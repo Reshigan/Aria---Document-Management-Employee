@@ -1,0 +1,7 @@
+This is a placeholder for favicon.ico
+For production, convert favicon.svg to .ico format using online tools like:
+- https://convertio.co/svg-ico/
+- https://www.favicon-generator.org/
+
+Or use ImageMagick:
+convert -density 256x256 -background transparent favicon.svg -define icon:auto-resize -colors 256 favicon.ico
