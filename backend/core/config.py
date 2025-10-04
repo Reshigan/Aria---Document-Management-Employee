@@ -20,7 +20,8 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
-        case_sensitive=True
+        case_sensitive=True,
+        extra="ignore"
     )
     
     # Application
@@ -41,15 +42,20 @@ class Settings(BaseSettings):
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7
     
     # Database
-    POSTGRES_SERVER: str
-    POSTGRES_USER: str
-    POSTGRES_PASSWORD: str
-    POSTGRES_DB: str
+    DATABASE_URL: Optional[str] = None
+    POSTGRES_SERVER: Optional[str] = None
+    POSTGRES_USER: Optional[str] = None
+    POSTGRES_PASSWORD: Optional[str] = None
+    POSTGRES_DB: Optional[str] = None
     POSTGRES_PORT: int = 5432
     
-    @property
-    def DATABASE_URL(self) -> str:
-        return f"postgresql+asyncpg://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_SERVER}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
+    def get_database_url(self) -> str:
+        if self.DATABASE_URL:
+            return self.DATABASE_URL
+        if self.POSTGRES_SERVER and self.POSTGRES_USER and self.POSTGRES_PASSWORD and self.POSTGRES_DB:
+            return f"postgresql+asyncpg://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_SERVER}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
+        # Default to SQLite for development
+        return "sqlite+aiosqlite:///./aria.db"
     
     # Redis
     REDIS_HOST: str = "localhost"
@@ -64,27 +70,27 @@ class Settings(BaseSettings):
         return f"redis://{self.REDIS_HOST}:{self.REDIS_PORT}/{self.REDIS_DB}"
     
     # MinIO
-    MINIO_ENDPOINT: str
-    MINIO_ACCESS_KEY: str
-    MINIO_SECRET_KEY: str
+    MINIO_ENDPOINT: Optional[str] = None
+    MINIO_ACCESS_KEY: Optional[str] = None
+    MINIO_SECRET_KEY: Optional[str] = None
     MINIO_USE_SSL: bool = False
     MINIO_BUCKET_DOCUMENTS: str = "documents"
     
     # SAP
-    SAP_ASHOST: str
-    SAP_SYSNR: str
-    SAP_CLIENT: str
-    SAP_USER: str
-    SAP_PASSWORD: str
+    SAP_ASHOST: Optional[str] = None
+    SAP_SYSNR: Optional[str] = None
+    SAP_CLIENT: Optional[str] = None
+    SAP_USER: Optional[str] = None
+    SAP_PASSWORD: Optional[str] = None
     SAP_LANG: str = "EN"
     
     # Email
-    SMTP_HOST: str
+    SMTP_HOST: Optional[str] = None
     SMTP_PORT: int = 587
-    SMTP_USER: str
-    SMTP_PASSWORD: str
+    SMTP_USER: Optional[str] = None
+    SMTP_PASSWORD: Optional[str] = None
     SMTP_TLS: bool = True
-    EMAILS_FROM_EMAIL: str
+    EMAILS_FROM_EMAIL: Optional[str] = None
     EMAILS_FROM_NAME: str = "ARIA"
     
     # ML Models
@@ -93,8 +99,29 @@ class Settings(BaseSettings):
     MODEL_CACHE_DIR: str = "/app/models"
     
     # Celery
-    CELERY_BROKER_URL: str = Field(default="amqp://guest:guest@localhost:5672//")
-    CELERY_RESULT_BACKEND: Optional[str] = None
+    CELERY_BROKER_URL: str = Field(default="redis://localhost:6379/0")
+    CELERY_RESULT_BACKEND: str = Field(default="redis://localhost:6379/0")
+    
+    # OCR
+    TESSERACT_CMD: Optional[str] = None  # Path to tesseract executable
+    OCR_LANGUAGES: str = "eng"  # Languages for OCR (comma-separated)
+    
+    # Slack
+    SLACK_BOT_TOKEN: Optional[str] = None
+    SLACK_CHANNEL: str = "#aria-notifications"
+    SLACK_ENABLED: bool = False
+    
+    # Microsoft Teams
+    TEAMS_WEBHOOK_URL: Optional[str] = None
+    TEAMS_ENABLED: bool = False
+    
+    # Internal LLM
+    LLM_API_URL: Optional[str] = None  # Internal LLM endpoint
+    LLM_API_KEY: Optional[str] = None
+    LLM_MODEL: str = "llama-3"  # Default model name
+    LLM_TEMPERATURE: float = 0.7
+    LLM_MAX_TOKENS: int = 2000
+    LLM_TIMEOUT: int = 30  # seconds
     
     @field_validator('BACKEND_CORS_ORIGINS', mode='before')
     @classmethod
