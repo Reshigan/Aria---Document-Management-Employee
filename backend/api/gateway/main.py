@@ -8,8 +8,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 import logging
 
-from core.config import settings
-from api.gateway.routers import auth, documents, chat, health
+from backend.core.config import settings
+from backend.api.gateway.routers import auth, documents, chat, health
 
 # Configure logging
 logging.basicConfig(
@@ -26,9 +26,13 @@ async def lifespan(app: FastAPI):
     logger.info(f"🚀 Starting {settings.APP_NAME} v{settings.APP_VERSION}")
     logger.info(f"Environment: {settings.ENVIRONMENT}")
     
-    # Initialize services here
-    # await database.connect()
-    # await ml_models.load()
+    # Initialize database
+    from backend.core.database import init_db, close_db
+    try:
+        await init_db()
+        logger.info("✅ Database initialized")
+    except Exception as e:
+        logger.error(f"❌ Database initialization failed: {e}")
     
     logger.info("✅ ARIA is online and ready!")
     
@@ -36,7 +40,8 @@ async def lifespan(app: FastAPI):
     
     # Shutdown
     logger.info("🛑 Shutting down ARIA gracefully...")
-    # await database.disconnect()
+    await close_db()
+    logger.info("✅ Database connections closed")
 
 
 # Create FastAPI application
