@@ -1,0 +1,107 @@
+name: ARIA CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+env:
+  PYTHON_VERSION: '3.11'
+  NODE_VERSION: '18'
+
+jobs:
+  # Backend Testing
+  test-backend:
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:14
+        env:
+          POSTGRES_USER: test_user
+          POSTGRES_PASSWORD: test_password
+          POSTGRES_DB: test_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      
+      redis:
+        image: redis:7
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        cache: 'pip'
+    
+    - name: Install dependencies
+      run: |
+        cd backend
+        python -m pip install --upgrade pip
+        pip install -r requirements/dev.txt
+    
+    - name: Run linting
+      run: |
+        cd backend
+        black --check .
+        isort --check-only .
+        flake8 .
+    
+    - name: Run tests
+      env:
+        SECRET_KEY: test-secret-key-minimum-32-characters-long
+        POSTGRES_SERVER: localhost
+        POSTGRES_USER: test_user
+        POSTGRES_PASSWORD: test_password
+        POSTGRES_DB: test_db
+        REDIS_HOST: localhost
+        MINIO_ENDPOINT: localhost:9000
+        MINIO_ACCESS_KEY: minioadmin
+        MINIO_SECRET_KEY: minioadmin
+        SAP_ASHOST: test.sap.com
+        SAP_SYSNR: "00"
+        SAP_CLIENT: "100"
+        SAP_USER: test_user
+        SAP_PASSWORD: test_password
+        SMTP_HOST: smtp.test.com
+        SMTP_USER: test@test.com
+        SMTP_PASSWORD: test_password
+        EMAILS_FROM_EMAIL: noreply@test.com
+      run: |
+        cd backend
+        pytest --cov=. --cov-report=xml
+
+  # Build Docker Images
+  build-images:
+    needs: [test-backend]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+    
+    - name: Build Backend image
+      uses: docker/build-push-action@v4
+      with:
+        context: .
+        file: ./deployment/docker/backend/Dockerfile
+        push: false
+        tags: aria-backend:latest
