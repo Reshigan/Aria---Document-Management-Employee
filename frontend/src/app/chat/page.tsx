@@ -73,23 +73,23 @@ export default function ChatPage() {
       let response;
 
       if (selectedDoc) {
-        response = await api.post('/chat/document/question', {
-          document_id: selectedDoc.toString(),
-          question: input
+        response = await api.post('/aria/chat', {
+          message: `Document question: ${input}`,
+          // question: input
         });
 
         const assistantMessage: Message = {
           role: 'assistant',
-          content: response.data.answer,
+          content: response.data.response,
           timestamp: new Date()
         };
 
         setMessages(prev => [...prev, assistantMessage]);
       } else {
-        response = await api.post('/chat/message', {
+        response = await api.post('/aria/chat', {
           message: input,
-          context: {},
-          conversation_id: null
+          
+          
         });
 
         const assistantMessage: Message = {
@@ -165,7 +165,7 @@ export default function ChatPage() {
               onChange={setSelectedDoc}
               showSearch
               filterOption={(input, option) =>
-                (option?.children as string).toLowerCase().includes(input.toLowerCase())
+                (option?.label as string).toLowerCase().includes(input.toLowerCase())
               }
             >
               {documents.map(doc => (
