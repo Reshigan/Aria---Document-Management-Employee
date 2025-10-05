@@ -1,0 +1,65 @@
+# Core FastAPI dependencies
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+python-multipart==0.0.6
+python-dotenv==1.0.0
+gunicorn==21.2.0
+
+# Database
+sqlalchemy[asyncio]==2.0.23
+aiosqlite==0.19.0
+alembic==1.12.1
+asyncpg==0.29.0
+psycopg2-binary==2.9.9
+
+# Authentication & Security
+python-jose[cryptography]==3.3.0
+passlib[argon2]==1.7.4
+bcrypt==4.1.1
+cryptography==41.0.7
+
+# Data validation
+pydantic==2.5.0
+pydantic-settings==2.1.0
+email-validator==2.1.0
+
+# Storage
+minio==7.2.9
+aiofiles==23.2.1
+boto3==1.34.0
+
+# File processing
+python-magic==0.4.27
+Pillow==10.1.0
+
+# OCR & Document Processing
+pytesseract==0.3.13
+pdf2image==1.17.0
+reportlab==4.4.4
+
+# Celery & Task Queue
+celery[redis]==5.5.3
+redis==5.2.1
+flower==2.0.1
+
+# Communication Services
+aiohttp==3.12.15
+# For production SMTP:
+# aiosmtplib==3.0.1
+
+# SAP Integration (optional - requires SAP NW RFC SDK)
+# pyrfc==3.3.0
+
+# Utilities
+python-dateutil==2.9.0.post0
+
+# Monitoring & Logging (optional)
+# sentry-sdk==1.40.0
+# prometheus-client==0.19.0
+
+# Development & Testing
+pytest==7.4.3
+pytest-asyncio==0.21.1
+pytest-cov==4.1.0
+httpx==0.25.2
+faker==22.0.0

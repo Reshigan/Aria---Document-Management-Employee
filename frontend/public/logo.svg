@@ -1,0 +1,44 @@
+<svg width="200" height="60" viewBox="0 0 200 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1890ff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#722ed1;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Icon Part -->
+  <g transform="translate(5, 5)">
+    <!-- Background Circle -->
+    <circle cx="25" cy="25" r="24" fill="url(#logoGradient)"/>
+    
+    <!-- Document -->
+    <rect x="14" y="12" width="19" height="25" rx="1.5" fill="white" opacity="0.95"/>
+    <rect x="17" y="16" width="13" height="1.5" rx="0.75" fill="#1890ff" opacity="0.5"/>
+    <rect x="17" y="21" width="13" height="1.5" rx="0.75" fill="#1890ff" opacity="0.5"/>
+    <rect x="17" y="26" width="9" height="1.5" rx="0.75" fill="#1890ff" opacity="0.5"/>
+    
+    <!-- AI Network -->
+    <circle cx="31" cy="15" r="1.5" fill="#13c2c2"/>
+    <circle cx="36" cy="20" r="1.5" fill="#13c2c2"/>
+    <circle cx="36" cy="30" r="1.5" fill="#13c2c2"/>
+    <circle cx="31" cy="35" r="1.5" fill="#13c2c2"/>
+    
+    <!-- Connections -->
+    <line x1="31" y1="15" x2="36" y2="20" stroke="#13c2c2" stroke-width="1" opacity="0.6"/>
+    <line x1="36" y1="20" x2="36" y2="30" stroke="#13c2c2" stroke-width="1" opacity="0.6"/>
+    <line x1="36" y1="30" x2="31" y2="35" stroke="#13c2c2" stroke-width="1" opacity="0.6"/>
+    
+    <!-- Sparkle -->
+    <path d="M20 8 L21 10 L23 11 L21 12 L20 14 L19 12 L17 11 L19 10 Z" fill="#ffd700"/>
+  </g>
+  
+  <!-- Text "ARIA" -->
+  <text x="65" y="38" font-family="Arial, sans-serif" font-size="28" font-weight="bold" fill="#1890ff">
+    ARIA
+  </text>
+  
+  <!-- Tagline -->
+  <text x="65" y="48" font-family="Arial, sans-serif" font-size="9" fill="#8c8c8c" letter-spacing="0.5">
+    AI Document Intelligence
+  </text>
+</svg>
