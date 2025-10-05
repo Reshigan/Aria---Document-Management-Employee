@@ -26,30 +26,71 @@ export default function Home() {
   }, [router]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      <div className="container mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <div className="flex justify-center items-center mb-6">
-            <Image
-              src="/aria-avatar.svg"
-              alt="ARIA"
-              width={80}
-              height={80}
-              className="mr-4"
-            />
-            <div>
-              <Title level={1} className="mb-2 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                ARIA
-              </Title>
-              <Text className="text-lg text-gray-600">AI Document Intelligence Platform</Text>
+    <>
+      {/* Particle Background */}
+      <div className="particles">
+        {[...Array(30)].map((_, i) => (
+          <div
+            key={i}
+            className="particle"
+            style={{
+              left: `${Math.random() * 100}%`,
+              animationDelay: `${Math.random() * 6}s`,
+              animationDuration: `${4 + Math.random() * 4}s`
+            }}
+          />
+        ))}
+      </div>
+
+      <div className="min-h-screen" style={{ position: 'relative', zIndex: 1 }}>
+        <div className="container mx-auto px-4 py-8">
+          {/* Header */}
+          <div className="text-center mb-12">
+            <div className="flex justify-center items-center mb-6">
+              <div style={{
+                width: '120px',
+                height: '120px',
+                borderRadius: '50%',
+                background: 'linear-gradient(45deg, var(--primary-cyan), var(--primary-blue))',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                boxShadow: '0 0 40px rgba(0, 245, 255, 0.4)',
+                marginRight: '24px'
+              }}>
+                <RobotOutlined style={{ fontSize: '60px', color: 'white' }} />
+              </div>
+              <div>
+                <h1 className="glow-text" style={{ 
+                  fontSize: '4rem', 
+                  fontWeight: '700', 
+                  margin: '0 0 8px 0',
+                  background: 'linear-gradient(45deg, var(--primary-cyan), var(--accent-neon))',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent'
+                }}>
+                  ARIA
+                </h1>
+                <p style={{ 
+                  fontSize: '1.5rem', 
+                  color: 'var(--text-secondary)',
+                  margin: 0
+                }}>
+                  AI Document Intelligence Platform
+                </p>
+              </div>
             </div>
+            <p style={{ 
+              fontSize: '1.25rem', 
+              color: 'var(--text-primary)', 
+              maxWidth: '800px', 
+              margin: '0 auto',
+              lineHeight: '1.6'
+            }}>
+              Intelligent document processing with AI-powered analysis, OCR, and automated workflows.
+              Transform your document management with cutting-edge artificial intelligence.
+            </p>
           </div>
-          <Paragraph className="text-xl text-gray-700 max-w-3xl mx-auto">
-            Intelligent document processing with AI-powered analysis, OCR, and automated workflows.
-            Transform your document management with cutting-edge artificial intelligence.
-          </Paragraph>
-        </div>
 
         {/* Features Grid */}
         <Row gutter={[24, 24]} className="mb-12">
