@@ -1,26 +1,80 @@
 """
 LLM Service for internal LLM integration (Llama, Mistral, etc.)
-Supports document Q&A and natural language queries.
+Supports document Q&A and natural language queries with ARIA's personality.
 """
 import logging
 import json
 from typing import Dict, List, Optional
 import aiohttp
 from backend.core.config import settings
+from backend.services.ai.aria_personality import ARIAPersonality
 
 logger = logging.getLogger(__name__)
 
 
 class LLMService:
-    """Service for integrating with internal LLM for document Q&A."""
+    """Service for integrating with internal LLM for document Q&A with ARIA's personality."""
     
     def __init__(self):
-        self.api_url = settings.LLM_API_URL
+        self.api_url = settings.LLM_API_URL or "http://localhost:11434"  # Default Ollama URL
         self.api_key = settings.LLM_API_KEY
-        self.model = settings.LLM_MODEL
+        self.model = settings.LLM_MODEL or "phi3:mini"  # Default to smaller model for ARM
         self.temperature = settings.LLM_TEMPERATURE
         self.max_tokens = settings.LLM_MAX_TOKENS
         self.timeout = settings.LLM_TIMEOUT
+        self.personality = ARIAPersonality()
+    
+    async def chat_with_aria(
+        self,
+        user_message: str,
+        document_context: Optional[str] = None,
+        user_name: Optional[str] = None
+    ) -> Dict:
+        """
+        Chat with ARIA using her full personality and context awareness.
+        
+        Args:
+            user_message: User's message
+            document_context: Optional document context
+            user_name: Optional user name for personalization
+            
+        Returns:
+            Dictionary with ARIA's response
+        """
+        # Build messages with ARIA's personality
+        messages = [
+            {'role': 'system', 'content': self.personality.get_system_prompt()}
+        ]
+        
+        # Add document context if provided
+        if document_context:
+            messages.append({
+                'role': 'system', 
+                'content': f"Document context:\n{document_context}\n\n{self.personality.get_document_analysis_prompt()}"
+            })
+        
+        # Add user message
+        messages.append({'role': 'user', 'content': user_message})
+        
+        result = await self.chat(messages)
+        
+        if result['success']:
+            # Enhance response with ARIA's personality
+            enhanced_response = self.personality.enhance_response(
+                result['message'],
+                context="general"
+            )
+            return {
+                'success': True,
+                'message': enhanced_response,
+                'model': result.get('model'),
+                'usage': result.get('usage')
+            }
+        else:
+            return {
+                'success': False,
+                'error': self.personality.get_error_message("connection_error")
+            }
     
     async def chat(
         self,
@@ -100,7 +154,7 @@ class LLMService:
         document_metadata: Optional[Dict] = None
     ) -> Dict:
         """
-        Ask a question about a specific document.
+        Ask a question about a specific document with ARIA's personality.
         
         Args:
             document_text: Full text of the document
@@ -110,13 +164,8 @@ class LLMService:
         Returns:
             Dictionary with answer
         """
-        # Build context-aware prompt
-        system_prompt = (
-            "You are an AI assistant specialized in analyzing business documents, "
-            "particularly invoices, purchase orders, and financial documents. "
-            "Answer questions accurately based on the provided document content. "
-            "If the answer cannot be found in the document, say so clearly."
-        )
+        # Build context-aware prompt with ARIA's personality
+        system_prompt = f"{ARIAPersonality.get_system_prompt()}\n\n{ARIAPersonality.get_document_analysis_prompt()}"
         
         # Include metadata if available
         context = f"Document content:\n\n{document_text}\n\n"
@@ -138,15 +187,25 @@ class LLMService:
         result = await self.chat(messages)
         
         if result['success']:
+            # Enhance response with ARIA's personality
+            enhanced_answer = ARIAPersonality.enhance_response(
+                result['message'], 
+                context="document_analysis"
+            )
             return {
                 'success': True,
                 'question': question,
-                'answer': result['message'],
+                'answer': enhanced_answer,
                 'model': result.get('model'),
                 'usage': result.get('usage')
             }
         else:
-            return result
+            # Enhance error message with ARIA's personality
+            error_message = ARIAPersonality.get_error_message("processing_failed")
+            return {
+                'success': False,
+                'error': error_message
+            }
     
     async def extract_information(
         self,
