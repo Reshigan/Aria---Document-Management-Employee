@@ -1,6 +1,24 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+/* Futuristic ARIA Design System */
+:root {
+  /* Futuristic Color Palette */
+  --primary-cyan: #00f5ff;
+  --primary-blue: #0066ff;
+  --primary-purple: #6600ff;
+  --accent-neon: #00ff88;
+  --accent-pink: #ff0080;
+  --dark-bg: #0a0a0f;
+  --dark-surface: #1a1a2e;
+  --dark-card: #16213e;
+  --text-primary: #ffffff;
+  --text-secondary: #b8c5d6;
+  --text-muted: #6b7280;
+  --border-glow: #00f5ff40;
+  --shadow-glow: #00f5ff20;
+}
 
 * {
   box-sizing: border-box;
@@ -12,14 +30,306 @@ html,
 body {
   max-width: 100vw;
   overflow-x: hidden;
+  background: var(--dark-bg);
+  color: var(--text-primary);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
 }
 
-body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+/* Animated Background */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    radial-gradient(circle at 20% 80%, rgba(0, 245, 255, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(102, 0, 255, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(0, 255, 136, 0.05) 0%, transparent 50%);
+  animation: backgroundPulse 8s ease-in-out infinite alternate;
+  z-index: -1;
+}
+
+@keyframes backgroundPulse {
+  0% { opacity: 0.3; }
+  100% { opacity: 0.6; }
+}
+
+/* Futuristic Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--dark-surface);
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(45deg, var(--primary-cyan), var(--primary-purple));
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(45deg, var(--accent-neon), var(--accent-pink));
+}
+
+/* Glowing Text Effect */
+.glow-text {
+  text-shadow: 
+    0 0 5px var(--primary-cyan),
+    0 0 10px var(--primary-cyan),
+    0 0 15px var(--primary-cyan);
+  animation: textGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes textGlow {
+  from { text-shadow: 0 0 5px var(--primary-cyan), 0 0 10px var(--primary-cyan), 0 0 15px var(--primary-cyan); }
+  to { text-shadow: 0 0 10px var(--primary-cyan), 0 0 20px var(--primary-cyan), 0 0 30px var(--primary-cyan); }
+}
+
+/* Futuristic Cards */
+.futuristic-card {
+  background: linear-gradient(135deg, rgba(26, 26, 46, 0.8), rgba(22, 33, 62, 0.6));
+  border: 1px solid var(--border-glow);
+  border-radius: 16px;
+  backdrop-filter: blur(10px);
+  box-shadow: 
+    0 8px 32px rgba(0, 245, 255, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.futuristic-card:hover {
+  border-color: var(--primary-cyan);
+  box-shadow: 
+    0 12px 40px rgba(0, 245, 255, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+/* Neon Buttons */
+.neon-button {
+  background: linear-gradient(45deg, var(--primary-cyan), var(--primary-blue));
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-weight: 600;
+  padding: 12px 24px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.neon-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.neon-button:hover::before {
+  left: 100%;
+}
+
+.neon-button:hover {
+  box-shadow: 
+    0 0 20px var(--primary-cyan),
+    0 0 40px var(--primary-cyan),
+    0 0 60px var(--primary-cyan);
+  transform: scale(1.05);
+}
+
+.neon-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.neon-button:disabled:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+/* Holographic Input Fields */
+.holo-input {
+  background: rgba(26, 26, 46, 0.6);
+  border: 1px solid var(--border-glow);
+  border-radius: 8px;
+  color: var(--text-primary);
+  padding: 12px 16px;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+  font-size: 14px;
+}
+
+.holo-input:focus {
+  outline: none;
+  border-color: var(--primary-cyan);
+  box-shadow: 
+    0 0 0 2px rgba(0, 245, 255, 0.2),
+    0 0 20px rgba(0, 245, 255, 0.1);
+}
+
+.holo-input::placeholder {
+  color: var(--text-muted);
+}
+
+/* Animated Loading Spinner */
+.cyber-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(0, 245, 255, 0.2);
+  border-top: 3px solid var(--primary-cyan);
+  border-radius: 50%;
+  animation: cyberSpin 1s linear infinite;
+}
+
+@keyframes cyberSpin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Message Bubbles */
+.message-bubble {
+  border-radius: 16px;
+  padding: 16px;
+  margin: 8px 0;
+  position: relative;
+  backdrop-filter: blur(10px);
+  animation: messageSlideIn 0.3s ease-out;
+}
+
+@keyframes messageSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.message-user {
+  background: linear-gradient(135deg, rgba(0, 102, 255, 0.2), rgba(102, 0, 255, 0.2));
+  border: 1px solid rgba(0, 102, 255, 0.3);
+  margin-left: 20%;
+}
+
+.message-ai {
+  background: linear-gradient(135deg, rgba(0, 245, 255, 0.1), rgba(0, 255, 136, 0.1));
+  border: 1px solid rgba(0, 245, 255, 0.3);
+  margin-right: 20%;
+}
+
+/* Typing Indicator */
+.typing-indicator {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 16px;
+}
+
+.typing-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--primary-cyan);
+  animation: typingPulse 1.4s infinite ease-in-out;
+}
+
+.typing-dot:nth-child(1) { animation-delay: -0.32s; }
+.typing-dot:nth-child(2) { animation-delay: -0.16s; }
+
+@keyframes typingPulse {
+  0%, 80%, 100% {
+    transform: scale(0.8);
+    opacity: 0.5;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Particle Effect */
+.particles {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.particle {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: var(--primary-cyan);
+  border-radius: 50%;
+  animation: particleFloat 6s infinite linear;
+}
+
+@keyframes particleFloat {
+  0% {
+    transform: translateY(100vh) translateX(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-10vh) translateX(100px);
+    opacity: 0;
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .message-user {
+    margin-left: 10%;
+  }
+  
+  .message-ai {
+    margin-right: 10%;
+  }
+  
+  .futuristic-card {
+    margin: 8px;
+  }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Selection styling */
+::selection {
+  background: rgba(0, 245, 255, 0.3);
+  color: white;
+}
+
+/* Focus indicators */
+.focus-visible {
+  outline: 2px solid var(--primary-cyan);
+  outline-offset: 2px;
 }
 
 a {
