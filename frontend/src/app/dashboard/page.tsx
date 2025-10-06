@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Layout, Card, Row, Col, Statistic, Button, Upload, Table, Tag, Typography, Space, message as antdMessage } from 'antd';
+import { Card, Row, Col, Statistic, Button, Upload, Table, Tag, Typography, message as antdMessage } from 'antd';
 import {
   FileTextOutlined,
   CheckCircleOutlined,
@@ -9,16 +9,16 @@ import {
   WarningOutlined,
   UploadOutlined,
   MessageOutlined,
-  LogoutOutlined,
-  UserOutlined,
-  DashboardOutlined,
+  RobotOutlined,
+  ThunderboltOutlined,
+  EyeOutlined,
+  DatabaseOutlined,
 } from '@ant-design/icons';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { apiClient } from '@/lib/api';
 import { Document, DocumentStatus } from '@/types';
 
-const { Header, Content, Sider } = Layout;
 const { Title, Text } = Typography;
 
 export default function DashboardPage() {
@@ -129,71 +129,52 @@ export default function DashboardPage() {
   ];
 
   return (
-    <Layout style={{ minHeight: '100vh' }}>
-      <Header style={{ 
-        background: 'linear-gradient(135deg, #1890ff 0%, #722ed1 100%)',
-        padding: '0 24px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-      }}>
-        <div className="flex items-center space-x-4">
-          <DashboardOutlined className="text-3xl text-white" />
-          <span className="text-white text-xl font-bold">ARIA Dashboard</span>
-        </div>
-        <Space size="large">
-          <Button 
-            type="text" 
-            className="text-white hover:bg-white hover:bg-opacity-20"
-            onClick={() => router.push('/documents')}
-          >
-            All Documents
-          </Button>
-          <Button 
-            type="text" 
-            className="text-white hover:bg-white hover:bg-opacity-20"
-            onClick={() => router.push('/chat')}
-          >
-            AI Chat
-          </Button>
-          {user?.is_superuser && (
-            <Button 
-              type="text" 
-              className="text-white hover:bg-white hover:bg-opacity-20"
-              onClick={() => router.push('/admin')}
-            >
-              Admin
-            </Button>
-          )}
-          <div className="flex items-center space-x-3 text-white">
-            <UserOutlined />
-            <span>{user?.full_name || user?.username}</span>
+    <div className="p-6 max-w-7xl mx-auto">
+      {/* Header Section */}
+      <div className="mb-8">
+        <div className="futuristic-card p-8 mb-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-6">
+              <div className="w-20 h-20 rounded-full bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 flex items-center justify-center relative">
+                <RobotOutlined className="text-3xl text-white" />
+                <div className="absolute inset-0 rounded-full bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 animate-pulse opacity-50"></div>
+              </div>
+              <div>
+                <h1 className="text-4xl font-bold glow-text mb-2">
+                  Neural Command Center
+                </h1>
+                <p className="text-xl text-gray-300">
+                  Welcome back, <span className="text-cyan-400 font-semibold">{user?.full_name || user?.username}</span>
+                </p>
+                <div className="flex items-center gap-4 mt-2">
+                  <div className="status-online text-sm">SYSTEM ONLINE</div>
+                  <span className="text-gray-400">•</span>
+                  <span className="text-gray-400 text-sm">
+                    {new Date().toLocaleString()}
+                  </span>
+                </div>
+              </div>
+            </div>
+            
+            <div className="flex gap-4">
+              <button 
+                className="cyber-button"
+                onClick={() => router.push('/chat')}
+              >
+                <MessageOutlined className="mr-2" />
+                AI Assistant
+              </button>
+              <button 
+                className="neon-button"
+                onClick={() => router.push('/upload')}
+              >
+                <UploadOutlined className="mr-2" />
+                Upload Document
+              </button>
+            </div>
           </div>
-          <Button 
-            type="primary" 
-            danger 
-            icon={<LogoutOutlined />}
-            onClick={logout}
-          >
-            Logout
-          </Button>
-        </Space>
-      </Header>
-
-      <Content style={{ 
-        padding: '24px',
-        background: 'linear-gradient(135deg, #f0f2f5 0%, #ffffff 100%)',
-        minHeight: 'calc(100vh - 64px)'
-      }}>
-        <div className="mb-8 animate-slideDown">
-          <Title level={2} className="mb-2">
-            Welcome back, {user?.full_name || user?.username}! 👋
-          </Title>
-          <Text type="secondary" className="text-lg">
-            Your AI-powered document processing assistant is ready to help
-          </Text>
         </div>
+      </div>
 
         {/* Statistics */}
         <Row gutter={[24, 24]} className="mb-8">

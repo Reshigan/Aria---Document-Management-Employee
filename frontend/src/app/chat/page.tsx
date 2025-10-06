@@ -127,24 +127,8 @@ export default function ChatPage() {
   };
 
   return (
-    <>
-      {/* Particle Background */}
-      <div className="particles">
-        {[...Array(20)].map((_, i) => (
-          <div
-            key={i}
-            className="particle"
-            style={{
-              left: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 6}s`,
-              animationDuration: `${4 + Math.random() * 4}s`
-            }}
-          />
-        ))}
-      </div>
-
-      <div style={{ padding: '24px', maxWidth: '1200px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
-        <div className="futuristic-card" style={{ padding: '24px' }}>
+    <div className="p-6 max-w-7xl mx-auto">
+      <div className="futuristic-card" style={{ padding: '32px' }}>
           {/* Header */}
           <div style={{ 
             display: 'flex', 
@@ -354,6 +338,6 @@ export default function ChatPage() {
           )}
         </div>
       </div>
-    </>
+    </div>
   );
 }
