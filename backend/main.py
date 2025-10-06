@@ -9,7 +9,7 @@ from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime, timedelta
 from jose import JWTError, jwt
-from passlib.context import CryptContext
+import hashlib
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 import os
 import uuid
@@ -69,7 +69,6 @@ SECRET_KEY = "AriaJWT1730901994SecretKey"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 security = HTTPBearer()
 
 def get_db():
@@ -80,10 +79,10 @@ def get_db():
         db.close()
 
 def verify_password(plain_password, hashed_password):
-    return pwd_context.verify(plain_password, hashed_password)
+    return hashlib.sha256(plain_password.encode()).hexdigest() == hashed_password
 
 def get_password_hash(password):
-    return pwd_context.hash(password)
+    return hashlib.sha256(password.encode()).hexdigest()
 
 def create_access_token(data: dict):
     to_encode = data.copy()
