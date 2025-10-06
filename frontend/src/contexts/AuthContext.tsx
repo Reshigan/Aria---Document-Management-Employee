@@ -44,12 +44,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const token = localStorage.getItem('access_token');
       if (token) {
         const userData = await apiClient.getCurrentUser();
-        setUser(userData);
+        setUser(userData.data);
       }
     } catch (error) {
       console.error('Auth check failed:', error);
       // Clear invalid tokens
-      apiClient.logout();
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('refresh_token');
     } finally {
       setLoading(false);
     }
@@ -58,9 +59,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const login = async (credentials: LoginCredentials) => {
     try {
       setLoading(true);
-      await apiClient.login(credentials.username, credentials.password);
+      await apiClient.login(credentials);
       const userData = await apiClient.getCurrentUser();
-      setUser(userData);
+      setUser(userData.data);
       message.success('Login successful!');
       router.push('/dashboard');
     } catch (error: any) {
@@ -88,7 +89,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const logout = () => {
-    apiClient.logout();
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
     setUser(null);
     message.info('Logged out successfully');
     router.push('/login');
@@ -97,7 +99,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const refreshUser = async () => {
     try {
       const userData = await apiClient.getCurrentUser();
-      setUser(userData);
+      setUser(userData.data);
     } catch (error) {
       console.error('Failed to refresh user:', error);
     }

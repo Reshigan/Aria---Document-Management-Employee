@@ -55,7 +55,7 @@ export default function DocumentsPage() {
   const [searchText, setSearchText] = useState('');
   const [statusFilter, setStatusFilter] = useState<string | undefined>();
   const [typeFilter, setTypeFilter] = useState<string | undefined>();
-  const [dateRange, setDateRange] = useState<any[]>([]);
+  const [dateRange, setDateRange] = useState<[any, any] | null>(null);
   const [selectedRowKeys, setSelectedRowKeys] = useState<number[]>([]);
   const [uploadModalVisible, setUploadModalVisible] = useState(false);
 
@@ -78,7 +78,7 @@ export default function DocumentsPage() {
       if (searchText) params.search = searchText;
       if (statusFilter) params.status = statusFilter;
       if (typeFilter) params.document_type = typeFilter;
-      if (dateRange.length === 2) {
+      if (dateRange && dateRange.length === 2) {
         params.date_from = dateRange[0].format('YYYY-MM-DD');
         params.date_to = dateRange[1].format('YYYY-MM-DD');
       }
@@ -325,7 +325,7 @@ export default function DocumentsPage() {
       title: 'Actions',
       key: 'actions',
       width: 80,
-      render: (_, record: Document) => (
+      render: (_: any, record: Document) => (
         <Dropdown overlay={getActionMenu(record)} trigger={['click']}>
           <Button type="text" icon={<MoreOutlined />} />
         </Dropdown>
