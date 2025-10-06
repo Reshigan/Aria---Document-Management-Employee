@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
-import { apiClient } from '@/lib/api';
+import { authAPI } from '@/lib/api';
 import { User, LoginCredentials, RegisterData } from '@/types';
 import { message } from 'antd';
 
@@ -41,16 +41,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const checkAuth = async () => {
     try {
-      const token = localStorage.getItem('access_token');
+      const token = localStorage.getItem('token');
       if (token) {
-        const userData = await apiClient.getCurrentUser();
-        setUser(userData.data);
+        const userData = await authAPI.getCurrentUser();
+        setUser(userData);
       }
     } catch (error) {
       console.error('Auth check failed:', error);
       // Clear invalid tokens
-      localStorage.removeItem('access_token');
-      localStorage.removeItem('refresh_token');
+      localStorage.removeItem('token');
     } finally {
       setLoading(false);
     }
@@ -59,9 +58,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const login = async (credentials: LoginCredentials) => {
     try {
       setLoading(true);
-      await apiClient.login(credentials);
-      const userData = await apiClient.getCurrentUser();
-      setUser(userData.data);
+      const loginResponse = await authAPI.login(credentials.email, credentials.password);
+      localStorage.setItem('token', loginResponse.access_token);
+      const userData = await authAPI.getCurrentUser();
+      setUser(userData);
       message.success('Login successful!');
       router.push('/dashboard');
     } catch (error: any) {
@@ -76,7 +76,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const register = async (data: RegisterData) => {
     try {
       setLoading(true);
-      await apiClient.register(data);
+      await authAPI.register(data.email, data.password, data.full_name || '');
       message.success('Registration successful! Please login.');
       router.push('/login');
     } catch (error: any) {
@@ -89,8 +89,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const logout = () => {
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('refresh_token');
+    localStorage.removeItem('token');
     setUser(null);
     message.info('Logged out successfully');
     router.push('/login');
@@ -98,8 +97,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const refreshUser = async () => {
     try {
-      const userData = await apiClient.getCurrentUser();
-      setUser(userData.data);
+      const userData = await authAPI.getCurrentUser();
+      setUser(userData);
     } catch (error) {
       console.error('Failed to refresh user:', error);
     }
