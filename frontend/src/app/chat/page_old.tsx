@@ -1,11 +1,12 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Select, message } from 'antd';
+import { Card, Input, Button, List, Avatar, Space, Select, message, Spin } from 'antd';
 import { SendOutlined, RobotOutlined, UserOutlined, FileTextOutlined } from '@ant-design/icons';
 import { useAuth } from '@/contexts/AuthContext';
 import api from '@/lib/api';
 
+const { TextArea } = Input;
 const { Option } = Select;
 
 interface Message {
@@ -69,17 +70,36 @@ export default function ChatPage() {
     setLoading(true);
 
     try {
-      const response = await api.post('/aria/chat', {
-        message: input,
-      });
+      let response;
 
-      const assistantMessage: Message = {
-        role: 'assistant',
-        content: response.data.response || response.data.message,
-        timestamp: new Date()
-      };
+      if (selectedDoc) {
+        response = await api.post('/aria/chat', {
+          message: `Document question: ${input}`,
+          // question: input
+        });
 
-      setMessages(prev => [...prev, assistantMessage]);
+        const assistantMessage: Message = {
+          role: 'assistant',
+          content: response.data.response,
+          timestamp: new Date()
+        };
+
+        setMessages(prev => [...prev, assistantMessage]);
+      } else {
+        response = await api.post('/aria/chat', {
+          message: input,
+          
+          
+        });
+
+        const assistantMessage: Message = {
+          role: 'assistant',
+          content: response.data.message,
+          timestamp: new Date()
+        };
+
+        setMessages(prev => [...prev, assistantMessage]);
+      }
     } catch (error: any) {
       console.error('Error sending message:', error);
       const errorMessage: Message = {
@@ -172,7 +192,7 @@ export default function ChatPage() {
               </h1>
             </div>
             
-            <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+            <Space>
               <Select
                 style={{ width: 250 }}
                 placeholder="Select document (optional)"
@@ -191,7 +211,7 @@ export default function ChatPage() {
                 }
               >
                 {documents.map(doc => (
-                  <Option key={doc.id} value={doc.id} label={doc.filename}>
+                  <Option key={doc.id} value={doc.id}>
                     <FileTextOutlined /> {doc.filename}
                   </Option>
                 ))}
@@ -201,159 +221,96 @@ export default function ChatPage() {
                   Get Summary
                 </button>
               )}
-            </div>
+            </Space>
           </div>
-
-          {/* Messages Area */}
-          <div style={{ 
-            height: '500px', 
-            overflowY: 'auto', 
-            marginBottom: '24px',
-            padding: '16px',
-            background: 'rgba(10, 10, 15, 0.3)',
-            borderRadius: '12px',
-            border: '1px solid var(--border-glow)',
-            backdropFilter: 'blur(10px)'
-          }}>
-            {messages.map((msg, index) => (
-              <div
-                key={index}
-                className={`message-bubble ${msg.role === 'user' ? 'message-user' : 'message-ai'}`}
+        <div style={{ 
+          height: '500px', 
+          overflowY: 'auto', 
+          marginBottom: '16px',
+          padding: '16px',
+          backgroundColor: '#f5f5f5',
+          borderRadius: '8px'
+        }}>
+          <List
+            dataSource={messages}
+            renderItem={(msg) => (
+              <List.Item
                 style={{
                   display: 'flex',
-                  alignItems: 'flex-start',
-                  flexDirection: msg.role === 'user' ? 'row-reverse' : 'row',
-                  gap: '12px'
+                  justifyContent: msg.role === 'user' ? 'flex-end' : 'flex-start',
+                  border: 'none',
+                  padding: '8px 0'
                 }}
               >
                 <div style={{
-                  width: '40px',
-                  height: '40px',
-                  borderRadius: '50%',
-                  background: msg.role === 'user' 
-                    ? 'linear-gradient(45deg, var(--primary-blue), var(--primary-purple))'
-                    : 'linear-gradient(45deg, var(--primary-cyan), var(--accent-neon))',
                   display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  boxShadow: msg.role === 'user'
-                    ? '0 0 15px rgba(0, 102, 255, 0.4)'
-                    : '0 0 15px rgba(0, 245, 255, 0.4)',
-                  flexShrink: 0
+                  alignItems: 'flex-start',
+                  flexDirection: msg.role === 'user' ? 'row-reverse' : 'row',
+                  maxWidth: '70%'
                 }}>
-                  {msg.role === 'user' ? 
-                    <UserOutlined style={{ fontSize: '18px', color: 'white' }} /> : 
-                    <RobotOutlined style={{ fontSize: '18px', color: 'white' }} />
-                  }
+                  <Avatar
+                    icon={msg.role === 'user' ? <UserOutlined /> : <RobotOutlined />}
+                    style={{
+                      backgroundColor: msg.role === 'user' ? '#1890ff' : '#52c41a',
+                      margin: msg.role === 'user' ? '0 0 0 8px' : '0 8px 0 0'
+                    }}
+                  />
+                  <div
+                    style={{
+                      padding: '12px 16px',
+                      borderRadius: '12px',
+                      backgroundColor: msg.role === 'user' ? '#1890ff' : '#fff',
+                      color: msg.role === 'user' ? '#fff' : '#000',
+                      boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                      whiteSpace: 'pre-wrap',
+                      wordBreak: 'break-word'
+                    }}
+                  >
+                    {msg.content}
+                  </div>
                 </div>
-                <div style={{
-                  flex: 1,
-                  whiteSpace: 'pre-wrap',
-                  wordBreak: 'break-word',
-                  color: 'var(--text-primary)',
-                  lineHeight: '1.6'
-                }}>
-                  {msg.content}
-                </div>
-              </div>
-            ))}
-            
-            <div ref={messagesEndRef} />
-            
-            {loading && (
-              <div className="message-bubble message-ai" style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '12px'
-              }}>
-                <div style={{
-                  width: '40px',
-                  height: '40px',
-                  borderRadius: '50%',
-                  background: 'linear-gradient(45deg, var(--primary-cyan), var(--accent-neon))',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  boxShadow: '0 0 15px rgba(0, 245, 255, 0.4)',
-                  flexShrink: 0
-                }}>
-                  <RobotOutlined style={{ fontSize: '18px', color: 'white' }} />
-                </div>
-                <div className="typing-indicator">
-                  <div className="typing-dot"></div>
-                  <div className="typing-dot"></div>
-                  <div className="typing-dot"></div>
-                  <span style={{ marginLeft: '8px', color: 'var(--text-secondary)' }}>
-                    ARIA is thinking...
-                  </span>
-                </div>
-              </div>
+              </List.Item>
             )}
-          </div>
-
-          {/* Input Area */}
-          <div style={{ 
-            display: 'flex', 
-            gap: '12px', 
-            alignItems: 'flex-end',
-            padding: '16px',
-            background: 'rgba(26, 26, 46, 0.4)',
-            borderRadius: '12px',
-            border: '1px solid var(--border-glow)'
-          }}>
-            <textarea
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyPress={handleKeyPress}
-              placeholder={
-                selectedDoc
-                  ? 'Ask a question about the selected document...'
-                  : 'Type your message... (Shift+Enter for new line)'
-              }
-              disabled={loading}
-              className="holo-input"
-              style={{
-                flex: 1,
-                minHeight: '48px',
-                maxHeight: '120px',
-                resize: 'none',
-                fontFamily: 'inherit'
-              }}
-            />
-            <button
-              className="neon-button"
-              onClick={sendMessage}
-              disabled={!input.trim() || loading}
-              style={{
-                height: '48px',
-                minWidth: '100px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '8px'
-              }}
-            >
-              <SendOutlined />
-              Send
-            </button>
-          </div>
-
-          {selectedDoc && (
-            <div style={{ 
-              marginTop: '16px', 
-              color: 'var(--text-muted)', 
-              fontSize: '12px',
-              textAlign: 'center',
-              padding: '8px',
-              background: 'rgba(0, 245, 255, 0.05)',
-              borderRadius: '8px',
-              border: '1px solid rgba(0, 245, 255, 0.1)'
-            }}>
-              💡 Tip: You can ask questions like "What is the total amount?", "Who is the vendor?", or "When is the payment due?"
+          />
+          <div ref={messagesEndRef} />
+          {loading && (
+            <div style={{ textAlign: 'center', padding: '16px' }}>
+              <Spin tip="Thinking..." />
             </div>
           )}
         </div>
-      </div>
-    </>
+
+        <Space.Compact style={{ width: '100%' }}>
+          <TextArea
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyPress={handleKeyPress}
+            placeholder={
+              selectedDoc
+                ? 'Ask a question about the selected document...'
+                : 'Type your message... (Shift+Enter for new line)'
+            }
+            autoSize={{ minRows: 1, maxRows: 4 }}
+            disabled={loading}
+            style={{ flex: 1 }}
+          />
+          <Button
+            type="primary"
+            icon={<SendOutlined />}
+            onClick={sendMessage}
+            disabled={!input.trim() || loading}
+            size="large"
+          >
+            Send
+          </Button>
+        </Space.Compact>
+
+        {selectedDoc && (
+          <div style={{ marginTop: '16px', color: '#666', fontSize: '12px' }}>
+            💡 Tip: You can ask questions like "What is the total amount?", "Who is the vendor?", or "When is the payment due?"
+          </div>
+        )}
+      </Card>
+    </div>
   );
 }

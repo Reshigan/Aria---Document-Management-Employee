@@ -130,15 +130,46 @@ export default function DashboardPage() {
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
-      <Header className="flex items-center justify-between px-6 bg-blue-600">
+      <Header style={{ 
+        background: 'linear-gradient(135deg, #1890ff 0%, #722ed1 100%)',
+        padding: '0 24px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+      }}>
         <div className="flex items-center space-x-4">
           <DashboardOutlined className="text-3xl text-white" />
           <span className="text-white text-xl font-bold">ARIA Dashboard</span>
         </div>
-        <Space>
-          <Text className="text-white">
-            <UserOutlined /> {user?.full_name || user?.username}
-          </Text>
+        <Space size="large">
+          <Button 
+            type="text" 
+            className="text-white hover:bg-white hover:bg-opacity-20"
+            onClick={() => router.push('/documents')}
+          >
+            All Documents
+          </Button>
+          <Button 
+            type="text" 
+            className="text-white hover:bg-white hover:bg-opacity-20"
+            onClick={() => router.push('/chat')}
+          >
+            AI Chat
+          </Button>
+          {user?.is_superuser && (
+            <Button 
+              type="text" 
+              className="text-white hover:bg-white hover:bg-opacity-20"
+              onClick={() => router.push('/admin')}
+            >
+              Admin
+            </Button>
+          )}
+          <div className="flex items-center space-x-3 text-white">
+            <UserOutlined />
+            <span>{user?.full_name || user?.username}</span>
+          </div>
           <Button 
             type="primary" 
             danger 
@@ -150,66 +181,130 @@ export default function DashboardPage() {
         </Space>
       </Header>
 
-      <Content className="p-6">
-        <div className="mb-6">
-          <Title level={2}>Welcome to ARIA</Title>
+      <Content style={{ 
+        padding: '24px',
+        background: 'linear-gradient(135deg, #f0f2f5 0%, #ffffff 100%)',
+        minHeight: 'calc(100vh - 64px)'
+      }}>
+        <div className="mb-8 animate-slideDown">
+          <Title level={2} className="mb-2">
+            Welcome back, {user?.full_name || user?.username}! 👋
+          </Title>
           <Text type="secondary" className="text-lg">
-            Your AI-powered document processing assistant
+            Your AI-powered document processing assistant is ready to help
           </Text>
         </div>
 
         {/* Statistics */}
-        <Row gutter={16} className="mb-6">
+        <Row gutter={[24, 24]} className="mb-8">
           <Col xs={24} sm={12} md={6}>
-            <Card>
-              <Statistic
-                title="Total Documents"
-                value={stats.total}
-                prefix={<FileTextOutlined />}
-                loading={loading}
-              />
+            <Card 
+              className="stats-card card-hover animate-slideUp"
+              style={{ borderRadius: '16px', border: '1px solid #f0f0f0' }}
+              loading={loading}
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="stats-icon" style={{ background: 'linear-gradient(135deg, #1890ff20, #1890ff40)', color: '#1890ff' }}>
+                    <FileTextOutlined />
+                  </div>
+                  <Statistic
+                    title="Total Documents"
+                    value={stats.total}
+                    valueStyle={{ color: '#1890ff', fontSize: '28px', fontWeight: '700' }}
+                  />
+                </div>
+              </div>
             </Card>
           </Col>
           <Col xs={24} sm={12} md={6}>
-            <Card>
-              <Statistic
-                title="Processing"
-                value={stats.processing}
-                prefix={<ClockCircleOutlined />}
-                valueStyle={{ color: '#1890ff' }}
-                loading={loading}
-              />
+            <Card 
+              className="stats-card card-hover animate-slideUp"
+              style={{ borderRadius: '16px', border: '1px solid #f0f0f0', animationDelay: '0.1s' }}
+              loading={loading}
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="stats-icon" style={{ background: 'linear-gradient(135deg, #fa8c1620, #fa8c1640)', color: '#fa8c16' }}>
+                    <ClockCircleOutlined />
+                  </div>
+                  <Statistic
+                    title="Processing"
+                    value={stats.processing}
+                    valueStyle={{ color: '#fa8c16', fontSize: '28px', fontWeight: '700' }}
+                  />
+                </div>
+              </div>
             </Card>
           </Col>
           <Col xs={24} sm={12} md={6}>
-            <Card>
-              <Statistic
-                title="Completed"
-                value={stats.completed}
-                prefix={<CheckCircleOutlined />}
-                valueStyle={{ color: '#52c41a' }}
-                loading={loading}
-              />
+            <Card 
+              className="stats-card card-hover animate-slideUp"
+              style={{ borderRadius: '16px', border: '1px solid #f0f0f0', animationDelay: '0.2s' }}
+              loading={loading}
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="stats-icon" style={{ background: 'linear-gradient(135deg, #52c41a20, #52c41a40)', color: '#52c41a' }}>
+                    <CheckCircleOutlined />
+                  </div>
+                  <Statistic
+                    title="Completed"
+                    value={stats.completed}
+                    valueStyle={{ color: '#52c41a', fontSize: '28px', fontWeight: '700' }}
+                  />
+                </div>
+              </div>
             </Card>
           </Col>
           <Col xs={24} sm={12} md={6}>
-            <Card>
-              <Statistic
-                title="Failed"
-                value={stats.failed}
-                prefix={<WarningOutlined />}
-                valueStyle={{ color: '#ff4d4f' }}
-                loading={loading}
-              />
+            <Card 
+              className="stats-card card-hover animate-slideUp"
+              style={{ borderRadius: '16px', border: '1px solid #f0f0f0', animationDelay: '0.3s' }}
+              loading={loading}
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="stats-icon" style={{ background: 'linear-gradient(135deg, #f5222d20, #f5222d40)', color: '#f5222d' }}>
+                    <WarningOutlined />
+                  </div>
+                  <Statistic
+                    title="Failed"
+                    value={stats.failed}
+                    valueStyle={{ color: '#f5222d', fontSize: '28px', fontWeight: '700' }}
+                  />
+                </div>
+              </div>
             </Card>
           </Col>
         </Row>
 
         {/* Upload Section */}
         <Card 
-          title="Upload Document" 
-          className="mb-6"
-          extra={<Button type="primary" icon={<UploadOutlined />}>Quick Upload</Button>}
+          title={
+            <div className="flex items-center gap-3">
+              <div className="stats-icon" style={{ background: 'linear-gradient(135deg, #13c2c220, #13c2c240)', color: '#13c2c2' }}>
+                <UploadOutlined />
+              </div>
+              <span>Upload Document</span>
+            </div>
+          }
+          className="mb-8 animate-slideUp"
+          style={{ borderRadius: '16px', border: '1px solid #f0f0f0', animationDelay: '0.4s' }}
+          extra={
+            <Button 
+              type="primary" 
+              icon={<UploadOutlined />}
+              style={{ 
+                background: 'linear-gradient(135deg, #1890ff 0%, #722ed1 100%)',
+                border: 'none',
+                borderRadius: '8px'
+              }}
+              onClick={() => router.push('/documents')}
+            >
+              View All Documents
+            </Button>
+          }
         >
           <Upload.Dragger
             name="file"
@@ -217,25 +312,64 @@ export default function DashboardPage() {
             beforeUpload={handleUpload}
             showUploadList={false}
             accept=".pdf,.jpg,.jpeg,.png,.xlsx,.xls,.doc,.docx"
+            style={{ 
+              borderRadius: '12px',
+              border: '2px dashed #d9d9d9',
+              background: 'linear-gradient(135deg, #f0f2f5 0%, #ffffff 100%)'
+            }}
           >
-            <p className="ant-upload-drag-icon">
-              <FileTextOutlined className="text-6xl text-blue-500" />
-            </p>
-            <p className="ant-upload-text text-lg">Click or drag file to upload</p>
-            <p className="ant-upload-hint">
-              Support for PDF, Images, Excel, and Word documents
-            </p>
+            <div className="py-8">
+              <p className="ant-upload-drag-icon">
+                <FileTextOutlined 
+                  className="text-6xl animate-float" 
+                  style={{ color: '#1890ff' }}
+                />
+              </p>
+              <p className="ant-upload-text text-xl font-semibold mb-2">
+                Click or drag file to upload
+              </p>
+              <p className="ant-upload-hint text-base text-gray-500">
+                Support for PDF, Images, Excel, and Word documents
+              </p>
+              <div className="mt-4 flex justify-center gap-2">
+                <span className="file-icon file-icon-pdf">PDF</span>
+                <span className="file-icon file-icon-img">IMG</span>
+                <span className="file-icon file-icon-xls">XLS</span>
+                <span className="file-icon file-icon-doc">DOC</span>
+              </div>
+            </div>
           </Upload.Dragger>
         </Card>
 
         {/* Recent Documents */}
-        <Card title="Recent Documents">
+        <Card 
+          title={
+            <div className="flex items-center gap-3">
+              <div className="stats-icon" style={{ background: 'linear-gradient(135deg, #722ed120, #722ed140)', color: '#722ed1' }}>
+                <FileTextOutlined />
+              </div>
+              <span>Recent Documents</span>
+            </div>
+          }
+          className="animate-slideUp"
+          style={{ borderRadius: '16px', border: '1px solid #f0f0f0', animationDelay: '0.5s' }}
+          extra={
+            <Button 
+              type="text" 
+              onClick={() => router.push('/documents')}
+              style={{ color: '#1890ff' }}
+            >
+              View All →
+            </Button>
+          }
+        >
           <Table 
             columns={columns} 
             dataSource={documents}
             rowKey="id"
             loading={loading}
-            pagination={{ pageSize: 10 }}
+            pagination={{ pageSize: 5, showSizeChanger: false }}
+            style={{ borderRadius: '8px' }}
           />
         </Card>
       </Content>

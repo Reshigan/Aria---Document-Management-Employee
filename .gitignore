@@ -87,7 +87,7 @@ downloads/
 temp/
 
 # ML Models
-models/
+ml_models/
 *.pth
 *.pt
 *.onnx
