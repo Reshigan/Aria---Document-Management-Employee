@@ -1,0 +1,131 @@
+version: '3.8'
+
+services:
+  # ARIA Frontend Production Service
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: aria-frontend-prod
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_API_URL=http://backend:8000
+      - NEXT_TELEMETRY_DISABLED=1
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - aria-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # ARIA Backend Production Service
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: aria-backend-prod
+    ports:
+      - "8000:8000"
+    environment:
+      - ENVIRONMENT=production
+      - LOG_LEVEL=INFO
+      - UPLOAD_DIRECTORY=/data/uploads
+    volumes:
+      - aria-uploads:/data/uploads
+      - aria-logs:/var/log/aria
+    restart: unless-stopped
+    networks:
+      - aria-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Nginx Reverse Proxy
+  nginx:
+    image: nginx:alpine
+    container_name: aria-nginx-prod
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.prod.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - aria-static:/var/www/static:ro
+    depends_on:
+      - frontend
+      - backend
+    restart: unless-stopped
+    networks:
+      - aria-network
+    healthcheck:
+      test: ["CMD", "nginx", "-t"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Redis for Caching (Optional)
+  redis:
+    image: redis:7-alpine
+    container_name: aria-redis-prod
+    ports:
+      - "6379:6379"
+    volumes:
+      - aria-redis:/data
+    restart: unless-stopped
+    networks:
+      - aria-network
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Monitoring with Prometheus (Optional)
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: aria-prometheus-prod
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - aria-prometheus:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    restart: unless-stopped
+    networks:
+      - aria-network
+
+volumes:
+  aria-uploads:
+    driver: local
+  aria-logs:
+    driver: local
+  aria-static:
+    driver: local
+  aria-redis:
+    driver: local
+  aria-prometheus:
+    driver: local
+
+networks:
+  aria-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
