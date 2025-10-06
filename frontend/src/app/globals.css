@@ -2,22 +2,28 @@
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
 
-/* Futuristic ARIA Design System */
+/* Advanced Digital Twin Design System */
 :root {
-  /* Futuristic Color Palette */
+  /* Digital Twin Color Palette */
   --primary-cyan: #00f5ff;
   --primary-blue: #0066ff;
   --primary-purple: #6600ff;
   --accent-neon: #00ff88;
   --accent-pink: #ff0080;
+  --accent-orange: #ff6b35;
+  --accent-yellow: #ffd700;
   --dark-bg: #0a0a0f;
   --dark-surface: #1a1a2e;
   --dark-card: #16213e;
+  --glass-surface: rgba(26, 26, 46, 0.15);
   --text-primary: #ffffff;
   --text-secondary: #b8c5d6;
   --text-muted: #6b7280;
   --border-glow: #00f5ff40;
   --shadow-glow: #00f5ff20;
+  --hologram-blue: rgba(0, 245, 255, 0.1);
+  --hologram-purple: rgba(102, 0, 255, 0.1);
+  --neural-grid: rgba(0, 245, 255, 0.05);
 }
 
 * {
@@ -35,7 +41,7 @@ body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
 }
 
-/* Animated Background */
+/* Advanced Neural Network Background */
 body::before {
   content: '';
   position: fixed;
@@ -44,16 +50,44 @@ body::before {
   width: 100%;
   height: 100%;
   background: 
-    radial-gradient(circle at 20% 80%, rgba(0, 245, 255, 0.1) 0%, transparent 50%),
-    radial-gradient(circle at 80% 20%, rgba(102, 0, 255, 0.1) 0%, transparent 50%),
-    radial-gradient(circle at 40% 40%, rgba(0, 255, 136, 0.05) 0%, transparent 50%);
-  animation: backgroundPulse 8s ease-in-out infinite alternate;
+    radial-gradient(circle at 20% 80%, var(--hologram-blue) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, var(--hologram-purple) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(0, 255, 136, 0.05) 0%, transparent 50%),
+    linear-gradient(45deg, transparent 48%, var(--neural-grid) 49%, var(--neural-grid) 51%, transparent 52%),
+    linear-gradient(-45deg, transparent 48%, var(--neural-grid) 49%, var(--neural-grid) 51%, transparent 52%);
+  background-size: 100% 100%, 100% 100%, 100% 100%, 60px 60px, 60px 60px;
+  animation: neuralPulse 12s ease-in-out infinite alternate, gridShift 20s linear infinite;
+  z-index: -2;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    radial-gradient(circle at 60% 30%, rgba(255, 107, 53, 0.03) 0%, transparent 40%),
+    radial-gradient(circle at 30% 70%, rgba(255, 215, 0, 0.02) 0%, transparent 40%);
+  animation: energyFlow 15s ease-in-out infinite alternate;
   z-index: -1;
 }
 
-@keyframes backgroundPulse {
-  0% { opacity: 0.3; }
-  100% { opacity: 0.6; }
+@keyframes neuralPulse {
+  0% { opacity: 0.4; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(1.02); }
+  100% { opacity: 0.5; transform: scale(1); }
+}
+
+@keyframes gridShift {
+  0% { background-position: 0 0, 0 0, 0 0, 0 0, 0 0; }
+  100% { background-position: 0 0, 0 0, 0 0, 60px 60px, -60px 60px; }
+}
+
+@keyframes energyFlow {
+  0% { opacity: 0.2; }
+  100% { opacity: 0.4; }
 }
 
 /* Futuristic Scrollbar */
@@ -88,38 +122,83 @@ body::before {
   to { text-shadow: 0 0 10px var(--primary-cyan), 0 0 20px var(--primary-cyan), 0 0 30px var(--primary-cyan); }
 }
 
-/* Futuristic Cards */
+/* Advanced Holographic Cards */
 .futuristic-card {
-  background: linear-gradient(135deg, rgba(26, 26, 46, 0.8), rgba(22, 33, 62, 0.6));
+  background: 
+    linear-gradient(135deg, rgba(26, 26, 46, 0.9), rgba(22, 33, 62, 0.7)),
+    linear-gradient(45deg, transparent 30%, rgba(0, 245, 255, 0.02) 50%, transparent 70%);
   border: 1px solid var(--border-glow);
-  border-radius: 16px;
-  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  backdrop-filter: blur(20px);
   box-shadow: 
-    0 8px 32px rgba(0, 245, 255, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  transition: all 0.3s ease;
+    0 8px 32px rgba(0, 245, 255, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 -1px 0 rgba(0, 245, 255, 0.1);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.futuristic-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(0, 245, 255, 0.1), transparent);
+  transition: left 0.6s ease;
+}
+
+.futuristic-card:hover::before {
+  left: 100%;
 }
 
 .futuristic-card:hover {
   border-color: var(--primary-cyan);
   box-shadow: 
-    0 12px 40px rgba(0, 245, 255, 0.2),
+    0 16px 48px rgba(0, 245, 255, 0.25),
+    0 0 0 1px rgba(0, 245, 255, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    inset 0 -1px 0 rgba(0, 245, 255, 0.2);
+  transform: translateY(-4px) scale(1.01);
+}
+
+/* Glass Morphism Cards */
+.glass-card {
+  background: var(--glass-surface);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  backdrop-filter: blur(40px);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.glass-card:hover {
+  background: rgba(26, 26, 46, 0.25);
+  border-color: rgba(0, 245, 255, 0.3);
   transform: translateY(-2px);
 }
 
-/* Neon Buttons */
+/* Advanced Neon Buttons */
 .neon-button {
-  background: linear-gradient(45deg, var(--primary-cyan), var(--primary-blue));
-  border: none;
-  border-radius: 8px;
+  background: 
+    linear-gradient(45deg, var(--primary-cyan), var(--primary-blue)),
+    linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%);
+  border: 1px solid rgba(0, 245, 255, 0.3);
+  border-radius: 12px;
   color: white;
   font-weight: 600;
-  padding: 12px 24px;
+  padding: 14px 28px;
   position: relative;
   overflow: hidden;
-  transition: all 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 13px;
 }
 
 .neon-button::before {
@@ -129,30 +208,93 @@ body::before {
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-  transition: left 0.5s;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.6s ease;
+}
+
+.neon-button::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+  transition: all 0.4s ease;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
 }
 
 .neon-button:hover::before {
   left: 100%;
 }
 
+.neon-button:hover::after {
+  width: 300px;
+  height: 300px;
+}
+
 .neon-button:hover {
   box-shadow: 
-    0 0 20px var(--primary-cyan),
-    0 0 40px var(--primary-cyan),
-    0 0 60px var(--primary-cyan);
-  transform: scale(1.05);
+    0 0 30px rgba(0, 245, 255, 0.6),
+    0 0 60px rgba(0, 245, 255, 0.4),
+    0 0 90px rgba(0, 245, 255, 0.2),
+    inset 0 0 20px rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px) scale(1.02);
+  border-color: var(--primary-cyan);
+}
+
+.neon-button:active {
+  transform: translateY(0) scale(0.98);
 }
 
 .neon-button:disabled {
-  opacity: 0.5;
+  opacity: 0.4;
   cursor: not-allowed;
+  background: linear-gradient(45deg, #333, #555);
 }
 
 .neon-button:disabled:hover {
   transform: none;
   box-shadow: none;
+}
+
+/* Secondary Button Style */
+.cyber-button {
+  background: transparent;
+  border: 2px solid var(--primary-cyan);
+  border-radius: 12px;
+  color: var(--primary-cyan);
+  font-weight: 600;
+  padding: 12px 24px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 13px;
+}
+
+.cyber-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: var(--primary-cyan);
+  transition: left 0.3s ease;
+  z-index: -1;
+}
+
+.cyber-button:hover::before {
+  left: 0;
+}
+
+.cyber-button:hover {
+  color: var(--dark-bg);
+  box-shadow: 0 0 20px rgba(0, 245, 255, 0.4);
 }
 
 /* Holographic Input Fields */
@@ -335,4 +477,290 @@ body::before {
 a {
   color: inherit;
   text-decoration: none;
+}
+
+/* Advanced Digital Twin Effects */
+
+/* Holographic Navigation */
+.holo-nav {
+  background: 
+    linear-gradient(135deg, rgba(26, 26, 46, 0.95), rgba(22, 33, 62, 0.9)),
+    linear-gradient(45deg, transparent 30%, rgba(0, 245, 255, 0.02) 50%, transparent 70%);
+  backdrop-filter: blur(30px);
+  border-bottom: 1px solid var(--border-glow);
+  box-shadow: 0 4px 20px rgba(0, 245, 255, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.nav-item {
+  position: relative;
+  padding: 12px 20px;
+  color: var(--text-secondary);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.nav-item::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--primary-cyan), var(--accent-neon));
+  transition: all 0.3s ease;
+  transform: translateX(-50%);
+}
+
+.nav-item:hover::before,
+.nav-item.active::before {
+  width: 100%;
+}
+
+.nav-item:hover,
+.nav-item.active {
+  color: var(--text-primary);
+  background: rgba(0, 245, 255, 0.05);
+}
+
+/* Data Visualization Cards */
+.data-card {
+  background: 
+    linear-gradient(135deg, rgba(26, 26, 46, 0.8), rgba(22, 33, 62, 0.6)),
+    radial-gradient(circle at top right, rgba(0, 245, 255, 0.1), transparent 50%);
+  border: 1px solid var(--border-glow);
+  border-radius: 16px;
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.data-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 100%;
+  height: 100%;
+  background: conic-gradient(from 0deg, transparent, rgba(0, 245, 255, 0.1), transparent);
+  animation: dataRotate 8s linear infinite;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.data-card:hover::before {
+  opacity: 1;
+}
+
+@keyframes dataRotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Status Indicators */
+.status-online {
+  position: relative;
+  color: var(--accent-neon);
+}
+
+.status-online::before {
+  content: '';
+  position: absolute;
+  left: -16px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 8px;
+  height: 8px;
+  background: var(--accent-neon);
+  border-radius: 50%;
+  animation: statusPulse 2s ease-in-out infinite;
+}
+
+@keyframes statusPulse {
+  0%, 100% { 
+    opacity: 1; 
+    box-shadow: 0 0 0 0 rgba(0, 255, 136, 0.7);
+  }
+  50% { 
+    opacity: 0.7; 
+    box-shadow: 0 0 0 8px rgba(0, 255, 136, 0);
+  }
+}
+
+/* Advanced Loading States */
+.neural-loading {
+  display: inline-block;
+  width: 60px;
+  height: 60px;
+  position: relative;
+}
+
+.neural-loading::before,
+.neural-loading::after {
+  content: '';
+  position: absolute;
+  border: 2px solid transparent;
+  border-top: 2px solid var(--primary-cyan);
+  border-radius: 50%;
+  animation: neuralSpin 1s linear infinite;
+}
+
+.neural-loading::before {
+  width: 60px;
+  height: 60px;
+}
+
+.neural-loading::after {
+  width: 40px;
+  height: 40px;
+  top: 10px;
+  left: 10px;
+  border-top-color: var(--accent-neon);
+  animation-direction: reverse;
+  animation-duration: 0.8s;
+}
+
+@keyframes neuralSpin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Glitch Effect */
+.glitch-text {
+  position: relative;
+  color: var(--text-primary);
+  font-weight: bold;
+}
+
+.glitch-text::before,
+.glitch-text::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.glitch-text::before {
+  animation: glitch1 2s infinite;
+  color: var(--accent-pink);
+  z-index: -1;
+}
+
+.glitch-text::after {
+  animation: glitch2 2s infinite;
+  color: var(--primary-cyan);
+  z-index: -2;
+}
+
+@keyframes glitch1 {
+  0%, 100% { transform: translate(0); }
+  20% { transform: translate(-2px, 2px); }
+  40% { transform: translate(-2px, -2px); }
+  60% { transform: translate(2px, 2px); }
+  80% { transform: translate(2px, -2px); }
+}
+
+@keyframes glitch2 {
+  0%, 100% { transform: translate(0); }
+  20% { transform: translate(2px, 2px); }
+  40% { transform: translate(2px, -2px); }
+  60% { transform: translate(-2px, 2px); }
+  80% { transform: translate(-2px, -2px); }
+}
+
+/* Holographic Progress Bar */
+.holo-progress {
+  width: 100%;
+  height: 8px;
+  background: rgba(26, 26, 46, 0.6);
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+
+.holo-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary-cyan), var(--accent-neon), var(--primary-purple));
+  background-size: 200% 100%;
+  animation: progressFlow 2s ease-in-out infinite;
+  border-radius: 4px;
+  position: relative;
+}
+
+.holo-progress-bar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  animation: progressShine 1.5s ease-in-out infinite;
+}
+
+@keyframes progressFlow {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+@keyframes progressShine {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* Floating Action Button */
+.fab {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(45deg, var(--primary-cyan), var(--primary-blue));
+  border: none;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+  box-shadow: 
+    0 8px 24px rgba(0, 245, 255, 0.3),
+    0 0 0 0 rgba(0, 245, 255, 0.4);
+  transition: all 0.3s ease;
+  z-index: 1000;
+}
+
+.fab:hover {
+  transform: scale(1.1);
+  box-shadow: 
+    0 12px 32px rgba(0, 245, 255, 0.4),
+    0 0 0 8px rgba(0, 245, 255, 0.1);
+}
+
+/* Notification Toast */
+.cyber-toast {
+  background: linear-gradient(135deg, rgba(26, 26, 46, 0.95), rgba(22, 33, 62, 0.9));
+  border: 1px solid var(--border-glow);
+  border-radius: 12px;
+  backdrop-filter: blur(20px);
+  color: var(--text-primary);
+  padding: 16px 20px;
+  box-shadow: 0 8px 32px rgba(0, 245, 255, 0.2);
+  animation: toastSlideIn 0.3s ease-out;
+}
+
+@keyframes toastSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }

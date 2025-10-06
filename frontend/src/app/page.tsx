@@ -26,23 +26,7 @@ export default function Home() {
   }, [router]);
 
   return (
-    <>
-      {/* Particle Background */}
-      <div className="particles">
-        {[...Array(30)].map((_, i) => (
-          <div
-            key={i}
-            className="particle"
-            style={{
-              left: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 6}s`,
-              animationDuration: `${4 + Math.random() * 4}s`
-            }}
-          />
-        ))}
-      </div>
-
-      <div className="min-h-screen" style={{ position: 'relative', zIndex: 1 }}>
+    <div className="min-h-screen" style={{ position: 'relative', zIndex: 1 }}>
         <div className="container mx-auto px-4 py-8">
           {/* Header */}
           <div className="text-center mb-12">
@@ -233,5 +217,6 @@ export default function Home() {
         </div>
       </div>
     </div>
+    </React.Fragment>
   );
 }
