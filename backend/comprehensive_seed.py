@@ -18,8 +18,8 @@ from sqlalchemy.orm import sessionmaker
 from passlib.context import CryptContext
 from models import Base, User, Document, DocumentStatus, DocumentType
 
-# Database setup
-DATABASE_URL = "sqlite:///./aria_database.db"
+# Database setup - Use the same DB as the backend
+DATABASE_URL = "sqlite:///./aria.db"
 engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
 SessionLocal = sessionmaker(bind=engine)
 
