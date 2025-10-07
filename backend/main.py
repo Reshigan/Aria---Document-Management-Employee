@@ -219,13 +219,13 @@ async def register(user_data: UserRegister, db: Session = Depends(get_db)):
     if existing_email:
         raise HTTPException(status_code=400, detail="Email already registered")
     
-    # Create new user
+    # Create new user (not superuser by default)
     new_user = User(
         username=user_data.username,
         email=user_data.email,
         full_name=user_data.full_name or user_data.username,
         hashed_password=get_password_hash(user_data.password),
-        role=UserRole.USER
+        is_superuser=False
     )
     
     db.add(new_user)
@@ -237,7 +237,7 @@ async def register(user_data: UserRegister, db: Session = Depends(get_db)):
         username=new_user.username,
         email=new_user.email,
         full_name=new_user.full_name,
-        role=new_user.role.value
+        is_superuser=new_user.is_superuser
     )
 
 @app.get("/api/auth/me", response_model=UserResponse)
@@ -247,7 +247,7 @@ async def get_current_user_profile(current_user: User = Depends(get_current_user
         username=current_user.username,
         email=current_user.email,
         full_name=current_user.full_name,
-        role=current_user.role.value
+        is_superuser=current_user.is_superuser
     )
 
 @app.get("/api/users/me", response_model=UserResponse)
@@ -257,7 +257,7 @@ async def get_profile(current_user: User = Depends(get_current_user)):
         username=current_user.username,
         email=current_user.email,
         full_name=current_user.full_name,
-        role=current_user.role.value
+        is_superuser=current_user.is_superuser
     )
 
 @app.post("/api/documents/upload")
@@ -309,7 +309,8 @@ async def get_documents(
     db: Session = Depends(get_db)
 ):
     query = db.query(Document)
-    if current_user.role == UserRole.USER:
+    # Regular users can only see their own documents
+    if not current_user.is_superuser:
         query = query.filter(Document.uploaded_by == current_user.id)
     
     documents = query.order_by(Document.created_at.desc()).all()
@@ -331,7 +332,8 @@ async def get_stats(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    if current_user.role == UserRole.USER:
+    # Regular users see only their own stats
+    if not current_user.is_superuser:
         total = db.query(Document).filter(Document.uploaded_by == current_user.id).count()
         processed = db.query(Document).filter(
             Document.uploaded_by == current_user.id,
@@ -417,7 +419,7 @@ async def process_document_ocr(
         raise HTTPException(status_code=404, detail="Document not found")
     
     # Check permissions
-    if current_user.role == UserRole.USER and doc.uploaded_by != current_user.id:
+    if not current_user.is_superuser and doc.uploaded_by != current_user.id:
         raise HTTPException(status_code=403, detail="Access denied")
     
     try:
@@ -452,7 +454,7 @@ async def search_documents(
     try:
         # Build query
         q = db.query(Document)
-        if current_user.role == UserRole.USER:
+        if not current_user.is_superuser:
             q = q.filter(Document.uploaded_by == current_user.id)
         
         # Search in filename and content
@@ -493,7 +495,7 @@ async def analyze_document(
         raise HTTPException(status_code=404, detail="Document not found")
     
     # Check permissions
-    if current_user.role == UserRole.USER and doc.uploaded_by != current_user.id:
+    if not current_user.is_superuser and doc.uploaded_by != current_user.id:
         raise HTTPException(status_code=403, detail="Access denied")
     
     try:
@@ -530,7 +532,7 @@ async def download_document(
         raise HTTPException(status_code=404, detail="Document not found")
     
     # Check permissions
-    if current_user.role == UserRole.USER and doc.uploaded_by != current_user.id:
+    if not current_user.is_superuser and doc.uploaded_by != current_user.id:
         raise HTTPException(status_code=403, detail="Access denied")
     
     try:
@@ -571,7 +573,7 @@ async def list_all_users(
     db: Session = Depends(get_db)
 ):
     """Admin endpoint to list all users"""
-    if current_user.role != UserRole.ADMIN:
+    if not current_user.is_superuser:
         raise HTTPException(status_code=403, detail="Admin access required")
     
     users = db.query(User).all()
@@ -581,7 +583,7 @@ async def list_all_users(
             "username": user.username,
             "email": user.email,
             "full_name": user.full_name,
-            "role": user.role.value,
+            "role": ("admin" if user.is_superuser else "user"),
             "is_active": user.is_active,
             "created_at": user.created_at
         }
@@ -594,7 +596,7 @@ async def admin_statistics(
     db: Session = Depends(get_db)
 ):
     """Advanced admin statistics and analytics"""
-    if current_user.role != UserRole.ADMIN:
+    if not current_user.is_superuser:
         raise HTTPException(status_code=403, detail="Admin access required")
     
     total_users = db.query(User).count()
