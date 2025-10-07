@@ -16,7 +16,7 @@ sys.path.insert(0, os.path.dirname(__file__))
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from passlib.context import CryptContext
-from models import Base, User, Document, ExtractedData
+from models import Base, User, Document
 
 # Database setup
 DATABASE_URL = "sqlite:///./aria_database.db"
@@ -166,27 +166,11 @@ def create_documents(session, users):
         session.add(document)
         documents_created += 1
         
-        # If processed, add extracted data
+        # If processed, add metadata
         if status == "processed":
-            # Add OCR text data
-            sample_texts = [
-                f"This is a {doc_type} document dated {created_date.strftime('%B %d, %Y')}. Amount: R{random.randint(1000, 50000)}.00",
-                f"Reference Number: REF-{random.randint(10000, 99999)}\nDate: {created_date.strftime('%Y-%m-%d')}\nTotal: R{random.randint(500, 25000)}.00",
-                f"Company: Vantax Solutions\nDocument Type: {doc_type}\nProcessed on {created_date.strftime('%d/%m/%Y')}",
-            ]
-            
-            extracted_text = random.choice(sample_texts)
-            
-            extracted_data = ExtractedData(
-                document_id=document.id,
-                raw_text=extracted_text,
-                confidence_score=random.uniform(0.85, 0.99),
-                page_count=random.randint(1, 10),
-                language_detected="en" if random.random() > 0.1 else "af",
-                processing_time=random.uniform(0.5, 5.0),
-                extracted_at=created_date + timedelta(minutes=random.randint(1, 30))
-            )
-            session.add(extracted_data)
+            # Add some metadata to the document
+            document.mime_type = "application/pdf"
+            document.hash = f"hash_{random.randint(100000, 999999)}"
     
     session.commit()
     print(f"✅ {documents_created} documents created\n")
@@ -200,7 +184,6 @@ def generate_statistics(session):
     print(f"  ⏳ Pending Documents: {session.query(Document).filter(Document.status == 'pending').count()}")
     print(f"  🔄 Processing Documents: {session.query(Document).filter(Document.status == 'processing').count()}")
     print(f"  ❌ Failed Documents: {session.query(Document).filter(Document.status == 'failed').count()}")
-    print(f"  📝 Extracted Data Records: {session.query(ExtractedData).count()}")
     print()
 
 def main():
