@@ -16,7 +16,7 @@ sys.path.insert(0, os.path.dirname(__file__))
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from passlib.context import CryptContext
-from models import Base, User, Document
+from models import Base, User, Document, DocumentStatus, DocumentType
 
 # Database setup
 DATABASE_URL = "sqlite:///./aria_database.db"
@@ -112,13 +112,17 @@ def create_documents(session, users):
     """Create comprehensive document records across multiple time periods"""
     print("📄 Creating documents...")
     
-    document_types = [
-        "Invoice", "Receipt", "Contract", "Report", "Statement",
-        "Agreement", "Proposal", "Policy", "Certificate", "Form",
-        "Letter", "Memo", "Notice", "Application", "Claim"
-    ]
+    # Map to actual document types from enum
+    doc_type_mapping = {
+        "invoice": DocumentType.INVOICE,
+        "receipt": DocumentType.RECEIPT,
+        "contract": DocumentType.CONTRACT,
+        "purchase_order": DocumentType.PURCHASE_ORDER,
+        "statement": DocumentType.STATEMENT,
+        "other": DocumentType.OTHER
+    }
     
-    statuses = ["pending", "processing", "processed", "failed"]
+    doc_types = list(doc_type_mapping.keys())
     
     # Create documents spread over last 12 months
     documents_created = 0
@@ -134,43 +138,46 @@ def create_documents(session, users):
         owner = random.choice(users)
         
         # Random document type
-        doc_type = random.choice(document_types)
+        doc_type_str = random.choice(doc_types)
+        doc_type = doc_type_mapping[doc_type_str]
         
         # Status based on age (older = more likely processed)
         if days_ago > 30:
-            status = random.choice(["processed", "processed", "processed", "failed"])
+            status = random.choice([DocumentStatus.PROCESSED, DocumentStatus.PROCESSED, DocumentStatus.PROCESSED, DocumentStatus.ERROR])
         elif days_ago > 7:
-            status = random.choice(["processed", "processing", "processed"])
+            status = random.choice([DocumentStatus.PROCESSED, DocumentStatus.PROCESSING, DocumentStatus.PROCESSED])
         else:
-            status = random.choice(["pending", "processing", "processed"])
+            status = random.choice([DocumentStatus.UPLOADED, DocumentStatus.PROCESSING, DocumentStatus.PROCESSED])
         
         # Random file size (100KB to 5MB)
         file_size = random.randint(100000, 5000000)
         
         # Create realistic filenames
-        filename_prefix = doc_type.lower().replace(" ", "_")
-        filename = f"{filename_prefix}_{created_date.strftime('%Y%m%d')}_{random.randint(1000, 9999)}.pdf"
+        filename = f"{doc_type_str}_{created_date.strftime('%Y%m%d')}_{random.randint(1000, 9999)}.pdf"
         
         document = Document(
+            filename=f"stored_{filename}",
             original_filename=filename,
-            stored_filename=f"stored_{filename}",
             file_path=f"/uploads/{filename}",
             file_size=file_size,
+            mime_type="application/pdf",
+            file_hash=f"hash_{random.randint(100000, 999999)}",
             document_type=doc_type,
             status=status,
-            user_id=owner.id,
-            created_at=created_date,
-            updated_at=created_date + timedelta(minutes=random.randint(1, 60))
+            user_id=owner.id
         )
         
         session.add(document)
         documents_created += 1
         
-        # If processed, add metadata
-        if status == "processed":
-            # Add some metadata to the document
-            document.mime_type = "application/pdf"
-            document.hash = f"hash_{random.randint(100000, 999999)}"
+        # If processed, add some OCR text
+        if status == DocumentStatus.PROCESSED:
+            sample_texts = [
+                f"Invoice #{random.randint(10000, 99999)}\nDate: {created_date.strftime('%Y-%m-%d')}\nAmount: R{random.randint(1000, 50000)}.00",
+                f"Receipt for payment\nReference: REF-{random.randint(10000, 99999)}\nTotal: R{random.randint(500, 25000)}.00",
+                f"Contract Agreement\nExecuted: {created_date.strftime('%B %d, %Y')}\nParties: Vantax Solutions",
+            ]
+            document.ocr_text = random.choice(sample_texts)
     
     session.commit()
     print(f"✅ {documents_created} documents created\n")
@@ -180,10 +187,10 @@ def generate_statistics(session):
     print("📊 Database Statistics:")
     print(f"  👥 Total Users: {session.query(User).count()}")
     print(f"  📄 Total Documents: {session.query(Document).count()}")
-    print(f"  ✅ Processed Documents: {session.query(Document).filter(Document.status == 'processed').count()}")
-    print(f"  ⏳ Pending Documents: {session.query(Document).filter(Document.status == 'pending').count()}")
-    print(f"  🔄 Processing Documents: {session.query(Document).filter(Document.status == 'processing').count()}")
-    print(f"  ❌ Failed Documents: {session.query(Document).filter(Document.status == 'failed').count()}")
+    print(f"  ✅ Processed Documents: {session.query(Document).filter(Document.status == DocumentStatus.PROCESSED).count()}")
+    print(f"  ⏳ Uploaded Documents: {session.query(Document).filter(Document.status == DocumentStatus.UPLOADED).count()}")
+    print(f"  🔄 Processing Documents: {session.query(Document).filter(Document.status == DocumentStatus.PROCESSING).count()}")
+    print(f"  ❌ Error Documents: {session.query(Document).filter(Document.status == DocumentStatus.ERROR).count()}")
     print()
 
 def main():
