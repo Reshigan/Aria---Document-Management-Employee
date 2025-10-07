@@ -40,7 +40,7 @@ class User(Base):
     email = Column(String(100), unique=True, index=True, nullable=False)
     full_name = Column(String(100), nullable=False)
     hashed_password = Column(String(255), nullable=False)
-    role = Column(Enum(UserRole), default=UserRole.USER)
+    is_superuser = Column(Boolean, default=False)
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, server_default=func.now())
     
@@ -149,7 +149,7 @@ class UserResponse(BaseModel):
     username: str
     email: str
     full_name: str
-    role: str
+    is_superuser: bool = False
 
 class DocumentResponse(BaseModel):
     id: int
@@ -165,16 +165,18 @@ async def startup():
     os.makedirs("uploads", exist_ok=True)
     
     db = SessionLocal()
-    if not db.query(User).filter(User.username == "admin").first():
-        admin = User(
-            username="admin",
-            email="admin@vantax.co.za",
-            full_name="Administrator",
-            hashed_password=get_password_hash("admin123"),
-            role=UserRole.ADMIN
-        )
-        db.add(admin)
-        db.commit()
+    # Admin user is now created via comprehensive_seed.py
+    # Commenting out old initialization to avoid schema conflicts
+    # if not db.query(User).filter(User.username == "admin").first():
+    #     admin = User(
+    #         username="admin",
+    #         email="admin@vantax.co.za",
+    #         full_name="Administrator",
+    #         hashed_password=get_password_hash("admin123"),
+    #         role=UserRole.ADMIN
+    #     )
+    #     db.add(admin)
+    #     db.commit()
     db.close()
 
 # Routes
