@@ -25,13 +25,15 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
-      <Card className="w-full max-w-md shadow-2xl">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-blue-50 p-4">
+      <Card className="w-full max-w-md shadow-xl border border-gray-200">
         <div className="text-center mb-6">
           <div className="flex justify-center mb-4">
-            <RobotOutlined className="text-5xl text-blue-600" />
+            <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-[#003d82] to-[#0059b3] flex items-center justify-center shadow-lg">
+              <RobotOutlined className="text-3xl text-white" />
+            </div>
           </div>
-          <Title level={2} className="mb-2">
+          <Title level={2} className="mb-2 text-[#003d82]">
             Create Account
           </Title>
           <Text type="secondary">

@@ -2,12 +2,12 @@ import type { ThemeConfig } from 'antd';
 
 export const ariaTheme: ThemeConfig = {
   token: {
-    // Primary Colors - Deep Blue representing trust and intelligence
-    colorPrimary: '#1890ff',
-    colorSuccess: '#52c41a',
-    colorWarning: '#fa8c16',
-    colorError: '#f5222d',
-    colorInfo: '#13c2c2',
+    // Corporate Professional Colors - Navy Blue representing trust, stability, and professionalism
+    colorPrimary: '#003d82',
+    colorSuccess: '#2e7d32',
+    colorWarning: '#ed6c02',
+    colorError: '#d32f2f',
+    colorInfo: '#0288d1',
     
     // Typography
     fontSize: 14,
@@ -16,27 +16,27 @@ export const ariaTheme: ThemeConfig = {
     fontSizeHeading3: 24,
     
     // Border Radius
-    borderRadius: 8,
-    borderRadiusLG: 12,
+    borderRadius: 6,
+    borderRadiusLG: 8,
     
     // Box Shadow
-    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
+    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.12)',
   },
   
   components: {
     Button: {
       controlHeight: 40,
-      primaryShadow: '0 2px 8px rgba(24, 144, 255, 0.15)',
+      primaryShadow: '0 2px 8px rgba(0, 61, 130, 0.20)',
     },
     Card: {
-      borderRadiusLG: 12,
+      borderRadiusLG: 8,
     },
   },
 };
 
 export const gradients = {
-  primary: 'linear-gradient(135deg, #1890ff 0%, #722ed1 100%)',
-  brand: 'linear-gradient(135deg, #1890ff 0%, #722ed1 50%, #13c2c2 100%)',
+  primary: 'linear-gradient(135deg, #003d82 0%, #0059b3 100%)',
+  brand: 'linear-gradient(135deg, #003d82 0%, #0059b3 50%, #0288d1 100%)',
 };
 
 export default ariaTheme;

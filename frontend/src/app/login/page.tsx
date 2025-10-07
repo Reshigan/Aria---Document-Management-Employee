@@ -28,15 +28,15 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex bg-gradient-to-br from-blue-50 via-purple-50 to-cyan-50">
+    <div className="min-h-screen flex bg-gradient-to-br from-gray-50 to-blue-50">
       <Row className="w-full">
         {/* Left Side - Branding */}
         <Col xs={0} lg={12} className="relative overflow-hidden">
-          <div className="h-full bg-gradient-to-br from-blue-500 via-purple-500 to-cyan-500 flex flex-col justify-center items-center p-12 text-white">
+          <div className="h-full bg-gradient-to-br from-[#003d82] via-[#0059b3] to-[#0288d1] flex flex-col justify-center items-center p-12 text-white">
             {/* Animated Background */}
             <div className="absolute inset-0">
-              <div className="absolute w-96 h-96 bg-white rounded-full blur-3xl opacity-10 -top-48 -left-48 animate-float"></div>
-              <div className="absolute w-96 h-96 bg-white rounded-full blur-3xl opacity-10 bottom-0 -right-48 animate-float" style={{ animationDelay: '2s' }}></div>
+              <div className="absolute w-96 h-96 bg-white rounded-full blur-3xl opacity-5 -top-48 -left-48"></div>
+              <div className="absolute w-96 h-96 bg-white rounded-full blur-3xl opacity-5 bottom-0 -right-48"></div>
             </div>
             
             <div className="relative z-10 text-center">
@@ -45,7 +45,7 @@ export default function LoginPage() {
                 alt="ARIA" 
                 width={200} 
                 height={200}
-                className="mx-auto mb-8 animate-float"
+                className="mx-auto mb-8"
               />
               <Title level={1} className="text-white mb-4">
                 Welcome to ARIA
@@ -55,7 +55,7 @@ export default function LoginPage() {
               </Paragraph>
               
               <div className="space-y-4 text-left max-w-md mx-auto">
-                <div className="flex items-start gap-3 bg-white/10 backdrop-blur-sm p-4 rounded-xl">
+                <div className="flex items-start gap-3 bg-white/10 backdrop-blur-sm p-4 rounded-lg border border-white/20">
                   <ThunderboltFilled className="text-2xl text-yellow-300 mt-1" />
                   <div>
                     <Title level={5} className="text-white m-0 mb-1">Lightning Fast Processing</Title>
@@ -65,7 +65,7 @@ export default function LoginPage() {
                   </div>
                 </div>
                 
-                <div className="flex items-start gap-3 bg-white/10 backdrop-blur-sm p-4 rounded-xl">
+                <div className="flex items-start gap-3 bg-white/10 backdrop-blur-sm p-4 rounded-lg border border-white/20">
                   <SafetyOutlined className="text-2xl text-green-300 mt-1" />
                   <div>
                     <Title level={5} className="text-white m-0 mb-1">Enterprise Security</Title>
@@ -75,7 +75,7 @@ export default function LoginPage() {
                   </div>
                 </div>
                 
-                <div className="flex items-start gap-3 bg-white/10 backdrop-blur-sm p-4 rounded-xl">
+                <div className="flex items-start gap-3 bg-white/10 backdrop-blur-sm p-4 rounded-lg border border-white/20">
                   <RocketOutlined className="text-2xl text-cyan-300 mt-1" />
                   <div>
                     <Title level={5} className="text-white m-0 mb-1">AI Intelligence</Title>
@@ -117,7 +117,7 @@ export default function LoginPage() {
               size="large"
             >
               <Form.Item
-                name="username"
+                name="email"
                 label="Username or Email"
                 rules={[
                   { required: true, message: 'Please input your username or email!' },

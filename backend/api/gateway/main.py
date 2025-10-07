@@ -28,6 +28,8 @@ async def lifespan(app: FastAPI):
     
     # Initialize database
     from backend.core.database import init_db, close_db
+    # Import models so SQLAlchemy knows about them
+    from backend.models import user, document
     try:
         await init_db()
         logger.info("✅ Database initialized")

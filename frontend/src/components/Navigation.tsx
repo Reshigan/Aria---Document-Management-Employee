@@ -57,22 +57,22 @@ const Navigation = () => {
       `}>
         <div className="holo-nav h-full flex flex-col">
           {/* Header */}
-          <div className="p-6 border-b border-gray-700/50">
+          <div className="p-6 border-b border-gray-200">
             <div className="flex items-center gap-4 mb-4">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-r from-cyan-400 to-blue-500 flex items-center justify-center">
+              <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#003d82] to-[#0059b3] flex items-center justify-center shadow-md">
                 <span className="text-xl font-bold text-white">A</span>
               </div>
               <div>
-                <h1 className="text-xl font-bold glow-text">ARIA</h1>
-                <p className="text-sm text-gray-400">Digital Twin System</p>
+                <h1 className="text-xl font-bold text-[#003d82]">ARIA</h1>
+                <p className="text-sm text-gray-600">Digital Twin System</p>
               </div>
             </div>
             
             {/* System Status */}
             <div className="flex items-center gap-2 text-sm">
-              <div className="status-online">ONLINE</div>
+              <div className="px-3 py-1 rounded-full bg-green-100 text-green-700 font-medium">ONLINE</div>
               <span className="text-gray-400">•</span>
-              <span className="text-gray-400">
+              <span className="text-gray-600">
                 {currentTime.toLocaleTimeString()}
               </span>
             </div>
@@ -99,26 +99,26 @@ const Navigation = () => {
 
           {/* User Section */}
           {user && (
-            <div className="p-4 border-t border-gray-700/50">
-              <div className="glass-card p-4 mb-4">
+            <div className="p-4 border-t border-gray-200">
+              <div className="bg-white rounded-lg border border-gray-200 p-4 mb-4 shadow-sm">
                 <div className="flex items-center gap-3 mb-3">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-400 to-pink-400 flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#0059b3] to-[#0288d1] flex items-center justify-center shadow-sm">
                     <UserOutlined className="text-white" />
                   </div>
                   <div>
-                    <p className="font-medium text-white">{user.username}</p>
-                    <p className="text-xs text-gray-400">{user.email}</p>
+                    <p className="font-medium text-gray-900">{user.username}</p>
+                    <p className="text-xs text-gray-600">{user.email}</p>
                   </div>
                 </div>
                 
-                {/* Neural Activity Indicator */}
+                {/* System Activity Indicator */}
                 <div className="mb-2">
-                  <div className="flex justify-between text-xs text-gray-400 mb-1">
-                    <span>Neural Activity</span>
+                  <div className="flex justify-between text-xs text-gray-600 mb-1">
+                    <span>System Activity</span>
                     <span>87%</span>
                   </div>
-                  <div className="holo-progress">
-                    <div className="holo-progress-bar" style={{ width: '87%' }}></div>
+                  <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div className="bg-gradient-to-r from-[#003d82] to-[#0059b3] h-2 rounded-full" style={{ width: '87%' }}></div>
                   </div>
                 </div>
               </div>

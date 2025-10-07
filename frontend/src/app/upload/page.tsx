@@ -102,7 +102,7 @@ export default function DocumentUploadPage() {
             setDocuments(prev => [...prev]);
 
             // Upload and process document
-            const uploadResponse = await api.post('/documents/upload', formData, {
+            const uploadResponse = await api.post('/api/documents/upload', formData, {
               headers: {
                 'Content-Type': 'multipart/form-data',
               },
@@ -112,7 +112,7 @@ export default function DocumentUploadPage() {
             setDocuments(prev => [...prev]);
 
             // Perform OCR scanning
-            const ocrResponse = await api.post('/documents/ocr', {
+            const ocrResponse = await api.post('/api/documents/ocr', {
               document_id: uploadResponse.data.id
             });
 
@@ -155,7 +155,7 @@ export default function DocumentUploadPage() {
         text_content: docData.extractedText
       };
 
-      const sapResponse = await api.post('/sap/post-document', sapPayload);
+      const sapResponse = await api.post('/api/sap/post-document', sapPayload);
       
       docData.sapData = sapResponse.data;
       docData.status = 'posted';

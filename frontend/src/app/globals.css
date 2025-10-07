@@ -2,28 +2,28 @@
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
 
-/* Advanced Digital Twin Design System */
+/* Corporate Professional Design System */
 :root {
-  /* Digital Twin Color Palette */
-  --primary-cyan: #00f5ff;
-  --primary-blue: #0066ff;
-  --primary-purple: #6600ff;
-  --accent-neon: #00ff88;
-  --accent-pink: #ff0080;
-  --accent-orange: #ff6b35;
-  --accent-yellow: #ffd700;
-  --dark-bg: #0a0a0f;
-  --dark-surface: #1a1a2e;
-  --dark-card: #16213e;
-  --glass-surface: rgba(26, 26, 46, 0.15);
-  --text-primary: #ffffff;
-  --text-secondary: #b8c5d6;
-  --text-muted: #6b7280;
-  --border-glow: #00f5ff40;
-  --shadow-glow: #00f5ff20;
-  --hologram-blue: rgba(0, 245, 255, 0.1);
-  --hologram-purple: rgba(102, 0, 255, 0.1);
-  --neural-grid: rgba(0, 245, 255, 0.05);
+  /* Corporate Color Palette */
+  --primary-navy: #003d82;
+  --primary-blue: #0059b3;
+  --primary-light-blue: #0288d1;
+  --accent-teal: #00897b;
+  --accent-green: #2e7d32;
+  --accent-orange: #ed6c02;
+  --accent-red: #d32f2f;
+  --dark-bg: #f5f7fa;
+  --dark-surface: #ffffff;
+  --dark-card: #ffffff;
+  --glass-surface: rgba(255, 255, 255, 0.95);
+  --text-primary: #1a1a1a;
+  --text-secondary: #4a5568;
+  --text-muted: #718096;
+  --border-color: #e2e8f0;
+  --shadow-color: rgba(0, 61, 130, 0.08);
+  --hover-blue: rgba(0, 61, 130, 0.04);
+  --focus-blue: rgba(0, 61, 130, 0.12);
+  --gradient-start: rgba(0, 61, 130, 0.03);
 }
 
 * {
@@ -41,7 +41,7 @@ body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
 }
 
-/* Advanced Neural Network Background */
+/* Professional Subtle Background */
 body::before {
   content: '';
   position: fixed;
@@ -50,13 +50,9 @@ body::before {
   width: 100%;
   height: 100%;
   background: 
-    radial-gradient(circle at 20% 80%, var(--hologram-blue) 0%, transparent 50%),
-    radial-gradient(circle at 80% 20%, var(--hologram-purple) 0%, transparent 50%),
-    radial-gradient(circle at 40% 40%, rgba(0, 255, 136, 0.05) 0%, transparent 50%),
-    linear-gradient(45deg, transparent 48%, var(--neural-grid) 49%, var(--neural-grid) 51%, transparent 52%),
-    linear-gradient(-45deg, transparent 48%, var(--neural-grid) 49%, var(--neural-grid) 51%, transparent 52%);
-  background-size: 100% 100%, 100% 100%, 100% 100%, 60px 60px, 60px 60px;
-  animation: neuralPulse 12s ease-in-out infinite alternate, gridShift 20s linear infinite;
+    radial-gradient(circle at 20% 80%, var(--gradient-start) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, var(--gradient-start) 0%, transparent 50%);
+  background-size: 100% 100%, 100% 100%;
   z-index: -2;
 }
 
@@ -67,10 +63,7 @@ body::after {
   left: 0;
   width: 100%;
   height: 100%;
-  background: 
-    radial-gradient(circle at 60% 30%, rgba(255, 107, 53, 0.03) 0%, transparent 40%),
-    radial-gradient(circle at 30% 70%, rgba(255, 215, 0, 0.02) 0%, transparent 40%);
-  animation: energyFlow 15s ease-in-out infinite alternate;
+  background: transparent;
   z-index: -1;
 }
 
@@ -90,51 +83,39 @@ body::after {
   100% { opacity: 0.4; }
 }
 
-/* Futuristic Scrollbar */
+/* Professional Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--dark-surface);
+  background: var(--dark-bg);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(45deg, var(--primary-cyan), var(--primary-purple));
+  background: var(--primary-blue);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(45deg, var(--accent-neon), var(--accent-pink));
+  background: var(--primary-navy);
 }
 
-/* Glowing Text Effect */
+/* Professional Text Effect */
 .glow-text {
-  text-shadow: 
-    0 0 5px var(--primary-cyan),
-    0 0 10px var(--primary-cyan),
-    0 0 15px var(--primary-cyan);
-  animation: textGlow 2s ease-in-out infinite alternate;
+  font-weight: 600;
+  color: var(--primary-navy);
 }
 
-@keyframes textGlow {
-  from { text-shadow: 0 0 5px var(--primary-cyan), 0 0 10px var(--primary-cyan), 0 0 15px var(--primary-cyan); }
-  to { text-shadow: 0 0 10px var(--primary-cyan), 0 0 20px var(--primary-cyan), 0 0 30px var(--primary-cyan); }
-}
-
-/* Advanced Holographic Cards */
+/* Professional Cards */
 .futuristic-card {
-  background: 
-    linear-gradient(135deg, rgba(26, 26, 46, 0.9), rgba(22, 33, 62, 0.7)),
-    linear-gradient(45deg, transparent 30%, rgba(0, 245, 255, 0.02) 50%, transparent 70%);
-  border: 1px solid var(--border-glow);
-  border-radius: 20px;
-  backdrop-filter: blur(20px);
+  background: var(--dark-card);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
   box-shadow: 
-    0 8px 32px rgba(0, 245, 255, 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1),
-    inset 0 -1px 0 rgba(0, 245, 255, 0.1);
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    0 2px 8px var(--shadow-color),
+    0 1px 2px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
 }
@@ -146,7 +127,7 @@ body::after {
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(0, 245, 255, 0.1), transparent);
+  background: linear-gradient(90deg, transparent, var(--hover-blue), transparent);
   transition: left 0.6s ease;
 }
 
@@ -155,50 +136,47 @@ body::after {
 }
 
 .futuristic-card:hover {
-  border-color: var(--primary-cyan);
+  border-color: var(--primary-blue);
   box-shadow: 
-    0 16px 48px rgba(0, 245, 255, 0.25),
-    0 0 0 1px rgba(0, 245, 255, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2),
-    inset 0 -1px 0 rgba(0, 245, 255, 0.2);
-  transform: translateY(-4px) scale(1.01);
+    0 4px 16px var(--shadow-color),
+    0 2px 4px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
 }
 
-/* Glass Morphism Cards */
+/* Professional Glass Cards */
 .glass-card {
   background: var(--glass-surface);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 24px;
-  backdrop-filter: blur(40px);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  backdrop-filter: blur(20px);
   box-shadow: 
-    0 8px 32px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    0 2px 8px var(--shadow-color),
+    0 1px 2px rgba(0, 0, 0, 0.05);
   transition: all 0.3s ease;
 }
 
 .glass-card:hover {
-  background: rgba(26, 26, 46, 0.25);
-  border-color: rgba(0, 245, 255, 0.3);
+  background: var(--dark-surface);
+  border-color: var(--primary-light-blue);
   transform: translateY(-2px);
+  box-shadow: 
+    0 4px 12px var(--shadow-color),
+    0 2px 4px rgba(0, 0, 0, 0.08);
 }
 
-/* Advanced Neon Buttons */
+/* Corporate Professional Buttons */
 .neon-button {
-  background: 
-    linear-gradient(45deg, var(--primary-cyan), var(--primary-blue)),
-    linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%);
-  border: 1px solid rgba(0, 245, 255, 0.3);
-  border-radius: 12px;
+  background: var(--primary-navy);
+  border: 1px solid var(--primary-navy);
+  border-radius: 6px;
   color: white;
   font-weight: 600;
-  padding: 14px 28px;
+  padding: 12px 24px;
   position: relative;
   overflow: hidden;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  font-size: 13px;
+  font-size: 14px;
 }
 
 .neon-button::before {
@@ -208,7 +186,7 @@ body::after {
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
   transition: left 0.6s ease;
 }
 
@@ -219,7 +197,7 @@ body::after {
   left: 50%;
   width: 0;
   height: 0;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, transparent 70%);
   transition: all 0.4s ease;
   transform: translate(-50%, -50%);
   border-radius: 50%;
@@ -235,13 +213,12 @@ body::after {
 }
 
 .neon-button:hover {
+  background: var(--primary-blue);
   box-shadow: 
-    0 0 30px rgba(0, 245, 255, 0.6),
-    0 0 60px rgba(0, 245, 255, 0.4),
-    0 0 90px rgba(0, 245, 255, 0.2),
-    inset 0 0 20px rgba(255, 255, 255, 0.1);
-  transform: translateY(-2px) scale(1.02);
-  border-color: var(--primary-cyan);
+    0 4px 12px var(--shadow-color),
+    0 2px 4px rgba(0, 0, 0, 0.08);
+  transform: translateY(-1px);
+  border-color: var(--primary-blue);
 }
 
 .neon-button:active {
@@ -249,9 +226,10 @@ body::after {
 }
 
 .neon-button:disabled {
-  opacity: 0.4;
+  opacity: 0.5;
   cursor: not-allowed;
-  background: linear-gradient(45deg, #333, #555);
+  background: var(--text-muted);
+  border-color: var(--text-muted);
 }
 
 .neon-button:disabled:hover {
@@ -262,18 +240,16 @@ body::after {
 /* Secondary Button Style */
 .cyber-button {
   background: transparent;
-  border: 2px solid var(--primary-cyan);
-  border-radius: 12px;
-  color: var(--primary-cyan);
+  border: 2px solid var(--primary-navy);
+  border-radius: 6px;
+  color: var(--primary-navy);
   font-weight: 600;
-  padding: 12px 24px;
+  padding: 10px 22px;
   position: relative;
   overflow: hidden;
   transition: all 0.3s ease;
   cursor: pointer;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  font-size: 13px;
+  font-size: 14px;
 }
 
 .cyber-button::before {
@@ -283,7 +259,7 @@ body::after {
   left: -100%;
   width: 100%;
   height: 100%;
-  background: var(--primary-cyan);
+  background: var(--primary-navy);
   transition: left 0.3s ease;
   z-index: -1;
 }
@@ -293,28 +269,26 @@ body::after {
 }
 
 .cyber-button:hover {
-  color: var(--dark-bg);
-  box-shadow: 0 0 20px rgba(0, 245, 255, 0.4);
+  color: white;
+  box-shadow: 0 2px 8px var(--shadow-color);
 }
 
-/* Holographic Input Fields */
+/* Professional Input Fields */
 .holo-input {
-  background: rgba(26, 26, 46, 0.6);
-  border: 1px solid var(--border-glow);
-  border-radius: 8px;
+  background: white;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
   color: var(--text-primary);
-  padding: 12px 16px;
-  backdrop-filter: blur(10px);
+  padding: 10px 14px;
   transition: all 0.3s ease;
   font-size: 14px;
 }
 
 .holo-input:focus {
   outline: none;
-  border-color: var(--primary-cyan);
+  border-color: var(--primary-blue);
   box-shadow: 
-    0 0 0 2px rgba(0, 245, 255, 0.2),
-    0 0 20px rgba(0, 245, 255, 0.1);
+    0 0 0 3px var(--focus-blue);
 }
 
 .holo-input::placeholder {

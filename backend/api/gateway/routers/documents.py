@@ -56,10 +56,11 @@ class DocumentResponse(BaseModel):
 
 
 class DocumentListResponse(BaseModel):
-    documents: List[DocumentResponse]
+    items: List[DocumentResponse]
     total: int
     page: int
     page_size: int
+    pages: int
 
 
 async def process_document_task(db: AsyncSession, document_id: int):
@@ -227,10 +228,11 @@ async def list_documents(
         ))
     
     return {
-        "documents": doc_responses,
+        "items": doc_responses,
         "total": total,
         "page": page,
-        "page_size": page_size
+        "page_size": page_size,
+        "pages": (total + page_size - 1) // page_size  # Calculate total pages
     }
 
 

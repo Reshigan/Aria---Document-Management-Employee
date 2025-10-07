@@ -54,7 +54,7 @@ class User(BaseModel):
     
     # Relationships
     roles = relationship("Role", secondary=user_roles, back_populates="users")
-    documents = relationship("Document", back_populates="uploaded_by_user")
+    documents = relationship("Document", foreign_keys="[Document.uploaded_by]", back_populates="uploaded_by_user")
     
     @hybrid_property
     def role_names(self):

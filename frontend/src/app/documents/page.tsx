@@ -83,7 +83,7 @@ export default function DocumentsPage() {
         params.date_to = dateRange[1].format('YYYY-MM-DD');
       }
 
-      const response = await api.get('/documents', { params });
+      const response = await api.get('/api/documents', { params });
       const data: DocumentListResponse = response.data;
       
       setDocuments(data.items || []);
@@ -101,7 +101,7 @@ export default function DocumentsPage() {
       formData.append('file', file);
       
       message.loading('Uploading document...', 0);
-      await api.post('/documents/upload', formData, {
+      await api.post('/api/documents/upload', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       
@@ -118,7 +118,7 @@ export default function DocumentsPage() {
 
   const handleDelete = async (documentId: number) => {
     try {
-      await api.delete(`/documents/${documentId}`);
+      await api.delete(`/api/documents/${documentId}`);
       message.success('Document deleted successfully');
       fetchDocuments();
     } catch (error: any) {
@@ -135,7 +135,7 @@ export default function DocumentsPage() {
       onOk: async () => {
         try {
           await Promise.all(
-            selectedRowKeys.map(id => api.delete(`/documents/${id}`))
+            selectedRowKeys.map(id => api.delete(`/api/documents/${id}`))
           );
           message.success('Documents deleted successfully');
           setSelectedRowKeys([]);
