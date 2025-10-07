@@ -164,7 +164,7 @@ def create_documents(session, users):
             file_hash=f"hash_{random.randint(100000, 999999)}",
             document_type=doc_type,
             status=status,
-            user_id=owner.id
+            uploaded_by=owner.id
         )
         
         session.add(document)
