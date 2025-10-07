@@ -55,7 +55,7 @@ class Document(Base):
     file_path = Column(String(500), nullable=False)
     file_size = Column(Integer)
     document_type = Column(String(100))
-    extracted_text = Column(Text)
+    # extracted_text removed - not in actual DB schema
     status = Column(Enum(DocumentStatus), default=DocumentStatus.UPLOADED)
     uploaded_by = Column(Integer, ForeignKey("users.id"))
     created_at = Column(DateTime, server_default=func.now())
