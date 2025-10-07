@@ -39,7 +39,7 @@ def create_users(session):
             "email": "admin@vantax.co.za",
             "password": "VantaXAdmin@2025",
             "full_name": "Administrator",
-            "role": "admin",
+            "is_superuser": True,
             "is_active": True
         },
         {
@@ -47,7 +47,7 @@ def create_users(session):
             "email": "john.doe@vantax.co.za",
             "password": "JohnDoe@123",
             "full_name": "John Doe",
-            "role": "user",
+            "is_superuser": False,
             "is_active": True
         },
         {
@@ -55,7 +55,7 @@ def create_users(session):
             "email": "jane.smith@vantax.co.za",
             "password": "JaneSmith@123",
             "full_name": "Jane Smith",
-            "role": "user",
+            "is_superuser": False,
             "is_active": True
         },
         {
@@ -63,7 +63,7 @@ def create_users(session):
             "email": "mike.manager@vantax.co.za",
             "password": "MikeManager@123",
             "full_name": "Mike Manager",
-            "role": "manager",
+            "is_superuser": False,
             "is_active": True
         },
         {
@@ -71,7 +71,7 @@ def create_users(session):
             "email": "sarah.analyst@vantax.co.za",
             "password": "SarahAnalyst@123",
             "full_name": "Sarah Analyst",
-            "role": "user",
+            "is_superuser": False,
             "is_active": True
         },
         {
@@ -79,7 +79,7 @@ def create_users(session):
             "email": "demo@vantax.co.za",
             "password": "Demo@123",
             "full_name": "Demo User",
-            "role": "user",
+            "is_superuser": False,
             "is_active": True
         },
     ]
@@ -96,13 +96,13 @@ def create_users(session):
                 email=user_data["email"],
                 hashed_password=hash_password(user_data["password"]),
                 full_name=user_data["full_name"],
-                role=user_data["role"],
-                is_active=user_data["is_active"],
-                created_at=datetime.utcnow() - timedelta(days=random.randint(30, 365))
+                is_superuser=user_data["is_superuser"],
+                is_active=user_data["is_active"]
             )
             session.add(user)
             created_users.append(user)
-            print(f"  ✓ Created user: {user_data['username']} ({user_data['role']})")
+            superuser_str = "admin" if user_data["is_superuser"] else "user"
+            print(f"  ✓ Created user: {user_data['username']} ({superuser_str})")
     
     session.commit()
     print(f"✅ {len(created_users)} users ready\n")
