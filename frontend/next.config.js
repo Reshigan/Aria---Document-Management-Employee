@@ -9,13 +9,14 @@ const nextConfig = {
   poweredByHeader: false,
   
   // Environment-specific API URL
+  // In production on server: both frontend and backend on same machine, use localhost:8000
+  // In development: use NEXT_PUBLIC_API_URL or fallback to localhost
   async rewrites() {
+    // Always proxy to localhost:8000 since backend is on same server
     return [
       {
         source: '/api/:path*',
-        destination: (process.env.NODE_ENV === 'production' 
-          ? 'http://localhost:8000/api/:path*' 
-          : (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000') + '/api/:path*'),
+        destination: 'http://localhost:8000/api/:path*',
       },
     ];
   },
