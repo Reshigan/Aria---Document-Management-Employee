@@ -76,7 +76,6 @@ dist-ssr
 *.local
 
 # Next.js
-.next/
 out/
 
 # Data directories
@@ -151,3 +150,6 @@ $RECYCLE.BIN/
 
 # SAP
 sapnwrfc.ini
+
+# Webpack cache (too large for GitHub)
+frontend/.next/cache/
