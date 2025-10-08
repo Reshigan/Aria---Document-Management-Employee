@@ -2,7 +2,8 @@
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: false,
-  output: 'standalone',
+  // REMOVED: output: 'standalone' - conflicts with npm start deployment
+  // Use standard Next.js deployment for reliability
   
   // Production optimizations
   compress: true,
