@@ -72,8 +72,8 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 security = HTTPBearer()
 
-# Password hashing using bcrypt (same as comprehensive_seed.py)
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+# Password hashing using bcrypt directly (avoiding passlib initialization issues)
+import bcrypt as bcrypt_lib
 
 def get_db():
     db = SessionLocal()
@@ -83,16 +83,15 @@ def get_db():
         db.close()
 
 def verify_password(plain_password, hashed_password):
-    # Bcrypt has a 72-byte limit, truncate if necessary
-    if len(plain_password.encode('utf-8')) > 72:
-        plain_password = plain_password[:72]
-    return pwd_context.verify(plain_password, hashed_password)
+    # Bcrypt has a 72-byte limit
+    password_bytes = plain_password.encode('utf-8')[:72]
+    return bcrypt_lib.checkpw(password_bytes, hashed_password.encode('utf-8'))
 
 def get_password_hash(password):
-    # Bcrypt has a 72-byte limit, truncate if necessary
-    if len(password.encode('utf-8')) > 72:
-        password = password[:72]
-    return pwd_context.hash(password)
+    # Bcrypt has a 72-byte limit
+    password_bytes = password.encode('utf-8')[:72]
+    hashed = bcrypt_lib.hashpw(password_bytes, bcrypt_lib.gensalt())
+    return hashed.decode('utf-8')
 
 def create_access_token(data: dict):
     to_encode = data.copy()
