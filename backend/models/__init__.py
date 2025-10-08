@@ -2,7 +2,7 @@
 Database models package
 """
 from .base import Base
-from .user import User, Role, Permission, UserRole
+from .user import User, Role, Permission, UserRole, PasswordResetToken
 from .document import Document, DocumentType, DocumentStatus
 
 __all__ = [
@@ -11,6 +11,7 @@ __all__ = [
     "Role", 
     "Permission", 
     "UserRole",
+    "PasswordResetToken",
     "Document", 
     "DocumentType", 
     "DocumentStatus"

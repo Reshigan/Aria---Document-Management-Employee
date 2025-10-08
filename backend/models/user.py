@@ -1,8 +1,9 @@
 """
 User related database models
 """
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Optional
+import secrets
 from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey, Table, Text
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.hybrid import hybrid_property
@@ -98,6 +99,44 @@ class Permission(BaseModel):
     
     # Relationships
     roles = relationship("Role", secondary=role_permissions, back_populates="permissions")
+
+
+class PasswordResetToken(BaseModel):
+    """Password reset token model"""
+    __tablename__ = "password_reset_tokens"
+    
+    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+    token = Column(String(100), unique=True, nullable=False, index=True)
+    expires_at = Column(DateTime, nullable=False)
+    used = Column(Boolean, default=False)
+    used_at = Column(DateTime)
+    
+    # Relationships
+    user = relationship("User")
+    
+    @staticmethod
+    def generate_token() -> str:
+        """Generate a secure random token"""
+        return secrets.token_urlsafe(32)
+    
+    @staticmethod
+    def create_for_user(user_id: int, expires_in_hours: int = 24) -> 'PasswordResetToken':
+        """Create a new password reset token for a user"""
+        token = PasswordResetToken(
+            user_id=user_id,
+            token=PasswordResetToken.generate_token(),
+            expires_at=datetime.utcnow() + timedelta(hours=expires_in_hours)
+        )
+        return token
+    
+    def is_valid(self) -> bool:
+        """Check if token is still valid"""
+        return not self.used and datetime.utcnow() < self.expires_at
+    
+    def mark_as_used(self):
+        """Mark token as used"""
+        self.used = True
+        self.used_at = datetime.utcnow()
 
 
 # For backward compatibility

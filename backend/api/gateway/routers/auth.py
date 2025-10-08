@@ -19,14 +19,16 @@ from backend.core.security import (
     validate_password_strength
 )
 from backend.core.config import settings
-from backend.models.user import User, Role
+from backend.models.user import User, Role, PasswordResetToken
 from backend.schemas.user import (
     UserCreate,
     UserResponse,
     TokenResponse,
     LoginRequest,
     TokenRefreshRequest,
-    PasswordChangeRequest
+    PasswordChangeRequest,
+    ForgotPasswordRequest,
+    ResetPasswordRequest
 )
 from backend.api.gateway.dependencies.auth import get_current_user
 
@@ -242,3 +244,114 @@ async def logout(current_user: User = Depends(get_current_user)):
     """
     # In a real implementation, you would add the token to a blacklist
     return {"message": "Successfully logged out"}
+
+
+@router.post("/auth/forgot-password")
+async def forgot_password(
+    request: ForgotPasswordRequest,
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    Request password reset token
+    Sends a password reset token (in production, this would be emailed)
+    """
+    # Find user by email
+    result = await db.execute(
+        select(User).where(User.email == request.email)
+    )
+    user = result.scalar_one_or_none()
+    
+    # Always return success to prevent email enumeration
+    if not user:
+        return {
+            "message": "If the email exists, a password reset link has been sent",
+            "email": request.email
+        }
+    
+    if not user.is_active:
+        return {
+            "message": "If the email exists, a password reset link has been sent",
+            "email": request.email
+        }
+    
+    # Invalidate any existing tokens for this user
+    result = await db.execute(
+        select(PasswordResetToken).where(
+            PasswordResetToken.user_id == user.id,
+            PasswordResetToken.used == False
+        )
+    )
+    existing_tokens = result.scalars().all()
+    for token in existing_tokens:
+        token.mark_as_used()
+    
+    # Create new reset token
+    reset_token = PasswordResetToken.create_for_user(user.id, expires_in_hours=1)
+    db.add(reset_token)
+    await db.commit()
+    await db.refresh(reset_token)
+    
+    # In production, send email here
+    # For now, return the token directly (ONLY FOR DEVELOPMENT)
+    return {
+        "message": "Password reset link sent to your email",
+        "email": request.email,
+        "token": reset_token.token,  # Remove this in production!
+        "reset_url": f"{settings.FRONTEND_URL}/reset-password?token={reset_token.token}"
+    }
+
+
+@router.post("/auth/reset-password")
+async def reset_password(
+    request: ResetPasswordRequest,
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    Reset password using token
+    """
+    # Find token
+    result = await db.execute(
+        select(PasswordResetToken).where(
+            PasswordResetToken.token == request.token
+        )
+    )
+    reset_token = result.scalar_one_or_none()
+    
+    if not reset_token:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid or expired reset token"
+        )
+    
+    # Validate token
+    if not reset_token.is_valid():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid or expired reset token"
+        )
+    
+    # Get user
+    result = await db.execute(
+        select(User).where(User.id == reset_token.user_id)
+    )
+    user = result.scalar_one_or_none()
+    
+    if not user or not user.is_active:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="User not found or inactive"
+        )
+    
+    # Validate new password
+    validate_password_strength(request.new_password)
+    
+    # Update password
+    user.hashed_password = get_password_hash(request.new_password)
+    reset_token.mark_as_used()
+    
+    await db.commit()
+    
+    return {
+        "message": "Password reset successfully",
+        "email": user.email
+    }

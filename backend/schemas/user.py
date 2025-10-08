@@ -102,15 +102,32 @@ class PasswordChangeRequest(BaseModel):
         return v
 
 
-class PasswordResetRequest(BaseModel):
-    """Password reset request"""
+class ForgotPasswordRequest(BaseModel):
+    """Forgot password request"""
     email: EmailStr
 
 
-class PasswordResetConfirm(BaseModel):
-    """Password reset confirmation"""
+class ResetPasswordRequest(BaseModel):
+    """Password reset with token"""
     token: str
     new_password: str = Field(..., min_length=8)
+    
+    @validator('new_password')
+    def validate_new_password(cls, v):
+        if len(v) < 8:
+            raise ValueError('Password must be at least 8 characters')
+        if not any(c.isupper() for c in v):
+            raise ValueError('Password must contain uppercase letters')
+        if not any(c.islower() for c in v):
+            raise ValueError('Password must contain lowercase letters')
+        if not any(c.isdigit() for c in v):
+            raise ValueError('Password must contain numbers')
+        return v
+
+
+# Legacy aliases for backward compatibility
+PasswordResetRequest = ForgotPasswordRequest
+PasswordResetConfirm = ResetPasswordRequest
 
 
 class RoleBase(BaseModel):

@@ -34,6 +34,7 @@ class Settings(BaseSettings):
     # API Configuration
     API_V1_PREFIX: str = "/api/v1"
     BACKEND_CORS_ORIGINS: List[str] = Field(default_factory=lambda: ["http://localhost:3000"])
+    FRONTEND_URL: str = Field(default="http://localhost:3000")
     
     # Security
     SECRET_KEY: str = Field(..., min_length=32)
