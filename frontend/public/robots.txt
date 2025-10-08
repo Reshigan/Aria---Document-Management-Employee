@@ -1,0 +1,13 @@
+# robots.txt for ARIA Document Management System
+
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /admin/
+Disallow: /_next/
+
+# Crawl delay (optional, helps reduce bot load)
+Crawl-delay: 10
+
+# Sitemap
+Sitemap: https://aria.vantax.co.za/sitemap.xml
