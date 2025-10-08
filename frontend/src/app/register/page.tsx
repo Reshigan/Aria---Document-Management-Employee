@@ -29,7 +29,7 @@ export default function RegisterPage() {
       <Card className="w-full max-w-md shadow-xl border border-gray-200">
         <div className="text-center mb-6">
           <div className="flex justify-center mb-4">
-            <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-[#003d82] to-[#0059b3] flex items-center justify-center shadow-lg">
+            <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-[#1a2332] to-[#2c3e50] flex items-center justify-center shadow-lg">
               <RobotOutlined className="text-3xl text-white" />
             </div>
           </div>

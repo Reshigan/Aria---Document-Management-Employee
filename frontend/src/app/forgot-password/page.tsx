@@ -108,7 +108,7 @@ export default function ForgotPasswordPage() {
       <Row className="w-full">
         {/* Left Side - Branding */}
         <Col xs={0} lg={12} className="relative overflow-hidden">
-          <div className="h-full bg-gradient-to-br from-[#003d82] via-[#0059b3] to-[#0288d1] flex flex-col justify-center items-center p-12 text-white">
+          <div className="h-full bg-gradient-to-br from-[#1a2332] via-[#2c3e50] to-[#16a085] flex flex-col justify-center items-center p-12 text-white">
             {/* Animated Background */}
             <div className="absolute inset-0">
               <div className="absolute w-96 h-96 bg-white rounded-full blur-3xl opacity-5 -top-48 -left-48"></div>
@@ -117,7 +117,7 @@ export default function ForgotPasswordPage() {
             
             <div className="relative z-10 text-center">
               <Image 
-                src="/aria-avatar.svg" 
+                src="/aria-corporate-icon.svg" 
                 alt="ARIA" 
                 width={200} 
                 height={200}
@@ -170,14 +170,14 @@ export default function ForgotPasswordPage() {
                   htmlType="submit"
                   loading={loading}
                   block
-                  className="bg-[#003d82] hover:bg-[#0059b3] h-12 text-lg font-semibold"
+                  className="bg-[#2c3e50] hover:bg-[#16a085] h-12 text-lg font-semibold"
                 >
                   Send Reset Instructions
                 </Button>
               </Form.Item>
 
               <div className="text-center space-y-2">
-                <Link href="/login" className="text-[#003d82] hover:text-[#0059b3] flex items-center justify-center gap-2">
+                <Link href="/login" className="text-[#2c3e50] hover:text-[#16a085] flex items-center justify-center gap-2">
                   <ArrowLeftOutlined />
                   Back to Login
                 </Link>
@@ -185,7 +185,7 @@ export default function ForgotPasswordPage() {
                 <div className="mt-4 pt-4 border-t">
                   <Text className="text-gray-600">
                     Don't have an account?{' '}
-                    <Link href="/register" className="text-[#003d82] hover:text-[#0059b3] font-semibold">
+                    <Link href="/register" className="text-[#2c3e50] hover:text-[#16a085] font-semibold">
                       Sign up
                     </Link>
                   </Text>

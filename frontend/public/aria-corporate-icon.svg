@@ -1,0 +1,68 @@
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Corporate Gradient - Navy to Deep Blue -->
+    <linearGradient id="corporateGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a2332;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#2c3e50;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#34495e;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Accent Gradient - Teal to Blue -->
+    <linearGradient id="accentGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#16a085;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1abc9c;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Gold Gradient for Premium Feel -->
+    <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f39c12;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f1c40f;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Glow Effect -->
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Background Circle with Corporate Gradient -->
+  <circle cx="100" cy="100" r="95" fill="url(#corporateGradient)" opacity="0.95"/>
+  
+  <!-- Subtle Inner Shadow -->
+  <circle cx="100" cy="100" r="90" fill="none" stroke="#000000" stroke-width="1" opacity="0.1"/>
+  
+  <!-- Main Icon Group -->
+  <g transform="translate(50, 40)">
+    <!-- Document Stack with Depth -->
+    <!-- Back Document - Creates depth -->
+    <rect x="20" y="16" width="72" height="96" rx="6" fill="#ffffff" opacity="0.15"/>
+    
+    <!-- Middle Document -->
+    <rect x="10" y="8" width="72" height="96" rx="6" fill="#ffffff" opacity="0.3"/>
+    
+    <!-- Front Document - Main Focus -->
+    <rect x="0" y="0" width="72" height="96" rx="6" fill="#ffffff" stroke="url(#accentGradient)" stroke-width="2"/>
+    
+    <!-- Document Content - Elegant Lines -->
+    <line x1="12" y1="20" x2="60" y2="20" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" opacity="0.8"/>
+    <line x1="12" y1="32" x2="60" y2="32" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" opacity="0.8"/>
+    <line x1="12" y1="44" x2="48" y2="44" stroke="url(#accentGradient)" stroke-width="3" stroke-linecap="round" opacity="0.9"/>
+    <line x1="12" y1="56" x2="56" y2="56" stroke="url(#accentGradient)" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+    <line x1="12" y1="66" x2="52" y2="66" stroke="url(#accentGradient)" stroke-width="2" stroke-linecap="round" opacity="0.4"/>
+    
+    <!-- AI Badge - Premium Gold Accent -->
+    <circle cx="56" cy="72" r="16" fill="url(#goldGradient)" filter="url(#glow)"/>
+    <circle cx="56" cy="72" r="14" fill="none" stroke="#ffffff" stroke-width="1" opacity="0.5"/>
+    
+    <!-- AI Symbol - Modern & Elegant -->
+    <text x="56" y="79" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#1a2332">AI</text>
+  </g>
+  
+  <!-- Elegant Border -->
+  <circle cx="100" cy="100" r="96" fill="none" stroke="url(#accentGradient)" stroke-width="2" opacity="0.6"/>
+  <circle cx="100" cy="100" r="98" fill="none" stroke="#ffffff" stroke-width="1" opacity="0.2"/>
+</svg>

@@ -80,7 +80,7 @@ function ResetPasswordForm() {
               type="primary"
               size="large"
               onClick={() => router.push('/login')}
-              className="bg-[#003d82] hover:bg-[#0059b3]"
+              className="bg-[#2c3e50] hover:bg-[#16a085]"
             >
               Go to Login
             </Button>
@@ -95,7 +95,7 @@ function ResetPasswordForm() {
       <Row className="w-full">
         {/* Left Side - Branding */}
         <Col xs={0} lg={12} className="relative overflow-hidden">
-          <div className="h-full bg-gradient-to-br from-[#003d82] via-[#0059b3] to-[#0288d1] flex flex-col justify-center items-center p-12 text-white">
+          <div className="h-full bg-gradient-to-br from-[#1a2332] via-[#2c3e50] to-[#16a085] flex flex-col justify-center items-center p-12 text-white">
             {/* Animated Background */}
             <div className="absolute inset-0">
               <div className="absolute w-96 h-96 bg-white rounded-full blur-3xl opacity-5 -top-48 -left-48"></div>
@@ -104,7 +104,7 @@ function ResetPasswordForm() {
             
             <div className="relative z-10 text-center">
               <Image 
-                src="/aria-avatar.svg" 
+                src="/aria-corporate-icon.svg" 
                 alt="ARIA" 
                 width={200} 
                 height={200}
@@ -210,7 +210,7 @@ function ResetPasswordForm() {
                   htmlType="submit"
                   loading={loading}
                   block
-                  className="bg-[#003d82] hover:bg-[#0059b3] h-12 text-lg font-semibold"
+                  className="bg-[#2c3e50] hover:bg-[#16a085] h-12 text-lg font-semibold"
                 >
                   Reset Password
                 </Button>
@@ -219,7 +219,7 @@ function ResetPasswordForm() {
               <div className="text-center">
                 <Text className="text-gray-600">
                   Remember your password?{' '}
-                  <Link href="/login" className="text-[#003d82] hover:text-[#0059b3] font-semibold">
+                  <Link href="/login" className="text-[#2c3e50] hover:text-[#16a085] font-semibold">
                     Back to Login
                   </Link>
                 </Text>
@@ -237,7 +237,7 @@ export default function ResetPasswordPage() {
     <Suspense fallback={
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-blue-50">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#003d82] mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#2c3e50] mx-auto mb-4"></div>
           <Text>Loading...</Text>
         </div>
       </div>

@@ -1,0 +1,27 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a2332"/>
+      <stop offset="100%" style="stop-color:#34495e"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#16a085"/>
+      <stop offset="100%" style="stop-color:#1abc9c"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="32" height="32" rx="6" fill="url(#bg)"/>
+  
+  <!-- Document Icon -->
+  <rect x="8" y="6" width="16" height="20" rx="2" fill="#ffffff"/>
+  
+  <!-- Lines -->
+  <line x1="11" y1="10" x2="21" y2="10" stroke="url(#accent)" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="11" y1="14" x2="21" y2="14" stroke="url(#accent)" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="11" y1="18" x2="18" y2="18" stroke="url(#accent)" stroke-width="1.5" stroke-linecap="round"/>
+  
+  <!-- AI Badge -->
+  <circle cx="20" cy="22" r="5" fill="#f39c12"/>
+  <text x="20" y="24" text-anchor="middle" font-family="Arial, sans-serif" font-size="6" font-weight="bold" fill="#1a2332">AI</text>
+</svg>

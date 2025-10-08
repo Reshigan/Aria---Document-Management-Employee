@@ -2,12 +2,12 @@ import type { ThemeConfig } from 'antd';
 
 export const ariaTheme: ThemeConfig = {
   token: {
-    // Corporate Professional Colors - Deep Navy & Teal for Trust & Innovation
-    colorPrimary: '#1a365d',       // Deep Navy Blue - Trust & Stability
-    colorSuccess: '#047857',        // Emerald Green - Success & Growth
-    colorWarning: '#d97706',        // Amber - Attention & Energy
-    colorError: '#c81e1e',          // Deep Red - Critical Actions
-    colorInfo: '#0891b2',           // Teal - Information & Clarity
+    // Corporate Professional Colors - Navy, Slate & Teal
+    colorPrimary: '#2c3e50',       // Navy Slate - Trust & Professionalism
+    colorSuccess: '#27ae60',        // Corporate Green - Success & Growth
+    colorWarning: '#f39c12',        // Gold - Attention & Premium
+    colorError: '#e74c3c',          // Corporate Red - Critical Actions
+    colorInfo: '#16a085',           // Teal - Information & Innovation
     
     // Typography - Modern & Professional
     fontSize: 14,
@@ -36,7 +36,7 @@ export const ariaTheme: ThemeConfig = {
   components: {
     Button: {
       controlHeight: 42,
-      primaryShadow: '0 4px 12px rgba(26, 54, 93, 0.25)',
+      primaryShadow: '0 4px 12px rgba(44, 62, 80, 0.25)',
       borderRadius: 8,
     },
     Card: {
@@ -48,7 +48,7 @@ export const ariaTheme: ThemeConfig = {
       borderRadius: 8,
     },
     Layout: {
-      headerBg: '#1a365d',
+      headerBg: '#2c3e50',
       headerColor: '#ffffff',
       siderBg: '#f8fafc',
     },
@@ -56,9 +56,11 @@ export const ariaTheme: ThemeConfig = {
 };
 
 export const gradients = {
-  primary: 'linear-gradient(135deg, #1a365d 0%, #2563eb 100%)',
-  brand: 'linear-gradient(135deg, #1a365d 0%, #2563eb 50%, #0891b2 100%)',
-  elegant: 'linear-gradient(135deg, #0f172a 0%, #1e40af 50%, #0891b2 100%)',
+  primary: 'linear-gradient(135deg, #1a2332 0%, #2c3e50 100%)',
+  brand: 'linear-gradient(135deg, #1a2332 0%, #2c3e50 50%, #16a085 100%)',
+  elegant: 'linear-gradient(135deg, #1a2332 0%, #2c3e50 50%, #16a085 100%)',
+  accent: 'linear-gradient(135deg, #16a085 0%, #1abc9c 100%)',
+  gold: 'linear-gradient(135deg, #f39c12 0%, #f1c40f 100%)',
 };
 
 export default ariaTheme;

@@ -16,7 +16,7 @@ export default function Home() {
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 flex items-center justify-center">
       <div className="text-center">
         <div className="mb-6 flex justify-center">
-          <div className="w-20 h-20 rounded-xl bg-gradient-to-br from-[#003d82] to-[#0059b3] flex items-center justify-center shadow-xl">
+          <div className="w-20 h-20 rounded-xl bg-gradient-to-br from-[#1a2332] to-[#2c3e50] flex items-center justify-center shadow-xl">
             <span className="text-4xl font-bold text-white">A</span>
           </div>
         </div>

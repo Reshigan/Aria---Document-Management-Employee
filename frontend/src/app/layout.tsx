@@ -19,9 +19,9 @@ export default function RootLayout({
       <head>
         <title>ARIA - Digital Twin Intelligence</title>
         <meta name="description" content="Advanced AI-Powered Document Management System with Neural Processing, OCR, and Intelligent Data Extraction" />
-        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-        <link rel="apple-touch-icon" href="/aria-avatar.svg" />
-        <meta name="theme-color" content="#003d82" />
+        <link rel="icon" type="image/svg+xml" href="/favicon-corporate.svg" />
+        <link rel="apple-touch-icon" href="/aria-corporate-icon.svg" />
+        <meta name="theme-color" content="#1a2332" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
