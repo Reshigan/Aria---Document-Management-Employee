@@ -11,6 +11,7 @@ dist/
 .env.local
 .env.production
 .env.development
+.env.test
 
 # Logs
 *.log
@@ -29,6 +30,17 @@ __pycache__/
 *.pyo
 *.pyd
 .Python
+
+# Python virtual environment
+venv/
+env/
+ENV/
+
+# Uploads and test files
+backend/uploads/
+test_*.json
+test_*.html
+*.pem
 
 # OS
 .DS_Store

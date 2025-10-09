@@ -21,9 +21,11 @@ const Navigation = () => {
   const pathname = usePathname();
   const { user, logout } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
-  const [currentTime, setCurrentTime] = useState(new Date());
+  const [currentTime, setCurrentTime] = useState<Date | null>(null);
 
   useEffect(() => {
+    // Set initial time on client mount
+    setCurrentTime(new Date());
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
@@ -72,8 +74,8 @@ const Navigation = () => {
             <div className="flex items-center gap-2 text-sm">
               <div className="px-3 py-1 rounded-full bg-green-100 text-green-700 font-medium">ONLINE</div>
               <span className="text-gray-400">•</span>
-              <span className="text-gray-600">
-                {currentTime.toLocaleTimeString()}
+              <span className="text-gray-600" suppressHydrationWarning>
+                {currentTime ? currentTime.toLocaleTimeString() : '--:--:--'}
               </span>
             </div>
           </div>
