@@ -8,8 +8,8 @@ import json
 import sys
 from typing import Dict, Any
 
-BASE_URL = "http://localhost:8000/api/v1"
-FRONTEND_URL = "http://localhost:12000"
+BASE_URL = "http://localhost:12000"
+FRONTEND_URL = "http://localhost:12001"
 
 class Colors:
     GREEN = '\033[92m'
@@ -62,7 +62,7 @@ def test_register_user() -> tuple[bool, Dict[str, Any]]:
     }
     
     try:
-        response = requests.post(f"{BASE_URL}/auth/register", json=user_data, timeout=10)
+        response = requests.post(f"{BASE_URL}/api/auth/register", json=user_data, timeout=10)
         passed = response.status_code in [200, 201]
         data = response.json() if passed else {}
         
@@ -80,8 +80,8 @@ def test_login(email: str, password: str) -> tuple[bool, str]:
     """Test user login"""
     try:
         response = requests.post(
-            f"{BASE_URL}/auth/login",
-            data={"username": email, "password": password},
+            f"{BASE_URL}/api/auth/login",
+            json={"username": email, "password": password},
             timeout=10
         )
         passed = response.status_code == 200
@@ -103,7 +103,7 @@ def test_get_current_user(token: str) -> bool:
     """Test getting current user info"""
     try:
         headers = {"Authorization": f"Bearer {token}"}
-        response = requests.get(f"{BASE_URL}/auth/me", headers=headers, timeout=10)
+        response = requests.get(f"{BASE_URL}/api/auth/me", headers=headers, timeout=10)
         passed = response.status_code == 200
         
         if passed:
@@ -121,12 +121,14 @@ def test_list_documents(token: str) -> bool:
     """Test listing documents"""
     try:
         headers = {"Authorization": f"Bearer {token}"}
-        response = requests.get(f"{BASE_URL}/documents", headers=headers, timeout=10)
+        response = requests.get(f"{BASE_URL}/api/documents", headers=headers, timeout=10)
         passed = response.status_code == 200
         
         if passed:
             data = response.json()
-            print_test("List Documents", True, f"Total: {data.get('total', 0)} documents")
+            # API returns a list of documents
+            doc_count = len(data) if isinstance(data, list) else 0
+            print_test("List Documents", True, f"Total: {doc_count} documents")
         else:
             print_test("List Documents", False, f"Status: {response.status_code}")
         
@@ -141,9 +143,9 @@ def test_chat_endpoint(token: str) -> bool:
         headers = {"Authorization": f"Bearer {token}"}
         chat_data = {
             "message": "Hello, ARIA! This is a system test.",
-            "conversation_id": None
+            "document_id": None
         }
-        response = requests.post(f"{BASE_URL}/chat/message", json=chat_data, headers=headers, timeout=15)
+        response = requests.post(f"{BASE_URL}/api/chat", json=chat_data, headers=headers, timeout=15)
         passed = response.status_code == 200
         
         if passed:

@@ -17,13 +17,18 @@ export default function LoginPage() {
   const router = useRouter();
 
   const onFinish = async (values: LoginCredentials) => {
+    console.log('[LOGIN PAGE] onFinish called with values:', values);
     try {
       setLoading(true);
+      console.log('[LOGIN PAGE] Calling login function...');
       await login(values);
+      console.log('[LOGIN PAGE] Login function completed successfully!');
     } catch (error) {
+      console.error('[LOGIN PAGE] Login error caught:', error);
       // Error is already handled in AuthContext
     } finally {
       setLoading(false);
+      console.log('[LOGIN PAGE] Loading state cleared');
     }
   };
 

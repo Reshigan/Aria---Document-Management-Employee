@@ -58,14 +58,24 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const login = async (credentials: LoginCredentials) => {
     try {
       setLoading(true);
+      console.log('[LOGIN] Step 1: Calling authAPI.login...');
       const loginResponse = await authAPI.login(credentials.email, credentials.password);
+      console.log('[LOGIN] Step 2: Login response received:', loginResponse);
       localStorage.setItem('token', loginResponse.access_token);
+      const tokenCheck = localStorage.getItem('token');
+      console.log('[LOGIN] Step 3: Token stored. Verification check:', tokenCheck ? `Token length: ${tokenCheck.length}` : 'TOKEN NOT FOUND!');
+      console.log('[LOGIN] Step 3.5: Calling getCurrentUser...');
       const userData = await authAPI.getCurrentUser();
+      console.log('[LOGIN] Step 4: User data received:', userData);
       setUser(userData);
+      console.log('[LOGIN] Step 5: User state set, showing success message...');
       message.success('Login successful!');
+      console.log('[LOGIN] Step 6: Navigating to dashboard...');
       router.push('/dashboard');
+      console.log('[LOGIN] Step 7: Login complete!');
     } catch (error: any) {
-      console.error('Login failed:', error);
+      console.error('[LOGIN ERROR] Failed at some step:', error);
+      console.error('[LOGIN ERROR] Error details:', error.response?.data);
       message.error(error.response?.data?.detail || 'Login failed. Please check your credentials.');
       throw error;
     } finally {

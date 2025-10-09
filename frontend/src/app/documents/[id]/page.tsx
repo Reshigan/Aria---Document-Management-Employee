@@ -19,11 +19,14 @@ const { TabPane } = Tabs;
 interface DocumentDetail {
   id: number;
   filename: string;
+  original_filename?: string;
   file_size: number;
   mime_type: string;
   status: string;
   document_type?: string;
-  uploaded_at: string;
+  created_at: string;
+  updated_at?: string;
+  uploaded_at?: string;
   processed_at?: string;
   confidence_score?: number;
   invoice_number?: string;
@@ -33,7 +36,10 @@ interface DocumentDetail {
   currency?: string;
   purchase_order_number?: string;
   extracted_data?: any;
+  ocr_text?: string;
   error_message?: string;
+  uploaded_by?: number;
+  file_path?: string;
 }
 
 export default function DocumentDetailPage() {
@@ -51,8 +57,8 @@ export default function DocumentDetailPage() {
 
   const fetchDocument = async () => {
     try {
-      const response = await api.get(`/documents/${documentId}`);
-      setDocument(response.data);
+      const data = await api.get<DocumentDetail>(`/api/documents/${documentId}`);
+      setDocument(data);
     } catch (error: any) {
       message.error(error.response?.data?.detail || 'Failed to fetch document');
     } finally {
@@ -63,7 +69,7 @@ export default function DocumentDetailPage() {
   const triggerProcessing = async () => {
     setProcessing(true);
     try {
-      await api.post(`/documents/${documentId}/process`);
+      await api.post(`/api/documents/${documentId}/process`);
       message.success('Document processing started');
       setTimeout(fetchDocument, 2000);
     } catch (error: any) {
@@ -75,8 +81,8 @@ export default function DocumentDetailPage() {
 
   const postToSAP = async () => {
     try {
-      const response = await api.post(`/documents/${documentId}/post-to-sap`);
-      message.success(`Posted to SAP: ${response.data.sap_document_number}`);
+      const data = await api.post<any>(`/api/documents/${documentId}/post-to-sap`);
+      message.success(`Posted to SAP: ${data.sap_document_number}`);
       fetchDocument();
     } catch (error: any) {
       message.error(error.response?.data?.detail || 'Failed to post to SAP');
@@ -170,10 +176,10 @@ export default function DocumentDetailPage() {
                 {document.mime_type}
               </Descriptions.Item>
               <Descriptions.Item label="Uploaded">
-                {new Date(document.uploaded_at).toLocaleString()}
+                {new Date(document.created_at).toLocaleString()}
               </Descriptions.Item>
               <Descriptions.Item label="Processed">
-                {document.processed_at ? new Date(document.processed_at).toLocaleString() : 'Not yet processed'}
+                {document.status === 'processed' && document.updated_at ? new Date(document.updated_at).toLocaleString() : 'Not yet processed'}
               </Descriptions.Item>
             </Descriptions>
 
@@ -233,6 +239,22 @@ export default function DocumentDetailPage() {
                     {document.currency || 'N/A'}
                   </Descriptions.Item>
                 </Descriptions>
+
+                {document.ocr_text && (
+                  <div style={{ marginTop: '24px' }}>
+                    <Title level={5}>OCR Extracted Text</Title>
+                    <pre style={{ 
+                      backgroundColor: '#f5f5f5', 
+                      padding: '16px', 
+                      borderRadius: '4px',
+                      overflow: 'auto',
+                      whiteSpace: 'pre-wrap',
+                      wordWrap: 'break-word'
+                    }}>
+                      {document.ocr_text}
+                    </pre>
+                  </div>
+                )}
 
                 {document.extracted_data && (
                   <div style={{ marginTop: '24px' }}>

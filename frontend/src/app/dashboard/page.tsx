@@ -27,12 +27,16 @@ export default function Dashboard() {
   const router = useRouter();
 
   useEffect(() => {
+    console.log('[DASHBOARD] useEffect running...');
     const token = localStorage.getItem('token');
+    console.log('[DASHBOARD] Token check:', token ? `Found token (length: ${token.length})` : 'NO TOKEN FOUND');
     if (!token) {
+      console.log('[DASHBOARD] No token, redirecting to login...');
       router.push('/login');
       return;
     }
     
+    console.log('[DASHBOARD] Token found, fetching data...');
     fetchData();
   }, []);
 
@@ -56,7 +60,8 @@ export default function Dashboard() {
       // Fetch documents
       const docsRes = await fetch('/api/documents', { headers });
       if (docsRes.ok) {
-        setDocuments(await docsRes.json());
+        const docsData = await docsRes.json();
+        setDocuments(docsData.items || []);
       }
     } catch (error) {
       console.error('Error fetching data:', error);

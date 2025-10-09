@@ -112,18 +112,16 @@ export default function DocumentUploadPage() {
             setDocuments(prev => [...prev]);
 
             // Perform OCR scanning
-            const ocrResponse = await api.post('/api/documents/ocr', {
-              document_id: uploadResponse.data.id
-            });
+            const ocrResponse = await api.post(`/api/documents/${uploadResponse.id}/ocr`);
 
-            docData.extractedText = ocrResponse.data.text;
-            docData.ocrData = ocrResponse.data;
+            docData.extractedText = ocrResponse.extracted_text || '';
+            docData.ocrData = ocrResponse;
             docData.status = 'scanned';
             docData.progress = 75;
             setDocuments(prev => [...prev]);
 
             // Post to SAP
-            await postToSAP(docData, uploadResponse.data.id);
+            await postToSAP(docData, uploadResponse.id);
 
           } catch (error: any) {
             console.error('Error processing document:', error);

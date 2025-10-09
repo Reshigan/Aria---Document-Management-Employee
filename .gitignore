@@ -1,6 +1,8 @@
-# Next.js build outputs
-.next/
+# Next.js
 node_modules/
+# Note: .next/ is included in git for Docker production deployment
+# But exclude cache (too large for git, not needed for production)
+.next/cache/
 
 # Production
 build/
@@ -19,10 +21,9 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Database
-*.db
-*.sqlite
-*.sqlite3
+# Database (backend/aria.db is included for Docker deployment)
+*.db-journal
+*.sqlite-journal
 
 # Python cache
 __pycache__/

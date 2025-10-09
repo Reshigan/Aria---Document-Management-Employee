@@ -1,11 +1,10 @@
 from fastapi import FastAPI, Depends, HTTPException, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from sqlalchemy import Column, Integer, String, DateTime, Text, Boolean, Float, ForeignKey, Enum, create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker, Session, relationship
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy.sql import func
-from pydantic import BaseModel
+from pydantic import BaseModel as PydanticBaseModel
 from typing import List, Optional
 from datetime import datetime, timedelta
 from jose import JWTError, jwt
@@ -15,55 +14,17 @@ from passlib.context import CryptContext
 import os
 import uuid
 import aiofiles
-import enum
+
+# Import models from the models package
+from models import Base, User, Document, DocumentType, DocumentStatus
 
 # Database setup
 DATABASE_URL = "sqlite:///./aria.db"
 engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-Base = declarative_base()
 
-# Models
-class UserRole(str, enum.Enum):
-    ADMIN = "admin"
-    USER = "user"
-
-class DocumentStatus(str, enum.Enum):
-    UPLOADED = "uploaded"
-    PROCESSED = "processed"
-    ERROR = "error"
-
-class User(Base):
-    __tablename__ = "users"
-    
-    id = Column(Integer, primary_key=True, index=True)
-    username = Column(String(50), unique=True, index=True, nullable=False)
-    email = Column(String(100), unique=True, index=True, nullable=False)
-    full_name = Column(String(100), nullable=False)
-    hashed_password = Column(String(255), nullable=False)
-    is_superuser = Column(Boolean, default=False)
-    is_active = Column(Boolean, default=True)
-    created_at = Column(DateTime, server_default=func.now())
-    
-    documents = relationship("Document", back_populates="uploader")
-
-class Document(Base):
-    __tablename__ = "documents"
-    
-    id = Column(Integer, primary_key=True, index=True)
-    original_filename = Column(String(255), nullable=False)
-    file_path = Column(String(500), nullable=False)
-    file_size = Column(Integer)
-    document_type = Column(String(100))
-    # extracted_text removed - not in actual DB schema
-    status = Column(Enum(DocumentStatus), default=DocumentStatus.UPLOADED)
-    uploaded_by = Column(Integer, ForeignKey("users.id"))
-    created_at = Column(DateTime, server_default=func.now())
-    
-    uploader = relationship("User", back_populates="documents")
-
-# Create tables
-Base.metadata.create_all(bind=engine)
+# Tables already exist, don't recreate them
+# Base.metadata.create_all(bind=engine)
 
 # Auth setup
 SECRET_KEY = "AriaJWT1730901994SecretKey"
@@ -72,8 +33,8 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 security = HTTPBearer()
 
-# Password hashing using bcrypt directly (avoiding passlib initialization issues)
-import bcrypt as bcrypt_lib
+# Password hashing using passlib for consistency
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 def get_db():
     db = SessionLocal()
@@ -83,15 +44,10 @@ def get_db():
         db.close()
 
 def verify_password(plain_password, hashed_password):
-    # Bcrypt has a 72-byte limit
-    password_bytes = plain_password.encode('utf-8')[:72]
-    return bcrypt_lib.checkpw(password_bytes, hashed_password.encode('utf-8'))
+    return pwd_context.verify(plain_password, hashed_password)
 
 def get_password_hash(password):
-    # Bcrypt has a 72-byte limit
-    password_bytes = password.encode('utf-8')[:72]
-    hashed = bcrypt_lib.hashpw(password_bytes, bcrypt_lib.gensalt())
-    return hashed.decode('utf-8')
+    return pwd_context.hash(password)
 
 def create_access_token(data: dict):
     to_encode = data.copy()
@@ -139,34 +95,41 @@ app.add_middleware(
 )
 
 # Pydantic models
-class UserLogin(BaseModel):
+class UserLogin(PydanticBaseModel):
     username: str
     password: str
 
-class UserRegister(BaseModel):
+class UserRegister(PydanticBaseModel):
     username: str
     email: str
     password: str
     full_name: str = ""
 
-class Token(BaseModel):
+class Token(PydanticBaseModel):
     access_token: str
     token_type: str
 
-class UserResponse(BaseModel):
+class UserResponse(PydanticBaseModel):
     id: int
     username: str
     email: str
-    full_name: str
+    full_name: Optional[str] = None
     is_superuser: bool = False
 
-class DocumentResponse(BaseModel):
+class DocumentResponse(PydanticBaseModel):
     id: int
     original_filename: str
     document_type: str
     status: str
     created_at: datetime
     file_size: int
+
+class DocumentListResponse(PydanticBaseModel):
+    items: List[DocumentResponse]
+    total: int
+    page: int
+    page_size: int
+    pages: int
 
 # Initialize admin user
 @app.on_event("startup")
@@ -279,13 +242,16 @@ async def upload_document(
         content = await file.read()
         await f.write(content)
     
-    # Create document record
+    # Create document record using proper model
     document = Document(
+        filename=file.filename,
         original_filename=file.filename,
         file_path=file_path,
         file_size=len(content),
-        document_type="document",
+        mime_type=file.content_type or "application/octet-stream",
+        document_type=DocumentType.OTHER,
         status=DocumentStatus.UPLOADED,
+        posted_to_sap=False,
         uploaded_by=current_user.id
     )
     
@@ -293,7 +259,7 @@ async def upload_document(
     if file.content_type and 'text' in file.content_type:
         try:
             text = content.decode('utf-8')
-            document.extracted_text = text
+            document.ocr_text = text
             document.status = DocumentStatus.PROCESSED
         except:
             pass
@@ -304,12 +270,17 @@ async def upload_document(
     
     return {
         "message": "Document uploaded successfully",
-        "document_id": document.id,
-        "filename": document.original_filename
+        "id": document.id,
+        "original_filename": document.original_filename,
+        "file_size": document.file_size,
+        "document_type": document.document_type.value if document.document_type else "OTHER",
+        "status": document.status.value if document.status else "uploaded"
     }
 
-@app.get("/api/documents", response_model=List[DocumentResponse])
+@app.get("/api/documents", response_model=DocumentListResponse)
 async def get_documents(
+    page: int = 1,
+    page_size: int = 20,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
@@ -318,9 +289,13 @@ async def get_documents(
     if not current_user.is_superuser:
         query = query.filter(Document.uploaded_by == current_user.id)
     
-    documents = query.order_by(Document.created_at.desc()).all()
+    # Get total count
+    total = query.count()
     
-    return [
+    # Apply pagination
+    documents = query.order_by(Document.created_at.desc()).offset((page - 1) * page_size).limit(page_size).all()
+    
+    items = [
         DocumentResponse(
             id=doc.id,
             original_filename=doc.original_filename,
@@ -331,6 +306,74 @@ async def get_documents(
         )
         for doc in documents
     ]
+    
+    return DocumentListResponse(
+        items=items,
+        total=total,
+        page=page,
+        page_size=page_size,
+        pages=(total + page_size - 1) // page_size
+    )
+
+@app.get("/api/documents/{document_id}")
+async def get_document_details(
+    document_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Get detailed information about a specific document"""
+    document = db.query(Document).filter(Document.id == document_id).first()
+    
+    if not document:
+        raise HTTPException(status_code=404, detail="Document not found")
+    
+    # Check permissions
+    if not current_user.is_superuser and document.uploaded_by != current_user.id:
+        raise HTTPException(status_code=403, detail="Not authorized to access this document")
+    
+    return {
+        "id": document.id,
+        "filename": document.filename,
+        "original_filename": document.original_filename,
+        "file_path": document.file_path,
+        "file_size": document.file_size,
+        "mime_type": document.mime_type,
+        "document_type": document.document_type.value if hasattr(document.document_type, 'value') else str(document.document_type),
+        "status": document.status.value if hasattr(document.status, 'value') else str(document.status),
+        "ocr_text": document.ocr_text,
+        "uploaded_by": document.uploaded_by,
+        "created_at": document.created_at,
+        "updated_at": document.updated_at
+    }
+
+@app.delete("/api/documents/{document_id}")
+async def delete_document(
+    document_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Delete a document"""
+    document = db.query(Document).filter(Document.id == document_id).first()
+    
+    if not document:
+        raise HTTPException(status_code=404, detail="Document not found")
+    
+    # Check permissions
+    if not current_user.is_superuser and document.uploaded_by != current_user.id:
+        raise HTTPException(status_code=403, detail="Not authorized to delete this document")
+    
+    # Delete the physical file
+    if os.path.exists(document.file_path):
+        try:
+            os.remove(document.file_path)
+        except Exception as e:
+            print(f"Failed to delete file {document.file_path}: {e}")
+    
+    # Delete from database
+    db.delete(document)
+    db.commit()
+    
+    return {"message": "Document deleted successfully", "id": document_id}
 
 @app.get("/api/dashboard/stats")
 async def get_stats(
@@ -360,24 +403,24 @@ async def get_stats(
 # ============================================================================
 
 # Pydantic models for enhanced features
-class ChatMessage(BaseModel):
+class ChatMessage(PydanticBaseModel):
     message: str
     document_id: Optional[int] = None
 
-class ChatResponse(BaseModel):
+class ChatResponse(PydanticBaseModel):
     response: str
     confidence: float
     sources: Optional[List[str]] = None
 
-class OCRRequest(BaseModel):
+class OCRRequest(PydanticBaseModel):
     document_id: int
     language: str = "eng"
 
-class SearchRequest(BaseModel):
+class SearchRequest(PydanticBaseModel):
     query: str
     document_type: Optional[str] = None
 
-class AnalysisResponse(BaseModel):
+class AnalysisResponse(PydanticBaseModel):
     document_id: int
     key_entities: List[str]
     summary: str

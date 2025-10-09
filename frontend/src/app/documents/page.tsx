@@ -83,8 +83,7 @@ export default function DocumentsPage() {
         params.date_to = dateRange[1].format('YYYY-MM-DD');
       }
 
-      const response = await api.get('/api/documents', { params });
-      const data: DocumentListResponse = response.data;
+      const data = await api.get<DocumentListResponse>('/api/documents', { params });
       
       setDocuments(data.items || []);
       setTotal(data.total || 0);
