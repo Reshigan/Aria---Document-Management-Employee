@@ -1,6 +1,8 @@
 """
 Analytics and Reporting API Routes
 """
+import os
+import psutil
 from datetime import datetime, timedelta
 from typing import List, Optional, Dict, Any
 from fastapi import APIRouter, Depends, HTTPException, status, Query
@@ -612,3 +614,85 @@ async def export_analytics_csv(
         "period_days": days,
         "since_date": since_date.isoformat()
     }
+
+
+@router.get("/system")
+async def get_system_health(
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """Get system health and performance metrics (Admin only)"""
+    if not current_user.is_superuser:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Not enough permissions"
+        )
+    
+    try:
+        # System uptime
+        boot_time = datetime.fromtimestamp(psutil.boot_time())
+        uptime = datetime.now() - boot_time
+        uptime_str = f"{uptime.days} days, {uptime.seconds // 3600} hours"
+        
+        # Memory usage
+        memory = psutil.virtual_memory()
+        
+        # Disk usage
+        disk = psutil.disk_usage('/')
+        
+        # CPU usage
+        cpu_percent = psutil.cpu_percent(interval=1)
+        
+        # Database stats
+        total_docs_result = await db.execute(select(func.count(Document.id)))
+        total_documents = total_docs_result.scalar() or 0
+        
+        total_users_result = await db.execute(select(func.count(User.id)))
+        total_users = total_users_result.scalar() or 0
+        
+        # Storage usage from documents
+        storage_result = await db.execute(select(func.sum(Document.file_size)))
+        storage_used_bytes = storage_result.scalar() or 0
+        storage_used_gb = storage_used_bytes / (1024 ** 3)
+        
+        return {
+            "uptime": uptime_str,
+            "version": "2.0.0",
+            "system": {
+                "cpu_percent": cpu_percent,
+                "memory_total_gb": round(memory.total / (1024 ** 3), 2),
+                "memory_used_gb": round(memory.used / (1024 ** 3), 2),
+                "memory_percent": memory.percent,
+                "disk_total_gb": round(disk.total / (1024 ** 3), 2),
+                "disk_used_gb": round(disk.used / (1024 ** 3), 2),
+                "disk_percent": round((disk.used / disk.total) * 100, 1)
+            },
+            "database": {
+                "total_documents": total_documents,
+                "total_users": total_users
+            },
+            "storage_used": round(storage_used_gb, 2),
+            "storage_total": 100  # Placeholder - would be actual storage limit
+        }
+    except Exception as e:
+        # Fallback system info if psutil fails
+        return {
+            "uptime": "Unknown",
+            "version": "2.0.0",
+            "system": {
+                "cpu_percent": 0,
+                "memory_total_gb": 0,
+                "memory_used_gb": 0,
+                "memory_percent": 0,
+                "disk_total_gb": 0,
+                "disk_used_gb": 0,
+                "disk_percent": 0
+            },
+            "database": {
+                "total_documents": 0,
+                "total_users": 0
+            },
+            "storage_used": 0,
+            "storage_total": 100,
+            "error": str(e)
+        }

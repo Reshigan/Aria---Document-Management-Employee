@@ -1,8 +1,10 @@
 # Next.js
 node_modules/
 # Note: .next/ is included in git for Docker production deployment
-# But exclude cache (too large for git, not needed for production)
+# But exclude cache and hot-update files (too large for git, not needed for production)
 .next/cache/
+.next/static/webpack/*.hot-update.*
+.next/trace
 
 # Production
 build/
