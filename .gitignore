@@ -5,6 +5,9 @@ node_modules/
 .next/cache/
 .next/static/webpack/*.hot-update.*
 .next/trace
+# Exclude all large webpack cache files
+.next/cache/webpack/
+*.pack
 
 # Production
 build/
