@@ -2,7 +2,7 @@
 Tests for data extraction service
 """
 import pytest
-from backend.services.processing.extraction_service import extraction_service
+from services.processing.extraction_service import extraction_service
 
 
 class TestExtractionService:

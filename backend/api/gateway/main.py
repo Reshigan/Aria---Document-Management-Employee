@@ -8,8 +8,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 import logging
 
-from backend.core.config import settings
-from backend.api.gateway.routers import auth, documents, chat, health
+from core.config import settings
+from api.gateway.routers import auth, documents, chat, health
 
 # Configure logging
 logging.basicConfig(
@@ -27,9 +27,9 @@ async def lifespan(app: FastAPI):
     logger.info(f"Environment: {settings.ENVIRONMENT}")
     
     # Initialize database
-    from backend.core.database import init_db, close_db
+    from core.database import init_db, close_db
     # Import models so SQLAlchemy knows about them
-    from backend.models import user, document
+    from models import user, document
     try:
         await init_db()
         logger.info("✅ Database initialized")

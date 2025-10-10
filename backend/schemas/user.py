@@ -2,7 +2,7 @@
 User related Pydantic schemas
 """
 from datetime import datetime
-from typing import Optional, List
+from typing import Optional, List, Dict, Any
 from pydantic import BaseModel, EmailStr, Field, validator
 
 
@@ -161,3 +161,26 @@ class PermissionResponse(PermissionBase):
     
     class Config:
         from_attributes = True
+
+
+class UserListResponse(BaseModel):
+    """User list response with pagination"""
+    items: List[UserResponse]
+    total: int
+    page: int
+    page_size: int
+    pages: int
+
+
+class UserProfileUpdate(BaseModel):
+    """User profile update schema"""
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    phone: Optional[str] = None
+    department: Optional[str] = None
+    position: Optional[str] = None
+    bio: Optional[str] = None
+    avatar_url: Optional[str] = None
+    timezone: Optional[str] = None
+    language: Optional[str] = None
+    notification_preferences: Optional[Dict[str, Any]] = None

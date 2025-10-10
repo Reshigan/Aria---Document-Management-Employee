@@ -3,8 +3,8 @@ Celery tasks for notifications.
 """
 import logging
 from typing import Optional
-from backend.core.celery_app import celery_app
-from backend.services.notifications.notification_service import notification_service
+from core.celery_app import celery_app
+from services.notifications.notification_service import notification_service
 
 logger = logging.getLogger(__name__)
 

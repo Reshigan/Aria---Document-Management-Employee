@@ -8,11 +8,11 @@ from datetime import datetime
 from enum import Enum
 from sqlalchemy import select
 
-from backend.api.gateway.dependencies.auth import get_current_user
-from backend.models.user import User
-from backend.models.document import Document
-from backend.core.database import get_db
-from backend.services.ai.llm_service import llm_service
+from api.gateway.dependencies.auth import get_current_user
+from models.user import User
+from models.document import Document
+from core.database import get_db
+from services.ai.llm_service import llm_service
 from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter()

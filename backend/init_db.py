@@ -9,10 +9,10 @@ import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from sqlalchemy import create_engine
-from backend.models.base import Base
-from backend.models.user import User
-from backend.models.document import Document
-from backend.core.security import get_password_hash
+from models.base import Base
+from models.user import User
+from models.document import Document
+from core.security import get_password_hash
 
 # Create database
 DATABASE_URL = "sqlite:///./aria.db"

@@ -11,7 +11,7 @@ import uuid
 import aiofiles
 import magic
 
-from backend.core.config import settings
+from core.config import settings
 
 
 class StorageService:

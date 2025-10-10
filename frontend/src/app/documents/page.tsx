@@ -12,7 +12,7 @@ import {
   SendOutlined, MoreOutlined, PlusOutlined
 } from '@ant-design/icons';
 import { useAuth } from '@/contexts/AuthContext';
-import api from '@/lib/api';
+import { documentsAPI } from '@/lib/api';
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
@@ -83,7 +83,7 @@ export default function DocumentsPage() {
         params.date_to = dateRange[1].format('YYYY-MM-DD');
       }
 
-      const data = await api.get<DocumentListResponse>('/api/documents', { params });
+      const data = await documentsAPI.list(params);
       
       setDocuments(data.items || []);
       setTotal(data.total || 0);
@@ -96,13 +96,8 @@ export default function DocumentsPage() {
 
   const handleUpload = async (file: File) => {
     try {
-      const formData = new FormData();
-      formData.append('file', file);
-      
       message.loading('Uploading document...', 0);
-      await api.post('/api/documents/upload', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
+      await documentsAPI.upload(file);
       
       message.destroy();
       message.success('Document uploaded successfully!');
@@ -117,7 +112,7 @@ export default function DocumentsPage() {
 
   const handleDelete = async (documentId: number) => {
     try {
-      await api.delete(`/api/documents/${documentId}`);
+      await documentsAPI.delete(documentId);
       message.success('Document deleted successfully');
       fetchDocuments();
     } catch (error: any) {
@@ -134,7 +129,7 @@ export default function DocumentsPage() {
       onOk: async () => {
         try {
           await Promise.all(
-            selectedRowKeys.map(id => api.delete(`/api/documents/${id}`))
+            selectedRowKeys.map(id => documentsAPI.delete(id))
           );
           message.success('Documents deleted successfully');
           setSelectedRowKeys([]);

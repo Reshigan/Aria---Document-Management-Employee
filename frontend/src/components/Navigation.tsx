@@ -13,7 +13,8 @@ import {
   UserOutlined,
   LogoutOutlined,
   MenuOutlined,
-  CloseOutlined
+  CloseOutlined,
+  BranchesOutlined
 } from '@ant-design/icons';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -34,6 +35,7 @@ const Navigation = () => {
     { href: '/dashboard', icon: DashboardOutlined, label: 'Dashboard' },
     { href: '/chat', icon: MessageOutlined, label: 'AI Chat' },
     { href: '/documents', icon: FileTextOutlined, label: 'Documents' },
+    { href: '/workflows', icon: BranchesOutlined, label: 'Workflows' },
     { href: '/upload', icon: UploadOutlined, label: 'Upload' },
   ];
 

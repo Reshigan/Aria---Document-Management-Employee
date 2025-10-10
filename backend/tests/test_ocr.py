@@ -3,7 +3,7 @@ Tests for OCR service
 """
 import pytest
 from pathlib import Path
-from backend.services.processing.ocr_service import ocr_service
+from services.processing.ocr_service import ocr_service
 
 
 class TestOCRService:

@@ -7,7 +7,7 @@ For production use, install: pip install pyrfc
 import logging
 from typing import Dict, Optional, List
 from datetime import datetime
-from backend.core.config import settings
+from core.config import settings
 
 logger = logging.getLogger(__name__)
 

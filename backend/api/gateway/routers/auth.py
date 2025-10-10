@@ -8,8 +8,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, or_
 from sqlalchemy.orm import selectinload
 
-from backend.core.database import get_db
-from backend.core.security import (
+from core.database import get_db
+from core.security import (
     verify_password,
     get_password_hash,
     create_access_token,
@@ -18,9 +18,9 @@ from backend.core.security import (
     REFRESH_TOKEN,
     validate_password_strength
 )
-from backend.core.config import settings
-from backend.models.user import User, Role, PasswordResetToken
-from backend.schemas.user import (
+from core.config import settings
+from models.user import User, Role, PasswordResetToken
+from schemas.user import (
     UserCreate,
     UserResponse,
     TokenResponse,
@@ -30,7 +30,7 @@ from backend.schemas.user import (
     ForgotPasswordRequest,
     ResetPasswordRequest
 )
-from backend.api.gateway.dependencies.auth import get_current_user
+from api.gateway.dependencies.auth import get_current_user
 
 router = APIRouter()
 

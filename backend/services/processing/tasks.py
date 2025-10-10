@@ -5,12 +5,12 @@ import logging
 from pathlib import Path
 from typing import Dict
 from sqlalchemy import select
-from backend.core.celery_app import celery_app
-from backend.core.database import AsyncSessionLocal
-from backend.models.document import Document, DocumentStatus as DBDocumentStatus
-from backend.services.processing.ocr_service import ocr_service
-from backend.services.processing.extraction_service import extraction_service
-from backend.services.notifications.notification_service import notification_service
+from core.celery_app import celery_app
+from core.database import AsyncSessionLocal
+from models.document import Document, DocumentStatus as DBDocumentStatus
+from services.processing.ocr_service import ocr_service
+from services.processing.extraction_service import extraction_service
+from services.notifications.notification_service import notification_service
 
 logger = logging.getLogger(__name__)
 

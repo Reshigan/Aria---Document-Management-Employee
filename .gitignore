@@ -39,9 +39,28 @@ ENV/
 
 # Uploads and test files
 backend/uploads/
+uploads/
 test_*.json
 test_*.html
+test_*.txt
+test_*.pdf
+test_*.docx
+downloaded_version_*.txt
 *.pem
+
+# Development scripts
+fix_*.py
+convert_*.py
+complete_*.py
+
+# Additional database files
+aria_document_management.db
+*.sqlite
+*.sqlite3
+
+# Alembic versions (except init)
+backend/alembic/versions/*.py
+!backend/alembic/versions/__init__.py
 
 # OS
 .DS_Store

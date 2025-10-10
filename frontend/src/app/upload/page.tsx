@@ -13,6 +13,7 @@ import {
   ScanOutlined
 } from '@ant-design/icons';
 import type { UploadProps, UploadFile } from 'antd';
+import { documentsAPI } from '@/lib/api';
 import api from '@/lib/api';
 
 const { Dragger } = Upload;
@@ -102,17 +103,13 @@ export default function DocumentUploadPage() {
             setDocuments(prev => [...prev]);
 
             // Upload and process document
-            const uploadResponse = await api.post('/api/documents/upload', formData, {
-              headers: {
-                'Content-Type': 'multipart/form-data',
-              },
-            });
+            const uploadResponse = await documentsAPI.upload(file.originFileObj);
 
             docData.progress = 50;
             setDocuments(prev => [...prev]);
 
             // Perform OCR scanning
-            const ocrResponse = await api.post(`/api/documents/${uploadResponse.id}/ocr`);
+            const ocrResponse = await api.post(`/api/v1/documents/${uploadResponse.id}/process`);
 
             docData.extractedText = ocrResponse.extracted_text || '';
             docData.ocrData = ocrResponse;
@@ -153,7 +150,7 @@ export default function DocumentUploadPage() {
         text_content: docData.extractedText
       };
 
-      const sapResponse = await api.post('/api/sap/post-document', sapPayload);
+      const sapResponse = await api.post('/api/v1/sap/post-document', sapPayload);
       
       docData.sapData = sapResponse.data;
       docData.status = 'posted';

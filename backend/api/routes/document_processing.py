@@ -27,7 +27,7 @@ except ImportError:
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter(prefix="/documents", tags=["Document Processing"])
+router = APIRouter(prefix="/document-processing", tags=["Document Processing"])
 
 # Document storage configuration
 UPLOAD_DIR = "/opt/aria/uploads"

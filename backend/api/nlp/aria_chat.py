@@ -4,8 +4,8 @@ ARIA Chat API endpoints with personality integration
 from typing import Optional
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
-from backend.services.ai.llm_service import llm_service
-from backend.services.ai.aria_personality import ARIAPersonality
+from services.ai.llm_service import llm_service
+from services.ai.aria_personality import ARIAPersonality
 import logging
 
 logger = logging.getLogger(__name__)

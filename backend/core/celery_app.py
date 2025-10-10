@@ -2,7 +2,7 @@
 Celery application configuration for background task processing.
 """
 from celery import Celery
-from backend.core.config import settings
+from core.config import settings
 
 # Create Celery instance
 celery_app = Celery(

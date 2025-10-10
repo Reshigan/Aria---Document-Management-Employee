@@ -10,11 +10,11 @@ import uuid
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func, desc
 
-from backend.api.gateway.dependencies.auth import get_current_user
-from backend.models.user import User
-from backend.models.document import Document, DocumentStatus as DBDocumentStatus, DocumentType as DBDocumentType
-from backend.core.database import get_db
-from backend.core.storage import storage_service
+from api.gateway.dependencies.auth import get_current_user
+from models.user import User
+from models.document import Document, DocumentStatus as DBDocumentStatus, DocumentType as DBDocumentType
+from core.database import get_db
+from core.storage import storage_service
 
 router = APIRouter()
 

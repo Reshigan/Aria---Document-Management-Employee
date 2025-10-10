@@ -9,10 +9,10 @@ from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sess
 from sqlalchemy.pool import StaticPool
 from httpx import AsyncClient
 
-from backend.api.gateway.main import app
-from backend.core.database import Base, get_db
-from backend.core.security import get_password_hash
-from backend.models.user import User, Role
+from api.gateway.main import app
+from core.database import Base, get_db
+from core.security import get_password_hash
+from models.user import User, Role
 
 
 # Test database URL (in-memory SQLite)

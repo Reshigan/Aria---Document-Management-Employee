@@ -11,6 +11,7 @@ import {
   CheckCircleOutlined, ClockCircleOutlined, WarningOutlined,
   SendOutlined, ArrowLeftOutlined
 } from '@ant-design/icons';
+import { documentsAPI } from '@/lib/api';
 import api from '@/lib/api';
 
 const { Title, Paragraph, Text } = Typography;
@@ -57,7 +58,7 @@ export default function DocumentDetailPage() {
 
   const fetchDocument = async () => {
     try {
-      const data = await api.get<DocumentDetail>(`/api/documents/${documentId}`);
+      const data = await documentsAPI.get(parseInt(documentId));
       setDocument(data);
     } catch (error: any) {
       message.error(error.response?.data?.detail || 'Failed to fetch document');
@@ -69,7 +70,7 @@ export default function DocumentDetailPage() {
   const triggerProcessing = async () => {
     setProcessing(true);
     try {
-      await api.post(`/api/documents/${documentId}/process`);
+      await documentsAPI.reprocess(parseInt(documentId));
       message.success('Document processing started');
       setTimeout(fetchDocument, 2000);
     } catch (error: any) {
@@ -81,8 +82,10 @@ export default function DocumentDetailPage() {
 
   const postToSAP = async () => {
     try {
-      const data = await api.post<any>(`/api/documents/${documentId}/post-to-sap`);
-      message.success(`Posted to SAP: ${data.sap_document_number}`);
+      const data = await api.post<any>(`/api/v1/sap/post-document`, {
+        document_id: parseInt(documentId)
+      });
+      message.success(`Posted to SAP: ${data.sap_document_number || 'Success'}`);
       fetchDocument();
     } catch (error: any) {
       message.error(error.response?.data?.detail || 'Failed to post to SAP');

@@ -17,16 +17,15 @@ from pathlib import Path
 # Add parent directory to path
 sys.path.append(str(Path(__file__).parents[1]))
 
-from backend.core.config import settings
-from backend.models.base import Base
+from core.config import settings
+from models.base import Base
 # Import all models to ensure they're registered
-from models import (
-    User, Role, Permission,
-    Document, DocumentMetadata,
-    ProcessingJob, ValidationResult,
-    SAPTransaction, SAPLog,
-    Conversation, Message,
-    AuditLog
+from models.user import User, Role, Permission
+from models.document import Document
+from models.advanced import (
+    Folder, Tag, DocumentVersion, ShareLink, Comment, 
+    Notification, Workflow, WorkflowTemplate, WorkflowStep, WorkflowStepTemplate,
+    ActivityLog, UserSession, APIKey, SearchQuery, DocumentFavorite, DocumentView
 )
 
 # this is the Alembic Config object, which provides

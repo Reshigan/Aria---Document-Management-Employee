@@ -104,12 +104,24 @@ class Document(BaseModel):
     notes = Column(Text)
     priority = Column(String(20), default='normal')  # low, normal, high, urgent
     
+    # Organization
+    folder_id = Column(Integer, ForeignKey('folders.id'))
+    
     # Relationships
     uploaded_by = Column(Integer, ForeignKey('users.id'), nullable=False)
     uploaded_by_user = relationship("User", foreign_keys=[uploaded_by], back_populates="documents")
     validated_by_user = relationship("User", foreign_keys=[validated_by])
     approved_by_user = relationship("User", foreign_keys=[approved_by])
     posted_by_user = relationship("User", foreign_keys=[posted_to_sap_by])
+    
+    # Advanced relationships (will be imported from advanced.py)
+    folder = relationship("Folder", back_populates="documents")
+    versions = relationship("DocumentVersion", back_populates="document", order_by="DocumentVersion.version_number")
+    tags = relationship("Tag", secondary="document_tags", back_populates="documents")
+    share_links = relationship("ShareLink", back_populates="document")
+    comments = relationship("Comment", back_populates="document")
+    workflows = relationship("Workflow", back_populates="document")
+    shared_with = relationship("User", secondary="document_shares")
     
     def __repr__(self):
         return f"<Document(id={self.id}, filename='{self.filename}', status='{self.status}')>"

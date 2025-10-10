@@ -6,8 +6,8 @@ import logging
 import json
 from typing import Dict, List, Optional
 import aiohttp
-from backend.core.config import settings
-from backend.services.ai.aria_personality import ARIAPersonality
+from core.config import settings
+from services.ai.aria_personality import ARIAPersonality
 
 logger = logging.getLogger(__name__)
 

@@ -7,7 +7,7 @@ from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
-from backend.models.user import User, PasswordResetToken
+from models.user import User, PasswordResetToken
 
 
 class TestRegistration:

@@ -46,6 +46,11 @@ class User(BaseModel):
     is_verified = Column(Boolean, default=False)
     last_login = Column(DateTime)
     
+    # Two-Factor Authentication
+    two_factor_enabled = Column(Boolean, default=False)
+    two_factor_secret = Column(String(255))  # Encrypted TOTP secret
+    backup_codes = Column(Text)  # JSON array of backup codes
+    
     # Preferences
     email_notifications = Column(Boolean, default=True)
     slack_notifications = Column(Boolean, default=False)
@@ -56,6 +61,7 @@ class User(BaseModel):
     # Relationships
     roles = relationship("Role", secondary=user_roles, back_populates="users")
     documents = relationship("Document", foreign_keys="[Document.uploaded_by]", back_populates="uploaded_by_user")
+    folder_permissions = relationship("FolderPermission", foreign_keys="[FolderPermission.user_id]", back_populates="user")
     
     @hybrid_property
     def role_names(self):

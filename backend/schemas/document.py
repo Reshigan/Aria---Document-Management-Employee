@@ -5,26 +5,27 @@ from datetime import datetime
 from decimal import Decimal
 from typing import Optional, Dict, Any, List
 from pydantic import BaseModel, Field
-from backend.models.document import DocumentType, DocumentStatus
 
 
 class DocumentBase(BaseModel):
     """Base document schema"""
     filename: str
-    document_type: DocumentType = DocumentType.OTHER
+    document_type: Optional[str] = "document"
 
 
 class DocumentCreate(DocumentBase):
     """Schema for creating a document"""
-    pass
+    folder_id: Optional[int] = None
+    description: Optional[str] = None
 
 
 class DocumentUpdate(BaseModel):
     """Schema for updating document"""
-    document_type: Optional[DocumentType] = None
-    status: Optional[DocumentStatus] = None
-    notes: Optional[str] = None
-    tags: Optional[Dict[str, Any]] = None
+    filename: Optional[str] = None
+    document_type: Optional[str] = None
+    status: Optional[str] = None
+    description: Optional[str] = None
+    folder_id: Optional[int] = None
 
 
 class DocumentResponse(BaseModel):
@@ -32,40 +33,36 @@ class DocumentResponse(BaseModel):
     id: int
     filename: str
     original_filename: str
-    file_size: int
-    mime_type: str
-    document_type: DocumentType
-    status: DocumentStatus
-    
-    # Extracted data
-    invoice_number: Optional[str] = None
-    invoice_date: Optional[datetime] = None
-    vendor_name: Optional[str] = None
-    vendor_code: Optional[str] = None
-    total_amount: Optional[Decimal] = None
-    currency: Optional[str] = None
-    
-    # Processing info
-    confidence_score: Optional[Decimal] = None
-    processing_started_at: Optional[datetime] = None
-    processing_completed_at: Optional[datetime] = None
-    
-    # SAP info
-    sap_document_number: Optional[str] = None
-    posted_to_sap: bool
-    posted_to_sap_at: Optional[datetime] = None
-    
-    # Metadata
-    uploaded_by: int
+    file_size: Optional[int]
+    mime_type: Optional[str]
+    document_type: Optional[str]
+    status: Optional[str]
     created_at: datetime
-    updated_at: datetime
+    updated_at: Optional[datetime]
+    uploaded_by: int
+    folder_id: Optional[int]
+    folder_name: Optional[str] = None
+    tags: List[str] = []
+    is_favorite: bool = False
     
     class Config:
         from_attributes = True
 
 
+class DocumentDetailResponse(DocumentResponse):
+    """Detailed document response schema"""
+    description: Optional[str] = None
+    ocr_text: Optional[str] = None
+    extracted_data: Optional[Dict[str, Any]] = None
+    versions: List[Any] = []
+    view_count: int = 0
+
+
+
+
+
 class DocumentListResponse(BaseModel):
-    """List of documents with pagination"""
+    """Document list response schema"""
     items: List[DocumentResponse]
     total: int
     page: int
@@ -73,36 +70,30 @@ class DocumentListResponse(BaseModel):
     pages: int
 
 
-class DocumentUploadResponse(BaseModel):
-    """Response after document upload"""
+class DocumentShareResponse(BaseModel):
+    """Document share response schema"""
     id: int
-    filename: str
-    file_size: int
-    status: DocumentStatus
-    message: str = "Document uploaded successfully"
-
-
-class ExtractedDataResponse(BaseModel):
-    """Extracted data from document"""
     document_id: int
-    extracted_data: Dict[str, Any]
-    confidence_score: Optional[Decimal]
-    ocr_text: Optional[str]
+    shared_by_user_id: int
+    shared_with_user_id: int
+    can_view: bool
+    can_edit: bool
+    can_download: bool
+    expires_at: Optional[datetime]
+    message: Optional[str]
+    created_at: datetime
+    
+    class Config:
+        from_attributes = True
 
 
-class DocumentApprovalRequest(BaseModel):
-    """Document approval request"""
-    approved: bool
-    comments: Optional[str] = None
+class DocumentShareCreate(BaseModel):
+    """Document share creation schema"""
+    shared_with_user_id: int
+    can_view: bool = True
+    can_edit: bool = False
+    can_download: bool = True
+    expires_at: Optional[datetime] = None
+    message: Optional[str] = None
 
 
-class DocumentSearchRequest(BaseModel):
-    """Document search request"""
-    query: Optional[str] = None
-    document_type: Optional[DocumentType] = None
-    status: Optional[DocumentStatus] = None
-    date_from: Optional[datetime] = None
-    date_to: Optional[datetime] = None
-    vendor: Optional[str] = None
-    min_amount: Optional[Decimal] = None
-    max_amount: Optional[Decimal] = None
