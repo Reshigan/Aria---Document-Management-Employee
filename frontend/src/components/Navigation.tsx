@@ -19,7 +19,8 @@ import {
   SearchOutlined,
   FolderOutlined,
   ShareAltOutlined,
-  TagOutlined
+  TagOutlined,
+  ShieldCheckOutlined
 } from '@ant-design/icons';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -46,6 +47,7 @@ const Navigation = () => {
     { href: '/shared', icon: ShareAltOutlined, label: 'Shared with Me' },
     { href: '/workflows', icon: BranchesOutlined, label: 'Workflows' },
     { href: '/analytics', icon: BarChartOutlined, label: 'Analytics' },
+    { href: '/security', icon: ShieldCheckOutlined, label: 'Security' },
     { href: '/upload', icon: UploadOutlined, label: 'Upload' },
   ];
 
