@@ -76,6 +76,9 @@ class APIClient {
 
 const apiClient = new APIClient();
 
+// Export the api client for direct use
+export const api = apiClient;
+
 export const authAPI = {
   login: async (email: string, password: string): Promise<TokenResponse> => {
     return apiClient.post<TokenResponse>('/api/v1/auth/login', {

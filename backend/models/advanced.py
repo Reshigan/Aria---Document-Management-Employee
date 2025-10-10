@@ -431,55 +431,7 @@ class ActivityLog(BaseModel):
         return f"<ActivityLog(id={self.id}, action='{self.action}', user_id={self.user_id})>"
 
 
-class UserSession(BaseModel):
-    """User session model for session management"""
-    __tablename__ = "user_sessions"
-    
-    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
-    session_token = Column(String(255), unique=True, nullable=False, index=True)
-    refresh_token = Column(String(255), unique=True, index=True)
-    
-    # Session details
-    ip_address = Column(String(45))
-    user_agent = Column(Text)
-    device_info = Column(JSON)
-    
-    # Status and timing
-    is_active = Column(Boolean, default=True)
-    expires_at = Column(DateTime, nullable=False)
-    last_activity = Column(DateTime, default=datetime.utcnow)
-    
-    # Relationships
-    user = relationship("User")
-    
-    def __repr__(self):
-        return f"<UserSession(id={self.id}, user_id={self.user_id}, active={self.is_active})>"
 
-
-class APIKey(BaseModel):
-    """API key model for programmatic access"""
-    __tablename__ = "api_keys"
-    
-    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
-    name = Column(String(255), nullable=False)  # User-friendly name
-    key_hash = Column(String(255), unique=True, nullable=False, index=True)
-    key_prefix = Column(String(10), nullable=False)  # First few chars for identification
-    
-    # Permissions and limits
-    permissions = Column(JSON)  # List of allowed permissions
-    rate_limit = Column(Integer, default=1000)  # Requests per hour
-    
-    # Status and timing
-    is_active = Column(Boolean, default=True)
-    expires_at = Column(DateTime)
-    last_used = Column(DateTime)
-    usage_count = Column(Integer, default=0)
-    
-    # Relationships
-    user = relationship("User")
-    
-    def __repr__(self):
-        return f"<APIKey(id={self.id}, name='{self.name}', user_id={self.user_id})>"
 
 
 class SearchQuery(BaseModel):

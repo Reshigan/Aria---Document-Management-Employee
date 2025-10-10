@@ -8,9 +8,9 @@ from datetime import datetime, timedelta
 import logging
 
 from models.workflow_models import (
-    Workflow, WorkflowStep, WorkflowTemplate, WorkflowTemplateStep,
-    WorkflowExecution, WorkflowNotification, WorkflowStatus, StepStatus
+    WorkflowTemplateStep, WorkflowExecution, WorkflowNotification, WorkflowStatus, StepStatus
 )
+from models.advanced import Workflow, WorkflowStep, WorkflowTemplate
 from schemas.workflow_schemas import (
     WorkflowCreate, WorkflowUpdate, WorkflowTemplateCreate, WorkflowTemplateUpdate,
     WorkflowStepUpdate, WorkflowExecutionCreate, WorkflowNotificationCreate

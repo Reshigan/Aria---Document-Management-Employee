@@ -127,6 +127,14 @@ class Document(BaseModel):
     notifications = relationship("Notification", back_populates="document")
     notification_subscriptions = relationship("NotificationSubscription", back_populates="document")
     
+    # Document processing relationships
+    processing_jobs = relationship("DocumentProcessingJob", back_populates="document")
+    ocr_results = relationship("OCRResult", back_populates="document")
+    classification_results = relationship("DocumentClassificationResult", back_populates="document")
+    extraction_results = relationship("ContentExtractionResult", back_populates="document")
+    conversion_results = relationship("DocumentConversionResult", back_populates="document")
+    ai_analysis_results = relationship("AIAnalysisResult", back_populates="document")
+    
     def __repr__(self):
         return f"<Document(id={self.id}, filename='{self.filename}', status='{self.status}')>"
     

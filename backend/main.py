@@ -17,7 +17,8 @@ import aiofiles
 
 # Import models from the models package
 from models import Base, User, Document, DocumentType, DocumentStatus
-from models.workflow_models import WorkflowTemplate, Workflow, WorkflowStep, WorkflowExecution, WorkflowNotification
+from models.workflow_models import WorkflowExecution, WorkflowNotification
+from models.advanced import WorkflowTemplate, Workflow, WorkflowStep
 from services.workflow_service import WorkflowService
 from services.notifications.enhanced_notification_service import EnhancedNotificationService
 from services.analytics_service import AnalyticsService
@@ -130,6 +131,18 @@ app.add_middleware(
 # Include security routes
 from routes.security_routes import router as security_router
 app.include_router(security_router)
+
+# Include integration routes
+from routes.integration_routes import router as integration_router
+app.include_router(integration_router)
+
+# Include document processing routes
+from api.document_processing import router as document_processing_router
+app.include_router(document_processing_router)
+
+# Include version control routes
+from api.routes.version_control import router as version_control_router
+app.include_router(version_control_router)
 
 # Pydantic models
 class UserLogin(PydanticBaseModel):

@@ -2,12 +2,12 @@
 Database models package
 """
 from .base import Base
-from .user import User, Role, Permission, UserRole, PasswordResetToken, UserActivity
+from .user import User, PasswordResetToken, UserActivity
 from .document import Document, DocumentType, DocumentStatus
 from .advanced import (
     Folder, FolderPermission, Tag, DocumentVersion, ShareLink, DocumentShare, Comment,
     Workflow, WorkflowTemplate, WorkflowStep, WorkflowStepTemplate,
-    ActivityLog, UserSession, APIKey, SearchQuery, DocumentFavorite,
+    ActivityLog, SearchQuery, DocumentFavorite,
     DocumentView, ShareLinkType, NotificationType, WorkflowStatus,
     WorkflowStepType, WorkflowStepStatus, document_tags, document_shares,
     folder_permissions
@@ -40,12 +40,12 @@ from .security_models import (
 __all__ = [
     "Base",
     # User models
-    "User", "Role", "Permission", "UserRole", "PasswordResetToken", "UserActivity",
+    "User", "PasswordResetToken", "UserActivity",
     # Document models
     "Document", "DocumentType", "DocumentStatus",
     # Advanced models
     "Folder", "FolderPermission", "Tag", "DocumentVersion", "ShareLink", "DocumentShare", "Comment",
-    "ActivityLog", "UserSession", "APIKey", "SearchQuery", "DocumentFavorite",
+    "ActivityLog", "SearchQuery", "DocumentFavorite",
     "DocumentView",
     # Enhanced Tag models
     "EnhancedTag", "TagHierarchy", "TagAnalytics", "AutoTagRule", "TagSuggestion", "TagTemplate",

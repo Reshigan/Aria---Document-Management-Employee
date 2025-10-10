@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, DateTime, Boolean, Text, ForeignKey, JSON, Enum
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
-from database import Base
+from .base import BaseModel
 import enum
 from datetime import datetime, timedelta
 import secrets
@@ -50,7 +50,7 @@ class SecurityEventType(enum.Enum):
     TWO_FACTOR_ENABLED = "two_factor_enabled"
     TWO_FACTOR_DISABLED = "two_factor_disabled"
 
-class Permission(Base):
+class Permission(BaseModel):
     __tablename__ = "permissions"
     
     id = Column(Integer, primary_key=True, index=True)
@@ -64,7 +64,7 @@ class Permission(Base):
     # Relationships
     role_permissions = relationship("RolePermission", back_populates="permission")
 
-class Role(Base):
+class Role(BaseModel):
     __tablename__ = "roles"
     
     id = Column(Integer, primary_key=True, index=True)
@@ -79,7 +79,7 @@ class Role(Base):
     user_roles = relationship("UserRole", back_populates="role")
     role_permissions = relationship("RolePermission", back_populates="role")
 
-class RolePermission(Base):
+class RolePermission(BaseModel):
     __tablename__ = "role_permissions"
     
     id = Column(Integer, primary_key=True, index=True)
@@ -92,7 +92,7 @@ class RolePermission(Base):
     role = relationship("Role", back_populates="role_permissions")
     permission = relationship("Permission", back_populates="role_permissions")
 
-class UserRole(Base):
+class UserRole(BaseModel):
     __tablename__ = "user_roles"
     
     id = Column(Integer, primary_key=True, index=True)
@@ -108,7 +108,7 @@ class UserRole(Base):
     role = relationship("Role", back_populates="user_roles")
     assigned_by_user = relationship("User", foreign_keys=[assigned_by])
 
-class UserSession(Base):
+class UserSession(BaseModel):
     __tablename__ = "user_sessions"
     
     id = Column(Integer, primary_key=True, index=True)
@@ -141,7 +141,7 @@ class UserSession(Base):
         self.refresh_token = secrets.token_urlsafe(32)
         self.expires_at = datetime.utcnow() + timedelta(hours=24)
 
-class PasswordHistory(Base):
+class PasswordHistory(BaseModel):
     __tablename__ = "password_history"
     
     id = Column(Integer, primary_key=True, index=True)
@@ -152,7 +152,7 @@ class PasswordHistory(Base):
     # Relationships
     user = relationship("User", back_populates="password_history")
 
-class TwoFactorAuth(Base):
+class TwoFactorAuth(BaseModel):
     __tablename__ = "two_factor_auth"
     
     id = Column(Integer, primary_key=True, index=True)
@@ -166,7 +166,7 @@ class TwoFactorAuth(Base):
     # Relationships
     user = relationship("User", back_populates="two_factor_auth")
 
-class SecurityEvent(Base):
+class SecurityEvent(BaseModel):
     __tablename__ = "security_events"
     
     id = Column(Integer, primary_key=True, index=True)
@@ -186,7 +186,7 @@ class SecurityEvent(Base):
     user = relationship("User", foreign_keys=[user_id])
     resolved_by_user = relationship("User", foreign_keys=[resolved_by])
 
-class AuditLog(Base):
+class AuditLog(BaseModel):
     __tablename__ = "audit_logs"
     
     id = Column(Integer, primary_key=True, index=True)
@@ -210,7 +210,7 @@ class AuditLog(Base):
     user = relationship("User", foreign_keys=[user_id])
     session = relationship("UserSession", foreign_keys=[session_id])
 
-class APIKey(Base):
+class APIKey(BaseModel):
     __tablename__ = "api_keys"
     
     id = Column(Integer, primary_key=True, index=True)
@@ -236,7 +236,7 @@ class APIKey(Base):
         self.key_hash = hashlib.sha256(key.encode()).hexdigest()
         return key
 
-class LoginAttempt(Base):
+class LoginAttempt(BaseModel):
     __tablename__ = "login_attempts"
     
     id = Column(Integer, primary_key=True, index=True)
@@ -247,7 +247,7 @@ class LoginAttempt(Base):
     failure_reason = Column(String(100))
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
-class AccountLockout(Base):
+class AccountLockout(BaseModel):
     __tablename__ = "account_lockouts"
     
     id = Column(Integer, primary_key=True, index=True)
@@ -265,7 +265,7 @@ class AccountLockout(Base):
     locked_by_user = relationship("User", foreign_keys=[locked_by])
     unlocked_by_user = relationship("User", foreign_keys=[unlocked_by])
 
-class SecurityPolicy(Base):
+class SecurityPolicy(BaseModel):
     __tablename__ = "security_policies"
     
     id = Column(Integer, primary_key=True, index=True)

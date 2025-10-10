@@ -11,21 +11,7 @@ from sqlalchemy.ext.hybrid import hybrid_property
 from .base import BaseModel
 
 
-# Association table for many-to-many relationship between users and roles
-user_roles = Table(
-    'user_roles',
-    BaseModel.metadata,
-    Column('user_id', Integer, ForeignKey('users.id'), primary_key=True),
-    Column('role_id', Integer, ForeignKey('roles.id'), primary_key=True)
-)
 
-# Association table for many-to-many relationship between roles and permissions
-role_permissions = Table(
-    'role_permissions',
-    BaseModel.metadata,
-    Column('role_id', Integer, ForeignKey('roles.id'), primary_key=True),
-    Column('permission_id', Integer, ForeignKey('permissions.id'), primary_key=True)
-)
 
 
 class User(BaseModel):
@@ -93,7 +79,6 @@ class User(BaseModel):
     })
     
     # Relationships
-    roles = relationship("Role", secondary=user_roles, back_populates="users")
     documents = relationship("Document", foreign_keys="[Document.uploaded_by]", back_populates="uploaded_by_user")
     folder_permissions = relationship("FolderPermission", foreign_keys="[FolderPermission.user_id]", back_populates="user")
     activities = relationship("UserActivity", back_populates="user", cascade="all, delete-orphan")
@@ -104,48 +89,30 @@ class User(BaseModel):
     notification_preferences = relationship("NotificationPreference", back_populates="user", cascade="all, delete-orphan")
     notification_subscriptions = relationship("NotificationSubscription", back_populates="user", cascade="all, delete-orphan")
     
+    # Integration relationships
+    created_integrations = relationship("Integration", foreign_keys="[Integration.created_by]", back_populates="creator")
+    
+    # Document processing relationships
+    processing_jobs = relationship("DocumentProcessingJob", back_populates="user")
+    processing_templates = relationship("ProcessingTemplate", back_populates="created_by")
+    
     @hybrid_property
     def role_names(self):
         """Get list of role names for this user"""
-        return [role.name for role in self.roles]
+        # This will be handled by the security system
+        return []
     
     def has_permission(self, permission_name: str) -> bool:
         """Check if user has a specific permission"""
-        for role in self.roles:
-            for permission in role.permissions:
-                if permission.name == permission_name:
-                    return True
+        # This will be handled by the security system
         return self.is_superuser
     
     def has_role(self, role_name: str) -> bool:
         """Check if user has a specific role"""
-        return role_name in self.role_names or self.is_superuser
+        # This will be handled by the security system
+        return self.is_superuser
 
 
-class Role(BaseModel):
-    """Role model"""
-    __tablename__ = "roles"
-    
-    name = Column(String(50), unique=True, nullable=False)
-    description = Column(Text)
-    is_default = Column(Boolean, default=False)
-    
-    # Relationships
-    users = relationship("User", secondary=user_roles, back_populates="roles")
-    permissions = relationship("Permission", secondary=role_permissions, back_populates="roles")
-
-
-class Permission(BaseModel):
-    """Permission model"""
-    __tablename__ = "permissions"
-    
-    name = Column(String(100), unique=True, nullable=False)
-    resource = Column(String(50), nullable=False)  # e.g., 'document', 'user'
-    action = Column(String(50), nullable=False)    # e.g., 'read', 'write', 'delete'
-    description = Column(Text)
-    
-    # Relationships
-    roles = relationship("Role", secondary=role_permissions, back_populates="permissions")
 
 
 class PasswordResetToken(BaseModel):
@@ -207,5 +174,3 @@ class UserActivity(BaseModel):
 
 
 
-# For backward compatibility
-UserRole = user_roles

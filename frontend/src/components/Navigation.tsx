@@ -20,7 +20,9 @@ import {
   FolderOutlined,
   ShareAltOutlined,
   TagOutlined,
-  ShieldCheckOutlined
+  ShieldCheckOutlined,
+  ApiOutlined,
+  RobotOutlined
 } from '@ant-design/icons';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -47,7 +49,9 @@ const Navigation = () => {
     { href: '/shared', icon: ShareAltOutlined, label: 'Shared with Me' },
     { href: '/workflows', icon: BranchesOutlined, label: 'Workflows' },
     { href: '/analytics', icon: BarChartOutlined, label: 'Analytics' },
+    { href: '/document-processing', icon: RobotOutlined, label: 'Processing' },
     { href: '/security', icon: ShieldCheckOutlined, label: 'Security' },
+    { href: '/integrations', icon: ApiOutlined, label: 'Integrations' },
     { href: '/upload', icon: UploadOutlined, label: 'Upload' },
   ];
 
