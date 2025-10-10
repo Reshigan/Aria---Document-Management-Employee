@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends, HTTPException, File, UploadFile
+from fastapi import FastAPI, Depends, HTTPException, File, UploadFile, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from sqlalchemy import create_engine
@@ -17,6 +17,39 @@ import aiofiles
 
 # Import models from the models package
 from models import Base, User, Document, DocumentType, DocumentStatus
+from models.workflow_models import WorkflowTemplate, Workflow, WorkflowStep, WorkflowExecution, WorkflowNotification
+from services.workflow_service import WorkflowService
+from services.notifications.enhanced_notification_service import EnhancedNotificationService
+from services.analytics_service import AnalyticsService
+from services.security_service import SecurityService
+from schemas.workflow_schemas import (
+    WorkflowCreate, WorkflowUpdate, WorkflowListResponse,
+    WorkflowTemplateCreate, WorkflowTemplateUpdate, WorkflowTemplateListResponse,
+    WorkflowStepUpdate, WorkflowStepAction, WorkflowStats,
+    WorkflowStatus, StepStatus
+)
+from schemas.notification_schemas import (
+    NotificationCreate, NotificationResponse, NotificationListResponse,
+    NotificationPreferenceUpdate, NotificationSubscriptionCreate,
+    NotificationTemplateCreate, NotificationTemplateUpdate,
+    WebSocketNotificationMessage
+)
+from schemas.analytics_schemas import (
+    DocumentAnalyticsCreate, DocumentAnalyticsUpdate,
+    UserActivityLogCreate, SystemMetricsCreate,
+    WorkflowAnalyticsCreate, WorkflowAnalyticsUpdate,
+    ReportTemplateCreate, ReportTemplateUpdate,
+    GeneratedReportCreate, ReportGenerationRequest,
+    DashboardWidgetCreate, DashboardWidgetUpdate,
+    AlertRuleCreate, AlertRuleUpdate,
+    AnalyticsFilters, MetricsQuery
+)
+from schemas.security_schemas import (
+    LoginRequest, LoginResponse, RefreshTokenRequest, ChangePasswordRequest,
+    TwoFactorSetupResponse, TwoFactorVerifyRequest, TwoFactorDisableRequest, TwoFactorStatus,
+    APIKeyCreate, APIKeyResponse, APIKeyWithSecret,
+    RoleCreate, UserRoleAssignment, SecurityDashboard
+)
 
 # Database setup
 DATABASE_URL = "sqlite:///./aria.db"
@@ -93,6 +126,10 @@ app.add_middleware(
     expose_headers=["*"],
     max_age=3600,
 )
+
+# Include security routes
+from routes.security_routes import router as security_router
+app.include_router(security_router)
 
 # Pydantic models
 class UserLogin(PydanticBaseModel):
@@ -661,6 +698,445 @@ async def admin_statistics(
         "processing_rate": round((processed_docs / total_docs * 100) if total_docs > 0 else 0, 1),
         "storage_used_mb": sum(doc.file_size or 0 for doc in db.query(Document).all()) / (1024 * 1024)
     }
+
+# ============================================================================
+# WORKFLOW SYSTEM ENDPOINTS - RAPID IMPLEMENTATION
+# ============================================================================
+
+# Template Routes
+@app.post("/api/workflows/templates")
+async def create_workflow_template(
+    template_data: WorkflowTemplateCreate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Create workflow template"""
+    service = WorkflowService(db)
+    return service.create_template(template_data, current_user.id)
+
+@app.get("/api/workflows/templates")
+async def get_workflow_templates(
+    skip: int = 0,
+    limit: int = 100,
+    category: Optional[str] = None,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Get workflow templates"""
+    service = WorkflowService(db)
+    templates = service.get_templates(skip, limit, category)
+    total = len(templates)
+    
+    return {
+        "templates": templates,
+        "total": total,
+        "page": skip // limit + 1,
+        "size": limit
+    }
+
+@app.get("/api/workflows/templates/{template_id}")
+async def get_workflow_template(
+    template_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Get workflow template by ID"""
+    service = WorkflowService(db)
+    template = service.get_template(template_id)
+    if not template:
+        raise HTTPException(status_code=404, detail="Template not found")
+    return template
+
+# Workflow Routes
+@app.post("/api/workflows")
+async def create_workflow(
+    workflow_data: WorkflowCreate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Create workflow"""
+    service = WorkflowService(db)
+    return service.create_workflow(workflow_data, current_user.id)
+
+@app.post("/api/workflows/from-template/{template_id}")
+async def create_workflow_from_template(
+    template_id: int,
+    document_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Create workflow from template"""
+    service = WorkflowService(db)
+    workflow = service.create_workflow_from_template(
+        template_id, document_id, current_user.id
+    )
+    if not workflow:
+        raise HTTPException(status_code=404, detail="Template not found")
+    return workflow
+
+@app.get("/api/workflows")
+async def get_workflows(
+    skip: int = 0,
+    limit: int = 100,
+    status: Optional[str] = None,
+    document_id: Optional[int] = None,
+    my_workflows: bool = False,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Get workflows"""
+    service = WorkflowService(db)
+    user_id = current_user.id if my_workflows else None
+    workflows = service.get_workflows(skip, limit, status, document_id, user_id)
+    total = len(workflows)
+    
+    return {
+        "workflows": workflows,
+        "total": total,
+        "page": skip // limit + 1,
+        "size": limit
+    }
+
+@app.get("/api/workflows/{workflow_id}")
+async def get_workflow(
+    workflow_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Get workflow by ID"""
+    service = WorkflowService(db)
+    workflow = service.get_workflow(workflow_id)
+    if not workflow:
+        raise HTTPException(status_code=404, detail="Workflow not found")
+    return workflow
+
+@app.post("/api/workflows/{workflow_id}/start")
+async def start_workflow(
+    workflow_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Start workflow execution"""
+    service = WorkflowService(db)
+    workflow = service.start_workflow(workflow_id)
+    if not workflow:
+        raise HTTPException(status_code=400, detail="Cannot start workflow")
+    return workflow
+
+# Step Routes
+@app.get("/api/workflows/{workflow_id}/steps")
+async def get_workflow_steps(
+    workflow_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Get workflow steps"""
+    service = WorkflowService(db)
+    return service.get_workflow_steps(workflow_id)
+
+@app.post("/api/workflows/steps/{step_id}/complete")
+async def complete_workflow_step(
+    step_id: int,
+    action_data: WorkflowStepAction,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Complete workflow step"""
+    service = WorkflowService(db)
+    step = service.complete_step(
+        step_id, current_user.id, 
+        action_data.step_data, action_data.comments
+    )
+    if not step:
+        raise HTTPException(status_code=400, detail="Cannot complete step")
+    return step
+
+# Task Management
+@app.get("/api/workflows/tasks/my-tasks")
+async def get_my_tasks(
+    status: Optional[str] = None,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Get user's assigned workflow tasks"""
+    service = WorkflowService(db)
+    return service.get_user_tasks(current_user.id, status)
+
+# Analytics
+@app.get("/api/workflows/analytics/stats")
+async def get_workflow_stats(
+    my_workflows: bool = False,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Get workflow statistics"""
+    service = WorkflowService(db)
+    user_id = current_user.id if my_workflows else None
+    return service.get_workflow_stats(user_id)
+
+# ============================================================================
+# NOTIFICATION ROUTES
+# ============================================================================
+
+@app.get("/api/notifications")
+async def get_notifications(
+    skip: int = 0,
+    limit: int = 20,
+    unread_only: bool = False,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Get user's notifications"""
+    service = EnhancedNotificationService(db)
+    return await service.get_user_notifications(current_user.id, skip, limit, unread_only)
+
+@app.post("/api/notifications")
+async def create_notification(
+    notification: NotificationCreate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Create a new notification"""
+    service = EnhancedNotificationService(db)
+    return await service.create_notification(notification, sender_id=current_user.id)
+
+@app.patch("/api/notifications/{notification_id}/read")
+async def mark_notification_read(
+    notification_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Mark notification as read"""
+    service = EnhancedNotificationService(db)
+    return await service.mark_as_read(notification_id, current_user.id)
+
+@app.patch("/api/notifications/mark-all-read")
+async def mark_all_notifications_read(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Mark all notifications as read"""
+    service = EnhancedNotificationService(db)
+    return await service.mark_all_as_read(current_user.id)
+
+@app.delete("/api/notifications/{notification_id}")
+async def delete_notification(
+    notification_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Delete a notification"""
+    service = EnhancedNotificationService(db)
+    return await service.delete_notification(notification_id, current_user.id)
+
+@app.get("/api/notifications/preferences")
+async def get_notification_preferences(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Get user's notification preferences"""
+    service = EnhancedNotificationService(db)
+    return await service.get_user_preferences(current_user.id)
+
+@app.patch("/api/notifications/preferences")
+async def update_notification_preferences(
+    preferences: NotificationPreferenceUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Update user's notification preferences"""
+    service = EnhancedNotificationService(db)
+    return await service.update_user_preferences(current_user.id, preferences)
+
+@app.post("/api/notifications/subscriptions")
+async def create_subscription(
+    subscription: NotificationSubscriptionCreate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Create notification subscription"""
+    service = EnhancedNotificationService(db)
+    return await service.create_subscription(current_user.id, subscription)
+
+@app.get("/api/notifications/subscriptions")
+async def get_subscriptions(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Get user's notification subscriptions"""
+    service = EnhancedNotificationService(db)
+    return await service.get_user_subscriptions(current_user.id)
+
+@app.delete("/api/notifications/subscriptions/{subscription_id}")
+async def delete_subscription(
+    subscription_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Delete notification subscription"""
+    service = EnhancedNotificationService(db)
+    return await service.delete_subscription(subscription_id, current_user.id)
+
+# Analytics Endpoints
+@app.post("/api/analytics/documents/{document_id}/view")
+async def track_document_view(
+    document_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Track document view"""
+    service = AnalyticsService(db)
+    analytics = service.increment_document_views(document_id, current_user.id)
+    
+    # Log the activity
+    service.log_user_activity(UserActivityLogCreate(
+        user_id=current_user.id,
+        action="view",
+        resource_type="document",
+        resource_id=document_id,
+        success=True
+    ))
+    
+    return {"message": "View tracked", "analytics": analytics}
+
+@app.post("/api/analytics/documents/{document_id}/download")
+async def track_document_download(
+    document_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Track document download"""
+    service = AnalyticsService(db)
+    analytics = service.increment_document_downloads(document_id, current_user.id)
+    
+    # Log the activity
+    service.log_user_activity(UserActivityLogCreate(
+        user_id=current_user.id,
+        action="download",
+        resource_type="document",
+        resource_id=document_id,
+        success=True
+    ))
+    
+    return {"message": "Download tracked", "analytics": analytics}
+
+@app.get("/api/analytics/documents/summary")
+async def get_document_analytics_summary(
+    start_date: Optional[datetime] = None,
+    end_date: Optional[datetime] = None,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Get document analytics summary"""
+    service = AnalyticsService(db)
+    filters = AnalyticsFilters(start_date=start_date, end_date=end_date)
+    return service.get_document_analytics_summary(filters)
+
+@app.get("/api/analytics/users/summary")
+async def get_user_activity_summary(
+    start_date: Optional[datetime] = None,
+    end_date: Optional[datetime] = None,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Get user activity summary"""
+    service = AnalyticsService(db)
+    filters = AnalyticsFilters(start_date=start_date, end_date=end_date)
+    return service.get_user_activity_summary(filters)
+
+@app.get("/api/analytics/workflows/summary")
+async def get_workflow_analytics_summary(
+    start_date: Optional[datetime] = None,
+    end_date: Optional[datetime] = None,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Get workflow analytics summary"""
+    service = AnalyticsService(db)
+    filters = AnalyticsFilters(start_date=start_date, end_date=end_date)
+    return service.get_workflow_analytics_summary(filters)
+
+@app.get("/api/analytics/system/summary")
+async def get_system_metrics_summary(
+    start_date: Optional[datetime] = None,
+    end_date: Optional[datetime] = None,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Get system metrics summary"""
+    service = AnalyticsService(db)
+    filters = AnalyticsFilters(start_date=start_date, end_date=end_date)
+    return service.get_system_metrics_summary(filters)
+
+@app.post("/api/analytics/metrics")
+async def record_system_metric(
+    metric_data: SystemMetricsCreate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Record a system metric"""
+    service = AnalyticsService(db)
+    return service.record_system_metric(metric_data)
+
+@app.get("/api/analytics/dashboard/widgets")
+async def get_dashboard_widgets(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Get dashboard widgets for the current user"""
+    service = AnalyticsService(db)
+    return service.get_dashboard_widgets(current_user.id)
+
+@app.post("/api/analytics/dashboard/widgets")
+async def create_dashboard_widget(
+    widget_data: DashboardWidgetCreate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Create a new dashboard widget"""
+    service = AnalyticsService(db)
+    widget_data.created_by = current_user.id
+    return service.create_dashboard_widget(widget_data)
+
+@app.get("/api/analytics/health")
+async def analytics_health_check(db: Session = Depends(get_db)):
+    """Health check for analytics system"""
+    try:
+        service = AnalyticsService(db)
+        # Simple health check - count recent metrics
+        from models.analytics_models import SystemMetrics
+        recent_metrics_count = service.db.query(SystemMetrics).filter(
+            SystemMetrics.timestamp >= datetime.utcnow() - timedelta(hours=1)
+        ).count()
+        
+        return {
+            "status": "healthy",
+            "timestamp": datetime.utcnow(),
+            "recent_metrics_count": recent_metrics_count
+        }
+    except Exception as e:
+        return {
+            "status": "unhealthy",
+            "timestamp": datetime.utcnow(),
+            "error": str(e)
+        }
+
+# WebSocket endpoint for real-time notifications
+@app.websocket("/ws/notifications/{user_id}")
+async def websocket_notifications(websocket: WebSocket, user_id: int, db: Session = Depends(get_db)):
+    """WebSocket endpoint for real-time notifications"""
+    service = EnhancedNotificationService(db)
+    await service.websocket_manager.connect(websocket, user_id)
+    try:
+        while True:
+            # Keep connection alive and handle incoming messages
+            data = await websocket.receive_text()
+            # Echo back for heartbeat
+            await websocket.send_text(f"pong: {data}")
+    except Exception as e:
+        print(f"WebSocket error: {e}")
+    finally:
+        service.websocket_manager.disconnect(websocket, user_id)
 
 if __name__ == "__main__":
     import uvicorn

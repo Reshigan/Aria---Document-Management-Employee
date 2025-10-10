@@ -4,7 +4,8 @@ User related database models
 from datetime import datetime, timedelta
 from typing import Optional
 import secrets
-from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey, Table, Text
+import json
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey, Table, Text, JSON
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.hybrid import hybrid_property
 from .base import BaseModel
@@ -35,9 +36,20 @@ class User(BaseModel):
     username = Column(String(50), unique=True, index=True, nullable=False)
     email = Column(String(255), unique=True, index=True, nullable=False)
     full_name = Column(String(100))
+    first_name = Column(String(50))
+    last_name = Column(String(50))
     phone_number = Column(String(20))
     department = Column(String(100))
     job_title = Column(String(100))
+    
+    # Profile information
+    bio = Column(Text)
+    avatar_url = Column(String(500))
+    avatar_filename = Column(String(255))  # For file storage
+    location = Column(String(100))
+    website = Column(String(255))
+    linkedin_url = Column(String(255))
+    github_url = Column(String(255))
     
     # Authentication
     hashed_password = Column(String(255), nullable=False)
@@ -54,14 +66,43 @@ class User(BaseModel):
     # Preferences
     email_notifications = Column(Boolean, default=True)
     slack_notifications = Column(Boolean, default=False)
+    push_notifications = Column(Boolean, default=True)
     language = Column(String(10), default='en')
     timezone = Column(String(50), default='UTC')
     theme = Column(String(20), default='light')
+    date_format = Column(String(20), default='YYYY-MM-DD')
+    time_format = Column(String(10), default='24h')
+    
+    # Advanced preferences stored as JSON
+    notification_preferences = Column(JSON, default=lambda: {
+        'email': {'documents': True, 'comments': True, 'shares': True, 'mentions': True},
+        'push': {'documents': True, 'comments': True, 'shares': True, 'mentions': True},
+        'frequency': 'immediate'  # immediate, daily, weekly
+    })
+    ui_preferences = Column(JSON, default=lambda: {
+        'sidebar_collapsed': False,
+        'table_density': 'default',
+        'default_view': 'list',
+        'items_per_page': 20
+    })
+    privacy_settings = Column(JSON, default=lambda: {
+        'profile_visibility': 'internal',  # public, internal, private
+        'show_email': False,
+        'show_phone': False,
+        'show_department': True
+    })
     
     # Relationships
     roles = relationship("Role", secondary=user_roles, back_populates="users")
     documents = relationship("Document", foreign_keys="[Document.uploaded_by]", back_populates="uploaded_by_user")
     folder_permissions = relationship("FolderPermission", foreign_keys="[FolderPermission.user_id]", back_populates="user")
+    activities = relationship("UserActivity", back_populates="user", cascade="all, delete-orphan")
+    
+    # Notification relationships
+    received_notifications = relationship("Notification", foreign_keys="[Notification.recipient_id]", back_populates="recipient")
+    sent_notifications = relationship("Notification", foreign_keys="[Notification.sender_id]", back_populates="sender")
+    notification_preferences = relationship("NotificationPreference", back_populates="user", cascade="all, delete-orphan")
+    notification_subscriptions = relationship("NotificationSubscription", back_populates="user", cascade="all, delete-orphan")
     
     @hybrid_property
     def role_names(self):
@@ -143,6 +184,27 @@ class PasswordResetToken(BaseModel):
         """Mark token as used"""
         self.used = True
         self.used_at = datetime.utcnow()
+
+
+class UserActivity(BaseModel):
+    """User activity tracking model"""
+    __tablename__ = "user_activities"
+    
+    user_id = Column(Integer, ForeignKey('users.id'), nullable=False, index=True)
+    activity_type = Column(String(50), nullable=False)  # login, logout, document_upload, document_view, etc.
+    activity_description = Column(Text)
+    resource_type = Column(String(50))  # document, folder, user, etc.
+    resource_id = Column(Integer)  # ID of the resource
+    ip_address = Column(String(45))  # IPv4 or IPv6
+    user_agent = Column(Text)
+    activity_metadata = Column(JSON)  # Additional activity metadata
+    
+    # Relationships
+    user = relationship("User", back_populates="activities")
+    
+    def __repr__(self):
+        return f"<UserActivity(user_id={self.user_id}, type={self.activity_type}, created_at={self.created_at})>"
+
 
 
 # For backward compatibility

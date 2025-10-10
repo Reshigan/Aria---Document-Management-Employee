@@ -123,6 +123,10 @@ class Document(BaseModel):
     workflows = relationship("Workflow", back_populates="document")
     shared_with = relationship("User", secondary="document_shares")
     
+    # Notification relationships
+    notifications = relationship("Notification", back_populates="document")
+    notification_subscriptions = relationship("NotificationSubscription", back_populates="document")
+    
     def __repr__(self):
         return f"<Document(id={self.id}, filename='{self.filename}', status='{self.status}')>"
     

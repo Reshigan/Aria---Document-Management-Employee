@@ -18,6 +18,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 import models.user
 import models.document
 import models.advanced
+import models.tag_models
 from models import Base
 
 from core.config import settings
@@ -38,7 +39,10 @@ from api.routes.workflows import router as workflows_router
 from api.routes.notifications import router as notifications_router
 from api.routes.analytics import router as analytics_router
 from api.routes.sharing import router as sharing_router
+from api.routes.comments import router as comments_router
 from api.routes.api_keys import router as api_keys_router
+from api.routes.user_profiles import router as user_profiles_router
+from api.routes.enhanced_tags import router as enhanced_tags_router
 
 # Configure logging
 logging.basicConfig(
@@ -181,7 +185,10 @@ app.include_router(workflows_router, prefix=settings.API_V1_PREFIX)
 app.include_router(notifications_router, prefix=settings.API_V1_PREFIX)
 app.include_router(analytics_router, prefix=settings.API_V1_PREFIX)
 app.include_router(sharing_router, prefix=settings.API_V1_PREFIX)
+app.include_router(comments_router, prefix=settings.API_V1_PREFIX)
 app.include_router(api_keys_router, prefix=settings.API_V1_PREFIX)
+app.include_router(user_profiles_router, prefix=settings.API_V1_PREFIX)
+app.include_router(enhanced_tags_router, prefix=settings.API_V1_PREFIX)
 app.include_router(document_processing_router, prefix=settings.API_V1_PREFIX)
 app.include_router(sap_router, prefix=settings.API_V1_PREFIX)
 

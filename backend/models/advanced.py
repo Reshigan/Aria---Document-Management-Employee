@@ -262,39 +262,7 @@ class Comment(BaseModel):
         return f"<Comment(id={self.id}, document_id={self.document_id}, author={self.author})>"
 
 
-class Notification(BaseModel):
-    """Notification model for user notifications"""
-    __tablename__ = "notifications"
-    
-    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
-    type = Column(Enum(NotificationType), nullable=False)
-    title = Column(String(255), nullable=False)
-    message = Column(Text, nullable=False)
-    
-    # Related objects
-    document_id = Column(Integer, ForeignKey('documents.id'))
-    comment_id = Column(Integer, ForeignKey('comments.id'))
-    workflow_id = Column(Integer, ForeignKey('workflows.id'))
-    
-    # Status
-    is_read = Column(Boolean, default=False)
-    read_at = Column(DateTime)
-    expires_at = Column(DateTime)
-    
-    # Delivery
-    email_sent = Column(Boolean, default=False)
-    email_sent_at = Column(DateTime)
-    push_sent = Column(Boolean, default=False)
-    push_sent_at = Column(DateTime)
-    
-    # Relationships
-    user = relationship("User")
-    document = relationship("Document")
-    comment = relationship("Comment")
-    workflow = relationship("Workflow")
-    
-    def __repr__(self):
-        return f"<Notification(id={self.id}, user_id={self.user_id}, type='{self.type}')>"
+# Notification class is imported from notification_models.py to avoid duplication
 
 
 class Workflow(BaseModel):
@@ -303,11 +271,23 @@ class Workflow(BaseModel):
     
     name = Column(String(255), nullable=False)
     description = Column(Text)
-    document_id = Column(Integer, ForeignKey('documents.id'), nullable=False)
+    status = Column(Enum(WorkflowStatus), default=WorkflowStatus.DRAFT, nullable=False)
+    
+    # Template reference
     template_id = Column(Integer, ForeignKey('workflow_templates.id'))
     
-    # Status and timing
-    status = Column(Enum(WorkflowStatus), default=WorkflowStatus.DRAFT, nullable=False)
+    # Document reference
+    document_id = Column(Integer, ForeignKey('documents.id'), nullable=False)
+    
+    # Execution tracking
+    current_step = Column(Integer, default=0)
+    progress_percentage = Column(Integer, default=0)
+    
+    # Assignment and timing
+    created_by = Column(Integer, ForeignKey('users.id'), nullable=False)
+    assigned_to = Column(Integer, ForeignKey('users.id'))
+    
+    # Timestamps
     started_at = Column(DateTime)
     completed_at = Column(DateTime)
     due_date = Column(DateTime)
@@ -316,12 +296,18 @@ class Workflow(BaseModel):
     auto_start = Column(Boolean, default=False)
     parallel_execution = Column(Boolean, default=False)
     
+    # Metadata
+    workflow_data = Column(JSON, default=dict)
+    
     # Relationships
     document = relationship("Document", back_populates="workflows")
+    steps = relationship("WorkflowStep", back_populates="workflow", cascade="all, delete-orphan")
+    
+    # Notification relationships
+    notifications = relationship("EnhancedNotification", back_populates="workflow")
+    notification_subscriptions = relationship("NotificationSubscription", back_populates="workflow")
     template = relationship("WorkflowTemplate")
-    steps = relationship("WorkflowStep", back_populates="workflow", order_by="WorkflowStep.order")
-    created_by = Column(Integer, ForeignKey('users.id'), nullable=False)
-    creator = relationship("User")
+    creator = relationship("User", foreign_keys=[created_by])
     
     def __repr__(self):
         return f"<Workflow(id={self.id}, name='{self.name}', status='{self.status}')>"
@@ -359,6 +345,7 @@ class WorkflowStep(BaseModel):
     template_step_id = Column(Integer, ForeignKey('workflow_step_templates.id'))
     
     # Step details
+    step_number = Column(Integer, nullable=False)
     name = Column(String(255), nullable=False)
     description = Column(Text)
     step_type = Column(Enum(WorkflowStepType), nullable=False)
@@ -379,8 +366,9 @@ class WorkflowStep(BaseModel):
     auto_complete = Column(Boolean, default=False)
     timeout_hours = Column(Integer)
     
-    # Results
-    result_data = Column(JSON)  # Store step results
+    # Step data
+    step_data = Column(JSON, default=dict)
+    result_data = Column(JSON, default=dict)  # Store step results
     comments = Column(Text)
     
     # Relationships

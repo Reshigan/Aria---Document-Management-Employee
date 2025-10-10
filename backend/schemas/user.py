@@ -174,13 +174,104 @@ class UserListResponse(BaseModel):
 
 class UserProfileUpdate(BaseModel):
     """User profile update schema"""
+    first_name: Optional[str] = Field(None, max_length=50)
+    last_name: Optional[str] = Field(None, max_length=50)
+    full_name: Optional[str] = Field(None, max_length=100)
+    phone_number: Optional[str] = Field(None, max_length=20)
+    department: Optional[str] = Field(None, max_length=100)
+    job_title: Optional[str] = Field(None, max_length=100)
+    bio: Optional[str] = Field(None, max_length=1000)
+    location: Optional[str] = Field(None, max_length=100)
+    website: Optional[str] = Field(None, max_length=255)
+    linkedin_url: Optional[str] = Field(None, max_length=255)
+    github_url: Optional[str] = Field(None, max_length=255)
+    timezone: Optional[str] = Field(None, max_length=50)
+    language: Optional[str] = Field(None, max_length=10)
+    theme: Optional[str] = Field(None, max_length=20)
+    date_format: Optional[str] = Field(None, max_length=20)
+    time_format: Optional[str] = Field(None, max_length=10)
+
+
+class UserPreferencesUpdate(BaseModel):
+    """User preferences update schema"""
+    email_notifications: Optional[bool] = None
+    slack_notifications: Optional[bool] = None
+    push_notifications: Optional[bool] = None
+    notification_preferences: Optional[Dict[str, Any]] = None
+    ui_preferences: Optional[Dict[str, Any]] = None
+    privacy_settings: Optional[Dict[str, Any]] = None
+
+
+class UserProfileResponse(BaseModel):
+    """Complete user profile response"""
+    id: int
+    username: str
+    email: str
+    full_name: Optional[str] = None
     first_name: Optional[str] = None
     last_name: Optional[str] = None
-    phone: Optional[str] = None
+    phone_number: Optional[str] = None
     department: Optional[str] = None
-    position: Optional[str] = None
+    job_title: Optional[str] = None
     bio: Optional[str] = None
     avatar_url: Optional[str] = None
-    timezone: Optional[str] = None
-    language: Optional[str] = None
+    location: Optional[str] = None
+    website: Optional[str] = None
+    linkedin_url: Optional[str] = None
+    github_url: Optional[str] = None
+    is_active: bool
+    is_verified: bool
+    last_login: Optional[datetime] = None
+    created_at: datetime
+    updated_at: datetime
+    
+    # Preferences
+    language: str = 'en'
+    timezone: str = 'UTC'
+    theme: str = 'light'
+    date_format: str = 'YYYY-MM-DD'
+    time_format: str = '24h'
+    email_notifications: bool = True
+    slack_notifications: bool = False
+    push_notifications: bool = True
+    
+    # JSON preferences
     notification_preferences: Optional[Dict[str, Any]] = None
+    ui_preferences: Optional[Dict[str, Any]] = None
+    privacy_settings: Optional[Dict[str, Any]] = None
+    
+    # Roles
+    roles: List[str] = []
+    
+    class Config:
+        from_attributes = True
+
+
+class UserActivityResponse(BaseModel):
+    """User activity response schema"""
+    id: int
+    activity_type: str
+    activity_description: Optional[str] = None
+    resource_type: Optional[str] = None
+    resource_id: Optional[int] = None
+    ip_address: Optional[str] = None
+    metadata: Optional[Dict[str, Any]] = None
+    created_at: datetime
+    
+    class Config:
+        from_attributes = True
+
+
+class UserActivityListResponse(BaseModel):
+    """User activity list response with pagination"""
+    items: List[UserActivityResponse]
+    total: int
+    page: int
+    page_size: int
+    pages: int
+
+
+class AvatarUploadResponse(BaseModel):
+    """Avatar upload response"""
+    avatar_url: str
+    message: str = "Avatar uploaded successfully"

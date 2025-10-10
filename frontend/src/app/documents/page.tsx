@@ -9,10 +9,12 @@ import {
 import { 
   FileTextOutlined, SearchOutlined, FilterOutlined, UploadOutlined,
   EyeOutlined, DownloadOutlined, DeleteOutlined, ReloadOutlined,
-  SendOutlined, MoreOutlined, PlusOutlined
+  SendOutlined, MoreOutlined, PlusOutlined, ShareAltOutlined,
+  CommentOutlined
 } from '@ant-design/icons';
 import { useAuth } from '@/contexts/AuthContext';
 import { documentsAPI } from '@/lib/api';
+import ShareDialog from '@/components/ShareDialog';
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
@@ -58,6 +60,8 @@ export default function DocumentsPage() {
   const [dateRange, setDateRange] = useState<[any, any] | null>(null);
   const [selectedRowKeys, setSelectedRowKeys] = useState<number[]>([]);
   const [uploadModalVisible, setUploadModalVisible] = useState(false);
+  const [shareDialogVisible, setShareDialogVisible] = useState(false);
+  const [selectedDocument, setSelectedDocument] = useState<Document | null>(null);
 
   useEffect(() => {
     if (!user) {
@@ -181,6 +185,11 @@ export default function DocumentsPage() {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
+  const handleShare = (document: Document) => {
+    setSelectedDocument(document);
+    setShareDialogVisible(true);
+  };
+
   const getActionMenu = (record: Document) => (
     <Menu>
       <Menu.Item 
@@ -192,6 +201,13 @@ export default function DocumentsPage() {
       </Menu.Item>
       <Menu.Item key="download" icon={<DownloadOutlined />}>
         Download
+      </Menu.Item>
+      <Menu.Item 
+        key="share" 
+        icon={<ShareAltOutlined />}
+        onClick={() => handleShare(record)}
+      >
+        Share
       </Menu.Item>
       <Menu.Item key="reprocess" icon={<ReloadOutlined />}>
         Reprocess
@@ -464,6 +480,16 @@ export default function DocumentsPage() {
           </p>
         </Upload.Dragger>
       </Modal>
+
+      {/* Share Dialog */}
+      <ShareDialog
+        visible={shareDialogVisible}
+        onClose={() => {
+          setShareDialogVisible(false);
+          setSelectedDocument(null);
+        }}
+        document={selectedDocument}
+      />
     </div>
   );
 }

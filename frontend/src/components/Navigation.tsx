@@ -14,7 +14,12 @@ import {
   LogoutOutlined,
   MenuOutlined,
   CloseOutlined,
-  BranchesOutlined
+  BranchesOutlined,
+  BarChartOutlined,
+  SearchOutlined,
+  FolderOutlined,
+  ShareAltOutlined,
+  TagOutlined
 } from '@ant-design/icons';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -33,9 +38,14 @@ const Navigation = () => {
 
   const navItems = [
     { href: '/dashboard', icon: DashboardOutlined, label: 'Dashboard' },
+    { href: '/search', icon: SearchOutlined, label: 'Search' },
     { href: '/chat', icon: MessageOutlined, label: 'AI Chat' },
     { href: '/documents', icon: FileTextOutlined, label: 'Documents' },
+    { href: '/folders', icon: FolderOutlined, label: 'Folders' },
+    { href: '/tags', icon: TagOutlined, label: 'Tags' },
+    { href: '/shared', icon: ShareAltOutlined, label: 'Shared with Me' },
     { href: '/workflows', icon: BranchesOutlined, label: 'Workflows' },
+    { href: '/analytics', icon: BarChartOutlined, label: 'Analytics' },
     { href: '/upload', icon: UploadOutlined, label: 'Upload' },
   ];
 
@@ -128,6 +138,15 @@ const Navigation = () => {
               </div>
 
               <div className="space-y-2">
+                <Link href="/profile">
+                  <div className="nav-item">
+                    <div className="flex items-center gap-3">
+                      <UserOutlined />
+                      <span>Profile</span>
+                    </div>
+                  </div>
+                </Link>
+                
                 <Link href="/admin">
                   <div className="nav-item">
                     <div className="flex items-center gap-3">

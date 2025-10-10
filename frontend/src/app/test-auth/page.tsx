@@ -16,7 +16,7 @@ export default function TestAuthPage() {
     try {
       addLog('Step 1: Sending login request...');
       
-      const loginRes = await fetch('/api/auth/login', {
+      const loginRes = await fetch('http://localhost:12001/api/v1/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username: 'admin', password: 'admin' })
@@ -38,7 +38,7 @@ export default function TestAuthPage() {
       addLog(`Step 6: Token stored: ${storedToken ? `YES (length: ${storedToken.length})` : 'NO'}`);
       
       addLog('Step 7: Fetching current user...');
-      const meRes = await fetch('/api/auth/me', {
+      const meRes = await fetch('http://localhost:12001/api/v1/auth/me', {
         headers: { 'Authorization': `Bearer ${storedToken}` }
       });
       

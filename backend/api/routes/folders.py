@@ -585,4 +585,353 @@ async def remove_folder_permission(
         f"Removed permissions for user {user_id} on folder {folder.name}"
     )
     
-    return {"message": "Folder permissions removed successfully"}
+    return {"message": "Permissions removed successfully"}
+
+
+@router.post("/bulk-operations")
+async def bulk_folder_operations(
+    operation: str,
+    folder_ids: List[int],
+    target_folder_id: Optional[int] = None,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """Perform bulk operations on folders"""
+    if operation not in ["move", "delete", "copy"]:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid operation. Supported: move, delete, copy"
+        )
+    
+    results = []
+    errors = []
+    
+    for folder_id in folder_ids:
+        try:
+            # Check permissions
+            if not await check_folder_permission(db, current_user, folder_id, "write"):
+                errors.append(f"No permission for folder {folder_id}")
+                continue
+            
+            folder_result = await db.execute(select(Folder).where(Folder.id == folder_id))
+            folder = folder_result.scalar_one_or_none()
+            if not folder:
+                errors.append(f"Folder {folder_id} not found")
+                continue
+            
+            if operation == "delete":
+                # Check if folder has children or documents
+                children_result = await db.execute(select(Folder).where(Folder.parent_id == folder_id))
+                children = children_result.scalars().all()
+                
+                docs_result = await db.execute(select(Document).where(Document.folder_id == folder_id))
+                documents = docs_result.scalars().all()
+                
+                if children or documents:
+                    errors.append(f"Folder {folder_id} is not empty")
+                    continue
+                
+                await db.delete(folder)
+                results.append(f"Deleted folder {folder.name}")
+                
+            elif operation == "move":
+                if not target_folder_id:
+                    errors.append("Target folder required for move operation")
+                    continue
+                
+                # Check target folder permissions
+                if not await check_folder_permission(db, current_user, target_folder_id, "write"):
+                    errors.append(f"No permission for target folder {target_folder_id}")
+                    continue
+                
+                # Update folder parent
+                folder.parent_id = target_folder_id
+                
+                # Update path
+                target_result = await db.execute(select(Folder).where(Folder.id == target_folder_id))
+                target_folder = target_result.scalar_one_or_none()
+                if target_folder:
+                    folder.path = f"{target_folder.path}/{folder.name}"
+                else:
+                    folder.path = folder.name
+                
+                results.append(f"Moved folder {folder.name}")
+                
+            elif operation == "copy":
+                if not target_folder_id:
+                    errors.append("Target folder required for copy operation")
+                    continue
+                
+                # Check target folder permissions
+                if not await check_folder_permission(db, current_user, target_folder_id, "write"):
+                    errors.append(f"No permission for target folder {target_folder_id}")
+                    continue
+                
+                # Create copy
+                target_result = await db.execute(select(Folder).where(Folder.id == target_folder_id))
+                target_folder = target_result.scalar_one_or_none()
+                
+                copy_name = f"{folder.name}_copy"
+                copy_path = f"{target_folder.path}/{copy_name}" if target_folder else copy_name
+                
+                new_folder = Folder(
+                    name=copy_name,
+                    description=folder.description,
+                    parent_id=target_folder_id,
+                    path=copy_path,
+                    created_by=current_user.id,
+                    color=folder.color,
+                    is_public=folder.is_public
+                )
+                
+                db.add(new_folder)
+                results.append(f"Copied folder {folder.name}")
+                
+        except Exception as e:
+            errors.append(f"Error processing folder {folder_id}: {str(e)}")
+    
+    await db.commit()
+    
+    # Log bulk operation
+    await auth_service._log_activity_async(
+        db, current_user.id, f"bulk_folder_{operation}", "folder", None,
+        f"Bulk {operation} operation on {len(folder_ids)} folders"
+    )
+    
+    return {
+        "operation": operation,
+        "processed": len(results),
+        "errors": len(errors),
+        "results": results,
+        "errors_detail": errors
+    }
+
+
+@router.get("/{folder_id}/statistics")
+async def get_folder_statistics(
+    folder_id: int,
+    include_subfolders: bool = Query(True),
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """Get detailed folder statistics"""
+    if not await check_folder_permission(db, current_user, folder_id, "read"):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="No permission to access this folder"
+        )
+    
+    folder_result = await db.execute(select(Folder).where(Folder.id == folder_id))
+    folder = folder_result.scalar_one_or_none()
+    if not folder:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Folder not found"
+        )
+    
+    stats = {
+        "folder_id": folder_id,
+        "folder_name": folder.name,
+        "direct_documents": 0,
+        "total_documents": 0,
+        "direct_subfolders": 0,
+        "total_subfolders": 0,
+        "total_size": 0,
+        "document_types": {},
+        "recent_activity": []
+    }
+    
+    # Direct documents count
+    direct_docs_result = await db.execute(
+        select(Document).where(Document.folder_id == folder_id)
+    )
+    direct_docs = direct_docs_result.scalars().all()
+    stats["direct_documents"] = len(direct_docs)
+    
+    # Calculate total size and document types
+    for doc in direct_docs:
+        if doc.file_size:
+            stats["total_size"] += doc.file_size
+        
+        doc_type = doc.document_type or "unknown"
+        stats["document_types"][doc_type] = stats["document_types"].get(doc_type, 0) + 1
+    
+    # Direct subfolders count
+    direct_subfolders_result = await db.execute(
+        select(Folder).where(Folder.parent_id == folder_id)
+    )
+    direct_subfolders = direct_subfolders_result.scalars().all()
+    stats["direct_subfolders"] = len(direct_subfolders)
+    
+    if include_subfolders:
+        # Recursive function to count all nested items
+        async def count_nested(parent_id: int):
+            nested_folders_result = await db.execute(
+                select(Folder).where(Folder.parent_id == parent_id)
+            )
+            nested_folders = nested_folders_result.scalars().all()
+            
+            nested_docs_result = await db.execute(
+                select(Document).where(Document.folder_id == parent_id)
+            )
+            nested_docs = nested_docs_result.scalars().all()
+            
+            folder_count = len(nested_folders)
+            doc_count = len(nested_docs)
+            size = sum(doc.file_size or 0 for doc in nested_docs)
+            
+            # Count document types
+            for doc in nested_docs:
+                doc_type = doc.document_type or "unknown"
+                stats["document_types"][doc_type] = stats["document_types"].get(doc_type, 0) + 1
+            
+            # Recursively count nested items
+            for nested_folder in nested_folders:
+                nested_counts = await count_nested(nested_folder.id)
+                folder_count += nested_counts["folders"]
+                doc_count += nested_counts["documents"]
+                size += nested_counts["size"]
+            
+            return {"folders": folder_count, "documents": doc_count, "size": size}
+        
+        nested_counts = await count_nested(folder_id)
+        stats["total_subfolders"] = nested_counts["folders"]
+        stats["total_documents"] = stats["direct_documents"] + nested_counts["documents"]
+        stats["total_size"] += nested_counts["size"]
+    else:
+        stats["total_subfolders"] = stats["direct_subfolders"]
+        stats["total_documents"] = stats["direct_documents"]
+    
+    return stats
+
+
+@router.post("/{folder_id}/duplicate")
+async def duplicate_folder(
+    folder_id: int,
+    target_parent_id: Optional[int] = None,
+    new_name: Optional[str] = None,
+    include_documents: bool = True,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """Duplicate a folder with all its contents"""
+    if not await check_folder_permission(db, current_user, folder_id, "read"):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="No permission to access source folder"
+        )
+    
+    # Check target parent permissions
+    if target_parent_id and not await check_folder_permission(db, current_user, target_parent_id, "write"):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="No permission to create folders in target location"
+        )
+    
+    source_folder_result = await db.execute(select(Folder).where(Folder.id == folder_id))
+    source_folder = source_folder_result.scalar_one_or_none()
+    if not source_folder:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Source folder not found"
+        )
+    
+    # Generate new name if not provided
+    if not new_name:
+        new_name = f"{source_folder.name}_copy"
+    
+    # Build new path
+    new_path = new_name
+    if target_parent_id:
+        target_parent_result = await db.execute(select(Folder).where(Folder.id == target_parent_id))
+        target_parent = target_parent_result.scalar_one_or_none()
+        if target_parent:
+            new_path = f"{target_parent.path}/{new_name}"
+    
+    # Create duplicate folder
+    duplicate_folder = Folder(
+        name=new_name,
+        description=source_folder.description,
+        parent_id=target_parent_id,
+        path=new_path,
+        created_by=current_user.id,
+        color=source_folder.color,
+        is_public=source_folder.is_public
+    )
+    
+    db.add(duplicate_folder)
+    await db.commit()
+    await db.refresh(duplicate_folder)
+    
+    duplicated_items = {"folders": 1, "documents": 0}
+    
+    # Recursively duplicate subfolders and documents
+    async def duplicate_contents(source_parent_id: int, target_parent_id: int):
+        # Duplicate subfolders
+        subfolders_result = await db.execute(
+            select(Folder).where(Folder.parent_id == source_parent_id)
+        )
+        subfolders = subfolders_result.scalars().all()
+        
+        for subfolder in subfolders:
+            new_subfolder_path = f"{duplicate_folder.path}/{subfolder.name}"
+            new_subfolder = Folder(
+                name=subfolder.name,
+                description=subfolder.description,
+                parent_id=target_parent_id,
+                path=new_subfolder_path,
+                created_by=current_user.id,
+                color=subfolder.color,
+                is_public=subfolder.is_public
+            )
+            
+            db.add(new_subfolder)
+            await db.commit()
+            await db.refresh(new_subfolder)
+            
+            duplicated_items["folders"] += 1
+            
+            # Recursively duplicate contents
+            await duplicate_contents(subfolder.id, new_subfolder.id)
+        
+        # Duplicate documents if requested
+        if include_documents:
+            documents_result = await db.execute(
+                select(Document).where(Document.folder_id == source_parent_id)
+            )
+            documents = documents_result.scalars().all()
+            
+            for doc in documents:
+                # Note: This creates a reference to the same file
+                # In a production system, you might want to copy the actual file
+                new_doc = Document(
+                    filename=f"copy_{doc.filename}",
+                    original_filename=f"copy_{doc.original_filename}",
+                    file_path=doc.file_path,  # Same file path - consider copying file
+                    file_size=doc.file_size,
+                    mime_type=doc.mime_type,
+                    document_type=doc.document_type,
+                    folder_id=target_parent_id,
+                    uploaded_by=current_user.id,
+                    status="uploaded",
+                    ocr_text=doc.ocr_text,
+                    extracted_data=doc.extracted_data
+                )
+                
+                db.add(new_doc)
+                duplicated_items["documents"] += 1
+    
+    await duplicate_contents(folder_id, duplicate_folder.id)
+    await db.commit()
+    
+    # Log activity
+    await auth_service._log_activity_async(
+        db, current_user.id, "folder_duplicated", "folder", duplicate_folder.id,
+        f"Duplicated folder {source_folder.name} as {new_name}"
+    )
+    
+    return {
+        "message": "Folder duplicated successfully",
+        "duplicate_folder": FolderResponse.from_orm(duplicate_folder),
+        "duplicated_items": duplicated_items
+    }

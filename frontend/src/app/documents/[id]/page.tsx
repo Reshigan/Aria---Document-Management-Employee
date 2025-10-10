@@ -9,10 +9,12 @@ import {
 import { 
   FileTextOutlined, DownloadOutlined, ReloadOutlined,
   CheckCircleOutlined, ClockCircleOutlined, WarningOutlined,
-  SendOutlined, ArrowLeftOutlined
+  SendOutlined, ArrowLeftOutlined, CommentOutlined, ShareAltOutlined
 } from '@ant-design/icons';
 import { documentsAPI } from '@/lib/api';
 import api from '@/lib/api';
+import CommentsPanel from '@/components/CommentsPanel';
+import ShareDialog from '@/components/ShareDialog';
 
 const { Title, Paragraph, Text } = Typography;
 const { TabPane } = Tabs;
@@ -51,6 +53,7 @@ export default function DocumentDetailPage() {
   const [document, setDocument] = useState<DocumentDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
+  const [shareDialogVisible, setShareDialogVisible] = useState(false);
 
   useEffect(() => {
     fetchDocument();
@@ -141,6 +144,12 @@ export default function DocumentDetailPage() {
         extra={
           <Space>
             <Button icon={<DownloadOutlined />}>Download</Button>
+            <Button 
+              icon={<ShareAltOutlined />}
+              onClick={() => setShareDialogVisible(true)}
+            >
+              Share
+            </Button>
             {document.status !== 'completed' && (
               <Button 
                 type="primary" 
@@ -365,8 +374,19 @@ export default function DocumentDetailPage() {
               </Card>
             </Space>
           </TabPane>
+
+          <TabPane tab={<span><CommentOutlined />Comments</span>} key="5">
+            <CommentsPanel documentId={parseInt(documentId)} />
+          </TabPane>
         </Tabs>
       </Card>
+
+      {/* Share Dialog */}
+      <ShareDialog
+        visible={shareDialogVisible}
+        onClose={() => setShareDialogVisible(false)}
+        document={document}
+      />
     </div>
   );
 }

@@ -1,5 +1,10 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
-import type { User, TokenResponse, Document, DocumentListResponse, UploadResponse, ExtractedData, DashboardStats } from '@/types';
+import type { 
+  User, TokenResponse, Document, DocumentListResponse, UploadResponse, ExtractedData, DashboardStats,
+  DocumentShare, DocumentShareCreate, ShareLinkCreate, ShareLinkResponse, SharedDocumentsResponse,
+  Comment, CommentCreate, CommentUpdate, EnhancedTag, TagCreate, TagUpdate, TagBulkOperation, 
+  TagSearchFilters, TagAnalytics, AutoTagRule, TagSuggestion, TagTemplate
+} from '@/types';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:12001';
 
@@ -204,15 +209,26 @@ export const documentsAPI = {
 
 // Folders API
 export const foldersAPI = {
-  list: async (parentId?: number): Promise<any[]> => {
-    return apiClient.get('/api/v1/folders/', { params: { parent_id: parentId } });
+  list: async (parentId?: number, page?: number, pageSize?: number, search?: string): Promise<any> => {
+    const params: any = {};
+    if (parentId !== undefined) params.parent_id = parentId;
+    if (page) params.page = page;
+    if (pageSize) params.page_size = pageSize;
+    if (search) params.search = search;
+    return apiClient.get('/api/v1/folders/', { params });
   },
 
   get: async (id: number): Promise<any> => {
     return apiClient.get(`/api/v1/folders/${id}`);
   },
 
-  create: async (data: { name: string; parent_id?: number; description?: string }): Promise<any> => {
+  create: async (data: { 
+    name: string; 
+    parent_id?: number; 
+    description?: string;
+    color?: string;
+    is_public?: boolean;
+  }): Promise<any> => {
     return apiClient.post('/api/v1/folders/', data);
   },
 
@@ -224,12 +240,55 @@ export const foldersAPI = {
     return apiClient.delete(`/api/v1/folders/${id}`);
   },
 
-  getTree: async (): Promise<any[]> => {
+  getTree: async (): Promise<any> => {
     return apiClient.get('/api/v1/folders/tree');
   },
 
   move: async (id: number, newParentId?: number): Promise<any> => {
     return apiClient.post(`/api/v1/folders/${id}/move`, { new_parent_id: newParentId });
+  },
+
+  // Bulk operations
+  bulkOperations: async (operation: string, folderIds: number[], targetFolderId?: number): Promise<any> => {
+    return apiClient.post('/api/v1/folders/bulk-operations', {
+      operation,
+      folder_ids: folderIds,
+      target_folder_id: targetFolderId
+    });
+  },
+
+  // Get folder statistics
+  getStatistics: async (id: number, includeSubfolders: boolean = true): Promise<any> => {
+    return apiClient.get(`/api/v1/folders/${id}/statistics`, {
+      params: { include_subfolders: includeSubfolders }
+    });
+  },
+
+  // Duplicate folder
+  duplicate: async (id: number, targetParentId?: number, newName?: string, includeDocuments: boolean = true): Promise<any> => {
+    return apiClient.post(`/api/v1/folders/${id}/duplicate`, {
+      target_parent_id: targetParentId,
+      new_name: newName,
+      include_documents: includeDocuments
+    });
+  },
+
+  // Folder permissions
+  getPermissions: async (id: number): Promise<any> => {
+    return apiClient.get(`/api/v1/folders/${id}/permissions`);
+  },
+
+  setPermissions: async (id: number, userId: number, permissions: {
+    can_read?: boolean;
+    can_write?: boolean;
+    can_delete?: boolean;
+    can_share?: boolean;
+  }): Promise<any> => {
+    return apiClient.post(`/api/v1/folders/${id}/permissions/${userId}`, permissions);
+  },
+
+  removePermissions: async (id: number, userId: number): Promise<any> => {
+    return apiClient.delete(`/api/v1/folders/${id}/permissions/${userId}`);
   },
 };
 
@@ -258,29 +317,40 @@ export const tagsAPI = {
 
 // Search API
 export const searchAPI = {
-  search: async (params: {
-    query?: string;
+  search: async (searchRequest: {
+    query: string;
     document_type?: string;
     folder_id?: number;
     tags?: string[];
     date_from?: string;
     date_to?: string;
-    page?: number;
-    page_size?: number;
-  }): Promise<any> => {
-    return apiClient.get('/api/v1/search/', { params });
+    file_size_min?: number;
+    file_size_max?: number;
+    uploaded_by?: number;
+    include_content?: boolean;
+    include_metadata?: boolean;
+  }, page: number = 1, page_size: number = 20): Promise<any> => {
+    return apiClient.post(`/search/?page=${page}&page_size=${page_size}`, searchRequest);
   },
 
-  saveSearch: async (data: { name: string; query: string; filters: any }): Promise<any> => {
-    return apiClient.post('/api/v1/search/saved', data);
+  getSuggestions: async (query: string, limit: number = 10): Promise<any> => {
+    return apiClient.get('/search/suggestions', { params: { q: query, limit } });
   },
 
-  getSavedSearches: async (): Promise<any[]> => {
-    return apiClient.get('/api/v1/search/saved');
+  getHistory: async (page: number = 1, page_size: number = 20): Promise<any> => {
+    return apiClient.get('/search/history', { params: { page, page_size } });
   },
 
-  getSearchHistory: async (limit: number = 10): Promise<any[]> => {
-    return apiClient.get('/api/v1/search/history', { params: { limit } });
+  deleteHistoryItem: async (searchId: number): Promise<any> => {
+    return apiClient.delete(`/search/history/${searchId}`);
+  },
+
+  clearHistory: async (): Promise<any> => {
+    return apiClient.delete('/search/history');
+  },
+
+  getAnalytics: async (days: number = 30): Promise<any> => {
+    return apiClient.get('/search/analytics', { params: { days } });
   },
 };
 
@@ -369,32 +439,7 @@ export const notificationsAPI = {
   },
 };
 
-// Sharing API
-export const sharingAPI = {
-  shareDocument: async (documentId: number, data: { user_id: number; permission: string }): Promise<any> => {
-    return apiClient.post(`/api/v1/sharing/documents/${documentId}/share`, data);
-  },
 
-  createShareLink: async (documentId: number, data: any): Promise<any> => {
-    return apiClient.post(`/api/v1/sharing/documents/${documentId}/links`, data);
-  },
-
-  getShareLinks: async (documentId: number): Promise<any[]> => {
-    return apiClient.get(`/api/v1/sharing/documents/${documentId}/links`);
-  },
-
-  updateShareLink: async (linkId: number, data: any): Promise<any> => {
-    return apiClient.put(`/api/v1/sharing/links/${linkId}`, data);
-  },
-
-  deleteShareLink: async (linkId: number): Promise<void> => {
-    return apiClient.delete(`/api/v1/sharing/links/${linkId}`);
-  },
-
-  getSharedDocuments: async (): Promise<any[]> => {
-    return apiClient.get('/api/v1/sharing/shared-with-me');
-  },
-};
 
 // Users API
 export const usersAPI = {
@@ -439,6 +484,84 @@ export const dashboardAPI = {
   },
 };
 
+export const sharingAPI = {
+  // Document sharing with users
+  shareDocument: async (documentId: number, shareData: DocumentShareCreate): Promise<DocumentShare> => {
+    return apiClient.post(`/api/v1/sharing/documents/${documentId}/share`, shareData);
+  },
+
+  getDocumentShares: async (documentId: number): Promise<DocumentShare[]> => {
+    return apiClient.get(`/api/v1/sharing/documents/${documentId}/shares`);
+  },
+
+  revokeDocumentShare: async (documentId: number, shareId: number): Promise<void> => {
+    return apiClient.delete(`/api/v1/sharing/documents/${documentId}/shares/${shareId}`);
+  },
+
+  getSharedWithMe: async (page: number = 1, pageSize: number = 20): Promise<SharedDocumentsResponse> => {
+    return apiClient.get('/api/v1/sharing/shared-with-me', { 
+      params: { page, page_size: pageSize } 
+    });
+  },
+
+  // Share links
+  createShareLink: async (documentId: number, linkData: ShareLinkCreate): Promise<ShareLinkResponse> => {
+    return apiClient.post(`/api/v1/sharing/documents/${documentId}/share-links`, linkData);
+  },
+
+  getShareLinks: async (documentId: number): Promise<ShareLinkResponse[]> => {
+    return apiClient.get(`/api/v1/sharing/documents/${documentId}/share-links`);
+  },
+
+  updateShareLink: async (linkId: number, linkData: Partial<ShareLinkCreate>): Promise<ShareLinkResponse> => {
+    return apiClient.put(`/api/v1/sharing/share-links/${linkId}`, linkData);
+  },
+
+  deleteShareLink: async (linkId: number): Promise<void> => {
+    return apiClient.delete(`/api/v1/sharing/share-links/${linkId}`);
+  },
+
+  accessSharedDocument: async (token: string, password?: string): Promise<any> => {
+    return apiClient.get(`/api/v1/sharing/links/${token}`, { 
+      params: password ? { password } : {} 
+    });
+  },
+};
+
+export const commentsAPI = {
+  // Document comments
+  createComment: async (documentId: number, commentData: CommentCreate): Promise<Comment> => {
+    return apiClient.post(`/api/v1/comments/documents/${documentId}/comments`, commentData);
+  },
+
+  getDocumentComments: async (
+    documentId: number, 
+    page: number = 1, 
+    pageSize: number = 50,
+    includeResolved: boolean = true
+  ): Promise<Comment[]> => {
+    return apiClient.get(`/api/v1/comments/documents/${documentId}/comments`, {
+      params: { page, page_size: pageSize, include_resolved: includeResolved }
+    });
+  },
+
+  updateComment: async (commentId: number, commentData: CommentUpdate): Promise<Comment> => {
+    return apiClient.put(`/api/v1/comments/comments/${commentId}`, commentData);
+  },
+
+  deleteComment: async (commentId: number): Promise<void> => {
+    return apiClient.delete(`/api/v1/comments/comments/${commentId}`);
+  },
+
+  resolveComment: async (commentId: number): Promise<void> => {
+    return apiClient.post(`/api/v1/comments/comments/${commentId}/resolve`);
+  },
+
+  unresolveComment: async (commentId: number): Promise<void> => {
+    return apiClient.post(`/api/v1/comments/comments/${commentId}/unresolve`);
+  },
+};
+
 export const adminAPI = {
   getUsers: async (): Promise<User[]> => {
     const response = await usersAPI.list();
@@ -455,6 +578,136 @@ export const adminAPI = {
 
   getSystemStats: async (): Promise<any> => {
     return analyticsAPI.getSystemHealth();
+  },
+};
+
+// Enhanced Tags API
+export const enhancedTagsAPI = {
+  // Basic CRUD operations
+  list: async (params?: { skip?: number; limit?: number; search?: string; filters?: any }): Promise<EnhancedTag[]> => {
+    return apiClient.get('/api/v1/enhanced-tags/', { params });
+  },
+
+  get: async (id: number): Promise<EnhancedTag> => {
+    return apiClient.get(`/api/v1/enhanced-tags/${id}`);
+  },
+
+  create: async (data: TagCreate): Promise<EnhancedTag> => {
+    return apiClient.post('/api/v1/enhanced-tags/', data);
+  },
+
+  update: async (id: number, data: TagUpdate): Promise<EnhancedTag> => {
+    return apiClient.put(`/api/v1/enhanced-tags/${id}`, data);
+  },
+
+  delete: async (id: number): Promise<void> => {
+    return apiClient.delete(`/api/v1/enhanced-tags/${id}`);
+  },
+
+  // Hierarchy operations
+  getHierarchy: async (rootId?: number): Promise<EnhancedTag[]> => {
+    const params = rootId ? { root_id: rootId } : {};
+    return apiClient.get('/api/v1/enhanced-tags/hierarchy', { params });
+  },
+
+  moveTag: async (tagId: number, newParentId?: number): Promise<EnhancedTag> => {
+    return apiClient.post(`/api/v1/enhanced-tags/${tagId}/move`, { parent_id: newParentId });
+  },
+
+  // Search and filtering
+  search: async (query: string, filters?: TagSearchFilters): Promise<EnhancedTag[]> => {
+    return apiClient.get('/api/v1/enhanced-tags/search', { 
+      params: { q: query, ...filters } 
+    });
+  },
+
+  // Analytics
+  getAnalytics: async (tagId: number): Promise<TagAnalytics> => {
+    return apiClient.get(`/api/v1/enhanced-tags/${tagId}/analytics`);
+  },
+
+  getUsageStats: async (period?: string): Promise<any> => {
+    return apiClient.get('/api/v1/enhanced-tags/usage-stats', { 
+      params: { period } 
+    });
+  },
+
+  // Auto-tagging rules
+  getRules: async (): Promise<AutoTagRule[]> => {
+    return apiClient.get('/api/v1/enhanced-tags/auto-tag-rules');
+  },
+
+  createRule: async (data: Omit<AutoTagRule, 'id' | 'created_at' | 'updated_at'>): Promise<AutoTagRule> => {
+    return apiClient.post('/api/v1/enhanced-tags/auto-tag-rules', data);
+  },
+
+  updateRule: async (id: number, data: Partial<AutoTagRule>): Promise<AutoTagRule> => {
+    return apiClient.put(`/api/v1/enhanced-tags/auto-tag-rules/${id}`, data);
+  },
+
+  deleteRule: async (id: number): Promise<void> => {
+    return apiClient.delete(`/api/v1/enhanced-tags/auto-tag-rules/${id}`);
+  },
+
+  testRule: async (ruleId: number, documentId: number): Promise<{ matches: boolean; confidence: number }> => {
+    return apiClient.post(`/api/v1/enhanced-tags/auto-tag-rules/${ruleId}/test`, { document_id: documentId });
+  },
+
+  // Tag suggestions
+  getSuggestions: async (documentId: number): Promise<TagSuggestion[]> => {
+    return apiClient.get(`/api/v1/enhanced-tags/suggestions/${documentId}`);
+  },
+
+  acceptSuggestion: async (suggestionId: number): Promise<void> => {
+    return apiClient.post(`/api/v1/enhanced-tags/suggestions/${suggestionId}/accept`);
+  },
+
+  rejectSuggestion: async (suggestionId: number): Promise<void> => {
+    return apiClient.post(`/api/v1/enhanced-tags/suggestions/${suggestionId}/reject`);
+  },
+
+  // Templates
+  getTemplates: async (): Promise<TagTemplate[]> => {
+    return apiClient.get('/api/v1/enhanced-tags/templates');
+  },
+
+  createTemplate: async (data: Omit<TagTemplate, 'id' | 'created_at' | 'updated_at'>): Promise<TagTemplate> => {
+    return apiClient.post('/api/v1/enhanced-tags/templates', data);
+  },
+
+  applyTemplate: async (templateId: number, documentIds: number[]): Promise<void> => {
+    return apiClient.post(`/api/v1/enhanced-tags/templates/${templateId}/apply`, { document_ids: documentIds });
+  },
+
+  // Bulk operations
+  bulkOperation: async (operation: TagBulkOperation): Promise<any> => {
+    return apiClient.post('/api/v1/enhanced-tags/bulk', operation);
+  },
+
+  // Document tagging
+  tagDocument: async (documentId: number, tagIds: number[]): Promise<void> => {
+    return apiClient.post(`/api/v1/enhanced-tags/documents/${documentId}/tags`, { tag_ids: tagIds });
+  },
+
+  untagDocument: async (documentId: number, tagIds: number[]): Promise<void> => {
+    return apiClient.delete(`/api/v1/enhanced-tags/documents/${documentId}/tags`, { data: { tag_ids: tagIds } });
+  },
+
+  getDocumentTags: async (documentId: number): Promise<EnhancedTag[]> => {
+    return apiClient.get(`/api/v1/enhanced-tags/documents/${documentId}/tags`);
+  },
+
+  // Import/Export
+  exportTags: async (format: 'json' | 'csv' = 'json'): Promise<Blob> => {
+    return apiClient.get(`/api/v1/enhanced-tags/export?format=${format}`, { responseType: 'blob' });
+  },
+
+  importTags: async (file: File): Promise<{ imported: number; errors: string[] }> => {
+    const formData = new FormData();
+    formData.append('file', file);
+    return apiClient.post('/api/v1/enhanced-tags/import', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
   },
 };
 

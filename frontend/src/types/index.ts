@@ -161,6 +161,126 @@ export interface Tag {
   updated_at: string;
 }
 
+// Enhanced Tag Management Types
+export interface EnhancedTag {
+  id: number;
+  name: string;
+  description?: string;
+  color: string;
+  icon?: string;
+  category?: string;
+  is_system: boolean;
+  is_active: boolean;
+  usage_count: number;
+  parent_id?: number;
+  parent?: EnhancedTag;
+  children?: EnhancedTag[];
+  level: number;
+  path: string;
+  tag_metadata?: Record<string, any>;
+  created_by: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface TagHierarchy {
+  id: number;
+  parent_id: number;
+  child_id: number;
+  level: number;
+  path: string;
+  created_at: string;
+}
+
+export interface TagAnalytics {
+  id: number;
+  tag_id: number;
+  document_count: number;
+  usage_trend: Record<string, any>;
+  last_used_at?: string;
+  avg_confidence_score?: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface AutoTagRule {
+  id: number;
+  name: string;
+  description?: string;
+  tag_id: number;
+  rule_type: 'content_match' | 'filename_pattern' | 'metadata_condition' | 'ml_classification';
+  conditions: Record<string, any>;
+  confidence_threshold: number;
+  is_active: boolean;
+  priority: number;
+  created_by: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface TagSuggestion {
+  id: number;
+  document_id: number;
+  tag_id: number;
+  confidence_score: number;
+  suggestion_source: 'ml_model' | 'content_analysis' | 'user_pattern' | 'rule_based';
+  is_accepted?: boolean;
+  reviewed_by?: number;
+  reviewed_at?: string;
+  created_at: string;
+}
+
+export interface TagTemplate {
+  id: number;
+  name: string;
+  description?: string;
+  category: string;
+  tags: number[];
+  is_default: boolean;
+  created_by: number;
+  created_at: string;
+  updated_at: string;
+}
+
+// Tag API Request/Response Types
+export interface TagCreate {
+  name: string;
+  description?: string;
+  color?: string;
+  icon?: string;
+  category?: string;
+  parent_id?: number;
+  tag_metadata?: Record<string, any>;
+}
+
+export interface TagUpdate {
+  name?: string;
+  description?: string;
+  color?: string;
+  icon?: string;
+  category?: string;
+  parent_id?: number;
+  is_active?: boolean;
+  tag_metadata?: Record<string, any>;
+}
+
+export interface TagBulkOperation {
+  operation: 'create' | 'update' | 'delete' | 'merge';
+  tag_ids?: number[];
+  data?: any;
+}
+
+export interface TagSearchFilters {
+  category?: string;
+  is_system?: boolean;
+  is_active?: boolean;
+  parent_id?: number;
+  usage_min?: number;
+  usage_max?: number;
+  created_after?: string;
+  created_before?: string;
+}
+
 export interface Workflow {
   id: number;
   name: string;
@@ -280,4 +400,110 @@ export interface AnalyticsData {
   total: number;
   change: number;
   change_percentage: number;
+}
+
+// Document Sharing Types
+export interface DocumentShare {
+  id: number;
+  document_id: number;
+  shared_by_user_id: number;
+  shared_with_user_id: number;
+  shared_by?: User;
+  shared_with?: User;
+  can_view: boolean;
+  can_edit: boolean;
+  can_download: boolean;
+  expires_at?: string;
+  message?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ShareLinkCreate {
+  link_type: 'public' | 'private' | 'password_protected';
+  password?: string;
+  expires_at?: string;
+  max_downloads?: number;
+  can_view: boolean;
+  can_download: boolean;
+  can_comment: boolean;
+}
+
+export interface ShareLinkResponse {
+  id: number;
+  document_id: number;
+  token: string;
+  link_type: 'public' | 'private' | 'password_protected';
+  expires_at?: string;
+  max_downloads?: number;
+  download_count: number;
+  is_active: boolean;
+  can_view: boolean;
+  can_download: boolean;
+  can_comment: boolean;
+  created_at: string;
+  created_by: number;
+}
+
+export interface DocumentShareCreate {
+  shared_with_user_id: number;
+  can_view: boolean;
+  can_edit: boolean;
+  can_download: boolean;
+  expires_at?: string;
+  message?: string;
+}
+
+// Comment Types
+export interface Comment {
+  id: number;
+  document_id: number;
+  parent_id?: number;
+  content: string;
+  is_resolved: boolean;
+  page_number?: number;
+  x_position?: number;
+  y_position?: number;
+  author: number;
+  author_name?: string;
+  replies: Comment[];
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CommentCreate {
+  document_id: number;
+  parent_id?: number;
+  content: string;
+  page_number?: number;
+  x_position?: number;
+  y_position?: number;
+}
+
+export interface CommentUpdate {
+  content?: string;
+  is_resolved?: boolean;
+}
+
+// Shared Documents Response
+export interface SharedDocumentsResponse {
+  items: Array<{
+    id: number;
+    filename: string;
+    original_filename: string;
+    document_type: DocumentType;
+    status: DocumentStatus;
+    file_size: number;
+    created_at: string;
+    shared_by: string;
+    shared_at: string;
+    can_edit: boolean;
+    can_download: boolean;
+    expires_at?: string;
+    message?: string;
+  }>;
+  total: number;
+  page: number;
+  page_size: number;
+  pages: number;
 }

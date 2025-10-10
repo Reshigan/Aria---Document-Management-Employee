@@ -287,15 +287,17 @@ async def _generate_search_facets(db: Session, user: User, search_request: Searc
     # Top tags
     tag_query = select(
         Tag.name,
-        func.count(DocumentTag.document_id).label('count')
-    ).join(DocumentTag).join(Document).where(
-        Document.uploaded_by == current_user.id if not current_user.is_superuser else True
+        func.count(document_tags.c.document_id).label('count')
+    ).select_from(
+        Tag.__table__.join(document_tags).join(Document.__table__)
+    ).where(
+        Document.uploaded_by == user.id if not user.is_superuser else True
     ).group_by(Tag.name).order_by(
-        func.count(DocumentTag.document_id).desc()
+        func.count(document_tags.c.document_id).desc()
     ).limit(10)
     
     tag_result = await db.execute(tag_query)
-    tag_facets = tag_result.all()
+    tag_facets = tag_result.fetchall()
     
     return {
         "document_types": [{"type": dt[0], "count": dt[1]} for dt in doc_types if dt[0]],
@@ -383,9 +385,10 @@ async def delete_search_history_item(
     db: AsyncSession = Depends(get_db)
 ):
     """Delete a search history item"""
-    search = select(SearchQuery).where(
+    result = await db.execute(select(SearchQuery).where(
         and_(SearchQuery.id == search_id, SearchQuery.user_id == current_user.id)
-    ).first()
+    ))
+    search = result.scalar_one_or_none()
     
     if not search:
         raise HTTPException(
@@ -405,9 +408,10 @@ async def clear_search_history(
     db: AsyncSession = Depends(get_db)
 ):
     """Clear all search history for current user"""
-    deleted_count = select(SearchQuery).where(
+    result = await db.execute(delete(SearchQuery).where(
         SearchQuery.user_id == current_user.id
-    ).delete()
+    ))
+    deleted_count = result.rowcount
     
     await db.commit()
     
@@ -437,27 +441,30 @@ async def get_search_analytics(
     total_searches = count_result.scalar()
     
     # Top queries
-    top_queries = select(
+    top_queries_result = await db.execute(select(
         SearchQuery.query,
         func.count(SearchQuery.id).label('count')
     ).where(
         SearchQuery.created_at >= since_date
     ).group_by(SearchQuery.query).order_by(
         func.count(SearchQuery.id).desc()
-    ).limit(10).all()
+    ).limit(10))
+    top_queries = top_queries_result.fetchall()
     
     # Average search time
-    avg_search_time = select(
-        func.avg(SearchQuery.search_time_ms)
-    ).where(SearchQuery.created_at >= since_date).scalar() or 0
+    avg_result = await db.execute(select(
+        func.avg(SearchQuery.execution_time)
+    ).where(SearchQuery.created_at >= since_date))
+    avg_search_time = avg_result.scalar() or 0
     
     # Searches by day
-    daily_searches = select(
+    daily_result = await db.execute(select(
         func.date(SearchQuery.created_at).label('date'),
         func.count(SearchQuery.id).label('count')
     ).where(
         SearchQuery.created_at >= since_date
-    ).group_by(func.date(SearchQuery.created_at)).order_by('date').all()
+    ).group_by(func.date(SearchQuery.created_at)).order_by('date'))
+    daily_searches = daily_result.fetchall()
     
     return {
         "total_searches": total_searches,
