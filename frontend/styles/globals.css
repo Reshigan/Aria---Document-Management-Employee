@@ -1,0 +1,447 @@
+/* VantaX ARIA Theme - Glassmorphism Black & Yellow */
+/* This CSS file integrates VantaX branding into ARIA */
+
+:root {
+  /* VantaX Color Palette */
+  --vx-primary-gold: #FFD700;
+  --vx-secondary-gold: #FFA500;
+  --vx-black: #000000;
+  --vx-dark-gray: #1a1a1a;
+  --vx-medium-gray: #2a2a2a;
+  --vx-light-gray: #3a3a3a;
+  
+  /* Glassmorphism Variables */
+  --glass-bg: rgba(255, 255, 255, 0.05);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-yellow-bg: rgba(255, 215, 0, 0.1);
+  --glass-yellow-border: rgba(255, 215, 0, 0.2);
+  
+  /* Typography */
+  --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-weight-light: 300;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-black: 900;
+  
+  /* Spacing */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-2xl: 3rem;
+  
+  /* Border Radius */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-2xl: 24px;
+  
+  /* Shadows */
+  --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  --shadow-glass-yellow: 0 8px 32px rgba(255, 215, 0, 0.1), inset 0 1px 0 rgba(255, 215, 0, 0.2);
+  --shadow-button: 0 4px 20px rgba(255, 215, 0, 0.3);
+  --shadow-button-hover: 0 6px 25px rgba(255, 215, 0, 0.4);
+}
+
+/* Base Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  font-family: var(--font-primary);
+  background: linear-gradient(135deg, var(--vx-black) 0%, var(--vx-dark-gray) 25%, var(--vx-medium-gray) 50%, var(--vx-dark-gray) 75%, var(--vx-black) 100%);
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
+  color: #ffffff;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Glassmorphism Components */
+.vx-glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-glass);
+}
+
+.vx-glass-yellow {
+  background: var(--glass-yellow-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-yellow-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-glass-yellow);
+}
+
+/* VantaX Logo Component */
+.vx-logo {
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, var(--vx-primary-gold), var(--vx-secondary-gold));
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: var(--font-weight-black);
+  font-size: 1.5rem;
+  color: var(--vx-black);
+  box-shadow: var(--shadow-button);
+  animation: vxPulse 2s ease-in-out infinite alternate;
+}
+
+@keyframes vxPulse {
+  0% { box-shadow: var(--shadow-button); }
+  100% { box-shadow: var(--shadow-button-hover); }
+}
+
+/* Typography */
+.vx-text-gradient {
+  background: linear-gradient(135deg, var(--vx-primary-gold), var(--vx-secondary-gold));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.vx-title {
+  font-size: 2rem;
+  font-weight: var(--font-weight-bold);
+  margin-bottom: var(--spacing-md);
+}
+
+.vx-subtitle {
+  font-size: 1.2rem;
+  font-weight: var(--font-weight-semibold);
+  color: var(--vx-primary-gold);
+  margin-bottom: var(--spacing-sm);
+}
+
+.vx-text-muted {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Buttons */
+.vx-btn {
+  padding: var(--spacing-md) var(--spacing-lg);
+  border: none;
+  border-radius: var(--radius-md);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  text-decoration: none;
+  font-size: 1rem;
+}
+
+.vx-btn-primary {
+  background: linear-gradient(135deg, var(--vx-primary-gold), var(--vx-secondary-gold));
+  color: var(--vx-black);
+  box-shadow: var(--shadow-button);
+}
+
+.vx-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-button-hover);
+}
+
+.vx-btn-secondary {
+  background: var(--glass-bg);
+  color: #ffffff;
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(10px);
+}
+
+.vx-btn-secondary:hover {
+  background: var(--glass-yellow-bg);
+  border-color: var(--glass-yellow-border);
+}
+
+.vx-btn-ghost {
+  background: transparent;
+  color: var(--vx-primary-gold);
+  border: 1px solid var(--vx-primary-gold);
+}
+
+.vx-btn-ghost:hover {
+  background: var(--glass-yellow-bg);
+}
+
+.vx-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Form Elements */
+.vx-input {
+  width: 100%;
+  padding: var(--spacing-md);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  color: #ffffff;
+  font-size: 1rem;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.vx-input:focus {
+  outline: none;
+  border-color: var(--vx-primary-gold);
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
+}
+
+.vx-input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.vx-textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+/* Cards */
+.vx-card {
+  padding: var(--spacing-xl);
+  margin-bottom: var(--spacing-lg);
+  transition: all 0.3s ease;
+}
+
+.vx-card:hover {
+  transform: translateY(-2px);
+}
+
+.vx-card-header {
+  margin-bottom: var(--spacing-lg);
+}
+
+.vx-card-title {
+  font-size: 1.5rem;
+  font-weight: var(--font-weight-bold);
+  margin-bottom: var(--spacing-sm);
+}
+
+.vx-card-description {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Status Indicators */
+.vx-status {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-xl);
+  font-size: 0.875rem;
+  font-weight: var(--font-weight-medium);
+}
+
+.vx-status-online {
+  background: rgba(0, 255, 0, 0.1);
+  border: 1px solid rgba(0, 255, 0, 0.3);
+  color: #00ff00;
+}
+
+.vx-status-processed {
+  background: var(--glass-yellow-bg);
+  border: 1px solid var(--glass-yellow-border);
+  color: var(--vx-primary-gold);
+}
+
+.vx-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+  animation: vxBlink 2s ease-in-out infinite;
+}
+
+@keyframes vxBlink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0.3; }
+}
+
+/* Document Items */
+.vx-document-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  transition: all 0.3s ease;
+  margin-bottom: var(--spacing-sm);
+}
+
+.vx-document-item:hover {
+  background: var(--glass-yellow-bg);
+  border-color: var(--glass-yellow-border);
+  transform: translateX(5px);
+}
+
+.vx-document-icon {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, var(--vx-primary-gold), var(--vx-secondary-gold));
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--vx-black);
+  font-weight: var(--font-weight-semibold);
+  font-size: 1.2rem;
+}
+
+/* Floating Elements */
+.vx-floating-orb {
+  position: fixed;
+  width: 100px;
+  height: 100px;
+  background: radial-gradient(circle, rgba(255, 215, 0, 0.1), transparent);
+  border-radius: 50%;
+  pointer-events: none;
+  animation: vxFloat 6s ease-in-out infinite;
+}
+
+@keyframes vxFloat {
+  0%, 100% { transform: translateY(0px) scale(1); }
+  50% { transform: translateY(-20px) scale(1.1); }
+}
+
+/* Utility Classes */
+.vx-flex { display: flex; }
+.vx-flex-col { flex-direction: column; }
+.vx-items-center { align-items: center; }
+.vx-justify-center { justify-content: center; }
+.vx-justify-between { justify-content: space-between; }
+.vx-gap-sm { gap: var(--spacing-sm); }
+.vx-gap-md { gap: var(--spacing-md); }
+.vx-gap-lg { gap: var(--spacing-lg); }
+
+.vx-p-sm { padding: var(--spacing-sm); }
+.vx-p-md { padding: var(--spacing-md); }
+.vx-p-lg { padding: var(--spacing-lg); }
+.vx-p-xl { padding: var(--spacing-xl); }
+
+.vx-m-sm { margin: var(--spacing-sm); }
+.vx-m-md { margin: var(--spacing-md); }
+.vx-m-lg { margin: var(--spacing-lg); }
+.vx-m-xl { margin: var(--spacing-xl); }
+
+.vx-w-full { width: 100%; }
+.vx-h-full { height: 100%; }
+
+.vx-text-center { text-align: center; }
+.vx-text-left { text-align: left; }
+.vx-text-right { text-align: right; }
+
+.vx-font-light { font-weight: var(--font-weight-light); }
+.vx-font-normal { font-weight: var(--font-weight-normal); }
+.vx-font-medium { font-weight: var(--font-weight-medium); }
+.vx-font-semibold { font-weight: var(--font-weight-semibold); }
+.vx-font-bold { font-weight: var(--font-weight-bold); }
+
+/* Animation Classes */
+.vx-animate-fade-in {
+  animation: vxFadeIn 0.5s ease-out;
+}
+
+@keyframes vxFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.vx-animate-slide-up {
+  animation: vxSlideUp 0.5s ease-out;
+}
+
+@keyframes vxSlideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .vx-title {
+    font-size: 1.5rem;
+  }
+  
+  .vx-card {
+    padding: var(--spacing-lg);
+  }
+}
+
+@media (max-width: 768px) {
+  :root {
+    --spacing-md: 0.75rem;
+    --spacing-lg: 1rem;
+    --spacing-xl: 1.5rem;
+  }
+  
+  .vx-logo {
+    width: 40px;
+    height: 40px;
+    font-size: 1.2rem;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--glass-bg);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--glass-yellow-bg);
+  border-radius: 4px;
+  border: 1px solid var(--glass-yellow-border);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 215, 0, 0.3);
+}
+
+/* Legacy compatibility for existing styles */
+button:hover {
+  opacity: 0.9;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+input:focus, button:focus {
+  outline: 2px solid var(--vx-primary-gold);
+  outline-offset: 2px;
+}

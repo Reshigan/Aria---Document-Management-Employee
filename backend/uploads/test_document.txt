@@ -1,0 +1,32 @@
+INVOICE
+
+Invoice Number: INV-2024-001
+Date: October 11, 2024
+Due Date: November 11, 2024
+
+Bill To:
+ARIA Document Management Systems
+123 Business Street
+Tech City, TC 12345
+
+From:
+Professional Services Inc.
+456 Service Avenue
+Business Town, BT 67890
+Phone: (555) 123-4567
+Email: billing@proservices.com
+
+Description                    Quantity    Rate        Amount
+Document Processing Setup         1        $2,500.00   $2,500.00
+OCR Integration Services          1        $1,800.00   $1,800.00
+AI Classification Setup          1        $2,200.00   $2,200.00
+Testing and Deployment           1        $1,000.00   $1,000.00
+
+                                          Subtotal:    $7,500.00
+                                          Tax (8%):      $600.00
+                                          Total:       $8,100.00
+
+Payment Terms: Net 30 days
+Payment Method: Check or Bank Transfer
+
+Thank you for your business!
