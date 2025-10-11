@@ -23,6 +23,10 @@ from services.workflow_service import WorkflowService
 from services.notifications.enhanced_notification_service import EnhancedNotificationService
 from services.analytics_service import AnalyticsService
 from services.security_service import SecurityService
+
+# Import compliance and mobile APIs
+from backend.app.api.compliance import router as compliance_router
+from backend.app.api.mobile import router as mobile_router
 from schemas.workflow_schemas import (
     WorkflowCreate, WorkflowUpdate, WorkflowListResponse,
     WorkflowTemplateCreate, WorkflowTemplateUpdate, WorkflowTemplateListResponse,
@@ -143,6 +147,12 @@ app.include_router(document_processing_router)
 # Include version control routes
 from api.routes.version_control import router as version_control_router
 app.include_router(version_control_router)
+
+# Include compliance routes
+app.include_router(compliance_router)
+
+# Include mobile routes
+app.include_router(mobile_router)
 
 # Pydantic models
 class UserLogin(PydanticBaseModel):
