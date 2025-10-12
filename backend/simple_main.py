@@ -1199,10 +1199,10 @@ async def chat_with_ai(
                 "stream": False,
                 "options": {
                     "temperature": 0.7,
-                    "max_tokens": 500
+                    "num_predict": 500
                 }
             },
-            timeout=30
+            timeout=60
         )
         
         if response.status_code == 200:

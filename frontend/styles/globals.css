@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 /* VantaX ARIA Theme - Glassmorphism Black & Yellow */
 /* This CSS file integrates VantaX branding into ARIA */
 

@@ -1,0 +1,21 @@
+INVOICE
+
+Company: ARIA Technologies Inc.
+Invoice Number: ARIA-2025-TEST-001
+Date: October 12, 2025
+
+Bill To:
+OpenHands Development Team
+123 AI Street
+Tech City, TC 12345
+
+Description: Software Development Services
+Amount: $2,500.00
+Tax: $250.00
+Total: $2,750.00
+
+Payment Terms: Net 30 days
+Contact: billing@aria-tech.com
+Phone: +1-555-ARIA-001
+
+Thank you for your business!

@@ -1,16 +1,41 @@
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/router'
+import Link from 'next/link'
 import axios from 'axios'
 
 export default function Home() {
+  console.log('Home component rendering...')
+  const router = useRouter()
   const [user, setUser] = useState(null)
+  const [isClient, setIsClient] = useState(false)
+  const [testClicked, setTestClicked] = useState(false)
+  const [loginAttempts, setLoginAttempts] = useState(0)
+  const [loginStatus, setLoginStatus] = useState('Ready')
+  console.log('Current user state:', user)
   const [documents, setDocuments] = useState([])
   const [chatMessage, setChatMessage] = useState('')
   const [chatResponse, setChatResponse] = useState('')
-  const [loginForm, setLoginForm] = useState({ username: '', password: '' })
+  const [loginForm, setLoginForm] = useState({ username: 'admin', password: 'admin123' })
   const [file, setFile] = useState(null)
 
   useEffect(() => {
+    console.log('🔍 USEEFFECT START: Setting isClient to true')
+    setIsClient(true)
+    if (typeof window === 'undefined') {
+      console.log('🔍 WINDOW UNDEFINED: Running on server side')
+      return
+    }
+    console.log('🔍 CLIENT SIDE DETECTED: useEffect running on client side')
+    console.log('🔍 WINDOW AVAILABLE:', typeof window)
+    console.log('🔍 DOCUMENT AVAILABLE:', typeof document)
+    
+    // Test setTimeout to verify JavaScript execution
+    setTimeout(() => {
+      console.log('🔍 TIMEOUT EXECUTED: Client-side JavaScript is working!')
+    }, 500)
+    
     const token = localStorage.getItem('token')
+    console.log('🔍 TOKEN FROM LOCALSTORAGE:', token ? 'present' : 'not found')
     if (token) {
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
       fetchUser()
@@ -18,35 +43,89 @@ export default function Home() {
     }
   }, [])
 
+  // useEffect to handle login when loginAttempts changes
+  useEffect(() => {
+    if (loginAttempts > 0) {
+      setLoginStatus(`Triggered attempt ${loginAttempts}`)
+      console.log('🚀 LOGIN TRIGGERED by state change, attempt:', loginAttempts)
+      // Implement login logic directly here instead of calling handleLogin()
+      const performLogin = async () => {
+        try {
+          setLoginStatus('Sending request...')
+          console.log('Sending login request...')
+          const response = await axios.post('/api/auth/login', loginForm)
+          console.log('Login response:', response.data)
+          const { access_token, user } = response.data
+          console.log('Setting token and user:', { access_token: access_token ? 'present' : 'missing', user })
+          if (typeof window !== 'undefined') {
+            localStorage.setItem('token', access_token)
+            console.log('Token stored in localStorage')
+          }
+          axios.defaults.headers.common['Authorization'] = `Bearer ${access_token}`
+          console.log('Authorization header set')
+          setUser(user)
+          setLoginStatus('SUCCESS! Logged in')
+          console.log('User state set')
+          console.log('Login process completed successfully')
+        } catch (error) {
+          console.error('Login error:', error)
+          setLoginStatus('ERROR: ' + (error.response?.data?.detail || 'Unknown error'))
+          // Can't use alert() here, so we'll just log the error
+          console.error('Login failed:', error.response?.data?.detail || 'Unknown error')
+        }
+      }
+      performLogin()
+    }
+  }, [loginAttempts])
+
   const fetchUser = async () => {
     try {
       const response = await axios.get('/api/auth/me')
       setUser(response.data)
     } catch (error) {
       console.error('Failed to fetch user:', error)
-      localStorage.removeItem('token')
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('token')
+      }
     }
   }
 
   const fetchDocuments = async () => {
+    console.log('fetchDocuments called')
     try {
+      console.log('Fetching documents from /api/documents')
       const response = await axios.get('/api/documents')
+      console.log('Documents response:', response.data)
       setDocuments(response.data.documents || [])
+      console.log('Documents state updated')
     } catch (error) {
       console.error('Failed to fetch documents:', error)
     }
   }
 
-  const handleLogin = async (e) => {
-    e.preventDefault()
+  const handleLogin = async () => {
+    console.log('=== HANDLE LOGIN CALLED ===')
+    console.log('Login form submitted:', loginForm)
+    setLoginStatus('Sending request...')
     try {
+      console.log('Sending login request...')
       const response = await axios.post('/api/auth/login', loginForm)
+      console.log('Login response:', response.data)
       const { access_token, user } = response.data
-      localStorage.setItem('token', access_token)
+      console.log('Setting token and user:', { access_token: access_token ? 'present' : 'missing', user })
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('token', access_token)
+        console.log('Token stored in localStorage')
+      }
       axios.defaults.headers.common['Authorization'] = `Bearer ${access_token}`
+      console.log('Authorization header set')
       setUser(user)
-      fetchDocuments()
+      setLoginStatus('✅ Login successful!')
+      console.log('User state set')
+      console.log('Login process completed successfully')
     } catch (error) {
+      console.error('Login error:', error)
+      setLoginStatus('❌ Login failed!')
       alert('Login failed: ' + (error.response?.data?.detail || 'Unknown error'))
     }
   }
@@ -84,7 +163,9 @@ export default function Home() {
   }
 
   const handleLogout = () => {
-    localStorage.removeItem('token')
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('token')
+    }
     delete axios.defaults.headers.common['Authorization']
     setUser(null)
     setDocuments([])
@@ -117,7 +198,7 @@ export default function Home() {
               </p>
             </div>
 
-            <form onSubmit={handleLogin}>
+            <div>
               <div className="vx-m-md">
                 <input
                   type="text"
@@ -136,17 +217,48 @@ export default function Home() {
                   className="vx-input"
                 />
               </div>
-              <button type="submit" className="vx-btn vx-btn-primary vx-w-full vx-m-md">
-                <span>🚀</span>
-                Login to ARIA
-              </button>
-            </form>
+              {isClient && (
+                <button onClick={() => setTestClicked(!testClicked)} className="vx-btn vx-btn-secondary vx-w-full vx-m-md">
+                  Test Button {testClicked ? '✅ CLICKED!' : '(Click Me)'}
+                </button>
+              )}
+              {isClient && (
+                <button onClick={() => {
+                  setLoginAttempts(loginAttempts + 1)
+                  handleLogin()
+                }} className="vx-btn vx-btn-primary vx-w-full vx-m-md">
+                  <span>🚀</span>
+                  Login to ARIA {loginAttempts > 0 ? `(Clicked ${loginAttempts} times!)` : '(Click Me)'}
+                </button>
+              )}
+              {isClient && (
+                <div className="vx-text-center vx-m-md">
+                  <strong>Login Status: {loginStatus}</strong>
+                </div>
+              )}
+            </div>
 
             <div className="vx-text-center vx-m-lg">
               <p className="vx-text-muted" style={{ fontSize: '0.875rem' }}>
                 Default credentials: <span className="vx-text-gradient">admin / admin123</span>
               </p>
             </div>
+
+            {/* DEBUG: Minimal login button outside main structure */}
+            {isClient && (
+              <div style={{ padding: '20px', border: '2px solid red', margin: '20px' }}>
+                <h3>DEBUG SECTION</h3>
+                <button 
+                  onClick={() => {
+                    console.log('🟢 MINIMAL LOGIN BUTTON CLICKED!')
+                    handleLogin()
+                  }}
+                  style={{ padding: '10px', backgroundColor: 'green', color: 'white' }}
+                >
+                  MINIMAL LOGIN TEST
+                </button>
+              </div>
+            )}
 
             {/* System Status */}
             <div className="vx-flex vx-justify-center vx-gap-sm vx-m-lg">
@@ -298,7 +410,15 @@ export default function Home() {
           ) : (
             <div style={{ display: 'grid', gap: '15px' }}>
               {documents.map((doc) => (
-                <div key={doc.id} className="vx-document-item">
+                <div 
+                  key={doc.id} 
+                  className="vx-document-item" 
+                  style={{ cursor: 'pointer', textDecoration: 'none', color: 'inherit' }}
+                  onClick={() => {
+                    console.log('Navigating to document:', doc.id);
+                    router.push(`/doc/${doc.id}`);
+                  }}
+                >
                   <div className="vx-document-icon">
                     {doc.document_category === 'invoice' ? '📄' : 
                      doc.document_category === 'remittance' ? '💰' :
