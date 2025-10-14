@@ -304,7 +304,7 @@ class Workflow(BaseModel):
     steps = relationship("WorkflowStep", back_populates="workflow", cascade="all, delete-orphan")
     
     # Notification relationships
-    notifications = relationship("Notification")
+    notifications = relationship("Notification", back_populates="workflow")
     notification_subscriptions = relationship("NotificationSubscription", back_populates="workflow")
     template = relationship("WorkflowTemplate")
     creator = relationship("User", foreign_keys=[created_by])
