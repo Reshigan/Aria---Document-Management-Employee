@@ -25,8 +25,8 @@ from services.analytics_service import AnalyticsService
 from services.security_service import SecurityService
 
 # Import compliance and mobile APIs
-from backend.app.api.compliance import router as compliance_router
-from backend.app.api.mobile import router as mobile_router
+from app.api.compliance import router as compliance_router
+from app.api.mobile import router as mobile_router
 from schemas.workflow_schemas import (
     WorkflowCreate, WorkflowUpdate, WorkflowListResponse,
     WorkflowTemplateCreate, WorkflowTemplateUpdate, WorkflowTemplateListResponse,
