@@ -8,7 +8,7 @@ from .advanced import (
     Folder, FolderPermission, Tag, DocumentVersionSimple, ShareLink, DocumentShare, Comment,
     Workflow, WorkflowTemplate, WorkflowStep, WorkflowStepTemplate,
     ActivityLog, SearchQuery, DocumentFavorite,
-    DocumentView, ShareLinkType, NotificationType, WorkflowStatus,
+    DocumentView, ShareLinkType, WorkflowStatus,
     WorkflowStepType, WorkflowStepStatus, document_tags, document_shares,
     folder_permissions
 )
