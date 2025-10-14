@@ -8,7 +8,6 @@ export default function Home() {
   const router = useRouter()
   const [user, setUser] = useState(null)
   const [isClient, setIsClient] = useState(false)
-  const [testClicked, setTestClicked] = useState(false)
   const [loginAttempts, setLoginAttempts] = useState(0)
   const [loginStatus, setLoginStatus] = useState('Ready')
   console.log('Current user state:', user)
@@ -17,6 +16,40 @@ export default function Home() {
   const [chatResponse, setChatResponse] = useState('')
   const [loginForm, setLoginForm] = useState({ username: 'admin', password: 'admin123' })
   const [file, setFile] = useState(null)
+
+  // Helper function to format document dates
+  const formatDocumentDate = (dateString) => {
+    if (!dateString) return 'No date'
+    
+    try {
+      // Handle different date formats
+      let date
+      
+      // If it's already a valid date string with timezone
+      if (dateString.includes('T') && (dateString.includes('+') || dateString.includes('Z'))) {
+        date = new Date(dateString)
+      } else {
+        // If it's a simple date string, parse it
+        date = new Date(dateString)
+      }
+      
+      // Check if date is valid
+      if (isNaN(date.getTime())) {
+        return 'Invalid Date'
+      }
+      
+      // Format for South African locale
+      return date.toLocaleDateString('en-ZA', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        timeZone: 'Africa/Johannesburg'
+      })
+    } catch (error) {
+      console.error('Date formatting error:', error, 'for date:', dateString)
+      return 'Invalid Date'
+    }
+  }
 
   useEffect(() => {
     console.log('🔍 USEEFFECT START: Setting isClient to true')
@@ -28,12 +61,12 @@ export default function Home() {
     console.log('🔍 CLIENT SIDE DETECTED: useEffect running on client side')
     console.log('🔍 WINDOW AVAILABLE:', typeof window)
     console.log('🔍 DOCUMENT AVAILABLE:', typeof document)
-    
+
     // Test setTimeout to verify JavaScript execution
     setTimeout(() => {
       console.log('🔍 TIMEOUT EXECUTED: Client-side JavaScript is working!')
     }, 500)
-    
+
     const token = localStorage.getItem('token')
     console.log('🔍 TOKEN FROM LOCALSTORAGE:', token ? 'present' : 'not found')
     if (token) {
@@ -69,7 +102,7 @@ export default function Home() {
           console.log('Login process completed successfully')
         } catch (error) {
           console.error('Login error:', error)
-          setLoginStatus('ERROR: ' + (error.response?.data?.detail || 'Unknown error'))
+          setLoginStatus('❌ Login failed!')
           // Can't use alert() here, so we'll just log the error
           console.error('Login failed:', error.response?.data?.detail || 'Unknown error')
         }
@@ -78,6 +111,46 @@ export default function Home() {
     }
   }, [loginAttempts])
 
+
+  const handleLogin = () => {
+    setLoginStatus('🔄 Starting login...')
+    
+    setTimeout(() => {
+      setLoginStatus('🔄 Sending request to /api/auth/login...')
+      
+      fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(loginForm)
+      })
+      .then(response => {
+        setLoginStatus('🔄 Got response, processing...')
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`)
+        }
+        return response.json()
+      })
+      .then(data => {
+        setLoginStatus('🔄 Processing login data...')
+        console.log('Login successful:', data)
+        
+        if (data.access_token) {
+          localStorage.setItem('token', data.access_token)
+          setUser(data.user || { username: loginForm.username })
+          setLoginStatus('✅ Login successful!')
+        } else {
+          throw new Error('No access token received')
+        }
+      })
+      .catch(error => {
+        const errorMsg = error.message || 'Unknown error'
+        setLoginStatus(`❌ Login failed: ${errorMsg}`)
+        alert('Login failed: ' + errorMsg)
+      })
+    }, 100)
+  }
   const fetchUser = async () => {
     try {
       const response = await axios.get('/api/auth/me')
@@ -244,11 +317,6 @@ export default function Home() {
                 />
               </div>
               {isClient && (
-                <button onClick={() => setTestClicked(!testClicked)} className="vx-btn vx-btn-secondary vx-w-full vx-m-md">
-                  Test Button {testClicked ? '✅ CLICKED!' : '(Click Me)'}
-                </button>
-              )}
-              {isClient && (
                 <button onClick={() => {
                   setLoginAttempts(loginAttempts + 1)
                   handleLogin()
@@ -274,7 +342,7 @@ export default function Home() {
             {isClient && (
               <div style={{ padding: '20px', border: '2px solid red', margin: '20px' }}>
                 <h3>DEBUG SECTION</h3>
-                <button 
+                <button
                   onClick={() => {
                     console.log('🟢 MINIMAL LOGIN BUTTON CLICKED!')
                     handleLogin()
@@ -308,13 +376,13 @@ export default function Home() {
 
       <div style={{ padding: '20px', maxWidth: '1400px', margin: '0 auto' }}>
         {/* VantaX Header */}
-        <header className="vx-glass vx-animate-fade-in" style={{ 
-          display: 'flex', 
-          justifyContent: 'space-between', 
-          alignItems: 'center', 
-          marginBottom: '30px', 
+        <header className="vx-glass vx-animate-fade-in" style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: '30px',
           padding: '20px 30px',
-          borderBottom: '1px solid rgba(255, 215, 0, 0.2)' 
+          borderBottom: '1px solid rgba(255, 215, 0, 0.2)'
         }}>
           <div className="vx-flex vx-items-center vx-gap-md">
             <div className="vx-logo">VX</div>
@@ -325,12 +393,37 @@ export default function Home() {
               </p>
             </div>
           </div>
+
+          {/* Navigation Buttons */}
+          <div className="vx-flex vx-gap-sm">
+            <button
+              onClick={() => router.push("/settings")}
+              className="vx-btn vx-btn-secondary"
+              style={{ padding: "0.5rem 1rem", fontSize: "0.9rem" }}
+            >
+              ⚙️ Settings
+            </button>
+            <button
+              onClick={() => router.push("/reports")}
+              className="vx-btn vx-btn-secondary"
+              style={{ padding: "0.5rem 1rem", fontSize: "0.9rem" }}
+            >
+              📊 Reports
+            </button>
+            <button
+              onClick={handleLogout}
+              className="vx-btn vx-btn-danger"
+              style={{ padding: "0.5rem 1rem", fontSize: "0.9rem" }}
+            >
+              🚪 Logout
+            </button>
+          </div>
           <div className="vx-flex vx-items-center vx-gap-md">
             <div className="vx-status vx-status-online">
               <div className="vx-status-dot"></div>
               <span>AI Online</span>
             </div>
-            <span className="vx-text-muted">Welcome, {user.username}!</span>
+            <span className="vx-text-muted">Welcome, {user.email}!</span>
             <button onClick={handleLogout} className="vx-btn vx-btn-ghost">
               Logout
             </button>
@@ -357,9 +450,9 @@ export default function Home() {
                 style={{ marginBottom: '15px' }}
                 accept=".pdf,.png,.jpg,.jpeg,.tiff,.xlsx,.xls"
               />
-              <button 
-                type="submit" 
-                disabled={!file} 
+              <button
+                type="submit"
+                disabled={!file}
                 className="vx-btn vx-btn-primary vx-w-full"
               >
                 <span>🚀</span>
@@ -394,8 +487,8 @@ export default function Home() {
               </button>
             </form>
             {chatResponse && (
-              <div className="vx-glass" style={{ 
-                marginTop: '15px', 
+              <div className="vx-glass" style={{
+                marginTop: '15px',
                 padding: '15px',
                 border: '1px solid rgba(255, 215, 0, 0.3)'
               }}>
@@ -422,7 +515,7 @@ export default function Home() {
               Processed documents with AI classification and business data extraction
             </p>
           </div>
-          
+
           {documents.length === 0 ? (
             <div className="vx-text-center vx-p-xl">
               <div style={{ fontSize: '4rem', marginBottom: '1rem', opacity: 0.5 }}>📄</div>
@@ -436,9 +529,9 @@ export default function Home() {
           ) : (
             <div style={{ display: 'grid', gap: '15px' }}>
               {documents.map((doc) => (
-                <div 
-                  key={doc.id} 
-                  className="vx-document-item" 
+                <div
+                  key={doc.id}
+                  className="vx-document-item"
                   style={{ cursor: 'pointer', textDecoration: 'none', color: 'inherit' }}
                   onClick={() => {
                     console.log('Navigating to document:', doc.id);
@@ -446,9 +539,9 @@ export default function Home() {
                   }}
                 >
                   <div className="vx-document-icon">
-                    {doc.document_category === 'invoice' ? '📄' : 
+                    {doc.document_category === 'invoice' ? '📄' :
                      doc.document_category === 'remittance' ? '💰' :
-                     doc.document_category === 'pod' ? '📦' : 
+                     doc.document_category === 'pod' ? '📦' :
                      doc.document_category === 'contract' ? '📋' : '📄'}
                   </div>
                   <div className="vx-flex vx-flex-col" style={{ flex: 1 }}>
@@ -470,7 +563,7 @@ export default function Home() {
                       <span>{doc.status || 'Processed'}</span>
                     </div>
                     <small className="vx-text-muted">
-                      {new Date(doc.created_at).toLocaleDateString()}
+                      {formatDocumentDate(doc.upload_date)}
                     </small>
                   </div>
                 </div>
