@@ -110,70 +110,74 @@ export default function Settings() {
   ];
 
   const renderSapConnectionTab = () => (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div>
-        <h3 className="text-lg font-medium text-white mb-4">SAP System Connection</h3>
+        <h3 className="vx-subtitle mb-6">🔗 SAP System Connection</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label className="block text-sm font-medium text-gray-200 mb-2">Server Address</label>
+            <label className="block text-sm font-medium text-gray-200 mb-3">Server Address</label>
             <input
               type="text"
               value={settings?.sap_connection?.server || ''}
               onChange={(e) => updateSapConnection('server', e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-3 bg-white/5 border border-gray-600/30 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-400/50 focus:border-yellow-400/50 transition-all"
               placeholder="sap.company.com"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-200 mb-2">Client</label>
+            <label className="block text-sm font-medium text-gray-200 mb-3">Client</label>
             <input
               type="text"
               value={settings?.sap_connection?.client || ''}
               onChange={(e) => updateSapConnection('client', e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-3 bg-white/5 border border-gray-600/30 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-400/50 focus:border-yellow-400/50 transition-all"
               placeholder="100"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-200 mb-2">Username</label>
+            <label className="block text-sm font-medium text-gray-200 mb-3">Username</label>
             <input
               type="text"
               value={settings?.sap_connection?.username || ''}
               onChange={(e) => updateSapConnection('username', e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-3 bg-white/5 border border-gray-600/30 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-400/50 focus:border-yellow-400/50 transition-all"
               placeholder="SAP username"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-200 mb-2">Password</label>
+            <label className="block text-sm font-medium text-gray-200 mb-3">Password</label>
             <input
               type="password"
               value={settings?.sap_connection?.password || ''}
               onChange={(e) => updateSapConnection('password', e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-3 bg-white/5 border border-gray-600/30 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-400/50 focus:border-yellow-400/50 transition-all"
               placeholder="SAP password"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-200 mb-2">System Number</label>
+            <label className="block text-sm font-medium text-gray-200 mb-3">System Number</label>
             <input
               type="text"
               value={settings?.sap_connection?.system_number || ''}
               onChange={(e) => updateSapConnection('system_number', e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-3 bg-white/5 border border-gray-600/30 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-400/50 focus:border-yellow-400/50 transition-all"
               placeholder="00"
             />
           </div>
         </div>
       </div>
-      <div className="bg-blue-50 p-4 rounded-lg">
-        <h4 className="font-medium text-blue-900 mb-2">Connection Status</h4>
-        <div className="flex items-center space-x-2">
-          <div className="w-3 h-3 bg-blue-600 rounded-full"></div>
-          <span className="text-sm text-blue-800">Connection not tested</span>
+      <div className="vx-glass-yellow p-6 rounded-xl">
+        <h4 className="font-medium text-yellow-100 mb-4 flex items-center space-x-2">
+          <span>📡</span>
+          <span>Connection Status</span>
+        </h4>
+        <div className="flex items-center space-x-3 mb-4">
+          <div className="w-3 h-3 bg-yellow-400 rounded-full animate-pulse"></div>
+          <span className="text-sm text-yellow-100">Connection not tested</span>
         </div>
-        <button className="mt-3 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm">
-          Test Connection
+        <button className="vx-btn vx-btn-secondary">
+          <span>🔍</span>
+          <span>Test Connection</span>
         </button>
       </div>
     </div>
@@ -339,24 +343,25 @@ export default function Settings() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white" style={{background: "#111827", color: "#ffffff"}}>
-      <div className="bg-gray-800 border-b border-gray-200">
+    <div className="min-h-screen" style={{background: "linear-gradient(135deg, #000000 0%, #1a1a1a 25%, #2a2a2a 50%, #1a1a1a 75%, #000000 100%)", backgroundSize: "400% 400%", animation: "gradientShift 15s ease infinite"}}>
+      {/* Modern Header */}
+      <div className="vx-glass border-b border-gray-700/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
+          <div className="flex items-center justify-between h-20">
             <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">VX</span>
+              <div className="flex items-center space-x-3">
+                <div className="vx-logo">
+                  <span className="text-black font-black text-xl">VX</span>
                 </div>
                 <div>
-                  <h1 className="text-xl font-bold text-white">ARIA Settings</h1>
-                  <p className="text-sm text-gray-300">System Configuration</p>
+                  <h1 className="text-2xl font-bold vx-text-gradient">ARIA Settings</h1>
+                  <p className="text-sm vx-text-muted">System Configuration & Management</p>
                 </div>
               </div>
             </div>
             <button
               onClick={() => router.push('/')}
-              className="flex items-center space-x-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+              className="vx-btn vx-btn-secondary"
             >
               <span>←</span>
               <span>Back to Dashboard</span>
@@ -366,53 +371,73 @@ export default function Settings() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Success/Error Messages */}
         {message && (
-          <div className="mb-6 bg-green-900 border border-green-700 text-green-100 px-4 py-3 rounded-lg">
-            {message}
+          <div className="mb-6 vx-glass-yellow border border-yellow-400/30 text-yellow-100 px-6 py-4 rounded-xl">
+            <div className="flex items-center space-x-2">
+              <span className="text-yellow-400">✅</span>
+              <span>{message}</span>
+            </div>
           </div>
         )}
 
         {error && (
-          <div className="mb-6 bg-red-900 border border-red-700 text-red-100 px-4 py-3 rounded-lg">
-            {error}
+          <div className="mb-6 vx-glass border border-red-400/30 text-red-100 px-6 py-4 rounded-xl">
+            <div className="flex items-center space-x-2">
+              <span className="text-red-400">❌</span>
+              <span>{error}</span>
+            </div>
           </div>
         )}
 
+        {/* Modern Tab Navigation */}
         <div className="mb-8">
-          <div className="border-b border-gray-200">
-            <nav className="-mb-px flex space-x-8">
+          <div className="vx-glass rounded-xl p-2">
+            <nav className="flex space-x-2">
               {tabs.map((tab) => (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors ${
+                  className={`flex items-center space-x-2 px-6 py-3 rounded-lg font-medium text-sm transition-all duration-300 ${
                     activeTab === tab.id
-                      ? 'border-yellow-400 text-yellow-400'
-                      : 'border-transparent text-gray-300 hover:text-gray-300 hover:border-gray-300'
+                      ? 'vx-glass-yellow text-yellow-100 shadow-lg'
+                      : 'text-gray-300 hover:text-white hover:bg-white/5'
                   }`}
                 >
-                  <span className="mr-2">{tab.icon}</span>
-                  {tab.name}
+                  <span className="text-lg">{tab.icon}</span>
+                  <span>{tab.name}</span>
                 </button>
               ))}
             </nav>
           </div>
         </div>
 
-        <div className="bg-gray-800 rounded-lg p-6">
+        {/* Modern Content Area */}
+        <div className="vx-glass rounded-xl p-8">
           {activeTab === 'sap-connection' && renderSapConnectionTab()}
           {activeTab === 'document-mappings' && renderDocumentMappingsTab()}
           {activeTab === 'thresholds' && renderThresholdsTab()}
           {activeTab === 'system-settings' && renderSystemSettingsTab()}
         </div>
 
+        {/* Modern Save Button */}
         <div className="mt-8 flex justify-end">
           <button
             onClick={handleSaveSettings}
             disabled={saving}
-            className="bg-blue-600 text-white px-8 py-3 rounded-lg font-medium hover:bg-yellow-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="vx-btn vx-btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {saving ? 'Saving...' : 'Save All Settings'}
+            {saving ? (
+              <>
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-black"></div>
+                <span>Saving...</span>
+              </>
+            ) : (
+              <>
+                <span>💾</span>
+                <span>Save All Settings</span>
+              </>
+            )}
           </button>
         </div>
       </div>

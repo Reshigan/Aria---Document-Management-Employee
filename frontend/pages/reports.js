@@ -6,6 +6,7 @@ export default function Reports() {
   const [reports, setReports] = useState({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [refreshing, setRefreshing] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -241,72 +242,101 @@ export default function Reports() {
   };
 
   return (
-    <>
-      {/* Floating Orbs */}
-      <div className="vx-floating-orb" style={{ top: '10%', left: '5%', animationDelay: '0s' }}></div>
-      <div className="vx-floating-orb" style={{ top: '70%', right: '10%', animationDelay: '3s' }}></div>
-      <div className="vx-floating-orb" style={{ bottom: '15%', left: '15%', animationDelay: '6s' }}></div>
-
-      <div className="min-h-screen vx-p-lg">
-        <div className="max-w-6xl mx-auto">
-          <div className="vx-card vx-glass vx-animate-fade-in">
-            <div className="vx-card-header vx-flex vx-items-center vx-justify-between">
-              <div>
-                <h1 className="vx-card-title vx-text-gradient">📊 Reports & Analytics</h1>
-                <p className="vx-card-description">Comprehensive insights and data analysis</p>
+    <div className="min-h-screen" style={{background: "linear-gradient(135deg, #000000 0%, #1a1a1a 25%, #2a2a2a 50%, #1a1a1a 75%, #000000 100%)", backgroundSize: "400% 400%", animation: "gradientShift 15s ease infinite"}}>
+      {/* Modern Header */}
+      <div className="vx-glass border-b border-gray-700/30">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-20">
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-3">
+                <div className="vx-logo">
+                  <span className="text-black font-black text-xl">VX</span>
+                </div>
+                <div>
+                  <h1 className="text-2xl font-bold vx-text-gradient">📊 Reports & Analytics</h1>
+                  <p className="text-sm vx-text-muted">Comprehensive insights and data analysis</p>
+                </div>
               </div>
+            </div>
+            <div className="flex items-center space-x-4">
+              <button
+                onClick={() => {setRefreshing(true); fetchReport(activeTab); setTimeout(() => setRefreshing(false), 1000);}}
+                className="vx-btn vx-btn-secondary"
+                disabled={refreshing}
+              >
+                {refreshing ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                    <span>Refreshing...</span>
+                  </>
+                ) : (
+                  <>
+                    <span>🔄</span>
+                    <span>Refresh</span>
+                  </>
+                )}
+              </button>
               <button
                 onClick={() => router.push('/')}
-                className="vx-btn vx-btn-ghost"
+                className="vx-btn vx-btn-secondary"
               >
-                ← Back to Dashboard
+                <span>←</span>
+                <span>Back to Dashboard</span>
               </button>
-            </div>
-
-            {/* Tabs */}
-            <div className="border-b border-gray-700 vx-p-md">
-              <nav className="vx-flex vx-gap-lg">
-                {tabs.map((tab) => (
-                  <button
-                    key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
-                    className={`vx-p-md vx-font-medium text-sm border-b-2 transition-all ${
-                      activeTab === tab.id
-                        ? 'border-yellow-400 vx-text-gradient'
-                        : 'border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-600'
-                    }`}
-                  >
-                    <span className="mr-2">{tab.icon}</span>
-                    {tab.name}
-                  </button>
-                ))}
-              </nav>
-            </div>
-
-            {/* Content */}
-            <div className="vx-p-lg">
-              {error && (
-                <div className="vx-card vx-glass border border-red-500 text-red-300 vx-p-md vx-m-md">
-                  {error}
-                </div>
-              )}
-
-              {loading ? (
-                <div className="vx-text-center vx-p-xl">
-                  <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-yellow-400 mx-auto"></div>
-                  <p className="vx-m-md text-gray-300">Loading report...</p>
-                </div>
-              ) : (
-                <div>
-                  {activeTab === 'document-status' && renderDocumentStatusReport()}
-                  {activeTab === 'sap-posting' && renderSapPostingReport()}
-                  {activeTab === 'processing-stats' && renderProcessingStatsReport()}
-                </div>
-              )}
             </div>
           </div>
         </div>
       </div>
-    </>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Modern Tab Navigation */}
+        <div className="mb-8">
+          <div className="vx-glass rounded-xl p-2">
+            <nav className="flex space-x-2">
+              {tabs.map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`flex items-center space-x-2 px-6 py-3 rounded-lg font-medium text-sm transition-all duration-300 ${
+                    activeTab === tab.id
+                      ? 'vx-glass-yellow text-yellow-100 shadow-lg'
+                      : 'text-gray-300 hover:text-white hover:bg-white/5'
+                  }`}
+                >
+                  <span className="text-lg">{tab.icon}</span>
+                  <span>{tab.name}</span>
+                </button>
+              ))}
+            </nav>
+          </div>
+        </div>
+
+        {/* Error Messages */}
+        {error && (
+          <div className="mb-6 vx-glass border border-red-400/30 text-red-100 px-6 py-4 rounded-xl">
+            <div className="flex items-center space-x-2">
+              <span className="text-red-400">❌</span>
+              <span>{error}</span>
+            </div>
+          </div>
+        )}
+
+        {/* Modern Content Area */}
+        <div className="vx-glass rounded-xl p-8">
+          {loading ? (
+            <div className="text-center py-16">
+              <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-yellow-400 mx-auto mb-4"></div>
+              <p className="text-gray-300">Loading report data...</p>
+            </div>
+          ) : (
+            <div>
+              {activeTab === 'document-status' && renderDocumentStatusReport()}
+              {activeTab === 'sap-posting' && renderSapPostingReport()}
+              {activeTab === 'processing-stats' && renderProcessingStatsReport()}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
   );
 }
