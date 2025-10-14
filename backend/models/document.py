@@ -136,6 +136,9 @@ class Document(BaseModel):
     conversion_results = relationship("DocumentConversionResult", back_populates="document")
     ai_analysis_results = relationship("AIAnalysisResult", back_populates="document")
     
+    # Analytics relationships
+    analytics = relationship("DocumentAnalytics", back_populates="document")
+    
     def __repr__(self):
         return f"<Document(id={self.id}, filename='{self.filename}', status='{self.status}')>"
     
