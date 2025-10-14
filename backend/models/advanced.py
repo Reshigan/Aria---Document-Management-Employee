@@ -157,9 +157,9 @@ class Tag(BaseModel):
         return f"<Tag(id={self.id}, name='{self.name}')>"
 
 
-class DocumentVersion(BaseModel):
-    """Document version model for version control"""
-    __tablename__ = "document_versions"
+class DocumentVersionSimple(BaseModel):
+    """Simple document version model for basic version tracking"""
+    __tablename__ = "document_versions_simple"
     
     document_id = Column(Integer, ForeignKey('documents.id'), nullable=False)
     version_number = Column(Integer, nullable=False)
@@ -183,7 +183,7 @@ class DocumentVersion(BaseModel):
     )
     
     def __repr__(self):
-        return f"<DocumentVersion(id={self.id}, document_id={self.document_id}, version={self.version_number})>"
+        return f"<DocumentVersionSimple(id={self.id}, document_id={self.document_id}, version={self.version_number})>"
 
 
 class ShareLink(BaseModel):

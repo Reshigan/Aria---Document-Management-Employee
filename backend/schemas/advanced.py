@@ -152,16 +152,16 @@ class DocumentTagResponse(BaseSchema):
     tagged_by: int
 
 
-# Document Version schemas
-class DocumentVersionBase(BaseSchema):
+# Document Version Simple schemas
+class DocumentVersionSimpleBase(BaseSchema):
     version_notes: Optional[str] = None
 
 
-class DocumentVersionCreate(DocumentVersionBase):
+class DocumentVersionSimpleCreate(DocumentVersionSimpleBase):
     pass
 
 
-class DocumentVersionResponse(DocumentVersionBase):
+class DocumentVersionSimpleResponse(DocumentVersionSimpleBase):
     id: int
     document_id: int
     version_number: int
