@@ -22,9 +22,9 @@ from .workflow_models import (
 )
 from .advanced import Workflow, WorkflowTemplate, WorkflowStep, WorkflowStepTemplate
 from .notification_models import (
-    Notification as EnhancedNotification, NotificationDelivery, NotificationTemplate, 
+    Notification, NotificationDelivery, NotificationTemplate, 
     NotificationPreference, NotificationSubscription,
-    NotificationType as EnhancedNotificationType, NotificationPriority, NotificationChannel
+    NotificationType, NotificationPriority, NotificationChannel
 )
 from .analytics_models import (
     DocumentAnalytics, UserActivityLog, SystemMetrics, WorkflowAnalytics,
@@ -58,8 +58,8 @@ __all__ = [
     "EnhancedTag", "TagHierarchy", "TagAnalytics", "AutoTagRule", "TagSuggestion", "TagTemplate",
     # Workflow models
     "Workflow", "WorkflowTemplate", "WorkflowStep", "WorkflowStepTemplate", "WorkflowTask",
-    # Enhanced Notification models
-    "EnhancedNotification", "NotificationDelivery", "NotificationTemplate", 
+    # Notification models
+    "Notification", "NotificationDelivery", "NotificationTemplate", 
     "NotificationPreference", "NotificationSubscription",
     # Analytics models
     "DocumentAnalytics", "UserActivityLog", "SystemMetrics", "WorkflowAnalytics",
@@ -69,9 +69,9 @@ __all__ = [
     "SecurityUserSession", "PasswordHistory", "TwoFactorAuth", "SecurityEvent", "AuditLog",
     "SecurityAPIKey", "LoginAttempt", "AccountLockout", "SecurityPolicy",
     # Enums
-    "ShareLinkType", "NotificationType", "WorkflowStatus", "WorkflowStepType", 
+    "ShareLinkType", "WorkflowStatus", "WorkflowStepType", 
     "WorkflowStepStatus", "WorkflowTaskStatus", "TagType", "TagCategory",
-    "EnhancedNotificationType", "NotificationPriority", "NotificationChannel",
+    "NotificationType", "NotificationPriority", "NotificationChannel",
     "SessionStatus", "SecurityEventType", "AuditAction",
     "VersionStatus", "MergeStatus", "ConflictType", "ChangeType",
     # Association tables
