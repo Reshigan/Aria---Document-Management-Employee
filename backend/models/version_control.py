@@ -74,7 +74,7 @@ class DocumentVersion(Base):
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     
     # Metadata
-    metadata = Column(JSON, nullable=True)
+    version_metadata = Column(JSON, nullable=True)
     tags = Column(JSON, nullable=True)  # Version-specific tags
     
     # Relationships
