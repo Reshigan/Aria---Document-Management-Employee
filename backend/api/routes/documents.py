@@ -17,16 +17,16 @@ from core.database import get_db
 from core.config import settings
 from api.gateway.dependencies.auth import get_current_user
 from models import (
-    User, Document, Folder, Tag, DocumentVersion, 
+    User, Document, Folder, Tag, 
     DocumentFavorite, DocumentView, ActivityLog, document_tags
 )
-from models.advanced import document_shares
+from models.advanced import document_shares, DocumentVersionSimple
 from models.document import DocumentType, DocumentStatus
 from schemas.document import (
     DocumentResponse, DocumentCreate, DocumentUpdate, DocumentListResponse,
     DocumentDetailResponse, DocumentShareResponse
 )
-from schemas.advanced import DocumentVersionResponse
+from schemas.advanced import DocumentVersionSimpleResponse
 from services.auth_service import auth_service
 
 router = APIRouter(prefix="/documents", tags=["documents"])
@@ -282,7 +282,7 @@ async def upload_document(
     await db.refresh(document)
     
     # Create initial version
-    version = DocumentVersion(
+    version = DocumentVersionSimple(
         document_id=document.id,
         version_number=1,
         filename=stored_filename,
@@ -404,8 +404,8 @@ async def get_document(
     
     # Get versions
     versions_query = select(DocumentVersion).where(
-        DocumentVersion.document_id == document_id
-    ).order_by(DocumentVersion.version_number.desc())
+        DocumentVersionSimple.document_id == document_id
+    ).order_by(DocumentVersionSimple.version_number.desc())
     versions_result = await db.execute(versions_query)
     versions = versions_result.scalars().all()
     
@@ -443,7 +443,7 @@ async def get_document(
         ocr_text=document.ocr_text,
         extracted_data=document.extracted_data,
         tags=tag_names,
-        versions=[DocumentVersionResponse.from_orm(v) for v in versions],
+        versions=[DocumentVersionSimpleResponse.from_orm(v) for v in versions],
         is_favorite=is_favorite,
         view_count=view_count
     )
@@ -558,7 +558,7 @@ async def delete_document(
         
         # Delete version files
         versions_query = select(DocumentVersion).where(
-            DocumentVersion.document_id == document_id
+            DocumentVersionSimple.document_id == document_id
         )
         versions_result = await db.execute(versions_query)
         versions = versions_result.scalars().all()
@@ -571,7 +571,7 @@ async def delete_document(
     
     # Delete related records using table references
     await db.execute(delete(document_tags).where(document_tags.c.document_id == document_id))
-    await db.execute(delete(DocumentVersion).where(DocumentVersion.document_id == document_id))
+    await db.execute(delete(DocumentVersion).where(DocumentVersionSimple.document_id == document_id))
     await db.execute(delete(document_shares).where(document_shares.c.document_id == document_id))
     await db.execute(delete(DocumentFavorite).where(DocumentFavorite.document_id == document_id))
     await db.execute(delete(DocumentView).where(DocumentView.document_id == document_id))
@@ -760,7 +760,7 @@ async def list_favorite_documents(
 
 # Document Version Management Endpoints
 
-@router.get("/{document_id}/versions", response_model=List[DocumentVersionResponse])
+@router.get("/{document_id}/versions", response_model=List[DocumentVersionSimpleResponse])
 async def get_document_versions(
     document_id: int,
     current_user: User = Depends(get_current_user),
@@ -777,15 +777,15 @@ async def get_document_versions(
     
     # Get versions
     versions_query = select(DocumentVersion).where(
-        DocumentVersion.document_id == document_id
-    ).order_by(DocumentVersion.version_number.desc())
+        DocumentVersionSimple.document_id == document_id
+    ).order_by(DocumentVersionSimple.version_number.desc())
     versions_result = await db.execute(versions_query)
     versions = versions_result.scalars().all()
     
-    return [DocumentVersionResponse.from_orm(v) for v in versions]
+    return [DocumentVersionSimpleResponse.from_orm(v) for v in versions]
 
 
-@router.post("/{document_id}/versions", response_model=DocumentVersionResponse)
+@router.post("/{document_id}/versions", response_model=DocumentVersionSimpleResponse)
 async def upload_document_version(
     document_id: int,
     file: UploadFile = File(...),
@@ -803,8 +803,8 @@ async def upload_document_version(
         raise HTTPException(status_code=404, detail="Document not found")
     
     # Get current highest version number
-    version_query = select(func.max(DocumentVersion.version_number)).where(
-        DocumentVersion.document_id == document_id
+    version_query = select(func.max(DocumentVersionSimple.version_number)).where(
+        DocumentVersionSimple.document_id == document_id
     )
     version_result = await db.execute(version_query)
     max_version = version_result.scalar() or 0
@@ -829,12 +829,12 @@ async def upload_document_version(
     
     # Mark all previous versions as not current
     update_query = update(DocumentVersion).where(
-        DocumentVersion.document_id == document_id
+        DocumentVersionSimple.document_id == document_id
     ).values(is_current=False)
     await db.execute(update_query)
     
     # Create new version
-    version = DocumentVersion(
+    version = DocumentVersionSimple(
         document_id=document_id,
         version_number=new_version_number,
         filename=file.filename or stored_filename,
@@ -857,7 +857,7 @@ async def upload_document_version(
     await db.commit()
     await db.refresh(version)
     
-    return DocumentVersionResponse.from_orm(version)
+    return DocumentVersionSimpleResponse.from_orm(version)
 
 
 @router.get("/{document_id}/versions/{version_number}")
@@ -879,8 +879,8 @@ async def download_document_version(
     # Get specific version
     version_query = select(DocumentVersion).where(
         and_(
-            DocumentVersion.document_id == document_id,
-            DocumentVersion.version_number == version_number
+            DocumentVersionSimple.document_id == document_id,
+            DocumentVersionSimple.version_number == version_number
         )
     )
     version_result = await db.execute(version_query)
@@ -919,8 +919,8 @@ async def revert_to_version(
     # Get specific version
     version_query = select(DocumentVersion).where(
         and_(
-            DocumentVersion.document_id == document_id,
-            DocumentVersion.version_number == version_number
+            DocumentVersionSimple.document_id == document_id,
+            DocumentVersionSimple.version_number == version_number
         )
     )
     version_result = await db.execute(version_query)
@@ -931,7 +931,7 @@ async def revert_to_version(
     
     # Mark all versions as not current
     update_query = update(DocumentVersion).where(
-        DocumentVersion.document_id == document_id
+        DocumentVersionSimple.document_id == document_id
     ).values(is_current=False)
     await db.execute(update_query)
     
@@ -968,8 +968,8 @@ async def delete_document_version(
     # Get specific version
     version_query = select(DocumentVersion).where(
         and_(
-            DocumentVersion.document_id == document_id,
-            DocumentVersion.version_number == version_number
+            DocumentVersionSimple.document_id == document_id,
+            DocumentVersionSimple.version_number == version_number
         )
     )
     version_result = await db.execute(version_query)
@@ -979,8 +979,8 @@ async def delete_document_version(
         raise HTTPException(status_code=404, detail="Version not found")
     
     # Don't allow deletion of current version if it's the only version
-    versions_count_query = select(func.count(DocumentVersion.id)).where(
-        DocumentVersion.document_id == document_id
+    versions_count_query = select(func.count(DocumentVersionSimple.id)).where(
+        DocumentVersionSimple.document_id == document_id
     )
     versions_count_result = await db.execute(versions_count_query)
     versions_count = versions_count_result.scalar()

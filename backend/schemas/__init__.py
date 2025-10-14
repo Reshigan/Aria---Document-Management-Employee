@@ -30,7 +30,7 @@ from .advanced import (
     # Tag schemas
     TagCreate, TagUpdate, TagResponse,
     # Document Version schemas
-    DocumentVersionCreate, DocumentVersionResponse,
+    DocumentVersionSimpleCreate, DocumentVersionSimpleResponse,
     # Share Link schemas
     ShareLinkCreate, ShareLinkUpdate, ShareLinkResponse,
     # Comment schemas
@@ -60,6 +60,12 @@ from .advanced import (
     ShareLinkTypeSchema, NotificationTypeSchema, WorkflowStatusSchema,
     WorkflowStepTypeSchema, WorkflowStepStatusSchema
 )
+from .version_control import (
+    DocumentVersionCreate, DocumentVersionUpdate, DocumentVersionResponse, DocumentVersionListResponse,
+    DocumentBranchCreate, DocumentBranchUpdate, DocumentBranchResponse,
+    MergeRequestCreate, MergeRequestUpdate, MergeRequestResponse,
+    VersionComparisonCreate, VersionComparisonResponse
+)
 
 __all__ = [
     # User schemas
@@ -76,7 +82,7 @@ __all__ = [
     "FolderListResponse", "FolderTreeResponse", "FolderPermissionResponse",
     "TagCreate", "TagUpdate", "TagResponse",
     "TagListResponse", "TagWithCountResponse", "DocumentTagResponse",
-    "DocumentVersionCreate",
+    "DocumentVersionSimpleCreate", "DocumentVersionSimpleResponse",
     "ShareLinkCreate", "ShareLinkUpdate", "ShareLinkResponse",
     "DocumentShareCreate", "DocumentShareResponse",
     "CommentCreate", "CommentUpdate", "CommentResponse",
@@ -92,6 +98,11 @@ __all__ = [
     "BulkOperationRequest", "BulkOperationResponse",
     "DocumentAnalytics", "UserAnalytics", "SystemAnalytics", "AnalyticsResponse",
     "DocumentCreateAdvanced", "DocumentUpdateAdvanced", "DocumentResponseAdvanced",
+    # Version control schemas
+    "DocumentVersionCreate", "DocumentVersionUpdate", "DocumentVersionResponse", "DocumentVersionListResponse",
+    "DocumentBranchCreate", "DocumentBranchUpdate", "DocumentBranchResponse",
+    "MergeRequestCreate", "MergeRequestUpdate", "MergeRequestResponse",
+    "VersionComparisonCreate", "VersionComparisonResponse",
     # Enums
     "ShareLinkTypeSchema", "NotificationTypeSchema", "WorkflowStatusSchema",
     "WorkflowStepTypeSchema", "WorkflowStepStatusSchema"
