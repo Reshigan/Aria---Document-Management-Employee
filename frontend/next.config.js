@@ -1,6 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  
+  // Fix CORS issues for production
+  allowedDevOrigins: ['aria.vantax.co.za', 'localhost', '127.0.0.1'],
+  
   async rewrites() {
     return [
       {
