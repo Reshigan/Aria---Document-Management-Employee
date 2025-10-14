@@ -64,7 +64,7 @@ from .version_control import (
     DocumentVersionCreate, DocumentVersionUpdate, DocumentVersionResponse, DocumentVersionListResponse,
     DocumentBranchCreate, DocumentBranchUpdate, DocumentBranchResponse,
     MergeRequestCreate, MergeRequestUpdate, MergeRequestResponse,
-    VersionComparisonCreate, VersionComparisonResponse
+    VersionComparisonRequest, VersionComparisonResponse
 )
 
 __all__ = [
@@ -102,7 +102,7 @@ __all__ = [
     "DocumentVersionCreate", "DocumentVersionUpdate", "DocumentVersionResponse", "DocumentVersionListResponse",
     "DocumentBranchCreate", "DocumentBranchUpdate", "DocumentBranchResponse",
     "MergeRequestCreate", "MergeRequestUpdate", "MergeRequestResponse",
-    "VersionComparisonCreate", "VersionComparisonResponse",
+    "VersionComparisonRequest", "VersionComparisonResponse",
     # Enums
     "ShareLinkTypeSchema", "NotificationTypeSchema", "WorkflowStatusSchema",
     "WorkflowStepTypeSchema", "WorkflowStepStatusSchema"
