@@ -8,7 +8,6 @@ export default function Home() {
   const router = useRouter()
   const [user, setUser] = useState(null)
   const [isClient, setIsClient] = useState(false)
-  const [loginAttempts, setLoginAttempts] = useState(0)
   const [loginStatus, setLoginStatus] = useState('Ready')
   console.log('Current user state:', user)
   const [documents, setDocuments] = useState([])
@@ -16,6 +15,8 @@ export default function Home() {
   const [chatResponse, setChatResponse] = useState('')
   const [loginForm, setLoginForm] = useState({ username: 'admin', password: 'admin123' })
   const [file, setFile] = useState(null)
+  const [loginError, setLoginError] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
 
   // Helper function to format document dates
   const formatDocumentDate = (dateString) => {
@@ -76,80 +77,61 @@ export default function Home() {
     }
   }, [])
 
-  // useEffect to handle login when loginAttempts changes
+  // Clear error when form changes
   useEffect(() => {
-    if (loginAttempts > 0) {
-      setLoginStatus(`Triggered attempt ${loginAttempts}`)
-      console.log('🚀 LOGIN TRIGGERED by state change, attempt:', loginAttempts)
-      // Implement login logic directly here instead of calling handleLogin()
-      const performLogin = async () => {
-        try {
-          setLoginStatus('Sending request...')
-          console.log('Sending login request...')
-          const response = await axios.post('/api/auth/login', loginForm)
-          console.log('Login response:', response.data)
-          const { access_token, user } = response.data
-          console.log('Setting token and user:', { access_token: access_token ? 'present' : 'missing', user })
-          if (typeof window !== 'undefined') {
-            localStorage.setItem('token', access_token)
-            console.log('Token stored in localStorage')
-          }
-          axios.defaults.headers.common['Authorization'] = `Bearer ${access_token}`
-          console.log('Authorization header set')
-          setUser(user)
-          setLoginStatus('SUCCESS! Logged in')
-          console.log('User state set')
-          console.log('Login process completed successfully')
-        } catch (error) {
-          console.error('Login error:', error)
-          setLoginStatus('❌ Login failed!')
-          // Can't use alert() here, so we'll just log the error
-          console.error('Login failed:', error.response?.data?.detail || 'Unknown error')
-        }
-      }
-      performLogin()
+    if (loginError) {
+      const timer = setTimeout(() => setLoginError(''), 5000)
+      return () => clearTimeout(timer)
     }
-  }, [loginAttempts])
+  }, [loginError])
 
 
-  const handleLogin = () => {
-    setLoginStatus('🔄 Starting login...')
+  const handleLogin = async () => {
+    if (isLoading) return
     
-    setTimeout(() => {
-      setLoginStatus('🔄 Sending request to /api/auth/login...')
-      
-      fetch('/api/auth/login', {
+    setIsLoading(true)
+    setLoginError('')
+    setLoginStatus('🔄 Authenticating...')
+    
+    try {
+      const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(loginForm)
       })
-      .then(response => {
-        setLoginStatus('🔄 Got response, processing...')
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`)
-        }
-        return response.json()
-      })
-      .then(data => {
-        setLoginStatus('🔄 Processing login data...')
-        console.log('Login successful:', data)
-        
-        if (data.access_token) {
-          localStorage.setItem('token', data.access_token)
-          setUser(data.user || { username: loginForm.username })
-          setLoginStatus('✅ Login successful!')
+      
+      const data = await response.json()
+      
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error('Invalid username or password')
+        } else if (response.status === 422) {
+          throw new Error('Please fill in all required fields')
+        } else if (response.status >= 500) {
+          throw new Error('Server error. Please try again later.')
         } else {
-          throw new Error('No access token received')
+          throw new Error(data.detail || `Error ${response.status}`)
         }
-      })
-      .catch(error => {
-        const errorMsg = error.message || 'Unknown error'
-        setLoginStatus(`❌ Login failed: ${errorMsg}`)
-        alert('Login failed: ' + errorMsg)
-      })
-    }, 100)
+      }
+      
+      if (data.access_token) {
+        localStorage.setItem('token', data.access_token)
+        axios.defaults.headers.common['Authorization'] = `Bearer ${data.access_token}`
+        setUser(data.user || { username: loginForm.username, email: loginForm.username })
+        setLoginStatus('✅ Login successful!')
+        fetchDocuments()
+      } else {
+        throw new Error('No access token received')
+      }
+    } catch (error) {
+      console.error('Login error:', error)
+      setLoginError(error.message)
+      setLoginStatus('❌ Login failed')
+    } finally {
+      setIsLoading(false)
+    }
   }
   const fetchUser = async () => {
     try {
@@ -231,86 +213,103 @@ export default function Home() {
   if (!user) {
     return (
       <>
-        {/* Floating Orbs */}
-        <div className="vx-floating-orb" style={{ top: '20%', left: '10%', animationDelay: '0s' }}></div>
-        <div className="vx-floating-orb" style={{ top: '60%', right: '15%', animationDelay: '2s' }}></div>
-        <div className="vx-floating-orb" style={{ bottom: '20%', left: '20%', animationDelay: '4s' }}></div>
+        {/* Enhanced Floating Orbs */}
+        <div className="vx-floating-orb" style={{ top: '15%', left: '8%', animationDelay: '0s' }}></div>
+        <div className="vx-floating-orb" style={{ top: '70%', right: '12%', animationDelay: '2s' }}></div>
+        <div className="vx-floating-orb" style={{ bottom: '25%', left: '15%', animationDelay: '4s' }}></div>
+        <div className="vx-floating-orb" style={{ top: '40%', right: '5%', animationDelay: '6s' }}></div>
+        <div className="vx-floating-orb" style={{ bottom: '10%', right: '25%', animationDelay: '8s' }}></div>
 
         <div className="vx-flex vx-items-center vx-justify-center" style={{ minHeight: '100vh', padding: '20px' }}>
-          <div className="vx-card vx-glass vx-animate-fade-in" style={{ maxWidth: '400px', width: '100%' }}>
+          <div className="vx-login-card vx-animate-fade-in" style={{ maxWidth: '450px', width: '100%' }}>
             {/* VantaX Header */}
             <div className="vx-flex vx-items-center vx-gap-md vx-m-lg vx-text-center vx-justify-center">
               <div className="vx-logo">VX</div>
               <div>
-                <h1 className="vx-title vx-text-gradient">ARIA</h1>
-                <p className="vx-text-muted" style={{ fontSize: '0.9rem', marginTop: '-0.5rem' }}>
+                <h1 className="vx-title vx-text-gradient" style={{ fontSize: '2.5rem', marginBottom: '0.25rem' }}>ARIA</h1>
+                <p className="vx-text-muted" style={{ fontSize: '1rem', marginTop: '0', fontWeight: '500' }}>
                   Document Management AI
                 </p>
               </div>
             </div>
 
-            <div className="vx-card-header vx-text-center">
-              <p className="vx-card-description">
+            <div className="vx-card-header vx-text-center" style={{ marginBottom: '2rem' }}>
+              <p className="vx-card-description" style={{ fontSize: '1rem', fontWeight: '400' }}>
                 Powered by VantaX's multidisciplinary AI technology
               </p>
             </div>
 
-            <div>
-              <div className="vx-m-md">
+            <form onSubmit={(e) => { e.preventDefault(); handleLogin(); }}>
+              <div className="vx-m-md" style={{ marginBottom: '1.5rem' }}>
                 <input
                   type="text"
                   placeholder="Username"
                   value={loginForm.username}
-                  onChange={(e) => setLoginForm({ ...loginForm, username: e.target.value })}
+                  onChange={(e) => {
+                    setLoginForm({ ...loginForm, username: e.target.value })
+                    setLoginError('')
+                  }}
                   className="vx-input"
+                  disabled={isLoading}
+                  required
                 />
               </div>
-              <div className="vx-m-md">
+              <div className="vx-m-md" style={{ marginBottom: '1.5rem' }}>
                 <input
                   type="password"
                   placeholder="Password"
                   value={loginForm.password}
-                  onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })}
+                  onChange={(e) => {
+                    setLoginForm({ ...loginForm, password: e.target.value })
+                    setLoginError('')
+                  }}
                   className="vx-input"
+                  disabled={isLoading}
+                  required
                 />
               </div>
-              {isClient && (
-                <button onClick={() => {
-                  setLoginAttempts(loginAttempts + 1)
-                  handleLogin()
-                }} className="vx-btn vx-btn-primary vx-w-full vx-m-md">
-                  <span>🚀</span>
-                  Login to ARIA {loginAttempts > 0 ? `(Clicked ${loginAttempts} times!)` : '(Click Me)'}
-                </button>
-              )}
-              {isClient && (
-                <div className="vx-text-center vx-m-md">
-                  <strong>Login Status: {loginStatus}</strong>
+
+              {/* Error Message */}
+              {loginError && (
+                <div className="vx-status vx-status-error vx-m-md" style={{ marginBottom: '1.5rem', padding: '1rem', justifyContent: 'center' }}>
+                  <span>⚠️ {loginError}</span>
                 </div>
               )}
-            </div>
+
+              {/* Login Button */}
+              <button 
+                type="submit"
+                disabled={isLoading || !loginForm.username || !loginForm.password}
+                className="vx-btn vx-btn-primary vx-w-full vx-m-md"
+                style={{ padding: '1rem 2rem', fontSize: '1.1rem', marginBottom: '1.5rem' }}
+              >
+                {isLoading ? (
+                  <>
+                    <span>⏳</span>
+                    Authenticating...
+                  </>
+                ) : (
+                  <>
+                    <span>🚀</span>
+                    Login to ARIA
+                  </>
+                )}
+              </button>
+
+              {/* Status Display */}
+              {loginStatus && loginStatus !== 'Ready' && (
+                <div className={`vx-status ${loginError ? 'vx-status-error' : isLoading ? 'vx-status-loading' : 'vx-status-success'} vx-text-center vx-m-md`} 
+                     style={{ marginBottom: '1.5rem', padding: '0.75rem', justifyContent: 'center' }}>
+                  <strong>{loginStatus}</strong>
+                </div>
+              )}
+            </form>
 
             <div className="vx-text-center vx-m-lg">
-              <p className="vx-text-muted" style={{ fontSize: '0.875rem' }}>
-                Default credentials: <span className="vx-text-gradient">admin / admin123</span>
+              <p className="vx-text-muted" style={{ fontSize: '0.9rem' }}>
+                Default credentials: <span className="vx-text-gradient" style={{ fontWeight: '600' }}>admin / admin123</span>
               </p>
             </div>
-
-            {/* DEBUG: Minimal login button outside main structure */}
-            {isClient && (
-              <div style={{ padding: '20px', border: '2px solid red', margin: '20px' }}>
-                <h3>DEBUG SECTION</h3>
-                <button
-                  onClick={() => {
-                    console.log('🟢 MINIMAL LOGIN BUTTON CLICKED!')
-                    handleLogin()
-                  }}
-                  style={{ padding: '10px', backgroundColor: 'green', color: 'white' }}
-                >
-                  MINIMAL LOGIN TEST
-                </button>
-              </div>
-            )}
 
             {/* System Status */}
             <div className="vx-flex vx-justify-center vx-gap-sm vx-m-lg">
