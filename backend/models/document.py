@@ -48,8 +48,8 @@ class Document(BaseModel):
     file_hash = Column(String(64), index=True)  # SHA-256 hash for deduplication
     
     # Document classification
-    document_type = Column(Enum(DocumentType), default=DocumentType.OTHER, nullable=False)
-    status = Column(Enum(DocumentStatus), default=DocumentStatus.UPLOADED, nullable=False)
+    document_type = Column(String(50), default=DocumentType.OTHER.value, nullable=False)
+    status = Column(String(50), default=DocumentStatus.UPLOADED.value, nullable=False)
     
     # Extracted data (from OCR and AI processing)
     ocr_text = Column(Text)
