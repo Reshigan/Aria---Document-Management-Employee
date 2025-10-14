@@ -309,6 +309,9 @@ class Workflow(BaseModel):
     template = relationship("WorkflowTemplate")
     creator = relationship("User", foreign_keys=[created_by])
     
+    # Analytics relationships
+    analytics = relationship("WorkflowAnalytics", back_populates="workflow")
+    
     def __repr__(self):
         return f"<Workflow(id={self.id}, name='{self.name}', status='{self.status}')>"
 
