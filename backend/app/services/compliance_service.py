@@ -8,7 +8,7 @@ import logging
 from pathlib import Path
 
 from app.models.compliance import (
-    ComplianceFrameworkConfig, CompliancePolicy, AuditLog, ComplianceAssessment,
+    ComplianceFrameworkConfig, CompliancePolicy, ComplianceAuditLog, ComplianceAssessment,
     PolicyAssessment, ComplianceViolation, DataClassification, DocumentCompliance,
     ComplianceReport, ComplianceMetric, ComplianceFramework, AuditEventType,
     RiskLevel, ComplianceStatus
@@ -204,13 +204,13 @@ class ComplianceService:
         country: Optional[str] = None,
         region: Optional[str] = None,
         city: Optional[str] = None
-    ) -> AuditLog:
+    ) -> ComplianceAuditLog:
         """Log an audit event"""
         try:
             # Calculate retention date based on compliance requirements
             retention_until = datetime.utcnow() + timedelta(days=2555)  # 7 years default
             
-            audit_log = AuditLog(
+            audit_log = ComplianceAuditLog(
                 event_type=event_type,
                 event_description=description,
                 user_id=user_id,
@@ -262,26 +262,26 @@ class ComplianceService:
         compliance_relevant: Optional[bool] = None,
         limit: int = 1000,
         offset: int = 0
-    ) -> List[AuditLog]:
+    ) -> List[ComplianceAuditLog]:
         """Get audit logs with filtering"""
-        query = self.db.query(AuditLog)
+        query = self.db.query(ComplianceAuditLog)
         
         if start_date:
-            query = query.filter(AuditLog.timestamp >= start_date)
+            query = query.filter(ComplianceAuditLog.timestamp >= start_date)
         if end_date:
-            query = query.filter(AuditLog.timestamp <= end_date)
+            query = query.filter(ComplianceAuditLog.timestamp <= end_date)
         if user_id:
-            query = query.filter(AuditLog.user_id == user_id)
+            query = query.filter(ComplianceAuditLog.user_id == user_id)
         if event_types:
-            query = query.filter(AuditLog.event_type.in_(event_types))
+            query = query.filter(ComplianceAuditLog.event_type.in_(event_types))
         if resource_type:
-            query = query.filter(AuditLog.resource_type == resource_type)
+            query = query.filter(ComplianceAuditLog.resource_type == resource_type)
         if risk_level:
-            query = query.filter(AuditLog.risk_level == risk_level)
+            query = query.filter(ComplianceAuditLog.risk_level == risk_level)
         if compliance_relevant is not None:
-            query = query.filter(AuditLog.compliance_relevant == compliance_relevant)
+            query = query.filter(ComplianceAuditLog.compliance_relevant == compliance_relevant)
         
-        return query.order_by(desc(AuditLog.timestamp)).offset(offset).limit(limit).all()
+        return query.order_by(desc(ComplianceAuditLog.timestamp)).offset(offset).limit(limit).all()
     
     # Compliance Assessments
     async def create_compliance_assessment(self, assessment_data: Dict[str, Any], user_id: int) -> ComplianceAssessment:
@@ -633,7 +633,7 @@ class ComplianceService:
             raise
     
     # Private helper methods
-    async def _check_compliance_violations(self, audit_log: AuditLog):
+    async def _check_compliance_violations(self, audit_log: ComplianceAuditLog):
         """Check if an audit event indicates a potential compliance violation"""
         # Implement violation detection logic based on audit events
         # This is a simplified example - real implementation would be more sophisticated
@@ -711,16 +711,16 @@ class ComplianceService:
         metrics["resolved_violations"] = violation_query.filter(ComplianceViolation.status == "resolved").count()
         
         # Audit activity
-        audit_query = self.db.query(AuditLog).filter(
+        audit_query = self.db.query(ComplianceAuditLog).filter(
             and_(
-                AuditLog.timestamp >= start_date,
-                AuditLog.timestamp <= end_date,
-                AuditLog.compliance_relevant == True
+                ComplianceAuditLog.timestamp >= start_date,
+                ComplianceAuditLog.timestamp <= end_date,
+                ComplianceAuditLog.compliance_relevant == True
             )
         )
         
         metrics["audit_events"] = audit_query.count()
-        metrics["high_risk_events"] = audit_query.filter(AuditLog.risk_level == RiskLevel.HIGH).count()
+        metrics["high_risk_events"] = audit_query.filter(ComplianceAuditLog.risk_level == RiskLevel.HIGH).count()
         
         return metrics
     

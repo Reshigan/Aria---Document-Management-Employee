@@ -111,8 +111,8 @@ class CompliancePolicy(Base):
     violations = relationship("ComplianceViolation", back_populates="policy")
 
 # Audit Trail
-class AuditLog(Base):
-    __tablename__ = "audit_logs"
+class ComplianceAuditLog(Base):
+    __tablename__ = "compliance_audit_logs"
     
     id = Column(Integer, primary_key=True, index=True)
     
