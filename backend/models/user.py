@@ -96,6 +96,12 @@ class User(BaseModel):
     processing_jobs = relationship("DocumentProcessingJob", back_populates="user")
     processing_templates = relationship("ProcessingTemplate", back_populates="created_by")
     
+    # Analytics relationships
+    activity_logs = relationship("UserActivityLog", back_populates="user")
+    
+    # Mobile relationships
+    mobile_devices = relationship("MobileDevice", back_populates="user")
+    
     @hybrid_property
     def role_names(self):
         """Get list of role names for this user"""
