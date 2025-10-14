@@ -44,6 +44,11 @@ from .integration_models import (
     Integration, IntegrationSyncLog, WebhookEndpoint, WebhookDelivery,
     IntegrationType, IntegrationStatus, WebhookEventType
 )
+from .document_processing_models import (
+    DocumentProcessingJob, OCRResult, DocumentClassificationResult,
+    ContentExtractionResult, DocumentConversionResult, AIAnalysisResult,
+    ProcessingType, ProcessingStatus
+)
 
 __all__ = [
     "Base",
@@ -74,6 +79,9 @@ __all__ = [
     "SecurityAPIKey", "LoginAttempt", "AccountLockout", "SecurityPolicy",
     # Integration models
     "Integration", "IntegrationSyncLog", "WebhookEndpoint", "WebhookDelivery",
+    # Document processing models
+    "DocumentProcessingJob", "OCRResult", "DocumentClassificationResult",
+    "ContentExtractionResult", "DocumentConversionResult", "AIAnalysisResult",
     # Enums
     "ShareLinkType", "WorkflowStatus", "WorkflowStepType", 
     "WorkflowStepStatus", "WorkflowTaskStatus", "TagType", "TagCategory",
@@ -81,6 +89,7 @@ __all__ = [
     "SessionStatus", "SecurityEventType", "AuditAction",
     "VersionStatus", "MergeStatus", "ConflictType", "ChangeType",
     "IntegrationType", "IntegrationStatus", "WebhookEventType",
+    "ProcessingType", "ProcessingStatus",
     # Association tables
     "document_tags", "document_shares", "folder_permissions", "document_enhanced_tags"
 ]
