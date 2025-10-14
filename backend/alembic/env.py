@@ -24,10 +24,13 @@ from models.user import User
 from models.security_models import Role, Permission
 from models.document import Document
 from models.advanced import (
-    Folder, Tag, DocumentVersion, ShareLink, Comment, 
+    Folder, Tag, DocumentVersionSimple, ShareLink, Comment, 
     Notification, Workflow, WorkflowTemplate, WorkflowStep, WorkflowStepTemplate,
     ActivityLog, UserSession, APIKey, SearchQuery, DocumentFavorite, DocumentView
 )
+from models.version_control import DocumentVersion
+# Import other model modules to ensure all models are registered
+from models import analytics_models, security_models, notification_models, mobile_models, compliance_models
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
