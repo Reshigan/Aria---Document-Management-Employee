@@ -213,7 +213,7 @@ async def ask_document_question(
     document_text = ""
     document_metadata = {
         'filename': document.filename,
-        'document_type': document.document_type.value if document.document_type else None,
+        'document_type': document.document_type if document.document_type else None,
         'invoice_number': document.invoice_number,
         'vendor': document.vendor_name,
         'amount': document.total_amount,

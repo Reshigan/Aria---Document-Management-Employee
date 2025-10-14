@@ -91,13 +91,13 @@ def process_document_task(self, document_id: int):
                 await notification_service.notify_document_processed(
                     document_id=document.id,
                     filename=document.filename,
-                    status=document.status.value,
+                    status=document.status,
                     confidence=document.confidence_score
                 )
                 
                 return {
                     'document_id': document.id,
-                    'status': document.status.value,
+                    'status': document.status,
                     'confidence_score': document.confidence_score,
                     'extracted_data': extracted_data
                 }

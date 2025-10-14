@@ -333,8 +333,8 @@ async def upload_document(
         "id": document.id,
         "original_filename": document.original_filename,
         "file_size": document.file_size,
-        "document_type": document.document_type.value if document.document_type else "OTHER",
-        "status": document.status.value if document.status else "uploaded"
+        "document_type": document.document_type if document.document_type else "OTHER",
+        "status": document.status if document.status else "uploaded"
     }
 
 @app.get("/api/documents", response_model=DocumentListResponse)
@@ -360,7 +360,7 @@ async def get_documents(
             id=doc.id,
             original_filename=doc.original_filename,
             document_type=doc.document_type or "document",
-            status=doc.status.value,
+            status=doc.status,
             created_at=doc.created_at,
             file_size=doc.file_size or 0
         )
@@ -581,7 +581,7 @@ async def search_documents(
                     "id": doc.id,
                     "filename": doc.original_filename,
                     "type": doc.document_type,
-                    "status": doc.status.value,
+                    "status": doc.status,
                     "created_at": doc.created_at,
                     "relevance_score": 0.85
                 }
