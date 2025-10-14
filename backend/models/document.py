@@ -19,6 +19,7 @@ class DocumentType(str, enum.Enum):
     DELIVERY_NOTE = "delivery_note"
     CREDIT_NOTE = "credit_note"
     STATEMENT = "statement"
+    DOCUMENT = "document"
     OTHER = "other"
 
 
