@@ -40,6 +40,10 @@ from .version_control import (
     DocumentVersion, DocumentBranch, DocumentChange, MergeRequest, 
     VersionComparison, MergeConflict, VersionStatus, MergeStatus, ConflictType, ChangeType
 )
+from .integration_models import (
+    Integration, IntegrationSyncLog, WebhookEndpoint, WebhookDelivery,
+    IntegrationType, IntegrationStatus, WebhookEventType
+)
 
 __all__ = [
     "Base",
@@ -68,12 +72,15 @@ __all__ = [
     "SecurityPermission", "SecurityRole", "RolePermission", "SecurityUserRole",
     "SecurityUserSession", "PasswordHistory", "TwoFactorAuth", "SecurityEvent", "AuditLog",
     "SecurityAPIKey", "LoginAttempt", "AccountLockout", "SecurityPolicy",
+    # Integration models
+    "Integration", "IntegrationSyncLog", "WebhookEndpoint", "WebhookDelivery",
     # Enums
     "ShareLinkType", "WorkflowStatus", "WorkflowStepType", 
     "WorkflowStepStatus", "WorkflowTaskStatus", "TagType", "TagCategory",
     "NotificationType", "NotificationPriority", "NotificationChannel",
     "SessionStatus", "SecurityEventType", "AuditAction",
     "VersionStatus", "MergeStatus", "ConflictType", "ChangeType",
+    "IntegrationType", "IntegrationStatus", "WebhookEventType",
     # Association tables
     "document_tags", "document_shares", "folder_permissions", "document_enhanced_tags"
 ]
