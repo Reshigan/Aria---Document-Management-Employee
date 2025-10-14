@@ -4,15 +4,15 @@ from typing import List, Optional, Dict, Any
 from datetime import datetime, timedelta
 import json
 
-from ..database import get_db
-from ..services.mobile_service import MobileService
-from ..models.mobile import (
+from core.database import get_db
+from app.services.mobile_service import MobileService
+from app.models.mobile import (
     MobileDevice, SyncSession, SyncItem, SyncConflict, OfflineDocument,
     MobileSettings, PushNotification, OfflineAction, MobileAnalytics,
     SyncPolicy, MobileSecurityLog, MobileAppVersion
 )
-from ..auth import get_current_user
-from ..models.user import User
+from auth import get_current_user
+from models.user import User
 
 router = APIRouter(prefix="/api/mobile", tags=["mobile"])
 

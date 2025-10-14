@@ -5,9 +5,9 @@ from datetime import datetime, timedelta
 from pydantic import BaseModel, Field
 import logging
 
-from ...core.database import get_db
-from ..services.compliance_service import ComplianceService
-from ..models.compliance import (
+from core.database import get_db
+from app.services.compliance_service import ComplianceService
+from app.models.compliance import (
     ComplianceFramework, AuditEventType, RiskLevel, ComplianceStatus
 )
 
