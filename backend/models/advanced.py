@@ -174,7 +174,7 @@ class DocumentVersionSimple(BaseModel):
     is_current = Column(Boolean, default=False)
     
     # Relationships
-    document = relationship("Document", back_populates="versions")
+    document = relationship("Document")
     created_by = Column(Integer, ForeignKey('users.id'), nullable=False)
     creator = relationship("User")
     
