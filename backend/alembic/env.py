@@ -21,12 +21,12 @@ from core.config import settings
 from models.base import Base
 # Import all models to ensure they're registered
 from models.user import User
-from models.security_models import Role, Permission
+from models.security_models import Role, Permission, UserSession, APIKey
 from models.document import Document
 from models.advanced import (
     Folder, Tag, DocumentVersionSimple, ShareLink, Comment, 
     Workflow, WorkflowTemplate, WorkflowStep, WorkflowStepTemplate,
-    ActivityLog, UserSession, APIKey, SearchQuery, DocumentFavorite, DocumentView
+    ActivityLog, SearchQuery, DocumentFavorite, DocumentView
 )
 from models.notification_models import Notification
 from models.version_control import DocumentVersion
