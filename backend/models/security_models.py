@@ -282,7 +282,7 @@ class SecurityPolicy(BaseModel):
     created_by_user = relationship("User", foreign_keys=[created_by])
 
 # Update User model to include security relationships
-from models.user import User
+from .user import User
 
 # Add relationships to User model
 User.user_roles = relationship("UserRole", foreign_keys="UserRole.user_id", back_populates="user")
