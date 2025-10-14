@@ -2,7 +2,7 @@ from sqlalchemy import Column, Integer, String, Text, Boolean, DateTime, JSON, F
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from enum import Enum
-from core.database import Base
+from .base import Base
 
 class ProcessingStatus(str, Enum):
     PENDING = "pending"
