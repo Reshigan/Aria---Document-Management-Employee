@@ -118,6 +118,7 @@ class Document(BaseModel):
     folder = relationship("Folder", back_populates="documents")
     versions = relationship("DocumentVersion", back_populates="document", order_by="DocumentVersion.version_number")
     tags = relationship("Tag", secondary="document_tags", back_populates="documents")
+    enhanced_tags = relationship("EnhancedTag", secondary="document_enhanced_tags", back_populates="documents")
     share_links = relationship("ShareLink", back_populates="document")
     comments = relationship("Comment", back_populates="document")
     workflows = relationship("Workflow", back_populates="document")
