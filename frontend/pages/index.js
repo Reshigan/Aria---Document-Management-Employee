@@ -94,12 +94,19 @@ export default function Home() {
     setLoginStatus('🔄 Authenticating...')
     
     try {
-      const response = await fetch('/api/auth/login', {
+      // Add email field for backend compatibility
+      const loginData = {
+        username: loginForm.username,
+        email: `${loginForm.username}@aria.local`, // Generate email from username
+        password: loginForm.password
+      }
+      
+      const response = await fetch('/api/security/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(loginForm)
+        body: JSON.stringify(loginData)
       })
       
       const data = await response.json()
