@@ -20,6 +20,14 @@ export default function DocumentView() {
       setLoading(true)
       const token = localStorage.getItem('token')
       
+      console.log('Token from localStorage:', token ? 'Token exists' : 'No token found')
+      
+      if (!token) {
+        setError('Authentication required. Please log in.')
+        setLoading(false)
+        return
+      }
+      
       const response = await axios.get(`/api/documents/${id}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -31,7 +39,14 @@ export default function DocumentView() {
       setError(null)
     } catch (error) {
       console.error('Error fetching document:', error)
-      setError('Failed to load document')
+      if (error.response?.status === 401) {
+        setError('Authentication failed. Please log in again.')
+        localStorage.removeItem('token')
+      } else if (error.response?.status === 404) {
+        setError('Document not found.')
+      } else {
+        setError('Failed to load document')
+      }
     } finally {
       setLoading(false)
     }

@@ -1154,6 +1154,48 @@ async def get_document_details(
         "metadata": json.loads(row.key_information) if row.key_information else {}
     }
 
+@app.delete("/api/documents/{document_id}")
+async def delete_document(
+    document_id: int,
+    current_user: dict = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Delete a document"""
+    # Check if document exists and belongs to user
+    result = db.execute(text("""
+        SELECT id, filename, file_path FROM documents 
+        WHERE id = :document_id AND uploaded_by = :uploaded_by
+    """), {"document_id": document_id, "uploaded_by": current_user["id"]})
+    
+    row = result.fetchone()
+    if not row:
+        raise HTTPException(status_code=404, detail="Document not found")
+    
+    try:
+        # Delete the physical file if it exists
+        if row.file_path and os.path.exists(row.file_path):
+            os.remove(row.file_path)
+            logger.info(f"Deleted file: {row.file_path}")
+        
+        # Delete from database
+        db.execute(text("""
+            DELETE FROM documents WHERE id = :document_id
+        """), {"document_id": document_id})
+        db.commit()
+        
+        logger.info(f"Document {document_id} ({row.filename}) deleted by user {current_user['username']}")
+        
+        return {
+            "message": "Document deleted successfully",
+            "document_id": document_id,
+            "filename": row.filename
+        }
+        
+    except Exception as e:
+        db.rollback()
+        logger.error(f"Error deleting document {document_id}: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to delete document")
+
 @app.post("/api/chat")
 async def chat_with_ai(
     request: ChatRequest,

@@ -1,5 +1,5 @@
 export default async function handler(req, res) {
-  if (req.method !== 'GET') {
+  if (!['GET', 'DELETE'].includes(req.method)) {
     return res.status(405).json({ message: 'Method not allowed' });
   }
 
@@ -12,7 +12,7 @@ export default async function handler(req, res) {
     }
 
     const response = await fetch(`http://localhost:8000/api/documents/${id}`, {
-      method: 'GET',
+      method: req.method,
       headers: {
         'Authorization': authHeader,
         'Content-Type': 'application/json',

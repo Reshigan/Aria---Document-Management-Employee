@@ -2,8 +2,7 @@
 Application configuration management
 """
 from typing import List, Optional
-from pydantic import Field, field_validator
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic import BaseSettings, Field, validator
 from enum import Enum
 
 
@@ -17,12 +16,11 @@ class Environment(str, Enum):
 class Settings(BaseSettings):
     """Application settings with validation"""
     
-    model_config = SettingsConfigDict(
-        env_file=".env",
-        env_file_encoding="utf-8",
-        case_sensitive=True,
-        extra="ignore"
-    )
+    class Config:
+        env_file = ".env"
+        env_file_encoding = "utf-8"
+        case_sensitive = True
+        extra = "ignore"
     
     # Application
     APP_NAME: str = Field(default="ARIA", description="Application name")
@@ -206,7 +204,7 @@ class Settings(BaseSettings):
     ENABLE_WORKFLOW_DESIGNER: bool = True
     ENABLE_MOBILE_APP: bool = True
     
-    @field_validator('BACKEND_CORS_ORIGINS', mode='before')
+    @validator('BACKEND_CORS_ORIGINS', pre=True)
     @classmethod
     def assemble_cors_origins(cls, v):
         if isinstance(v, str):

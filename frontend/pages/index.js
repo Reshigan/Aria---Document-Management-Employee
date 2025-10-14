@@ -103,31 +103,48 @@ export default function Home() {
     }
   }
 
-  const handleLogin = async () => {
-    console.log('=== HANDLE LOGIN CALLED ===')
-    console.log('Login form submitted:', loginForm)
-    setLoginStatus('Sending request...')
-    try {
-      console.log('Sending login request...')
-      const response = await axios.post('/api/auth/login', loginForm)
-      console.log('Login response:', response.data)
-      const { access_token, user } = response.data
-      console.log('Setting token and user:', { access_token: access_token ? 'present' : 'missing', user })
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('token', access_token)
-        console.log('Token stored in localStorage')
-      }
-      axios.defaults.headers.common['Authorization'] = `Bearer ${access_token}`
-      console.log('Authorization header set')
-      setUser(user)
-      setLoginStatus('✅ Login successful!')
-      console.log('User state set')
-      console.log('Login process completed successfully')
-    } catch (error) {
-      console.error('Login error:', error)
-      setLoginStatus('❌ Login failed!')
-      alert('Login failed: ' + (error.response?.data?.detail || 'Unknown error'))
-    }
+  const handleLogin = () => {
+    setLoginStatus('🔄 Starting login...')
+    
+    setTimeout(() => {
+      setLoginStatus('🔄 Sending request to /api/auth/login...')
+      
+      fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(loginForm)
+      })
+      .then(response => {
+        setLoginStatus('🔄 Got response, processing...')
+        
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+        }
+        
+        return response.json()
+      })
+      .then(data => {
+        const { access_token, user } = data
+        
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('token', access_token)
+        }
+        
+        if (typeof axios !== 'undefined') {
+          axios.defaults.headers.common['Authorization'] = `Bearer ${access_token}`
+        }
+        
+        setUser(user)
+        setLoginStatus('✅ Login successful!')
+      })
+      .catch(error => {
+        const errorMsg = error.message || 'Unknown error'
+        setLoginStatus(`❌ Login failed: ${errorMsg}`)
+        alert('Login failed: ' + errorMsg)
+      })
+    }, 100)
   }
 
   const handleFileUpload = async (e) => {
@@ -151,13 +168,22 @@ export default function Home() {
 
   const handleChat = async (e) => {
     e.preventDefault()
-    if (!chatMessage.trim()) return
+    console.log('handleChat called with message:', chatMessage)
+    if (!chatMessage.trim()) {
+      console.log('Empty message, returning')
+      return
+    }
 
     try {
+      console.log('Sending chat request to /api/chat')
+      console.log('Authorization header:', axios.defaults.headers.common['Authorization'])
       const response = await axios.post('/api/chat', { message: chatMessage })
+      console.log('Chat response received:', response.data)
       setChatResponse(response.data.response)
       setChatMessage('')
     } catch (error) {
+      console.error('Chat error:', error)
+      console.error('Error response:', error.response?.data)
       alert('Chat failed: ' + (error.response?.data?.detail || 'Unknown error'))
     }
   }

@@ -1,5 +1,5 @@
 export default async function handler(req, res) {
-  if (req.method !== 'GET') {
+  if (!['GET', 'DELETE'].includes(req.method)) {
     return res.status(405).json({ message: 'Method not allowed' });
   }
 
@@ -9,8 +9,20 @@ export default async function handler(req, res) {
       return res.status(401).json({ message: 'Authorization header required' });
     }
 
-    const response = await fetch('http://localhost:8000/api/documents', {
-      method: 'GET',
+    let backendUrl = 'http://localhost:8000/api/documents';
+    
+    // Handle DELETE requests with document ID
+    if (req.method === 'DELETE') {
+      const { query } = req;
+      if (query.id) {
+        backendUrl = `http://localhost:8000/api/documents/${query.id}`;
+      } else {
+        return res.status(400).json({ message: 'Document ID required for delete' });
+      }
+    }
+
+    const response = await fetch(backendUrl, {
+      method: req.method,
       headers: {
         'Authorization': authHeader,
         'Content-Type': 'application/json',
