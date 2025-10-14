@@ -20,7 +20,8 @@ sys.path.append(str(Path(__file__).parents[1]))
 from core.config import settings
 from models.base import Base
 # Import all models to ensure they're registered
-from models.user import User, Role, Permission
+from models.user import User
+from models.security_models import Role, Permission
 from models.document import Document
 from models.advanced import (
     Folder, Tag, DocumentVersion, ShareLink, Comment, 
