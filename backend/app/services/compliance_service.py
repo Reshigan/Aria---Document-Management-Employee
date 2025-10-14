@@ -7,7 +7,7 @@ import hashlib
 import logging
 from pathlib import Path
 
-from backend.app.models.compliance import (
+from app.models.compliance import (
     ComplianceFrameworkConfig, CompliancePolicy, AuditLog, ComplianceAssessment,
     PolicyAssessment, ComplianceViolation, DataClassification, DocumentCompliance,
     ComplianceReport, ComplianceMetric, ComplianceFramework, AuditEventType,
