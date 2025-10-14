@@ -14,8 +14,8 @@ from ..models.mobile import (
     SyncPolicy, MobileSecurityLog, MobileAppVersion,
     DeviceType, SyncStatus, ConflictResolution
 )
-from ..models.document import Document
-from ..models.user import User
+from models.document import Document
+from models.user import User
 
 class MobileService:
     def __init__(self, db: Session):
