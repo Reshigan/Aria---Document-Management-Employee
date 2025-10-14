@@ -25,9 +25,10 @@ from models.security_models import Role, Permission
 from models.document import Document
 from models.advanced import (
     Folder, Tag, DocumentVersionSimple, ShareLink, Comment, 
-    Notification, Workflow, WorkflowTemplate, WorkflowStep, WorkflowStepTemplate,
+    Workflow, WorkflowTemplate, WorkflowStep, WorkflowStepTemplate,
     ActivityLog, UserSession, APIKey, SearchQuery, DocumentFavorite, DocumentView
 )
+from models.notification_models import Notification
 from models.version_control import DocumentVersion
 # Import other model modules to ensure all models are registered
 from models import analytics_models, security_models, notification_models, mobile_models, compliance_models
