@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from typing import List, Optional
 
 from core.database import get_db
-from core.auth import get_current_user
+from api.gateway.dependencies.auth import get_current_user
 from models.user import User
 from services.version_control_service import VersionControlService
 from schemas.version_control import (
