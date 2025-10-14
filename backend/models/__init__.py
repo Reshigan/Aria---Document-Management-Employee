@@ -5,7 +5,7 @@ from .base import Base
 from .user import User, PasswordResetToken, UserActivity
 from .document import Document, DocumentType, DocumentStatus
 from .advanced import (
-    Folder, FolderPermission, Tag, DocumentVersion, ShareLink, DocumentShare, Comment,
+    Folder, FolderPermission, Tag, DocumentVersionSimple, ShareLink, DocumentShare, Comment,
     Workflow, WorkflowTemplate, WorkflowStep, WorkflowStepTemplate,
     ActivityLog, SearchQuery, DocumentFavorite,
     DocumentView, ShareLinkType, NotificationType, WorkflowStatus,
@@ -36,6 +36,10 @@ from .security_models import (
     APIKey as SecurityAPIKey, LoginAttempt, AccountLockout, SecurityPolicy,
     SessionStatus, SecurityEventType, AuditAction
 )
+from .version_control import (
+    DocumentVersion, DocumentBranch, DocumentChange, MergeRequest, 
+    VersionComparison, MergeConflict, VersionStatus, MergeStatus, ConflictType, ChangeType
+)
 
 __all__ = [
     "Base",
@@ -44,9 +48,12 @@ __all__ = [
     # Document models
     "Document", "DocumentType", "DocumentStatus",
     # Advanced models
-    "Folder", "FolderPermission", "Tag", "DocumentVersion", "ShareLink", "DocumentShare", "Comment",
+    "Folder", "FolderPermission", "Tag", "DocumentVersionSimple", "ShareLink", "DocumentShare", "Comment",
     "ActivityLog", "SearchQuery", "DocumentFavorite",
     "DocumentView",
+    # Version control models
+    "DocumentVersion", "DocumentBranch", "DocumentChange", "MergeRequest", 
+    "VersionComparison", "MergeConflict",
     # Enhanced Tag models
     "EnhancedTag", "TagHierarchy", "TagAnalytics", "AutoTagRule", "TagSuggestion", "TagTemplate",
     # Workflow models
@@ -66,6 +73,7 @@ __all__ = [
     "WorkflowStepStatus", "WorkflowTaskStatus", "TagType", "TagCategory",
     "EnhancedNotificationType", "NotificationPriority", "NotificationChannel",
     "SessionStatus", "SecurityEventType", "AuditAction",
+    "VersionStatus", "MergeStatus", "ConflictType", "ChangeType",
     # Association tables
     "document_tags", "document_shares", "folder_permissions", "document_enhanced_tags"
 ]
