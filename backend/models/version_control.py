@@ -122,7 +122,7 @@ class DocumentBranch(Base):
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     
     # Metadata
-    metadata = Column(JSON, nullable=True)
+    branch_metadata = Column(JSON, nullable=True)
     
     # Relationships
     document = relationship("Document")
@@ -166,7 +166,7 @@ class DocumentChange(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     
     # Metadata
-    metadata = Column(JSON, nullable=True)
+    change_metadata = Column(JSON, nullable=True)
     
     # Relationships
     version = relationship("DocumentVersion", back_populates="changes")
@@ -218,7 +218,7 @@ class MergeRequest(Base):
     merged_at = Column(DateTime(timezone=True), nullable=True)
     
     # Metadata
-    metadata = Column(JSON, nullable=True)
+    merge_metadata = Column(JSON, nullable=True)
     merge_strategy = Column(String(50), default="auto")  # auto, manual, force
     
     # Relationships
@@ -270,7 +270,7 @@ class MergeConflict(Base):
     resolved_at = Column(DateTime(timezone=True), nullable=True)
     
     # Metadata
-    metadata = Column(JSON, nullable=True)
+    conflict_metadata = Column(JSON, nullable=True)
     
     # Relationships
     merge_request = relationship("MergeRequest", back_populates="conflicts")
@@ -344,7 +344,7 @@ class VersionTag(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     
     # Metadata
-    metadata = Column(JSON, nullable=True)
+    tag_metadata = Column(JSON, nullable=True)
     
     # Relationships
     document = relationship("Document")
