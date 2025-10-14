@@ -31,7 +31,7 @@ from models.advanced import (
 from models.notification_models import Notification
 from models.version_control import DocumentVersion
 # Import other model modules to ensure all models are registered
-from models import analytics_models, security_models, notification_models, mobile_models, compliance_models
+from models import analytics_models, security_models, notification_models, document_processing_models, integration_models, tag_models, workflow_models
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
