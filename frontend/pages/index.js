@@ -176,49 +176,7 @@ export default function Home() {
     }
   }
 
-  const handleLogin = () => {
-    setLoginStatus('🔄 Starting login...')
-    
-    setTimeout(() => {
-      setLoginStatus('🔄 Sending request to /api/auth/login...')
-      
-      fetch('/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(loginForm)
-      })
-      .then(response => {
-        setLoginStatus('🔄 Got response, processing...')
-        
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}: ${response.statusText}`)
-        }
-        
-        return response.json()
-      })
-      .then(data => {
-        const { access_token, user } = data
-        
-        if (typeof window !== 'undefined') {
-          localStorage.setItem('token', access_token)
-        }
-        
-        if (typeof axios !== 'undefined') {
-          axios.defaults.headers.common['Authorization'] = `Bearer ${access_token}`
-        }
-        
-        setUser(user)
-        setLoginStatus('✅ Login successful!')
-      })
-      .catch(error => {
-        const errorMsg = error.message || 'Unknown error'
-        setLoginStatus(`❌ Login failed: ${errorMsg}`)
-        alert('Login failed: ' + errorMsg)
-      })
-    }, 100)
-  }
+
 
   const handleFileUpload = async (e) => {
     e.preventDefault()

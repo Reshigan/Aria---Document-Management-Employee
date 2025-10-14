@@ -92,7 +92,7 @@ export default function Reports() {
             </div>
             <div className="vx-p-md">
               <div className="text-lg font-bold text-red-400">{report.confidence_analysis.low_confidence}</div>
-              <div className="text-sm text-gray-300">Low Confidence (<50%)</div>
+              <div className="text-sm text-gray-300">Low Confidence (&lt;50%)</div>
             </div>
           </div>
         </div>
