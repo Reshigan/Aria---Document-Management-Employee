@@ -1,0 +1,21 @@
+INVOICE
+
+Company: VantaX Solutions (Pty) Ltd
+Date: 2025-10-13
+Invoice Number: INV-2025-001
+
+Bill To:
+ARIA Document Management
+123 Business Street
+Johannesburg, 2000
+South Africa
+
+Description: Document Management System Setup
+Amount: R 15,000.00
+VAT (15%): R 2,250.00
+Total: R 17,250.00
+
+Payment Terms: 30 days
+Due Date: 2025-11-12
+
+Thank you for your business!

@@ -1,0 +1,5 @@
+Invoice
+Date: 2025-10-13
+Amount: $1,234.56
+Vendor: Test Company
+Description: Test invoice for system verification

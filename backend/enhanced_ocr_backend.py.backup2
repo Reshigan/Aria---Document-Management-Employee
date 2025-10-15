@@ -1,0 +1,864 @@
+"""
+Enhanced ARIA Backend with Real OCR and Document Processing
+Integrates pytesseract, OpenCV, and AI classification
+"""
+
+import os
+import time
+import json
+import logging
+from datetime import datetime, timedelta
+import pytz
+from typing import Dict, List, Optional, Any
+from pathlib import Path
+import hashlib
+import shutil
+
+# FastAPI imports
+from fastapi import FastAPI, HTTPException, Depends, File, UploadFile, status
+from fastapi.security import HTTPBearer
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+import jwt
+
+# OCR and Image Processing
+import pytesseract
+from PIL import Image
+import pdf2image
+import cv2
+import numpy as np
+import PyPDF2
+
+# SAP Integration
+import requests
+from decimal import Decimal
+
+
+# South Africa timezone helper
+def get_sa_time():
+    """Get current time in South Africa timezone"""
+    sa_tz = pytz.timezone('Africa/Johannesburg')
+    return datetime.now(sa_tz)
+
+def format_sa_datetime(dt=None):
+    """Format datetime in South Africa timezone for display"""
+    if dt is None:
+        dt = get_sa_time()
+    elif dt.tzinfo is None:
+        # If naive datetime, assume it's UTC and convert
+        utc_tz = pytz.timezone('UTC')
+        dt = utc_tz.localize(dt)
+        sa_tz = pytz.timezone('Africa/Johannesburg')
+        dt = dt.astimezone(sa_tz)
+    return dt.strftime('%Y-%m-%dT%H:%M:%S%z')
+
+def format_sa_date(dt=None):
+    """Format date in South Africa timezone"""
+    if dt is None:
+        dt = get_sa_time()
+    elif dt.tzinfo is None:
+        utc_tz = pytz.timezone('UTC')
+        dt = utc_tz.localize(dt)
+        sa_tz = pytz.timezone('Africa/Johannesburg')
+        dt = dt.astimezone(sa_tz)
+    return dt.strftime('%Y-%m-%d')
+
+
+# Setup logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+app = FastAPI(title="ARIA Document Management API", version="2.0.0")
+
+# CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Security
+SECRET_KEY = "AriaJWT1730901994SecretKey"
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
+security = HTTPBearer()
+
+# Mock database
+MOCK_USERS = [
+    {
+        'id': 1,
+        'username': 'admin',
+        'email': 'admin@aria.com',
+        'name': 'Administrator',
+        'password_hash': '$2b$12$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW'  # secret
+    }
+]
+
+MOCK_DOCUMENTS = []
+DOCUMENT_COUNTER = 1
+
+# Pydantic models
+class LoginRequest(BaseModel):
+    username: str
+    password: str
+
+class ChatRequest(BaseModel):
+    message: str
+
+class SAPPostRequest(BaseModel):
+    document_id: int
+    sap_config: Optional[Dict] = None
+
+class DocumentProcessor:
+    """Enhanced document processing with real OCR and AI classification"""
+
+    def __init__(self):
+        self.supported_formats = {
+            'images': ['.jpg', '.jpeg', '.png', '.bmp', '.tiff', '.gif'],
+            'documents': ['.pdf'],
+            'text': ['.txt']
+        }
+        
+        # Create processing directories
+        self.temp_dir = Path("temp_processing")
+        self.uploads_dir = Path("uploads")
+        self.temp_dir.mkdir(exist_ok=True)
+        self.uploads_dir.mkdir(exist_ok=True)
+
+    def process_document(self, file_path: str, filename: str) -> Dict:
+        """Complete document processing pipeline with real OCR"""
+        try:
+            logger.info(f"Starting OCR processing for: {filename}")
+
+            # Initialize result structure
+            result = {
+                "filename": filename,
+                "file_path": file_path,
+                "processed_at": format_sa_datetime(),
+                "file_size": os.path.getsize(file_path),
+                "processing_status": "processing",
+                "ocr_text": "",
+                "classification": {},
+                "metadata": {},
+                "confidence_scores": {},
+                "errors": []
+            }
+
+            # Determine file type and process accordingly
+            file_ext = Path(filename).suffix.lower()
+
+            if file_ext in self.supported_formats['images']:
+                result = self._process_image(file_path, result)
+            elif file_ext in self.supported_formats['documents']:
+                result = self._process_pdf(file_path, result)
+            elif file_ext in self.supported_formats['text']:
+                result = self._process_text_file(file_path, result)
+            else:
+                result["errors"].append(f"Unsupported file format: {file_ext}")
+                result["processing_status"] = "error"
+                return result
+
+            # AI-powered classification and analysis
+            if result["ocr_text"] and not result["errors"]:
+                result = self._classify_document(result)
+                result = self._extract_business_data(result)
+
+            result["processing_status"] = "completed" if not result["errors"] else "completed_with_errors"
+            logger.info(f"OCR processing completed for: {filename}")
+
+            return result
+
+        except Exception as e:
+            logger.error(f"Error processing document {filename}: {str(e)}")
+            result["errors"].append(f"Processing error: {str(e)}")
+            result["processing_status"] = "error"
+            return result
+
+    def _process_image(self, file_path: str, result: Dict) -> Dict:
+        """Process image files with OCR"""
+        try:
+            # Load and preprocess image
+            image = cv2.imread(file_path)
+            if image is None:
+                # Try with PIL for other formats
+                pil_image = Image.open(file_path)
+                image = cv2.cvtColor(np.array(pil_image), cv2.COLOR_RGB2BGR)
+
+            # Image preprocessing for better OCR
+            processed_image = self._preprocess_image(image)
+
+            # Perform OCR
+            ocr_text = pytesseract.image_to_string(processed_image, lang='eng')
+            result["ocr_text"] = ocr_text.strip()
+
+            # Get OCR confidence
+            try:
+                ocr_data = pytesseract.image_to_data(processed_image, output_type=pytesseract.Output.DICT)
+                confidences = [int(conf) for conf in ocr_data['conf'] if int(conf) > 0]
+                result["confidence_scores"]["ocr_average"] = sum(confidences) / len(confidences) if confidences else 0
+            except:
+                result["confidence_scores"]["ocr_average"] = 85.0  # Default confidence
+
+            # Image metadata
+            result["metadata"]["image_dimensions"] = f"{image.shape[1]}x{image.shape[0]}"
+            result["metadata"]["color_channels"] = image.shape[2] if len(image.shape) > 2 else 1
+
+            logger.info(f"OCR extracted {len(result['ocr_text'])} characters from image")
+
+        except Exception as e:
+            result["errors"].append(f"Image processing error: {str(e)}")
+            logger.error(f"Image processing error: {str(e)}")
+
+        return result
+
+    def _process_pdf(self, file_path: str, result: Dict) -> Dict:
+        """Process PDF files with OCR"""
+        try:
+            # First try to extract text directly from PDF
+            with open(file_path, 'rb') as file:
+                pdf_reader = PyPDF2.PdfReader(file)
+                text_content = ""
+                
+                for page in pdf_reader.pages:
+                    text_content += page.extract_text() + "\n"
+                
+                if text_content.strip():
+                    result["ocr_text"] = text_content.strip()
+                    result["metadata"]["extraction_method"] = "direct_text"
+                    result["confidence_scores"]["ocr_average"] = 95.0
+                    logger.info(f"Extracted text directly from PDF: {len(result['ocr_text'])} characters")
+                else:
+                    # If no text found, convert to images and OCR
+                    result = self._ocr_pdf_images(file_path, result)
+                    
+        except Exception as e:
+            result["errors"].append(f"PDF processing error: {str(e)}")
+            logger.error(f"PDF processing error: {str(e)}")
+
+        return result
+
+    def _ocr_pdf_images(self, file_path: str, result: Dict) -> Dict:
+        """Convert PDF to images and perform OCR"""
+        try:
+            # Convert PDF to images
+            images = pdf2image.convert_from_path(file_path)
+            all_text = ""
+            
+            for i, image in enumerate(images):
+                # Convert PIL image to OpenCV format
+                cv_image = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
+                processed_image = self._preprocess_image(cv_image)
+                
+                # Perform OCR on each page
+                page_text = pytesseract.image_to_string(processed_image, lang='eng')
+                all_text += f"--- Page {i+1} ---\n{page_text}\n\n"
+            
+            result["ocr_text"] = all_text.strip()
+            result["metadata"]["extraction_method"] = "ocr_from_images"
+            result["metadata"]["total_pages"] = len(images)
+            result["confidence_scores"]["ocr_average"] = 80.0
+            
+            logger.info(f"OCR from PDF images: {len(result['ocr_text'])} characters from {len(images)} pages")
+            
+        except Exception as e:
+            result["errors"].append(f"PDF OCR error: {str(e)}")
+            logger.error(f"PDF OCR error: {str(e)}")
+
+        return result
+
+    def _process_text_file(self, file_path: str, result: Dict) -> Dict:
+        """Process plain text files"""
+        try:
+            with open(file_path, 'r', encoding='utf-8') as file:
+                result["ocr_text"] = file.read()
+                result["metadata"]["extraction_method"] = "direct_read"
+                result["confidence_scores"]["ocr_average"] = 100.0
+                
+        except Exception as e:
+            result["errors"].append(f"Text file processing error: {str(e)}")
+            logger.error(f"Text file processing error: {str(e)}")
+
+        return result
+
+    def _preprocess_image(self, image):
+        """Preprocess image for better OCR results"""
+        try:
+            # Convert to grayscale
+            gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+            
+            # Apply Gaussian blur to reduce noise
+            blurred = cv2.GaussianBlur(gray, (5, 5), 0)
+            
+            # Apply threshold to get binary image
+            _, thresh = cv2.threshold(blurred, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+            
+            return thresh
+        except:
+            # If preprocessing fails, return original grayscale
+            return cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+    def _classify_document(self, result: Dict) -> Dict:
+        """AI-powered document classification based on content"""
+        text = result["ocr_text"].lower()
+        
+        # Simple rule-based classification (can be enhanced with ML models)
+        classification_rules = {
+            "Invoice": ["invoice", "bill", "amount due", "total:", "subtotal", "tax", "payment"],
+            "Receipt": ["receipt", "paid", "transaction", "purchase", "thank you"],
+            "Contract": ["agreement", "contract", "terms", "conditions", "party", "signature"],
+            "Legal Document": ["legal", "court", "law", "attorney", "plaintiff", "defendant"],
+            "Financial Statement": ["balance sheet", "income statement", "financial", "assets", "liabilities"],
+            "Report": ["report", "analysis", "summary", "findings", "conclusion"],
+            "Letter": ["dear", "sincerely", "regards", "letter", "correspondence"],
+            "Form": ["form", "application", "please fill", "submit", "required"],
+            "Certificate": ["certificate", "certified", "award", "achievement", "completion"],
+            "ID Document": ["identification", "passport", "license", "id card", "social security"]
+        }
+        
+        scores = {}
+        for doc_type, keywords in classification_rules.items():
+            score = sum(1 for keyword in keywords if keyword in text)
+            if score > 0:
+                scores[doc_type] = score / len(keywords)  # Normalize score
+        
+        if scores:
+            best_match = max(scores, key=scores.get)
+            confidence = scores[best_match]
+            
+            result["classification"] = {
+                "document_type": best_match,
+                "confidence": confidence,
+                "all_scores": scores
+            }
+        else:
+            result["classification"] = {
+                "document_type": "Unknown",
+                "confidence": 0.0,
+                "all_scores": {}
+            }
+        
+        return result
+
+    def _extract_business_data(self, result: Dict) -> Dict:
+        """Extract business-relevant data from document text"""
+        text = result["ocr_text"]
+        
+        # Extract common business data patterns
+        business_data = {}
+        
+        # Extract dates (simple pattern)
+        import re
+        date_patterns = [
+            r'\d{1,2}[/-]\d{1,2}[/-]\d{2,4}',
+            r'\d{4}[/-]\d{1,2}[/-]\d{1,2}',
+            r'[A-Za-z]+ \d{1,2}, \d{4}'
+        ]
+        
+        dates = []
+        for pattern in date_patterns:
+            dates.extend(re.findall(pattern, text))
+        
+        if dates:
+            business_data["dates_found"] = dates[:5]  # Limit to first 5 dates
+        
+        # Extract amounts (simple pattern)
+        amount_patterns = [
+            r'\$\d+[,.]?\d*',
+            r'\d+[,.]\d{2}',
+            r'total[:\s]+\$?\d+[,.]?\d*'
+        ]
+        
+        amounts = []
+        for pattern in amount_patterns:
+            amounts.extend(re.findall(pattern, text, re.IGNORECASE))
+        
+        if amounts:
+            business_data["amounts_found"] = amounts[:5]  # Limit to first 5 amounts
+        
+        # Extract email addresses
+        email_pattern = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
+        emails = re.findall(email_pattern, text)
+        if emails:
+            business_data["emails_found"] = emails[:3]  # Limit to first 3 emails
+        
+        # Extract phone numbers (simple pattern)
+        phone_pattern = r'\b\d{3}[-.]?\d{3}[-.]?\d{4}\b'
+        phones = re.findall(phone_pattern, text)
+        if phones:
+            business_data["phones_found"] = phones[:3]  # Limit to first 3 phones
+        
+        result["business_data"] = business_data
+        return result
+
+class SAPIntegration:
+    """SAP Integration for posting processed documents"""
+    
+    def __init__(self, sap_config: Dict[str, str] = None):
+        """Initialize SAP integration with configuration"""
+        self.config = sap_config or {
+            'base_url': 'https://sap-demo.vantax.com',
+            'username': 'ARIA_USER',
+            'password': 'demo_password',
+            'client': '100',
+            'company_code': '1000'
+        }
+        self.session = requests.Session()
+        self.session.auth = (self.config.get('username'), self.config.get('password'))
+
+    def post_document_to_sap(self, document_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Post processed document to SAP based on classification"""
+        try:
+            classification = document_data.get('classification', {})
+            doc_type = classification.get('document_type', 'Unknown')
+            
+            if doc_type == 'Invoice':
+                return self._post_invoice_to_sap(document_data)
+            elif doc_type == 'Receipt':
+                return self._post_receipt_to_sap(document_data)
+            elif doc_type == 'Contract':
+                return self._post_contract_to_sap(document_data)
+            else:
+                return self._post_generic_document_to_sap(document_data)
+                
+        except Exception as e:
+            logger.error(f"SAP posting error: {str(e)}")
+            return {
+                'success': False,
+                'error': str(e),
+                'sap_document_number': None
+            }
+
+    def _post_invoice_to_sap(self, document_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Post invoice to SAP using FB01 transaction"""
+        try:
+            business_data = document_data.get('business_data', {})
+            
+            # Extract invoice data
+            amounts = business_data.get('amounts_found', [])
+            dates = business_data.get('dates_found', [])
+            
+            # Prepare SAP invoice document
+            sap_document = {
+                'transaction_code': 'FB01',  # Enter Vendor Invoice
+                'document_type': 'KR',       # Vendor Invoice
+                'company_code': self.config.get('company_code', '1000'),
+                'posting_date': dates[0] if dates else format_sa_date(),
+                'document_date': dates[0] if dates else format_sa_date(),
+                'reference': document_data.get('filename', ''),
+                'header_text': f"OCR Invoice from {document_data.get('filename', '')}",
+                'line_items': []
+            }
+            
+            # Add line items based on extracted amounts
+            if amounts:
+                for i, amount in enumerate(amounts[:3]):  # Limit to 3 line items
+                    # Clean amount string
+                    clean_amount = ''.join(filter(str.isdigit, amount.replace('.', '').replace(',', '')))
+                    if clean_amount:
+                        amount_value = float(clean_amount) / 100  # Assume cents
+                        
+                        sap_document['line_items'].append({
+                            'line_number': (i + 1) * 10,
+                            'account': '2100000',  # Vendor account
+                            'amount': amount_value,
+                            'tax_code': 'V0',      # Input tax
+                            'text': f'OCR extracted amount {i+1}'
+                        })
+            
+            # Mock SAP API call (in production, use SAP RFC/OData)
+            response = self._mock_sap_api_call('FB01', sap_document)
+            
+            return {
+                'success': True,
+                'sap_document_number': response.get('document_number', f'INV{int(time.time())}'),
+                'transaction_code': 'FB01',
+                'posting_date': sap_document['posting_date'],
+                'message': 'Invoice posted to SAP successfully'
+            }
+            
+        except Exception as e:
+            logger.error(f"Invoice SAP posting error: {str(e)}")
+            return {
+                'success': False,
+                'error': str(e),
+                'sap_document_number': None
+            }
+
+    def _post_receipt_to_sap(self, document_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Post receipt to SAP using F-28 transaction"""
+        try:
+            business_data = document_data.get('business_data', {})
+            amounts = business_data.get('amounts_found', [])
+            
+            sap_document = {
+                'transaction_code': 'F-28',  # Post Incoming Payments
+                'document_type': 'DZ',       # Payment Document
+                'company_code': self.config.get('company_code', '1000'),
+                'posting_date': format_sa_date(),
+                'reference': document_data.get('filename', ''),
+                'amount': amounts[0] if amounts else '0.00'
+            }
+            
+            response = self._mock_sap_api_call('F-28', sap_document)
+            
+            return {
+                'success': True,
+                'sap_document_number': response.get('document_number', f'RCP{int(time.time())}'),
+                'transaction_code': 'F-28',
+                'message': 'Receipt posted to SAP successfully'
+            }
+            
+        except Exception as e:
+            return {
+                'success': False,
+                'error': str(e),
+                'sap_document_number': None
+            }
+
+    def _post_contract_to_sap(self, document_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Post contract to SAP document management"""
+        try:
+            sap_document = {
+                'transaction_code': 'CV01N',  # Create Contract
+                'contract_type': 'SERV',      # Service Contract
+                'description': f"Contract from {document_data.get('filename', '')}",
+                'document_text': document_data.get('ocr_text', '')[:1000]  # Limit text
+            }
+            
+            response = self._mock_sap_api_call('CV01N', sap_document)
+            
+            return {
+                'success': True,
+                'sap_document_number': response.get('document_number', f'CTR{int(time.time())}'),
+                'transaction_code': 'CV01N',
+                'message': 'Contract posted to SAP successfully'
+            }
+            
+        except Exception as e:
+            return {
+                'success': False,
+                'error': str(e),
+                'sap_document_number': None
+            }
+
+    def _post_generic_document_to_sap(self, document_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Post generic document to SAP document management"""
+        try:
+            sap_document = {
+                'transaction_code': 'CV02N',  # Change Document
+                'document_type': 'GEN',       # Generic Document
+                'description': f"Document from {document_data.get('filename', '')}",
+                'classification': document_data.get('classification', {}).get('document_type', 'Unknown'),
+                'content_preview': document_data.get('ocr_text', '')[:500]
+            }
+            
+            response = self._mock_sap_api_call('CV02N', sap_document)
+            
+            return {
+                'success': True,
+                'sap_document_number': response.get('document_number', f'DOC{int(time.time())}'),
+                'transaction_code': 'CV02N',
+                'message': 'Document posted to SAP successfully'
+            }
+            
+        except Exception as e:
+            return {
+                'success': False,
+                'error': str(e),
+                'sap_document_number': None
+            }
+
+    def _mock_sap_api_call(self, transaction_code: str, document_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Mock SAP API call - in production, replace with actual SAP integration"""
+        
+        # Simulate SAP API response
+        doc_number = f"{transaction_code}{int(time.time())}"
+        
+        logger.info(f"Mock SAP API call: {transaction_code} - Document: {doc_number}")
+        
+        return {
+            'success': True,
+            'document_number': doc_number,
+            'posting_date': format_sa_date(),
+            'message': f'Document posted via {transaction_code}'
+        }
+
+    def get_sap_status(self, sap_document_number: str) -> Dict[str, Any]:
+        """Get SAP document status"""
+        try:
+            # Mock status check
+            return {
+                'document_number': sap_document_number,
+                'status': 'Posted',
+                'posting_date': format_sa_date(),
+                'company_code': self.config.get('company_code', '1000')
+            }
+        except Exception as e:
+            return {
+                'error': str(e),
+                'status': 'Error'
+            }
+
+# Initialize processors
+doc_processor = DocumentProcessor()
+sap_integration = SAPIntegration()
+
+# Helper functions
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    # Simple password verification (in production, use proper hashing)
+    return plain_password == "secret"
+
+def create_access_token(data: dict):
+    to_encode = data.copy()
+    expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    to_encode.update({"exp": expire})
+    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+
+def get_current_user(token: str = Depends(security)):
+    try:
+        payload = jwt.decode(token.credentials, SECRET_KEY, algorithms=[ALGORITHM])
+        username: str = payload.get("sub")
+        if username is None:
+            raise HTTPException(status_code=401, detail="Invalid token")
+        
+        user = next((user for user in MOCK_USERS if user['username'] == username), None)
+        if user is None:
+            raise HTTPException(status_code=401, detail="User not found")
+        
+        return user
+    except jwt.PyJWTError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+# API Routes
+@app.get('/api/health')
+async def health_check():
+    return {'status': 'healthy', 'timestamp': time.strftime('%Y-%m-%dT%H:%M:%SZ')}
+
+@app.post('/api/auth/login')
+async def login(login_request: LoginRequest):
+    user = None
+    for u in MOCK_USERS:
+        if (u['username'] == login_request.username or u['email'] == login_request.username):
+            if verify_password(login_request.password, u['password_hash']):
+                user = u
+                break
+    
+    if not user:
+        raise HTTPException(status_code=401, detail='Invalid credentials')
+    
+    access_token = create_access_token(data={"sub": user['username']})
+    
+    return {
+        'access_token': access_token,
+        'token_type': 'bearer',
+        'user': {
+            'id': user['id'],
+            'username': user['username'],
+            'email': user['email'],
+            'name': user['name']
+        }
+    }
+
+@app.get('/api/auth/me')
+async def get_current_user_info(current_user: dict = Depends(get_current_user)):
+    return {
+        'id': current_user['id'],
+        'username': current_user['username'],
+        'email': current_user['email'],
+        'name': current_user['name']
+    }
+
+@app.get('/api/documents')
+async def get_documents(current_user: dict = Depends(get_current_user)):
+    user_documents = [doc for doc in MOCK_DOCUMENTS if doc.get('user_id') == current_user['id']]
+    return {'documents': user_documents}
+
+@app.get('/api/documents/{document_id}')
+async def get_document(document_id: int, current_user: dict = Depends(get_current_user)):
+    document = next((doc for doc in MOCK_DOCUMENTS if doc['id'] == document_id), None)
+    if not document:
+        raise HTTPException(status_code=404, detail='Document not found')
+    return document
+
+@app.post('/api/documents/upload')
+async def upload_document(file: UploadFile = File(...), current_user: dict = Depends(get_current_user)):
+    global DOCUMENT_COUNTER
+
+    try:
+        # Save uploaded file
+        file_path = doc_processor.uploads_dir / f"{DOCUMENT_COUNTER}_{file.filename}"
+        with open(file_path, "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
+
+        # Process document with real OCR
+        processing_result = doc_processor.process_document(str(file_path), file.filename)
+        
+        # Create document record
+        document = {
+            'id': DOCUMENT_COUNTER,
+            'title': file.filename,
+            'filename': file.filename,
+            'upload_date': format_sa_datetime(),
+            'size': file.size or processing_result.get('file_size', 0),
+            'type': file.filename.split('.')[-1] if '.' in file.filename else 'unknown',
+            'user_id': current_user['id'],
+            'processing_result': processing_result,
+            'ocr_text': processing_result.get('ocr_text', ''),
+            'classification': processing_result.get('classification', {}),
+            'business_data': processing_result.get('business_data', {}),
+            'confidence_scores': processing_result.get('confidence_scores', {}),
+            'processing_status': processing_result.get('processing_status', 'completed')
+        }
+
+        MOCK_DOCUMENTS.append(document)
+        DOCUMENT_COUNTER += 1
+
+        return {
+            'message': 'Document uploaded and processed with OCR successfully',
+            'document': document,
+            'ocr_processing': {
+                'status': processing_result.get('processing_status', 'completed'),
+                'text_length': len(processing_result.get('ocr_text', '')),
+                'classification': processing_result.get('classification', {}),
+                'confidence': processing_result.get('confidence_scores', {}),
+                'business_data_extracted': len(processing_result.get('business_data', {}))
+            },
+            'sap_ready': processing_result.get('processing_status') == 'completed'
+        }
+
+    except Exception as e:
+        logger.error(f"Upload processing error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Processing error: {str(e)}")
+
+@app.post('/api/documents/{document_id}/sap-post')
+async def post_document_to_sap(document_id: int, sap_request: SAPPostRequest, current_user: dict = Depends(get_current_user)):
+    """Post processed document to SAP ERP system"""
+    try:
+        # Find the document
+        document = next((doc for doc in MOCK_DOCUMENTS if doc['id'] == document_id), None)
+        if not document:
+            raise HTTPException(status_code=404, detail='Document not found')
+        
+        # Check if document belongs to user
+        if document.get('user_id') != current_user['id']:
+            raise HTTPException(status_code=403, detail='Access denied')
+        
+        # Check if document processing is completed
+        if document.get('processing_status') != 'completed':
+            raise HTTPException(status_code=400, detail='Document processing not completed')
+        
+        # Initialize SAP integration with custom config if provided
+        sap_client = sap_integration
+        if sap_request.sap_config:
+            sap_client = SAPIntegration(sap_request.sap_config)
+        
+        # Post to SAP
+        sap_result = sap_client.post_document_to_sap(document)
+        
+        # Update document with SAP information
+        document['sap_posting'] = {
+            'posted_at': time.strftime('%Y-%m-%dT%H:%M:%SZ'),
+            'sap_document_number': sap_result.get('sap_document_number'),
+            'transaction_code': sap_result.get('transaction_code'),
+            'success': sap_result.get('success', False),
+            'message': sap_result.get('message', ''),
+            'error': sap_result.get('error')
+        }
+        
+        return {
+            'message': 'Document posted to SAP successfully' if sap_result.get('success') else 'SAP posting failed',
+            'sap_result': sap_result,
+            'document_id': document_id,
+            'sap_document_number': sap_result.get('sap_document_number')
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"SAP posting error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"SAP posting error: {str(e)}")
+
+@app.get('/api/documents/{document_id}/sap-status')
+async def get_sap_status(document_id: int, current_user: dict = Depends(get_current_user)):
+    """Get SAP posting status for a document"""
+    try:
+        # Find the document
+        document = next((doc for doc in MOCK_DOCUMENTS if doc['id'] == document_id), None)
+        if not document:
+            raise HTTPException(status_code=404, detail='Document not found')
+        
+        # Check if document belongs to user
+        if document.get('user_id') != current_user['id']:
+            raise HTTPException(status_code=403, detail='Access denied')
+        
+        sap_posting = document.get('sap_posting')
+        if not sap_posting:
+            return {
+                'sap_posted': False,
+                'message': 'Document not posted to SAP yet'
+            }
+        
+        # Get current SAP status if document was posted
+        if sap_posting.get('sap_document_number'):
+            sap_status = sap_integration.get_sap_status(sap_posting['sap_document_number'])
+            return {
+                'sap_posted': True,
+                'sap_posting': sap_posting,
+                'current_status': sap_status
+            }
+        else:
+            return {
+                'sap_posted': False,
+                'sap_posting': sap_posting,
+                'message': 'SAP posting failed'
+            }
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"SAP status check error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"SAP status error: {str(e)}")
+
+@app.get('/api/sap/config')
+async def get_sap_config(current_user: dict = Depends(get_current_user)):
+    """Get current SAP configuration (without sensitive data)"""
+    return {
+        'base_url': sap_integration.config.get('base_url', ''),
+        'client': sap_integration.config.get('client', ''),
+        'company_code': sap_integration.config.get('company_code', ''),
+        'username': sap_integration.config.get('username', ''),
+        'connected': True  # Mock connection status
+    }
+
+@app.post('/api/chat')
+async def chat_with_aria(chat_request: ChatRequest, current_user: dict = Depends(get_current_user)):
+    message = chat_request.message.lower()
+
+    # Enhanced AI responses with OCR context
+    if 'document' in message or 'upload' in message:
+        response = 'I can help you process documents using advanced OCR technology. Upload a document and I will extract text, classify it, and extract business data automatically using Tesseract OCR and AI analysis.'
+    elif 'ocr' in message:
+        response = 'Our OCR engine uses Tesseract 5.3.4 with OpenCV preprocessing to extract text from images and PDFs with high accuracy. It supports multiple languages and includes confidence scoring for quality assessment.'
+    elif 'ai' in message or 'classification' in message:
+        response = 'ARIA uses advanced AI models to classify documents into categories like invoices, contracts, receipts, and more. The AI also extracts key business data like dates, amounts, emails, and phone numbers automatically.'
+    elif 'sap' in message or 'erp' in message:
+        response = 'ARIA integrates seamlessly with SAP ERP systems. Extracted data can be automatically pushed to your SAP modules for streamlined business processes. The SAP integration supports invoice posting, vendor management, and document archiving.'
+    elif 'processing' in message or 'extract' in message:
+        response = 'Document processing includes: OCR text extraction, AI classification, business data extraction (dates, amounts, contacts), confidence scoring, and metadata analysis. Supported formats: PDF, JPG, PNG, TXT, and more.'
+    elif 'hello' in message or 'hi' in message:
+        response = f'Hello {current_user["name"]}! I am ARIA, your AI document management assistant with advanced OCR capabilities. How can I help you process documents today?'
+    else:
+        response = 'I am ARIA, powered by VantaX multidisciplinary AI technology with Tesseract OCR integration. I can help with document processing, OCR text extraction, AI classification, business data extraction, and SAP integration. What would you like to know?'
+
+    return {
+        'response': response,
+        'timestamp': time.strftime('%Y-%m-%dT%H:%M:%SZ'),
+        'user': current_user['name'],
+        'ai_model': 'ARIA-VantaX-OCR-v2.0'
+    }
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)

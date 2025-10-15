@@ -451,5 +451,5 @@ class BulkVersionOperationResponse(BaseModel):
 
 
 # Forward references
-DocumentVersionWithDetails.model_rebuild()
-MergeRequestWithDetails.model_rebuild()
+DocumentVersionWithDetails# .model_rebuild()
+MergeRequestWithDetails# .model_rebuild()

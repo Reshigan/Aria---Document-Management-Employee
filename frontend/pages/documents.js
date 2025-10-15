@@ -1,40 +1,51 @@
-import { useState, useEffect } from 'react'
-import { useRouter } from 'next/router'
-import { motion, AnimatePresence } from 'framer-motion'
-import axios from 'axios'
-import AppLayout from '../components/layout/AppLayout'
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../components/ui/Card'
-import Button from '../components/ui/Button'
+import { useState, useEffect } from "react"
+import { useRouter } from "next/router"
+import { motion, AnimatePresence } from "framer-motion"
+import axios from "axios"
+import AppLayout from "../components/layout/AppLayout"
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "../components/ui/Card"
+import Button from "../components/ui/Button"
 
 const Documents = () => {
   const router = useRouter()
   const [documents, setDocuments] = useState([])
   const [loading, setLoading] = useState(true)
   const [uploading, setUploading] = useState(false)
-  const [searchTerm, setSearchTerm] = useState('')
-  const [selectedCategory, setSelectedCategory] = useState('all')
+  const [searchTerm, setSearchTerm] = useState("")
+  const [selectedCategory, setSelectedCategory] = useState("all")
   const [dragActive, setDragActive] = useState(false)
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    const token = localStorage.getItem('token')
+    setMounted(true)
+  }, [])
+
+  useEffect(() => {
+    if (!mounted) return
+    
+    const token = localStorage.getItem("token")
     if (!token) {
-      router.push('/login')
+      router.push("/login")
       return
     }
-    
+
     fetchDocuments()
-  }, [router])
+  }, [router, mounted])
 
   const fetchDocuments = async () => {
     try {
-      const token = localStorage.getItem('token')
-      const response = await axios.get('http://localhost:8000/documents/', {
+      const token = localStorage.getItem("token")
+      const response = await axios.get("/api/documents/", {
         headers: { Authorization: `Bearer ${token}` }
       })
-      setDocuments(response.data || [])
+      
+      // Ensure we always have an array
+      const docs = Array.isArray(response.data) ? response.data : []
+      setDocuments(docs)
       setLoading(false)
     } catch (error) {
-      console.error('Error fetching documents:', error)
+      console.error("Error fetching documents:", error)
+      setDocuments([]) // Ensure we set an empty array on error
       setLoading(false)
     }
   }
@@ -43,26 +54,25 @@ const Documents = () => {
     if (!files || files.length === 0) return
 
     setUploading(true)
-    const token = localStorage.getItem('token')
+    const token = localStorage.getItem("token")
 
     try {
       for (const file of files) {
         const formData = new FormData()
-        formData.append('file', file)
+        formData.append("file", file)
 
-        await axios.post('http://localhost:8000/documents/upload', formData, {
+        await axios.post("/api/documents/upload", formData, {
           headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'multipart/form-data'
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "multipart/form-data"
           }
         })
       }
-
-      // Refresh documents list
-      await fetchDocuments()
+      
+      fetchDocuments()
+      setUploading(false)
     } catch (error) {
-      console.error('Error uploading files:', error)
-    } finally {
+      console.error("Error uploading files:", error)
       setUploading(false)
     }
   }
@@ -70,9 +80,9 @@ const Documents = () => {
   const handleDrag = (e) => {
     e.preventDefault()
     e.stopPropagation()
-    if (e.type === 'dragenter' || e.type === 'dragover') {
+    if (e.type === "dragenter" || e.type === "dragover") {
       setDragActive(true)
-    } else if (e.type === 'dragleave') {
+    } else if (e.type === "dragleave") {
       setDragActive(false)
     }
   }
@@ -87,230 +97,158 @@ const Documents = () => {
     }
   }
 
-  const handleFileSelect = (e) => {
-    if (e.target.files && e.target.files[0]) {
-      handleFileUpload(Array.from(e.target.files))
-    }
-  }
-
-  const filteredDocuments = documents.filter(doc => {
-    const matchesSearch = doc.filename.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         (doc.document_type || '').toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesCategory = selectedCategory === 'all' || doc.document_type === selectedCategory
+  // Ensure documents is always an array before filtering
+  const safeDocuments = Array.isArray(documents) ? documents : []
+  const filteredDocuments = safeDocuments.filter(doc => {
+    const matchesSearch = doc.filename?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         doc.content?.toLowerCase().includes(searchTerm.toLowerCase())
+    const matchesCategory = selectedCategory === "all" || doc.category === selectedCategory
     return matchesSearch && matchesCategory
   })
 
-  const categories = ['all', ...new Set(documents.map(doc => doc.document_type).filter(Boolean))]
-
-  const formatFileSize = (bytes) => {
-    if (!bytes) return 'Unknown size'
-    if (bytes === 0) return '0 Bytes'
-    const k = 1024
-    const sizes = ['Bytes', 'KB', 'MB', 'GB']
-    const i = Math.floor(Math.log(bytes) / Math.log(k))
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
-  }
-
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    })
-  }
-
-  const getFileIcon = (filename) => {
-    const extension = filename.split('.').pop()?.toLowerCase()
-    
-    switch (extension) {
-      case 'pdf':
-        return (
-          <svg className="w-8 h-8 text-red-500" fill="currentColor" viewBox="0 0 20 20">
-            <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clipRule="evenodd" />
-          </svg>
-        )
-      case 'doc':
-      case 'docx':
-        return (
-          <svg className="w-8 h-8 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
-            <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clipRule="evenodd" />
-          </svg>
-        )
-      case 'xls':
-      case 'xlsx':
-        return (
-          <svg className="w-8 h-8 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-            <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clipRule="evenodd" />
-          </svg>
-        )
-      default:
-        return (
-          <svg className="w-8 h-8 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
-            <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clipRule="evenodd" />
-          </svg>
-        )
-    }
-  }
-
-  if (loading) {
-    return (
-      <AppLayout title="Documents" description="Manage your documents">
-        <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-        </div>
-      </AppLayout>
-    )
+  if (!mounted) {
+    return <div>Loading...</div>
   }
 
   return (
-    <AppLayout title="Documents" description="Manage your documents">
-      <div className="space-y-6">
-        {/* Upload Area */}
-        <Card>
-          <CardContent className="p-6">
-            <div
-              className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
-                dragActive 
-                  ? 'border-blue-500 bg-blue-50' 
-                  : 'border-gray-300 hover:border-gray-400'
-              }`}
-              onDragEnter={handleDrag}
-              onDragLeave={handleDrag}
-              onDragOver={handleDrag}
-              onDrop={handleDrop}
-            >
-              <div className="space-y-4">
-                <div className="mx-auto w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
-                  <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                  </svg>
-                </div>
-                <div>
-                  <h3 className="text-lg font-medium text-gray-900">Upload Documents</h3>
-                  <p className="text-gray-500">Drag and drop files here, or click to select</p>
-                </div>
-                <div className="flex justify-center">
-                  <label htmlFor="file-upload">
-                    <Button
-                      variant="primary"
-                      loading={uploading}
-                      className="cursor-pointer"
-                    >
-                      {uploading ? 'Uploading...' : 'Choose Files'}
-                    </Button>
+    <AppLayout>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-6">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="max-w-7xl mx-auto"
+        >
+          {/* Header */}
+          <div className="mb-8">
+            <h1 className="text-4xl font-bold text-slate-800 mb-2">Document Management</h1>
+            <p className="text-slate-600">Upload, organize, and manage your documents with AI-powered insights</p>
+          </div>
+
+          {/* Upload Area */}
+          <Card className="mb-8">
+            <CardContent className="p-8">
+              <div
+                className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
+                  dragActive ? "border-blue-500 bg-blue-50" : "border-slate-300 hover:border-blue-400"
+                }`}
+                onDragEnter={handleDrag}
+                onDragLeave={handleDrag}
+                onDragOver={handleDrag}
+                onDrop={handleDrop}
+              >
+                <div className="flex flex-col items-center space-y-4">
+                  <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
+                    <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-slate-800 mb-2">Upload Documents</h3>
+                    <p className="text-slate-600 mb-4">Drag and drop files here, or click to select</p>
                     <input
-                      id="file-upload"
                       type="file"
                       multiple
                       className="hidden"
-                      onChange={handleFileSelect}
-                      accept=".pdf,.doc,.docx,.xls,.xlsx,.txt"
+                      id="file-upload"
+                      onChange={(e) => handleFileUpload(Array.from(e.target.files))}
                     />
-                  </label>
+                    <Button
+                      onClick={() => document.getElementById("file-upload").click()}
+                      disabled={uploading}
+                      className="bg-blue-600 hover:bg-blue-700"
+                    >
+                      {uploading ? "Uploading..." : "Select Files"}
+                    </Button>
+                  </div>
                 </div>
               </div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
 
-        {/* Filters */}
-        <div className="flex flex-col sm:flex-row gap-4">
-          <div className="flex-1">
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-              </div>
+          {/* Search and Filter */}
+          <div className="flex flex-col md:flex-row gap-4 mb-6">
+            <div className="flex-1">
               <input
                 type="text"
                 placeholder="Search documents..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value="all">All Categories</option>
+              <option value="contract">Contracts</option>
+              <option value="invoice">Invoices</option>
+              <option value="report">Reports</option>
+              <option value="other">Other</option>
+            </select>
           </div>
-          <select
-            value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-          >
-            {categories.map(category => (
-              <option key={category} value={category}>
-                {category === 'all' ? 'All Categories' : category}
-              </option>
-            ))}
-          </select>
-        </div>
 
-        {/* Documents Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <AnimatePresence>
-            {filteredDocuments.map((doc, index) => (
-              <motion.div
-                key={doc.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ delay: index * 0.1 }}
-              >
-                <Card className="h-full">
-                  <CardContent className="p-6">
-                    <div className="flex items-start space-x-4">
-                      <div className="flex-shrink-0">
-                        {getFileIcon(doc.filename)}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h3 className="text-sm font-medium text-gray-900 truncate">
-                          {doc.filename}
-                        </h3>
-                        <p className="text-sm text-gray-500 mt-1">
-                          {doc.document_type || 'Unknown type'}
-                        </p>
-                        <div className="mt-2 space-y-1">
-                          <p className="text-xs text-gray-400">
-                            {formatFileSize(doc.file_size)}
-                          </p>
-                          <p className="text-xs text-gray-400">
-                            {formatDate(doc.created_at)}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="mt-4 flex space-x-2">
-                      <Button variant="ghost" size="sm" className="flex-1">
-                        View
-                      </Button>
-                      <Button variant="ghost" size="sm" className="flex-1">
-                        Download
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        </div>
-
-        {filteredDocuments.length === 0 && !loading && (
-          <div className="text-center py-12">
-            <div className="mx-auto w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-              <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
+          {/* Documents Grid */}
+          {loading ? (
+            <div className="text-center py-12">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+              <p className="mt-4 text-slate-600">Loading documents...</p>
             </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No documents found</h3>
-            <p className="text-gray-500">
-              {searchTerm || selectedCategory !== 'all' 
-                ? 'Try adjusting your search or filter criteria'
-                : 'Upload your first document to get started'
-              }
-            </p>
-          </div>
-        )}
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <AnimatePresence>
+                {filteredDocuments.map((doc, index) => (
+                  <motion.div
+                    key={doc.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    transition={{ delay: index * 0.1 }}
+                  >
+                    <Card className="hover:shadow-lg transition-shadow">
+                      <CardHeader>
+                        <CardTitle className="text-lg font-semibold text-slate-800 truncate">
+                          {doc.filename || "Untitled Document"}
+                        </CardTitle>
+                        <CardDescription>
+                          {doc.category && (
+                            <span className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
+                              {doc.category}
+                            </span>
+                          )}
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="text-slate-600 text-sm mb-4 line-clamp-3">
+                          {doc.content || "No content available"}
+                        </p>
+                        <div className="flex justify-between items-center text-xs text-slate-500">
+                          <span>
+                            {doc.created_at ? new Date(doc.created_at).toLocaleDateString() : "Unknown date"}
+                          </span>
+                          <span>{doc.file_size || "Unknown size"}</span>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </div>
+          )}
+
+          {!loading && filteredDocuments.length === 0 && (
+            <div className="text-center py-12">
+              <div className="w-24 h-24 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-12 h-12 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-semibold text-slate-800 mb-2">No documents found</h3>
+              <p className="text-slate-600">Upload your first document to get started</p>
+            </div>
+          )}
+        </motion.div>
       </div>
     </AppLayout>
   )

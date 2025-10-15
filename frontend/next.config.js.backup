@@ -1,0 +1,57 @@
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  reactStrictMode: true,
+  async rewrites() {
+    return [
+      // Proxy all API routes except settings to backend
+      {
+        source: '/api/auth/:path*',
+        destination: 'http://localhost:8000/api/auth/:path*',
+      },
+      {
+        source: '/api/documents/:path*',
+        destination: 'http://localhost:8000/api/documents/:path*',
+      },
+      {
+        source: '/api/chat/:path*',
+        destination: 'http://localhost:8000/api/chat/:path*',
+      },
+      {
+        source: '/api/users/:path*',
+        destination: 'http://localhost:8000/api/users/:path*',
+      },
+      {
+        source: '/api/admin/:path*',
+        destination: 'http://localhost:8000/api/admin/:path*',
+      },
+      {
+        source: '/api/analytics/:path*',
+        destination: 'http://localhost:8000/api/analytics/:path*',
+      },
+      {
+        source: '/api/health',
+        destination: 'http://localhost:8000/api/health',
+      },
+      {
+        source: '/api/metrics',
+        destination: 'http://localhost:8000/api/metrics',
+      },
+      // Keep settings local - no rewrite rule for /api/settings
+    ];
+  },
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          { key: 'Access-Control-Allow-Credentials', value: 'true' },
+          { key: 'Access-Control-Allow-Origin', value: '*' },
+          { key: 'Access-Control-Allow-Methods', value: 'GET,DELETE,PATCH,POST,PUT' },
+          { key: 'Access-Control-Allow-Headers', value: 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization' },
+        ],
+      },
+    ];
+  },
+};
+
+module.exports = nextConfig;

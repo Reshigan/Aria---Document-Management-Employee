@@ -37,7 +37,7 @@ const Dashboard = () => {
       const headers = { Authorization: `Bearer ${token}` }
 
       // Fetch documents
-      const documentsResponse = await axios.get('http://localhost:8000/documents/', { headers })
+      const documentsResponse = await axios.get('/documents/', { headers })
       const docs = documentsResponse.data || []
       setDocuments(docs)
 

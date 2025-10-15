@@ -6,7 +6,7 @@ export default async function handler(req, res) {
   const apiPath = Array.isArray(path) ? path.join('/') : path;
   
   // Backend API URL
-  const backendUrl = process.env.BACKEND_URL || 'http://localhost:8000';
+  const backendUrl = process.env.BACKEND_URL || '';
   const fullUrl = `${backendUrl}/${apiPath}`;
   
   try {

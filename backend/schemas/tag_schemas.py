@@ -306,4 +306,4 @@ class DocumentTagResponse(BaseModel):
 
 
 # Update forward references
-TagHierarchyResponse.model_rebuild()
+TagHierarchyResponse# .model_rebuild()

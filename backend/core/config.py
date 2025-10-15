@@ -55,7 +55,7 @@ class Settings(BaseSettings):
         if self.POSTGRES_SERVER and self.POSTGRES_USER and self.POSTGRES_PASSWORD and self.POSTGRES_DB:
             return f"postgresql+asyncpg://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_SERVER}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
         # Default to SQLite for development
-        return "sqlite+aiosqlite:///./aria.db"
+        return "sqlite+aiosqlite+aiosqlite:///./aria.db"
     
     # Redis
     REDIS_HOST: str = "localhost"

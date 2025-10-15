@@ -9,13 +9,13 @@ export default async function handler(req, res) {
       return res.status(401).json({ message: 'Authorization header required' });
     }
 
-    let backendUrl = 'http://localhost:8000/api/documents';
+    let backendUrl = '/api/documents';
     
     // Handle DELETE requests with document ID
     if (req.method === 'DELETE') {
       const { query } = req;
       if (query.id) {
-        backendUrl = `http://localhost:8000/api/documents/${query.id}`;
+        backendUrl = `/api/documents/${query.id}`;
       } else {
         return res.status(400).json({ message: 'Document ID required for delete' });
       }

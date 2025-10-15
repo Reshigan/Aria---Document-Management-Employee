@@ -1,0 +1,29 @@
+INVOICE
+
+VantaX Technologies (Pty) Ltd
+123 Business Street
+Cape Town, 8001
+South Africa
+
+BILL TO:
+ABC Company
+456 Client Avenue
+Johannesburg, 2000
+
+Invoice Number: INV-2025-001
+Invoice Date: 13 October 2025
+Due Date: 13 November 2025
+
+DESCRIPTION                    QTY    RATE      AMOUNT
+AI Document Processing         10     R500.00   R5,000.00
+OCR Services                   5      R300.00   R1,500.00
+System Integration            1      R2,000.00  R2,000.00
+
+                              SUBTOTAL: R8,500.00
+                                   VAT: R1,275.00
+                                 TOTAL: R9,775.00
+
+Payment Terms: Net 30 days
+Bank Details: FNB - Account 123456789
+
+Thank you for your business!
