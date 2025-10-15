@@ -8,6 +8,7 @@ export default function Home() {
   const router = useRouter()
   const [user, setUser] = useState(null)
   const [isClient, setIsClient] = useState(false)
+  const [loginAttempts, setLoginAttempts] = useState(0)
   const [loginStatus, setLoginStatus] = useState('Ready')
   console.log('Current user state:', user)
   const [documents, setDocuments] = useState([])
@@ -15,17 +16,15 @@ export default function Home() {
   const [chatResponse, setChatResponse] = useState('')
   const [loginForm, setLoginForm] = useState({ username: 'admin', password: 'admin123' })
   const [file, setFile] = useState(null)
-  const [loginError, setLoginError] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
 
   // Helper function to format document dates
   const formatDocumentDate = (dateString) => {
     if (!dateString) return 'No date'
-    
+
     try {
       // Handle different date formats
       let date
-      
+
       // If it's already a valid date string with timezone
       if (dateString.includes('T') && (dateString.includes('+') || dateString.includes('Z'))) {
         date = new Date(dateString)
@@ -33,12 +32,12 @@ export default function Home() {
         // If it's a simple date string, parse it
         date = new Date(dateString)
       }
-      
+
       // Check if date is valid
       if (isNaN(date.getTime())) {
         return 'Invalid Date'
       }
-      
+
       // Format for South African locale
       return date.toLocaleDateString('en-ZA', {
         year: 'numeric',
@@ -77,69 +76,68 @@ export default function Home() {
     }
   }, [])
 
-  // Clear error when form changes
-  useEffect(() => {
-    if (loginError) {
-      const timer = setTimeout(() => setLoginError(''), 5000)
-      return () => clearTimeout(timer)
-    }
-  }, [loginError])
-
-
   const handleLogin = async () => {
-    if (isLoading) return
-    
-    setIsLoading(true)
-    setLoginError('')
-    setLoginStatus('🔄 Authenticating...')
-    
+    setLoginStatus('🔄 Starting login...')
+    console.log('🚀 LOGIN STARTED with form data:', loginForm)
+
     try {
-      // Add email field for backend compatibility
+      // Send username and password to backend
       const loginData = {
         username: loginForm.username,
-        email: `${loginForm.username}@aria.local`, // Generate email from username
         password: loginForm.password
       }
       
-      const response = await fetch('/api/security/auth/login', {
+      console.log('🔄 Sending login data to backend:', loginData)
+      setLoginStatus('🔄 Sending request to /api/auth/login...')
+
+      const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(loginData)
       })
-      
-      const data = await response.json()
-      
+
+      console.log('🔄 Got response status:', response.status)
+      setLoginStatus(`🔄 Got response (${response.status}), processing...`)
+
       if (!response.ok) {
-        if (response.status === 401) {
-          throw new Error('Invalid username or password')
-        } else if (response.status === 422) {
-          throw new Error('Please fill in all required fields')
-        } else if (response.status >= 500) {
-          throw new Error('Server error. Please try again later.')
-        } else {
-          throw new Error(data.detail || `Error ${response.status}`)
-        }
+        const errorData = await response.json()
+        console.error('Login failed with error:', errorData)
+        throw new Error(`HTTP error! status: ${response.status}, message: ${errorData.detail || 'Unknown error'}`)
       }
-      
+
+      const data = await response.json()
+      console.log('🔄 Login response data:', data)
+      setLoginStatus('🔄 Processing login data...')
+
       if (data.access_token) {
+        console.log('✅ Access token received, storing in localStorage')
         localStorage.setItem('token', data.access_token)
         axios.defaults.headers.common['Authorization'] = `Bearer ${data.access_token}`
-        setUser(data.user || { username: loginForm.username, email: loginForm.username })
-        setLoginStatus('✅ Login successful!')
+        
+        // Set user data
+        const userData = data.user || { 
+          username: loginForm.username, 
+        }
+        setUser(userData)
+        setLoginStatus('✅ Login successful! Redirecting...')
+        
+        // Fetch user documents
         fetchDocuments()
+        
+        console.log('✅ Login process completed successfully')
       } else {
         throw new Error('No access token received')
       }
     } catch (error) {
-      console.error('Login error:', error)
-      setLoginError(error.message)
-      setLoginStatus('❌ Login failed')
-    } finally {
-      setIsLoading(false)
+      const errorMsg = error.message || 'Unknown error'
+      console.error('❌ Login error:', error)
+      setLoginStatus(`❌ Login failed: ${errorMsg}`)
+      alert('Login failed: ' + errorMsg)
     }
   }
+
   const fetchUser = async () => {
     try {
       const response = await axios.get('/api/auth/me')
@@ -164,8 +162,6 @@ export default function Home() {
       console.error('Failed to fetch documents:', error)
     }
   }
-
-
 
   const handleFileUpload = async (e) => {
     e.preventDefault()
@@ -220,101 +216,65 @@ export default function Home() {
   if (!user) {
     return (
       <>
-        {/* Enhanced Floating Orbs */}
-        <div className="vx-floating-orb" style={{ top: '15%', left: '8%', animationDelay: '0s' }}></div>
-        <div className="vx-floating-orb" style={{ top: '70%', right: '12%', animationDelay: '2s' }}></div>
-        <div className="vx-floating-orb" style={{ bottom: '25%', left: '15%', animationDelay: '4s' }}></div>
-        <div className="vx-floating-orb" style={{ top: '40%', right: '5%', animationDelay: '6s' }}></div>
-        <div className="vx-floating-orb" style={{ bottom: '10%', right: '25%', animationDelay: '8s' }}></div>
+        {/* Floating Orbs */}
+        <div className="vx-floating-orb" style={{ top: '20%', left: '10%', animationDelay: '0s' }}></div>
+        <div className="vx-floating-orb" style={{ top: '60%', right: '15%', animationDelay: '2s' }}></div>
+        <div className="vx-floating-orb" style={{ bottom: '20%', left: '20%', animationDelay: '4s' }}></div>
 
         <div className="vx-flex vx-items-center vx-justify-center" style={{ minHeight: '100vh', padding: '20px' }}>
-          <div className="vx-login-card vx-animate-fade-in" style={{ maxWidth: '450px', width: '100%' }}>
+          <div className="vx-card vx-glass vx-animate-fade-in" style={{ maxWidth: '400px', width: '100%' }}>
             {/* VantaX Header */}
             <div className="vx-flex vx-items-center vx-gap-md vx-m-lg vx-text-center vx-justify-center">
               <div className="vx-logo">VX</div>
               <div>
-                <h1 className="vx-title vx-text-gradient" style={{ fontSize: '2.5rem', marginBottom: '0.25rem' }}>ARIA</h1>
-                <p className="vx-text-muted" style={{ fontSize: '1rem', marginTop: '0', fontWeight: '500' }}>
+                <h1 className="vx-title vx-text-gradient">ARIA</h1>
+                <p className="vx-text-muted" style={{ fontSize: '0.9rem', marginTop: '-0.5rem' }}>
                   Document Management AI
                 </p>
               </div>
             </div>
 
-            <div className="vx-card-header vx-text-center" style={{ marginBottom: '2rem' }}>
-              <p className="vx-card-description" style={{ fontSize: '1rem', fontWeight: '400' }}>
+            <div className="vx-card-header vx-text-center">
+              <p className="vx-card-description">
                 Powered by VantaX's multidisciplinary AI technology
               </p>
             </div>
 
-            <form onSubmit={(e) => { e.preventDefault(); handleLogin(); }}>
-              <div className="vx-m-md" style={{ marginBottom: '1.5rem' }}>
+            <div>
+              <div className="vx-m-md">
                 <input
                   type="text"
                   placeholder="Username"
                   value={loginForm.username}
-                  onChange={(e) => {
-                    setLoginForm({ ...loginForm, username: e.target.value })
-                    setLoginError('')
-                  }}
+                  onChange={(e) => setLoginForm({ ...loginForm, username: e.target.value })}
                   className="vx-input"
-                  disabled={isLoading}
-                  required
                 />
               </div>
-              <div className="vx-m-md" style={{ marginBottom: '1.5rem' }}>
+              <div className="vx-m-md">
                 <input
                   type="password"
                   placeholder="Password"
                   value={loginForm.password}
-                  onChange={(e) => {
-                    setLoginForm({ ...loginForm, password: e.target.value })
-                    setLoginError('')
-                  }}
+                  onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })}
                   className="vx-input"
-                  disabled={isLoading}
-                  required
                 />
               </div>
-
-              {/* Error Message */}
-              {loginError && (
-                <div className="vx-status vx-status-error vx-m-md" style={{ marginBottom: '1.5rem', padding: '1rem', justifyContent: 'center' }}>
-                  <span>⚠️ {loginError}</span>
+              {isClient && (
+                <button onClick={handleLogin} className="vx-btn vx-btn-primary vx-w-full vx-m-md">
+                  <span>🚀</span>
+                  Login to ARIA
+                </button>
+              )}
+              {isClient && (
+                <div className="vx-text-center vx-m-md">
+                  <strong>Login Status: {loginStatus}</strong>
                 </div>
               )}
-
-              {/* Login Button */}
-              <button 
-                type="submit"
-                disabled={isLoading || !loginForm.username || !loginForm.password}
-                className="vx-btn vx-btn-primary vx-w-full vx-m-md"
-                style={{ padding: '1rem 2rem', fontSize: '1.1rem', marginBottom: '1.5rem' }}
-              >
-                {isLoading ? (
-                  <>
-                    <span>⏳</span>
-                    Authenticating...
-                  </>
-                ) : (
-                  <>
-                    <span>🚀</span>
-                    Login to ARIA
-                  </>
-                )}
-              </button>
-
-              {/* Status Display */}
-              {loginStatus && loginStatus !== 'Ready' && (
-                <div className={`vx-status ${loginError ? 'vx-status-error' : isLoading ? 'vx-status-loading' : 'vx-status-success'} vx-text-center vx-m-md`} 
-                     style={{ marginBottom: '1.5rem', padding: '0.75rem', justifyContent: 'center' }}>
-                  <strong>{loginStatus}</strong>
-                </div>
-              )}
-            </form>
+            </div>
 
             <div className="vx-text-center vx-m-lg">
-              <p className="vx-text-muted" style={{ fontSize: '0.9rem' }}>
-                Default credentials: <span className="vx-text-gradient" style={{ fontWeight: '600' }}>admin / admin123</span>
+              <p className="vx-text-muted" style={{ fontSize: '0.875rem' }}>
+                Default credentials: <span className="vx-text-gradient">admin / admin123</span>
               </p>
             </div>
 
