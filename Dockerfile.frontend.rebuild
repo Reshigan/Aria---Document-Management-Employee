@@ -1,0 +1,46 @@
+# Build stage
+FROM node:18-alpine AS builder
+
+WORKDIR /app
+
+# Set build-time environment variable
+ARG NEXT_PUBLIC_API_URL=https://aria.vantax.co.za
+ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+
+# Copy package files
+COPY frontend/package*.json ./
+RUN npm ci
+
+# Copy source code
+COPY frontend/ ./
+
+# Build the application
+RUN npm run build
+
+# Production stage
+FROM node:18-alpine AS runner
+
+WORKDIR /app
+
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV NEXT_PUBLIC_API_URL=https://aria.vantax.co.za
+
+# Create nextjs user
+RUN addgroup --system --gid 1001 nodejs &&     adduser --system --uid 1001 nextjs
+
+# Install production dependencies
+COPY frontend/package*.json ./
+RUN npm ci --only=production && npm cache clean --force
+
+# Copy built application from builder
+COPY --from=builder --chown=nextjs:nodejs /app/.next ./.next
+COPY --chown=nextjs:nodejs frontend/public ./public
+COPY --chown=nextjs:nodejs frontend/next.config.js ./
+
+USER nextjs
+EXPOSE 3000
+
+HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3   CMD curl -f http://localhost:3000/ || exit 1
+
+CMD ["npm", "start"]

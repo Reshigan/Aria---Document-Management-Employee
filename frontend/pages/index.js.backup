@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
 import axios from 'axios'
-import ModernLayout from '../components/layout/ModernLayout'
 
 export default function Home() {
   console.log('Home component rendering...')
@@ -21,11 +20,11 @@ export default function Home() {
   // Helper function to format document dates
   const formatDocumentDate = (dateString) => {
     if (!dateString) return 'No date'
-
+    
     try {
       // Handle different date formats
       let date
-
+      
       // If it's already a valid date string with timezone
       if (dateString.includes('T') && (dateString.includes('+') || dateString.includes('Z'))) {
         date = new Date(dateString)
@@ -33,12 +32,12 @@ export default function Home() {
         // If it's a simple date string, parse it
         date = new Date(dateString)
       }
-
+      
       // Check if date is valid
       if (isNaN(date.getTime())) {
         return 'Invalid Date'
       }
-
+      
       // Format for South African locale
       return date.toLocaleDateString('en-ZA', {
         year: 'numeric',
@@ -77,68 +76,81 @@ export default function Home() {
     }
   }, [])
 
-  const handleLogin = async () => {
-    setLoginStatus('🔄 Starting login...')
-    console.log('🚀 LOGIN STARTED with form data:', loginForm)
-
-    try {
-      // Send username and password to backend
-      const loginData = {
-        username: loginForm.username,
-        password: loginForm.password
+  // useEffect to handle login when loginAttempts changes
+  useEffect(() => {
+    if (loginAttempts > 0) {
+      setLoginStatus(`Triggered attempt ${loginAttempts}`)
+      console.log('🚀 LOGIN TRIGGERED by state change, attempt:', loginAttempts)
+      // Implement login logic directly here instead of calling handleLogin()
+      const performLogin = async () => {
+        try {
+          setLoginStatus('Sending request...')
+          console.log('Sending login request...')
+          const response = await axios.post('/api/auth/login', loginForm)
+          console.log('Login response:', response.data)
+          const { access_token, user } = response.data
+          console.log('Setting token and user:', { access_token: access_token ? 'present' : 'missing', user })
+          if (typeof window !== 'undefined') {
+            localStorage.setItem('token', access_token)
+            console.log('Token stored in localStorage')
+          }
+          axios.defaults.headers.common['Authorization'] = `Bearer ${access_token}`
+          console.log('Authorization header set')
+          setUser(user)
+          setLoginStatus('SUCCESS! Logged in')
+          console.log('User state set')
+          console.log('Login process completed successfully')
+        } catch (error) {
+          console.error('Login error:', error)
+          setLoginStatus('❌ Login failed!')
+          // Can't use alert() here, so we'll just log the error
+          console.error('Login failed:', error.response?.data?.detail || 'Unknown error')
+        }
       }
-      
-      console.log('🔄 Sending login data to backend:', loginData)
-      setLoginStatus('🔄 Sending request to /api/auth/login...')
+      performLogin()
+    }
+  }, [loginAttempts])
 
-      const response = await fetch('/api/auth/login', {
+
+  const handleLogin = () => {
+    setLoginStatus('🔄 Starting login...')
+    
+    setTimeout(() => {
+      setLoginStatus('🔄 Sending request to /api/auth/login...')
+      
+      fetch('/api/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(loginData)
+        body: JSON.stringify(loginForm)
       })
-
-      console.log('🔄 Got response status:', response.status)
-      setLoginStatus(`🔄 Got response (${response.status}), processing...`)
-
-      if (!response.ok) {
-        const errorData = await response.json()
-        console.error('Login failed with error:', errorData)
-        throw new Error(`HTTP error! status: ${response.status}, message: ${errorData.detail || 'Unknown error'}`)
-      }
-
-      const data = await response.json()
-      console.log('🔄 Login response data:', data)
-      setLoginStatus('🔄 Processing login data...')
-
-      if (data.access_token) {
-        console.log('✅ Access token received, storing in localStorage')
-        localStorage.setItem('token', data.access_token)
-        axios.defaults.headers.common['Authorization'] = `Bearer ${data.access_token}`
-        
-        // Set user data
-        const userData = data.user || { 
-          username: loginForm.username, 
+      .then(response => {
+        setLoginStatus('🔄 Got response, processing...')
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`)
         }
-        setUser(userData)
-        setLoginStatus('✅ Login successful! Redirecting...')
+        return response.json()
+      })
+      .then(data => {
+        setLoginStatus('🔄 Processing login data...')
+        console.log('Login successful:', data)
         
-        // Fetch user documents
-        fetchDocuments()
-        
-        console.log('✅ Login process completed successfully')
-      } else {
-        throw new Error('No access token received')
-      }
-    } catch (error) {
-      const errorMsg = error.message || 'Unknown error'
-      console.error('❌ Login error:', error)
-      setLoginStatus(`❌ Login failed: ${errorMsg}`)
-      alert('Login failed: ' + errorMsg)
-    }
+        if (data.access_token) {
+          localStorage.setItem('token', data.access_token)
+          setUser(data.user || { username: loginForm.username })
+          setLoginStatus('✅ Login successful!')
+        } else {
+          throw new Error('No access token received')
+        }
+      })
+      .catch(error => {
+        const errorMsg = error.message || 'Unknown error'
+        setLoginStatus(`❌ Login failed: ${errorMsg}`)
+        alert('Login failed: ' + errorMsg)
+      })
+    }, 100)
   }
-
   const fetchUser = async () => {
     try {
       const response = await axios.get('/api/auth/me')
@@ -163,6 +175,8 @@ export default function Home() {
       console.error('Failed to fetch documents:', error)
     }
   }
+
+
 
   const handleFileUpload = async (e) => {
     e.preventDefault()
@@ -261,9 +275,12 @@ export default function Home() {
                 />
               </div>
               {isClient && (
-                <button onClick={handleLogin} className="vx-btn vx-btn-primary vx-w-full vx-m-md">
+                <button onClick={() => {
+                  setLoginAttempts(loginAttempts + 1)
+                  handleLogin()
+                }} className="vx-btn vx-btn-primary vx-w-full vx-m-md">
                   <span>🚀</span>
-                  Login to ARIA
+                  Login to ARIA {loginAttempts > 0 ? `(Clicked ${loginAttempts} times!)` : '(Click Me)'}
                 </button>
               )}
               {isClient && (
@@ -279,6 +296,22 @@ export default function Home() {
               </p>
             </div>
 
+            {/* DEBUG: Minimal login button outside main structure */}
+            {isClient && (
+              <div style={{ padding: '20px', border: '2px solid red', margin: '20px' }}>
+                <h3>DEBUG SECTION</h3>
+                <button
+                  onClick={() => {
+                    console.log('🟢 MINIMAL LOGIN BUTTON CLICKED!')
+                    handleLogin()
+                  }}
+                  style={{ padding: '10px', backgroundColor: 'green', color: 'white' }}
+                >
+                  MINIMAL LOGIN TEST
+                </button>
+              </div>
+            )}
+
             {/* System Status */}
             <div className="vx-flex vx-justify-center vx-gap-sm vx-m-lg">
               <div className="vx-status vx-status-online">
@@ -289,126 +322,6 @@ export default function Home() {
           </div>
         </div>
       </>
-    )
-  }
-
-
-  // If user is logged in, show the modern layout with document management
-  if (user) {
-    return (
-      <ModernLayout user={user} onLogout={handleLogout}>
-        <div className="space-y-6">
-          {/* Document Upload Section */}
-          <div className="vx-card vx-glass p-8">
-            <h2 className="text-2xl font-bold vx-text-gradient mb-6">📄 Document Management</h2>
-            
-            {/* Upload Form */}
-            <div className="mb-8">
-              <div className="border-2 border-dashed border-gray-600 rounded-lg p-8 text-center hover:border-yellow-400 transition-colors">
-                <input
-                  type="file"
-                  onChange={(e) => setFile(e.target.files[0])}
-                  className="hidden"
-                  id="file-upload"
-                  accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png"
-                />
-                <label htmlFor="file-upload" className="cursor-pointer">
-                  <div className="text-4xl mb-4">📁</div>
-                  <p className="text-lg text-gray-300 mb-2">
-                    {file ? file.name : 'Click to upload or drag and drop'}
-                  </p>
-                  <p className="text-sm text-gray-400">
-                    PDF, DOC, DOCX, TXT, JPG, JPEG, PNG up to 10MB
-                  </p>
-                </label>
-              </div>
-              
-              {file && (
-                <div className="mt-4 flex justify-center">
-                  <button
-                    onClick={handleFileUpload}
-                    className="vx-btn vx-btn-primary"
-                  >
-                    <span>⬆️</span>
-                    <span>Upload Document</span>
-                  </button>
-                </div>
-              )}
-            </div>
-
-            {/* Documents List */}
-            <div className="space-y-4">
-              <h3 className="text-xl font-semibold text-white">Recent Documents</h3>
-              {documents.length > 0 ? (
-                <div className="grid gap-4">
-                  {documents.map((doc, index) => (
-                    <div key={index} className="vx-glass p-4 rounded-lg hover:vx-glass-yellow transition-all">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-3">
-                          <span className="text-2xl">📄</span>
-                          <div>
-                            <h4 className="font-medium text-white">{doc.filename}</h4>
-                            <p className="text-sm text-gray-400">
-                              Uploaded: {formatDocumentDate(doc.upload_date)}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <span className="px-2 py-1 bg-green-500/20 text-green-400 rounded text-xs">
-                            Processed
-                          </span>
-                          <button className="text-yellow-400 hover:text-yellow-300">
-                            📥 Download
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-8 text-gray-400">
-                  No documents uploaded yet
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* AI Chat Section */}
-          <div className="vx-card vx-glass p-8">
-            <h2 className="text-2xl font-bold vx-text-gradient mb-6">🤖 AI Assistant</h2>
-            
-            <div className="space-y-4">
-              <div className="flex space-x-4">
-                <input
-                  type="text"
-                  value={chatMessage}
-                  onChange={(e) => setChatMessage(e.target.value)}
-                  placeholder="Ask me about your documents..."
-                  className="vx-input flex-1"
-                  onKeyPress={(e) => e.key === 'Enter' && handleChat(e)}
-                />
-                <button
-                  onClick={(e) => handleChat(e)}
-                  className="vx-btn vx-btn-primary"
-                >
-                  Send
-                </button>
-              </div>
-              
-              {chatResponse && (
-                <div className="vx-glass p-4 rounded-lg">
-                  <div className="flex items-start space-x-3">
-                    <span className="text-2xl">🤖</span>
-                    <div className="flex-1">
-                      <p className="text-white">{chatResponse}</p>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      </ModernLayout>
     )
   }
 
@@ -442,25 +355,11 @@ export default function Home() {
           {/* Navigation Buttons */}
           <div className="vx-flex vx-gap-sm">
             <button
-              onClick={() => router.push("/enterprise-dashboard")}
-              className="vx-btn vx-btn-primary"
-              style={{ padding: "0.5rem 1rem", fontSize: "0.9rem" }}
-            >
-              🏢 Enterprise Analytics
-            </button>
-            <button
-              onClick={() => router.push("/document-classification")}
+              onClick={() => router.push("/settings")}
               className="vx-btn vx-btn-secondary"
               style={{ padding: "0.5rem 1rem", fontSize: "0.9rem" }}
             >
-              🤖 AI Classification
-            </button>
-            <button
-              onClick={() => router.push("/integrations")}
-              className="vx-btn vx-btn-secondary"
-              style={{ padding: "0.5rem 1rem", fontSize: "0.9rem" }}
-            >
-              🔗 Integrations
+              ⚙️ Settings
             </button>
             <button
               onClick={() => router.push("/reports")}
@@ -468,13 +367,6 @@ export default function Home() {
               style={{ padding: "0.5rem 1rem", fontSize: "0.9rem" }}
             >
               📊 Reports
-            </button>
-            <button
-              onClick={() => router.push("/settings")}
-              className="vx-btn vx-btn-secondary"
-              style={{ padding: "0.5rem 1rem", fontSize: "0.9rem" }}
-            >
-              ⚙️ Settings
             </button>
             <button
               onClick={handleLogout}
@@ -639,5 +531,5 @@ export default function Home() {
         </div>
       </div>
     </>
-  );
+  )
 }
