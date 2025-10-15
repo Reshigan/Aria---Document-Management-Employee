@@ -1,14 +1,19 @@
-# Aria Document Management System - Deployment Guide
+# ARIA Document Management - Enterprise Deployment Guide
 
-## 🚀 Deployment Status: COMPLETED
+## 🚀 Production System Status: ✅ FULLY OPERATIONAL
+
+**Production URL:** https://aria.vantax.co.za  
+**Server:** ubuntu@3.8.139.178  
+**Status:** Enterprise system deployed and running successfully
 
 ### System Overview
 - **Domain**: aria.vantax.co.za
 - **Backend API**: FastAPI running on port 8000
-- **Frontend**: React/Next.js (port 3000)
+- **Frontend**: Next.js running on port 12001
 - **SSL**: Let's Encrypt certificate active
-- **Database**: PostgreSQL with Redis and RabbitMQ
+- **Database**: SQLite with aiosqlite async driver
 - **Reverse Proxy**: Nginx with security headers
+- **Authentication**: JWT with bcrypt password hashing
 
 ### ✅ Completed Deployment Tasks
 

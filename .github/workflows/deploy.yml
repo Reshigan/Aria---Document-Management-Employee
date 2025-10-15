@@ -1,0 +1,60 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      
+    - name: Setup SSH
+      uses: webfactory/ssh-agent@v0.7.0
+      with:
+        ssh-private-key: ${{ secrets.PRODUCTION_SSH_KEY }}
+        
+    - name: Deploy to Production Server
+      run: |
+        ssh -o StrictHostKeyChecking=no ubuntu@3.8.139.178 << 'EOF'
+          cd Aria---Document-Management-Employee
+          
+          # Backup current system
+          sudo cp -r . ../aria-backup-$(date +%Y%m%d-%H%M%S) || true
+          
+          # Pull latest changes
+          git pull origin main
+          
+          # Install backend dependencies
+          cd backend
+          pip install -r requirements.txt --break-system-packages || true
+          cd ..
+          
+          # Install frontend dependencies
+          cd frontend
+          npm install || true
+          cd ..
+          
+          # Restart backend service
+          pkill -f "uvicorn main:app" || true
+          sleep 2
+          cd backend
+          nohup python -m uvicorn main:app --host 0.0.0.0 --port 8000 > backend.log 2>&1 &
+          cd ..
+          
+          # Restart frontend service
+          pkill -f "next dev -p 12001" || true
+          sleep 2
+          cd frontend
+          nohup npm run dev -- -p 12001 > frontend.log 2>&1 &
+          cd ..
+          
+          # Reload nginx
+          sudo nginx -t && sudo systemctl reload nginx
+          
+          echo "Deployment completed successfully"
+        EOF
