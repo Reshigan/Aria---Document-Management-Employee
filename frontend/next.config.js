@@ -3,7 +3,12 @@ const nextConfig = {
   reactStrictMode: true,
   
   // Fix CORS issues for production
-  allowedDevOrigins: ['aria.vantax.co.za', 'localhost', '127.0.0.1'],
+  allowedDevOrigins: [
+    'aria.vantax.co.za', 
+    'localhost', 
+    '127.0.0.1',
+    'work-2-qatnwrksyeyxxnnz.prod-runtime.all-hands.dev'
+  ],
   
   async rewrites() {
     return [
