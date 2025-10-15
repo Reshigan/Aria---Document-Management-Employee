@@ -321,11 +321,25 @@ export default function Home() {
           {/* Navigation Buttons */}
           <div className="vx-flex vx-gap-sm">
             <button
-              onClick={() => router.push("/settings")}
+              onClick={() => router.push("/enterprise-dashboard")}
+              className="vx-btn vx-btn-primary"
+              style={{ padding: "0.5rem 1rem", fontSize: "0.9rem" }}
+            >
+              🏢 Enterprise Analytics
+            </button>
+            <button
+              onClick={() => router.push("/document-classification")}
               className="vx-btn vx-btn-secondary"
               style={{ padding: "0.5rem 1rem", fontSize: "0.9rem" }}
             >
-              ⚙️ Settings
+              🤖 AI Classification
+            </button>
+            <button
+              onClick={() => router.push("/integrations")}
+              className="vx-btn vx-btn-secondary"
+              style={{ padding: "0.5rem 1rem", fontSize: "0.9rem" }}
+            >
+              🔗 Integrations
             </button>
             <button
               onClick={() => router.push("/reports")}
@@ -333,6 +347,13 @@ export default function Home() {
               style={{ padding: "0.5rem 1rem", fontSize: "0.9rem" }}
             >
               📊 Reports
+            </button>
+            <button
+              onClick={() => router.push("/settings")}
+              className="vx-btn vx-btn-secondary"
+              style={{ padding: "0.5rem 1rem", fontSize: "0.9rem" }}
+            >
+              ⚙️ Settings
             </button>
             <button
               onClick={handleLogout}
