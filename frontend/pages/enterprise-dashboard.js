@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
+import ModernLayout from '../components/layout/ModernLayout';
+import AnalyticsDashboard from '../components/dashboard/AnalyticsDashboard';
 
 export default function EnterpriseDashboard() {
   const [activeTab, setActiveTab] = useState('executive');
@@ -8,9 +10,21 @@ export default function EnterpriseDashboard() {
   const [error, setError] = useState('');
   const [refreshing, setRefreshing] = useState(false);
   const [realTimeData, setRealTimeData] = useState({});
+  const [user, setUser] = useState(null);
   const router = useRouter();
 
   useEffect(() => {
+    // Check authentication
+    const token = localStorage.getItem('token');
+    const userData = localStorage.getItem('user');
+    if (!token) {
+      router.push('/');
+      return;
+    }
+    if (userData) {
+      setUser(JSON.parse(userData));
+    }
+
     fetchDashboardData(activeTab);
     // Set up real-time updates
     const interval = setInterval(() => {
@@ -71,6 +85,19 @@ export default function EnterpriseDashboard() {
     } catch (err) {
       console.error('Real-time data fetch failed:', err);
     }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    router.push('/');
+  };
+
+  const handleRefresh = () => {
+    setRefreshing(true);
+    fetchDashboardData(activeTab);
+    fetchRealTimeData();
+    setTimeout(() => setRefreshing(false), 1000);
   };
 
   const tabs = [
@@ -494,125 +521,47 @@ export default function EnterpriseDashboard() {
     );
   };
 
+  // Prepare dashboard data for the modern component
+  const modernDashboardData = {
+    total_documents: dashboardData[activeTab]?.kpis?.total_documents || 1247,
+    processed_today: dashboardData[activeTab]?.kpis?.processed_today || 89,
+    storage_used: dashboardData[activeTab]?.kpis?.storage_used || '2.4 GB',
+    active_users: dashboardData[activeTab]?.kpis?.active_users || 23,
+    chart_data: dashboardData[activeTab]?.chart_data,
+    category_data: dashboardData[activeTab]?.category_data
+  };
+
+  const modernRealTimeData = {
+    recent_activities: realTimeData?.recent_activities || [
+      {
+        icon: '📄',
+        message: 'New document processed: Invoice_2024_001.pdf',
+        timestamp: '2 minutes ago',
+        status: 'success'
+      },
+      {
+        icon: '📧',
+        message: 'Email attachment detected from Office365',
+        timestamp: '5 minutes ago',
+        status: 'processing'
+      },
+      {
+        icon: '🔍',
+        message: 'Document classification completed',
+        timestamp: '8 minutes ago',
+        status: 'success'
+      }
+    ]
+  };
+
   return (
-    <div className="min-h-screen" style={{
-      background: "linear-gradient(135deg, #000000 0%, #1a1a1a 25%, #2a2a2a 50%, #1a1a1a 75%, #000000 100%)",
-      backgroundSize: "400% 400%",
-      animation: "gradientShift 15s ease infinite"
-    }}>
-      {/* Enterprise Header */}
-      <div className="vx-glass border-b border-gray-700/30">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-20">
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-3">
-                <div className="vx-logo">
-                  <span className="text-black font-black text-xl">VX</span>
-                </div>
-                <div>
-                  <h1 className="text-2xl font-bold vx-text-gradient">🏢 Enterprise Dashboard</h1>
-                  <p className="text-sm vx-text-muted">Fortune 500 Business Intelligence Platform</p>
-                </div>
-              </div>
-            </div>
-            <div className="flex items-center space-x-4">
-              {/* Real-time indicator */}
-              <div className="flex items-center space-x-2 px-3 py-1 bg-green-400/10 border border-green-400/30 rounded-full">
-                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                <span className="text-xs text-green-400">Live Data</span>
-              </div>
-              
-              <button
-                onClick={() => {setRefreshing(true); fetchDashboardData(activeTab); setTimeout(() => setRefreshing(false), 1000);}}
-                className="vx-btn vx-btn-secondary"
-                disabled={refreshing}
-              >
-                {refreshing ? (
-                  <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                    <span>Refreshing...</span>
-                  </>
-                ) : (
-                  <>
-                    <span>🔄</span>
-                    <span>Refresh</span>
-                  </>
-                )}
-              </button>
-              
-              <button
-                onClick={() => router.push('/test')}
-                className="vx-btn vx-btn-secondary"
-              >
-                <span>←</span>
-                <span>Back to Dashboard</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Enterprise Tab Navigation */}
-        <div className="mb-8">
-          <div className="vx-glass rounded-xl p-2">
-            <nav className="flex space-x-2 overflow-x-auto">
-              {tabs.map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center space-x-3 px-6 py-4 rounded-lg font-medium text-sm transition-all duration-300 whitespace-nowrap ${
-                    activeTab === tab.id
-                      ? 'vx-glass-yellow text-yellow-100 shadow-lg transform scale-105'
-                      : 'text-gray-300 hover:text-white hover:bg-white/5'
-                  }`}
-                >
-                  <span className="text-lg">{tab.icon}</span>
-                  <div className="text-left">
-                    <div>{tab.name}</div>
-                    <div className="text-xs opacity-75">{tab.description}</div>
-                  </div>
-                </button>
-              ))}
-            </nav>
-          </div>
-        </div>
-
-        {/* Error Messages */}
-        {error && (
-          <div className="mb-6 vx-glass border border-red-400/30 text-red-100 px-6 py-4 rounded-xl">
-            <div className="flex items-center space-x-2">
-              <span className="text-red-400">❌</span>
-              <span>{error}</span>
-            </div>
-          </div>
-        )}
-
-        {/* Dashboard Content */}
-        <div className="vx-glass rounded-xl p-8 min-h-[600px]">
-          {loading ? (
-            <div className="text-center py-16">
-              <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-yellow-400 mx-auto mb-4"></div>
-              <p className="text-gray-300">Loading enterprise analytics...</p>
-            </div>
-          ) : (
-            <div>
-              {activeTab === 'executive' && renderExecutiveDashboard()}
-              {activeTab === 'operational' && renderOperationalDashboard()}
-              {activeTab === 'financial' && renderFinancialDashboard()}
-              {activeTab === 'compliance' && renderComplianceDashboard()}
-              {activeTab === 'predictive' && renderPredictiveDashboard()}
-            </div>
-          )}
-        </div>
-      </div>
-
-      <style jsx>{`
-        @keyframes gradientShift {
-          0%, 100% { background-position: 0% 50%; }
-          50% { background-position: 100% 50%; }
-        }
-      `}</style>
-    </div>
+    <ModernLayout user={user} onLogout={handleLogout}>
+      <AnalyticsDashboard
+        data={modernDashboardData}
+        realTimeData={modernRealTimeData}
+        onRefresh={handleRefresh}
+        loading={loading}
+      />
+    </ModernLayout>
   );
 }

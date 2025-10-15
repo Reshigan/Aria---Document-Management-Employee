@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
 import axios from 'axios'
+import ModernLayout from '../components/layout/ModernLayout'
 
 export default function Home() {
   console.log('Home component rendering...')
@@ -289,6 +290,132 @@ export default function Home() {
         </div>
       </>
     )
+  }
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    setUser(null);
+    router.push('/');
+  };
+
+  // If user is logged in, show the modern layout with document management
+  if (user) {
+    return (
+      <ModernLayout user={user} onLogout={handleLogout}>
+        <div className="space-y-6">
+          {/* Document Upload Section */}
+          <div className="vx-card vx-glass p-8">
+            <h2 className="text-2xl font-bold vx-text-gradient mb-6">📄 Document Management</h2>
+            
+            {/* Upload Form */}
+            <div className="mb-8">
+              <div className="border-2 border-dashed border-gray-600 rounded-lg p-8 text-center hover:border-yellow-400 transition-colors">
+                <input
+                  type="file"
+                  onChange={(e) => setFile(e.target.files[0])}
+                  className="hidden"
+                  id="file-upload"
+                  accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png"
+                />
+                <label htmlFor="file-upload" className="cursor-pointer">
+                  <div className="text-4xl mb-4">📁</div>
+                  <p className="text-lg text-gray-300 mb-2">
+                    {file ? file.name : 'Click to upload or drag and drop'}
+                  </p>
+                  <p className="text-sm text-gray-400">
+                    PDF, DOC, DOCX, TXT, JPG, JPEG, PNG up to 10MB
+                  </p>
+                </label>
+              </div>
+              
+              {file && (
+                <div className="mt-4 flex justify-center">
+                  <button
+                    onClick={handleFileUpload}
+                    className="vx-btn vx-btn-primary"
+                  >
+                    <span>⬆️</span>
+                    <span>Upload Document</span>
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Documents List */}
+            <div className="space-y-4">
+              <h3 className="text-xl font-semibold text-white">Recent Documents</h3>
+              {documents.length > 0 ? (
+                <div className="grid gap-4">
+                  {documents.map((doc, index) => (
+                    <div key={index} className="vx-glass p-4 rounded-lg hover:vx-glass-yellow transition-all">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                          <span className="text-2xl">📄</span>
+                          <div>
+                            <h4 className="font-medium text-white">{doc.filename}</h4>
+                            <p className="text-sm text-gray-400">
+                              Uploaded: {formatDocumentDate(doc.upload_date)}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <span className="px-2 py-1 bg-green-500/20 text-green-400 rounded text-xs">
+                            Processed
+                          </span>
+                          <button className="text-yellow-400 hover:text-yellow-300">
+                            📥 Download
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-8 text-gray-400">
+                  No documents uploaded yet
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* AI Chat Section */}
+          <div className="vx-card vx-glass p-8">
+            <h2 className="text-2xl font-bold vx-text-gradient mb-6">🤖 AI Assistant</h2>
+            
+            <div className="space-y-4">
+              <div className="flex space-x-4">
+                <input
+                  type="text"
+                  value={chatMessage}
+                  onChange={(e) => setChatMessage(e.target.value)}
+                  placeholder="Ask me about your documents..."
+                  className="vx-input flex-1"
+                  onKeyPress={(e) => e.key === 'Enter' && handleChatSubmit()}
+                />
+                <button
+                  onClick={handleChatSubmit}
+                  className="vx-btn vx-btn-primary"
+                >
+                  Send
+                </button>
+              </div>
+              
+              {chatResponse && (
+                <div className="vx-glass p-4 rounded-lg">
+                  <div className="flex items-start space-x-3">
+                    <span className="text-2xl">🤖</span>
+                    <div className="flex-1">
+                      <p className="text-white">{chatResponse}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </ModernLayout>
+    );
   }
 
   return (
