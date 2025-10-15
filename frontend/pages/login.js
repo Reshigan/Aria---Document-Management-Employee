@@ -1,216 +1,266 @@
-import { useState, useEffect } from 'react'
-import { useRouter } from 'next/router'
-import { motion } from 'framer-motion'
-import axios from 'axios'
-import Button from '../components/ui/Button'
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../components/ui/Card'
+import { useState, useEffect } from "react"
+import { useRouter } from "next/router"
+import { motion, AnimatePresence } from "framer-motion"
+import axios from "axios"
 
-const LoginPage = () => {
+const Login = () => {
   const router = useRouter()
-  const [formData, setFormData] = useState({
-    username: '',
-    password: ''
-  })
+  const [formData, setFormData] = useState({ username: "", password: "" })
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
+  const [error, setError] = useState("")
   const [showPassword, setShowPassword] = useState(false)
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    // Check if user is already logged in
-    const token = localStorage.getItem('token')
+    setMounted(true)
+    const token = localStorage.getItem("token")
     if (token) {
-      router.push('/enterprise-dashboard')
+      router.push("/dashboard")
     }
   }, [router])
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }))
-    // Clear error when user starts typing
-    if (error) setError('')
-  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
-    setError('')
+    setError("")
 
     try {
-      const response = await axios.post('/api/auth/login', {
-        username: formData.username,
-        password: formData.password
-      })
-
+      const response = await axios.post("/api/auth/login", formData)
+      
       if (response.data.access_token) {
-        localStorage.setItem('token', response.data.access_token)
-        localStorage.setItem('user', JSON.stringify({
-          username: formData.username,
-          role: 'Administrator'
-        }))
-        
-        // Redirect to dashboard
-        router.push('/enterprise-dashboard')
+        localStorage.setItem("token", response.data.access_token)
+        localStorage.setItem("user", JSON.stringify(response.data.user || { username: formData.username }))
+        router.push("/dashboard")
       }
     } catch (error) {
-      console.error('Login error:', error)
-      setError(
-        error.response?.data?.detail || 
-        'Login failed. Please check your credentials and try again.'
-      )
+      setError(error.response?.data?.detail || "Login failed. Please try again.")
     } finally {
       setLoading(false)
     }
   }
 
-  const EyeIcon = ({ open }) => (
-    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      {open ? (
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-      ) : (
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21" />
-      )}
-    </svg>
-  )
+  const fillDemoCredentials = () => {
+    setFormData({ username: "admin", password: "admin123" })
+  }
+
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
+      </div>
+    )
+  }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50 flex items-center justify-center p-4">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="w-full max-w-md"
-      >
-        {/* Logo and branding */}
-        <div className="text-center mb-8">
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-            className="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg"
-          >
-            <span className="text-white font-bold text-2xl">A</span>
-          </motion.div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome to ARIA</h1>
-          <p className="text-gray-600">Enterprise Document Management System</p>
+    <>
+      <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 relative overflow-hidden">
+        {/* Animated Background Elements */}
+        <div className="absolute inset-0">
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob"></div>
+          <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-2000"></div>
+          <div className="absolute bottom-1/4 left-1/3 w-96 h-96 bg-pink-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-4000"></div>
         </div>
 
-        <Card className="shadow-xl border-0">
-          <CardHeader className="text-center pb-2">
-            <CardTitle className="text-xl">Sign in to your account</CardTitle>
-            <CardDescription>
-              Enter your credentials to access the dashboard
-            </CardDescription>
-          </CardHeader>
-          
-          <CardContent className="pt-4">
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Username field */}
-              <div>
-                <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-2">
-                  Username
-                </label>
-                <motion.input
-                  whileFocus={{ scale: 1.02 }}
-                  type="text"
-                  id="username"
-                  name="username"
-                  value={formData.username}
-                  onChange={handleInputChange}
-                  required
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-white"
-                  placeholder="Enter your username"
-                />
+        {/* Floating Particles */}
+        <div className="absolute inset-0 overflow-hidden">
+          {[...Array(20)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute w-2 h-2 bg-white rounded-full opacity-10"
+              animate={{
+                y: [0, -100, 0],
+                x: [0, Math.random() * 100 - 50, 0],
+                opacity: [0.1, 0.3, 0.1],
+              }}
+              transition={{
+                duration: Math.random() * 10 + 10,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+              }}
+            />
+          ))}
+        </div>
+
+        <div className="relative z-10 min-h-screen flex items-center justify-center p-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="w-full max-w-md"
+          >
+            {/* Logo and Brand */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.2, duration: 0.6 }}
+              className="text-center mb-8"
+            >
+              <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-blue-400 to-purple-500 rounded-2xl mb-6 shadow-2xl">
+                <span className="text-3xl font-bold text-white">A</span>
+              </div>
+              <h1 className="text-4xl font-bold text-white mb-2">Welcome to ARIA</h1>
+              <p className="text-blue-200 text-lg">Enterprise Document Management</p>
+            </motion.div>
+
+            {/* Login Card */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4, duration: 0.6 }}
+              className="backdrop-blur-xl bg-white/10 rounded-3xl p-8 shadow-2xl border border-white/20"
+            >
+              <div className="text-center mb-6">
+                <h2 className="text-2xl font-semibold text-white mb-2">Sign in to your account</h2>
+                <p className="text-blue-200">Enter your credentials to access the dashboard</p>
               </div>
 
-              {/* Password field */}
-              <div>
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-                  Password
-                </label>
-                <div className="relative">
-                  <motion.input
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <AnimatePresence>
+                  {error && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="bg-red-500/20 border border-red-500/30 rounded-xl p-4 text-red-200 text-sm"
+                    >
+                      {error}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                <div className="space-y-4">
+                  <motion.div
                     whileFocus={{ scale: 1.02 }}
-                    type={showPassword ? 'text' : 'password'}
-                    id="password"
-                    name="password"
-                    value={formData.password}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-white"
-                    placeholder="Enter your password"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                    className="relative"
                   >
-                    <EyeIcon open={showPassword} />
-                  </button>
+                    <label className="block text-sm font-medium text-blue-200 mb-2">
+                      Username
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={formData.username}
+                      onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+                      className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all duration-200 backdrop-blur-sm"
+                      placeholder="Enter your username"
+                    />
+                  </motion.div>
+
+                  <motion.div
+                    whileFocus={{ scale: 1.02 }}
+                    className="relative"
+                  >
+                    <label className="block text-sm font-medium text-blue-200 mb-2">
+                      Password
+                    </label>
+                    <div className="relative">
+                      <input
+                        type={showPassword ? "text" : "password"}
+                        required
+                        value={formData.password}
+                        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                        className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all duration-200 backdrop-blur-sm pr-12"
+                        placeholder="Enter your password"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-blue-300 hover:text-white transition-colors"
+                      >
+                        {showPassword ? (
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21" />
+                          </svg>
+                        ) : (
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                          </svg>
+                        )}
+                      </button>
+                    </div>
+                  </motion.div>
                 </div>
-              </div>
 
-              {/* Error message */}
-              {error && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm"
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  type="submit"
+                  disabled={loading}
+                  className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-3 px-6 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {error}
-                </motion.div>
-              )}
+                  {loading ? (
+                    <div className="flex items-center justify-center">
+                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                      Signing in...
+                    </div>
+                  ) : (
+                    "Sign in"
+                  )}
+                </motion.button>
+              </form>
 
-              {/* Submit button */}
-              <Button
-                type="submit"
-                variant="primary"
-                size="lg"
-                loading={loading}
-                className="w-full"
+              {/* Demo Credentials */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.8 }}
+                className="mt-6 p-4 bg-white/5 rounded-xl border border-white/10"
               >
-                {loading ? 'Signing in...' : 'Sign in'}
-              </Button>
-            </form>
+                <p className="text-blue-200 text-sm mb-3 text-center">Demo Credentials:</p>
+                <div className="text-center space-y-1 mb-3">
+                  <p className="text-white text-sm"><span className="font-semibold">Username:</span> admin</p>
+                  <p className="text-white text-sm"><span className="font-semibold">Password:</span> admin123</p>
+                </div>
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  type="button"
+                  onClick={fillDemoCredentials}
+                  className="w-full bg-white/10 hover:bg-white/20 text-white py-2 px-4 rounded-lg text-sm font-medium transition-all duration-200 border border-white/20"
+                >
+                  Fill demo credentials
+                </motion.button>
+              </motion.div>
+            </motion.div>
 
-            {/* Demo credentials */}
+            {/* Footer */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 0.5 }}
-              className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200"
+              transition={{ delay: 1 }}
+              className="text-center mt-8 space-y-2"
             >
-              <p className="text-sm text-blue-800 font-medium mb-2">Demo Credentials:</p>
-              <div className="text-sm text-blue-700 space-y-1">
-                <p><strong>Username:</strong> admin</p>
-                <p><strong>Password:</strong> admin123</p>
-              </div>
-              <button
-                type="button"
-                onClick={() => setFormData({ username: 'admin', password: 'admin123' })}
-                className="mt-2 text-xs text-blue-600 hover:text-blue-800 underline"
-              >
-                Fill demo credentials
-              </button>
+              <p className="text-blue-200 text-sm">© 2024 ARIA Document Management. All rights reserved.</p>
+              <p className="text-blue-300 text-sm font-medium">Powered by VantaX Technology</p>
             </motion.div>
-          </CardContent>
-        </Card>
+          </motion.div>
+        </div>
+      </div>
 
-        {/* Footer */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.7 }}
-          className="text-center mt-8 text-sm text-gray-500"
-        >
-          <p>© 2024 ARIA Document Management. All rights reserved.</p>
-          <p className="mt-1">Powered by VantaX Technology</p>
-        </motion.div>
-      </motion.div>
-    </div>
+      <style jsx>{`
+        @keyframes blob {
+          0% { transform: translate(0px, 0px) scale(1); }
+          33% { transform: translate(30px, -50px) scale(1.1); }
+          66% { transform: translate(-20px, 20px) scale(0.9); }
+          100% { transform: translate(0px, 0px) scale(1); }
+        }
+        .animate-blob {
+          animation: blob 7s infinite;
+        }
+        .animation-delay-2000 {
+          animation-delay: 2s;
+        }
+        .animation-delay-4000 {
+          animation-delay: 4s;
+        }
+      `}</style>
+    </>
   )
 }
 
-export default LoginPage
+export default Login
