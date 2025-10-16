@@ -1,5 +1,6 @@
 import '../styles/globals.css'
 import axios from 'axios'
+import ErrorBoundary from '../components/ErrorBoundary'
 
 // Set base URL for axios
 // In production, use relative URLs so requests go to the same domain
@@ -7,5 +8,9 @@ import axios from 'axios'
 axios.defaults.baseURL = ''
 
 export default function App({ Component, pageProps }) {
-  return <Component {...pageProps} />
+  return (
+    <ErrorBoundary>
+      <Component {...pageProps} />
+    </ErrorBoundary>
+  )
 }
