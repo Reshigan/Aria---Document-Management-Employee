@@ -1,18 +1,15 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  
-  // Enable case-sensitive routing for both dev and production
-  caseSensitive: true,
-  
+
   // Fix CORS issues for production
   allowedDevOrigins: [
-    'aria.vantax.co.za', 
-    'localhost', 
+    'aria.vantax.co.za',
+    'localhost',
     '127.0.0.1',
     'work-2-qatnwrksyeyxxnnz.prod-runtime.all-hands.dev'
   ],
-  
+
   async rewrites() {
     return [
       {
