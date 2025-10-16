@@ -8,7 +8,7 @@ import {
   UserIcon,
   CurrencyDollarIcon,
   ArrowLeftIcon,
-  DownloadIcon,
+  ArrowDownTrayIcon,
   EyeIcon,
   ClockIcon
 } from '@heroicons/react/24/outline'
@@ -143,7 +143,7 @@ export default function DocumentDetail() {
             onClick={downloadDocument}
             className="flex items-center space-x-2 bg-amber-400 hover:bg-amber-500 text-black font-medium py-2 px-4 rounded-lg transition-colors"
           >
-            <DownloadIcon className="h-5 w-5" />
+            <ArrowDownTrayIcon className="h-5 w-5" />
             <span>Download</span>
           </button>
         </div>
