@@ -538,3 +538,83 @@ input:focus, button:focus {
   outline: 2px solid var(--vx-primary-gold);
   outline-offset: 2px;
 }
+
+/* CRITICAL BORDER FIX - MUST BE AT END OF FILE */
+* {
+}
+
+*:before,
+*:after {
+}
+
+[class*="border"] {
+}
+
+.border-dashed,
+.border-2.border-dashed,
+.border.border-dashed,
+.border-t-dashed,
+.border-r-dashed,
+.border-b-dashed,
+.border-l-dashed {
+}
+
+input, select, textarea, div, button, span, p, h1, h2, h3, h4, h5, h6,
+section, article, aside, nav, header, footer, main, form, fieldset,
+table, tr, td, th, ul, ol, li, dl, dt, dd {
+}
+
+[style*="border-style: dashed"] {
+}
+
+[style*="border-style:dashed"] {
+}
+
+*:focus,
+*:hover,
+*:active {
+}
+
+/* CRITICAL BORDER FIX - MUST BE AT END OF FILE */
+* {
+  border-style: solid !important;
+}
+
+*:before,
+*:after {
+  border-style: solid !important;
+}
+
+[class*="border"] {
+  border-style: solid !important;
+}
+
+.border-dashed,
+.border-2.border-dashed,
+.border.border-dashed,
+.border-t-dashed,
+.border-r-dashed,
+.border-b-dashed,
+.border-l-dashed {
+  border-style: solid !important;
+}
+
+input, select, textarea, div, button, span, p, h1, h2, h3, h4, h5, h6,
+section, article, aside, nav, header, footer, main, form, fieldset,
+table, tr, td, th, ul, ol, li, dl, dt, dd {
+  border-style: solid !important;
+}
+
+[style*="border-style: dashed"] {
+  border-style: solid !important;
+}
+
+[style*="border-style:dashed"] {
+  border-style: solid !important;
+}
+
+*:focus,
+*:hover,
+*:active {
+  border-style: solid !important;
+}
