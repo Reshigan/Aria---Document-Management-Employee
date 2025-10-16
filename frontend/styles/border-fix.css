@@ -1,0 +1,25 @@
+/* Force all borders to be solid - override any dashed borders */
+* {
+  border-style: solid !important;
+}
+
+input, select, textarea, div, button {
+  border-style: solid !important;
+}
+
+.border-dashed {
+  border-style: solid !important;
+}
+
+/* Specific overrides for upload zones */
+.upload-zone,
+.upload-zone * {
+  border-style: solid !important;
+}
+
+/* Override any Tailwind dashed border utilities */
+.border-dashed,
+.border-2.border-dashed,
+.border.border-dashed {
+  border-style: solid !important;
+}

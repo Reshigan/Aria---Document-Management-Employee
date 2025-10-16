@@ -198,27 +198,27 @@ export default function ModernARIA() {
           </div>
 
           <nav className="p-6 space-y-2">
-            <a href="#" className="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-300 bg-gradient-to-r from-purple-500/20 to-pink-500/20 text-purple-300 border border-purple-500/30">
+            <a href="#" className="nav-item active">
               <DashboardIcon className="w-5 h-5" />
               <span>Dashboard</span>
             </a>
-            <a href="#" className="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-300 hover:bg-white/10 cursor-pointer">
+            <a href="#" className="nav-item">
               <DocumentIcon className="w-5 h-5" />
               <span>Documents</span>
             </a>
-            <a href="#" className="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-300 hover:bg-white/10 cursor-pointer">
+            <a href="#" className="nav-item">
               <AIIcon className="w-5 h-5" />
               <span>AI Classification</span>
             </a>
-            <a href="#" className="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-300 hover:bg-white/10 cursor-pointer">
+            <a href="#" className="nav-item">
               <AnalyticsIcon className="w-5 h-5" />
               <span>Analytics</span>
             </a>
-            <a href="#" className="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-300 hover:bg-white/10 cursor-pointer">
+            <a href="#" className="nav-item">
               <IntegrationIcon className="w-5 h-5" />
               <span>Integrations</span>
             </a>
-            <a href="#" className="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-300 hover:bg-white/10 cursor-pointer">
+            <a href="#" className="nav-item">
               <SettingsIcon className="w-5 h-5" />
               <span>Settings</span>
             </a>
@@ -336,7 +336,7 @@ export default function ModernARIA() {
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {documents.slice(0, 6).map((doc, index) => (
-                      <div key={index} className="bg-black/20 backdrop-blur-xl rounded-xl p-4 border border-white/10 hover:border-purple-500/50 transition-all duration-300 hover:scale-105 cursor-pointer group">
+                      <div key={index} className="document-card">
                         <div className="flex items-start space-x-3">
                           <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
                             <DocumentIcon className="w-5 h-5 text-white" />
@@ -346,7 +346,7 @@ export default function ModernARIA() {
                             <p className="text-sm text-gray-400 truncate">{doc.classification || 'Processing...'}</p>
                             <div className="flex items-center justify-between mt-3">
                               <div className="flex items-center space-x-2">
-                                <span className="flex items-center space-x-2 px-3 py-1 rounded-full bg-green-500/20 text-green-300 border border-green-500/30 text-xs">
+                                <span className="status-online text-xs">
                                   <SuccessIcon className="w-3 h-3" />
                                   <span>Processed</span>
                                 </span>
@@ -374,7 +374,7 @@ export default function ModernARIA() {
             </div>
 
             {/* Chat Section */}
-            <div className="bg-black/20 backdrop-blur-xl border border-white/10 rounded-2xl flex flex-col h-[600px]">
+            <div className="glass rounded-2xl flex flex-col h-[600px]">
               <div className="p-4 border-b border-white/10">
                 <h3 className="text-lg font-semibold flex items-center space-x-2">
                   <AIIcon className="w-6 h-6 text-purple-400" />
@@ -386,11 +386,7 @@ export default function ModernARIA() {
               <div className="flex-1 overflow-y-auto p-4 space-y-4">
                 {chatMessages.map((message, index) => (
                   <div key={index} className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}>
-                    <div className={`max-w-[80%] p-4 rounded-2xl shadow-lg ${
-                      message.type === 'user' 
-                        ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white ml-auto' 
-                        : 'bg-black/20 backdrop-blur-xl border border-white/10 text-gray-100'
-                    }`}>
+                    <div className={`chat-bubble ${message.type}`}>
                       <p className="text-sm">{message.content}</p>
                     </div>
                   </div>
@@ -406,7 +402,7 @@ export default function ModernARIA() {
                     onChange={(e) => setChatInput(e.target.value)}
                     onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
                     placeholder="Ask ARIA about your documents..."
-                    className="flex-1 px-4 py-3 bg-black/20 backdrop-blur-xl border border-white/10 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300"
+                    className="input flex-1"
                   />
                   <Button
                     onClick={sendMessage}

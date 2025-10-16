@@ -18,12 +18,12 @@ app.add_middleware(
 security = HTTPBearer(auto_error=False)
 
 class LoginRequest(BaseModel):
-    email: str
+    username: str
     password: str
 
 MOCK_USERS = {
-    'admin@aria.com': {'id': 1, 'email': 'admin@aria.com', 'password': 'admin123', 'name': 'Admin User', 'role': 'admin'},
-    'user@aria.com': {'id': 2, 'email': 'user@aria.com', 'password': 'user123', 'name': 'Regular User', 'role': 'user'}
+    'admin': {'id': 1, 'email': 'admin@aria.com', 'username': 'admin', 'password': 'admin123', 'name': 'Admin User', 'role': 'admin'},
+    'user': {'id': 2, 'email': 'user@aria.com', 'username': 'user', 'password': 'user123', 'name': 'Regular User', 'role': 'user'}
 }
 
 def get_current_user(credentials: Optional[HTTPAuthorizationCredentials] = Depends(security)):
@@ -32,9 +32,9 @@ def get_current_user(credentials: Optional[HTTPAuthorizationCredentials] = Depen
     
     token = credentials.credentials
     if token.startswith('mock_token_'):
-        email = token.replace('mock_token_', '')
-        if email in MOCK_USERS:
-            return MOCK_USERS[email]
+        username = token.replace('mock_token_', '')
+        if username in MOCK_USERS:
+            return MOCK_USERS[username]
     
     raise HTTPException(status_code=401, detail='Invalid authentication credentials')
 
@@ -52,12 +52,12 @@ async def api_health():
 
 @app.post('/api/auth/login')
 async def login(login_data: LoginRequest):
-    user = MOCK_USERS.get(login_data.email)
+    user = MOCK_USERS.get(login_data.username)
     if not user or user['password'] != login_data.password:
-        raise HTTPException(status_code=401, detail='Invalid email or password')
+        raise HTTPException(status_code=401, detail='Invalid username or password')
     
     return {
-        'access_token': f'mock_token_{user[email]}',
+        'access_token': f'mock_token_{user["username"]}',
         'token_type': 'bearer',
         'user': {'id': user['id'], 'email': user['email'], 'name': user['name'], 'role': user['role']}
     }

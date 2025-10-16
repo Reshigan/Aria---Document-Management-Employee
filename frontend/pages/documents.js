@@ -128,7 +128,8 @@ const Documents = () => {
           <Card className="mb-8">
             <CardContent className="p-8">
               <div
-                className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
+                style={{ borderStyle: 'solid !important' }}
+                className={`border-2 border-purple-300 rounded-lg p-8 text-center transition-colors ${
                   dragActive ? "border-blue-500 bg-blue-50" : "border-slate-300 hover:border-blue-400"
                 }`}
                 onDragEnter={handleDrag}
@@ -173,12 +174,14 @@ const Documents = () => {
                 placeholder="Search documents..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
+                style={{ borderStyle: 'solid !important' }}
                 className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
             <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
+              style={{ borderStyle: 'solid !important' }}
               className="px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
               <option value="all">All Categories</option>

@@ -84,3 +84,10 @@ jspm_packages/
 
 # Serverless directories
 .serverless
+
+# SSH keys and certificates
+*.pem
+*.key
+
+# Backup files
+*_backup.*

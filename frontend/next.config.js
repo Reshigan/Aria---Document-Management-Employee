@@ -2,6 +2,9 @@
 const nextConfig = {
   reactStrictMode: true,
   
+  // Enable case-sensitive routing for both dev and production
+  caseSensitive: true,
+  
   // Fix CORS issues for production
   allowedDevOrigins: [
     'aria.vantax.co.za', 

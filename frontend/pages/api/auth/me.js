@@ -7,7 +7,7 @@ export default async function handler(req, res) {
 
   try {
     // Forward the request to the backend with the Authorization header
-    const response = await axios.get('/api/auth/me', {
+    const response = await axios.get('http://localhost:8000/api/auth/me', {
       headers: {
         'Authorization': req.headers.authorization,
         'Content-Type': 'application/json'
