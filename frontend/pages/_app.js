@@ -1,5 +1,4 @@
 import '../styles/globals.css'
-import '../styles/border-fix.css'
 import axios from 'axios'
 
 // Set base URL for axios

@@ -161,7 +161,9 @@ body {
     backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.1);
     box-shadow: var(--shadow-glass);
-    @apply rounded-2xl p-6 transition-all duration-300;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
   }
 
   .card:hover {
@@ -171,57 +173,148 @@ body {
 
   /* Button Styles */
   .btn {
-    @apply inline-flex items-center justify-center px-6 py-3 rounded-lg font-semibold transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 disabled:opacity-50 disabled:cursor-not-allowed;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    outline: none;
+    border: none;
+    cursor: pointer;
+  }
+
+  .btn:focus {
+    ring: 2px solid rgba(139, 92, 246, 0.5);
+  }
+
+  .btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
   }
 
   .btn-primary {
-    @apply btn bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600 focus:ring-purple-500 shadow-lg shadow-purple-500/25;
+    background: linear-gradient(to right, #8b5cf6, #ec4899);
+    color: white;
+    box-shadow: 0 10px 15px -3px rgba(139, 92, 246, 0.25);
+  }
+
+  .btn-primary:hover {
+    background: linear-gradient(to right, #7c3aed, #db2777);
   }
 
   .btn-secondary {
-    @apply btn text-white hover:bg-white/20 focus:ring-gray-500;
+    color: white;
     background: rgba(255, 255, 255, 0.05);
     backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.1);
   }
 
+  .btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
+
   .btn-ghost {
-    @apply btn text-gray-300 hover:bg-white/10 focus:ring-gray-500;
+    color: #d1d5db;
+    background: transparent;
+  }
+
+  .btn-ghost:hover {
+    background: rgba(255, 255, 255, 0.1);
   }
 
   /* Input Styles */
   .input {
-    @apply w-full px-4 py-3 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    color: white;
     background: rgba(255, 255, 255, 0.05);
     backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.1);
+    outline: none;
+    transition: all 0.3s ease;
+  }
+
+  .input::placeholder {
+    color: #9ca3af;
+  }
+
+  .input:focus {
+    ring: 2px solid #8b5cf6;
+    border-color: transparent;
   }
 
   /* Navigation Styles */
   .nav-item {
-    @apply flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-300 hover:bg-white/10 cursor-pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+
+  .nav-item:hover {
+    background: rgba(255, 255, 255, 0.1);
   }
 
   .nav-item.active {
-    @apply bg-gradient-to-r from-purple-500/20 to-pink-500/20 text-purple-300 border border-purple-500/30;
+    background: linear-gradient(to right, rgba(139, 92, 246, 0.2), rgba(236, 72, 153, 0.2));
+    color: #c4b5fd;
+    border: 1px solid rgba(139, 92, 246, 0.3);
   }
 
   /* Status Indicators */
   .status-online {
-    @apply flex items-center space-x-2 px-3 py-1 rounded-full bg-green-500/20 text-green-300 border border-green-500/30;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    background: rgba(34, 197, 94, 0.2);
+    color: #86efac;
+    border: 1px solid rgba(34, 197, 94, 0.3);
   }
 
   .status-processing {
-    @apply flex items-center space-x-2 px-3 py-1 rounded-full bg-yellow-500/20 text-yellow-300 border border-yellow-500/30;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    background: rgba(245, 158, 11, 0.2);
+    color: #fcd34d;
+    border: 1px solid rgba(245, 158, 11, 0.3);
   }
 
   .status-error {
-    @apply flex items-center space-x-2 px-3 py-1 rounded-full bg-red-500/20 text-red-300 border border-red-500/30;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    background: rgba(239, 68, 68, 0.2);
+    color: #fca5a5;
+    border: 1px solid rgba(239, 68, 68, 0.3);
   }
 
   /* Document Card */
   .document-card {
-    @apply card hover:border-purple-500/50 cursor-pointer group;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: var(--shadow-glass);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+
+  .document-card:hover {
+    border-color: rgba(139, 92, 246, 0.5);
   }
 
   .document-card:hover {
@@ -230,15 +323,20 @@ body {
 
   /* Chat Bubble */
   .chat-bubble {
-    @apply max-w-[80%] p-4 rounded-2xl shadow-lg;
+    max-width: 80%;
+    padding: 1rem;
+    border-radius: 1rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
   }
 
   .chat-bubble.user {
-    @apply bg-gradient-to-r from-purple-500 to-pink-500 text-white ml-auto;
+    background: linear-gradient(to right, #8b5cf6, #ec4899);
+    color: white;
+    margin-left: auto;
   }
 
   .chat-bubble.assistant {
-    @apply text-gray-100;
+    color: #f3f4f6;
     background: rgba(255, 255, 255, 0.05);
     backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.1);
@@ -246,21 +344,38 @@ body {
 
   /* Upload Zone */
   .upload-zone {
-    @apply relative border-2 border-solid border-purple-300 rounded-2xl p-8 text-center transition-all duration-300 hover:border-purple-500 hover:bg-purple-500/5;
+    position: relative;
+    border: 2px solid #c4b5fd;
+    border-radius: 1rem;
+    padding: 2rem;
+    text-align: center;
+    transition: all 0.3s ease;
+  }
+
+  .upload-zone:hover {
+    border-color: #8b5cf6;
+    background: rgba(139, 92, 246, 0.05);
   }
 
   .upload-zone.active {
-    @apply border-purple-400 bg-purple-500/10 scale-105;
+    border-color: #a78bfa;
+    background: rgba(139, 92, 246, 0.1);
+    transform: scale(1.05);
   }
 
   /* Loading States */
   .skeleton {
-    @apply animate-pulse bg-gray-700/50 rounded;
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    background: rgba(55, 65, 81, 0.5);
+    border-radius: 0.25rem;
   }
 
   /* Focus Styles for Accessibility */
-  .focus-visible {
-    @apply focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-gray-900;
+  .focus-visible:focus {
+    outline: none;
+    ring: 2px solid #8b5cf6;
+    ring-offset: 2px;
+    ring-offset-color: #111827;
   }
 }
 
