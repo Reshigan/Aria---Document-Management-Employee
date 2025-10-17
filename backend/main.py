@@ -174,6 +174,10 @@ app.include_router(document_classification_router)
 from api.routes.enterprise_integrations import router as enterprise_integrations_router
 app.include_router(enterprise_integrations_router)
 
+# Include advanced document processing routes
+from api.document.advanced_processing import router as advanced_processing_router
+app.include_router(advanced_processing_router)
+
 # Pydantic models
 class UserLogin(PydanticBaseModel):
     username: str

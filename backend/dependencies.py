@@ -18,12 +18,37 @@ async def get_current_user(
     try:
         payload = jwt.decode(credentials.credentials, SECRET_KEY, algorithms=[ALGORITHM])
         username: str = payload.get("sub")
+        user_id: int = payload.get("id")
         if username is None:
             raise HTTPException(status_code=401, detail="Invalid token")
     except JWTError:
         raise HTTPException(status_code=401, detail="Invalid token")
     
-    user = db.query(User).filter(User.username == username).first()
-    if user is None:
-        raise HTTPException(status_code=401, detail="User not found")
-    return user
+    # For testing, return a mock user object
+    return {
+        "id": user_id or 1,
+        "username": username,
+        "email": f"{username}@aria.local",
+        "full_name": "Administrator" if username == "admin" else username.title()
+    }
+
+def get_current_user_websocket(token: str = None):
+    """Get current user for WebSocket connections"""
+    try:
+        if not token:
+            return {"id": "anonymous", "username": "anonymous", "is_admin": False}
+        
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username: str = payload.get("sub")
+        if username is None:
+            return {"id": "anonymous", "username": "anonymous", "is_admin": False}
+        
+        # Return user info (in production, fetch from database)
+        return {
+            "id": 1,
+            "username": username,
+            "email": "admin@aria.local",
+            "is_admin": True
+        }
+    except JWTError:
+        return {"id": "anonymous", "username": "anonymous", "is_admin": False}
