@@ -44,6 +44,16 @@ class User(BaseModel):
     is_verified = Column(Boolean, default=False)
     last_login = Column(DateTime)
     
+    @hybrid_property
+    def password_hash(self):
+        """Alias for hashed_password for compatibility"""
+        return self.hashed_password
+    
+    @password_hash.setter
+    def password_hash(self, value):
+        """Set hashed_password via password_hash property"""
+        self.hashed_password = value
+    
     # Two-Factor Authentication
     two_factor_enabled = Column(Boolean, default=False)
     two_factor_secret = Column(String(255))  # Encrypted TOTP secret
@@ -99,8 +109,8 @@ class User(BaseModel):
     # Analytics relationships
     activity_logs = relationship("UserActivityLog", back_populates="user")
     
-    # Mobile relationships
-    mobile_devices = relationship("MobileDevice", back_populates="user")
+    # Mobile relationships (commented out until MobileDevice model is properly imported)
+    # mobile_devices = relationship("MobileDevice", back_populates="user")
     
     @hybrid_property
     def role_names(self):

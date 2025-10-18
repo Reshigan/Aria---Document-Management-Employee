@@ -1,6 +1,8 @@
-from fastapi import FastAPI, Depends, HTTPException, File, UploadFile, WebSocket
+from fastapi import FastAPI, Depends, HTTPException, File, UploadFile, WebSocket, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from fastapi.exceptions import RequestValidationError
+from starlette.exceptions import HTTPException as StarletteHTTPException
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy.sql import func
@@ -14,6 +16,21 @@ from passlib.context import CryptContext
 import os
 import uuid
 import aiofiles
+
+# Import error handling and logging
+from core.error_handling import (
+    AriaException, AuthenticationError, AuthorizationError, ValidationError,
+    ResourceNotFoundError, DatabaseError, FileOperationError, RateLimitError,
+    aria_exception_handler, http_exception_handler, validation_exception_handler,
+    general_exception_handler, ErrorMiddleware, HealthChecker
+)
+from core.logging_config import (
+    get_logger, get_access_logger, get_security_logger, get_performance_logger,
+    LoggingMiddleware, PerformanceTracker, SecurityLogger
+)
+
+# Import security middleware
+from security_middleware import SecurityMiddleware
 
 # Import models from the models package
 from models import Base, User, Document, DocumentType, DocumentStatus
@@ -129,8 +146,29 @@ async def get_current_user(
         raise HTTPException(status_code=401, detail="User not found")
     return user
 
-# FastAPI app
-app = FastAPI(title="ARIA Document Management", version="1.0.0")
+# Initialize loggers
+logger = get_logger(__name__)
+security_logger = SecurityLogger()
+
+# FastAPI app with enhanced error handling
+app = FastAPI(
+    title="ARIA Document Management System",
+    version="2.0.0",
+    description="World-class enterprise document management platform",
+    docs_url="/api/docs",
+    redoc_url="/api/redoc"
+)
+
+# Add error handlers
+app.add_exception_handler(AriaException, aria_exception_handler)
+app.add_exception_handler(StarletteHTTPException, http_exception_handler)
+app.add_exception_handler(RequestValidationError, validation_exception_handler)
+app.add_exception_handler(Exception, general_exception_handler)
+
+# Add middleware
+app.add_middleware(SecurityMiddleware)
+app.add_middleware(ErrorMiddleware)
+app.add_middleware(LoggingMiddleware)
 
 app.add_middleware(
     CORSMiddleware,
@@ -173,6 +211,10 @@ app.include_router(document_classification_router)
 
 from api.routes.enterprise_integrations import router as enterprise_integrations_router
 app.include_router(enterprise_integrations_router)
+
+# Include advanced document processing routes
+from api.document.advanced_processing import router as advanced_processing_router
+app.include_router(advanced_processing_router)
 
 # Pydantic models
 class UserLogin(PydanticBaseModel):
@@ -238,22 +280,143 @@ async def root():
 
 @app.get("/health")
 async def health():
-    """Health check endpoint - always returns healthy"""
+    """Basic health check endpoint"""
     return {
         "status": "healthy",
-        "database": "connected",
         "timestamp": datetime.utcnow().isoformat(),
-        "version": "3.0"
+        "version": "2.0.0"
     }
 
-@app.post("/api/auth/login", response_model=Token)
-async def login(credentials: UserLogin, db: Session = Depends(get_db)):
-    user = authenticate_user(db, credentials.username, credentials.password)
-    if not user:
-        raise HTTPException(status_code=401, detail="Invalid credentials")
+@app.get("/api/health")
+async def api_health(db: Session = Depends(get_db)):
+    """API health check endpoint with database connectivity"""
+    try:
+        # Test database connectivity
+        db.execute("SELECT 1")
+        db_status = "healthy"
+        overall_status = "healthy"
+    except Exception as e:
+        logger.error(f"Database health check failed: {e}")
+        db_status = "unhealthy"
+        overall_status = "degraded"
     
-    token = create_access_token(data={"sub": user.username})
-    return {"access_token": token, "token_type": "bearer"}
+    return {
+        "status": overall_status,
+        "service": "aria-api",
+        "timestamp": datetime.utcnow().isoformat(),
+        "version": "2.0.0",
+        "database": {
+            "status": db_status
+        }
+    }
+
+@app.get("/api/health/detailed")
+async def detailed_health_check():
+    """Comprehensive health check with system status"""
+    try:
+        with PerformanceTracker("health_check"):
+            # Check database health
+            db_health = await HealthChecker.check_database_health()
+            
+            # Check Redis health
+            redis_health = await HealthChecker.check_redis_health()
+            
+            # Check file system health
+            fs_health = await HealthChecker.check_file_system_health()
+            
+            # Overall status
+            all_healthy = all([
+                db_health["status"] == "healthy",
+                redis_health["status"] == "healthy",
+                fs_health["status"] in ["healthy", "warning"]
+            ])
+            
+            return {
+                "status": "healthy" if all_healthy else "degraded",
+                "timestamp": datetime.utcnow().isoformat(),
+                "version": "2.0.0",
+                "service": "aria-document-management",
+                "checks": {
+                    "database": db_health,
+                    "redis": redis_health,
+                    "filesystem": fs_health
+                },
+                "uptime": "operational",
+                "environment": os.getenv("ENVIRONMENT", "production")
+            }
+    except Exception as e:
+        logger.error(f"Health check failed: {e}")
+        return {
+            "status": "unhealthy",
+            "timestamp": datetime.utcnow().isoformat(),
+            "version": "2.0.0",
+            "error": str(e)
+        }
+
+@app.get("/api/health/ready")
+async def readiness_check():
+    """Kubernetes readiness probe endpoint"""
+    try:
+        # Quick database connectivity check
+        db_health = await HealthChecker.check_database_health()
+        
+        if db_health["status"] == "healthy":
+            return {"status": "ready"}
+        else:
+            raise HTTPException(status_code=503, detail="Service not ready")
+    except Exception as e:
+        logger.error(f"Readiness check failed: {e}")
+        raise HTTPException(status_code=503, detail="Service not ready")
+
+@app.get("/api/health/live")
+async def liveness_check():
+    """Kubernetes liveness probe endpoint"""
+    return {"status": "alive", "timestamp": datetime.utcnow().isoformat()}
+
+@app.post("/api/auth/login", response_model=Token)
+async def login(credentials: UserLogin, request: Request, db: Session = Depends(get_db)):
+    """Enhanced login with security logging and error handling"""
+    client_ip = request.client.host if request.client else "unknown"
+    user_agent = request.headers.get("user-agent", "unknown")
+    
+    try:
+        with PerformanceTracker("user_authentication", logger):
+            user = authenticate_user(db, credentials.username, credentials.password)
+            
+            if not user:
+                # Log failed login attempt
+                security_logger.log_login_attempt(
+                    credentials.username, False, client_ip, user_agent
+                )
+                raise AuthenticationError("Invalid credentials")
+            
+            # Log successful login
+            security_logger.log_login_attempt(
+                credentials.username, True, client_ip, user_agent
+            )
+            
+            # Create token
+            token = create_access_token(data={"sub": user.username})
+            
+            logger.info(f"User {credentials.username} logged in successfully", extra={
+                "extra_fields": {
+                    "user_id": user.id,
+                    "username": credentials.username,
+                    "ip_address": client_ip
+                }
+            })
+            
+            return {"access_token": token, "token_type": "bearer"}
+            
+    except AuthenticationError:
+        raise
+    except Exception as e:
+        logger.error(f"Login error for user {credentials.username}: {e}")
+        raise AriaException(
+            message="Authentication service temporarily unavailable",
+            error_code="AUTH_SERVICE_ERROR",
+            status_code=503
+        )
 
 @app.post("/api/auth/register", response_model=UserResponse)
 async def register(user_data: UserRegister, db: Session = Depends(get_db)):

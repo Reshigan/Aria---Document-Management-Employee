@@ -15,7 +15,9 @@ import {
   UsersIcon,
   ChartBarIcon,
   BellIcon,
-  XMarkIcon
+  XMarkIcon,
+  SparklesIcon,
+  PresentationChartBarIcon
 } from '@heroicons/react/24/outline'
 import VantaXHeader from './VantaXHeader'
 import VantaXFooter from './VantaXFooter'
@@ -67,6 +69,18 @@ const Layout = ({ children }) => {
       icon: HomeIcon,
       label: 'Dashboard',
       path: '/dashboard'
+    },
+    {
+      key: 'modern-dashboard',
+      icon: PresentationChartBarIcon,
+      label: 'Analytics Dashboard',
+      path: '/modern-dashboard'
+    },
+    {
+      key: 'ai-bot',
+      icon: SparklesIcon,
+      label: 'AI Assistant',
+      path: '/ai-bot'
     },
     {
       key: 'documents',

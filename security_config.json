@@ -1,0 +1,43 @@
+{
+  "security": {
+    "rate_limiting": {
+      "enabled": true,
+      "login_attempts": 5,
+      "api_requests": 100,
+      "upload_requests": 10,
+      "window_minutes": 5
+    },
+    "headers": {
+      "hsts_max_age": 31536000,
+      "csp_policy": "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:;",
+      "frame_options": "SAMEORIGIN"
+    },
+    "blocked_paths": [
+      "/.env",
+      "/config.json",
+      "/admin",
+      "/.git",
+      "/backup.sql",
+      "/wp-admin",
+      "/phpmyadmin"
+    ],
+    "suspicious_patterns": [
+      "union",
+      "select",
+      "drop",
+      "delete",
+      "insert",
+      "update",
+      "<script",
+      "javascript:",
+      "../",
+      "/etc/passwd"
+    ]
+  },
+  "logging": {
+    "security_events": true,
+    "failed_logins": true,
+    "rate_limit_violations": true,
+    "suspicious_requests": true
+  }
+}
