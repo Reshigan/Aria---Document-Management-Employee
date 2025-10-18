@@ -29,6 +29,9 @@ from core.logging_config import (
     LoggingMiddleware, PerformanceTracker, SecurityLogger
 )
 
+# Import security middleware
+from security_middleware import SecurityMiddleware
+
 # Import models from the models package
 from models import Base, User, Document, DocumentType, DocumentStatus
 from models.workflow_models import WorkflowExecution, WorkflowNotification
@@ -163,6 +166,7 @@ app.add_exception_handler(RequestValidationError, validation_exception_handler)
 app.add_exception_handler(Exception, general_exception_handler)
 
 # Add middleware
+app.add_middleware(SecurityMiddleware)
 app.add_middleware(ErrorMiddleware)
 app.add_middleware(LoggingMiddleware)
 
@@ -284,13 +288,26 @@ async def health():
     }
 
 @app.get("/api/health")
-async def api_health():
-    """API health check endpoint"""
+async def api_health(db: Session = Depends(get_db)):
+    """API health check endpoint with database connectivity"""
+    try:
+        # Test database connectivity
+        db.execute("SELECT 1")
+        db_status = "healthy"
+        overall_status = "healthy"
+    except Exception as e:
+        logger.error(f"Database health check failed: {e}")
+        db_status = "unhealthy"
+        overall_status = "degraded"
+    
     return {
-        "status": "healthy",
+        "status": overall_status,
         "service": "aria-api",
         "timestamp": datetime.utcnow().isoformat(),
-        "version": "2.0.0"
+        "version": "2.0.0",
+        "database": {
+            "status": db_status
+        }
     }
 
 @app.get("/api/health/detailed")

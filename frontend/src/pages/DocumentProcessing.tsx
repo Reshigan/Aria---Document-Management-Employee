@@ -40,7 +40,20 @@ const DocumentProcessing: React.FC = () => {
   const [loading, setLoading] = useState(false);
   
   const { addNotification } = useNotifications();
-  const { isConnected } = useWebSocket();
+  const { isConnected } = useWebSocket('ws://localhost:8000/ws', {
+    onMessage: (data) => {
+      // Handle WebSocket messages for real-time updates
+      if (data.type === 'processing_update') {
+        setProcessingJobs(prev => 
+          prev.map(job => 
+            job.job_id === data.job_id 
+              ? { ...job, status: data.status, progress: data.progress }
+              : job
+          )
+        );
+      }
+    }
+  });
 
   // Load processing jobs on component mount
   useEffect(() => {

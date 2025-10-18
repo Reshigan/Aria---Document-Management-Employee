@@ -1,0 +1,174 @@
+{
+  "timestamp": "2025-10-18T04:49:22.958303",
+  "target": "https://aria.vantax.co.za",
+  "vulnerabilities": [
+    {
+      "category": "Disclosure",
+      "status": "FAIL",
+      "message": "Sensitive file accessible: /.env",
+      "severity": "high",
+      "timestamp": "2025-10-18T04:49:27.182069"
+    },
+    {
+      "category": "Disclosure",
+      "status": "FAIL",
+      "message": "Sensitive file accessible: /config.json",
+      "severity": "high",
+      "timestamp": "2025-10-18T04:49:27.478472"
+    },
+    {
+      "category": "Disclosure",
+      "status": "FAIL",
+      "message": "Sensitive file accessible: /admin",
+      "severity": "high",
+      "timestamp": "2025-10-18T04:49:28.080091"
+    },
+    {
+      "category": "Disclosure",
+      "status": "FAIL",
+      "message": "Sensitive file accessible: /.git/config",
+      "severity": "high",
+      "timestamp": "2025-10-18T04:49:28.385111"
+    },
+    {
+      "category": "Disclosure",
+      "status": "FAIL",
+      "message": "Sensitive file accessible: /backup.sql",
+      "severity": "high",
+      "timestamp": "2025-10-18T04:49:28.683279"
+    }
+  ],
+  "security_issues": [
+    {
+      "category": "Headers",
+      "status": "FAIL",
+      "message": "Missing X-Content-Type-Options header",
+      "severity": "medium",
+      "timestamp": "2025-10-18T04:49:23.573422"
+    },
+    {
+      "category": "Headers",
+      "status": "FAIL",
+      "message": "Missing X-Frame-Options header",
+      "severity": "medium",
+      "timestamp": "2025-10-18T04:49:23.573466"
+    },
+    {
+      "category": "Headers",
+      "status": "FAIL",
+      "message": "Missing X-XSS-Protection header",
+      "severity": "low",
+      "timestamp": "2025-10-18T04:49:23.573477"
+    },
+    {
+      "category": "Headers",
+      "status": "FAIL",
+      "message": "Missing Strict-Transport-Security header",
+      "severity": "low",
+      "timestamp": "2025-10-18T04:49:23.573489"
+    },
+    {
+      "category": "Headers",
+      "status": "FAIL",
+      "message": "Missing Content-Security-Policy header",
+      "severity": "low",
+      "timestamp": "2025-10-18T04:49:23.573498"
+    },
+    {
+      "category": "Headers",
+      "status": "FAIL",
+      "message": "Missing Referrer-Policy header",
+      "severity": "low",
+      "timestamp": "2025-10-18T04:49:23.573508"
+    }
+  ],
+  "recommendations": [
+    {
+      "category": "Auth",
+      "status": "RECOMMEND",
+      "message": "Consider implementing rate limiting for login attempts",
+      "severity": "low",
+      "timestamp": "2025-10-18T04:49:25.381326"
+    }
+  ],
+  "passed_checks": [
+    {
+      "category": "SSL",
+      "status": "PASS",
+      "message": "SSL certificate valid for 78 days",
+      "severity": "info",
+      "timestamp": "2025-10-18T04:49:23.270001"
+    },
+    {
+      "category": "SSL",
+      "status": "PASS",
+      "message": "SSL certificate matches hostname",
+      "severity": "info",
+      "timestamp": "2025-10-18T04:49:23.270039"
+    },
+    {
+      "category": "Auth",
+      "status": "PASS",
+      "message": "Invalid credentials properly rejected",
+      "severity": "info",
+      "timestamp": "2025-10-18T04:49:23.873637"
+    },
+    {
+      "category": "Auth",
+      "status": "PASS",
+      "message": "No user enumeration vulnerability detected",
+      "severity": "info",
+      "timestamp": "2025-10-18T04:49:23.873682"
+    },
+    {
+      "category": "API",
+      "status": "PASS",
+      "message": "Protected endpoint /api/documents requires authentication",
+      "severity": "info",
+      "timestamp": "2025-10-18T04:49:25.682365"
+    },
+    {
+      "category": "API",
+      "status": "PASS",
+      "message": "Protected endpoint /api/auth/me requires authentication",
+      "severity": "info",
+      "timestamp": "2025-10-18T04:49:25.980195"
+    },
+    {
+      "category": "API",
+      "status": "PASS",
+      "message": "Protected endpoint /api/dashboard/stats requires authentication",
+      "severity": "info",
+      "timestamp": "2025-10-18T04:49:26.282018"
+    },
+    {
+      "category": "API",
+      "status": "PASS",
+      "message": "No obvious SQL injection vulnerability",
+      "severity": "info",
+      "timestamp": "2025-10-18T04:49:26.582476"
+    },
+    {
+      "category": "Upload",
+      "status": "PASS",
+      "message": "File upload requires authentication",
+      "severity": "info",
+      "timestamp": "2025-10-18T04:49:26.880415"
+    },
+    {
+      "category": "Disclosure",
+      "status": "PASS",
+      "message": "Sensitive file properly protected: /api/debug",
+      "severity": "info",
+      "timestamp": "2025-10-18T04:49:27.778121"
+    },
+    {
+      "category": "Server",
+      "status": "PASS",
+      "message": "X-Powered-By header properly hidden",
+      "severity": "info",
+      "timestamp": "2025-10-18T04:49:28.980046"
+    }
+  ],
+  "overall_score": 0.0
+}

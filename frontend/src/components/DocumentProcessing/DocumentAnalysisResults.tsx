@@ -168,7 +168,7 @@ const DocumentAnalysisResults: React.FC<DocumentAnalysisResultsProps> = ({
                     </Badge>
                   </div>
                 </div>
-              </div>
+              </CardContent>
             </Card>
 
             <Card>
@@ -182,7 +182,7 @@ const DocumentAnalysisResults: React.FC<DocumentAnalysisResultsProps> = ({
                     </p>
                   </div>
                 </div>
-              </div>
+              </CardContent>
             </Card>
 
             <Card>
@@ -196,7 +196,7 @@ const DocumentAnalysisResults: React.FC<DocumentAnalysisResultsProps> = ({
                     </p>
                   </div>
                 </div>
-              </div>
+              </CardContent>
             </Card>
           </>
         )}

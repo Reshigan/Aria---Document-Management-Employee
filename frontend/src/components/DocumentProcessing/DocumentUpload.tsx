@@ -63,7 +63,7 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({
     multiple: true
   });
 
-  const uploadFile = async (uploadFile: UploadFile) => {
+  const handleUploadFile = async (uploadFile: UploadFile) => {
     try {
       setUploadFiles(prev =>
         prev.map(f =>
@@ -192,7 +192,7 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({
   const uploadAllFiles = () => {
     uploadFiles
       .filter(f => f.status === 'pending')
-      .forEach(uploadFile);
+      .forEach(handleUploadFile);
   };
 
   const removeFile = (id: string) => {
@@ -394,7 +394,7 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({
                   <div className="flex-shrink-0">
                     {uploadFile.status === 'pending' && (
                       <Button
-                        onClick={() => uploadFile(uploadFile)}
+                        onClick={() => handleUploadFile(uploadFile)}
                         size="sm"
                         variant="outline"
                       >

@@ -1,0 +1,28 @@
+{
+  "security_headers": {
+    "X-Content-Type-Options": "FAIL",
+    "X-Frame-Options": "FAIL",
+    "X-XSS-Protection": "FAIL",
+    "Strict-Transport-Security": "FAIL",
+    "Referrer-Policy": "FAIL",
+    "server_hidden": "PARTIAL"
+  },
+  "rate_limiting": {
+    "login": "PARTIAL"
+  },
+  "sensitive_files": {
+    "/.env": "FAIL",
+    "/config.json": "FAIL",
+    "/admin": "FAIL",
+    "/.git/config": "FAIL",
+    "/backup.sql": "FAIL",
+    "/wp-admin": "FAIL",
+    "/phpmyadmin": "FAIL"
+  },
+  "authentication": {
+    "/api/documents": "PASS",
+    "/api/auth/me": "PASS",
+    "/api/dashboard/stats": "PASS"
+  },
+  "overall_status": "POOR"
+}
