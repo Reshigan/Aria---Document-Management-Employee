@@ -1,0 +1,307 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: aria_postgres_commercial
+    environment:
+      POSTGRES_DB: aria_commercial
+      POSTGRES_USER: aria_user
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-aria_secure_2024!}
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=C --lc-ctype=C"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    networks:
+      - aria_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U aria_user -d aria_commercial"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: aria_redis_commercial
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-redis_secure_2024!}
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    networks:
+      - aria_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # MinIO Object Storage
+  minio:
+    image: minio/minio:latest
+    container_name: aria_minio_commercial
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-aria_admin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minio_secure_2024!}
+    volumes:
+      - minio_data:/data
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    networks:
+      - aria_network
+    command: server /data --console-address ":9001"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # RabbitMQ Message Queue
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: aria_rabbitmq_commercial
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-aria_queue}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:-rabbit_secure_2024!}
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - aria_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Elasticsearch
+  elasticsearch:
+    image: elasticsearch:8.11.0
+    container_name: aria_elasticsearch_commercial
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
+    networks:
+      - aria_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9200/_cluster/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ARIA Backend API (Commercial)
+  aria_backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.commercial
+    container_name: aria_backend_commercial
+    environment:
+      - DATABASE_URL=postgresql://aria_user:${POSTGRES_PASSWORD:-aria_secure_2024!}@postgres:5432/aria_commercial
+      - REDIS_URL=redis://:${REDIS_PASSWORD:-redis_secure_2024!}@redis:6379/0
+      - SECRET_KEY=${SECRET_KEY:-your-super-secret-key-change-in-production-2024!}
+      - MINIO_ENDPOINT=minio:9000
+      - MINIO_ACCESS_KEY=${MINIO_ROOT_USER:-aria_admin}
+      - MINIO_SECRET_KEY=${MINIO_ROOT_PASSWORD:-minio_secure_2024!}
+      - RABBITMQ_URL=amqp://${RABBITMQ_USER:-aria_queue}:${RABBITMQ_PASSWORD:-rabbit_secure_2024!}@rabbitmq:5672/
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+      - ENVIRONMENT=production
+      - LOG_LEVEL=INFO
+      - CORS_ORIGINS=${CORS_ORIGINS:-http://localhost:3000,https://aria.vantax.co.za}
+    volumes:
+      - ./uploads:/app/uploads
+      - ./logs:/app/logs
+    ports:
+      - "12000:12000"
+    networks:
+      - aria_network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      elasticsearch:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:12000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ARIA Frontend (Commercial)
+  aria_frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.commercial
+    container_name: aria_frontend_commercial
+    environment:
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:12000}
+      - NEXT_PUBLIC_APP_NAME=ARIA Document Management - Commercial
+      - NEXT_PUBLIC_VERSION=2.0.0-commercial
+      - NODE_ENV=production
+    ports:
+      - "3000:3000"
+    networks:
+      - aria_network
+    depends_on:
+      aria_backend:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Celery Worker for Background Tasks
+  celery_worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.commercial
+    container_name: aria_celery_commercial
+    command: celery -A celery_app worker --loglevel=info --concurrency=4
+    environment:
+      - DATABASE_URL=postgresql://aria_user:${POSTGRES_PASSWORD:-aria_secure_2024!}@postgres:5432/aria_commercial
+      - REDIS_URL=redis://:${REDIS_PASSWORD:-redis_secure_2024!}@redis:6379/0
+      - RABBITMQ_URL=amqp://${RABBITMQ_USER:-aria_queue}:${RABBITMQ_PASSWORD:-rabbit_secure_2024!}@rabbitmq:5672/
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+      - ENVIRONMENT=production
+    volumes:
+      - ./uploads:/app/uploads
+      - ./logs:/app/logs
+    networks:
+      - aria_network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # Celery Beat Scheduler
+  celery_beat:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.commercial
+    container_name: aria_celery_beat_commercial
+    command: celery -A celery_app beat --loglevel=info
+    environment:
+      - DATABASE_URL=postgresql://aria_user:${POSTGRES_PASSWORD:-aria_secure_2024!}@postgres:5432/aria_commercial
+      - REDIS_URL=redis://:${REDIS_PASSWORD:-redis_secure_2024!}@redis:6379/0
+      - RABBITMQ_URL=amqp://${RABBITMQ_USER:-aria_queue}:${RABBITMQ_PASSWORD:-rabbit_secure_2024!}@rabbitmq:5672/
+      - ENVIRONMENT=production
+    volumes:
+      - ./logs:/app/logs
+    networks:
+      - aria_network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # Prometheus Monitoring
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: aria_prometheus_commercial
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - aria_network
+    restart: unless-stopped
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+
+  # Grafana Dashboard
+  grafana:
+    image: grafana/grafana:latest
+    container_name: aria_grafana_commercial
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-grafana_secure_2024!}
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources
+    ports:
+      - "3001:3000"
+    networks:
+      - aria_network
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+
+  # Nginx Reverse Proxy
+  nginx:
+    image: nginx:alpine
+    container_name: aria_nginx_commercial
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/ssl:/etc/nginx/ssl
+      - ./logs/nginx:/var/log/nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - aria_network
+    depends_on:
+      - aria_frontend
+      - aria_backend
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  minio_data:
+    driver: local
+  rabbitmq_data:
+    driver: local
+  elasticsearch_data:
+    driver: local
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local
+
+networks:
+  aria_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
