@@ -9,7 +9,7 @@ export default async function handler(req, res) {
       return res.status(401).json({ message: 'Authorization header required' });
     }
 
-    const response = await fetch('/api/documents', {
+    const response = await fetch('http://localhost:12000/api/documents', {
       method: 'GET',
       headers: {
         'Authorization': authHeader,

@@ -7,7 +7,7 @@ export default async function handler(req, res) {
 
   try {
     // Forward the login request to the backend
-    const response = await axios.post('http://localhost:8000/api/auth/login', req.body, {
+    const response = await axios.post('http://localhost:12000/api/auth/login', req.body, {
       headers: {
         'Content-Type': 'application/json'
       }

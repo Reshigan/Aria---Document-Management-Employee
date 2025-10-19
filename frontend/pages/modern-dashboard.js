@@ -7,7 +7,7 @@ import {
   ChartBarIcon,
   CpuChipIcon,
   SparklesIcon,
-  TrendingUpIcon,
+  ArrowTrendingUpIcon,
   ClockIcon,
   ShieldCheckIcon,
   UserGroupIcon,
@@ -344,7 +344,7 @@ const ModernDashboard = () => {
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-lg font-semibold text-gray-900">Document Trends</h3>
-                <TrendingUpIcon className="h-5 w-5 text-green-500" />
+                <ArrowTrendingUpIcon className="h-5 w-5 text-green-500" />
               </div>
               <div className="h-64">
                 <Line data={documentTrendsData} options={chartOptions} />
