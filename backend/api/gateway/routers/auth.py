@@ -1,357 +1,134 @@
 """
-Authentication endpoints
+Authentication API Endpoints
 """
-from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, or_
-from sqlalchemy.orm import selectinload
+from pydantic import BaseModel, EmailStr, Field
+from sqlalchemy.orm import Session
+from typing import Optional
 
-from core.database import get_db
-from core.security import (
-    verify_password,
-    get_password_hash,
-    create_access_token,
-    create_refresh_token,
-    decode_token,
-    REFRESH_TOKEN,
-    validate_password_strength
-)
-from core.config import settings
-from models.user import User, Role, PasswordResetToken
-from schemas.user import (
-    UserCreate,
-    UserResponse,
-    TokenResponse,
-    LoginRequest,
-    TokenRefreshRequest,
-    PasswordChangeRequest,
-    ForgotPasswordRequest,
-    ResetPasswordRequest
-)
-from api.gateway.dependencies.auth import get_current_user
+from backend.core.auth import AuthService, get_db
+from backend.models.user import User
+from backend.models.tenant_models import Organization, OrganizationUser, SubscriptionPlan
 
-router = APIRouter()
+router = APIRouter(prefix="/auth", tags=["Authentication"])
 
+class UserSignup(BaseModel):
+    email: EmailStr
+    password: str = Field(..., min_length=8)
+    full_name: str
+    organization_name: str
 
-@router.post("/auth/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
-async def register(user_data: UserCreate, db: AsyncSession = Depends(get_db)):
-    """
-    Register a new user
-    """
-    # Check if user already exists
-    result = await db.execute(
-        select(User).where(
-            or_(User.email == user_data.email, User.username == user_data.username)
-        )
-    )
-    existing_user = result.scalar_one_or_none()
+class UserLogin(BaseModel):
+    email: EmailStr
+    password: str
+
+class TokenResponse(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+    user: dict
+
+@router.post("/signup", response_model=TokenResponse)
+async def signup(user_data: UserSignup, db: Session = Depends(get_db)):
+    """Create new user and organization"""
     
+    # Check if user exists
+    existing_user = db.query(User).filter(User.email == user_data.email).first()
     if existing_user:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="User with this email or username already exists"
-        )
+        raise HTTPException(status_code=400, detail="Email already registered")
     
-    # Validate password strength
-    validate_password_strength(user_data.password)
-    
-    # Create new user
-    new_user = User(
+    # Create user
+    hashed_password = AuthService.get_password_hash(user_data.password)
+    user = User(
         email=user_data.email,
-        username=user_data.username,
+        password_hash=hashed_password,
         full_name=user_data.full_name,
-        hashed_password=get_password_hash(user_data.password),
-        phone_number=user_data.phone_number,
-        department=user_data.department,
-        job_title=user_data.job_title,
-        is_active=True,
-        is_verified=False
+        is_active=True
     )
+    db.add(user)
+    db.flush()
     
-    # Assign default role
-    result = await db.execute(select(Role).where(Role.is_default == True))
-    default_role = result.scalar_one_or_none()
-    role_names = []
-    if default_role:
-        new_user.roles.append(default_role)
-        role_names = [default_role.name]
-    
-    db.add(new_user)
-    await db.commit()
-    await db.refresh(new_user)
-    
-    return UserResponse(
-        id=new_user.id,
-        email=new_user.email,
-        username=new_user.username,
-        full_name=new_user.full_name,
-        phone_number=new_user.phone_number,
-        department=new_user.department,
-        job_title=new_user.job_title,
-        is_active=new_user.is_active,
-        is_superuser=new_user.is_superuser,
-        is_verified=new_user.is_verified,
-        created_at=new_user.created_at,
-        updated_at=new_user.updated_at,
-        last_login=new_user.last_login,
-        roles=role_names
+    # Create organization
+    org_slug = user_data.organization_name.lower().replace(" ", "-")
+    org = Organization(
+        name=user_data.organization_name,
+        slug=org_slug,
+        subscription_plan=SubscriptionPlan.FREE,
+        status="trial"
     )
-
-
-@router.post("/auth/login", response_model=TokenResponse)
-async def login(
-    form_data: OAuth2PasswordRequestForm = Depends(),
-    db: AsyncSession = Depends(get_db)
-):
-    """
-    Login and get access token
-    OAuth2 compatible token login
-    """
-    # Find user by username or email
-    result = await db.execute(
-        select(User).where(
-            or_(User.username == form_data.username, User.email == form_data.username)
-        )
+    db.add(org)
+    db.flush()
+    
+    # Link user to organization
+    org_user = OrganizationUser(
+        organization_id=org.id,
+        user_id=user.id,
+        role="owner",
+        is_primary=True
     )
-    user = result.scalar_one_or_none()
+    db.add(org_user)
+    db.commit()
     
-    if not user or not verify_password(form_data.password, user.hashed_password):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect username or password",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    
-    if not user.is_active:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="User account is inactive"
-        )
-    
-    # Update last login
-    user.last_login = datetime.utcnow()
-    user.failed_login_attempts = 0
-    await db.commit()
-    
-    # Create tokens
-    access_token = create_access_token(data={"sub": str(user.id)})
-    refresh_token = create_refresh_token(data={"sub": str(user.id)})
+    # Create access token
+    access_token = AuthService.create_access_token(
+        data={"user_id": user.id, "organization_id": org.id}
+    )
     
     return TokenResponse(
         access_token=access_token,
-        refresh_token=refresh_token,
-        token_type="bearer",
-        expires_in=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60
-    )
-
-
-@router.post("/auth/refresh", response_model=TokenResponse)
-async def refresh_token(
-    refresh_data: TokenRefreshRequest,
-    db: AsyncSession = Depends(get_db)
-):
-    """
-    Refresh access token using refresh token
-    """
-    payload = decode_token(refresh_data.refresh_token)
-    
-    # Validate it's a refresh token
-    if payload.get("type") != REFRESH_TOKEN:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid token type"
-        )
-    
-    user_id = int(payload.get("sub"))
-    
-    # Verify user still exists and is active
-    result = await db.execute(select(User).where(User.id == user_id))
-    user = result.scalar_one_or_none()
-    
-    if not user or not user.is_active:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="User not found or inactive"
-        )
-    
-    # Create new tokens
-    new_access_token = create_access_token(data={"sub": str(user.id)})
-    new_refresh_token = create_refresh_token(data={"sub": str(user.id)})
-    
-    return TokenResponse(
-        access_token=new_access_token,
-        refresh_token=new_refresh_token,
-        token_type="bearer",
-        expires_in=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60
-    )
-
-
-@router.get("/auth/me", response_model=UserResponse)
-async def get_current_user_info(current_user: User = Depends(get_current_user)):
-    """
-    Get current user information
-    """
-    return UserResponse(
-        id=current_user.id,
-        email=current_user.email,
-        username=current_user.username,
-        full_name=current_user.full_name,
-        phone_number=current_user.phone_number,
-        department=current_user.department,
-        job_title=current_user.job_title,
-        is_active=current_user.is_active,
-        is_superuser=current_user.is_superuser,
-        is_verified=current_user.is_verified,
-        created_at=current_user.created_at,
-        updated_at=current_user.updated_at,
-        last_login=current_user.last_login,
-        roles=[role.name for role in current_user.roles]
-    )
-
-
-@router.post("/auth/change-password")
-async def change_password(
-    password_data: PasswordChangeRequest,
-    current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db)
-):
-    """
-    Change user password
-    """
-    # Verify old password
-    if not verify_password(password_data.old_password, current_user.hashed_password):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Incorrect password"
-        )
-    
-    # Validate new password
-    validate_password_strength(password_data.new_password)
-    
-    # Update password
-    current_user.hashed_password = get_password_hash(password_data.new_password)
-    await db.commit()
-    
-    return {"message": "Password changed successfully"}
-
-
-@router.post("/auth/logout")
-async def logout(current_user: User = Depends(get_current_user)):
-    """
-    Logout user (invalidate token)
-    """
-    # In a real implementation, you would add the token to a blacklist
-    return {"message": "Successfully logged out"}
-
-
-@router.post("/auth/forgot-password")
-async def forgot_password(
-    request: ForgotPasswordRequest,
-    db: AsyncSession = Depends(get_db)
-):
-    """
-    Request password reset token
-    Sends a password reset token (in production, this would be emailed)
-    """
-    # Find user by email
-    result = await db.execute(
-        select(User).where(User.email == request.email)
-    )
-    user = result.scalar_one_or_none()
-    
-    # Always return success to prevent email enumeration
-    if not user:
-        return {
-            "message": "If the email exists, a password reset link has been sent",
-            "email": request.email
+        user={
+            "id": user.id,
+            "email": user.email,
+            "full_name": user.full_name,
+            "organization_id": org.id,
+            "organization_name": org.name
         }
+    )
+
+@router.post("/login", response_model=TokenResponse)
+async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+    """Login user"""
+    
+    # Find user
+    user = db.query(User).filter(User.email == form_data.username).first()
+    if not user or not AuthService.verify_password(form_data.password, user.password_hash):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect email or password"
+        )
     
     if not user.is_active:
-        return {
-            "message": "If the email exists, a password reset link has been sent",
-            "email": request.email
+        raise HTTPException(status_code=400, detail="User account is inactive")
+    
+    # Get user's organization
+    org_user = db.query(OrganizationUser).filter(
+        OrganizationUser.user_id == user.id
+    ).first()
+    
+    # Create access token
+    access_token = AuthService.create_access_token(
+        data={
+            "user_id": user.id,
+            "organization_id": org_user.organization_id if org_user else None
         }
-    
-    # Invalidate any existing tokens for this user
-    result = await db.execute(
-        select(PasswordResetToken).where(
-            PasswordResetToken.user_id == user.id,
-            PasswordResetToken.used == False
-        )
     )
-    existing_tokens = result.scalars().all()
-    for token in existing_tokens:
-        token.mark_as_used()
     
-    # Create new reset token
-    reset_token = PasswordResetToken.create_for_user(user.id, expires_in_hours=1)
-    db.add(reset_token)
-    await db.commit()
-    await db.refresh(reset_token)
-    
-    # In production, send email here
-    # For now, return the token directly (ONLY FOR DEVELOPMENT)
-    return {
-        "message": "Password reset link sent to your email",
-        "email": request.email,
-        "token": reset_token.token,  # Remove this in production!
-        "reset_url": f"{settings.FRONTEND_URL}/reset-password?token={reset_token.token}"
-    }
+    return TokenResponse(
+        access_token=access_token,
+        user={
+            "id": user.id,
+            "email": user.email,
+            "full_name": user.full_name,
+            "organization_id": org_user.organization_id if org_user else None
+        }
+    )
 
-
-@router.post("/auth/reset-password")
-async def reset_password(
-    request: ResetPasswordRequest,
-    db: AsyncSession = Depends(get_db)
-):
-    """
-    Reset password using token
-    """
-    # Find token
-    result = await db.execute(
-        select(PasswordResetToken).where(
-            PasswordResetToken.token == request.token
-        )
-    )
-    reset_token = result.scalar_one_or_none()
-    
-    if not reset_token:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Invalid or expired reset token"
-        )
-    
-    # Validate token
-    if not reset_token.is_valid():
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Invalid or expired reset token"
-        )
-    
-    # Get user
-    result = await db.execute(
-        select(User).where(User.id == reset_token.user_id)
-    )
-    user = result.scalar_one_or_none()
-    
-    if not user or not user.is_active:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="User not found or inactive"
-        )
-    
-    # Validate new password
-    validate_password_strength(request.new_password)
-    
-    # Update password
-    user.hashed_password = get_password_hash(request.new_password)
-    reset_token.mark_as_used()
-    
-    await db.commit()
-    
+@router.get("/me")
+async def get_current_user_info(current_user: User = Depends(get_current_user)):
+    """Get current user information"""
     return {
-        "message": "Password reset successfully",
-        "email": user.email
+        "id": current_user.id,
+        "email": current_user.email,
+        "full_name": current_user.full_name,
+        "is_active": current_user.is_active
     }
