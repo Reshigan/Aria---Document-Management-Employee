@@ -9,7 +9,7 @@ from fastapi.responses import JSONResponse
 import logging
 
 from core.config import settings
-from api.gateway.routers import auth, documents, chat, health
+from api.gateway.routers import auth, documents, chat, health, bots, reporting
 
 # Configure logging
 logging.basicConfig(
@@ -71,6 +71,8 @@ app.include_router(health.router, prefix=settings.API_V1_PREFIX, tags=["health"]
 app.include_router(auth.router, prefix=settings.API_V1_PREFIX, tags=["auth"])
 app.include_router(documents.router, prefix=settings.API_V1_PREFIX, tags=["documents"])
 app.include_router(chat.router, prefix=settings.API_V1_PREFIX, tags=["chat"])
+app.include_router(bots.router, prefix=settings.API_V1_PREFIX, tags=["bots"])
+app.include_router(reporting.router, prefix=settings.API_V1_PREFIX, tags=["reporting"])
 
 
 @app.get("/")
