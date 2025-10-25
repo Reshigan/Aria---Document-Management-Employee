@@ -56,11 +56,11 @@ class BotManager:
         # Financial Category (7 bots)
         BotInfo("invoice_reconciliation", "Invoice Reconciliation Bot", 
                 "Automatically match invoices to payments, flag discrepancies, and reconcile accounts",
-                "financial", "📄", module_path="backend.bots.invoice_bot"),
+                "financial", "📄", module_path="backend.bots.invoice_reconciliation_bot"),
         
         BotInfo("expense_management", "Expense Management Bot",
                 "Track expenses, categorize costs, generate expense reports, and enforce policies",
-                "financial", "💰"),
+                "financial", "💰", module_path="backend.bots.expense_management_bot"),
         
         BotInfo("budget_forecasting", "Budget Forecasting Bot",
                 "Predict cash flow, analyze spending patterns, and provide budget recommendations",
@@ -123,7 +123,7 @@ class BotManager:
         # HR Category (3 bots)
         BotInfo("payroll_sa", "Payroll Bot (South Africa)",
                 "Process payroll, calculate PAYE/UIF/SDL, generate IRP5s, and file with SARS",
-                "hr", "💼", requires_sars=True),
+                "hr", "💼", requires_sars=True, module_path="backend.bots.payroll_sa_bot"),
         
         BotInfo("leave_management", "Leave Management Bot",
                 "Track leave balances, approve requests, sync calendars, and ensure compliance",
@@ -158,7 +158,7 @@ class BotManager:
         # Compliance Category (1 bot - CRITICAL for South Africa!)
         BotInfo("bbbee_compliance", "BBBEE Compliance Bot",
                 "Calculate BBBEE scorecard, track ownership, verify suppliers, and generate reports",
-                "compliance", "🇿🇦", requires_bbbee=True),
+                "compliance", "🇿🇦", requires_bbbee=True, module_path="backend.bots.bbbee_compliance_bot"),
     ]
     
     def __init__(self):
