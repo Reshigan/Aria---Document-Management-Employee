@@ -4,20 +4,12 @@ export default {
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
-  darkMode: 'class',
   theme: {
     extend: {
       colors: {
-        primary: {
-          50: '#eef2ff',
-          500: '#6366f1',
-          600: '#4f46e5',
-          700: '#4338ca',
-        }
+        'vanta-navy': '#1a2332',
+        'vanta-gold': '#FFB800',
       },
-      animation: {
-        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-      }
     },
   },
   plugins: [],
