@@ -88,7 +88,7 @@ export default function CalendarOffice365Config() {
   };
 
   return (
-    <Box sx={ p: 3 }>
+    <Box sx={{ p: 3 }>
       <Typography variant="h4" gutterBottom>
         Calendar Bot (Office 365)
       </Typography>
@@ -97,7 +97,7 @@ export default function CalendarOffice365Config() {
         Automates meeting scheduling, room bookings, and calendar coordination
       </Typography>
 
-      <Grid container spacing=2 sx={ mb: 3 }>
+      <Grid container spacing={2} sx={{ mb: 3 }>
         <Grid item>
           <Chip label="Category: integration" />
         </Grid>
@@ -110,19 +110,19 @@ export default function CalendarOffice365Config() {
       </Grid>
 
       {message && (
-        <Alert severity={message.type} sx={ mb: 2 }>
+        <Alert severity={message.type} sx={{ mb: 2 }>
           {message.text}
         </Alert>
       )}
 
-      <Card sx={ mb: 3 }>
+      <Card sx={{ mb: 3 }>
         <CardContent>
           <Typography variant="h6" gutterBottom>
             Bot Configuration
           </Typography>
           
-          <Grid container spacing=3>
-            <Grid item xs=12>
+          <Grid container spacing={3}>
+            <Grid item xs={12}>
               <FormControlLabel
                 control={
                   <Switch
@@ -134,7 +134,7 @@ export default function CalendarOffice365Config() {
               />
             </Grid>
 
-            <Grid item xs=12 md=6>
+            <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
                 label="Schedule (Cron)"
@@ -144,7 +144,7 @@ export default function CalendarOffice365Config() {
               />
             </Grid>
 
-            <Grid item xs=12 md=6>
+            <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
                 type="number"
@@ -155,7 +155,7 @@ export default function CalendarOffice365Config() {
               />
             </Grid>
 
-            <Grid item xs=12 md=6>
+            <Grid item xs={12} md={6}>
               <FormControlLabel
                 control={
                   <Switch
@@ -167,7 +167,7 @@ export default function CalendarOffice365Config() {
               />
             </Grid>
 
-            <Grid item xs=12 md=6>
+            <Grid item xs={12} md={6}>
               <FormControlLabel
                 control={
                   <Switch
@@ -182,13 +182,13 @@ export default function CalendarOffice365Config() {
         </CardContent>
       </Card>
 
-      <Card sx={ mb: 3 }>
+      <Card sx={{ mb: 3 }>
         <CardContent>
           <Typography variant="h6" gutterBottom>
             Features
           </Typography>
           
-          <Grid container spacing={1}>
+          <Grid container spacing={}{1}>
             {[
               "Automatic meeting scheduling (find optimal time for all attendees)", "Room and resource booking", "Meeting conflict resolution", "Calendar synchronization across users", "Recurring meeting management", "Meeting reminder notifications", "Integration with Office 365 Calendar", "Time zone conversion", "Meeting analytics (time spent in meetings)", "Auto-decline conflicting invites"
             ].map((feature, index) => (
@@ -200,7 +200,7 @@ export default function CalendarOffice365Config() {
         </CardContent>
       </Card>
 
-      <Box sx={ display: 'flex', gap: 2 }>
+      <Box sx={{ display: 'flex', gap: 2 }>
         <Button
           variant="contained"
           startIcon={<SaveIcon />}

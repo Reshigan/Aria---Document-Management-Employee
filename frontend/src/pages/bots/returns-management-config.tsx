@@ -88,7 +88,7 @@ export default function ReturnsManagementConfig() {
   };
 
   return (
-    <Box sx={ p: 3 }>
+    <Box sx={{ p: 3 }>
       <Typography variant="h4" gutterBottom>
         Returns Management Bot
       </Typography>
@@ -97,7 +97,7 @@ export default function ReturnsManagementConfig() {
         Automates RMA processing, refunds, warranty claims, and returns logistics
       </Typography>
 
-      <Grid container spacing=2 sx={ mb: 3 }>
+      <Grid container spacing={2} sx={{ mb: 3 }>
         <Grid item>
           <Chip label="Category: operations" />
         </Grid>
@@ -110,19 +110,19 @@ export default function ReturnsManagementConfig() {
       </Grid>
 
       {message && (
-        <Alert severity={message.type} sx={ mb: 2 }>
+        <Alert severity={message.type} sx={{ mb: 2 }>
           {message.text}
         </Alert>
       )}
 
-      <Card sx={ mb: 3 }>
+      <Card sx={{ mb: 3 }>
         <CardContent>
           <Typography variant="h6" gutterBottom>
             Bot Configuration
           </Typography>
           
-          <Grid container spacing=3>
-            <Grid item xs=12>
+          <Grid container spacing={3}>
+            <Grid item xs={12}>
               <FormControlLabel
                 control={
                   <Switch
@@ -134,7 +134,7 @@ export default function ReturnsManagementConfig() {
               />
             </Grid>
 
-            <Grid item xs=12 md=6>
+            <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
                 label="Schedule (Cron)"
@@ -144,7 +144,7 @@ export default function ReturnsManagementConfig() {
               />
             </Grid>
 
-            <Grid item xs=12 md=6>
+            <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
                 type="number"
@@ -155,7 +155,7 @@ export default function ReturnsManagementConfig() {
               />
             </Grid>
 
-            <Grid item xs=12 md=6>
+            <Grid item xs={12} md={6}>
               <FormControlLabel
                 control={
                   <Switch
@@ -167,7 +167,7 @@ export default function ReturnsManagementConfig() {
               />
             </Grid>
 
-            <Grid item xs=12 md=6>
+            <Grid item xs={12} md={6}>
               <FormControlLabel
                 control={
                   <Switch
@@ -182,13 +182,13 @@ export default function ReturnsManagementConfig() {
         </CardContent>
       </Card>
 
-      <Card sx={ mb: 3 }>
+      <Card sx={{ mb: 3 }>
         <CardContent>
           <Typography variant="h6" gutterBottom>
             Features
           </Typography>
           
-          <Grid container spacing={1}>
+          <Grid container spacing={}{1}>
             {[
               "RMA (Return Merchandise Authorization) generation", "Return reason tracking and analysis", "Automatic refund processing", "Warranty claim verification", "Return shipping label generation", "Inventory return processing", "Restocking automation", "Return analytics and trends", "Fraud detection", "Integration with couriers"
             ].map((feature, index) => (
@@ -200,7 +200,7 @@ export default function ReturnsManagementConfig() {
         </CardContent>
       </Card>
 
-      <Box sx={ display: 'flex', gap: 2 }>
+      <Box sx={{ display: 'flex', gap: 2 }>
         <Button
           variant="contained"
           startIcon={<SaveIcon />}

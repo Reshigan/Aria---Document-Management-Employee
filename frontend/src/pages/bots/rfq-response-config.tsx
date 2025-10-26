@@ -88,7 +88,7 @@ export default function RfqResponseConfig() {
   };
 
   return (
-    <Box sx={ p: 3 }>
+    <Box sx={{ p: 3 }>
       <Typography variant="h4" gutterBottom>
         RFQ Response Bot
       </Typography>
@@ -97,7 +97,7 @@ export default function RfqResponseConfig() {
         Automates RFQ/tender responses, quote generation, and submission
       </Typography>
 
-      <Grid container spacing=2 sx={ mb: 3 }>
+      <Grid container spacing={2} sx={{ mb: 3 }>
         <Grid item>
           <Chip label="Category: sales_crm" />
         </Grid>
@@ -110,19 +110,19 @@ export default function RfqResponseConfig() {
       </Grid>
 
       {message && (
-        <Alert severity={message.type} sx={ mb: 2 }>
+        <Alert severity={message.type} sx={{ mb: 2 }>
           {message.text}
         </Alert>
       )}
 
-      <Card sx={ mb: 3 }>
+      <Card sx={{ mb: 3 }>
         <CardContent>
           <Typography variant="h6" gutterBottom>
             Bot Configuration
           </Typography>
           
-          <Grid container spacing=3>
-            <Grid item xs=12>
+          <Grid container spacing={3}>
+            <Grid item xs={12}>
               <FormControlLabel
                 control={
                   <Switch
@@ -134,7 +134,7 @@ export default function RfqResponseConfig() {
               />
             </Grid>
 
-            <Grid item xs=12 md=6>
+            <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
                 label="Schedule (Cron)"
@@ -144,7 +144,7 @@ export default function RfqResponseConfig() {
               />
             </Grid>
 
-            <Grid item xs=12 md=6>
+            <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
                 type="number"
@@ -155,7 +155,7 @@ export default function RfqResponseConfig() {
               />
             </Grid>
 
-            <Grid item xs=12 md=6>
+            <Grid item xs={12} md={6}>
               <FormControlLabel
                 control={
                   <Switch
@@ -167,7 +167,7 @@ export default function RfqResponseConfig() {
               />
             </Grid>
 
-            <Grid item xs=12 md=6>
+            <Grid item xs={12} md={6}>
               <FormControlLabel
                 control={
                   <Switch
@@ -182,13 +182,13 @@ export default function RfqResponseConfig() {
         </CardContent>
       </Card>
 
-      <Card sx={ mb: 3 }>
+      <Card sx={{ mb: 3 }>
         <CardContent>
           <Typography variant="h6" gutterBottom>
             Features
           </Typography>
           
-          <Grid container spacing={1}>
+          <Grid container spacing={}{1}>
             {[
               "Automatic RFQ parsing (from email, portals)", "Quote generation with pricing", "Tender document compilation", "BBBEE certificate inclusion", "Compliance checklist verification", "Multi-stakeholder collaboration", "Submission tracking and reminders", "Win/loss analysis", "Template library", "Integration with government tender portals"
             ].map((feature, index) => (
@@ -200,7 +200,7 @@ export default function RfqResponseConfig() {
         </CardContent>
       </Card>
 
-      <Box sx={ display: 'flex', gap: 2 }>
+      <Box sx={{ display: 'flex', gap: 2 }>
         <Button
           variant="contained"
           startIcon={<SaveIcon />}

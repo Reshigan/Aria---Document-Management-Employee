@@ -88,7 +88,7 @@ export default function OcrDocumentCaptureConfig() {
   };
 
   return (
-    <Box sx={ p: 3 }>
+    <Box sx={{ p: 3 }>
       <Typography variant="h4" gutterBottom>
         OCR/Document Capture Bot
       </Typography>
@@ -97,7 +97,7 @@ export default function OcrDocumentCaptureConfig() {
         Automates document scanning, OCR text extraction, and intelligent document classification
       </Typography>
 
-      <Grid container spacing=2 sx={ mb: 3 }>
+      <Grid container spacing={2} sx={{ mb: 3 }>
         <Grid item>
           <Chip label="Category: integration" />
         </Grid>
@@ -110,19 +110,19 @@ export default function OcrDocumentCaptureConfig() {
       </Grid>
 
       {message && (
-        <Alert severity={message.type} sx={ mb: 2 }>
+        <Alert severity={message.type} sx={{ mb: 2 }>
           {message.text}
         </Alert>
       )}
 
-      <Card sx={ mb: 3 }>
+      <Card sx={{ mb: 3 }>
         <CardContent>
           <Typography variant="h6" gutterBottom>
             Bot Configuration
           </Typography>
           
-          <Grid container spacing=3>
-            <Grid item xs=12>
+          <Grid container spacing={3}>
+            <Grid item xs={12}>
               <FormControlLabel
                 control={
                   <Switch
@@ -134,7 +134,7 @@ export default function OcrDocumentCaptureConfig() {
               />
             </Grid>
 
-            <Grid item xs=12 md=6>
+            <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
                 label="Schedule (Cron)"
@@ -144,7 +144,7 @@ export default function OcrDocumentCaptureConfig() {
               />
             </Grid>
 
-            <Grid item xs=12 md=6>
+            <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
                 type="number"
@@ -155,7 +155,7 @@ export default function OcrDocumentCaptureConfig() {
               />
             </Grid>
 
-            <Grid item xs=12 md=6>
+            <Grid item xs={12} md={6}>
               <FormControlLabel
                 control={
                   <Switch
@@ -167,7 +167,7 @@ export default function OcrDocumentCaptureConfig() {
               />
             </Grid>
 
-            <Grid item xs=12 md=6>
+            <Grid item xs={12} md={6}>
               <FormControlLabel
                 control={
                   <Switch
@@ -182,13 +182,13 @@ export default function OcrDocumentCaptureConfig() {
         </CardContent>
       </Card>
 
-      <Card sx={ mb: 3 }>
+      <Card sx={{ mb: 3 }>
         <CardContent>
           <Typography variant="h6" gutterBottom>
             Features
           </Typography>
           
-          <Grid container spacing={1}>
+          <Grid container spacing={}{1}>
             {[
               "Automatic document scanning from email attachments, file uploads, and network folders", "OCR text extraction with 98%+ accuracy using Azure AI Vision", "Intelligent document classification (invoices, quotes, contracts, receipts, etc.)", "Metadata extraction (dates, amounts, vendor names, PO numbers)", "Multi-language support (English, Afrikaans, Zulu, Xhosa)", "Barcode and QR code scanning", "Image preprocessing (deskew, denoise, enhance)", "PDF generation with searchable text layer", "Batch processing (100+ documents per run)", "Integration with Document Management System"
             ].map((feature, index) => (
@@ -200,7 +200,7 @@ export default function OcrDocumentCaptureConfig() {
         </CardContent>
       </Card>
 
-      <Box sx={ display: 'flex', gap: 2 }>
+      <Box sx={{ display: 'flex', gap: 2 }>
         <Button
           variant="contained"
           startIcon={<SaveIcon />}
