@@ -1,0 +1,809 @@
+# ARIA Bot Specifications
+# Complete specifications for rapid bot generation
+# Version: 1.0.0
+# Date: October 26, 2025
+
+bots:
+  # ============================================================================
+  # INTEGRATION BOTS (3 bots)
+  # ============================================================================
+  
+  - bot_id: ocr_document_capture
+    bot_name: "OCR/Document Capture Bot"
+    category: integration
+    priority: CRITICAL
+    description: "Automates document scanning, OCR text extraction, and intelligent document classification"
+    purpose: "Digitize paper documents and extract structured data automatically"
+    
+    features:
+      - "Automatic document scanning from email attachments, file uploads, and network folders"
+      - "OCR text extraction with 98%+ accuracy using Azure AI Vision"
+      - "Intelligent document classification (invoices, quotes, contracts, receipts, etc.)"
+      - "Metadata extraction (dates, amounts, vendor names, PO numbers)"
+      - "Multi-language support (English, Afrikaans, Zulu, Xhosa)"
+      - "Barcode and QR code scanning"
+      - "Image preprocessing (deskew, denoise, enhance)"
+      - "PDF generation with searchable text layer"
+      - "Batch processing (100+ documents per run)"
+      - "Integration with Document Management System"
+    
+    integrations:
+      - "Azure AI Vision (OCR)"
+      - "Google Cloud Vision API (backup)"
+      - "Tesseract OCR (offline fallback)"
+      - "Email Bot (receive attachments)"
+      - "File storage (Azure Blob, AWS S3)"
+    
+    requirements:
+      - "Azure AI Vision API key"
+      - "File storage credentials"
+      - "Network folder access (optional)"
+    
+    value: "R60K-R120K/year saved"
+    roi: "Very high - 90% faster document processing, 95% less manual data entry"
+    standalone_value: 5  # 5 stars
+    market_potential: "R1.8B ARR (100K companies)"
+    
+    estimated_lines: 18000
+    estimated_tests: 25
+    development_priority: 1
+
+  - bot_id: esignature
+    bot_name: "eSignature Bot"
+    category: integration
+    priority: CRITICAL
+    description: "Automates document signing workflows with integration to DocuSign, Adobe Sign"
+    purpose: "Eliminate manual document signing and speed up approvals by 95%"
+    
+    features:
+      - "Send documents for signature automatically"
+      - "Track signature status in real-time"
+      - "Multi-party signing workflows"
+      - "Sequential and parallel signing"
+      - "Signature reminders and escalations"
+      - "PDF form filling and signing"
+      - "Integration with DocuSign, Adobe Sign"
+      - "In-app signing (fallback)"
+      - "Certificate-based signatures (PKI)"
+      - "Signature audit trail"
+    
+    integrations:
+      - "DocuSign API"
+      - "Adobe Sign API"
+      - "Email Bot (send signature requests)"
+      - "Document Management System"
+    
+    requirements:
+      - "DocuSign or Adobe Sign API credentials"
+      - "PKI certificate (optional)"
+    
+    value: "R40K-R80K/year saved"
+    roi: "Very high - 95% faster signing, 100% audit trail, legal compliance"
+    standalone_value: 5
+    market_potential: "R1.5B ARR (100K companies)"
+    
+    estimated_lines: 15000
+    estimated_tests: 22
+    development_priority: 2
+
+  - bot_id: calendar_office365
+    bot_name: "Calendar Bot (Office 365)"
+    category: integration
+    priority: HIGH
+    description: "Automates meeting scheduling, room bookings, and calendar coordination"
+    purpose: "Eliminate back-and-forth email for scheduling and optimize calendar usage"
+    
+    features:
+      - "Automatic meeting scheduling (find optimal time for all attendees)"
+      - "Room and resource booking"
+      - "Meeting conflict resolution"
+      - "Calendar synchronization across users"
+      - "Recurring meeting management"
+      - "Meeting reminder notifications"
+      - "Integration with Office 365 Calendar"
+      - "Time zone conversion"
+      - "Meeting analytics (time spent in meetings)"
+      - "Auto-decline conflicting invites"
+    
+    integrations:
+      - "Microsoft Graph API (Calendar)"
+      - "Email Bot (send invites)"
+      - "Teams integration (optional)"
+    
+    requirements:
+      - "Microsoft Graph API credentials"
+      - "Office 365 tenant"
+    
+    value: "R30K-R60K/year saved"
+    roi: "High - 80% less scheduling back-and-forth, better resource utilization"
+    standalone_value: 4
+    market_potential: "R600M ARR (40K companies)"
+    
+    estimated_lines: 12000
+    estimated_tests: 20
+    development_priority: 3
+
+  # ============================================================================
+  # FINANCIAL BOTS (6 bots)
+  # ============================================================================
+
+  - bot_id: tax_compliance
+    bot_name: "Tax Compliance Bot"
+    category: financial
+    priority: CRITICAL
+    description: "Automates SA tax compliance - VAT201, EMP201, income tax, tax submissions"
+    purpose: "Ensure 100% tax compliance and eliminate penalties"
+    
+    features:
+      - "Automatic VAT201 calculation and submission"
+      - "EMP201 (PAYE) monthly submissions"
+      - "Income tax provisional calculations"
+      - "Tax payment scheduling and reminders"
+      - "SARS eFiling integration"
+      - "Tax optimization suggestions"
+      - "Tax deadline tracking"
+      - "Audit trail for SARS compliance"
+      - "Multi-company support"
+      - "Tax reconciliation reports"
+    
+    integrations:
+      - "SARS eFiling API"
+      - "Accounting system (GL, AP, AR)"
+      - "Payroll Bot (for PAYE)"
+      - "Email Bot (notifications)"
+    
+    requirements:
+      - "SARS eFiling credentials"
+      - "Company tax registration numbers"
+    
+    value: "R120K-R240K/year saved"
+    roi: "Very high - 100% compliance, no penalties, tax optimization, 90% less manual work"
+    standalone_value: 5
+    market_potential: "R1.5B ARR (100K SA companies - EVERY company needs this!)"
+    
+    estimated_lines: 25000
+    estimated_tests: 30
+    development_priority: 4
+
+  - bot_id: credit_control
+    bot_name: "Credit Control Bot"
+    category: financial
+    priority: HIGH
+    description: "Automates debtor follow-ups, collections, and aging analysis"
+    purpose: "Reduce bad debt by 60% and speed up collections by 40%"
+    
+    features:
+      - "Automatic debtor follow-up emails and SMS"
+      - "Escalation workflows (email → phone → legal)"
+      - "Aging analysis and reports"
+      - "Payment promises tracking"
+      - "Credit limit monitoring"
+      - "Account suspension for overdue customers"
+      - "Payment allocation automation"
+      - "Debtor risk scoring"
+      - "Integration with collections agencies"
+      - "Dunning letter generation"
+    
+    integrations:
+      - "Email Bot (send follow-ups)"
+      - "WhatsApp Bot (send reminders)"
+      - "SMS gateway"
+      - "AR module"
+    
+    requirements:
+      - "Email and SMS credentials"
+      - "Credit control policies"
+    
+    value: "R90K-R180K/year saved"
+    roi: "Very high - 60% reduction in bad debt, 40% faster collections, improved cash flow"
+    standalone_value: 4
+    market_potential: "R800M ARR (50K companies)"
+    
+    estimated_lines: 20000
+    estimated_tests: 25
+    development_priority: 5
+
+  - bot_id: budget_management
+    bot_name: "Budget Management Bot"
+    category: financial
+    priority: HIGH
+    description: "Automates budget creation, tracking, variance analysis, and alerts"
+    purpose: "Improve cost control and reduce budget overruns by 70%"
+    
+    features:
+      - "Automatic budget creation from historical data"
+      - "Budget vs actual tracking"
+      - "Variance analysis and alerts"
+      - "Budget approval workflows"
+      - "Department budget allocation"
+      - "Real-time spend monitoring"
+      - "Budget forecasting (AI-powered)"
+      - "Budget revision workflows"
+      - "Multi-year budget planning"
+      - "Budget reports and dashboards"
+    
+    integrations:
+      - "General Ledger"
+      - "Purchase Order system"
+      - "Email Bot (approval workflows)"
+    
+    requirements:
+      - "Historical financial data"
+      - "Budget approval hierarchy"
+    
+    value: "R60K-R120K/year saved"
+    roi: "High - 70% fewer budget overruns, better cost control, informed decision making"
+    standalone_value: 4
+    market_potential: "R500M ARR (35K companies)"
+    
+    estimated_lines: 18000
+    estimated_tests: 24
+    development_priority: 6
+
+  - bot_id: fixed_asset_management
+    bot_name: "Fixed Asset Management Bot"
+    category: financial
+    priority: HIGH
+    description: "Automates asset register, depreciation, disposal, and tax optimization"
+    purpose: "Ensure accurate asset tracking and maximize tax deductions"
+    
+    features:
+      - "Asset register maintenance"
+      - "Automatic depreciation calculations (multiple methods)"
+      - "Asset disposal tracking"
+      - "Asset transfer between departments"
+      - "Asset physical verification scheduling"
+      - "Asset insurance tracking"
+      - "Asset maintenance scheduling"
+      - "Barcode/RFID tagging"
+      - "Tax depreciation optimization"
+      - "Asset valuation reports"
+    
+    integrations:
+      - "General Ledger (depreciation journals)"
+      - "Tax Compliance Bot"
+      - "Email Bot (verification reminders)"
+    
+    requirements:
+      - "Asset master data"
+      - "Depreciation policies"
+    
+    value: "R80K-R160K/year saved"
+    roi: "Very high - tax optimization, accurate asset tracking, 85% less manual work"
+    standalone_value: 4
+    market_potential: "R400M ARR (30K companies)"
+    
+    estimated_lines: 22000
+    estimated_tests: 26
+    development_priority: 7
+
+  - bot_id: multi_currency
+    bot_name: "Multi-Currency Bot"
+    category: financial
+    priority: NORMAL
+    description: "Automates forex transactions, revaluation, hedging, and exchange rate management"
+    purpose: "Reduce forex losses and automate currency management"
+    
+    features:
+      - "Automatic exchange rate updates"
+      - "Foreign currency revaluation (monthly)"
+      - "Unrealized gain/loss calculations"
+      - "Forex transaction processing"
+      - "Currency hedging monitoring"
+      - "Multi-currency reporting"
+      - "Currency conversion on-the-fly"
+      - "Historical rate tracking"
+      - "Best rate alerts"
+      - "Integration with forex brokers"
+    
+    integrations:
+      - "Exchange rate APIs (XE, OANDA)"
+      - "General Ledger"
+      - "Banking systems"
+    
+    requirements:
+      - "Exchange rate API key"
+      - "Bank forex accounts"
+    
+    value: "R50K-R100K/year saved"
+    roi: "High - better forex rates, reduced losses, automated revaluation"
+    standalone_value: 3
+    market_potential: "R300M ARR (20K companies)"
+    
+    estimated_lines: 15000
+    estimated_tests: 22
+    development_priority: 8
+
+  - bot_id: cash_management
+    bot_name: "Cash Management Bot"
+    category: financial
+    priority: HIGH
+    description: "Automates cash forecasting, working capital optimization, and liquidity management"
+    purpose: "Optimize cash position and reduce working capital requirements by 30%"
+    
+    features:
+      - "Cash flow forecasting (13-week rolling)"
+      - "Working capital optimization"
+      - "Cash position dashboard"
+      - "Automatic cash sweeping"
+      - "Investment opportunity alerts"
+      - "Debtor/creditor payment optimization"
+      - "Bank balance monitoring"
+      - "Cash scenario analysis"
+      - "Liquidity risk alerts"
+      - "Cash allocation recommendations"
+    
+    integrations:
+      - "Banking systems"
+      - "AR/AP modules"
+      - "Budget Management Bot"
+    
+    requirements:
+      - "Bank account access"
+      - "Historical cash flow data"
+    
+    value: "R70K-R140K/year saved"
+    roi: "Very high - 30% working capital reduction, better cash utilization, reduced borrowing"
+    standalone_value: 4
+    market_potential: "R450M ARR (30K companies)"
+    
+    estimated_lines: 20000
+    estimated_tests: 25
+    development_priority: 9
+
+  # ============================================================================
+  # SALES & CRM BOTS (6 bots)
+  # ============================================================================
+
+  - bot_id: customer_onboarding
+    bot_name: "Customer Onboarding Bot"
+    category: sales_crm
+    priority: CRITICAL
+    description: "Automates customer registration, verification, credit checks, and setup"
+    purpose: "Reduce onboarding time from 5 days to 4 hours"
+    
+    features:
+      - "Automatic customer registration from web forms"
+      - "Document verification (company registration, tax certificates)"
+      - "Credit checks and scoring"
+      - "BBBEE verification (SA-specific)"
+      - "FICA/KYC compliance"
+      - "Customer account setup"
+      - "Welcome email and onboarding materials"
+      - "Credit limit approval workflows"
+      - "Customer portal access provisioning"
+      - "Integration with CRM"
+    
+    integrations:
+      - "Credit bureaus (TransUnion, Experian)"
+      - "CIPC (company verification)"
+      - "BBBEE verification services"
+      - "CRM system"
+      - "Email Bot"
+    
+    requirements:
+      - "Credit bureau API credentials"
+      - "CIPC access"
+      - "KYC policies"
+    
+    value: "R60K-R120K/year saved"
+    roi: "Very high - 85% faster onboarding, 100% compliance, better customer experience"
+    standalone_value: 5
+    market_potential: "R900M ARR (50K companies)"
+    
+    estimated_lines: 20000
+    estimated_tests: 26
+    development_priority: 10
+
+  - bot_id: sales_commission
+    bot_name: "Sales Commission Bot"
+    category: sales_crm
+    priority: HIGH
+    description: "Automates commission calculations, adjustments, and payouts"
+    purpose: "Ensure accurate commissions and eliminate disputes"
+    
+    features:
+      - "Automatic commission calculations (multiple structures)"
+      - "Tiered commission support"
+      - "Team-based commissions"
+      - "Commission splits"
+      - "Clawback handling (returns/cancellations)"
+      - "Commission approval workflows"
+      - "Integration with payroll"
+      - "Commission statements"
+      - "Real-time commission tracking"
+      - "Commission forecasting"
+    
+    integrations:
+      - "Sales Order system"
+      - "Payroll Bot"
+      - "CRM"
+    
+    requirements:
+      - "Commission structures defined"
+      - "Sales data"
+    
+    value: "R50K-R100K/year saved"
+    roi: "High - 100% accuracy, no disputes, motivated sales team"
+    standalone_value: 4
+    market_potential: "R400M ARR (25K companies)"
+    
+    estimated_lines: 18000
+    estimated_tests: 24
+    development_priority: 11
+
+  - bot_id: pricing
+    bot_name: "Pricing Bot"
+    category: sales_crm
+    priority: CRITICAL
+    description: "Automates dynamic pricing, discounts, margin analysis, and competitor monitoring"
+    purpose: "Improve margins by 15-25% through intelligent pricing"
+    
+    features:
+      - "Dynamic pricing based on demand, inventory, competition"
+      - "Cost-plus pricing automation"
+      - "Margin analysis and alerts"
+      - "Discount approval workflows"
+      - "Price list management"
+      - "Competitor price monitoring"
+      - "Volume-based pricing"
+      - "Customer-specific pricing"
+      - "Price change tracking"
+      - "Pricing recommendations (AI-powered)"
+    
+    integrations:
+      - "Product management system"
+      - "Inventory system"
+      - "Competitor monitoring tools"
+      - "Quote Generation Bot"
+    
+    requirements:
+      - "Cost data"
+      - "Pricing policies"
+      - "Competitor websites (for monitoring)"
+    
+    value: "R90K-R180K/year saved"
+    roi: "Very high - 15-25% margin improvement, competitive pricing, reduced discounting"
+    standalone_value: 5
+    market_potential: "R1B ARR (50K companies)"
+    
+    estimated_lines: 22000
+    estimated_tests: 28
+    development_priority: 12
+
+  - bot_id: rfq_response
+    bot_name: "RFQ Response Bot"
+    category: sales_crm
+    priority: HIGH
+    description: "Automates RFQ/tender responses, quote generation, and submission"
+    purpose: "Respond to 3x more RFQs and win more tenders"
+    
+    features:
+      - "Automatic RFQ parsing (from email, portals)"
+      - "Quote generation with pricing"
+      - "Tender document compilation"
+      - "BBBEE certificate inclusion"
+      - "Compliance checklist verification"
+      - "Multi-stakeholder collaboration"
+      - "Submission tracking and reminders"
+      - "Win/loss analysis"
+      - "Template library"
+      - "Integration with government tender portals"
+    
+    integrations:
+      - "Email Bot (receive RFQs)"
+      - "Pricing Bot"
+      - "Document Management"
+      - "Government tender portals"
+    
+    requirements:
+      - "Product/service catalog"
+      - "BBBEE certificates"
+      - "Company credentials"
+    
+    value: "R70K-R140K/year saved"
+    roi: "Very high - 75% faster response, 3x more tenders, higher win rate"
+    standalone_value: 4
+    market_potential: "R700M ARR (40K companies)"
+    
+    estimated_lines: 15000
+    estimated_tests: 22
+    development_priority: 13
+
+  - bot_id: sales_forecasting
+    bot_name: "Sales Forecasting Bot"
+    category: sales_crm
+    priority: HIGH
+    description: "AI-powered sales forecasting, pipeline analysis, and revenue predictions"
+    purpose: "Improve forecast accuracy from 60% to 85%+"
+    
+    features:
+      - "AI-powered sales forecasting"
+      - "Pipeline analysis and health scoring"
+      - "Deal probability assessment"
+      - "Revenue predictions (monthly, quarterly, annual)"
+      - "Seasonality analysis"
+      - "Sales trend identification"
+      - "At-risk deal alerts"
+      - "Sales target tracking"
+      - "What-if scenario analysis"
+      - "Forecast vs actual reports"
+    
+    integrations:
+      - "CRM (pipeline data)"
+      - "Sales Order system"
+      - "Budget Management Bot"
+    
+    requirements:
+      - "Historical sales data (12+ months)"
+      - "CRM data"
+    
+    value: "R60K-R120K/year saved"
+    roi: "High - 30% better forecast accuracy, informed planning, optimized inventory"
+    standalone_value: 4
+    market_potential: "R500M ARR (30K companies)"
+    
+    estimated_lines: 20000
+    estimated_tests: 26
+    development_priority: 14
+
+  - bot_id: customer_retention
+    bot_name: "Customer Retention Bot"
+    category: sales_crm
+    priority: HIGH
+    description: "Automates churn prediction, retention campaigns, and loyalty programs"
+    purpose: "Reduce churn by 40% and increase customer lifetime value"
+    
+    features:
+      - "Churn prediction (AI-powered)"
+      - "At-risk customer identification"
+      - "Automated retention campaigns"
+      - "Loyalty program management"
+      - "Win-back campaigns"
+      - "Customer satisfaction monitoring"
+      - "Usage pattern analysis"
+      - "Personalized offers"
+      - "Customer health scoring"
+      - "Retention KPI tracking"
+    
+    integrations:
+      - "CRM"
+      - "Email Bot (send campaigns)"
+      - "WhatsApp Bot"
+      - "Customer portal"
+    
+    requirements:
+      - "Customer transaction history"
+      - "Usage data"
+      - "Retention policies"
+    
+    value: "R80K-R160K/year saved"
+    roi: "Very high - 40% lower churn, 25% higher customer lifetime value"
+    standalone_value: 4
+    market_potential: "R600M ARR (35K companies)"
+    
+    estimated_lines: 18000
+    estimated_tests: 24
+    development_priority: 15
+
+  # ============================================================================
+  # OPERATIONS BOTS (5 bots)
+  # ============================================================================
+
+  - bot_id: supplier_onboarding
+    bot_name: "Supplier Onboarding Bot"
+    category: operations
+    priority: HIGH
+    description: "Automates supplier registration, BBBEE verification, and vendor setup"
+    purpose: "Streamline supplier onboarding and ensure BBBEE compliance"
+    
+    features:
+      - "Automatic supplier registration"
+      - "BBBEE certificate verification"
+      - "Tax clearance verification"
+      - "Banking details verification"
+      - "Supplier risk assessment"
+      - "Vendor code generation"
+      - "Supplier portal access"
+      - "Contract management"
+      - "Performance tracking setup"
+      - "Integration with procurement"
+    
+    integrations:
+      - "BBBEE verification services"
+      - "SARS (tax clearance)"
+      - "Procurement system"
+      - "Email Bot"
+    
+    requirements:
+      - "BBBEE verification access"
+      - "SARS API credentials"
+    
+    value: "R50K-R100K/year saved"
+    roi: "High - 100% BBBEE compliance, faster onboarding, reduced risk"
+    standalone_value: 4
+    market_potential: "R400M ARR (25K SA companies)"
+    
+    estimated_lines: 20000
+    estimated_tests: 25
+    development_priority: 16
+
+  - bot_id: tender_management
+    bot_name: "Tender Management Bot"
+    category: operations
+    priority: CRITICAL
+    description: "Automates government tender discovery, response, and submission (SA-specific)"
+    purpose: "Win 3x more government tenders"
+    
+    features:
+      - "Government tender monitoring (eTender Portal)"
+      - "Tender matching to capabilities"
+      - "Automatic tender alerts"
+      - "Tender document compilation"
+      - "BBBEE scorecard generation"
+      - "Compliance checklist"
+      - "Multi-stakeholder collaboration"
+      - "Submission tracking"
+      - "Win/loss analysis"
+      - "Tender calendar and reminders"
+    
+    integrations:
+      - "National Treasury eTender Portal"
+      - "BBBEE Compliance Bot"
+      - "Document Management"
+      - "RFQ Response Bot"
+    
+    requirements:
+      - "eTender Portal access"
+      - "BBBEE certificates"
+      - "Company profile"
+    
+    value: "R70K-R140K/year saved"
+    roi: "Very high - 3x more tender submissions, 50% higher win rate, R5M+ new revenue"
+    standalone_value: 5
+    market_potential: "R1.2B ARR (50K SA companies - government tenders are HUGE)"
+    
+    estimated_lines: 22000
+    estimated_tests: 28
+    development_priority: 17
+
+  - bot_id: quality_control
+    bot_name: "Quality Control Bot"
+    category: operations
+    priority: NORMAL
+    description: "Automates QC inspections, defect tracking, and quality reporting"
+    purpose: "Reduce defects by 70% and improve quality consistency"
+    
+    features:
+      - "Automated QC inspection workflows"
+      - "Defect identification and logging"
+      - "Quality metrics tracking"
+      - "Non-conformance reports (NCR)"
+      - "Corrective action tracking"
+      - "Supplier quality monitoring"
+      - "Statistical process control (SPC)"
+      - "Quality audit scheduling"
+      - "Certificate of analysis generation"
+      - "Integration with production"
+    
+    integrations:
+      - "Manufacturing Bot"
+      - "Inventory system"
+      - "Supplier systems"
+    
+    requirements:
+      - "Quality standards defined"
+      - "Inspection criteria"
+    
+    value: "R60K-R120K/year saved"
+    roi: "High - 70% fewer defects, improved customer satisfaction, reduced returns"
+    standalone_value: 3
+    market_potential: "R350M ARR (20K manufacturers)"
+    
+    estimated_lines: 18000
+    estimated_tests: 24
+    development_priority: 18
+
+  - bot_id: shipping_logistics
+    bot_name: "Shipping & Logistics Bot"
+    category: operations
+    priority: HIGH
+    description: "Automates courier bookings, tracking, POD, and delivery management"
+    purpose: "Reduce shipping time by 60% and costs by 20%"
+    
+    features:
+      - "Automatic courier selection (best rate)"
+      - "Shipping label generation"
+      - "Courier booking automation"
+      - "Real-time tracking integration"
+      - "Delivery notifications (email, SMS, WhatsApp)"
+      - "Proof of delivery (POD) capture"
+      - "Freight cost allocation"
+      - "Delivery performance tracking"
+      - "Route optimization"
+      - "Returns processing"
+    
+    integrations:
+      - "Courier services (The Courier Guy, RAM, PostNet, etc.)"
+      - "Warehouse Management Bot"
+      - "Sales Order system"
+      - "Email/WhatsApp Bots"
+    
+    requirements:
+      - "Courier API credentials"
+      - "Shipping addresses"
+    
+    value: "R80K-R160K/year saved"
+    roi: "Very high - 60% faster shipping, 20% cost reduction, better customer experience"
+    standalone_value: 4
+    market_potential: "R900M ARR (50K companies)"
+    
+    estimated_lines: 25000
+    estimated_tests: 28
+    development_priority: 19
+
+  - bot_id: returns_management
+    bot_name: "Returns Management Bot"
+    category: operations
+    priority: NORMAL
+    description: "Automates RMA processing, refunds, warranty claims, and returns logistics"
+    purpose: "Process returns 80% faster and improve customer satisfaction"
+    
+    features:
+      - "RMA (Return Merchandise Authorization) generation"
+      - "Return reason tracking and analysis"
+      - "Automatic refund processing"
+      - "Warranty claim verification"
+      - "Return shipping label generation"
+      - "Inventory return processing"
+      - "Restocking automation"
+      - "Return analytics and trends"
+      - "Fraud detection"
+      - "Integration with couriers"
+    
+    integrations:
+      - "Sales Order system"
+      - "Inventory system"
+      - "Shipping & Logistics Bot"
+      - "Finance (refunds)"
+    
+    requirements:
+      - "Return policies defined"
+      - "Warranty terms"
+    
+    value: "R50K-R100K/year saved"
+    roi: "High - 80% faster processing, improved customer satisfaction, reduced fraud"
+    standalone_value: 3
+    market_potential: "R300M ARR (20K companies)"
+    
+    estimated_lines: 18000
+    estimated_tests: 24
+    development_priority: 20
+
+# ============================================================================
+# METADATA
+# ============================================================================
+
+metadata:
+  total_bots: 20
+  total_estimated_lines: 381000
+  total_estimated_tests: 500
+  categories:
+    integration: 3
+    financial: 6
+    sales_crm: 6
+    operations: 5
+  priority_breakdown:
+    CRITICAL: 8
+    HIGH: 10
+    NORMAL: 2
+  total_market_potential: "R13.55B ARR (standalone bots)"
+  
+generation_settings:
+  use_base_bot_class: true
+  generate_tests: true
+  generate_frontend: true
+  generate_seed_data: true
+  test_coverage_target: 95
+  code_style: "black"
+  docstring_format: "google"
