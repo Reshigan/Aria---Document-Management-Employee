@@ -88,7 +88,7 @@ export default function OcrDocumentCaptureConfig() {
   };
 
   return (
-    <Box sx={{ p: 3 }>
+    <Box sx={{ p: 3 }}>
       <Typography variant="h4" gutterBottom>
         OCR/Document Capture Bot
       </Typography>
@@ -97,7 +97,7 @@ export default function OcrDocumentCaptureConfig() {
         Automates document scanning, OCR text extraction, and intelligent document classification
       </Typography>
 
-      <Grid container spacing={2} sx={{ mb: 3 }>
+      <Grid container spacing={2} sx={{ mb: 3 }}>
         <Grid item>
           <Chip label="Category: integration" />
         </Grid>
@@ -110,12 +110,12 @@ export default function OcrDocumentCaptureConfig() {
       </Grid>
 
       {message && (
-        <Alert severity={message.type} sx={{ mb: 2 }>
+        <Alert severity={message.type} sx={{ mb: 2 }}>
           {message.text}
         </Alert>
       )}
 
-      <Card sx={{ mb: 3 }>
+      <Card sx={{ mb: 3 }}>
         <CardContent>
           <Typography variant="h6" gutterBottom>
             Bot Configuration
@@ -182,7 +182,7 @@ export default function OcrDocumentCaptureConfig() {
         </CardContent>
       </Card>
 
-      <Card sx={{ mb: 3 }>
+      <Card sx={{ mb: 3 }}>
         <CardContent>
           <Typography variant="h6" gutterBottom>
             Features
@@ -200,7 +200,7 @@ export default function OcrDocumentCaptureConfig() {
         </CardContent>
       </Card>
 
-      <Box sx={{ display: 'flex', gap: 2 }>
+      <Box sx={{ display: 'flex', gap: 2 }}>
         <Button
           variant="contained"
           startIcon={<SaveIcon />}

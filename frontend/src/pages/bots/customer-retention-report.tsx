@@ -64,12 +64,12 @@ export default function CustomerRetentionReport() {
   const successRate = stats ? (stats.success_count / stats.execution_count * 100) : 0;
 
   return (
-    <Box sx={{ p: 3 }>
+    <Box sx={{ p: 3 }}>
       <Typography variant="h4" gutterBottom>
         Customer Retention Bot - Report
       </Typography>
 
-      <Grid container spacing={3} sx={{ mb: 3 }>
+      <Grid container spacing={3} sx={{ mb: 3 }}>
         <Grid item xs={12} md={3}>
           <Card>
             <CardContent>

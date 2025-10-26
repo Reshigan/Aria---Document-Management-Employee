@@ -88,7 +88,7 @@ export default function ShippingLogisticsConfig() {
   };
 
   return (
-    <Box sx={{ p: 3 }>
+    <Box sx={{ p: 3 }}>
       <Typography variant="h4" gutterBottom>
         Shipping & Logistics Bot
       </Typography>
@@ -97,7 +97,7 @@ export default function ShippingLogisticsConfig() {
         Automates courier bookings, tracking, POD, and delivery management
       </Typography>
 
-      <Grid container spacing={2} sx={{ mb: 3 }>
+      <Grid container spacing={2} sx={{ mb: 3 }}>
         <Grid item>
           <Chip label="Category: operations" />
         </Grid>
@@ -110,12 +110,12 @@ export default function ShippingLogisticsConfig() {
       </Grid>
 
       {message && (
-        <Alert severity={message.type} sx={{ mb: 2 }>
+        <Alert severity={message.type} sx={{ mb: 2 }}>
           {message.text}
         </Alert>
       )}
 
-      <Card sx={{ mb: 3 }>
+      <Card sx={{ mb: 3 }}>
         <CardContent>
           <Typography variant="h6" gutterBottom>
             Bot Configuration
@@ -182,7 +182,7 @@ export default function ShippingLogisticsConfig() {
         </CardContent>
       </Card>
 
-      <Card sx={{ mb: 3 }>
+      <Card sx={{ mb: 3 }}>
         <CardContent>
           <Typography variant="h6" gutterBottom>
             Features
@@ -200,7 +200,7 @@ export default function ShippingLogisticsConfig() {
         </CardContent>
       </Card>
 
-      <Box sx={{ display: 'flex', gap: 2 }>
+      <Box sx={{ display: 'flex', gap: 2 }}>
         <Button
           variant="contained"
           startIcon={<SaveIcon />}

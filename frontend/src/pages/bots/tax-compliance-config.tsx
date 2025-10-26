@@ -88,7 +88,7 @@ export default function TaxComplianceConfig() {
   };
 
   return (
-    <Box sx={{ p: 3 }>
+    <Box sx={{ p: 3 }}>
       <Typography variant="h4" gutterBottom>
         Tax Compliance Bot
       </Typography>
@@ -97,7 +97,7 @@ export default function TaxComplianceConfig() {
         Automates SA tax compliance - VAT201, EMP201, income tax, tax submissions
       </Typography>
 
-      <Grid container spacing={2} sx={{ mb: 3 }>
+      <Grid container spacing={2} sx={{ mb: 3 }}>
         <Grid item>
           <Chip label="Category: financial" />
         </Grid>
@@ -110,12 +110,12 @@ export default function TaxComplianceConfig() {
       </Grid>
 
       {message && (
-        <Alert severity={message.type} sx={{ mb: 2 }>
+        <Alert severity={message.type} sx={{ mb: 2 }}>
           {message.text}
         </Alert>
       )}
 
-      <Card sx={{ mb: 3 }>
+      <Card sx={{ mb: 3 }}>
         <CardContent>
           <Typography variant="h6" gutterBottom>
             Bot Configuration
@@ -182,7 +182,7 @@ export default function TaxComplianceConfig() {
         </CardContent>
       </Card>
 
-      <Card sx={{ mb: 3 }>
+      <Card sx={{ mb: 3 }}>
         <CardContent>
           <Typography variant="h6" gutterBottom>
             Features
@@ -200,7 +200,7 @@ export default function TaxComplianceConfig() {
         </CardContent>
       </Card>
 
-      <Box sx={{ display: 'flex', gap: 2 }>
+      <Box sx={{ display: 'flex', gap: 2 }}>
         <Button
           variant="contained"
           startIcon={<SaveIcon />}

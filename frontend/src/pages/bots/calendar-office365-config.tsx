@@ -88,7 +88,7 @@ export default function CalendarOffice365Config() {
   };
 
   return (
-    <Box sx={{ p: 3 }>
+    <Box sx={{ p: 3 }}>
       <Typography variant="h4" gutterBottom>
         Calendar Bot (Office 365)
       </Typography>
@@ -97,7 +97,7 @@ export default function CalendarOffice365Config() {
         Automates meeting scheduling, room bookings, and calendar coordination
       </Typography>
 
-      <Grid container spacing={2} sx={{ mb: 3 }>
+      <Grid container spacing={2} sx={{ mb: 3 }}>
         <Grid item>
           <Chip label="Category: integration" />
         </Grid>
@@ -110,12 +110,12 @@ export default function CalendarOffice365Config() {
       </Grid>
 
       {message && (
-        <Alert severity={message.type} sx={{ mb: 2 }>
+        <Alert severity={message.type} sx={{ mb: 2 }}>
           {message.text}
         </Alert>
       )}
 
-      <Card sx={{ mb: 3 }>
+      <Card sx={{ mb: 3 }}>
         <CardContent>
           <Typography variant="h6" gutterBottom>
             Bot Configuration
@@ -182,7 +182,7 @@ export default function CalendarOffice365Config() {
         </CardContent>
       </Card>
 
-      <Card sx={{ mb: 3 }>
+      <Card sx={{ mb: 3 }}>
         <CardContent>
           <Typography variant="h6" gutterBottom>
             Features
@@ -200,7 +200,7 @@ export default function CalendarOffice365Config() {
         </CardContent>
       </Card>
 
-      <Box sx={{ display: 'flex', gap: 2 }>
+      <Box sx={{ display: 'flex', gap: 2 }}>
         <Button
           variant="contained"
           startIcon={<SaveIcon />}
