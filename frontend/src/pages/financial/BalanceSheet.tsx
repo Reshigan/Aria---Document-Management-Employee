@@ -1,0 +1,91 @@
+import React from 'react';
+import { Scale } from 'lucide-react';
+
+export default function BalanceSheetPage() {
+  const assets = {
+    current: { cash: 250000, debtors: 180000, inventory: 95000 },
+    fixed: { property: 800000, equipment: 150000, vehicles: 200000 }
+  };
+
+  const liabilities = {
+    current: { creditors: 120000, shortTerm: 50000 },
+    longTerm: { loans: 400000, mortgage: 500000 }
+  };
+
+  const totalAssets = Object.values(assets.current).reduce((a, b) => a + b, 0) + Object.values(assets.fixed).reduce((a, b) => a + b, 0);
+  const totalLiabilities = Object.values(liabilities.current).reduce((a, b) => a + b, 0) + Object.values(liabilities.longTerm).reduce((a, b) => a + b, 0);
+  const equity = totalAssets - totalLiabilities;
+
+  return (
+    <div className="container mx-auto p-6 max-w-5xl">
+      <h1 className="text-3xl font-bold mb-6 flex items-center gap-3">
+        <Scale className="h-8 w-8" />
+        Balance Sheet
+      </h1>
+
+      <div className="grid grid-cols-2 gap-6">
+        <div className="bg-white rounded-lg shadow p-6">
+          <h3 className="text-xl font-bold text-gray-900 mb-4">Assets</h3>
+          <div className="space-y-4">
+            <div>
+              <h4 className="font-medium text-gray-700 mb-2">Current Assets</h4>
+              {Object.entries(assets.current).map(([key, value]) => (
+                <div key={key} className="flex justify-between py-1">
+                  <span className="capitalize text-sm">{key}</span>
+                  <span className="text-sm">R {value.toLocaleString()}</span>
+                </div>
+              ))}
+            </div>
+            <div>
+              <h4 className="font-medium text-gray-700 mb-2">Fixed Assets</h4>
+              {Object.entries(assets.fixed).map(([key, value]) => (
+                <div key={key} className="flex justify-between py-1">
+                  <span className="capitalize text-sm">{key}</span>
+                  <span className="text-sm">R {value.toLocaleString()}</span>
+                </div>
+              ))}
+            </div>
+            <div className="pt-3 border-t font-bold flex justify-between">
+              <span>Total Assets</span>
+              <span className="text-blue-600">R {totalAssets.toLocaleString()}</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-lg shadow p-6">
+          <h3 className="text-xl font-bold text-gray-900 mb-4">Liabilities & Equity</h3>
+          <div className="space-y-4">
+            <div>
+              <h4 className="font-medium text-gray-700 mb-2">Current Liabilities</h4>
+              {Object.entries(liabilities.current).map(([key, value]) => (
+                <div key={key} className="flex justify-between py-1">
+                  <span className="capitalize text-sm">{key}</span>
+                  <span className="text-sm">R {value.toLocaleString()}</span>
+                </div>
+              ))}
+            </div>
+            <div>
+              <h4 className="font-medium text-gray-700 mb-2">Long-term Liabilities</h4>
+              {Object.entries(liabilities.longTerm).map(([key, value]) => (
+                <div key={key} className="flex justify-between py-1">
+                  <span className="capitalize text-sm">{key}</span>
+                  <span className="text-sm">R {value.toLocaleString()}</span>
+                </div>
+              ))}
+            </div>
+            <div className="pt-3 border-t">
+              <div className="flex justify-between py-1 font-medium">
+                <span>Total Liabilities</span>
+                <span>R {totalLiabilities.toLocaleString()}</span>
+              </div>
+              <div className="flex justify-between py-1 font-bold text-lg">
+                <span>Equity</span>
+                <span className="text-green-600">R {equity.toLocaleString()}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
