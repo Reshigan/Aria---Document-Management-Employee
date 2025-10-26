@@ -1,0 +1,3831 @@
+{
+  "company": {
+    "name": "TechForge Manufacturing (Pty) Ltd",
+    "registration_number": "2020/123456/07",
+    "vat_number": "4123456789",
+    "tax_number": "9876543210",
+    "paye_number": "7123456789",
+    "uif_number": "U123456789",
+    "sdl_number": "L123456789",
+    "bbbee_level": 4,
+    "bbbee_score": 85.2,
+    "bbbee_certificate_number": "BBBEE-2025-001234",
+    "bbbee_expiry": "2026-10-31",
+    "physical_address": {
+      "street": "45 Industrial Drive",
+      "suburb": "Midrand",
+      "city": "Johannesburg",
+      "province": "Gauteng",
+      "postal_code": "1685",
+      "country": "South Africa"
+    },
+    "contact": {
+      "phone": "+27 11 234 5678",
+      "email": "info@techforge.co.za",
+      "website": "https://www.techforge.co.za"
+    },
+    "financial": {
+      "financial_year_end": "02-28",
+      "vat_rate": 15.0,
+      "currency": "ZAR"
+    },
+    "banking": {
+      "bank_name": "First National Bank",
+      "account_number": "62123456789",
+      "branch_code": "250655",
+      "account_type": "Business Current Account",
+      "swift_code": "FIRNZAJJ"
+    },
+    "branding": {
+      "primary_color": "#1e40af",
+      "secondary_color": "#10b981"
+    }
+  },
+  "users": [
+    {
+      "email": "admin@techforge.co.za",
+      "password": "Demo@2025",
+      "first_name": "Sarah",
+      "last_name": "Naidoo",
+      "role": "admin",
+      "status": "active",
+      "phone": "+27 82 123 4567"
+    },
+    {
+      "email": "finance@techforge.co.za",
+      "password": "Demo@2025",
+      "first_name": "Thabo",
+      "last_name": "Mokoena",
+      "role": "finance",
+      "status": "active",
+      "phone": "+27 83 234 5678"
+    },
+    {
+      "email": "hr@techforge.co.za",
+      "password": "Demo@2025",
+      "first_name": "Zanele",
+      "last_name": "Dlamini",
+      "role": "hr",
+      "status": "active",
+      "phone": "+27 84 345 6789"
+    },
+    {
+      "email": "manager@techforge.co.za",
+      "password": "Demo@2025",
+      "first_name": "Johan",
+      "last_name": "van der Merwe",
+      "role": "manager",
+      "status": "active",
+      "phone": "+27 85 456 7890"
+    },
+    {
+      "email": "employee@techforge.co.za",
+      "password": "Demo@2025",
+      "first_name": "Lindiwe",
+      "last_name": "Mkhize",
+      "role": "employee",
+      "status": "active",
+      "phone": "+27 86 567 8901"
+    }
+  ],
+  "customers": [
+    {
+      "name": "ABC Manufacturing Ltd",
+      "vat": "4111111111",
+      "bbbee_level": 3,
+      "credit_limit": 500000,
+      "payment_terms": 30
+    },
+    {
+      "name": "XYZ Distributors (Pty) Ltd",
+      "vat": "4222222222",
+      "bbbee_level": 4,
+      "credit_limit": 300000,
+      "payment_terms": 30
+    },
+    {
+      "name": "Superior Tools SA",
+      "vat": "4333333333",
+      "bbbee_level": 2,
+      "credit_limit": 750000,
+      "payment_terms": 45
+    },
+    {
+      "name": "MegaBuild Construction",
+      "vat": "4444444444",
+      "bbbee_level": 5,
+      "credit_limit": 200000,
+      "payment_terms": 60
+    },
+    {
+      "name": "Industrial Supplies Co",
+      "vat": "4555555555",
+      "bbbee_level": 4,
+      "credit_limit": 400000,
+      "payment_terms": 30
+    },
+    {
+      "name": "TechZone Electronics",
+      "vat": "4666666666",
+      "bbbee_level": 3,
+      "credit_limit": 600000,
+      "payment_terms": 30
+    },
+    {
+      "name": "ProBuild Hardware",
+      "vat": "4777777777",
+      "bbbee_level": 6,
+      "credit_limit": 150000,
+      "payment_terms": 45
+    },
+    {
+      "name": "MetalWorks SA (Pty) Ltd",
+      "vat": "4888888888",
+      "bbbee_level": 2,
+      "credit_limit": 800000,
+      "payment_terms": 30
+    },
+    {
+      "name": "Cape Engineering",
+      "vat": "4999999999",
+      "bbbee_level": 4,
+      "credit_limit": 350000,
+      "payment_terms": 30
+    },
+    {
+      "name": "Durban Industrial Group",
+      "vat": "4101010101",
+      "bbbee_level": 3,
+      "credit_limit": 500000,
+      "payment_terms": 45
+    },
+    {
+      "name": "PE Manufacturing Hub",
+      "vat": "4121212121",
+      "bbbee_level": 5,
+      "credit_limit": 250000,
+      "payment_terms": 30
+    },
+    {
+      "name": "Johannesburg Tech",
+      "vat": "4131313131",
+      "bbbee_level": 4,
+      "credit_limit": 400000,
+      "payment_terms": 30
+    },
+    {
+      "name": "Pretoria Components",
+      "vat": "4141414141",
+      "bbbee_level": 3,
+      "credit_limit": 450000,
+      "payment_terms": 45
+    },
+    {
+      "name": "Bloemfontein Supplies",
+      "vat": "4151515151",
+      "bbbee_level": 6,
+      "credit_limit": 180000,
+      "payment_terms": 30
+    },
+    {
+      "name": "Nelspruit Traders",
+      "vat": "4161616161",
+      "bbbee_level": 4,
+      "credit_limit": 300000,
+      "payment_terms": 60
+    },
+    {
+      "name": "Polokwane Industrial",
+      "vat": "4171717171",
+      "bbbee_level": 5,
+      "credit_limit": 220000,
+      "payment_terms": 30
+    },
+    {
+      "name": "Kimberley Mining Supplies",
+      "vat": "4181818181",
+      "bbbee_level": 3,
+      "credit_limit": 550000,
+      "payment_terms": 45
+    },
+    {
+      "name": "East London Machinery",
+      "vat": "4191919191",
+      "bbbee_level": 4,
+      "credit_limit": 380000,
+      "payment_terms": 30
+    },
+    {
+      "name": "George Coastal Builders",
+      "vat": "4202020202",
+      "bbbee_level": 5,
+      "credit_limit": 270000,
+      "payment_terms": 45
+    },
+    {
+      "name": "Rustenburg Equipment",
+      "vat": "4212121212",
+      "bbbee_level": 4,
+      "credit_limit": 320000,
+      "payment_terms": 30
+    }
+  ],
+  "suppliers": [
+    {
+      "name": "Steel Suppliers SA",
+      "vat": "4311111111",
+      "bbbee_level": 2,
+      "payment_terms": 30
+    },
+    {
+      "name": "Aluminium World",
+      "vat": "4322222222",
+      "bbbee_level": 3,
+      "payment_terms": 45
+    },
+    {
+      "name": "Plastic Components Ltd",
+      "vat": "4333333333",
+      "bbbee_level": 4,
+      "payment_terms": 30
+    },
+    {
+      "name": "Electronics Wholesalers",
+      "vat": "4344444444",
+      "bbbee_level": 3,
+      "payment_terms": 60
+    },
+    {
+      "name": "Paint & Coatings Co",
+      "vat": "4355555555",
+      "bbbee_level": 5,
+      "payment_terms": 30
+    },
+    {
+      "name": "Fasteners & Fixings",
+      "vat": "4366666666",
+      "bbbee_level": 4,
+      "payment_terms": 30
+    },
+    {
+      "name": "Rubber Seals SA",
+      "vat": "4377777777",
+      "bbbee_level": 3,
+      "payment_terms": 45
+    },
+    {
+      "name": "Industrial Chemicals",
+      "vat": "4388888888",
+      "bbbee_level": 2,
+      "payment_terms": 30
+    },
+    {
+      "name": "Packaging Solutions",
+      "vat": "4399999999",
+      "bbbee_level": 4,
+      "payment_terms": 30
+    },
+    {
+      "name": "Machine Tools Imports",
+      "vat": "4301010101",
+      "bbbee_level": 6,
+      "payment_terms": 60
+    },
+    {
+      "name": "Safety Equipment SA",
+      "vat": "4312121212",
+      "bbbee_level": 3,
+      "payment_terms": 30
+    },
+    {
+      "name": "Office Supplies Co",
+      "vat": "4323232323",
+      "bbbee_level": 4,
+      "payment_terms": 30
+    },
+    {
+      "name": "IT Hardware Distributors",
+      "vat": "4334343434",
+      "bbbee_level": 3,
+      "payment_terms": 45
+    },
+    {
+      "name": "Logistics & Transport",
+      "vat": "4345454545",
+      "bbbee_level": 5,
+      "payment_terms": 30
+    },
+    {
+      "name": "Cleaning Services Ltd",
+      "vat": "4356565656",
+      "bbbee_level": 1,
+      "payment_terms": 30
+    }
+  ],
+  "products": [
+    {
+      "code": "PROD-001",
+      "name": "Steel Bracket Type A",
+      "category": "Hardware",
+      "unit_price": 45.0,
+      "cost_price": 28.0,
+      "unit": "Each"
+    },
+    {
+      "code": "PROD-002",
+      "name": "Steel Bracket Type B",
+      "category": "Hardware",
+      "unit_price": 65.0,
+      "cost_price": 42.0,
+      "unit": "Each"
+    },
+    {
+      "code": "PROD-003",
+      "name": "Aluminium Plate 10x10",
+      "category": "Raw Material",
+      "unit_price": 120.0,
+      "cost_price": 75.0,
+      "unit": "Each"
+    },
+    {
+      "code": "PROD-004",
+      "name": "Aluminium Plate 20x20",
+      "category": "Raw Material",
+      "unit_price": 230.0,
+      "cost_price": 150.0,
+      "unit": "Each"
+    },
+    {
+      "code": "PROD-005",
+      "name": "Plastic Housing Large",
+      "category": "Components",
+      "unit_price": 85.0,
+      "cost_price": 52.0,
+      "unit": "Each"
+    },
+    {
+      "code": "PROD-017",
+      "name": "Assembly Unit Type 1",
+      "category": "Finished Goods",
+      "unit_price": 850.0,
+      "cost_price": 520.0,
+      "unit": "Each"
+    },
+    {
+      "code": "PROD-018",
+      "name": "Assembly Unit Type 2",
+      "category": "Finished Goods",
+      "unit_price": 1200.0,
+      "cost_price": 750.0,
+      "unit": "Each"
+    },
+    {
+      "code": "PROD-019",
+      "name": "Assembly Unit Type 3",
+      "category": "Finished Goods",
+      "unit_price": 1650.0,
+      "cost_price": 1020.0,
+      "unit": "Each"
+    },
+    {
+      "code": "PROD-030",
+      "name": "Complete System Package",
+      "category": "Finished Goods",
+      "unit_price": 4500.0,
+      "cost_price": 2800.0,
+      "unit": "Each"
+    }
+  ],
+  "invoices": [
+    {
+      "invoice_number": "INV-2025-00001",
+      "date": "2025-10-26",
+      "due_date": "2025-11-25",
+      "customer_name": "TechZone Electronics",
+      "customer_vat": "4666666666",
+      "line_items": [
+        {
+          "product_code": "PROD-004",
+          "description": "Aluminium Plate 20x20",
+          "quantity": 15,
+          "unit_price": 230.0,
+          "total": 3450.0
+        },
+        {
+          "product_code": "PROD-030",
+          "description": "Complete System Package",
+          "quantity": 10,
+          "unit_price": 4500.0,
+          "total": 45000.0
+        },
+        {
+          "product_code": "PROD-017",
+          "description": "Assembly Unit Type 1",
+          "quantity": 3,
+          "unit_price": 850.0,
+          "total": 2550.0
+        },
+        {
+          "product_code": "PROD-002",
+          "description": "Steel Bracket Type B",
+          "quantity": 14,
+          "unit_price": 65.0,
+          "total": 910.0
+        },
+        {
+          "product_code": "PROD-002",
+          "description": "Steel Bracket Type B",
+          "quantity": 8,
+          "unit_price": 65.0,
+          "total": 520.0
+        }
+      ],
+      "subtotal": 52430.0,
+      "vat": 7864.5,
+      "total": 60294.5,
+      "status": "paid",
+      "payment_date": "2025-11-16"
+    },
+    {
+      "invoice_number": "INV-2025-00002",
+      "date": "2025-08-21",
+      "due_date": "2025-09-20",
+      "customer_name": "Industrial Supplies Co",
+      "customer_vat": "4555555555",
+      "line_items": [
+        {
+          "product_code": "PROD-003",
+          "description": "Aluminium Plate 10x10",
+          "quantity": 13,
+          "unit_price": 120.0,
+          "total": 1560.0
+        },
+        {
+          "product_code": "PROD-001",
+          "description": "Steel Bracket Type A",
+          "quantity": 1,
+          "unit_price": 45.0,
+          "total": 45.0
+        },
+        {
+          "product_code": "PROD-019",
+          "description": "Assembly Unit Type 3",
+          "quantity": 2,
+          "unit_price": 1650.0,
+          "total": 3300.0
+        }
+      ],
+      "subtotal": 4905.0,
+      "vat": 735.75,
+      "total": 5640.75,
+      "status": "paid",
+      "payment_date": null
+    },
+    {
+      "invoice_number": "INV-2025-00003",
+      "date": "2025-05-07",
+      "due_date": "2025-06-21",
+      "customer_name": "Durban Industrial Group",
+      "customer_vat": "4101010101",
+      "line_items": [
+        {
+          "product_code": "PROD-017",
+          "description": "Assembly Unit Type 1",
+          "quantity": 8,
+          "unit_price": 850.0,
+          "total": 6800.0
+        },
+        {
+          "product_code": "PROD-018",
+          "description": "Assembly Unit Type 2",
+          "quantity": 3,
+          "unit_price": 1200.0,
+          "total": 3600.0
+        }
+      ],
+      "subtotal": 10400.0,
+      "vat": 1560.0,
+      "total": 11960.0,
+      "status": "paid",
+      "payment_date": "2025-05-09"
+    },
+    {
+      "invoice_number": "INV-2025-00004",
+      "date": "2025-10-02",
+      "due_date": "2025-11-01",
+      "customer_name": "Industrial Supplies Co",
+      "customer_vat": "4555555555",
+      "line_items": [
+        {
+          "product_code": "PROD-001",
+          "description": "Steel Bracket Type A",
+          "quantity": 15,
+          "unit_price": 45.0,
+          "total": 675.0
+        }
+      ],
+      "subtotal": 675.0,
+      "vat": 101.25,
+      "total": 776.25,
+      "status": "paid",
+      "payment_date": null
+    },
+    {
+      "invoice_number": "INV-2025-00005",
+      "date": "2025-05-30",
+      "due_date": "2025-06-29",
+      "customer_name": "Cape Engineering",
+      "customer_vat": "4999999999",
+      "line_items": [
+        {
+          "product_code": "PROD-001",
+          "description": "Steel Bracket Type A",
+          "quantity": 18,
+          "unit_price": 45.0,
+          "total": 810.0
+        }
+      ],
+      "subtotal": 810.0,
+      "vat": 121.5,
+      "total": 931.5,
+      "status": "paid",
+      "payment_date": "2025-06-08"
+    },
+    {
+      "invoice_number": "INV-2025-00006",
+      "date": "2025-06-05",
+      "due_date": "2025-07-20",
+      "customer_name": "George Coastal Builders",
+      "customer_vat": "4202020202",
+      "line_items": [
+        {
+          "product_code": "PROD-003",
+          "description": "Aluminium Plate 10x10",
+          "quantity": 14,
+          "unit_price": 120.0,
+          "total": 1680.0
+        },
+        {
+          "product_code": "PROD-017",
+          "description": "Assembly Unit Type 1",
+          "quantity": 3,
+          "unit_price": 850.0,
+          "total": 2550.0
+        },
+        {
+          "product_code": "PROD-018",
+          "description": "Assembly Unit Type 2",
+          "quantity": 3,
+          "unit_price": 1200.0,
+          "total": 3600.0
+        },
+        {
+          "product_code": "PROD-002",
+          "description": "Steel Bracket Type B",
+          "quantity": 11,
+          "unit_price": 65.0,
+          "total": 715.0
+        }
+      ],
+      "subtotal": 8545.0,
+      "vat": 1281.75,
+      "total": 9826.75,
+      "status": "overdue",
+      "payment_date": "2025-07-17"
+    },
+    {
+      "invoice_number": "INV-2025-00007",
+      "date": "2025-08-10",
+      "due_date": "2025-09-09",
+      "customer_name": "Johannesburg Tech",
+      "customer_vat": "4131313131",
+      "line_items": [
+        {
+          "product_code": "PROD-004",
+          "description": "Aluminium Plate 20x20",
+          "quantity": 11,
+          "unit_price": 230.0,
+          "total": 2530.0
+        },
+        {
+          "product_code": "PROD-019",
+          "description": "Assembly Unit Type 3",
+          "quantity": 14,
+          "unit_price": 1650.0,
+          "total": 23100.0
+        },
+        {
+          "product_code": "PROD-003",
+          "description": "Aluminium Plate 10x10",
+          "quantity": 4,
+          "unit_price": 120.0,
+          "total": 480.0
+        },
+        {
+          "product_code": "PROD-018",
+          "description": "Assembly Unit Type 2",
+          "quantity": 7,
+          "unit_price": 1200.0,
+          "total": 8400.0
+        }
+      ],
+      "subtotal": 34510.0,
+      "vat": 5176.5,
+      "total": 39686.5,
+      "status": "pending",
+      "payment_date": "2025-09-09"
+    },
+    {
+      "invoice_number": "INV-2025-00008",
+      "date": "2025-09-14",
+      "due_date": "2025-10-14",
+      "customer_name": "Polokwane Industrial",
+      "customer_vat": "4171717171",
+      "line_items": [
+        {
+          "product_code": "PROD-004",
+          "description": "Aluminium Plate 20x20",
+          "quantity": 18,
+          "unit_price": 230.0,
+          "total": 4140.0
+        },
+        {
+          "product_code": "PROD-004",
+          "description": "Aluminium Plate 20x20",
+          "quantity": 15,
+          "unit_price": 230.0,
+          "total": 3450.0
+        }
+      ],
+      "subtotal": 7590.0,
+      "vat": 1138.5,
+      "total": 8728.5,
+      "status": "paid",
+      "payment_date": "2025-10-05"
+    },
+    {
+      "invoice_number": "INV-2025-00009",
+      "date": "2025-10-05",
+      "due_date": "2025-11-19",
+      "customer_name": "Pretoria Components",
+      "customer_vat": "4141414141",
+      "line_items": [
+        {
+          "product_code": "PROD-030",
+          "description": "Complete System Package",
+          "quantity": 10,
+          "unit_price": 4500.0,
+          "total": 45000.0
+        },
+        {
+          "product_code": "PROD-005",
+          "description": "Plastic Housing Large",
+          "quantity": 20,
+          "unit_price": 85.0,
+          "total": 1700.0
+        }
+      ],
+      "subtotal": 46700.0,
+      "vat": 7005.0,
+      "total": 53705.0,
+      "status": "paid",
+      "payment_date": "2025-10-09"
+    },
+    {
+      "invoice_number": "INV-2025-00010",
+      "date": "2025-07-05",
+      "due_date": "2025-08-04",
+      "customer_name": "Rustenburg Equipment",
+      "customer_vat": "4212121212",
+      "line_items": [
+        {
+          "product_code": "PROD-018",
+          "description": "Assembly Unit Type 2",
+          "quantity": 10,
+          "unit_price": 1200.0,
+          "total": 12000.0
+        }
+      ],
+      "subtotal": 12000.0,
+      "vat": 1800.0,
+      "total": 13800.0,
+      "status": "pending",
+      "payment_date": "2025-07-22"
+    },
+    {
+      "invoice_number": "INV-2025-00011",
+      "date": "2025-08-14",
+      "due_date": "2025-09-13",
+      "customer_name": "Johannesburg Tech",
+      "customer_vat": "4131313131",
+      "line_items": [
+        {
+          "product_code": "PROD-005",
+          "description": "Plastic Housing Large",
+          "quantity": 6,
+          "unit_price": 85.0,
+          "total": 510.0
+        },
+        {
+          "product_code": "PROD-001",
+          "description": "Steel Bracket Type A",
+          "quantity": 16,
+          "unit_price": 45.0,
+          "total": 720.0
+        },
+        {
+          "product_code": "PROD-019",
+          "description": "Assembly Unit Type 3",
+          "quantity": 14,
+          "unit_price": 1650.0,
+          "total": 23100.0
+        },
+        {
+          "product_code": "PROD-002",
+          "description": "Steel Bracket Type B",
+          "quantity": 7,
+          "unit_price": 65.0,
+          "total": 455.0
+        }
+      ],
+      "subtotal": 24785.0,
+      "vat": 3717.75,
+      "total": 28502.75,
+      "status": "paid",
+      "payment_date": null
+    },
+    {
+      "invoice_number": "INV-2025-00012",
+      "date": "2025-10-03",
+      "due_date": "2025-11-02",
+      "customer_name": "Cape Engineering",
+      "customer_vat": "4999999999",
+      "line_items": [
+        {
+          "product_code": "PROD-002",
+          "description": "Steel Bracket Type B",
+          "quantity": 19,
+          "unit_price": 65.0,
+          "total": 1235.0
+        },
+        {
+          "product_code": "PROD-017",
+          "description": "Assembly Unit Type 1",
+          "quantity": 16,
+          "unit_price": 850.0,
+          "total": 13600.0
+        }
+      ],
+      "subtotal": 14835.0,
+      "vat": 2225.25,
+      "total": 17060.25,
+      "status": "pending",
+      "payment_date": null
+    },
+    {
+      "invoice_number": "INV-2025-00013",
+      "date": "2025-05-02",
+      "due_date": "2025-06-01",
+      "customer_name": "Polokwane Industrial",
+      "customer_vat": "4171717171",
+      "line_items": [
+        {
+          "product_code": "PROD-018",
+          "description": "Assembly Unit Type 2",
+          "quantity": 7,
+          "unit_price": 1200.0,
+          "total": 8400.0
+        },
+        {
+          "product_code": "PROD-005",
+          "description": "Plastic Housing Large",
+          "quantity": 9,
+          "unit_price": 85.0,
+          "total": 765.0
+        },
+        {
+          "product_code": "PROD-001",
+          "description": "Steel Bracket Type A",
+          "quantity": 4,
+          "unit_price": 45.0,
+          "total": 180.0
+        },
+        {
+          "product_code": "PROD-004",
+          "description": "Aluminium Plate 20x20",
+          "quantity": 1,
+          "unit_price": 230.0,
+          "total": 230.0
+        }
+      ],
+      "subtotal": 9575.0,
+      "vat": 1436.25,
+      "total": 11011.25,
+      "status": "overdue",
+      "payment_date": null
+    },
+    {
+      "invoice_number": "INV-2025-00014",
+      "date": "2025-08-28",
+      "due_date": "2025-10-12",
+      "customer_name": "George Coastal Builders",
+      "customer_vat": "4202020202",
+      "line_items": [
+        {
+          "product_code": "PROD-017",
+          "description": "Assembly Unit Type 1",
+          "quantity": 8,
+          "unit_price": 850.0,
+          "total": 6800.0
+        },
+        {
+          "product_code": "PROD-030",
+          "description": "Complete System Package",
+          "quantity": 3,
+          "unit_price": 4500.0,
+          "total": 13500.0
+        },
+        {
+          "product_code": "PROD-017",
+          "description": "Assembly Unit Type 1",
+          "quantity": 8,
+          "unit_price": 850.0,
+          "total": 6800.0
+        },
+        {
+          "product_code": "PROD-005",
+          "description": "Plastic Housing Large",
+          "quantity": 1,
+          "unit_price": 85.0,
+          "total": 85.0
+        }
+      ],
+      "subtotal": 27185.0,
+      "vat": 4077.75,
+      "total": 31262.75,
+      "status": "paid",
+      "payment_date": "2025-10-03"
+    },
+    {
+      "invoice_number": "INV-2025-00015",
+      "date": "2025-07-26",
+      "due_date": "2025-09-09",
+      "customer_name": "Durban Industrial Group",
+      "customer_vat": "4101010101",
+      "line_items": [
+        {
+          "product_code": "PROD-003",
+          "description": "Aluminium Plate 10x10",
+          "quantity": 12,
+          "unit_price": 120.0,
+          "total": 1440.0
+        },
+        {
+          "product_code": "PROD-004",
+          "description": "Aluminium Plate 20x20",
+          "quantity": 17,
+          "unit_price": 230.0,
+          "total": 3910.0
+        },
+        {
+          "product_code": "PROD-019",
+          "description": "Assembly Unit Type 3",
+          "quantity": 10,
+          "unit_price": 1650.0,
+          "total": 16500.0
+        },
+        {
+          "product_code": "PROD-018",
+          "description": "Assembly Unit Type 2",
+          "quantity": 17,
+          "unit_price": 1200.0,
+          "total": 20400.0
+        },
+        {
+          "product_code": "PROD-005",
+          "description": "Plastic Housing Large",
+          "quantity": 9,
+          "unit_price": 85.0,
+          "total": 765.0
+        }
+      ],
+      "subtotal": 43015.0,
+      "vat": 6452.25,
+      "total": 49467.25,
+      "status": "overdue",
+      "payment_date": "2025-08-04"
+    },
+    {
+      "invoice_number": "INV-2025-00016",
+      "date": "2025-06-21",
+      "due_date": "2025-07-21",
+      "customer_name": "TechZone Electronics",
+      "customer_vat": "4666666666",
+      "line_items": [
+        {
+          "product_code": "PROD-003",
+          "description": "Aluminium Plate 10x10",
+          "quantity": 19,
+          "unit_price": 120.0,
+          "total": 2280.0
+        },
+        {
+          "product_code": "PROD-019",
+          "description": "Assembly Unit Type 3",
+          "quantity": 6,
+          "unit_price": 1650.0,
+          "total": 9900.0
+        },
+        {
+          "product_code": "PROD-004",
+          "description": "Aluminium Plate 20x20",
+          "quantity": 13,
+          "unit_price": 230.0,
+          "total": 2990.0
+        }
+      ],
+      "subtotal": 15170.0,
+      "vat": 2275.5,
+      "total": 17445.5,
+      "status": "paid",
+      "payment_date": null
+    },
+    {
+      "invoice_number": "INV-2025-00017",
+      "date": "2025-05-07",
+      "due_date": "2025-06-21",
+      "customer_name": "ProBuild Hardware",
+      "customer_vat": "4777777777",
+      "line_items": [
+        {
+          "product_code": "PROD-018",
+          "description": "Assembly Unit Type 2",
+          "quantity": 15,
+          "unit_price": 1200.0,
+          "total": 18000.0
+        },
+        {
+          "product_code": "PROD-002",
+          "description": "Steel Bracket Type B",
+          "quantity": 4,
+          "unit_price": 65.0,
+          "total": 260.0
+        },
+        {
+          "product_code": "PROD-001",
+          "description": "Steel Bracket Type A",
+          "quantity": 17,
+          "unit_price": 45.0,
+          "total": 765.0
+        }
+      ],
+      "subtotal": 19025.0,
+      "vat": 2853.75,
+      "total": 21878.75,
+      "status": "pending",
+      "payment_date": "2025-05-08"
+    },
+    {
+      "invoice_number": "INV-2025-00018",
+      "date": "2025-08-12",
+      "due_date": "2025-09-11",
+      "customer_name": "MetalWorks SA (Pty) Ltd",
+      "customer_vat": "4888888888",
+      "line_items": [
+        {
+          "product_code": "PROD-019",
+          "description": "Assembly Unit Type 3",
+          "quantity": 3,
+          "unit_price": 1650.0,
+          "total": 4950.0
+        },
+        {
+          "product_code": "PROD-001",
+          "description": "Steel Bracket Type A",
+          "quantity": 20,
+          "unit_price": 45.0,
+          "total": 900.0
+        },
+        {
+          "product_code": "PROD-018",
+          "description": "Assembly Unit Type 2",
+          "quantity": 6,
+          "unit_price": 1200.0,
+          "total": 7200.0
+        }
+      ],
+      "subtotal": 13050.0,
+      "vat": 1957.5,
+      "total": 15007.5,
+      "status": "paid",
+      "payment_date": "2025-08-28"
+    },
+    {
+      "invoice_number": "INV-2025-00019",
+      "date": "2025-05-04",
+      "due_date": "2025-06-03",
+      "customer_name": "TechZone Electronics",
+      "customer_vat": "4666666666",
+      "line_items": [
+        {
+          "product_code": "PROD-017",
+          "description": "Assembly Unit Type 1",
+          "quantity": 13,
+          "unit_price": 850.0,
+          "total": 11050.0
+        },
+        {
+          "product_code": "PROD-001",
+          "description": "Steel Bracket Type A",
+          "quantity": 17,
+          "unit_price": 45.0,
+          "total": 765.0
+        }
+      ],
+      "subtotal": 11815.0,
+      "vat": 1772.25,
+      "total": 13587.25,
+      "status": "pending",
+      "payment_date": "2025-05-06"
+    },
+    {
+      "invoice_number": "INV-2025-00020",
+      "date": "2025-09-23",
+      "due_date": "2025-10-23",
+      "customer_name": "ABC Manufacturing Ltd",
+      "customer_vat": "4111111111",
+      "line_items": [
+        {
+          "product_code": "PROD-003",
+          "description": "Aluminium Plate 10x10",
+          "quantity": 6,
+          "unit_price": 120.0,
+          "total": 720.0
+        },
+        {
+          "product_code": "PROD-019",
+          "description": "Assembly Unit Type 3",
+          "quantity": 15,
+          "unit_price": 1650.0,
+          "total": 24750.0
+        },
+        {
+          "product_code": "PROD-003",
+          "description": "Aluminium Plate 10x10",
+          "quantity": 1,
+          "unit_price": 120.0,
+          "total": 120.0
+        },
+        {
+          "product_code": "PROD-019",
+          "description": "Assembly Unit Type 3",
+          "quantity": 1,
+          "unit_price": 1650.0,
+          "total": 1650.0
+        }
+      ],
+      "subtotal": 27240.0,
+      "vat": 4086.0,
+      "total": 31326.0,
+      "status": "paid",
+      "payment_date": "2025-10-07"
+    },
+    {
+      "invoice_number": "INV-2025-00021",
+      "date": "2025-09-06",
+      "due_date": "2025-10-06",
+      "customer_name": "Polokwane Industrial",
+      "customer_vat": "4171717171",
+      "line_items": [
+        {
+          "product_code": "PROD-001",
+          "description": "Steel Bracket Type A",
+          "quantity": 9,
+          "unit_price": 45.0,
+          "total": 405.0
+        }
+      ],
+      "subtotal": 405.0,
+      "vat": 60.75,
+      "total": 465.75,
+      "status": "paid",
+      "payment_date": "2025-09-25"
+    },
+    {
+      "invoice_number": "INV-2025-00022",
+      "date": "2025-05-08",
+      "due_date": "2025-06-07",
+      "customer_name": "XYZ Distributors (Pty) Ltd",
+      "customer_vat": "4222222222",
+      "line_items": [
+        {
+          "product_code": "PROD-002",
+          "description": "Steel Bracket Type B",
+          "quantity": 9,
+          "unit_price": 65.0,
+          "total": 585.0
+        },
+        {
+          "product_code": "PROD-002",
+          "description": "Steel Bracket Type B",
+          "quantity": 2,
+          "unit_price": 65.0,
+          "total": 130.0
+        }
+      ],
+      "subtotal": 715.0,
+      "vat": 107.25,
+      "total": 822.25,
+      "status": "paid",
+      "payment_date": null
+    },
+    {
+      "invoice_number": "INV-2025-00023",
+      "date": "2025-08-30",
+      "due_date": "2025-10-14",
+      "customer_name": "George Coastal Builders",
+      "customer_vat": "4202020202",
+      "line_items": [
+        {
+          "product_code": "PROD-001",
+          "description": "Steel Bracket Type A",
+          "quantity": 10,
+          "unit_price": 45.0,
+          "total": 450.0
+        },
+        {
+          "product_code": "PROD-001",
+          "description": "Steel Bracket Type A",
+          "quantity": 13,
+          "unit_price": 45.0,
+          "total": 585.0
+        }
+      ],
+      "subtotal": 1035.0,
+      "vat": 155.25,
+      "total": 1190.25,
+      "status": "overdue",
+      "payment_date": null
+    },
+    {
+      "invoice_number": "INV-2025-00024",
+      "date": "2025-05-14",
+      "due_date": "2025-06-13",
+      "customer_name": "MetalWorks SA (Pty) Ltd",
+      "customer_vat": "4888888888",
+      "line_items": [
+        {
+          "product_code": "PROD-002",
+          "description": "Steel Bracket Type B",
+          "quantity": 17,
+          "unit_price": 65.0,
+          "total": 1105.0
+        },
+        {
+          "product_code": "PROD-017",
+          "description": "Assembly Unit Type 1",
+          "quantity": 1,
+          "unit_price": 850.0,
+          "total": 850.0
+        },
+        {
+          "product_code": "PROD-018",
+          "description": "Assembly Unit Type 2",
+          "quantity": 8,
+          "unit_price": 1200.0,
+          "total": 9600.0
+        },
+        {
+          "product_code": "PROD-002",
+          "description": "Steel Bracket Type B",
+          "quantity": 8,
+          "unit_price": 65.0,
+          "total": 520.0
+        },
+        {
+          "product_code": "PROD-004",
+          "description": "Aluminium Plate 20x20",
+          "quantity": 4,
+          "unit_price": 230.0,
+          "total": 920.0
+        }
+      ],
+      "subtotal": 12995.0,
+      "vat": 1949.25,
+      "total": 14944.25,
+      "status": "pending",
+      "payment_date": "2025-05-27"
+    },
+    {
+      "invoice_number": "INV-2025-00025",
+      "date": "2025-06-18",
+      "due_date": "2025-07-18",
+      "customer_name": "Bloemfontein Supplies",
+      "customer_vat": "4151515151",
+      "line_items": [
+        {
+          "product_code": "PROD-005",
+          "description": "Plastic Housing Large",
+          "quantity": 3,
+          "unit_price": 85.0,
+          "total": 255.0
+        },
+        {
+          "product_code": "PROD-019",
+          "description": "Assembly Unit Type 3",
+          "quantity": 13,
+          "unit_price": 1650.0,
+          "total": 21450.0
+        }
+      ],
+      "subtotal": 21705.0,
+      "vat": 3255.75,
+      "total": 24960.75,
+      "status": "paid",
+      "payment_date": "2025-06-19"
+    },
+    {
+      "invoice_number": "INV-2025-00026",
+      "date": "2025-09-19",
+      "due_date": "2025-10-19",
+      "customer_name": "Johannesburg Tech",
+      "customer_vat": "4131313131",
+      "line_items": [
+        {
+          "product_code": "PROD-004",
+          "description": "Aluminium Plate 20x20",
+          "quantity": 17,
+          "unit_price": 230.0,
+          "total": 3910.0
+        },
+        {
+          "product_code": "PROD-001",
+          "description": "Steel Bracket Type A",
+          "quantity": 17,
+          "unit_price": 45.0,
+          "total": 765.0
+        }
+      ],
+      "subtotal": 4675.0,
+      "vat": 701.25,
+      "total": 5376.25,
+      "status": "paid",
+      "payment_date": "2025-10-05"
+    },
+    {
+      "invoice_number": "INV-2025-00027",
+      "date": "2025-09-08",
+      "due_date": "2025-11-07",
+      "customer_name": "Nelspruit Traders",
+      "customer_vat": "4161616161",
+      "line_items": [
+        {
+          "product_code": "PROD-030",
+          "description": "Complete System Package",
+          "quantity": 12,
+          "unit_price": 4500.0,
+          "total": 54000.0
+        },
+        {
+          "product_code": "PROD-019",
+          "description": "Assembly Unit Type 3",
+          "quantity": 17,
+          "unit_price": 1650.0,
+          "total": 28050.0
+        }
+      ],
+      "subtotal": 82050.0,
+      "vat": 12307.5,
+      "total": 94357.5,
+      "status": "paid",
+      "payment_date": null
+    },
+    {
+      "invoice_number": "INV-2025-00028",
+      "date": "2025-06-27",
+      "due_date": "2025-08-11",
+      "customer_name": "ProBuild Hardware",
+      "customer_vat": "4777777777",
+      "line_items": [
+        {
+          "product_code": "PROD-017",
+          "description": "Assembly Unit Type 1",
+          "quantity": 5,
+          "unit_price": 850.0,
+          "total": 4250.0
+        },
+        {
+          "product_code": "PROD-003",
+          "description": "Aluminium Plate 10x10",
+          "quantity": 10,
+          "unit_price": 120.0,
+          "total": 1200.0
+        },
+        {
+          "product_code": "PROD-002",
+          "description": "Steel Bracket Type B",
+          "quantity": 13,
+          "unit_price": 65.0,
+          "total": 845.0
+        },
+        {
+          "product_code": "PROD-018",
+          "description": "Assembly Unit Type 2",
+          "quantity": 16,
+          "unit_price": 1200.0,
+          "total": 19200.0
+        }
+      ],
+      "subtotal": 25495.0,
+      "vat": 3824.25,
+      "total": 29319.25,
+      "status": "paid",
+      "payment_date": null
+    },
+    {
+      "invoice_number": "INV-2025-00029",
+      "date": "2025-06-26",
+      "due_date": "2025-07-26",
+      "customer_name": "PE Manufacturing Hub",
+      "customer_vat": "4121212121",
+      "line_items": [
+        {
+          "product_code": "PROD-019",
+          "description": "Assembly Unit Type 3",
+          "quantity": 8,
+          "unit_price": 1650.0,
+          "total": 13200.0
+        },
+        {
+          "product_code": "PROD-003",
+          "description": "Aluminium Plate 10x10",
+          "quantity": 19,
+          "unit_price": 120.0,
+          "total": 2280.0
+        },
+        {
+          "product_code": "PROD-004",
+          "description": "Aluminium Plate 20x20",
+          "quantity": 2,
+          "unit_price": 230.0,
+          "total": 460.0
+        }
+      ],
+      "subtotal": 15940.0,
+      "vat": 2391.0,
+      "total": 18331.0,
+      "status": "pending",
+      "payment_date": null
+    },
+    {
+      "invoice_number": "INV-2025-00030",
+      "date": "2025-08-29",
+      "due_date": "2025-10-28",
+      "customer_name": "Nelspruit Traders",
+      "customer_vat": "4161616161",
+      "line_items": [
+        {
+          "product_code": "PROD-018",
+          "description": "Assembly Unit Type 2",
+          "quantity": 10,
+          "unit_price": 1200.0,
+          "total": 12000.0
+        },
+        {
+          "product_code": "PROD-018",
+          "description": "Assembly Unit Type 2",
+          "quantity": 5,
+          "unit_price": 1200.0,
+          "total": 6000.0
+        },
+        {
+          "product_code": "PROD-019",
+          "description": "Assembly Unit Type 3",
+          "quantity": 13,
+          "unit_price": 1650.0,
+          "total": 21450.0
+        }
+      ],
+      "subtotal": 39450.0,
+      "vat": 5917.5,
+      "total": 45367.5,
+      "status": "paid",
+      "payment_date": null
+    },
+    {
+      "invoice_number": "INV-2025-00031",
+      "date": "2025-07-24",
+      "due_date": "2025-08-23",
+      "customer_name": "XYZ Distributors (Pty) Ltd",
+      "customer_vat": "4222222222",
+      "line_items": [
+        {
+          "product_code": "PROD-018",
+          "description": "Assembly Unit Type 2",
+          "quantity": 16,
+          "unit_price": 1200.0,
+          "total": 19200.0
+        },
+        {
+          "product_code": "PROD-019",
+          "description": "Assembly Unit Type 3",
+          "quantity": 14,
+          "unit_price": 1650.0,
+          "total": 23100.0
+        }
+      ],
+      "subtotal": 42300.0,
+      "vat": 6345.0,
+      "total": 48645.0,
+      "status": "overdue",
+      "payment_date": "2025-07-24"
+    },
+    {
+      "invoice_number": "INV-2025-00032",
+      "date": "2025-06-15",
+      "due_date": "2025-08-14",
+      "customer_name": "MegaBuild Construction",
+      "customer_vat": "4444444444",
+      "line_items": [
+        {
+          "product_code": "PROD-030",
+          "description": "Complete System Package",
+          "quantity": 15,
+          "unit_price": 4500.0,
+          "total": 67500.0
+        },
+        {
+          "product_code": "PROD-004",
+          "description": "Aluminium Plate 20x20",
+          "quantity": 10,
+          "unit_price": 230.0,
+          "total": 2300.0
+        }
+      ],
+      "subtotal": 69800.0,
+      "vat": 10470.0,
+      "total": 80270.0,
+      "status": "pending",
+      "payment_date": null
+    },
+    {
+      "invoice_number": "INV-2025-00033",
+      "date": "2025-08-18",
+      "due_date": "2025-09-17",
+      "customer_name": "ABC Manufacturing Ltd",
+      "customer_vat": "4111111111",
+      "line_items": [
+        {
+          "product_code": "PROD-005",
+          "description": "Plastic Housing Large",
+          "quantity": 3,
+          "unit_price": 85.0,
+          "total": 255.0
+        }
+      ],
+      "subtotal": 255.0,
+      "vat": 38.25,
+      "total": 293.25,
+      "status": "paid",
+      "payment_date": "2025-08-21"
+    },
+    {
+      "invoice_number": "INV-2025-00034",
+      "date": "2025-06-30",
+      "due_date": "2025-07-30",
+      "customer_name": "Cape Engineering",
+      "customer_vat": "4999999999",
+      "line_items": [
+        {
+          "product_code": "PROD-017",
+          "description": "Assembly Unit Type 1",
+          "quantity": 8,
+          "unit_price": 850.0,
+          "total": 6800.0
+        },
+        {
+          "product_code": "PROD-005",
+          "description": "Plastic Housing Large",
+          "quantity": 14,
+          "unit_price": 85.0,
+          "total": 1190.0
+        },
+        {
+          "product_code": "PROD-018",
+          "description": "Assembly Unit Type 2",
+          "quantity": 8,
+          "unit_price": 1200.0,
+          "total": 9600.0
+        }
+      ],
+      "subtotal": 17590.0,
+      "vat": 2638.5,
+      "total": 20228.5,
+      "status": "paid",
+      "payment_date": "2025-07-02"
+    },
+    {
+      "invoice_number": "INV-2025-00035",
+      "date": "2025-10-16",
+      "due_date": "2025-11-15",
+      "customer_name": "Rustenburg Equipment",
+      "customer_vat": "4212121212",
+      "line_items": [
+        {
+          "product_code": "PROD-019",
+          "description": "Assembly Unit Type 3",
+          "quantity": 14,
+          "unit_price": 1650.0,
+          "total": 23100.0
+        },
+        {
+          "product_code": "PROD-003",
+          "description": "Aluminium Plate 10x10",
+          "quantity": 9,
+          "unit_price": 120.0,
+          "total": 1080.0
+        },
+        {
+          "product_code": "PROD-018",
+          "description": "Assembly Unit Type 2",
+          "quantity": 12,
+          "unit_price": 1200.0,
+          "total": 14400.0
+        },
+        {
+          "product_code": "PROD-002",
+          "description": "Steel Bracket Type B",
+          "quantity": 6,
+          "unit_price": 65.0,
+          "total": 390.0
+        },
+        {
+          "product_code": "PROD-002",
+          "description": "Steel Bracket Type B",
+          "quantity": 13,
+          "unit_price": 65.0,
+          "total": 845.0
+        }
+      ],
+      "subtotal": 39815.0,
+      "vat": 5972.25,
+      "total": 45787.25,
+      "status": "pending",
+      "payment_date": null
+    },
+    {
+      "invoice_number": "INV-2025-00036",
+      "date": "2025-08-12",
+      "due_date": "2025-09-11",
+      "customer_name": "Bloemfontein Supplies",
+      "customer_vat": "4151515151",
+      "line_items": [
+        {
+          "product_code": "PROD-003",
+          "description": "Aluminium Plate 10x10",
+          "quantity": 7,
+          "unit_price": 120.0,
+          "total": 840.0
+        },
+        {
+          "product_code": "PROD-001",
+          "description": "Steel Bracket Type A",
+          "quantity": 3,
+          "unit_price": 45.0,
+          "total": 135.0
+        }
+      ],
+      "subtotal": 975.0,
+      "vat": 146.25,
+      "total": 1121.25,
+      "status": "paid",
+      "payment_date": "2025-08-22"
+    },
+    {
+      "invoice_number": "INV-2025-00037",
+      "date": "2025-06-22",
+      "due_date": "2025-07-22",
+      "customer_name": "XYZ Distributors (Pty) Ltd",
+      "customer_vat": "4222222222",
+      "line_items": [
+        {
+          "product_code": "PROD-019",
+          "description": "Assembly Unit Type 3",
+          "quantity": 13,
+          "unit_price": 1650.0,
+          "total": 21450.0
+        },
+        {
+          "product_code": "PROD-019",
+          "description": "Assembly Unit Type 3",
+          "quantity": 6,
+          "unit_price": 1650.0,
+          "total": 9900.0
+        }
+      ],
+      "subtotal": 31350.0,
+      "vat": 4702.5,
+      "total": 36052.5,
+      "status": "paid",
+      "payment_date": "2025-07-21"
+    },
+    {
+      "invoice_number": "INV-2025-00038",
+      "date": "2025-09-24",
+      "due_date": "2025-10-24",
+      "customer_name": "Bloemfontein Supplies",
+      "customer_vat": "4151515151",
+      "line_items": [
+        {
+          "product_code": "PROD-002",
+          "description": "Steel Bracket Type B",
+          "quantity": 3,
+          "unit_price": 65.0,
+          "total": 195.0
+        },
+        {
+          "product_code": "PROD-018",
+          "description": "Assembly Unit Type 2",
+          "quantity": 15,
+          "unit_price": 1200.0,
+          "total": 18000.0
+        },
+        {
+          "product_code": "PROD-005",
+          "description": "Plastic Housing Large",
+          "quantity": 4,
+          "unit_price": 85.0,
+          "total": 340.0
+        },
+        {
+          "product_code": "PROD-019",
+          "description": "Assembly Unit Type 3",
+          "quantity": 13,
+          "unit_price": 1650.0,
+          "total": 21450.0
+        },
+        {
+          "product_code": "PROD-030",
+          "description": "Complete System Package",
+          "quantity": 14,
+          "unit_price": 4500.0,
+          "total": 63000.0
+        }
+      ],
+      "subtotal": 102985.0,
+      "vat": 15447.75,
+      "total": 118432.75,
+      "status": "paid",
+      "payment_date": "2025-10-07"
+    },
+    {
+      "invoice_number": "INV-2025-00039",
+      "date": "2025-06-25",
+      "due_date": "2025-07-25",
+      "customer_name": "Rustenburg Equipment",
+      "customer_vat": "4212121212",
+      "line_items": [
+        {
+          "product_code": "PROD-030",
+          "description": "Complete System Package",
+          "quantity": 16,
+          "unit_price": 4500.0,
+          "total": 72000.0
+        },
+        {
+          "product_code": "PROD-017",
+          "description": "Assembly Unit Type 1",
+          "quantity": 16,
+          "unit_price": 850.0,
+          "total": 13600.0
+        }
+      ],
+      "subtotal": 85600.0,
+      "vat": 12840.0,
+      "total": 98440.0,
+      "status": "pending",
+      "payment_date": "2025-07-04"
+    },
+    {
+      "invoice_number": "INV-2025-00040",
+      "date": "2025-08-30",
+      "due_date": "2025-09-29",
+      "customer_name": "MetalWorks SA (Pty) Ltd",
+      "customer_vat": "4888888888",
+      "line_items": [
+        {
+          "product_code": "PROD-030",
+          "description": "Complete System Package",
+          "quantity": 14,
+          "unit_price": 4500.0,
+          "total": 63000.0
+        },
+        {
+          "product_code": "PROD-002",
+          "description": "Steel Bracket Type B",
+          "quantity": 19,
+          "unit_price": 65.0,
+          "total": 1235.0
+        }
+      ],
+      "subtotal": 64235.0,
+      "vat": 9635.25,
+      "total": 73870.25,
+      "status": "pending",
+      "payment_date": "2025-09-26"
+    },
+    {
+      "invoice_number": "INV-2025-00041",
+      "date": "2025-10-15",
+      "due_date": "2025-11-29",
+      "customer_name": "Kimberley Mining Supplies",
+      "customer_vat": "4181818181",
+      "line_items": [
+        {
+          "product_code": "PROD-002",
+          "description": "Steel Bracket Type B",
+          "quantity": 3,
+          "unit_price": 65.0,
+          "total": 195.0
+        },
+        {
+          "product_code": "PROD-019",
+          "description": "Assembly Unit Type 3",
+          "quantity": 6,
+          "unit_price": 1650.0,
+          "total": 9900.0
+        },
+        {
+          "product_code": "PROD-017",
+          "description": "Assembly Unit Type 1",
+          "quantity": 6,
+          "unit_price": 850.0,
+          "total": 5100.0
+        }
+      ],
+      "subtotal": 15195.0,
+      "vat": 2279.25,
+      "total": 17474.25,
+      "status": "paid",
+      "payment_date": "2025-10-26"
+    },
+    {
+      "invoice_number": "INV-2025-00042",
+      "date": "2025-05-29",
+      "due_date": "2025-07-28",
+      "customer_name": "MegaBuild Construction",
+      "customer_vat": "4444444444",
+      "line_items": [
+        {
+          "product_code": "PROD-030",
+          "description": "Complete System Package",
+          "quantity": 9,
+          "unit_price": 4500.0,
+          "total": 40500.0
+        },
+        {
+          "product_code": "PROD-005",
+          "description": "Plastic Housing Large",
+          "quantity": 5,
+          "unit_price": 85.0,
+          "total": 425.0
+        },
+        {
+          "product_code": "PROD-005",
+          "description": "Plastic Housing Large",
+          "quantity": 18,
+          "unit_price": 85.0,
+          "total": 1530.0
+        },
+        {
+          "product_code": "PROD-003",
+          "description": "Aluminium Plate 10x10",
+          "quantity": 20,
+          "unit_price": 120.0,
+          "total": 2400.0
+        },
+        {
+          "product_code": "PROD-017",
+          "description": "Assembly Unit Type 1",
+          "quantity": 6,
+          "unit_price": 850.0,
+          "total": 5100.0
+        }
+      ],
+      "subtotal": 49955.0,
+      "vat": 7493.25,
+      "total": 57448.25,
+      "status": "overdue",
+      "payment_date": null
+    },
+    {
+      "invoice_number": "INV-2025-00043",
+      "date": "2025-07-10",
+      "due_date": "2025-08-09",
+      "customer_name": "Industrial Supplies Co",
+      "customer_vat": "4555555555",
+      "line_items": [
+        {
+          "product_code": "PROD-005",
+          "description": "Plastic Housing Large",
+          "quantity": 8,
+          "unit_price": 85.0,
+          "total": 680.0
+        },
+        {
+          "product_code": "PROD-001",
+          "description": "Steel Bracket Type A",
+          "quantity": 14,
+          "unit_price": 45.0,
+          "total": 630.0
+        }
+      ],
+      "subtotal": 1310.0,
+      "vat": 196.5,
+      "total": 1506.5,
+      "status": "pending",
+      "payment_date": "2025-07-22"
+    },
+    {
+      "invoice_number": "INV-2025-00044",
+      "date": "2025-08-09",
+      "due_date": "2025-09-08",
+      "customer_name": "Polokwane Industrial",
+      "customer_vat": "4171717171",
+      "line_items": [
+        {
+          "product_code": "PROD-030",
+          "description": "Complete System Package",
+          "quantity": 4,
+          "unit_price": 4500.0,
+          "total": 18000.0
+        },
+        {
+          "product_code": "PROD-030",
+          "description": "Complete System Package",
+          "quantity": 19,
+          "unit_price": 4500.0,
+          "total": 85500.0
+        },
+        {
+          "product_code": "PROD-018",
+          "description": "Assembly Unit Type 2",
+          "quantity": 17,
+          "unit_price": 1200.0,
+          "total": 20400.0
+        },
+        {
+          "product_code": "PROD-003",
+          "description": "Aluminium Plate 10x10",
+          "quantity": 9,
+          "unit_price": 120.0,
+          "total": 1080.0
+        }
+      ],
+      "subtotal": 124980.0,
+      "vat": 18747.0,
+      "total": 143727.0,
+      "status": "paid",
+      "payment_date": null
+    },
+    {
+      "invoice_number": "INV-2025-00045",
+      "date": "2025-07-09",
+      "due_date": "2025-08-08",
+      "customer_name": "XYZ Distributors (Pty) Ltd",
+      "customer_vat": "4222222222",
+      "line_items": [
+        {
+          "product_code": "PROD-003",
+          "description": "Aluminium Plate 10x10",
+          "quantity": 13,
+          "unit_price": 120.0,
+          "total": 1560.0
+        }
+      ],
+      "subtotal": 1560.0,
+      "vat": 234.0,
+      "total": 1794.0,
+      "status": "pending",
+      "payment_date": "2025-07-29"
+    },
+    {
+      "invoice_number": "INV-2025-00046",
+      "date": "2025-07-17",
+      "due_date": "2025-08-16",
+      "customer_name": "PE Manufacturing Hub",
+      "customer_vat": "4121212121",
+      "line_items": [
+        {
+          "product_code": "PROD-003",
+          "description": "Aluminium Plate 10x10",
+          "quantity": 19,
+          "unit_price": 120.0,
+          "total": 2280.0
+        }
+      ],
+      "subtotal": 2280.0,
+      "vat": 342.0,
+      "total": 2622.0,
+      "status": "paid",
+      "payment_date": "2025-08-16"
+    },
+    {
+      "invoice_number": "INV-2025-00047",
+      "date": "2025-08-23",
+      "due_date": "2025-09-22",
+      "customer_name": "TechZone Electronics",
+      "customer_vat": "4666666666",
+      "line_items": [
+        {
+          "product_code": "PROD-017",
+          "description": "Assembly Unit Type 1",
+          "quantity": 14,
+          "unit_price": 850.0,
+          "total": 11900.0
+        },
+        {
+          "product_code": "PROD-003",
+          "description": "Aluminium Plate 10x10",
+          "quantity": 15,
+          "unit_price": 120.0,
+          "total": 1800.0
+        },
+        {
+          "product_code": "PROD-005",
+          "description": "Plastic Housing Large",
+          "quantity": 6,
+          "unit_price": 85.0,
+          "total": 510.0
+        },
+        {
+          "product_code": "PROD-001",
+          "description": "Steel Bracket Type A",
+          "quantity": 13,
+          "unit_price": 45.0,
+          "total": 585.0
+        }
+      ],
+      "subtotal": 14795.0,
+      "vat": 2219.25,
+      "total": 17014.25,
+      "status": "paid",
+      "payment_date": "2025-09-10"
+    },
+    {
+      "invoice_number": "INV-2025-00048",
+      "date": "2025-10-18",
+      "due_date": "2025-11-17",
+      "customer_name": "Bloemfontein Supplies",
+      "customer_vat": "4151515151",
+      "line_items": [
+        {
+          "product_code": "PROD-002",
+          "description": "Steel Bracket Type B",
+          "quantity": 11,
+          "unit_price": 65.0,
+          "total": 715.0
+        },
+        {
+          "product_code": "PROD-030",
+          "description": "Complete System Package",
+          "quantity": 3,
+          "unit_price": 4500.0,
+          "total": 13500.0
+        },
+        {
+          "product_code": "PROD-030",
+          "description": "Complete System Package",
+          "quantity": 14,
+          "unit_price": 4500.0,
+          "total": 63000.0
+        },
+        {
+          "product_code": "PROD-017",
+          "description": "Assembly Unit Type 1",
+          "quantity": 3,
+          "unit_price": 850.0,
+          "total": 2550.0
+        },
+        {
+          "product_code": "PROD-030",
+          "description": "Complete System Package",
+          "quantity": 19,
+          "unit_price": 4500.0,
+          "total": 85500.0
+        }
+      ],
+      "subtotal": 165265.0,
+      "vat": 24789.75,
+      "total": 190054.75,
+      "status": "pending",
+      "payment_date": null
+    },
+    {
+      "invoice_number": "INV-2025-00049",
+      "date": "2025-09-06",
+      "due_date": "2025-10-21",
+      "customer_name": "George Coastal Builders",
+      "customer_vat": "4202020202",
+      "line_items": [
+        {
+          "product_code": "PROD-002",
+          "description": "Steel Bracket Type B",
+          "quantity": 10,
+          "unit_price": 65.0,
+          "total": 650.0
+        },
+        {
+          "product_code": "PROD-019",
+          "description": "Assembly Unit Type 3",
+          "quantity": 6,
+          "unit_price": 1650.0,
+          "total": 9900.0
+        },
+        {
+          "product_code": "PROD-005",
+          "description": "Plastic Housing Large",
+          "quantity": 7,
+          "unit_price": 85.0,
+          "total": 595.0
+        },
+        {
+          "product_code": "PROD-004",
+          "description": "Aluminium Plate 20x20",
+          "quantity": 20,
+          "unit_price": 230.0,
+          "total": 4600.0
+        },
+        {
+          "product_code": "PROD-005",
+          "description": "Plastic Housing Large",
+          "quantity": 2,
+          "unit_price": 85.0,
+          "total": 170.0
+        }
+      ],
+      "subtotal": 15915.0,
+      "vat": 2387.25,
+      "total": 18302.25,
+      "status": "pending",
+      "payment_date": "2025-10-05"
+    },
+    {
+      "invoice_number": "INV-2025-00050",
+      "date": "2025-07-27",
+      "due_date": "2025-08-26",
+      "customer_name": "Bloemfontein Supplies",
+      "customer_vat": "4151515151",
+      "line_items": [
+        {
+          "product_code": "PROD-017",
+          "description": "Assembly Unit Type 1",
+          "quantity": 14,
+          "unit_price": 850.0,
+          "total": 11900.0
+        },
+        {
+          "product_code": "PROD-018",
+          "description": "Assembly Unit Type 2",
+          "quantity": 8,
+          "unit_price": 1200.0,
+          "total": 9600.0
+        }
+      ],
+      "subtotal": 21500.0,
+      "vat": 3225.0,
+      "total": 24725.0,
+      "status": "paid",
+      "payment_date": null
+    },
+    {
+      "invoice_number": "INV-2025-00051",
+      "date": "2025-09-13",
+      "due_date": "2025-10-13",
+      "customer_name": "Polokwane Industrial",
+      "customer_vat": "4171717171",
+      "line_items": [
+        {
+          "product_code": "PROD-002",
+          "description": "Steel Bracket Type B",
+          "quantity": 15,
+          "unit_price": 65.0,
+          "total": 975.0
+        },
+        {
+          "product_code": "PROD-003",
+          "description": "Aluminium Plate 10x10",
+          "quantity": 10,
+          "unit_price": 120.0,
+          "total": 1200.0
+        },
+        {
+          "product_code": "PROD-003",
+          "description": "Aluminium Plate 10x10",
+          "quantity": 14,
+          "unit_price": 120.0,
+          "total": 1680.0
+        }
+      ],
+      "subtotal": 3855.0,
+      "vat": 578.25,
+      "total": 4433.25,
+      "status": "paid",
+      "payment_date": "2025-10-03"
+    },
+    {
+      "invoice_number": "INV-2025-00052",
+      "date": "2025-10-05",
+      "due_date": "2025-11-04",
+      "customer_name": "Polokwane Industrial",
+      "customer_vat": "4171717171",
+      "line_items": [
+        {
+          "product_code": "PROD-001",
+          "description": "Steel Bracket Type A",
+          "quantity": 2,
+          "unit_price": 45.0,
+          "total": 90.0
+        },
+        {
+          "product_code": "PROD-003",
+          "description": "Aluminium Plate 10x10",
+          "quantity": 9,
+          "unit_price": 120.0,
+          "total": 1080.0
+        }
+      ],
+      "subtotal": 1170.0,
+      "vat": 175.5,
+      "total": 1345.5,
+      "status": "overdue",
+      "payment_date": "2025-11-03"
+    },
+    {
+      "invoice_number": "INV-2025-00053",
+      "date": "2025-09-21",
+      "due_date": "2025-11-05",
+      "customer_name": "Durban Industrial Group",
+      "customer_vat": "4101010101",
+      "line_items": [
+        {
+          "product_code": "PROD-005",
+          "description": "Plastic Housing Large",
+          "quantity": 13,
+          "unit_price": 85.0,
+          "total": 1105.0
+        },
+        {
+          "product_code": "PROD-030",
+          "description": "Complete System Package",
+          "quantity": 20,
+          "unit_price": 4500.0,
+          "total": 90000.0
+        }
+      ],
+      "subtotal": 91105.0,
+      "vat": 13665.75,
+      "total": 104770.75,
+      "status": "pending",
+      "payment_date": null
+    },
+    {
+      "invoice_number": "INV-2025-00054",
+      "date": "2025-06-25",
+      "due_date": "2025-08-24",
+      "customer_name": "MegaBuild Construction",
+      "customer_vat": "4444444444",
+      "line_items": [
+        {
+          "product_code": "PROD-003",
+          "description": "Aluminium Plate 10x10",
+          "quantity": 16,
+          "unit_price": 120.0,
+          "total": 1920.0
+        },
+        {
+          "product_code": "PROD-005",
+          "description": "Plastic Housing Large",
+          "quantity": 12,
+          "unit_price": 85.0,
+          "total": 1020.0
+        },
+        {
+          "product_code": "PROD-004",
+          "description": "Aluminium Plate 20x20",
+          "quantity": 7,
+          "unit_price": 230.0,
+          "total": 1610.0
+        }
+      ],
+      "subtotal": 4550.0,
+      "vat": 682.5,
+      "total": 5232.5,
+      "status": "paid",
+      "payment_date": null
+    },
+    {
+      "invoice_number": "INV-2025-00055",
+      "date": "2025-06-29",
+      "due_date": "2025-07-29",
+      "customer_name": "Cape Engineering",
+      "customer_vat": "4999999999",
+      "line_items": [
+        {
+          "product_code": "PROD-018",
+          "description": "Assembly Unit Type 2",
+          "quantity": 17,
+          "unit_price": 1200.0,
+          "total": 20400.0
+        },
+        {
+          "product_code": "PROD-001",
+          "description": "Steel Bracket Type A",
+          "quantity": 1,
+          "unit_price": 45.0,
+          "total": 45.0
+        },
+        {
+          "product_code": "PROD-001",
+          "description": "Steel Bracket Type A",
+          "quantity": 5,
+          "unit_price": 45.0,
+          "total": 225.0
+        },
+        {
+          "product_code": "PROD-005",
+          "description": "Plastic Housing Large",
+          "quantity": 11,
+          "unit_price": 85.0,
+          "total": 935.0
+        },
+        {
+          "product_code": "PROD-002",
+          "description": "Steel Bracket Type B",
+          "quantity": 15,
+          "unit_price": 65.0,
+          "total": 975.0
+        }
+      ],
+      "subtotal": 22580.0,
+      "vat": 3387.0,
+      "total": 25967.0,
+      "status": "paid",
+      "payment_date": "2025-06-29"
+    },
+    {
+      "invoice_number": "INV-2025-00056",
+      "date": "2025-07-12",
+      "due_date": "2025-08-11",
+      "customer_name": "TechZone Electronics",
+      "customer_vat": "4666666666",
+      "line_items": [
+        {
+          "product_code": "PROD-004",
+          "description": "Aluminium Plate 20x20",
+          "quantity": 3,
+          "unit_price": 230.0,
+          "total": 690.0
+        }
+      ],
+      "subtotal": 690.0,
+      "vat": 103.5,
+      "total": 793.5,
+      "status": "pending",
+      "payment_date": "2025-07-23"
+    },
+    {
+      "invoice_number": "INV-2025-00057",
+      "date": "2025-10-01",
+      "due_date": "2025-11-30",
+      "customer_name": "MegaBuild Construction",
+      "customer_vat": "4444444444",
+      "line_items": [
+        {
+          "product_code": "PROD-002",
+          "description": "Steel Bracket Type B",
+          "quantity": 20,
+          "unit_price": 65.0,
+          "total": 1300.0
+        },
+        {
+          "product_code": "PROD-004",
+          "description": "Aluminium Plate 20x20",
+          "quantity": 13,
+          "unit_price": 230.0,
+          "total": 2990.0
+        },
+        {
+          "product_code": "PROD-002",
+          "description": "Steel Bracket Type B",
+          "quantity": 5,
+          "unit_price": 65.0,
+          "total": 325.0
+        }
+      ],
+      "subtotal": 4615.0,
+      "vat": 692.25,
+      "total": 5307.25,
+      "status": "pending",
+      "payment_date": "2025-10-20"
+    },
+    {
+      "invoice_number": "INV-2025-00058",
+      "date": "2025-06-29",
+      "due_date": "2025-07-29",
+      "customer_name": "Cape Engineering",
+      "customer_vat": "4999999999",
+      "line_items": [
+        {
+          "product_code": "PROD-019",
+          "description": "Assembly Unit Type 3",
+          "quantity": 9,
+          "unit_price": 1650.0,
+          "total": 14850.0
+        },
+        {
+          "product_code": "PROD-002",
+          "description": "Steel Bracket Type B",
+          "quantity": 11,
+          "unit_price": 65.0,
+          "total": 715.0
+        },
+        {
+          "product_code": "PROD-030",
+          "description": "Complete System Package",
+          "quantity": 17,
+          "unit_price": 4500.0,
+          "total": 76500.0
+        },
+        {
+          "product_code": "PROD-018",
+          "description": "Assembly Unit Type 2",
+          "quantity": 3,
+          "unit_price": 1200.0,
+          "total": 3600.0
+        }
+      ],
+      "subtotal": 95665.0,
+      "vat": 14349.75,
+      "total": 110014.75,
+      "status": "paid",
+      "payment_date": "2025-07-07"
+    },
+    {
+      "invoice_number": "INV-2025-00059",
+      "date": "2025-07-06",
+      "due_date": "2025-08-20",
+      "customer_name": "George Coastal Builders",
+      "customer_vat": "4202020202",
+      "line_items": [
+        {
+          "product_code": "PROD-002",
+          "description": "Steel Bracket Type B",
+          "quantity": 18,
+          "unit_price": 65.0,
+          "total": 1170.0
+        },
+        {
+          "product_code": "PROD-004",
+          "description": "Aluminium Plate 20x20",
+          "quantity": 10,
+          "unit_price": 230.0,
+          "total": 2300.0
+        },
+        {
+          "product_code": "PROD-019",
+          "description": "Assembly Unit Type 3",
+          "quantity": 1,
+          "unit_price": 1650.0,
+          "total": 1650.0
+        },
+        {
+          "product_code": "PROD-002",
+          "description": "Steel Bracket Type B",
+          "quantity": 13,
+          "unit_price": 65.0,
+          "total": 845.0
+        }
+      ],
+      "subtotal": 5965.0,
+      "vat": 894.75,
+      "total": 6859.75,
+      "status": "paid",
+      "payment_date": null
+    },
+    {
+      "invoice_number": "INV-2025-00060",
+      "date": "2025-08-01",
+      "due_date": "2025-09-15",
+      "customer_name": "Durban Industrial Group",
+      "customer_vat": "4101010101",
+      "line_items": [
+        {
+          "product_code": "PROD-019",
+          "description": "Assembly Unit Type 3",
+          "quantity": 15,
+          "unit_price": 1650.0,
+          "total": 24750.0
+        },
+        {
+          "product_code": "PROD-003",
+          "description": "Aluminium Plate 10x10",
+          "quantity": 16,
+          "unit_price": 120.0,
+          "total": 1920.0
+        },
+        {
+          "product_code": "PROD-017",
+          "description": "Assembly Unit Type 1",
+          "quantity": 7,
+          "unit_price": 850.0,
+          "total": 5950.0
+        },
+        {
+          "product_code": "PROD-030",
+          "description": "Complete System Package",
+          "quantity": 18,
+          "unit_price": 4500.0,
+          "total": 81000.0
+        },
+        {
+          "product_code": "PROD-017",
+          "description": "Assembly Unit Type 1",
+          "quantity": 3,
+          "unit_price": 850.0,
+          "total": 2550.0
+        }
+      ],
+      "subtotal": 116170.0,
+      "vat": 17425.5,
+      "total": 133595.5,
+      "status": "paid",
+      "payment_date": "2025-08-11"
+    },
+    {
+      "invoice_number": "INV-2025-00061",
+      "date": "2025-10-17",
+      "due_date": "2025-11-16",
+      "customer_name": "XYZ Distributors (Pty) Ltd",
+      "customer_vat": "4222222222",
+      "line_items": [
+        {
+          "product_code": "PROD-002",
+          "description": "Steel Bracket Type B",
+          "quantity": 1,
+          "unit_price": 65.0,
+          "total": 65.0
+        },
+        {
+          "product_code": "PROD-003",
+          "description": "Aluminium Plate 10x10",
+          "quantity": 3,
+          "unit_price": 120.0,
+          "total": 360.0
+        },
+        {
+          "product_code": "PROD-018",
+          "description": "Assembly Unit Type 2",
+          "quantity": 20,
+          "unit_price": 1200.0,
+          "total": 24000.0
+        }
+      ],
+      "subtotal": 24425.0,
+      "vat": 3663.75,
+      "total": 28088.75,
+      "status": "paid",
+      "payment_date": "2025-10-27"
+    },
+    {
+      "invoice_number": "INV-2025-00062",
+      "date": "2025-10-08",
+      "due_date": "2025-11-07",
+      "customer_name": "Cape Engineering",
+      "customer_vat": "4999999999",
+      "line_items": [
+        {
+          "product_code": "PROD-002",
+          "description": "Steel Bracket Type B",
+          "quantity": 13,
+          "unit_price": 65.0,
+          "total": 845.0
+        },
+        {
+          "product_code": "PROD-004",
+          "description": "Aluminium Plate 20x20",
+          "quantity": 18,
+          "unit_price": 230.0,
+          "total": 4140.0
+        },
+        {
+          "product_code": "PROD-018",
+          "description": "Assembly Unit Type 2",
+          "quantity": 11,
+          "unit_price": 1200.0,
+          "total": 13200.0
+        }
+      ],
+      "subtotal": 18185.0,
+      "vat": 2727.75,
+      "total": 20912.75,
+      "status": "paid",
+      "payment_date": null
+    },
+    {
+      "invoice_number": "INV-2025-00063",
+      "date": "2025-07-02",
+      "due_date": "2025-08-01",
+      "customer_name": "PE Manufacturing Hub",
+      "customer_vat": "4121212121",
+      "line_items": [
+        {
+          "product_code": "PROD-019",
+          "description": "Assembly Unit Type 3",
+          "quantity": 16,
+          "unit_price": 1650.0,
+          "total": 26400.0
+        }
+      ],
+      "subtotal": 26400.0,
+      "vat": 3960.0,
+      "total": 30360.0,
+      "status": "paid",
+      "payment_date": "2025-07-09"
+    },
+    {
+      "invoice_number": "INV-2025-00064",
+      "date": "2025-10-10",
+      "due_date": "2025-11-24",
+      "customer_name": "Durban Industrial Group",
+      "customer_vat": "4101010101",
+      "line_items": [
+        {
+          "product_code": "PROD-001",
+          "description": "Steel Bracket Type A",
+          "quantity": 14,
+          "unit_price": 45.0,
+          "total": 630.0
+        },
+        {
+          "product_code": "PROD-030",
+          "description": "Complete System Package",
+          "quantity": 11,
+          "unit_price": 4500.0,
+          "total": 49500.0
+        },
+        {
+          "product_code": "PROD-017",
+          "description": "Assembly Unit Type 1",
+          "quantity": 18,
+          "unit_price": 850.0,
+          "total": 15300.0
+        },
+        {
+          "product_code": "PROD-002",
+          "description": "Steel Bracket Type B",
+          "quantity": 17,
+          "unit_price": 65.0,
+          "total": 1105.0
+        },
+        {
+          "product_code": "PROD-018",
+          "description": "Assembly Unit Type 2",
+          "quantity": 14,
+          "unit_price": 1200.0,
+          "total": 16800.0
+        }
+      ],
+      "subtotal": 83335.0,
+      "vat": 12500.25,
+      "total": 95835.25,
+      "status": "paid",
+      "payment_date": null
+    },
+    {
+      "invoice_number": "INV-2025-00065",
+      "date": "2025-06-02",
+      "due_date": "2025-07-02",
+      "customer_name": "Bloemfontein Supplies",
+      "customer_vat": "4151515151",
+      "line_items": [
+        {
+          "product_code": "PROD-019",
+          "description": "Assembly Unit Type 3",
+          "quantity": 10,
+          "unit_price": 1650.0,
+          "total": 16500.0
+        },
+        {
+          "product_code": "PROD-004",
+          "description": "Aluminium Plate 20x20",
+          "quantity": 19,
+          "unit_price": 230.0,
+          "total": 4370.0
+        },
+        {
+          "product_code": "PROD-030",
+          "description": "Complete System Package",
+          "quantity": 15,
+          "unit_price": 4500.0,
+          "total": 67500.0
+        }
+      ],
+      "subtotal": 88370.0,
+      "vat": 13255.5,
+      "total": 101625.5,
+      "status": "overdue",
+      "payment_date": null
+    },
+    {
+      "invoice_number": "INV-2025-00066",
+      "date": "2025-09-29",
+      "due_date": "2025-11-13",
+      "customer_name": "George Coastal Builders",
+      "customer_vat": "4202020202",
+      "line_items": [
+        {
+          "product_code": "PROD-030",
+          "description": "Complete System Package",
+          "quantity": 2,
+          "unit_price": 4500.0,
+          "total": 9000.0
+        }
+      ],
+      "subtotal": 9000.0,
+      "vat": 1350.0,
+      "total": 10350.0,
+      "status": "paid",
+      "payment_date": "2025-10-10"
+    },
+    {
+      "invoice_number": "INV-2025-00067",
+      "date": "2025-05-19",
+      "due_date": "2025-06-18",
+      "customer_name": "TechZone Electronics",
+      "customer_vat": "4666666666",
+      "line_items": [
+        {
+          "product_code": "PROD-019",
+          "description": "Assembly Unit Type 3",
+          "quantity": 6,
+          "unit_price": 1650.0,
+          "total": 9900.0
+        }
+      ],
+      "subtotal": 9900.0,
+      "vat": 1485.0,
+      "total": 11385.0,
+      "status": "paid",
+      "payment_date": null
+    },
+    {
+      "invoice_number": "INV-2025-00068",
+      "date": "2025-08-22",
+      "due_date": "2025-10-21",
+      "customer_name": "Nelspruit Traders",
+      "customer_vat": "4161616161",
+      "line_items": [
+        {
+          "product_code": "PROD-018",
+          "description": "Assembly Unit Type 2",
+          "quantity": 8,
+          "unit_price": 1200.0,
+          "total": 9600.0
+        },
+        {
+          "product_code": "PROD-018",
+          "description": "Assembly Unit Type 2",
+          "quantity": 9,
+          "unit_price": 1200.0,
+          "total": 10800.0
+        }
+      ],
+      "subtotal": 20400.0,
+      "vat": 3060.0,
+      "total": 23460.0,
+      "status": "pending",
+      "payment_date": "2025-08-25"
+    },
+    {
+      "invoice_number": "INV-2025-00069",
+      "date": "2025-07-30",
+      "due_date": "2025-09-13",
+      "customer_name": "Pretoria Components",
+      "customer_vat": "4141414141",
+      "line_items": [
+        {
+          "product_code": "PROD-001",
+          "description": "Steel Bracket Type A",
+          "quantity": 19,
+          "unit_price": 45.0,
+          "total": 855.0
+        },
+        {
+          "product_code": "PROD-001",
+          "description": "Steel Bracket Type A",
+          "quantity": 4,
+          "unit_price": 45.0,
+          "total": 180.0
+        },
+        {
+          "product_code": "PROD-018",
+          "description": "Assembly Unit Type 2",
+          "quantity": 5,
+          "unit_price": 1200.0,
+          "total": 6000.0
+        },
+        {
+          "product_code": "PROD-004",
+          "description": "Aluminium Plate 20x20",
+          "quantity": 12,
+          "unit_price": 230.0,
+          "total": 2760.0
+        }
+      ],
+      "subtotal": 9795.0,
+      "vat": 1469.25,
+      "total": 11264.25,
+      "status": "paid",
+      "payment_date": "2025-08-18"
+    },
+    {
+      "invoice_number": "INV-2025-00070",
+      "date": "2025-05-04",
+      "due_date": "2025-06-18",
+      "customer_name": "Durban Industrial Group",
+      "customer_vat": "4101010101",
+      "line_items": [
+        {
+          "product_code": "PROD-030",
+          "description": "Complete System Package",
+          "quantity": 16,
+          "unit_price": 4500.0,
+          "total": 72000.0
+        },
+        {
+          "product_code": "PROD-019",
+          "description": "Assembly Unit Type 3",
+          "quantity": 10,
+          "unit_price": 1650.0,
+          "total": 16500.0
+        }
+      ],
+      "subtotal": 88500.0,
+      "vat": 13275.0,
+      "total": 101775.0,
+      "status": "pending",
+      "payment_date": "2025-05-29"
+    },
+    {
+      "invoice_number": "INV-2025-00071",
+      "date": "2025-05-29",
+      "due_date": "2025-06-28",
+      "customer_name": "PE Manufacturing Hub",
+      "customer_vat": "4121212121",
+      "line_items": [
+        {
+          "product_code": "PROD-004",
+          "description": "Aluminium Plate 20x20",
+          "quantity": 19,
+          "unit_price": 230.0,
+          "total": 4370.0
+        },
+        {
+          "product_code": "PROD-001",
+          "description": "Steel Bracket Type A",
+          "quantity": 20,
+          "unit_price": 45.0,
+          "total": 900.0
+        },
+        {
+          "product_code": "PROD-002",
+          "description": "Steel Bracket Type B",
+          "quantity": 16,
+          "unit_price": 65.0,
+          "total": 1040.0
+        }
+      ],
+      "subtotal": 6310.0,
+      "vat": 946.5,
+      "total": 7256.5,
+      "status": "paid",
+      "payment_date": "2025-06-01"
+    },
+    {
+      "invoice_number": "INV-2025-00072",
+      "date": "2025-08-25",
+      "due_date": "2025-09-24",
+      "customer_name": "Johannesburg Tech",
+      "customer_vat": "4131313131",
+      "line_items": [
+        {
+          "product_code": "PROD-003",
+          "description": "Aluminium Plate 10x10",
+          "quantity": 4,
+          "unit_price": 120.0,
+          "total": 480.0
+        },
+        {
+          "product_code": "PROD-018",
+          "description": "Assembly Unit Type 2",
+          "quantity": 2,
+          "unit_price": 1200.0,
+          "total": 2400.0
+        },
+        {
+          "product_code": "PROD-005",
+          "description": "Plastic Housing Large",
+          "quantity": 6,
+          "unit_price": 85.0,
+          "total": 510.0
+        }
+      ],
+      "subtotal": 3390.0,
+      "vat": 508.5,
+      "total": 3898.5,
+      "status": "paid",
+      "payment_date": "2025-09-08"
+    },
+    {
+      "invoice_number": "INV-2025-00073",
+      "date": "2025-06-10",
+      "due_date": "2025-07-10",
+      "customer_name": "MetalWorks SA (Pty) Ltd",
+      "customer_vat": "4888888888",
+      "line_items": [
+        {
+          "product_code": "PROD-005",
+          "description": "Plastic Housing Large",
+          "quantity": 1,
+          "unit_price": 85.0,
+          "total": 85.0
+        }
+      ],
+      "subtotal": 85.0,
+      "vat": 12.75,
+      "total": 97.75,
+      "status": "overdue",
+      "payment_date": "2025-07-08"
+    },
+    {
+      "invoice_number": "INV-2025-00074",
+      "date": "2025-07-20",
+      "due_date": "2025-09-03",
+      "customer_name": "Kimberley Mining Supplies",
+      "customer_vat": "4181818181",
+      "line_items": [
+        {
+          "product_code": "PROD-003",
+          "description": "Aluminium Plate 10x10",
+          "quantity": 5,
+          "unit_price": 120.0,
+          "total": 600.0
+        },
+        {
+          "product_code": "PROD-030",
+          "description": "Complete System Package",
+          "quantity": 6,
+          "unit_price": 4500.0,
+          "total": 27000.0
+        },
+        {
+          "product_code": "PROD-005",
+          "description": "Plastic Housing Large",
+          "quantity": 15,
+          "unit_price": 85.0,
+          "total": 1275.0
+        },
+        {
+          "product_code": "PROD-001",
+          "description": "Steel Bracket Type A",
+          "quantity": 18,
+          "unit_price": 45.0,
+          "total": 810.0
+        }
+      ],
+      "subtotal": 29685.0,
+      "vat": 4452.75,
+      "total": 34137.75,
+      "status": "paid",
+      "payment_date": "2025-08-17"
+    },
+    {
+      "invoice_number": "INV-2025-00075",
+      "date": "2025-05-09",
+      "due_date": "2025-06-23",
+      "customer_name": "Pretoria Components",
+      "customer_vat": "4141414141",
+      "line_items": [
+        {
+          "product_code": "PROD-002",
+          "description": "Steel Bracket Type B",
+          "quantity": 3,
+          "unit_price": 65.0,
+          "total": 195.0
+        }
+      ],
+      "subtotal": 195.0,
+      "vat": 29.25,
+      "total": 224.25,
+      "status": "paid",
+      "payment_date": "2025-05-22"
+    },
+    {
+      "invoice_number": "INV-2025-00076",
+      "date": "2025-08-06",
+      "due_date": "2025-09-05",
+      "customer_name": "Johannesburg Tech",
+      "customer_vat": "4131313131",
+      "line_items": [
+        {
+          "product_code": "PROD-018",
+          "description": "Assembly Unit Type 2",
+          "quantity": 6,
+          "unit_price": 1200.0,
+          "total": 7200.0
+        },
+        {
+          "product_code": "PROD-002",
+          "description": "Steel Bracket Type B",
+          "quantity": 5,
+          "unit_price": 65.0,
+          "total": 325.0
+        },
+        {
+          "product_code": "PROD-001",
+          "description": "Steel Bracket Type A",
+          "quantity": 8,
+          "unit_price": 45.0,
+          "total": 360.0
+        },
+        {
+          "product_code": "PROD-001",
+          "description": "Steel Bracket Type A",
+          "quantity": 16,
+          "unit_price": 45.0,
+          "total": 720.0
+        }
+      ],
+      "subtotal": 8605.0,
+      "vat": 1290.75,
+      "total": 9895.75,
+      "status": "paid",
+      "payment_date": "2025-08-27"
+    },
+    {
+      "invoice_number": "INV-2025-00077",
+      "date": "2025-06-15",
+      "due_date": "2025-08-14",
+      "customer_name": "Nelspruit Traders",
+      "customer_vat": "4161616161",
+      "line_items": [
+        {
+          "product_code": "PROD-001",
+          "description": "Steel Bracket Type A",
+          "quantity": 19,
+          "unit_price": 45.0,
+          "total": 855.0
+        },
+        {
+          "product_code": "PROD-001",
+          "description": "Steel Bracket Type A",
+          "quantity": 9,
+          "unit_price": 45.0,
+          "total": 405.0
+        },
+        {
+          "product_code": "PROD-017",
+          "description": "Assembly Unit Type 1",
+          "quantity": 11,
+          "unit_price": 850.0,
+          "total": 9350.0
+        }
+      ],
+      "subtotal": 10610.0,
+      "vat": 1591.5,
+      "total": 12201.5,
+      "status": "paid",
+      "payment_date": null
+    },
+    {
+      "invoice_number": "INV-2025-00078",
+      "date": "2025-05-27",
+      "due_date": "2025-07-11",
+      "customer_name": "Kimberley Mining Supplies",
+      "customer_vat": "4181818181",
+      "line_items": [
+        {
+          "product_code": "PROD-002",
+          "description": "Steel Bracket Type B",
+          "quantity": 6,
+          "unit_price": 65.0,
+          "total": 390.0
+        }
+      ],
+      "subtotal": 390.0,
+      "vat": 58.5,
+      "total": 448.5,
+      "status": "overdue",
+      "payment_date": null
+    },
+    {
+      "invoice_number": "INV-2025-00079",
+      "date": "2025-10-18",
+      "due_date": "2025-11-17",
+      "customer_name": "East London Machinery",
+      "customer_vat": "4191919191",
+      "line_items": [
+        {
+          "product_code": "PROD-019",
+          "description": "Assembly Unit Type 3",
+          "quantity": 13,
+          "unit_price": 1650.0,
+          "total": 21450.0
+        },
+        {
+          "product_code": "PROD-001",
+          "description": "Steel Bracket Type A",
+          "quantity": 13,
+          "unit_price": 45.0,
+          "total": 585.0
+        },
+        {
+          "product_code": "PROD-018",
+          "description": "Assembly Unit Type 2",
+          "quantity": 9,
+          "unit_price": 1200.0,
+          "total": 10800.0
+        },
+        {
+          "product_code": "PROD-003",
+          "description": "Aluminium Plate 10x10",
+          "quantity": 15,
+          "unit_price": 120.0,
+          "total": 1800.0
+        }
+      ],
+      "subtotal": 34635.0,
+      "vat": 5195.25,
+      "total": 39830.25,
+      "status": "pending",
+      "payment_date": null
+    },
+    {
+      "invoice_number": "INV-2025-00080",
+      "date": "2025-05-15",
+      "due_date": "2025-06-29",
+      "customer_name": "Pretoria Components",
+      "customer_vat": "4141414141",
+      "line_items": [
+        {
+          "product_code": "PROD-003",
+          "description": "Aluminium Plate 10x10",
+          "quantity": 8,
+          "unit_price": 120.0,
+          "total": 960.0
+        },
+        {
+          "product_code": "PROD-003",
+          "description": "Aluminium Plate 10x10",
+          "quantity": 16,
+          "unit_price": 120.0,
+          "total": 1920.0
+        },
+        {
+          "product_code": "PROD-017",
+          "description": "Assembly Unit Type 1",
+          "quantity": 11,
+          "unit_price": 850.0,
+          "total": 9350.0
+        },
+        {
+          "product_code": "PROD-017",
+          "description": "Assembly Unit Type 1",
+          "quantity": 17,
+          "unit_price": 850.0,
+          "total": 14450.0
+        },
+        {
+          "product_code": "PROD-030",
+          "description": "Complete System Package",
+          "quantity": 17,
+          "unit_price": 4500.0,
+          "total": 76500.0
+        }
+      ],
+      "subtotal": 103180.0,
+      "vat": 15477.0,
+      "total": 118657.0,
+      "status": "overdue",
+      "payment_date": "2025-06-14"
+    },
+    {
+      "invoice_number": "INV-2025-00081",
+      "date": "2025-08-06",
+      "due_date": "2025-09-20",
+      "customer_name": "ProBuild Hardware",
+      "customer_vat": "4777777777",
+      "line_items": [
+        {
+          "product_code": "PROD-017",
+          "description": "Assembly Unit Type 1",
+          "quantity": 15,
+          "unit_price": 850.0,
+          "total": 12750.0
+        },
+        {
+          "product_code": "PROD-003",
+          "description": "Aluminium Plate 10x10",
+          "quantity": 8,
+          "unit_price": 120.0,
+          "total": 960.0
+        },
+        {
+          "product_code": "PROD-005",
+          "description": "Plastic Housing Large",
+          "quantity": 9,
+          "unit_price": 85.0,
+          "total": 765.0
+        },
+        {
+          "product_code": "PROD-003",
+          "description": "Aluminium Plate 10x10",
+          "quantity": 17,
+          "unit_price": 120.0,
+          "total": 2040.0
+        }
+      ],
+      "subtotal": 16515.0,
+      "vat": 2477.25,
+      "total": 18992.25,
+      "status": "paid",
+      "payment_date": "2025-09-16"
+    },
+    {
+      "invoice_number": "INV-2025-00082",
+      "date": "2025-05-31",
+      "due_date": "2025-06-30",
+      "customer_name": "TechZone Electronics",
+      "customer_vat": "4666666666",
+      "line_items": [
+        {
+          "product_code": "PROD-030",
+          "description": "Complete System Package",
+          "quantity": 14,
+          "unit_price": 4500.0,
+          "total": 63000.0
+        },
+        {
+          "product_code": "PROD-019",
+          "description": "Assembly Unit Type 3",
+          "quantity": 5,
+          "unit_price": 1650.0,
+          "total": 8250.0
+        },
+        {
+          "product_code": "PROD-001",
+          "description": "Steel Bracket Type A",
+          "quantity": 3,
+          "unit_price": 45.0,
+          "total": 135.0
+        },
+        {
+          "product_code": "PROD-018",
+          "description": "Assembly Unit Type 2",
+          "quantity": 2,
+          "unit_price": 1200.0,
+          "total": 2400.0
+        }
+      ],
+      "subtotal": 73785.0,
+      "vat": 11067.75,
+      "total": 84852.75,
+      "status": "paid",
+      "payment_date": null
+    },
+    {
+      "invoice_number": "INV-2025-00083",
+      "date": "2025-09-15",
+      "due_date": "2025-10-15",
+      "customer_name": "Johannesburg Tech",
+      "customer_vat": "4131313131",
+      "line_items": [
+        {
+          "product_code": "PROD-017",
+          "description": "Assembly Unit Type 1",
+          "quantity": 8,
+          "unit_price": 850.0,
+          "total": 6800.0
+        },
+        {
+          "product_code": "PROD-005",
+          "description": "Plastic Housing Large",
+          "quantity": 9,
+          "unit_price": 85.0,
+          "total": 765.0
+        },
+        {
+          "product_code": "PROD-030",
+          "description": "Complete System Package",
+          "quantity": 9,
+          "unit_price": 4500.0,
+          "total": 40500.0
+        }
+      ],
+      "subtotal": 48065.0,
+      "vat": 7209.75,
+      "total": 55274.75,
+      "status": "overdue",
+      "payment_date": "2025-10-01"
+    },
+    {
+      "invoice_number": "INV-2025-00084",
+      "date": "2025-10-18",
+      "due_date": "2025-11-17",
+      "customer_name": "Industrial Supplies Co",
+      "customer_vat": "4555555555",
+      "line_items": [
+        {
+          "product_code": "PROD-005",
+          "description": "Plastic Housing Large",
+          "quantity": 8,
+          "unit_price": 85.0,
+          "total": 680.0
+        },
+        {
+          "product_code": "PROD-030",
+          "description": "Complete System Package",
+          "quantity": 18,
+          "unit_price": 4500.0,
+          "total": 81000.0
+        },
+        {
+          "product_code": "PROD-019",
+          "description": "Assembly Unit Type 3",
+          "quantity": 18,
+          "unit_price": 1650.0,
+          "total": 29700.0
+        },
+        {
+          "product_code": "PROD-004",
+          "description": "Aluminium Plate 20x20",
+          "quantity": 13,
+          "unit_price": 230.0,
+          "total": 2990.0
+        },
+        {
+          "product_code": "PROD-004",
+          "description": "Aluminium Plate 20x20",
+          "quantity": 2,
+          "unit_price": 230.0,
+          "total": 460.0
+        }
+      ],
+      "subtotal": 114830.0,
+      "vat": 17224.5,
+      "total": 132054.5,
+      "status": "paid",
+      "payment_date": null
+    },
+    {
+      "invoice_number": "INV-2025-00085",
+      "date": "2025-09-09",
+      "due_date": "2025-10-09",
+      "customer_name": "MetalWorks SA (Pty) Ltd",
+      "customer_vat": "4888888888",
+      "line_items": [
+        {
+          "product_code": "PROD-030",
+          "description": "Complete System Package",
+          "quantity": 17,
+          "unit_price": 4500.0,
+          "total": 76500.0
+        },
+        {
+          "product_code": "PROD-018",
+          "description": "Assembly Unit Type 2",
+          "quantity": 17,
+          "unit_price": 1200.0,
+          "total": 20400.0
+        }
+      ],
+      "subtotal": 96900.0,
+      "vat": 14535.0,
+      "total": 111435.0,
+      "status": "overdue",
+      "payment_date": "2025-10-08"
+    },
+    {
+      "invoice_number": "INV-2025-00086",
+      "date": "2025-10-19",
+      "due_date": "2025-11-18",
+      "customer_name": "Johannesburg Tech",
+      "customer_vat": "4131313131",
+      "line_items": [
+        {
+          "product_code": "PROD-017",
+          "description": "Assembly Unit Type 1",
+          "quantity": 10,
+          "unit_price": 850.0,
+          "total": 8500.0
+        }
+      ],
+      "subtotal": 8500.0,
+      "vat": 1275.0,
+      "total": 9775.0,
+      "status": "paid",
+      "payment_date": "2025-10-23"
+    },
+    {
+      "invoice_number": "INV-2025-00087",
+      "date": "2025-07-27",
+      "due_date": "2025-08-26",
+      "customer_name": "Johannesburg Tech",
+      "customer_vat": "4131313131",
+      "line_items": [
+        {
+          "product_code": "PROD-004",
+          "description": "Aluminium Plate 20x20",
+          "quantity": 7,
+          "unit_price": 230.0,
+          "total": 1610.0
+        },
+        {
+          "product_code": "PROD-005",
+          "description": "Plastic Housing Large",
+          "quantity": 9,
+          "unit_price": 85.0,
+          "total": 765.0
+        },
+        {
+          "product_code": "PROD-002",
+          "description": "Steel Bracket Type B",
+          "quantity": 16,
+          "unit_price": 65.0,
+          "total": 1040.0
+        },
+        {
+          "product_code": "PROD-004",
+          "description": "Aluminium Plate 20x20",
+          "quantity": 3,
+          "unit_price": 230.0,
+          "total": 690.0
+        },
+        {
+          "product_code": "PROD-019",
+          "description": "Assembly Unit Type 3",
+          "quantity": 7,
+          "unit_price": 1650.0,
+          "total": 11550.0
+        }
+      ],
+      "subtotal": 15655.0,
+      "vat": 2348.25,
+      "total": 18003.25,
+      "status": "overdue",
+      "payment_date": "2025-07-28"
+    },
+    {
+      "invoice_number": "INV-2025-00088",
+      "date": "2025-07-21",
+      "due_date": "2025-09-04",
+      "customer_name": "Durban Industrial Group",
+      "customer_vat": "4101010101",
+      "line_items": [
+        {
+          "product_code": "PROD-001",
+          "description": "Steel Bracket Type A",
+          "quantity": 16,
+          "unit_price": 45.0,
+          "total": 720.0
+        },
+        {
+          "product_code": "PROD-004",
+          "description": "Aluminium Plate 20x20",
+          "quantity": 4,
+          "unit_price": 230.0,
+          "total": 920.0
+        },
+        {
+          "product_code": "PROD-018",
+          "description": "Assembly Unit Type 2",
+          "quantity": 10,
+          "unit_price": 1200.0,
+          "total": 12000.0
+        },
+        {
+          "product_code": "PROD-004",
+          "description": "Aluminium Plate 20x20",
+          "quantity": 13,
+          "unit_price": 230.0,
+          "total": 2990.0
+        }
+      ],
+      "subtotal": 16630.0,
+      "vat": 2494.5,
+      "total": 19124.5,
+      "status": "paid",
+      "payment_date": "2025-08-24"
+    },
+    {
+      "invoice_number": "INV-2025-00089",
+      "date": "2025-05-31",
+      "due_date": "2025-06-30",
+      "customer_name": "MetalWorks SA (Pty) Ltd",
+      "customer_vat": "4888888888",
+      "line_items": [
+        {
+          "product_code": "PROD-004",
+          "description": "Aluminium Plate 20x20",
+          "quantity": 14,
+          "unit_price": 230.0,
+          "total": 3220.0
+        },
+        {
+          "product_code": "PROD-002",
+          "description": "Steel Bracket Type B",
+          "quantity": 6,
+          "unit_price": 65.0,
+          "total": 390.0
+        },
+        {
+          "product_code": "PROD-002",
+          "description": "Steel Bracket Type B",
+          "quantity": 6,
+          "unit_price": 65.0,
+          "total": 390.0
+        },
+        {
+          "product_code": "PROD-001",
+          "description": "Steel Bracket Type A",
+          "quantity": 15,
+          "unit_price": 45.0,
+          "total": 675.0
+        },
+        {
+          "product_code": "PROD-001",
+          "description": "Steel Bracket Type A",
+          "quantity": 18,
+          "unit_price": 45.0,
+          "total": 810.0
+        }
+      ],
+      "subtotal": 5485.0,
+      "vat": 822.75,
+      "total": 6307.75,
+      "status": "paid",
+      "payment_date": "2025-06-29"
+    },
+    {
+      "invoice_number": "INV-2025-00090",
+      "date": "2025-08-19",
+      "due_date": "2025-09-18",
+      "customer_name": "Cape Engineering",
+      "customer_vat": "4999999999",
+      "line_items": [
+        {
+          "product_code": "PROD-030",
+          "description": "Complete System Package",
+          "quantity": 17,
+          "unit_price": 4500.0,
+          "total": 76500.0
+        },
+        {
+          "product_code": "PROD-003",
+          "description": "Aluminium Plate 10x10",
+          "quantity": 14,
+          "unit_price": 120.0,
+          "total": 1680.0
+        },
+        {
+          "product_code": "PROD-004",
+          "description": "Aluminium Plate 20x20",
+          "quantity": 1,
+          "unit_price": 230.0,
+          "total": 230.0
+        },
+        {
+          "product_code": "PROD-001",
+          "description": "Steel Bracket Type A",
+          "quantity": 16,
+          "unit_price": 45.0,
+          "total": 720.0
+        }
+      ],
+      "subtotal": 79130.0,
+      "vat": 11869.5,
+      "total": 90999.5,
+      "status": "pending",
+      "payment_date": null
+    },
+    {
+      "invoice_number": "INV-2025-00091",
+      "date": "2025-05-27",
+      "due_date": "2025-07-11",
+      "customer_name": "Kimberley Mining Supplies",
+      "customer_vat": "4181818181",
+      "line_items": [
+        {
+          "product_code": "PROD-030",
+          "description": "Complete System Package",
+          "quantity": 19,
+          "unit_price": 4500.0,
+          "total": 85500.0
+        },
+        {
+          "product_code": "PROD-002",
+          "description": "Steel Bracket Type B",
+          "quantity": 15,
+          "unit_price": 65.0,
+          "total": 975.0
+        }
+      ],
+      "subtotal": 86475.0,
+      "vat": 12971.25,
+      "total": 99446.25,
+      "status": "paid",
+      "payment_date": null
+    },
+    {
+      "invoice_number": "INV-2025-00092",
+      "date": "2025-05-30",
+      "due_date": "2025-06-29",
+      "customer_name": "Bloemfontein Supplies",
+      "customer_vat": "4151515151",
+      "line_items": [
+        {
+          "product_code": "PROD-019",
+          "description": "Assembly Unit Type 3",
+          "quantity": 12,
+          "unit_price": 1650.0,
+          "total": 19800.0
+        },
+        {
+          "product_code": "PROD-001",
+          "description": "Steel Bracket Type A",
+          "quantity": 16,
+          "unit_price": 45.0,
+          "total": 720.0
+        },
+        {
+          "product_code": "PROD-004",
+          "description": "Aluminium Plate 20x20",
+          "quantity": 17,
+          "unit_price": 230.0,
+          "total": 3910.0
+        }
+      ],
+      "subtotal": 24430.0,
+      "vat": 3664.5,
+      "total": 28094.5,
+      "status": "paid",
+      "payment_date": "2025-05-31"
+    },
+    {
+      "invoice_number": "INV-2025-00093",
+      "date": "2025-09-28",
+      "due_date": "2025-10-28",
+      "customer_name": "Bloemfontein Supplies",
+      "customer_vat": "4151515151",
+      "line_items": [
+        {
+          "product_code": "PROD-030",
+          "description": "Complete System Package",
+          "quantity": 10,
+          "unit_price": 4500.0,
+          "total": 45000.0
+        },
+        {
+          "product_code": "PROD-004",
+          "description": "Aluminium Plate 20x20",
+          "quantity": 2,
+          "unit_price": 230.0,
+          "total": 460.0
+        },
+        {
+          "product_code": "PROD-017",
+          "description": "Assembly Unit Type 1",
+          "quantity": 3,
+          "unit_price": 850.0,
+          "total": 2550.0
+        }
+      ],
+      "subtotal": 48010.0,
+      "vat": 7201.5,
+      "total": 55211.5,
+      "status": "paid",
+      "payment_date": "2025-10-24"
+    },
+    {
+      "invoice_number": "INV-2025-00094",
+      "date": "2025-07-20",
+      "due_date": "2025-08-19",
+      "customer_name": "Cape Engineering",
+      "customer_vat": "4999999999",
+      "line_items": [
+        {
+          "product_code": "PROD-019",
+          "description": "Assembly Unit Type 3",
+          "quantity": 4,
+          "unit_price": 1650.0,
+          "total": 6600.0
+        },
+        {
+          "product_code": "PROD-002",
+          "description": "Steel Bracket Type B",
+          "quantity": 13,
+          "unit_price": 65.0,
+          "total": 845.0
+        }
+      ],
+      "subtotal": 7445.0,
+      "vat": 1116.75,
+      "total": 8561.75,
+      "status": "paid",
+      "payment_date": "2025-07-30"
+    },
+    {
+      "invoice_number": "INV-2025-00095",
+      "date": "2025-04-30",
+      "due_date": "2025-05-30",
+      "customer_name": "MetalWorks SA (Pty) Ltd",
+      "customer_vat": "4888888888",
+      "line_items": [
+        {
+          "product_code": "PROD-017",
+          "description": "Assembly Unit Type 1",
+          "quantity": 16,
+          "unit_price": 850.0,
+          "total": 13600.0
+        }
+      ],
+      "subtotal": 13600.0,
+      "vat": 2040.0,
+      "total": 15640.0,
+      "status": "pending",
+      "payment_date": "2025-05-15"
+    },
+    {
+      "invoice_number": "INV-2025-00096",
+      "date": "2025-10-19",
+      "due_date": "2025-11-18",
+      "customer_name": "Rustenburg Equipment",
+      "customer_vat": "4212121212",
+      "line_items": [
+        {
+          "product_code": "PROD-002",
+          "description": "Steel Bracket Type B",
+          "quantity": 16,
+          "unit_price": 65.0,
+          "total": 1040.0
+        },
+        {
+          "product_code": "PROD-019",
+          "description": "Assembly Unit Type 3",
+          "quantity": 17,
+          "unit_price": 1650.0,
+          "total": 28050.0
+        }
+      ],
+      "subtotal": 29090.0,
+      "vat": 4363.5,
+      "total": 33453.5,
+      "status": "paid",
+      "payment_date": "2025-11-04"
+    },
+    {
+      "invoice_number": "INV-2025-00097",
+      "date": "2025-05-23",
+      "due_date": "2025-06-22",
+      "customer_name": "XYZ Distributors (Pty) Ltd",
+      "customer_vat": "4222222222",
+      "line_items": [
+        {
+          "product_code": "PROD-004",
+          "description": "Aluminium Plate 20x20",
+          "quantity": 12,
+          "unit_price": 230.0,
+          "total": 2760.0
+        }
+      ],
+      "subtotal": 2760.0,
+      "vat": 414.0,
+      "total": 3174.0,
+      "status": "paid",
+      "payment_date": "2025-06-05"
+    },
+    {
+      "invoice_number": "INV-2025-00098",
+      "date": "2025-10-08",
+      "due_date": "2025-12-07",
+      "customer_name": "MegaBuild Construction",
+      "customer_vat": "4444444444",
+      "line_items": [
+        {
+          "product_code": "PROD-018",
+          "description": "Assembly Unit Type 2",
+          "quantity": 4,
+          "unit_price": 1200.0,
+          "total": 4800.0
+        },
+        {
+          "product_code": "PROD-005",
+          "description": "Plastic Housing Large",
+          "quantity": 20,
+          "unit_price": 85.0,
+          "total": 1700.0
+        }
+      ],
+      "subtotal": 6500.0,
+      "vat": 975.0,
+      "total": 7475.0,
+      "status": "paid",
+      "payment_date": null
+    },
+    {
+      "invoice_number": "INV-2025-00099",
+      "date": "2025-07-28",
+      "due_date": "2025-09-26",
+      "customer_name": "Nelspruit Traders",
+      "customer_vat": "4161616161",
+      "line_items": [
+        {
+          "product_code": "PROD-003",
+          "description": "Aluminium Plate 10x10",
+          "quantity": 14,
+          "unit_price": 120.0,
+          "total": 1680.0
+        },
+        {
+          "product_code": "PROD-003",
+          "description": "Aluminium Plate 10x10",
+          "quantity": 20,
+          "unit_price": 120.0,
+          "total": 2400.0
+        },
+        {
+          "product_code": "PROD-018",
+          "description": "Assembly Unit Type 2",
+          "quantity": 10,
+          "unit_price": 1200.0,
+          "total": 12000.0
+        },
+        {
+          "product_code": "PROD-004",
+          "description": "Aluminium Plate 20x20",
+          "quantity": 18,
+          "unit_price": 230.0,
+          "total": 4140.0
+        }
+      ],
+      "subtotal": 20220.0,
+      "vat": 3033.0,
+      "total": 23253.0,
+      "status": "paid",
+      "payment_date": null
+    },
+    {
+      "invoice_number": "INV-2025-00100",
+      "date": "2025-09-18",
+      "due_date": "2025-11-02",
+      "customer_name": "George Coastal Builders",
+      "customer_vat": "4202020202",
+      "line_items": [
+        {
+          "product_code": "PROD-001",
+          "description": "Steel Bracket Type A",
+          "quantity": 12,
+          "unit_price": 45.0,
+          "total": 540.0
+        },
+        {
+          "product_code": "PROD-018",
+          "description": "Assembly Unit Type 2",
+          "quantity": 8,
+          "unit_price": 1200.0,
+          "total": 9600.0
+        },
+        {
+          "product_code": "PROD-018",
+          "description": "Assembly Unit Type 2",
+          "quantity": 20,
+          "unit_price": 1200.0,
+          "total": 24000.0
+        },
+        {
+          "product_code": "PROD-002",
+          "description": "Steel Bracket Type B",
+          "quantity": 9,
+          "unit_price": 65.0,
+          "total": 585.0
+        }
+      ],
+      "subtotal": 34725.0,
+      "vat": 5208.75,
+      "total": 39933.75,
+      "status": "paid",
+      "payment_date": "2025-10-17"
+    }
+  ]
+}

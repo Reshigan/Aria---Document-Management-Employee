@@ -1,0 +1,47 @@
+[
+  {
+    "email": "admin@techforge.co.za",
+    "password": "Demo@2025",
+    "first_name": "Sarah",
+    "last_name": "Naidoo",
+    "role": "admin",
+    "status": "active",
+    "phone": "+27 82 123 4567"
+  },
+  {
+    "email": "finance@techforge.co.za",
+    "password": "Demo@2025",
+    "first_name": "Thabo",
+    "last_name": "Mokoena",
+    "role": "finance",
+    "status": "active",
+    "phone": "+27 83 234 5678"
+  },
+  {
+    "email": "hr@techforge.co.za",
+    "password": "Demo@2025",
+    "first_name": "Zanele",
+    "last_name": "Dlamini",
+    "role": "hr",
+    "status": "active",
+    "phone": "+27 84 345 6789"
+  },
+  {
+    "email": "manager@techforge.co.za",
+    "password": "Demo@2025",
+    "first_name": "Johan",
+    "last_name": "van der Merwe",
+    "role": "manager",
+    "status": "active",
+    "phone": "+27 85 456 7890"
+  },
+  {
+    "email": "employee@techforge.co.za",
+    "password": "Demo@2025",
+    "first_name": "Lindiwe",
+    "last_name": "Mkhize",
+    "role": "employee",
+    "status": "active",
+    "phone": "+27 86 567 8901"
+  }
+]

@@ -1,0 +1,74 @@
+[
+  {
+    "code": "PROD-001",
+    "name": "Steel Bracket Type A",
+    "category": "Hardware",
+    "unit_price": 45.0,
+    "cost_price": 28.0,
+    "unit": "Each"
+  },
+  {
+    "code": "PROD-002",
+    "name": "Steel Bracket Type B",
+    "category": "Hardware",
+    "unit_price": 65.0,
+    "cost_price": 42.0,
+    "unit": "Each"
+  },
+  {
+    "code": "PROD-003",
+    "name": "Aluminium Plate 10x10",
+    "category": "Raw Material",
+    "unit_price": 120.0,
+    "cost_price": 75.0,
+    "unit": "Each"
+  },
+  {
+    "code": "PROD-004",
+    "name": "Aluminium Plate 20x20",
+    "category": "Raw Material",
+    "unit_price": 230.0,
+    "cost_price": 150.0,
+    "unit": "Each"
+  },
+  {
+    "code": "PROD-005",
+    "name": "Plastic Housing Large",
+    "category": "Components",
+    "unit_price": 85.0,
+    "cost_price": 52.0,
+    "unit": "Each"
+  },
+  {
+    "code": "PROD-017",
+    "name": "Assembly Unit Type 1",
+    "category": "Finished Goods",
+    "unit_price": 850.0,
+    "cost_price": 520.0,
+    "unit": "Each"
+  },
+  {
+    "code": "PROD-018",
+    "name": "Assembly Unit Type 2",
+    "category": "Finished Goods",
+    "unit_price": 1200.0,
+    "cost_price": 750.0,
+    "unit": "Each"
+  },
+  {
+    "code": "PROD-019",
+    "name": "Assembly Unit Type 3",
+    "category": "Finished Goods",
+    "unit_price": 1650.0,
+    "cost_price": 1020.0,
+    "unit": "Each"
+  },
+  {
+    "code": "PROD-030",
+    "name": "Complete System Package",
+    "category": "Finished Goods",
+    "unit_price": 4500.0,
+    "cost_price": 2800.0,
+    "unit": "Each"
+  }
+]
