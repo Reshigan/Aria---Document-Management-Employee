@@ -188,7 +188,7 @@ export default function CashManagementConfig() {
             Features
           </Typography>
           
-          <Grid container spacing={}{1}>
+          <Grid container spacing={1}>
             {[
               "Cash flow forecasting (13-week rolling)", "Working capital optimization", "Cash position dashboard", "Automatic cash sweeping", "Investment opportunity alerts", "Debtor/creditor payment optimization", "Bank balance monitoring", "Cash scenario analysis", "Liquidity risk alerts", "Cash allocation recommendations"
             ].map((feature, index) => (

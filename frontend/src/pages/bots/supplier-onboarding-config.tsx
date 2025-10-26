@@ -188,7 +188,7 @@ export default function SupplierOnboardingConfig() {
             Features
           </Typography>
           
-          <Grid container spacing={}{1}>
+          <Grid container spacing={1}>
             {[
               "Automatic supplier registration", "BBBEE certificate verification", "Tax clearance verification", "Banking details verification", "Supplier risk assessment", "Vendor code generation", "Supplier portal access", "Contract management", "Performance tracking setup", "Integration with procurement"
             ].map((feature, index) => (

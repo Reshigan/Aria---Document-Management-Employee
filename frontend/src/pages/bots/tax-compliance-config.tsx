@@ -188,7 +188,7 @@ export default function TaxComplianceConfig() {
             Features
           </Typography>
           
-          <Grid container spacing={}{1}>
+          <Grid container spacing={1}>
             {[
               "Automatic VAT201 calculation and submission", "EMP201 (PAYE) monthly submissions", "Income tax provisional calculations", "Tax payment scheduling and reminders", "SARS eFiling integration", "Tax optimization suggestions", "Tax deadline tracking", "Audit trail for SARS compliance", "Multi-company support", "Tax reconciliation reports"
             ].map((feature, index) => (

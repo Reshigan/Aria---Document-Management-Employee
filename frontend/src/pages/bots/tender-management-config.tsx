@@ -97,7 +97,7 @@ export default function TenderManagementConfig() {
         Automates government tender discovery, response, and submission (SA-specific)
       </Typography>
 
-      <Grid container spacing={}{2} sx={{ mb: 3 }>
+      <Grid container spacing={2} sx={{ mb: 3 }>
         <Grid item>
           <Chip label="Category: operations" />
         </Grid>
@@ -121,8 +121,8 @@ export default function TenderManagementConfig() {
             Bot Configuration
           </Typography>
           
-          <Grid container spacing={}{3}>
-            <Grid item xs={}{12}>
+          <Grid container spacing={3}>
+            <Grid item xs={12}>
               <FormControlLabel
                 control={
                   <Switch
@@ -134,7 +134,7 @@ export default function TenderManagementConfig() {
               />
             </Grid>
 
-            <Grid item xs={}{12} md={}{6}>
+            <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
                 label="Schedule (Cron)"
@@ -144,7 +144,7 @@ export default function TenderManagementConfig() {
               />
             </Grid>
 
-            <Grid item xs={}{12} md={}{6}>
+            <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
                 type="number"
@@ -155,7 +155,7 @@ export default function TenderManagementConfig() {
               />
             </Grid>
 
-            <Grid item xs={}{12} md={}{6}>
+            <Grid item xs={12} md={6}>
               <FormControlLabel
                 control={
                   <Switch
@@ -167,7 +167,7 @@ export default function TenderManagementConfig() {
               />
             </Grid>
 
-            <Grid item xs={}{12} md={}{6}>
+            <Grid item xs={12} md={6}>
               <FormControlLabel
                 control={
                   <Switch
@@ -188,7 +188,7 @@ export default function TenderManagementConfig() {
             Features
           </Typography>
           
-          <Grid container spacing={}{}{1}>
+          <Grid container spacing={1}>
             {[
               "Government tender monitoring (eTender Portal)", "Tender matching to capabilities", "Automatic tender alerts", "Tender document compilation", "BBBEE scorecard generation", "Compliance checklist", "Multi-stakeholder collaboration", "Submission tracking", "Win/loss analysis", "Tender calendar and reminders"
             ].map((feature, index) => (

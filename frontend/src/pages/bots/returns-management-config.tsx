@@ -188,7 +188,7 @@ export default function ReturnsManagementConfig() {
             Features
           </Typography>
           
-          <Grid container spacing={}{1}>
+          <Grid container spacing={1}>
             {[
               "RMA (Return Merchandise Authorization) generation", "Return reason tracking and analysis", "Automatic refund processing", "Warranty claim verification", "Return shipping label generation", "Inventory return processing", "Restocking automation", "Return analytics and trends", "Fraud detection", "Integration with couriers"
             ].map((feature, index) => (

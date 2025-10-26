@@ -188,7 +188,7 @@ export default function SalesForecastingConfig() {
             Features
           </Typography>
           
-          <Grid container spacing={}{1}>
+          <Grid container spacing={1}>
             {[
               "AI-powered sales forecasting", "Pipeline analysis and health scoring", "Deal probability assessment", "Revenue predictions (monthly, quarterly, annual)", "Seasonality analysis", "Sales trend identification", "At-risk deal alerts", "Sales target tracking", "What-if scenario analysis", "Forecast vs actual reports"
             ].map((feature, index) => (

@@ -188,7 +188,7 @@ export default function ShippingLogisticsConfig() {
             Features
           </Typography>
           
-          <Grid container spacing={}{1}>
+          <Grid container spacing={1}>
             {[
               "Automatic courier selection (best rate)", "Shipping label generation", "Courier booking automation", "Real-time tracking integration", "Delivery notifications (email, SMS, WhatsApp)", "Proof of delivery (POD) capture", "Freight cost allocation", "Delivery performance tracking", "Route optimization", "Returns processing"
             ].map((feature, index) => (

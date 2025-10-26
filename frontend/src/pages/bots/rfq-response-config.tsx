@@ -188,7 +188,7 @@ export default function RfqResponseConfig() {
             Features
           </Typography>
           
-          <Grid container spacing={}{1}>
+          <Grid container spacing={1}>
             {[
               "Automatic RFQ parsing (from email, portals)", "Quote generation with pricing", "Tender document compilation", "BBBEE certificate inclusion", "Compliance checklist verification", "Multi-stakeholder collaboration", "Submission tracking and reminders", "Win/loss analysis", "Template library", "Integration with government tender portals"
             ].map((feature, index) => (

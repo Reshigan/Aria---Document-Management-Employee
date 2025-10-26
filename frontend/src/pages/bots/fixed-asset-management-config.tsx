@@ -188,7 +188,7 @@ export default function FixedAssetManagementConfig() {
             Features
           </Typography>
           
-          <Grid container spacing={}{1}>
+          <Grid container spacing={1}>
             {[
               "Asset register maintenance", "Automatic depreciation calculations (multiple methods)", "Asset disposal tracking", "Asset transfer between departments", "Asset physical verification scheduling", "Asset insurance tracking", "Asset maintenance scheduling", "Barcode/RFID tagging", "Tax depreciation optimization", "Asset valuation reports"
             ].map((feature, index) => (

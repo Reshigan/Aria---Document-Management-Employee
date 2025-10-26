@@ -188,7 +188,7 @@ export default function EsignatureConfig() {
             Features
           </Typography>
           
-          <Grid container spacing={}{1}>
+          <Grid container spacing={1}>
             {[
               "Send documents for signature automatically", "Track signature status in real-time", "Multi-party signing workflows", "Sequential and parallel signing", "Signature reminders and escalations", "PDF form filling and signing", "Integration with DocuSign, Adobe Sign", "In-app signing (fallback)", "Certificate-based signatures (PKI)", "Signature audit trail"
             ].map((feature, index) => (

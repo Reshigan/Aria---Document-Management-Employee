@@ -188,7 +188,7 @@ export default function PricingConfig() {
             Features
           </Typography>
           
-          <Grid container spacing={}{1}>
+          <Grid container spacing={1}>
             {[
               "Dynamic pricing based on demand, inventory, competition", "Cost-plus pricing automation", "Margin analysis and alerts", "Discount approval workflows", "Price list management", "Competitor price monitoring", "Volume-based pricing", "Customer-specific pricing", "Price change tracking", "Pricing recommendations (AI-powered)"
             ].map((feature, index) => (

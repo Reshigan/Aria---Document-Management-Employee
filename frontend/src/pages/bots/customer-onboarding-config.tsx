@@ -188,7 +188,7 @@ export default function CustomerOnboardingConfig() {
             Features
           </Typography>
           
-          <Grid container spacing={}{1}>
+          <Grid container spacing={1}>
             {[
               "Automatic customer registration from web forms", "Document verification (company registration, tax certificates)", "Credit checks and scoring", "BBBEE verification (SA-specific)", "FICA/KYC compliance", "Customer account setup", "Welcome email and onboarding materials", "Credit limit approval workflows", "Customer portal access provisioning", "Integration with CRM"
             ].map((feature, index) => (

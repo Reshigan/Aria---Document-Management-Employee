@@ -188,7 +188,7 @@ export default function QualityControlConfig() {
             Features
           </Typography>
           
-          <Grid container spacing={}{1}>
+          <Grid container spacing={1}>
             {[
               "Automated QC inspection workflows", "Defect identification and logging", "Quality metrics tracking", "Non-conformance reports (NCR)", "Corrective action tracking", "Supplier quality monitoring", "Statistical process control (SPC)", "Quality audit scheduling", "Certificate of analysis generation", "Integration with production"
             ].map((feature, index) => (

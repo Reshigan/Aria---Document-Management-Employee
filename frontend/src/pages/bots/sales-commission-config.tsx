@@ -188,7 +188,7 @@ export default function SalesCommissionConfig() {
             Features
           </Typography>
           
-          <Grid container spacing={}{1}>
+          <Grid container spacing={1}>
             {[
               "Automatic commission calculations (multiple structures)", "Tiered commission support", "Team-based commissions", "Commission splits", "Clawback handling (returns/cancellations)", "Commission approval workflows", "Integration with payroll", "Commission statements", "Real-time commission tracking", "Commission forecasting"
             ].map((feature, index) => (

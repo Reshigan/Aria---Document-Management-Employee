@@ -188,7 +188,7 @@ export default function CreditControlConfig() {
             Features
           </Typography>
           
-          <Grid container spacing={}{1}>
+          <Grid container spacing={1}>
             {[
               "Automatic debtor follow-up emails and SMS", "Escalation workflows (email → phone → legal)", "Aging analysis and reports", "Payment promises tracking", "Credit limit monitoring", "Account suspension for overdue customers", "Payment allocation automation", "Debtor risk scoring", "Integration with collections agencies", "Dunning letter generation"
             ].map((feature, index) => (

@@ -188,7 +188,7 @@ export default function CustomerRetentionConfig() {
             Features
           </Typography>
           
-          <Grid container spacing={}{1}>
+          <Grid container spacing={1}>
             {[
               "Churn prediction (AI-powered)", "At-risk customer identification", "Automated retention campaigns", "Loyalty program management", "Win-back campaigns", "Customer satisfaction monitoring", "Usage pattern analysis", "Personalized offers", "Customer health scoring", "Retention KPI tracking"
             ].map((feature, index) => (

@@ -188,7 +188,7 @@ export default function MultiCurrencyConfig() {
             Features
           </Typography>
           
-          <Grid container spacing={}{1}>
+          <Grid container spacing={1}>
             {[
               "Automatic exchange rate updates", "Foreign currency revaluation (monthly)", "Unrealized gain/loss calculations", "Forex transaction processing", "Currency hedging monitoring", "Multi-currency reporting", "Currency conversion on-the-fly", "Historical rate tracking", "Best rate alerts", "Integration with forex brokers"
             ].map((feature, index) => (

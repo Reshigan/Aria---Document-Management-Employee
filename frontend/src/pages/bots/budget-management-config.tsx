@@ -188,7 +188,7 @@ export default function BudgetManagementConfig() {
             Features
           </Typography>
           
-          <Grid container spacing={}{1}>
+          <Grid container spacing={1}>
             {[
               "Automatic budget creation from historical data", "Budget vs actual tracking", "Variance analysis and alerts", "Budget approval workflows", "Department budget allocation", "Real-time spend monitoring", "Budget forecasting (AI-powered)", "Budget revision workflows", "Multi-year budget planning", "Budget reports and dashboards"
             ].map((feature, index) => (

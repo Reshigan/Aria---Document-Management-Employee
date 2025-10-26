@@ -188,7 +188,7 @@ export default function OcrDocumentCaptureConfig() {
             Features
           </Typography>
           
-          <Grid container spacing={}{1}>
+          <Grid container spacing={1}>
             {[
               "Automatic document scanning from email attachments, file uploads, and network folders", "OCR text extraction with 98%+ accuracy using Azure AI Vision", "Intelligent document classification (invoices, quotes, contracts, receipts, etc.)", "Metadata extraction (dates, amounts, vendor names, PO numbers)", "Multi-language support (English, Afrikaans, Zulu, Xhosa)", "Barcode and QR code scanning", "Image preprocessing (deskew, denoise, enhance)", "PDF generation with searchable text layer", "Batch processing (100+ documents per run)", "Integration with Document Management System"
             ].map((feature, index) => (

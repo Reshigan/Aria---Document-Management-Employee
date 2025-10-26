@@ -188,7 +188,7 @@ export default function CalendarOffice365Config() {
             Features
           </Typography>
           
-          <Grid container spacing={}{1}>
+          <Grid container spacing={1}>
             {[
               "Automatic meeting scheduling (find optimal time for all attendees)", "Room and resource booking", "Meeting conflict resolution", "Calendar synchronization across users", "Recurring meeting management", "Meeting reminder notifications", "Integration with Office 365 Calendar", "Time zone conversion", "Meeting analytics (time spent in meetings)", "Auto-decline conflicting invites"
             ].map((feature, index) => (
