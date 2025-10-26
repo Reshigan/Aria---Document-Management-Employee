@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Calendar } from 'lucide-react';
-import { DataTable } from '../components/shared/DataTable';
+import { DataTable } from '../../components/shared/DataTable';
 
 export default function AgedReportsPage() {
   const [reportType, setReportType] = useState('debtors');

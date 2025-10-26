@@ -1,6 +1,6 @@
 import React from 'react';
 import { RefreshCw, CheckCircle, XCircle, Clock } from 'lucide-react';
-import { DataTable } from '../components/shared/DataTable';
+import { DataTable } from '../../components/shared/DataTable';
 
 export default function IntegrationSyncPage() {
   const syncHistory = [

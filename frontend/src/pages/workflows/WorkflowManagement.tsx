@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Workflow, Play, Clock } from 'lucide-react';
-import { DataTable } from '../components/shared/DataTable';
+import { DataTable } from '../../components/shared/DataTable';
 
 export default function WorkflowManagementPage() {
   const [workflows, setWorkflows] = useState([]);
