@@ -5,7 +5,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Button } from '../../components/ui/button';
-import DataTable from '../../components/shared/DataTable';
+import { DataTable } from '../../components/shared/DataTable';
 import {
   Users, UserPlus, Mail, Shield, Trash2, RotateCcw,
   CheckCircle, XCircle, Clock, MoreVertical

@@ -1,6 +1,6 @@
 import React from 'react';
 import { FileText, Download, Mail, Eye } from 'lucide-react';
-import DataTable from '../components/shared/DataTable';
+import { DataTable } from '../components/shared/DataTable';
 
 export default function DocumentHistoryPage() {
   const documents = [

@@ -1,6 +1,6 @@
 import React from 'react';
 import { CheckSquare, X, Check } from 'lucide-react';
-import DataTable from '../components/shared/DataTable';
+import { DataTable } from '../components/shared/DataTable';
 
 export default function PendingActionsPage() {
   const actions = [

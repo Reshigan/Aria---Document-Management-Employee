@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FileText, CheckCircle, XCircle, Clock } from 'lucide-react';
-import DataTable from '../../components/shared/DataTable';
+import { DataTable } from '../../components/shared/DataTable';
 
 export default function InvoiceReconciliationReportPage() {
   const [data, setData] = useState({ stats: {}, invoices: [] });

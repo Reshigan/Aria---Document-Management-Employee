@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '../../components/ui/button';
-import DataTable from '../../components/shared/DataTable';
+import { DataTable } from '../../components/shared/DataTable';
 import { Settings, Shield, Bell, Database, Key, Activity } from 'lucide-react';
 
 export default function SystemSettingsPage() {

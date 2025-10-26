@@ -1,6 +1,6 @@
 import React from 'react';
 import { DollarSign } from 'lucide-react';
-import DataTable from '../../components/shared/DataTable';
+import { DataTable } from '../../components/shared/DataTable';
 
 export default function PayrollActivityReportPage() {
   const runs = [

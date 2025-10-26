@@ -7,44 +7,44 @@ import { MainLayout } from './components/layout/MainLayout';
 
 // Public Pages
 import { Landing } from './pages/Landing';
-import { Login } from './pages/Login';
-import { Register } from './pages/Register';
+import Login from './pages/Login';
+import Register from './pages/Register';
 
 // Dashboard
-import { Dashboard } from './pages/Dashboard';
+import Dashboard from './pages/Dashboard';
 import { CustomerDashboard } from './pages/CustomerDashboard';
 
 // Admin Pages
-import { CompanySettings } from './pages/admin/CompanySettings';
-import { UserManagement } from './pages/admin/UserManagement';
-import { BotConfiguration } from './pages/admin/BotConfiguration';
-import { SystemSettings } from './pages/admin/SystemSettings';
+import CompanySettings from './pages/admin/CompanySettings';
+import UserManagement from './pages/admin/UserManagement';
+import BotConfiguration from './pages/admin/BotConfiguration';
+import SystemSettings from './pages/admin/SystemSettings';
 
 // Bot Reports
-import { BotDashboard } from './pages/reports/BotDashboard';
-import { InvoiceReconciliationReport } from './pages/reports/InvoiceReconciliationReport';
-import { BbbeeComplianceReport } from './pages/reports/BbbeeComplianceReport';
-import { PayrollActivityReport } from './pages/reports/PayrollActivityReport';
-import { ExpenseManagementReport } from './pages/reports/ExpenseManagementReport';
+import BotDashboard from './pages/reports/BotDashboard';
+import InvoiceReconciliationReport from './pages/reports/InvoiceReconciliationReport';
+import BbbeeComplianceReport from './pages/reports/BbbeeComplianceReport';
+import PayrollActivityReport from './pages/reports/PayrollActivityReport';
+import ExpenseManagementReport from './pages/reports/ExpenseManagementReport';
 
 // Document Management
-import { DocumentTemplates } from './pages/documents/DocumentTemplates';
-import { GenerateDocument } from './pages/documents/GenerateDocument';
-import { DocumentHistory } from './pages/documents/DocumentHistory';
+import DocumentTemplates from './pages/documents/DocumentTemplates';
+import GenerateDocument from './pages/documents/GenerateDocument';
+import DocumentHistory from './pages/documents/DocumentHistory';
 
 // Financial Reports
-import { ProfitLossStatement } from './pages/financial/ProfitLossStatement';
-import { BalanceSheet } from './pages/financial/BalanceSheet';
-import { CashFlowStatement } from './pages/financial/CashFlowStatement';
-import { AgedReports } from './pages/financial/AgedReports';
+import ProfitLossStatement from './pages/financial/ProfitLossStatement';
+import BalanceSheet from './pages/financial/BalanceSheet';
+import CashFlowStatement from './pages/financial/CashFlowStatement';
+import AgedReports from './pages/financial/AgedReports';
 
 // Workflows
-import { WorkflowManagement } from './pages/workflows/WorkflowManagement';
-import { PendingActions } from './pages/PendingActions';
+import WorkflowManagement from './pages/workflows/WorkflowManagement';
+import PendingActions from './pages/PendingActions';
 
 // Integrations
-import { IntegrationsList } from './pages/integrations/IntegrationsList';
-import { IntegrationSync } from './pages/integrations/IntegrationSync';
+import IntegrationsList from './pages/integrations/IntegrationsList';
+import IntegrationSync from './pages/integrations/IntegrationSync';
 
 // ARIA Voice Interface
 import { AriaVoiceInterface } from './components/aria/AriaVoiceInterface';
