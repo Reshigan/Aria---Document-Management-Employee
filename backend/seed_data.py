@@ -6,10 +6,21 @@ Creates a complete South African company with realistic data for testing all 47 
 import asyncio
 from datetime import datetime, timedelta
 from sqlalchemy.orm import Session
-from backend.database import engine, SessionLocal
-from backend.models.base import Base
 import random
 import string
+import sys
+import os
+
+# Add parent directory to path for imports
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+try:
+    from backend.database import engine, SessionLocal
+    from backend.models.base import Base
+except ImportError:
+    # Running from backend directory
+    from database import engine, SessionLocal
+    from models.base import Base
 
 # Sample SA company data
 SA_COMPANY = {
