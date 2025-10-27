@@ -10,6 +10,9 @@ import { Landing } from './pages/Landing';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import BotShowcase from './pages/BotShowcase';
+import ApiTest from './pages/ApiTest';
+import BotsLive from './pages/BotsLive';
+import Sandpit from './pages/Sandpit';
 
 // Dashboard
 import Dashboard from './pages/Dashboard';
@@ -74,7 +77,10 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/signup" element={<Register />} />
+        <Route path="/sandpit" element={<Sandpit />} />
         <Route path="/bots" element={<BotShowcase />} />
+        <Route path="/bots-live" element={<BotsLive />} />
+        <Route path="/api-test" element={<ApiTest />} />
 
         {/* ============================================
             PROTECTED ROUTES (Authentication required)

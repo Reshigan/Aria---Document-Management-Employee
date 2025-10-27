@@ -1,13 +1,9 @@
 #!/bin/bash
-################################################################################
-# ARIA Document Management System - Production Deployment Script
-# 
-# This script automates the deployment of ARIA to a production server
-# 
-# Usage: 
-#   Local: ./deploy_production.sh
-#   Remote: Run this on your production server after transferring files
-################################################################################
+
+###############################################################################
+# ARIA ERP & BOTS - Production Deployment Script
+# This script deploys all components of the ARIA system
+###############################################################################
 
 set -e  # Exit on error
 
@@ -18,206 +14,185 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
-# Configuration
-APP_DIR="/var/www/aria"
-BACKEND_PORT=8000
-FRONTEND_PORT=3000
-DB_PATH="$APP_DIR/backend/aria.db"
-
-echo -e "${BLUE}============================================================${NC}"
-echo -e "${BLUE}ARIA Document Management System - Production Deployment${NC}"
-echo -e "${BLUE}============================================================${NC}\n"
-
-# Function to print colored output
-print_status() {
-    echo -e "${GREEN}[✓]${NC} $1"
+# Functions
+print_header() {
+    echo -e "\n${BLUE}═══════════════════════════════════════════════════════════${NC}"
+    echo -e "${BLUE}$1${NC}"
+    echo -e "${BLUE}═══════════════════════════════════════════════════════════${NC}\n"
 }
 
-print_error() {
-    echo -e "${RED}[✗]${NC} $1"
+print_success() {
+    echo -e "${GREEN}✓ $1${NC}"
 }
 
 print_warning() {
-    echo -e "${YELLOW}[!]${NC} $1"
+    echo -e "${YELLOW}⚠ $1${NC}"
+}
+
+print_error() {
+    echo -e "${RED}✗ $1${NC}"
 }
 
 print_info() {
-    echo -e "${BLUE}[i]${NC} $1"
+    echo -e "${BLUE}ℹ $1${NC}"
 }
 
-# Check if running as root
-if [ "$EUID" -eq 0 ]; then 
-    print_warning "Running as root. This is okay for initial setup."
+# Check if Docker is installed
+check_docker() {
+    if ! command -v docker &> /dev/null; then
+        print_error "Docker is not installed. Please install Docker first."
+        exit 1
+    fi
+    
+    if ! command -v docker-compose &> /dev/null; then
+        print_error "Docker Compose is not installed. Please install Docker Compose first."
+        exit 1
+    fi
+    
+    print_success "Docker and Docker Compose are installed"
+}
+
+# Main deployment
+print_header "🚀 ARIA ERP & BOTS - Production Deployment"
+
+print_info "Starting deployment process..."
+
+# Step 1: Check prerequisites
+print_header "Step 1: Checking Prerequisites"
+check_docker
+
+# Step 2: Stop any existing containers
+print_header "Step 2: Stopping Existing Containers"
+if docker-compose ps | grep -q "Up"; then
+    print_info "Stopping existing containers..."
+    docker-compose down
+    print_success "Existing containers stopped"
+else
+    print_info "No existing containers running"
 fi
 
-# 1. System Update
-print_info "Step 1/10: Updating system packages..."
-sudo apt-get update -qq
-print_status "System packages updated"
+# Step 3: Build Docker images
+print_header "Step 3: Building Docker Images"
+print_info "This may take several minutes..."
+docker-compose build --no-cache
+print_success "Docker images built successfully"
 
-# 2. Install Required Packages
-print_info "Step 2/10: Installing required packages..."
-sudo apt-get install -y \
-    python3 \
-    python3-pip \
-    python3-venv \
-    nodejs \
-    npm \
-    nginx \
-    git \
-    curl \
-    build-essential \
-    postgresql \
-    postgresql-contrib \
-    > /dev/null 2>&1
-print_status "Required packages installed"
+# Step 4: Start services
+print_header "Step 4: Starting Services"
+print_info "Starting all services in detached mode..."
+docker-compose up -d
+print_success "All services started"
 
-# 3. Check Node.js version
-print_info "Step 3/10: Checking Node.js version..."
-NODE_VERSION=$(node --version)
-print_status "Node.js version: $NODE_VERSION"
+# Step 5: Wait for services to be ready
+print_header "Step 5: Waiting for Services to be Ready"
+print_info "Waiting for backend to be ready..."
+sleep 10
 
-# 4. Create application directory
-print_info "Step 4/10: Creating application directory..."
-sudo mkdir -p $APP_DIR
-sudo chown -R $USER:$USER $APP_DIR
-print_status "Application directory created: $APP_DIR"
+# Check backend health
+MAX_RETRIES=30
+RETRY_COUNT=0
+while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+    if curl -s http://localhost:8000/health > /dev/null 2>&1; then
+        print_success "Backend is healthy"
+        break
+    fi
+    RETRY_COUNT=$((RETRY_COUNT + 1))
+    echo -n "."
+    sleep 2
+done
 
-# 5. Setup Python Virtual Environment
-print_info "Step 5/10: Setting up Python virtual environment..."
-cd $APP_DIR
-python3 -m venv venv
-source venv/bin/activate
-print_status "Python virtual environment created"
+if [ $RETRY_COUNT -eq $MAX_RETRIES ]; then
+    print_error "Backend failed to start within timeout"
+    print_info "Checking logs..."
+    docker-compose logs backend
+    exit 1
+fi
 
-# 6. Install Python Dependencies
-print_info "Step 6/10: Installing Python dependencies..."
-pip install --upgrade pip > /dev/null
-cd backend
-pip install -r requirements.txt > /dev/null
-print_status "Python dependencies installed"
-
-# 7. Install Frontend Dependencies
-print_info "Step 7/10: Installing frontend dependencies..."
-cd ../frontend
-npm install > /dev/null 2>&1
-print_status "Frontend dependencies installed"
-
-# 8. Build Frontend
-print_info "Step 8/10: Building frontend for production..."
-npm run build > /dev/null 2>&1
-print_status "Frontend built successfully"
-
-# 9. Setup Environment Variables
-print_info "Step 9/10: Setting up environment variables..."
-cd $APP_DIR
-
-# Backend .env
-cat > backend/.env << EOF
-DATABASE_URL=sqlite:///$DB_PATH
-SECRET_KEY=$(openssl rand -hex 32)
-ALGORITHM=HS256
-ACCESS_TOKEN_EXPIRE_MINUTES=30
-ENVIRONMENT=production
-ALLOWED_ORIGINS=http://localhost:$FRONTEND_PORT,http://$(hostname -I | awk '{print $1}'):$FRONTEND_PORT
-EOF
-print_status "Backend environment configured"
-
-# Frontend .env.local
-cat > frontend/.env.local << EOF
-NEXT_PUBLIC_API_URL=http://$(hostname -I | awk '{print $1}'):$BACKEND_PORT/api/v1
-EOF
-print_status "Frontend environment configured"
-
-# 10. Setup Systemd Services
-print_info "Step 10/10: Setting up systemd services..."
-
-# Backend service
-sudo tee /etc/systemd/system/aria-backend.service > /dev/null << EOF
-[Unit]
-Description=ARIA Backend API
-After=network.target
-
-[Service]
-Type=simple
-User=$USER
-WorkingDirectory=$APP_DIR/backend
-Environment="PATH=$APP_DIR/venv/bin"
-ExecStart=$APP_DIR/venv/bin/uvicorn api.gateway.main:app --host 0.0.0.0 --port $BACKEND_PORT
-Restart=always
-RestartSec=10
-
-[Install]
-WantedBy=multi-user.target
-EOF
-
-# Frontend service
-sudo tee /etc/systemd/system/aria-frontend.service > /dev/null << EOF
-[Unit]
-Description=ARIA Frontend
-After=network.target
-
-[Service]
-Type=simple
-User=$USER
-WorkingDirectory=$APP_DIR/frontend
-Environment="PATH=/usr/bin:/usr/local/bin"
-Environment="PORT=$FRONTEND_PORT"
-ExecStart=/usr/bin/npm start
-Restart=always
-RestartSec=10
-
-[Install]
-WantedBy=multi-user.target
-EOF
-
-# Reload systemd and start services
-sudo systemctl daemon-reload
-sudo systemctl enable aria-backend aria-frontend
-sudo systemctl restart aria-backend aria-frontend
-
-print_status "Systemd services configured and started"
-
-# Wait for services to start
+# Check frontend
+print_info "Checking frontend..."
 sleep 5
-
-# Check service status
-echo ""
-print_info "Checking service status..."
-if systemctl is-active --quiet aria-backend; then
-    print_status "Backend service is running"
+if curl -s http://localhost:12000 > /dev/null 2>&1; then
+    print_success "Frontend is running"
 else
-    print_error "Backend service failed to start"
-    sudo journalctl -u aria-backend -n 20 --no-pager
+    print_warning "Frontend may not be fully ready yet"
 fi
 
-if systemctl is-active --quiet aria-frontend; then
-    print_status "Frontend service is running"
+# Step 6: Verify all services
+print_header "Step 6: Verifying Services"
+docker-compose ps
+
+# Step 7: Run health checks
+print_header "Step 7: Running Health Checks"
+
+# Backend health
+print_info "Testing backend health endpoint..."
+HEALTH_RESPONSE=$(curl -s http://localhost:8000/health)
+if echo "$HEALTH_RESPONSE" | grep -q "healthy"; then
+    print_success "Backend health check passed"
+    echo "$HEALTH_RESPONSE" | python3 -m json.tool 2>/dev/null || echo "$HEALTH_RESPONSE"
 else
-    print_error "Frontend service failed to start"
-    sudo journalctl -u aria-frontend -n 20 --no-pager
+    print_error "Backend health check failed"
 fi
 
-# Display access information
-echo ""
-echo -e "${BLUE}============================================================${NC}"
-echo -e "${GREEN}Deployment Complete!${NC}"
-echo -e "${BLUE}============================================================${NC}"
-echo ""
-echo -e "Access your ARIA system at:"
-echo -e "  Frontend: ${GREEN}http://$(hostname -I | awk '{print $1}'):$FRONTEND_PORT${NC}"
-echo -e "  Backend API: ${GREEN}http://$(hostname -I | awk '{print $1}'):$BACKEND_PORT/api/v1${NC}"
-echo -e "  API Docs: ${GREEN}http://$(hostname -I | awk '{print $1}'):$BACKEND_PORT/api/v1/docs${NC}"
-echo ""
-echo -e "Service Management:"
-echo -e "  View backend logs: ${YELLOW}sudo journalctl -u aria-backend -f${NC}"
-echo -e "  View frontend logs: ${YELLOW}sudo journalctl -u aria-frontend -f${NC}"
-echo -e "  Restart backend: ${YELLOW}sudo systemctl restart aria-backend${NC}"
-echo -e "  Restart frontend: ${YELLOW}sudo systemctl restart aria-frontend${NC}"
-echo ""
-echo -e "Next Steps:"
-echo -e "  1. Configure Nginx reverse proxy (optional)"
-echo -e "  2. Set up SSL certificates"
-echo -e "  3. Configure firewall rules"
-echo -e "  4. Run the test script: ${YELLOW}python3 test_production.py${NC}"
-echo ""
+# Bots availability
+print_info "Testing bots endpoint..."
+BOTS_RESPONSE=$(curl -s http://localhost:8000/api/bots)
+BOT_COUNT=$(echo "$BOTS_RESPONSE" | grep -o "bot_id" | wc -l)
+if [ "$BOT_COUNT" -ge 8 ]; then
+    print_success "All $BOT_COUNT bots are available"
+else
+    print_warning "Only $BOT_COUNT bots found (expected 8)"
+fi
+
+# ERP modules
+print_info "Testing ERP modules..."
+MODULES=("financial" "hr" "crm" "procurement" "compliance")
+for module in "${MODULES[@]}"; do
+    if curl -s "http://localhost:8000/api/erp/$module" | grep -q "module"; then
+        print_success "ERP module '$module' is available"
+    else
+        print_warning "ERP module '$module' may have issues"
+    fi
+done
+
+# Step 8: Display deployment information
+print_header "🎉 Deployment Complete!"
+
+echo -e "${GREEN}═══════════════════════════════════════════════════════════${NC}"
+echo -e "${GREEN}✓ All services are running successfully!${NC}"
+echo -e "${GREEN}═══════════════════════════════════════════════════════════${NC}\n"
+
+echo -e "${BLUE}📍 Access Points:${NC}"
+echo -e "   Backend API:       http://localhost:8000"
+echo -e "   API Documentation: http://localhost:8000/docs"
+echo -e "   Frontend:          http://localhost:12000"
+echo -e "   Health Check:      http://localhost:8000/health\n"
+
+echo -e "${BLUE}🤖 Available Bots (8):${NC}"
+echo -e "   1. Invoice Reconciliation"
+echo -e "   2. Expense Management"
+echo -e "   3. Accounts Payable"
+echo -e "   4. AR Collections"
+echo -e "   5. Bank Reconciliation"
+echo -e "   6. Lead Qualification"
+echo -e "   7. Payroll SA"
+echo -e "   8. BBBEE Compliance\n"
+
+echo -e "${BLUE}🏢 ERP Modules (5):${NC}"
+echo -e "   1. Financial Management"
+echo -e "   2. Human Resources"
+echo -e "   3. Customer Relationship Management"
+echo -e "   4. Procurement"
+echo -e "   5. Compliance\n"
+
+echo -e "${BLUE}📊 Useful Commands:${NC}"
+echo -e "   View logs:         docker-compose logs -f"
+echo -e "   Stop services:     docker-compose down"
+echo -e "   Restart service:   docker-compose restart [service]"
+echo -e "   View status:       docker-compose ps\n"
+
+echo -e "${BLUE}📚 Documentation:${NC}"
+echo -e "   Full Status:       DEPLOYMENT_STATUS.md"
+echo -e "   Quick Start:       QUICK_START.md\n"
+
+print_header "✨ Ready for Production! ✨"

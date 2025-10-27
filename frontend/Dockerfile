@@ -11,6 +11,10 @@ RUN npm install
 # Copy application
 COPY . .
 
+# Build for production if needed (commented out for dev mode)
+# RUN npm run build
+
 EXPOSE 12000
 
-CMD ["npm", "run", "dev"]
+# For development with hot reload
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0", "--port", "12000"]

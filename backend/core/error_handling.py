@@ -15,11 +15,16 @@ import asyncio
 import json
 
 # Configure logging
+import os
+log_dir = os.getenv('LOG_DIR', './logs')
+os.makedirs(log_dir, exist_ok=True)
+log_file = os.path.join(log_dir, 'application.log')
+
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler('/var/log/aria/application.log'),
+        logging.FileHandler(log_file),
         logging.StreamHandler()
     ]
 )

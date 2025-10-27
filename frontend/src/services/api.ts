@@ -42,11 +42,33 @@ export const authAPI = {
 
 export const botsAPI = {
   list: () => 
-    api.get('/bots/'),
+    api.get('/bots'),
+  get: (botName: string) =>
+    api.get(`/bots/${botName}`),
+  execute: (botName: string, data: any) => 
+    api.post('/bots/execute', { bot_name: botName, data }),
   query: (botId: string, query: string) => 
     api.post(`/bots/${botId}/query`, { query }),
   status: (botId: string) => 
     api.get(`/bots/${botId}/status`),
+};
+
+export const erpAPI = {
+  financial: () => 
+    api.get('/erp/financial'),
+  hr: () => 
+    api.get('/erp/hr'),
+  crm: () => 
+    api.get('/erp/crm'),
+  procurement: () => 
+    api.get('/erp/procurement'),
+  compliance: () => 
+    api.get('/erp/compliance'),
+};
+
+export const healthAPI = {
+  check: () =>
+    axios.get(`${API_BASE_URL}/health`),
 };
 
 export const tenantsAPI = {
