@@ -91,3 +91,13 @@ env/
 .idea/
 *.swp
 *.swo
+
+# Private keys and sensitive files
+*.pem
+*.key
+*.ppk
+.env
+.env.local
+*.p12
+*.pfx
+
