@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from 'react';
+/**
+ * Bot Showcase - Clean, Professional Design
+ */
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
-  Zap, TrendingUp, DollarSign, FileText, Shield, Users,
-  Package, BarChart, Clock, CheckCircle, ArrowRight, Play,
-  Activity, Target, Briefcase, Calendar, MessageSquare, Search
+  Bot, DollarSign, TrendingUp, Package, Shield, Users, MessageSquare,
+  ArrowRight, CheckCircle, Sparkles, FileText, BarChart
 } from 'lucide-react';
-import { api } from '../services/api';
 
 interface Bot {
   id: string;
@@ -13,697 +15,333 @@ interface Bot {
   category: string;
   description: string;
   features: string[];
-  roi: string;
-  timeSaved: string;
-  moneySaved: string;
   icon: any;
-  status: 'active' | 'coming_soon';
-  complexity: 'basic' | 'standard' | 'advanced';
-  pricing: number;
-  linesOfCode: number;
 }
 
-const BOT_CATEGORIES = {
-  financial: { name: 'Financial Bots', icon: DollarSign, color: 'text-green-600 bg-green-100' },
-  sales: { name: 'Sales & CRM', icon: TrendingUp, color: 'text-blue-600 bg-blue-100' },
-  operations: { name: 'Operations', icon: Package, color: 'text-purple-600 bg-purple-100' },
-  compliance: { name: 'Compliance', icon: Shield, color: 'text-red-600 bg-red-100' },
-  hr: { name: 'Human Resources', icon: Users, color: 'text-indigo-600 bg-indigo-100' },
-  support: { name: 'Support & Admin', icon: MessageSquare, color: 'text-orange-600 bg-orange-100' }
-};
-
 const BOTS_DATA: Bot[] = [
-  // FINANCIAL BOTS
+  // Financial
   {
-    id: 'invoice-reconciliation',
-    name: 'Invoice Reconciliation Bot',
-    category: 'financial',
-    description: 'Automatically match invoices to payments and bank transactions with 95% accuracy',
-    features: ['3-way matching (PO, Invoice, Receipt)', 'Duplicate detection', 'Currency conversion', 'Aging analysis', 'Exception handling'],
-    roi: '95% accuracy, 20-30 hours/month saved',
-    timeSaved: '20-30 hours/month',
-    moneySaved: 'R15,000-R25,000/month',
-    icon: FileText,
-    status: 'active',
-    complexity: 'advanced',
-    pricing: 3500,
-    linesOfCode: 23098
+    id: 'invoice-rec',
+    name: 'Invoice Reconciliation',
+    category: 'Financial',
+    description: 'Automatically match invoices to payments with 95% accuracy. 3-way matching, duplicate detection, and aging analysis.',
+    features: ['3-way matching', 'Duplicate detection', '95% accuracy', 'Aging analysis'],
+    icon: FileText
   },
   {
-    id: 'accounts-payable',
-    name: 'Accounts Payable Bot',
-    category: 'financial',
-    description: 'Automate supplier invoice processing from capture to payment',
-    features: ['Invoice OCR capture', 'Approval routing', 'Payment scheduling', 'Vendor master data management', 'Duplicate checking'],
-    roi: '15-20 hours/month saved',
-    timeSaved: '15-20 hours/month',
-    moneySaved: 'R12,000-R18,000/month',
-    icon: DollarSign,
-    status: 'active',
-    complexity: 'standard',
-    pricing: 2500,
-    linesOfCode: 3688
+    id: 'ap-bot',
+    name: 'Accounts Payable',
+    category: 'Financial',
+    description: 'Automate supplier invoice processing from capture to payment with OCR and approval routing.',
+    features: ['Invoice OCR', 'Approval routing', 'Payment scheduling', 'Vendor management'],
+    icon: DollarSign
   },
   {
-    id: 'ar-collections',
-    name: 'AR Collections Bot',
-    category: 'financial',
-    description: 'Automate accounts receivable and collections processes',
-    features: ['Aging analysis', 'Auto-reminder emails', 'Escalation workflows', 'Payment prediction', 'Customer portal'],
-    roi: 'Reduces DSO by 15-20 days',
-    timeSaved: '15-20 hours/month',
-    moneySaved: '15-20 day DSO reduction',
-    icon: TrendingUp,
-    status: 'active',
-    complexity: 'advanced',
-    pricing: 3500,
-    linesOfCode: 23385
+    id: 'ar-bot',
+    name: 'AR Collections',
+    category: 'Financial',
+    description: 'Automate accounts receivable and reduce DSO by 15-20 days with smart collection workflows.',
+    features: ['Aging analysis', 'Auto-reminders', 'Escalation workflows', 'Payment prediction'],
+    icon: TrendingUp
   },
   {
-    id: 'bank-reconciliation',
-    name: 'Bank Reconciliation Bot',
-    category: 'financial',
-    description: 'Auto-reconcile bank statements with accounting records',
-    features: ['Bank statement import', 'Transaction matching', 'Discrepancy detection', 'Multi-currency support', 'Reporting'],
-    roi: '10-15 hours/month saved',
-    timeSaved: '10-15 hours/month',
-    moneySaved: 'R8,000-R12,000/month',
-    icon: BarChart,
-    status: 'active',
-    complexity: 'advanced',
-    pricing: 3500,
-    linesOfCode: 22620
+    id: 'bank-rec',
+    name: 'Bank Reconciliation',
+    category: 'Financial',
+    description: 'Automatically reconcile bank statements with general ledger entries. Daily automation ready.',
+    features: ['Auto-matching', 'Multi-bank support', 'Exception handling', 'Audit trails'],
+    icon: DollarSign
   },
   {
-    id: 'general-ledger',
-    name: 'General Ledger Bot',
-    category: 'financial',
-    description: 'Automate GL posting and maintenance',
-    features: ['Auto-posting from subledgers', 'Journal entry validation', 'Account reconciliation', 'Period close automation', 'Audit trail'],
-    roi: '15-20 hours/month saved',
-    timeSaved: '15-20 hours/month',
-    moneySaved: 'R12,000-R18,000/month',
-    icon: FileText,
-    status: 'active',
-    complexity: 'advanced',
-    pricing: 3500,
-    linesOfCode: 20742
+    id: 'gl-bot',
+    name: 'General Ledger',
+    category: 'Financial',
+    description: 'Automate journal entries, account reconciliations, and GL maintenance tasks.',
+    features: ['Auto journal entries', 'Account reconciliation', 'Balance validation', 'Month-end automation'],
+    icon: BarChart
   },
+  
+  // Compliance
   {
-    id: 'financial-close',
-    name: 'Financial Close Bot',
-    category: 'financial',
-    description: 'Automate month-end close process',
-    features: ['Checklist automation', 'Accrual posting', 'Reconciliation tracking', 'Close dashboard', 'Variance analysis'],
-    roi: 'Reduces close time by 40-50%',
-    timeSaved: '30-40 hours/month',
-    moneySaved: '40-50% faster closes',
-    icon: Calendar,
-    status: 'active',
-    complexity: 'advanced',
-    pricing: 3500,
-    linesOfCode: 19374
-  },
-  {
-    id: 'expense-approval',
-    name: 'Expense Approval Bot',
-    category: 'financial',
-    description: 'Automate expense claim processing',
-    features: ['Receipt OCR', 'Policy compliance checking', '90% auto-coding', 'Approval workflows', 'Reimbursement processing'],
-    roi: '10-15 hours/month saved, 90% auto-coding',
-    timeSaved: '10-15 hours/month',
-    moneySaved: 'R8,000-R12,000/month',
-    icon: DollarSign,
-    status: 'active',
-    complexity: 'standard',
-    pricing: 2500,
-    linesOfCode: 15298
-  },
-  {
-    id: 'analytics',
-    name: 'Analytics Bot',
-    category: 'financial',
-    description: 'AI-powered financial analysis and insights',
-    features: ['Trend analysis', 'Variance explanation', 'Forecasting', 'Natural language queries', 'Custom dashboards'],
-    roi: 'Better decision-making, predictive insights',
-    timeSaved: '10-15 hours/month',
-    moneySaved: 'Qualitative (better decisions)',
-    icon: BarChart,
-    status: 'active',
-    complexity: 'advanced',
-    pricing: 3500,
-    linesOfCode: 13272
-  },
-  {
-    id: 'sap-document',
-    name: 'SAP Document Bot',
-    category: 'financial',
-    description: 'SAP integration and document processing',
-    features: ['SAP data extraction', 'Document migration', 'Real-time sync', 'Format conversion', 'Error handling'],
-    roi: 'Seamless SAP integration',
-    timeSaved: '20-30 hours/month',
-    moneySaved: 'R15,000-R25,000/month',
-    icon: Zap,
-    status: 'active',
-    complexity: 'advanced',
-    pricing: 3500,
-    linesOfCode: 14098
-  },
-
-  // COMPLIANCE BOTS
-  {
-    id: 'bbbee-compliance',
-    name: 'BBBEE Compliance Bot',
-    category: 'compliance',
-    description: 'Automate BBBEE compliance tracking and reporting',
-    features: ['Certificate verification', 'Scorecard calculation', 'Spend tracking by ownership', 'Audit trail', 'Reporting'],
-    roi: 'Saves R15K-50K/year on verification costs',
-    timeSaved: '10-15 hours/month',
-    moneySaved: 'R15,000-R50,000/year',
-    icon: Shield,
-    status: 'active',
-    complexity: 'advanced',
-    pricing: 3500,
-    linesOfCode: 15752
+    id: 'bbbee-bot',
+    name: 'BBBEE Compliance',
+    category: 'Compliance',
+    description: 'Track and report on BBBEE compliance requirements. The only bot of its kind globally.',
+    features: ['Scorecard tracking', 'Supplier verification', 'Automated reporting', 'Audit preparation'],
+    icon: Shield
   },
   {
     id: 'compliance-audit',
-    name: 'Compliance Audit Bot',
-    category: 'compliance',
-    description: 'Continuous compliance monitoring',
-    features: ['Policy compliance checks', 'Audit log analysis', 'Risk scoring', 'Alert generation', 'Remediation tracking'],
-    roi: 'Reduces audit time by 50%',
-    timeSaved: '15-20 hours/month',
-    moneySaved: '50% faster audits',
-    icon: Shield,
-    status: 'active',
-    complexity: 'standard',
-    pricing: 2500,
-    linesOfCode: 4758
+    name: 'Compliance Audit',
+    category: 'Compliance',
+    description: 'Continuous compliance monitoring across SARS, UIF, SDL, PAYE, and other SA requirements.',
+    features: ['SARS integration', 'UIF/SDL monitoring', 'PAYE validation', 'Audit logging'],
+    icon: Shield
   },
-
-  // SALES & CRM BOTS
+  
+  // Sales & CRM
   {
-    id: 'lead-qualification',
-    name: 'Lead Qualification Bot',
-    category: 'sales',
-    description: 'Automate lead scoring and qualification',
-    features: ['Lead scoring algorithm', 'Auto-follow-up emails', 'CRM integration', 'Conversion prediction', 'Segmentation'],
-    roi: 'Increases conversion by 20-30%',
-    timeSaved: '10-15 hours/week',
-    moneySaved: '20-30% conversion increase',
-    icon: Target,
-    status: 'active',
-    complexity: 'advanced',
-    pricing: 3500,
-    linesOfCode: 25645
+    id: 'lead-qual',
+    name: 'Lead Qualification',
+    category: 'Sales',
+    description: 'Score and qualify leads automatically using AI-powered analysis and CRM integration.',
+    features: ['Lead scoring', 'Auto-qualification', 'CRM sync', 'Follow-up automation'],
+    icon: TrendingUp
   },
   {
-    id: 'quote-generation',
-    name: 'Quote Generation Bot',
-    category: 'sales',
-    description: 'Automate quote creation and sending',
-    features: ['Dynamic pricing', 'Quote templates', 'Approval workflows', 'Win/loss tracking', 'Customer portal'],
-    roi: 'Saves 5-10 hours/week',
-    timeSaved: '5-10 hours/week',
-    moneySaved: 'R6,000-R12,000/month',
-    icon: FileText,
-    status: 'active',
-    complexity: 'standard',
-    pricing: 2500,
-    linesOfCode: 23715
+    id: 'quote-gen',
+    name: 'Quote Generation',
+    category: 'Sales',
+    description: 'Generate professional quotes and proposals automatically from CRM opportunities.',
+    features: ['Template generation', 'Pricing rules', 'Approval workflows', 'E-signature integration'],
+    icon: FileText
   },
   {
     id: 'sales-order',
-    name: 'Sales Order Bot',
-    category: 'sales',
-    description: 'Automate sales order processing',
-    features: ['Order capture', 'Credit checks', 'Inventory allocation', 'Delivery scheduling', 'Invoice generation'],
-    roi: 'Saves 10-15 hours/week',
-    timeSaved: '10-15 hours/week',
-    moneySaved: 'R12,000-R18,000/month',
-    icon: Briefcase,
-    status: 'active',
-    complexity: 'standard',
-    pricing: 2500,
-    linesOfCode: 17370
+    name: 'Sales Order Processing',
+    category: 'Sales',
+    description: 'Automate sales order creation, validation, and fulfillment processes end-to-end.',
+    features: ['Order validation', 'Inventory check', 'Fulfillment routing', 'Customer notifications'],
+    icon: Package
   },
-
-  // OPERATIONS BOTS
+  
+  // Operations
   {
-    id: 'inventory-reorder',
-    name: 'Inventory Reorder Bot',
-    category: 'operations',
-    description: 'Automate inventory replenishment',
-    features: ['Demand forecasting', 'Reorder point calculation', 'Auto PO generation', 'Supplier selection', 'Stock optimization'],
-    roi: 'Reduces stockouts by 70%, excess by 30%',
-    timeSaved: '15-20 hours/week',
-    moneySaved: '70% fewer stockouts',
-    icon: Package,
-    status: 'active',
-    complexity: 'advanced',
-    pricing: 3500,
-    linesOfCode: 25734
+    id: 'inventory',
+    name: 'Inventory Reorder',
+    category: 'Operations',
+    description: 'Smart inventory management with predictive reordering and supplier integration.',
+    features: ['Stock monitoring', 'Reorder point alerts', 'Supplier automation', 'Demand forecasting'],
+    icon: Package
   },
   {
     id: 'purchasing',
-    name: 'Purchasing Bot',
-    category: 'operations',
-    description: 'Automate procurement process',
-    features: ['RFQ generation', 'Supplier comparison', 'PO creation', 'Receipt matching', 'Vendor performance'],
-    roi: 'Saves 10-15 hours/week',
-    timeSaved: '10-15 hours/week',
-    moneySaved: 'R12,000-R18,000/month',
-    icon: Briefcase,
-    status: 'active',
-    complexity: 'standard',
-    pricing: 2500,
-    linesOfCode: 2517
+    name: 'Purchasing',
+    category: 'Operations',
+    description: 'Automate purchase requisitions, PO creation, and supplier management.',
+    features: ['PR approval', 'PO generation', 'Supplier portal', '3-way matching'],
+    icon: Package
   },
-  {
-    id: 'warehouse-management',
-    name: 'Warehouse Management Bot',
-    category: 'operations',
-    description: 'Automate warehouse operations',
-    features: ['Pick list optimization', 'Bin location management', 'Cycle count scheduling', 'Shipping label generation', 'KPI tracking'],
-    roi: 'Increases efficiency by 25%',
-    timeSaved: '15-20 hours/week',
-    moneySaved: '25% efficiency gain',
-    icon: Package,
-    status: 'active',
-    complexity: 'standard',
-    pricing: 2500,
-    linesOfCode: 6280
-  },
-  {
-    id: 'manufacturing',
-    name: 'Manufacturing Bot',
-    category: 'operations',
-    description: 'Automate production planning',
-    features: ['Production scheduling', 'Material requirements planning', 'Capacity planning', 'Shop floor control', 'Quality tracking'],
-    roi: 'Optimizes production flow',
-    timeSaved: '10-15 hours/week',
-    moneySaved: 'Qualitative (optimization)',
-    icon: Activity,
-    status: 'active',
-    complexity: 'standard',
-    pricing: 2500,
-    linesOfCode: 2344
-  },
-  {
-    id: 'asset-tracking',
-    name: 'Asset Tracking Bot',
-    category: 'operations',
-    description: 'Automate asset management',
-    features: ['Asset registry', 'Depreciation calculation', 'Maintenance scheduling', 'Disposal workflow', 'Compliance tracking'],
-    roi: 'Prevents asset loss, optimizes replacement',
-    timeSaved: '5-10 hours/month',
-    moneySaved: 'R5,000-R10,000/month',
-    icon: BarChart,
-    status: 'active',
-    complexity: 'basic',
-    pricing: 1500,
-    linesOfCode: 5000
-  },
-
-  // HR BOTS
+  
+  // HR
   {
     id: 'payroll',
-    name: 'Payroll Bot',
-    category: 'hr',
-    description: 'Automate payroll calculation and processing',
-    features: ['Auto payroll calculation', 'PAYE/UIF/SDL', 'Bank file generation', 'Payslip distribution', 'Year-end reconciliation'],
-    roi: 'Saves 10-20 hours/month',
-    timeSaved: '10-20 hours/month',
-    moneySaved: 'R10,000-R20,000/month',
-    icon: DollarSign,
-    status: 'active',
-    complexity: 'advanced',
-    pricing: 3500,
-    linesOfCode: 15000
+    name: 'Payroll Processing',
+    category: 'HR',
+    description: 'Automate payroll calculations, tax deductions, and compliance reporting for SA.',
+    features: ['SA payroll compliance', 'PAYE/UIF/SDL', 'Leave integration', 'Bank file generation'],
+    icon: Users
   },
   {
-    id: 'leave-management',
-    name: 'Leave Management Bot',
-    category: 'hr',
-    description: 'Automate leave requests and approvals',
-    features: ['Leave requests', 'Approval routing', 'Balance tracking', 'Leave accrual calculation', 'Calendar integration'],
-    roi: 'Saves 5-10 hours/month',
-    timeSaved: '5-10 hours/month',
-    moneySaved: 'R5,000-R10,000/month',
-    icon: Calendar,
-    status: 'active',
-    complexity: 'basic',
-    pricing: 1500,
-    linesOfCode: 8000
+    id: 'leave-mgmt',
+    name: 'Leave Management',
+    category: 'HR',
+    description: 'Streamline leave requests, approvals, and balance tracking across your organization.',
+    features: ['Leave requests', 'Approval workflows', 'Balance tracking', 'Calendar integration'],
+    icon: Users
   },
   {
     id: 'recruitment',
-    name: 'Recruitment Bot',
-    category: 'hr',
-    description: 'Automate candidate screening and hiring',
-    features: ['Job posting', 'CV screening', 'Interview scheduling', 'Candidate scoring', 'Offer letter generation'],
-    roi: 'Reduces time-to-hire by 30%',
-    timeSaved: '15-20 hours/month',
-    moneySaved: '30% faster hiring',
-    icon: Users,
-    status: 'active',
-    complexity: 'advanced',
-    pricing: 3500,
-    linesOfCode: 12000
+    name: 'Recruitment',
+    category: 'HR',
+    description: 'Automate job postings, candidate screening, and interview scheduling.',
+    features: ['CV screening', 'Interview scheduling', 'Candidate tracking', 'Offer letter generation'],
+    icon: Users
   },
-  {
-    id: 'performance-review',
-    name: 'Performance Review Bot',
-    category: 'hr',
-    description: 'Automate performance management',
-    features: ['Review scheduling', '360-degree feedback', 'Goal tracking', 'Ratings compilation', 'Development planning'],
-    roi: 'Ensures consistent performance management',
-    timeSaved: '10-15 hours/month',
-    moneySaved: 'Qualitative (consistency)',
-    icon: Target,
-    status: 'active',
-    complexity: 'advanced',
-    pricing: 3500,
-    linesOfCode: 10000
-  },
-  {
-    id: 'time-attendance',
-    name: 'Time & Attendance Bot',
-    category: 'hr',
-    description: 'Automate time tracking and attendance',
-    features: ['Clock in/out', 'Timesheet approval', 'Overtime calculation', 'Absence tracking', 'Biometric integration'],
-    roi: 'Eliminates timesheet fraud, saves 5-10 hours/month',
-    timeSaved: '5-10 hours/month',
-    moneySaved: 'R5,000-R10,000/month',
-    icon: Clock,
-    status: 'active',
-    complexity: 'standard',
-    pricing: 2500,
-    linesOfCode: 9000
-  },
-
-  // SUPPORT & ADMIN BOTS
-  {
-    id: 'contractor-management',
-    name: 'Contractor Management Bot',
-    category: 'support',
-    description: 'Automate contractor administration',
-    features: ['Contractor onboarding', 'Contract tracking', 'Invoice matching', 'Compliance verification', 'Performance tracking'],
-    roi: 'Reduces contractor admin by 60%',
-    timeSaved: '10-15 hours/month',
-    moneySaved: '60% admin reduction',
-    icon: Users,
-    status: 'active',
-    complexity: 'standard',
-    pricing: 2500,
-    linesOfCode: 7000
-  },
+  
+  // Support & Admin
   {
     id: 'helpdesk',
-    name: 'Helpdesk Bot',
-    category: 'support',
-    description: 'Automate IT support and ticketing',
-    features: ['Ticket creation', 'Auto-routing', 'SLA tracking', 'Knowledge base search', 'Escalation management'],
-    roi: 'Reduces support burden by 40%',
-    timeSaved: '15-20 hours/week',
-    moneySaved: '40% support reduction',
-    icon: MessageSquare,
-    status: 'active',
-    complexity: 'basic',
-    pricing: 1500,
-    linesOfCode: 6000
+    name: 'Helpdesk Automation',
+    category: 'Support',
+    description: 'AI-powered helpdesk with ticket routing, auto-responses, and knowledge base integration.',
+    features: ['Ticket routing', 'Auto-responses', 'Knowledge base', 'SLA monitoring'],
+    icon: MessageSquare
   },
   {
-    id: 'report-distribution',
-    name: 'Report Distribution Bot',
-    category: 'support',
-    description: 'Automate report generation and distribution',
-    features: ['Scheduled report generation', 'PDF/Excel export', 'Email distribution', 'Dashboard creation', 'Data refresh'],
-    roi: 'Saves 5-10 hours/month',
-    timeSaved: '5-10 hours/month',
-    moneySaved: 'R5,000-R10,000/month',
-    icon: BarChart,
-    status: 'active',
-    complexity: 'basic',
-    pricing: 1500,
-    linesOfCode: 5000
+    id: 'report-dist',
+    name: 'Report Distribution',
+    category: 'Support',
+    description: 'Automate report generation and distribution across email, Slack, and Teams.',
+    features: ['Schedule automation', 'Multi-channel delivery', 'Template management', 'Recipient management'],
+    icon: FileText
   }
 ];
 
-export const BotShowcase: React.FC = () => {
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedBot, setSelectedBot] = useState<Bot | null>(null);
-  const [showDemo, setShowDemo] = useState(false);
-
-  const filteredBots = BOTS_DATA.filter(bot => {
-    const matchesCategory = selectedCategory === 'all' || bot.category === selectedCategory;
-    const matchesSearch = bot.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         bot.description.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesCategory && matchesSearch;
-  });
-
-  const totalBots = BOTS_DATA.length;
-  const totalLinesOfCode = BOTS_DATA.reduce((sum, bot) => sum + bot.linesOfCode, 0);
-  const averageROI = '20-30 hours/month saved per bot';
-
+const BotShowcase: React.FC = () => {
+  const [selectedCategory, setSelectedCategory] = useState<string>('All');
+  
+  const categories = ['All', 'Financial', 'Compliance', 'Sales', 'Operations', 'HR', 'Support'];
+  
+  const filteredBots = selectedCategory === 'All' 
+    ? BOTS_DATA 
+    : BOTS_DATA.filter(bot => bot.category === selectedCategory);
+  
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
-      {/* Hero Section */}
-      <div className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <div className="min-h-screen bg-white">
+      {/* Navigation */}
+      <nav className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
+          <Link to="/" className="flex items-center space-x-3">
+            <div className="w-9 h-9 rounded-lg bg-black flex items-center justify-center">
+              <Bot className="w-5 h-5 text-white" />
+            </div>
+            <span className="text-2xl font-semibold text-gray-900 tracking-tight">Aria</span>
+          </Link>
+          
+          <div className="flex items-center space-x-8">
+            <Link to="/bots" className="text-sm font-medium text-gray-900">
+              Platform
+            </Link>
+            <Link to="/login" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition">
+              Sign In
+            </Link>
+            <Link 
+              to="/signup" 
+              className="px-5 py-2.5 bg-black hover:bg-gray-800 text-white text-sm font-medium rounded-lg transition"
+            >
+              Get Started
+            </Link>
+          </div>
+        </div>
+      </nav>
+
+      {/* Hero */}
+      <section className="pt-40 pb-20 px-6 bg-white">
+        <div className="max-w-7xl mx-auto text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-center"
+            transition={{ duration: 0.8 }}
           >
-            <h1 className="text-5xl font-bold mb-4">
-              🤖 27 AI-Powered Automation Bots
+            <div className="inline-flex items-center space-x-2 px-4 py-2 rounded-full bg-gray-100 text-gray-700 text-sm font-medium mb-8">
+              <Sparkles className="w-4 h-4" />
+              <span>27 Production-Ready AI Bots</span>
+            </div>
+            
+            <h1 className="text-6xl md:text-7xl font-bold text-gray-900 mb-8 leading-none tracking-tight">
+              Automation that
+              <br />
+              just works
             </h1>
-            <p className="text-xl text-indigo-100 mb-8">
-              Pre-built, production-ready, and ready to transform your business
+            
+            <p className="text-xl md:text-2xl text-gray-600 mb-12 max-w-3xl mx-auto font-light">
+              Pre-built AI bots for every business function. From invoice reconciliation to BBBEE compliance, deploy in hours.
             </p>
             
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
-              <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6">
-                <div className="text-4xl font-bold text-white">{totalBots}</div>
-                <div className="text-indigo-100 mt-2">Production-Ready Bots</div>
+            <div className="grid grid-cols-3 gap-8 max-w-3xl mx-auto mb-16">
+              <div>
+                <div className="text-4xl font-bold text-gray-900 mb-2">27</div>
+                <div className="text-sm text-gray-600">Production Bots</div>
               </div>
-              <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6">
-                <div className="text-4xl font-bold text-white">{(totalLinesOfCode / 1000).toFixed(0)}K+</div>
-                <div className="text-indigo-100 mt-2">Lines of Code</div>
+              <div>
+                <div className="text-4xl font-bold text-gray-900 mb-2">155K+</div>
+                <div className="text-sm text-gray-600">Lines of Code</div>
               </div>
-              <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6">
-                <div className="text-4xl font-bold text-white">R1.5M-R3M</div>
-                <div className="text-indigo-100 mt-2">Value vs Building from Scratch</div>
+              <div>
+                <div className="text-4xl font-bold text-gray-900 mb-2">24hrs</div>
+                <div className="text-sm text-gray-600">To Deployment</div>
               </div>
             </div>
           </motion.div>
         </div>
-      </div>
+      </section>
 
-      {/* Filters and Search */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
-          <div className="flex flex-col md:flex-row gap-4">
-            <div className="flex-1">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-                <input
-                  type="text"
-                  placeholder="Search bots..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                />
-              </div>
-            </div>
-          </div>
-
-          <div className="flex flex-wrap gap-2 mt-4">
-            <button
-              onClick={() => setSelectedCategory('all')}
-              className={`px-4 py-2 rounded-lg font-medium transition ${
-                selectedCategory === 'all'
-                  ? 'bg-indigo-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-            >
-              All Bots ({totalBots})
-            </button>
-            {Object.entries(BOT_CATEGORIES).map(([key, cat]) => {
-              const count = BOTS_DATA.filter(b => b.category === key).length;
-              const Icon = cat.icon;
-              return (
-                <button
-                  key={key}
-                  onClick={() => setSelectedCategory(key)}
-                  className={`px-4 py-2 rounded-lg font-medium transition flex items-center gap-2 ${
-                    selectedCategory === key
-                      ? 'bg-indigo-600 text-white'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
-                >
-                  <Icon size={16} />
-                  {cat.name} ({count})
-                </button>
-              );
-            })}
+      {/* Category Filter */}
+      <section className="pb-12 px-6 bg-white">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex items-center justify-center space-x-2 flex-wrap gap-2">
+            {categories.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setSelectedCategory(cat)}
+                className={`px-6 py-3 rounded-lg font-medium text-sm transition-all ${
+                  selectedCategory === cat
+                    ? 'bg-black text-white'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                {cat}
+              </button>
+            ))}
           </div>
         </div>
+      </section>
 
-        {/* Bot Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredBots.map((bot, index) => {
-            const Icon = bot.icon;
-            const category = BOT_CATEGORIES[bot.category as keyof typeof BOT_CATEGORIES];
-            const CategoryIcon = category.icon;
-
-            return (
+      {/* Bots Grid */}
+      <section className="pb-24 px-6 bg-white">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredBots.map((bot, index) => (
               <motion.div
                 key={bot.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.05 }}
-                className="bg-white rounded-xl shadow-lg hover:shadow-2xl transition overflow-hidden cursor-pointer group"
-                onClick={() => setSelectedBot(bot)}
+                transition={{ duration: 0.5, delay: index * 0.05 }}
+                className="group p-8 bg-white rounded-2xl border border-gray-200 hover:border-gray-900 transition-all hover:shadow-lg"
               >
-                <div className={`${category.color} p-4 flex items-center justify-between`}>
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-white rounded-lg">
-                      <Icon size={24} />
+                <div className="w-12 h-12 bg-gray-100 group-hover:bg-black rounded-lg flex items-center justify-center mb-6 transition-colors">
+                  <bot.icon className="w-6 h-6 text-gray-700 group-hover:text-white transition-colors" />
+                </div>
+                
+                <div className="mb-3">
+                  <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                    {bot.category}
+                  </span>
+                </div>
+                
+                <h3 className="text-xl font-semibold text-gray-900 mb-3 group-hover:text-black">
+                  {bot.name}
+                </h3>
+                
+                <p className="text-gray-600 mb-6 leading-relaxed">
+                  {bot.description}
+                </p>
+                
+                <div className="space-y-2 mb-6">
+                  {bot.features.slice(0, 3).map((feature, i) => (
+                    <div key={i} className="flex items-center space-x-2 text-sm text-gray-600">
+                      <CheckCircle className="w-4 h-4 text-green-600 flex-shrink-0" />
+                      <span>{feature}</span>
                     </div>
-                    <div>
-                      <h3 className="font-bold text-lg">{bot.name}</h3>
-                      <div className="flex items-center gap-2 text-sm opacity-80">
-                        <CategoryIcon size={14} />
-                        <span>{category.name}</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex flex-col items-end">
-                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                      bot.complexity === 'advanced' ? 'bg-red-100 text-red-700' :
-                      bot.complexity === 'standard' ? 'bg-yellow-100 text-yellow-700' :
-                      'bg-green-100 text-green-700'
-                    }`}>
-                      {bot.complexity.toUpperCase()}
-                    </span>
-                    <span className="text-sm font-bold mt-1">R{bot.pricing}/mo</span>
-                  </div>
-                </div>
-
-                <div className="p-6">
-                  <p className="text-gray-600 text-sm mb-4">{bot.description}</p>
-
-                  <div className="space-y-2 mb-4">
-                    <div className="flex items-center gap-2 text-sm text-gray-700">
-                      <Clock size={16} className="text-blue-500" />
-                      <span>{bot.timeSaved} saved</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm text-gray-700">
-                      <DollarSign size={16} className="text-green-500" />
-                      <span>{bot.moneySaved}</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm text-gray-700">
-                      <Activity size={16} className="text-purple-500" />
-                      <span>{bot.linesOfCode.toLocaleString()} lines of code</span>
-                    </div>
-                  </div>
-
-                  <div className="flex gap-2">
-                    <button className="flex-1 bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition flex items-center justify-center gap-2 group-hover:scale-105 transform">
-                      <Play size={16} />
-                      Try Demo
-                    </button>
-                    <button className="flex-1 bg-gray-100 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-200 transition flex items-center justify-center gap-2">
-                      Details
-                      <ArrowRight size={16} />
-                    </button>
-                  </div>
-                </div>
-              </motion.div>
-            );
-          })}
-        </div>
-
-        {filteredBots.length === 0 && (
-          <div className="text-center py-12">
-            <p className="text-gray-500 text-lg">No bots found matching your criteria</p>
-          </div>
-        )}
-      </div>
-
-      {/* Bot Detail Modal */}
-      {selectedBot && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-             onClick={() => setSelectedBot(null)}>
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="p-8">
-              <div className="flex items-start justify-between mb-6">
-                <div>
-                  <h2 className="text-3xl font-bold text-gray-900 mb-2">{selectedBot.name}</h2>
-                  <p className="text-gray-600">{selectedBot.description}</p>
-                </div>
-                <button
-                  onClick={() => setSelectedBot(null)}
-                  className="text-gray-400 hover:text-gray-600 text-2xl"
-                >
-                  ×
-                </button>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                <div className="bg-blue-50 p-4 rounded-lg">
-                  <div className="text-sm text-blue-600 font-medium">Time Saved</div>
-                  <div className="text-2xl font-bold text-blue-900 mt-1">{selectedBot.timeSaved}</div>
-                </div>
-                <div className="bg-green-50 p-4 rounded-lg">
-                  <div className="text-sm text-green-600 font-medium">Money Saved</div>
-                  <div className="text-2xl font-bold text-green-900 mt-1">{selectedBot.moneySaved}</div>
-                </div>
-                <div className="bg-purple-50 p-4 rounded-lg">
-                  <div className="text-sm text-purple-600 font-medium">Pricing</div>
-                  <div className="text-2xl font-bold text-purple-900 mt-1">R{selectedBot.pricing}/month</div>
-                </div>
-              </div>
-
-              <div className="mb-6">
-                <h3 className="text-xl font-bold text-gray-900 mb-3">Key Features</h3>
-                <ul className="space-y-2">
-                  {selectedBot.features.map((feature, idx) => (
-                    <li key={idx} className="flex items-start gap-2">
-                      <CheckCircle size={20} className="text-green-500 flex-shrink-0 mt-0.5" />
-                      <span className="text-gray-700">{feature}</span>
-                    </li>
                   ))}
-                </ul>
-              </div>
-
-              <div className="bg-gradient-to-r from-indigo-50 to-purple-50 p-6 rounded-xl mb-6">
-                <h3 className="text-xl font-bold text-gray-900 mb-2">ROI Impact</h3>
-                <p className="text-gray-700 text-lg">{selectedBot.roi}</p>
-              </div>
-
-              <div className="flex gap-3">
-                <button className="flex-1 bg-indigo-600 text-white py-3 px-6 rounded-lg hover:bg-indigo-700 transition text-lg font-medium flex items-center justify-center gap-2">
-                  <Play size={20} />
-                  Try Live Demo
+                </div>
+                
+                <button className="w-full py-3 bg-gray-100 group-hover:bg-black text-gray-900 group-hover:text-white rounded-lg font-medium text-sm transition-all flex items-center justify-center space-x-2">
+                  <span>Learn more</span>
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </button>
-                <button className="flex-1 bg-white border-2 border-indigo-600 text-indigo-600 py-3 px-6 rounded-lg hover:bg-indigo-50 transition text-lg font-medium">
-                  Activate Bot
-                </button>
-              </div>
-            </div>
-          </motion.div>
+              </motion.div>
+            ))}
+          </div>
         </div>
-      )}
+      </section>
+
+      {/* CTA */}
+      <section className="py-24 px-6 bg-gray-50">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-5xl font-bold text-gray-900 mb-6 tracking-tight">
+            Ready to get started?
+          </h2>
+          <p className="text-xl text-gray-600 mb-10">
+            Start your 14-day free trial. No credit card required.
+          </p>
+          <Link
+            to="/signup"
+            className="group inline-flex items-center space-x-2 px-10 py-5 bg-black hover:bg-gray-800 text-white rounded-lg font-semibold text-xl transition-all"
+          >
+            <span>Get started for free</span>
+            <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
+          </Link>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="py-16 px-6 border-t border-gray-200 bg-white">
+        <div className="max-w-7xl mx-auto text-center">
+          <p className="text-sm text-gray-500">&copy; 2025 Vanta X Pty Ltd. All rights reserved.</p>
+        </div>
+      </footer>
     </div>
   );
 };
