@@ -68,7 +68,7 @@ def verify_token(token: str) -> Optional[Dict]:
             detail="Token has expired",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    except jwt.JWTError:
+    except jwt.InvalidTokenError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Could not validate credentials",
@@ -112,11 +112,20 @@ async def get_current_user(
         )
     
     # Get user ID from token
-    user_id: int = payload.get("sub")
-    if user_id is None:
+    user_id_str = payload.get("sub")
+    if user_id_str is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Could not validate credentials"
+        )
+    
+    # Convert sub to integer (PyJWT requires sub to be string)
+    try:
+        user_id = int(user_id_str)
+    except (ValueError, TypeError):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid user ID in token"
         )
     
     # Check if session is still active
@@ -238,10 +247,10 @@ def login_user(email: str, password: str, ip_address: Optional[str] = None,
     
     # Create tokens
     access_token = create_access_token(
-        data={"sub": user['id'], "email": user['email']}
+        data={"sub": str(user['id']), "email": user['email']}
     )
     refresh_token = create_refresh_token(
-        data={"sub": user['id'], "email": user['email']}
+        data={"sub": str(user['id']), "email": user['email']}
     )
     
     # Create session in database
@@ -314,11 +323,20 @@ def refresh_access_token(refresh_token: str) -> Dict:
         )
     
     # Get user ID
-    user_id: int = payload.get("sub")
-    if user_id is None:
+    user_id_str = payload.get("sub")
+    if user_id_str is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Could not validate credentials"
+        )
+    
+    # Convert sub to integer (PyJWT requires sub to be string)
+    try:
+        user_id = int(user_id_str)
+    except (ValueError, TypeError):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid user ID in token"
         )
     
     # Get user
@@ -331,7 +349,7 @@ def refresh_access_token(refresh_token: str) -> Dict:
     
     # Create new access token
     new_access_token = create_access_token(
-        data={"sub": user['id'], "email": user['email']}
+        data={"sub": str(user['id']), "email": user['email']}
     )
     
     return {

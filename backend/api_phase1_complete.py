@@ -28,8 +28,11 @@ from database import (
 )
 
 # Import existing bot and ERP systems
-from bots_advanced import BOTS_REGISTRY
-from erp_complete import ERP_MODULES
+from bots_advanced import ADVANCED_BOTS as BOTS_REGISTRY, execute_advanced_bot
+try:
+    from erp_complete import ERP_MODULES
+except ImportError:
+    ERP_MODULES = {}
 
 # Initialize FastAPI
 app = FastAPI(

@@ -22,8 +22,8 @@ import concurrent.futures
 from tabulate import tabulate
 
 # Configuration
-BASE_URL = "https://aria.vantax.co.za/api"
-TEST_EMAIL = f"test_{int(time.time())}@aria.test"
+BASE_URL = "http://localhost:12001/api"  # Local test server
+TEST_EMAIL = f"test_{int(time.time())}@example.com"
 TEST_PASSWORD = "TestPassword123!"
 TEST_FULL_NAME = "Test User Phase 1"
 TEST_ORG_NAME = "Test Organization"
@@ -82,7 +82,18 @@ def make_request(method: str, endpoint: str, data: Dict = None, headers: Dict = 
 
 def test_health_check():
     """Test 1: Health check endpoint"""
-    status_code, data, duration_ms = make_request("GET", "/health")
+    # Health endpoint is at root, not /api
+    url = BASE_URL.replace("/api", "") + "/health"
+    start_time = time.time()
+    try:
+        response = requests.get(url, timeout=30)
+        duration_ms = int((time.time() - start_time) * 1000)
+        status_code = response.status_code
+        data = response.json()
+    except Exception as e:
+        duration_ms = int((time.time() - start_time) * 1000)
+        status_code = 0
+        data = {"error": str(e)}
     
     if status_code == 200 and data.get("status") == "healthy":
         log_test("AUTH", "Health Check", "PASSED", duration_ms)
@@ -215,9 +226,9 @@ def test_bot_execution_samples(access_token: str):
     test_bots = [
         ("mrp_bot", {"demand": 100, "lead_time": 5, "safety_stock": 20}),
         ("quality_predictor", {"defect_history": [2, 1, 3, 0, 1], "batch_size": 100}),
-        ("demand_forecaster", {"historical_sales": [100, 120, 110, 130, 125], "periods_ahead": 3}),
+        ("demand_forecasting", {"historical_sales": [100, 120, 110, 130, 125], "periods_ahead": 3}),
         ("inventory_optimizer", {"current_stock": 50, "reorder_point": 30, "lead_time": 7}),
-        ("payroll_calculator", {"basic_salary": 15000, "overtime_hours": 10, "deductions": 1000}),
+        ("price_optimization", {"current_price": 100, "competitors": [95, 105, 98], "demand_elasticity": 1.5}),
     ]
     
     passed = 0
@@ -384,7 +395,8 @@ def test_concurrent_requests(access_token: str):
     headers = {"Authorization": f"Bearer {access_token}"}
     
     def single_request():
-        status_code, _, duration_ms = make_request("GET", "/health", headers=headers)
+        # Use the /bots endpoint which requires authentication
+        status_code, _, duration_ms = make_request("GET", "/bots", headers=headers)
         return status_code == 200, duration_ms
     
     start_time = time.time()

@@ -15,6 +15,7 @@ class MRPBot:
     name = "MRP Bot"
     description = "Automated material requirements planning and scheduling"
     category = "manufacturing"
+    required_fields = ["bom", "quantity"]
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
@@ -49,6 +50,7 @@ class ProductionSchedulerBot:
     name = "Production Scheduler"
     description = "AI-powered production scheduling and capacity planning"
     category = "manufacturing"
+    required_fields = []
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
@@ -88,6 +90,7 @@ class QualityPredictorBot:
     name = "Quality Predictor"
     description = "ML-based quality defect prediction and prevention"
     category = "manufacturing"
+    required_fields = []
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
@@ -122,6 +125,7 @@ class PredictiveMaintenanceBot:
     name = "Predictive Maintenance"
     description = "AI-powered equipment failure prediction"
     category = "manufacturing"
+    required_fields = []
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
@@ -153,6 +157,7 @@ class InventoryOptimizerBot:
     name = "Inventory Optimizer"
     description = "AI-powered inventory level optimization"
     category = "manufacturing"
+    required_fields = []
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
@@ -193,6 +198,7 @@ class PatientSchedulingBot:
     name = "Patient Scheduling"
     description = "Automated patient appointment scheduling and management"
     category = "healthcare"
+    required_fields = []
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
@@ -226,6 +232,7 @@ class MedicalRecordsBot:
     name = "Medical Records Manager"
     description = "Automated medical records processing and retrieval"
     category = "healthcare"
+    required_fields = []
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
@@ -260,6 +267,7 @@ class InsuranceClaimsBot:
     name = "Insurance Claims Processor"
     description = "Automated insurance claims submission and tracking"
     category = "healthcare"
+    required_fields = []
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
@@ -283,6 +291,7 @@ class LabResultsBot:
     name = "Lab Results Processor"
     description = "Automated lab results processing and notification"
     category = "healthcare"
+    required_fields = []
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
@@ -312,6 +321,7 @@ class PrescriptionManagementBot:
     name = "Prescription Manager"
     description = "Automated prescription generation and refill management"
     category = "healthcare"
+    required_fields = []
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
@@ -340,6 +350,7 @@ class DemandForecastingBot:
     name = "Demand Forecasting"
     description = "ML-powered sales demand forecasting"
     category = "retail"
+    required_fields = []
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
@@ -373,6 +384,7 @@ class PriceOptimizationBot:
     name = "Price Optimizer"
     description = "AI-powered dynamic pricing optimization"
     category = "retail"
+    required_fields = []
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
@@ -402,6 +414,7 @@ class CustomerSegmentationBot:
     name = "Customer Segmentation"
     description = "AI-powered customer segmentation and targeting"
     category = "retail"
+    required_fields = []
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
@@ -448,6 +461,7 @@ class StorePerformanceBot:
     name = "Store Performance"
     description = "Multi-store performance analysis and benchmarking"
     category = "retail"
+    required_fields = []
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
@@ -484,6 +498,7 @@ class LoyaltyProgramBot:
     name = "Loyalty Program Manager"
     description = "Automated loyalty program management and rewards"
     category = "retail"
+    required_fields = []
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
