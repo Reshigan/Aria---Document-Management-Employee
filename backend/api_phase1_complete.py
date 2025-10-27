@@ -604,12 +604,11 @@ async def list_erp_modules_legacy():
 try:
     from aria_controller import get_aria_controller
     from erp_integration import get_erp_integration
-    from database import get_db
     
     ARIA_ENABLED = True
-except ImportError:
+except ImportError as e:
     ARIA_ENABLED = False
-    print("⚠️  Aria AI Controller not available")
+    print(f"⚠️  Aria AI Controller not available: {e}")
 
 class AriaRequest(BaseModel):
     message: str
@@ -640,9 +639,8 @@ async def chat_with_aria(
         )
     
     try:
-        # Get database session
-        db = next(get_db())
-        erp_integration = get_erp_integration(db)
+        # Get ERP integration and Aria controller
+        erp_integration = get_erp_integration()
         aria = get_aria_controller(erp_integration)
         
         # Process request
@@ -659,8 +657,10 @@ async def chat_with_aria(
         # Log activity
         log_action(
             user_id=current_user['id'],
-            action="aria_chat",
-            details=f"User: {request.message[:100]}... | Intent: {response.get('intent', 'unknown')}"
+            organization_id=current_user.get('organization_id'),
+            action=f"aria_chat: {request.message[:50]}...",
+            entity_type="aria_conversation",
+            changes={"intent": response.get('intent', 'unknown'), "message": request.message[:100]}
         )
         
         return response
@@ -687,8 +687,8 @@ async def get_aria_status(current_user: Dict = Depends(get_current_user)):
         }
     
     try:
-        db = next(get_db())
-        erp_integration = get_erp_integration(db)
+        # No database session needed
+        erp_integration = get_erp_integration()
         aria = get_aria_controller(erp_integration)
         
         status = await aria.get_system_status()
@@ -718,8 +718,8 @@ async def get_aria_help(
         )
     
     try:
-        db = next(get_db())
-        erp_integration = get_erp_integration(db)
+        # No database session needed
+        erp_integration = get_erp_integration()
         aria = get_aria_controller(erp_integration)
         
         help_info = await aria.help(category)
@@ -761,8 +761,8 @@ async def execute_aria_workflow(
         )
     
     try:
-        db = next(get_db())
-        erp_integration = get_erp_integration(db)
+        # No database session needed
+        erp_integration = get_erp_integration()
         aria = get_aria_controller(erp_integration)
         
         result = await aria.bot_orchestrator.execute_workflow(
@@ -773,8 +773,10 @@ async def execute_aria_workflow(
         # Log activity
         log_action(
             user_id=current_user['id'],
-            action="aria_workflow",
-            details=f"Executed {len(workflow)} step workflow"
+            organization_id=current_user.get('organization_id'),
+            action=f"aria_workflow: executed {len(workflow)} steps",
+            entity_type="aria_workflow",
+            changes={"steps": len(workflow), "workflow_description": description[:100] if description else ""}
         )
         
         return result

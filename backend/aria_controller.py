@@ -287,11 +287,19 @@ class AriaController:
         # ERP statistics
         erp_stats = {}
         if self.erp_integration:
-            erp_stats = {
-                "production": await self.erp_integration.get_production_summary(),
-                "quality": await self.erp_integration.get_quality_summary(),
-                "bot_activity": await self.erp_integration.get_bot_erp_activity()
-            }
+            try:
+                production_analytics = await self.erp_integration.get_production_analytics()
+                quality_analytics = await self.erp_integration.get_quality_analytics()
+                erp_stats = {
+                    "production": production_analytics,
+                    "quality": quality_analytics,
+                    "status": "connected"
+                }
+            except Exception as e:
+                erp_stats = {
+                    "status": "error",
+                    "error": str(e)
+                }
         
         return {
             "status": "operational",
