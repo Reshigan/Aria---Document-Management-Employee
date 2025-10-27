@@ -68,3 +68,26 @@ temp/
 # Runtime files
 *.pid
 *.sock
+
+# Python cache files
+**/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Backup files
+*.backup
+*.backup_*
+*.bak
+
+# Virtual environments
+venv/
+ENV/
+env/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo

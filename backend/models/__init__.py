@@ -2,7 +2,7 @@
 Database models package
 """
 from .base import Base
-from .user import User, PasswordResetToken, UserActivity
+from .user import User
 from .document import Document, DocumentType, DocumentStatus
 from .advanced import (
     Folder, FolderPermission, Tag, DocumentVersionSimple, ShareLink, DocumentShare, Comment,

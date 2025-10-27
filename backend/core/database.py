@@ -19,3 +19,11 @@ def init_db():
     """Initialize database"""
     from backend.models import base
     Base.metadata.create_all(bind=engine)
+
+def get_db():
+    """Get database session"""
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()

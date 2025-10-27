@@ -206,6 +206,9 @@ app.include_router(mobile_router)
 from api.routes.enterprise_analytics import router as enterprise_analytics_router
 app.include_router(enterprise_analytics_router)
 
+# Include intelligent bot routes
+from api.routes.intelligent_bot import router as intelligent_bot_router
+app.include_router(intelligent_bot_router)
 from api.routes.document_classification import router as document_classification_router
 app.include_router(document_classification_router)
 
@@ -213,8 +216,8 @@ from api.routes.enterprise_integrations import router as enterprise_integrations
 app.include_router(enterprise_integrations_router)
 
 # Include advanced document processing routes
-from api.document.advanced_processing import router as advanced_processing_router
-app.include_router(advanced_processing_router)
+# TEMPORARILY DISABLED - MISSING DEPS: from api.document.advanced_processing import router as advanced_processing_router
+# TEMPORARILY DISABLED - MISSING DEPS: app.include_router(advanced_processing_router)
 
 # Pydantic models
 class UserLogin(PydanticBaseModel):
