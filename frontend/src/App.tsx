@@ -9,6 +9,8 @@ import { MainLayout } from './components/layout/MainLayout';
 import { Landing } from './pages/Landing';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import BotShowcase from './pages/BotShowcase';
+import Pricing from './pages/Pricing';
 
 // Dashboard
 import Dashboard from './pages/Dashboard';
@@ -73,6 +75,8 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/signup" element={<Register />} />
+        <Route path="/bots" element={<BotShowcase />} />
+        <Route path="/pricing" element={<Pricing />} />
 
         {/* ============================================
             PROTECTED ROUTES (Authentication required)
