@@ -212,6 +212,10 @@ app.include_router(intelligent_bot_router)
 from api.routes.document_classification import router as document_classification_router
 app.include_router(document_classification_router)
 
+# Include bot marketplace routes (Fast Track API)
+from api.routes.bot_marketplace import router as bot_marketplace_router
+app.include_router(bot_marketplace_router, prefix="/api/bots")
+
 from api.routes.enterprise_integrations import router as enterprise_integrations_router
 app.include_router(enterprise_integrations_router)
 
