@@ -10,8 +10,14 @@ from pathlib import Path
 backend_dir = Path(__file__).parent.parent
 sys.path.insert(0, str(backend_dir))
 
-from core.database import Base, engine
-import models  # Import all models to register them
+from core.database import engine
+from models.base import Base
+# Import all models to register them with Base
+from models import (
+    User, Document, Folder, Customer, Supplier, Invoice, Bill, Payment,
+    Product, Warehouse, Employee, Lead, Opportunity, Quote, ChartOfAccounts,
+    GeneralLedger, TaxRate, FiscalPeriod, StockLevel, PayrollPeriod, LeaveRequest
+)
 
 def init_database():
     """Create all database tables"""

@@ -70,8 +70,7 @@ def create_users(db: SessionLocal, tenant_id: int, count: int = 15):
         # Create admin
         admin = User(
             email="admin@vantax.co.za",
-            username="admin",
-            hashed_password=pwd_context.hash("Demo@2025"),
+            password_hash=pwd_context.hash("Demo@2025"),
             full_name="Demo Administrator",
             is_active=True,
             is_superuser=True,
@@ -91,8 +90,7 @@ def create_users(db: SessionLocal, tenant_id: int, count: int = 15):
         
         user = User(
             email=f"{first_name.lower()}.{last_name.lower()}@vantax.co.za",
-            username=f"{first_name.lower()}.{last_name.lower()}",
-            hashed_password=pwd_context.hash("Demo@2025"),
+            password_hash=pwd_context.hash("Demo@2025"),
             full_name=f"{first_name} {last_name}",
             is_active=True,
             is_superuser=False,
@@ -105,22 +103,33 @@ def create_users(db: SessionLocal, tenant_id: int, count: int = 15):
     print(f"   ✅ Created {len(users)} users")
     return users
 
-def create_customers(db: SessionLocal, tenant_id: int, count: int = 50):
+def create_customers(db: SessionLocal, tenant_id: str, count: int = 50):
     """Create customer records"""
     print(f"Creating {count} customers...")
     customers = []
     
     for i in range(count):
+        company_name = random.choice(COMPANY_NAMES)
         customer = Customer(
+            tenant_id=tenant_id,
             customer_code=f"CUST{1000+i}",
-            name=random.choice(COMPANY_NAMES) + f" {i+1}",
+            customer_name=f"{company_name} {i+1}",
+            contact_person=f"{random.choice(FIRST_NAMES)} {random.choice(LAST_NAMES)}",
             email=f"contact{i+1}@customer{i+1}.co.za",
             phone=f"+2711{random.randint(1000000, 9999999)}",
-            vat_number=f"VAT{random.randint(1000000000, 9999999999)}",
-            registration_number=f"2020/{random.randint(100000, 999999)}/07",
-            physical_address=f"{random.randint(1, 999)} Business St, Johannesburg",
-            credit_limit=Decimal(random.randint(50000, 500000)),
+            mobile=f"+2782{random.randint(1000000, 9999999)}",
+            billing_address_line1=f"{random.randint(1, 999)} Business St",
+            billing_city="Johannesburg",
+            billing_province="Gauteng",
+            billing_postal_code=f"{random.randint(1000, 9999)}",
+            billing_country="South Africa",
+            vat_number=f"4{random.randint(100000000, 999999999)}",
+            tax_number=f"9{random.randint(100000000, 999999999)}",
+            is_vat_registered=True,
             payment_terms_days=random.choice([7, 14, 30, 60]),
+            credit_limit=float(random.randint(50000, 500000)),
+            current_balance=0.0,
+            bbbee_level=random.choice([1, 2, 3, 4]),
             is_active=True,
             created_at=datetime.now() - timedelta(days=random.randint(1, 365))
         )
