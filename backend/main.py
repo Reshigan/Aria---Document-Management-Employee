@@ -180,6 +180,10 @@ app.add_middleware(
     max_age=3600,
 )
 
+# Include auth routes (LOGIN & REGISTER) - CRITICAL
+from api.routes.auth import router as auth_router
+app.include_router(auth_router, prefix="/api/auth", tags=["authentication"])
+
 # Include security routes
 from routes.security_routes import router as security_router
 app.include_router(security_router)

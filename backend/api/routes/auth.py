@@ -61,6 +61,9 @@ class RegisterResponse(BaseModel):
     tenant_id: str
     user_id: str
     email: str
+    access_token: str
+    refresh_token: str
+    token_type: str = "bearer"
 
 
 class ChangePasswordRequest(BaseModel):
@@ -75,7 +78,7 @@ class ResetPasswordRequest(BaseModel):
 
 
 @router.post("/login", response_model=LoginResponse)
-async def login(request: LoginRequest):
+def login(request: LoginRequest):
     """
     Login with email and password.
     
@@ -86,7 +89,7 @@ async def login(request: LoginRequest):
     # Use public schema for authentication (no tenant context)
     with db_manager.get_db() as db:
         try:
-            result = await AuthService.login(
+            result = AuthService.login(
                 email=request.email,
                 password=request.password,
                 db=db
@@ -107,7 +110,7 @@ async def login(request: LoginRequest):
 
 
 @router.post("/refresh", response_model=RefreshTokenResponse)
-async def refresh_token(request: RefreshTokenRequest):
+def refresh_token(request: RefreshTokenRequest):
     """
     Refresh access token using refresh token.
     
@@ -117,7 +120,7 @@ async def refresh_token(request: RefreshTokenRequest):
     
     with db_manager.get_db() as db:
         try:
-            result = await AuthService.refresh_token(
+            result = AuthService.refresh_token(
                 refresh_token=request.refresh_token,
                 db=db
             )
@@ -137,7 +140,7 @@ async def refresh_token(request: RefreshTokenRequest):
 
 
 @router.post("/register", response_model=RegisterResponse, status_code=status.HTTP_201_CREATED)
-async def register(request: RegisterRequest):
+def register(request: RegisterRequest):
     """
     Register new user and create tenant.
     
@@ -210,6 +213,19 @@ async def register(request: RegisterRequest):
         db.add(user)
         db.commit()
         
+        # Generate tokens for immediate login
+        access_token = JWTManager.create_access_token(
+            user_id=user_id,
+            tenant_id=tenant_id,
+            email=request.email,
+            role="admin"
+        )
+        
+        refresh_token = JWTManager.create_refresh_token(
+            user_id=user_id,
+            tenant_id=tenant_id
+        )
+        
         logger.info(f"New tenant registered: {tenant_id} ({request.company_name})")
     
     # Create tenant schema in database
@@ -224,10 +240,12 @@ async def register(request: RegisterRequest):
     # TODO: Send email verification
     
     return RegisterResponse(
-        message="Registration successful! Check your email to verify your account.",
+        message="Registration successful! Welcome to ARIA.",
         tenant_id=tenant_id,
         user_id=user_id,
-        email=request.email
+        email=request.email,
+        access_token=access_token,
+        refresh_token=refresh_token
     )
 
 

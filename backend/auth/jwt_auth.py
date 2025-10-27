@@ -250,7 +250,7 @@ class AuthService:
     """Authentication service for login/register."""
     
     @staticmethod
-    async def authenticate_user(
+    def authenticate_user(
         email: str,
         password: str,
         db
@@ -297,7 +297,7 @@ class AuthService:
         }
     
     @staticmethod
-    async def login(
+    def login(
         email: str,
         password: str,
         db
@@ -313,7 +313,7 @@ class AuthService:
         Returns:
             Dict with access_token and refresh_token
         """
-        user = await AuthService.authenticate_user(email, password, db)
+        user = AuthService.authenticate_user(email, password, db)
         
         if not user:
             raise HTTPException(
@@ -344,7 +344,7 @@ class AuthService:
         }
     
     @staticmethod
-    async def refresh_token(refresh_token: str, db) -> Dict[str, str]:
+    def refresh_token(refresh_token: str, db) -> Dict[str, str]:
         """
         Refresh access token using refresh token.
         

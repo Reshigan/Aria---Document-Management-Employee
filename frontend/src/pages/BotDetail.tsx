@@ -1,0 +1,510 @@
+/**
+ * Bot Detail Page - Reusable template for all bot detail pages
+ */
+import React, { useState, useEffect } from 'react';
+import { useParams, Link, useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import {
+  Bot, ArrowLeft, CheckCircle, TrendingUp, DollarSign, Clock, Users,
+  Zap, Shield, Download, Play, Star, ArrowRight, Package
+} from 'lucide-react';
+
+interface BotFeature {
+  title: string;
+  description: string;
+  icon: any;
+}
+
+interface BotUseCase {
+  title: string;
+  description: string;
+  savingsTime: string;
+  savingsCost: string;
+}
+
+interface BotData {
+  id: string;
+  name: string;
+  tagline: string;
+  description: string;
+  category: string;
+  isFunctional: boolean;
+  roi: number;
+  deploymentTime: string;
+  pricing: {
+    starter: string;
+    professional: string;
+    enterprise: string;
+  };
+  features: BotFeature[];
+  useCases: BotUseCase[];
+  integrations: string[];
+  requirements: string[];
+  testimonial?: {
+    quote: string;
+    author: string;
+    company: string;
+    role: string;
+  };
+}
+
+const BotDetail: React.FC = () => {
+  const { botId } = useParams<{ botId: string }>();
+  const navigate = useNavigate();
+  const [botData, setBotData] = useState<BotData | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Fetch bot data from API
+    const fetchBotData = async () => {
+      try {
+        const response = await fetch(`/api/bots/marketplace/${botId}`);
+        if (response.ok) {
+          const data = await response.json();
+          setBotData(data);
+        }
+      } catch (error) {
+        console.error('Error fetching bot data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBotData();
+  }, [botId]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center">
+          <Bot className="w-12 h-12 text-gray-400 animate-pulse mx-auto mb-4" />
+          <p className="text-gray-600">Loading bot details...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!botData) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-600 mb-4">Bot not found</p>
+          <Link to="/bots" className="text-blue-600 hover:underline">
+            ← Back to Bot Showcase
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-white">
+      {/* Navigation */}
+      <nav className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
+          <Link to="/" className="flex items-center space-x-3">
+            <div className="w-9 h-9 rounded-lg bg-black flex items-center justify-center">
+              <Bot className="w-5 h-5 text-white" />
+            </div>
+            <span className="text-2xl font-semibold text-gray-900 tracking-tight">Aria</span>
+          </Link>
+          
+          <div className="flex items-center space-x-8">
+            <Link to="/bots" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition">
+              ← All Bots
+            </Link>
+            <Link to="/login" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition">
+              Sign In
+            </Link>
+            <Link 
+              to="/signup" 
+              className="px-5 py-2.5 bg-black hover:bg-gray-800 text-white text-sm font-medium rounded-lg transition"
+            >
+              Get Started
+            </Link>
+          </div>
+        </div>
+      </nav>
+
+      {/* Hero Section */}
+      <section className="pt-32 pb-16 px-6 bg-gradient-to-b from-gray-50 to-white">
+        <div className="max-w-5xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <div className="flex items-center space-x-3 mb-6">
+              <span className="px-3 py-1 bg-gray-100 text-gray-700 text-xs font-semibold rounded-full">
+                {botData.category}
+              </span>
+              {botData.isFunctional ? (
+                <span className="px-3 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded-full flex items-center space-x-1">
+                  <CheckCircle className="w-3 h-3" />
+                  <span>LIVE NOW</span>
+                </span>
+              ) : (
+                <span className="px-3 py-1 bg-gray-100 text-gray-600 text-xs font-semibold rounded-full">
+                  COMING SOON
+                </span>
+              )}
+            </div>
+
+            <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 tracking-tight">
+              {botData.name}
+            </h1>
+            
+            <p className="text-xl md:text-2xl text-gray-600 mb-8 font-light">
+              {botData.tagline}
+            </p>
+
+            {/* Key Metrics */}
+            <div className="grid grid-cols-3 gap-6 mb-8">
+              <div className="text-center p-6 bg-white rounded-xl border border-gray-200">
+                <TrendingUp className="w-8 h-8 text-green-600 mx-auto mb-3" />
+                <div className="text-3xl font-bold text-gray-900 mb-1">{botData.roi}%</div>
+                <div className="text-sm text-gray-600">ROI</div>
+              </div>
+              <div className="text-center p-6 bg-white rounded-xl border border-gray-200">
+                <Clock className="w-8 h-8 text-blue-600 mx-auto mb-3" />
+                <div className="text-3xl font-bold text-gray-900 mb-1">{botData.deploymentTime}</div>
+                <div className="text-sm text-gray-600">Deploy Time</div>
+              </div>
+              <div className="text-center p-6 bg-white rounded-xl border border-gray-200">
+                <Zap className="w-8 h-8 text-yellow-600 mx-auto mb-3" />
+                <div className="text-3xl font-bold text-gray-900 mb-1">95%+</div>
+                <div className="text-sm text-gray-600">Accuracy</div>
+              </div>
+            </div>
+
+            {/* CTA Buttons */}
+            <div className="flex flex-wrap gap-4">
+              {botData.isFunctional ? (
+                <>
+                  <button 
+                    onClick={() => navigate('/signup')}
+                    className="px-8 py-4 bg-black hover:bg-gray-800 text-white rounded-lg font-semibold text-lg transition flex items-center space-x-2"
+                  >
+                    <span>Deploy Bot Now</span>
+                    <ArrowRight className="w-5 h-5" />
+                  </button>
+                  <button 
+                    onClick={() => navigate(`/demo/${botData.id}`)}
+                    className="px-8 py-4 bg-white hover:bg-gray-50 text-gray-900 border-2 border-gray-900 rounded-lg font-semibold text-lg transition flex items-center space-x-2"
+                  >
+                    <Play className="w-5 h-5" />
+                    <span>Try Demo</span>
+                  </button>
+                </>
+              ) : (
+                <button 
+                  onClick={() => navigate('/signup')}
+                  className="px-8 py-4 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-semibold text-lg transition flex items-center space-x-2"
+                >
+                  <span>Join Waitlist</span>
+                  <ArrowRight className="w-5 h-5" />
+                </button>
+              )}
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Description */}
+      <section className="py-16 px-6 bg-white">
+        <div className="max-w-4xl mx-auto">
+          <p className="text-lg text-gray-700 leading-relaxed">
+            {botData.description}
+          </p>
+        </div>
+      </section>
+
+      {/* Features Grid */}
+      <section className="py-16 px-6 bg-gray-50">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-3xl font-bold text-gray-900 mb-12 text-center">
+            Key Features
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {botData.features.map((feature, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                viewport={{ once: true }}
+                className="p-6 bg-white rounded-xl border border-gray-200"
+              >
+                <feature.icon className="w-10 h-10 text-blue-600 mb-4" />
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                  {feature.title}
+                </h3>
+                <p className="text-gray-600">
+                  {feature.description}
+                </p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Use Cases */}
+      <section className="py-16 px-6 bg-white">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-3xl font-bold text-gray-900 mb-12 text-center">
+            Use Cases & ROI
+          </h2>
+          <div className="space-y-8">
+            {botData.useCases.map((useCase, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                viewport={{ once: true }}
+                className="p-8 bg-gradient-to-r from-blue-50 to-green-50 rounded-xl border border-blue-200"
+              >
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <h3 className="text-2xl font-semibold text-gray-900 mb-3">
+                      {useCase.title}
+                    </h3>
+                    <p className="text-gray-700 mb-4">
+                      {useCase.description}
+                    </p>
+                  </div>
+                  <div className="ml-8 text-right">
+                    <div className="mb-4">
+                      <div className="text-sm text-gray-600 mb-1">Time Saved</div>
+                      <div className="text-2xl font-bold text-green-600">{useCase.savingsTime}</div>
+                    </div>
+                    <div>
+                      <div className="text-sm text-gray-600 mb-1">Cost Saved</div>
+                      <div className="text-2xl font-bold text-green-600">{useCase.savingsCost}</div>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Integrations */}
+      <section className="py-16 px-6 bg-gray-50">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">
+            Integrations
+          </h2>
+          <div className="flex flex-wrap justify-center gap-4">
+            {botData.integrations.map((integration, index) => (
+              <div
+                key={index}
+                className="px-6 py-3 bg-white rounded-lg border border-gray-200 text-gray-700 font-medium"
+              >
+                {integration}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Pricing */}
+      <section className="py-16 px-6 bg-white">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-3xl font-bold text-gray-900 mb-12 text-center">
+            Pricing
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Starter */}
+            <div className="p-8 bg-white rounded-xl border-2 border-gray-200">
+              <div className="text-center mb-6">
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">Starter</h3>
+                <div className="text-4xl font-bold text-gray-900 mb-1">
+                  {botData.pricing.starter}
+                </div>
+                <div className="text-sm text-gray-600">per month</div>
+              </div>
+              <ul className="space-y-3 mb-8">
+                <li className="flex items-center space-x-2 text-gray-700">
+                  <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
+                  <span>5 users included</span>
+                </li>
+                <li className="flex items-center space-x-2 text-gray-700">
+                  <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
+                  <span>Basic features</span>
+                </li>
+                <li className="flex items-center space-x-2 text-gray-700">
+                  <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
+                  <span>Email support</span>
+                </li>
+              </ul>
+              <button
+                onClick={() => navigate('/signup?plan=starter')}
+                className="w-full py-3 bg-gray-100 hover:bg-gray-200 text-gray-900 rounded-lg font-semibold transition"
+              >
+                Get Started
+              </button>
+            </div>
+
+            {/* Professional */}
+            <div className="p-8 bg-black text-white rounded-xl border-2 border-black relative">
+              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                <span className="px-4 py-1 bg-green-500 text-white text-xs font-bold rounded-full">
+                  POPULAR
+                </span>
+              </div>
+              <div className="text-center mb-6">
+                <h3 className="text-2xl font-bold mb-2">Professional</h3>
+                <div className="text-4xl font-bold mb-1">
+                  {botData.pricing.professional}
+                </div>
+                <div className="text-sm text-gray-300">per month</div>
+              </div>
+              <ul className="space-y-3 mb-8">
+                <li className="flex items-center space-x-2">
+                  <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0" />
+                  <span>20 users included</span>
+                </li>
+                <li className="flex items-center space-x-2">
+                  <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0" />
+                  <span>All features</span>
+                </li>
+                <li className="flex items-center space-x-2">
+                  <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0" />
+                  <span>Priority support</span>
+                </li>
+                <li className="flex items-center space-x-2">
+                  <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0" />
+                  <span>Advanced analytics</span>
+                </li>
+              </ul>
+              <button
+                onClick={() => navigate('/signup?plan=professional')}
+                className="w-full py-3 bg-white hover:bg-gray-100 text-black rounded-lg font-semibold transition"
+              >
+                Get Started
+              </button>
+            </div>
+
+            {/* Enterprise */}
+            <div className="p-8 bg-white rounded-xl border-2 border-gray-200">
+              <div className="text-center mb-6">
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">Enterprise</h3>
+                <div className="text-4xl font-bold text-gray-900 mb-1">
+                  {botData.pricing.enterprise}
+                </div>
+                <div className="text-sm text-gray-600">custom pricing</div>
+              </div>
+              <ul className="space-y-3 mb-8">
+                <li className="flex items-center space-x-2 text-gray-700">
+                  <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
+                  <span>Unlimited users</span>
+                </li>
+                <li className="flex items-center space-x-2 text-gray-700">
+                  <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
+                  <span>All features + custom</span>
+                </li>
+                <li className="flex items-center space-x-2 text-gray-700">
+                  <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
+                  <span>24/7 dedicated support</span>
+                </li>
+                <li className="flex items-center space-x-2 text-gray-700">
+                  <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
+                  <span>SLA guarantees</span>
+                </li>
+              </ul>
+              <button
+                onClick={() => navigate('/contact?plan=enterprise')}
+                className="w-full py-3 bg-gray-100 hover:bg-gray-200 text-gray-900 rounded-lg font-semibold transition"
+              >
+                Contact Sales
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonial */}
+      {botData.testimonial && (
+        <section className="py-16 px-6 bg-gray-50">
+          <div className="max-w-4xl mx-auto">
+            <div className="p-12 bg-white rounded-2xl border border-gray-200">
+              <div className="flex items-center mb-6">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className="w-6 h-6 text-yellow-400 fill-yellow-400" />
+                ))}
+              </div>
+              <p className="text-2xl text-gray-900 font-light mb-8 italic">
+                "{botData.testimonial.quote}"
+              </p>
+              <div>
+                <div className="font-semibold text-gray-900">
+                  {botData.testimonial.author}
+                </div>
+                <div className="text-gray-600">
+                  {botData.testimonial.role}, {botData.testimonial.company}
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Requirements */}
+      <section className="py-16 px-6 bg-white">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">
+            Requirements
+          </h2>
+          <div className="bg-gray-50 rounded-xl p-8 border border-gray-200">
+            <ul className="space-y-3">
+              {botData.requirements.map((req, index) => (
+                <li key={index} className="flex items-start space-x-3 text-gray-700">
+                  <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <span>{req}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      {/* Final CTA */}
+      <section className="py-24 px-6 bg-gradient-to-b from-gray-50 to-white">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6 tracking-tight">
+            Ready to get started?
+          </h2>
+          <p className="text-xl text-gray-600 mb-10">
+            Deploy {botData.name} in {botData.deploymentTime}. No credit card required for trial.
+          </p>
+          <div className="flex flex-wrap justify-center gap-4">
+            <button
+              onClick={() => navigate('/signup')}
+              className="px-10 py-5 bg-black hover:bg-gray-800 text-white rounded-lg font-semibold text-xl transition flex items-center space-x-2"
+            >
+              <span>Start Free Trial</span>
+              <ArrowRight className="w-6 h-6" />
+            </button>
+            <button
+              onClick={() => navigate('/contact')}
+              className="px-10 py-5 bg-white hover:bg-gray-50 text-gray-900 border-2 border-gray-900 rounded-lg font-semibold text-xl transition"
+            >
+              Talk to Sales
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="py-16 px-6 border-t border-gray-200 bg-white">
+        <div className="max-w-7xl mx-auto text-center">
+          <p className="text-sm text-gray-500">&copy; 2025 Vanta X Pty Ltd. All rights reserved.</p>
+        </div>
+      </footer>
+    </div>
+  );
+};
+
+export default BotDetail;
