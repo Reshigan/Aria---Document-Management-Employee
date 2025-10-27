@@ -597,6 +597,192 @@ async def list_erp_modules_legacy():
     return {"modules": modules_list, "total": len(modules_list)}
 
 # ========================================
+# ARIA AI CONTROLLER ENDPOINTS (PHASE 2)
+# ========================================
+
+# Import Aria AI Controller
+try:
+    from aria_controller import get_aria_controller
+    from erp_integration import get_erp_integration
+    from database import get_db
+    
+    ARIA_ENABLED = True
+except ImportError:
+    ARIA_ENABLED = False
+    print("⚠️  Aria AI Controller not available")
+
+class AriaRequest(BaseModel):
+    message: str
+    conversation_id: Optional[str] = None
+    auto_execute_workflows: bool = True
+
+@app.post("/api/aria/chat")
+async def chat_with_aria(
+    request: AriaRequest,
+    current_user: Dict = Depends(get_current_user)
+):
+    """
+    Chat with Aria using natural language
+    
+    Aria will understand your request, route to appropriate bots,
+    and execute multi-bot workflows automatically.
+    
+    Example requests:
+    - "Plan production for 500 units of Widget A"
+    - "Check inventory levels"
+    - "Predict quality issues for Product X"
+    - "Create a bill of materials for Product Y"
+    """
+    if not ARIA_ENABLED:
+        raise HTTPException(
+            status_code=503,
+            detail="Aria AI Controller is not available"
+        )
+    
+    try:
+        # Get database session
+        db = next(get_db())
+        erp_integration = get_erp_integration(db)
+        aria = get_aria_controller(erp_integration)
+        
+        # Process request
+        response = await aria.process_request(
+            message=request.message,
+            user_id=str(current_user['id']),
+            conversation_id=request.conversation_id,
+            context={
+                'auto_execute_workflows': request.auto_execute_workflows,
+                'organization_id': current_user.get('organization_id')
+            }
+        )
+        
+        # Log activity
+        log_action(
+            user_id=current_user['id'],
+            action="aria_chat",
+            details=f"User: {request.message[:100]}... | Intent: {response.get('intent', 'unknown')}"
+        )
+        
+        return response
+        
+    except Exception as e:
+        print(f"Error in Aria chat: {traceback.format_exc()}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/aria/status")
+async def get_aria_status(current_user: Dict = Depends(get_current_user)):
+    """
+    Get Aria system status and statistics
+    
+    Returns information about:
+    - Bot execution statistics
+    - ERP integration status
+    - System capabilities
+    """
+    if not ARIA_ENABLED:
+        return {
+            "status": "disabled",
+            "message": "Aria AI Controller is not available",
+            "aria_enabled": False
+        }
+    
+    try:
+        db = next(get_db())
+        erp_integration = get_erp_integration(db)
+        aria = get_aria_controller(erp_integration)
+        
+        status = await aria.get_system_status()
+        
+        return status
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/aria/help")
+async def get_aria_help(
+    category: Optional[str] = None,
+    current_user: Dict = Depends(get_current_user)
+):
+    """
+    Get help information about what Aria can do
+    
+    Args:
+        category: Optional category filter (manufacturing, healthcare, retail, general)
+    
+    Returns help documentation
+    """
+    if not ARIA_ENABLED:
+        raise HTTPException(
+            status_code=503,
+            detail="Aria AI Controller is not available"
+        )
+    
+    try:
+        db = next(get_db())
+        erp_integration = get_erp_integration(db)
+        aria = get_aria_controller(erp_integration)
+        
+        help_info = await aria.help(category)
+        
+        return help_info
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/aria/workflow")
+async def execute_aria_workflow(
+    workflow: List[Dict[str, Any]],
+    current_user: Dict = Depends(get_current_user)
+):
+    """
+    Execute a custom multi-bot workflow
+    
+    Example workflow:
+    [
+        {
+            "name": "check_inventory",
+            "bot": "inventory_optimizer",
+            "params": {"product": "Widget A"},
+            "fetch_erp_data": true
+        },
+        {
+            "name": "plan_production",
+            "bot": "mrp_bot",
+            "params": {},
+            "depends_on": ["check_inventory"],
+            "store_in_erp": true
+        }
+    ]
+    """
+    if not ARIA_ENABLED:
+        raise HTTPException(
+            status_code=503,
+            detail="Aria AI Controller is not available"
+        )
+    
+    try:
+        db = next(get_db())
+        erp_integration = get_erp_integration(db)
+        aria = get_aria_controller(erp_integration)
+        
+        result = await aria.bot_orchestrator.execute_workflow(
+            workflow=workflow,
+            user_id=str(current_user['id'])
+        )
+        
+        # Log activity
+        log_action(
+            user_id=current_user['id'],
+            action="aria_workflow",
+            details=f"Executed {len(workflow)} step workflow"
+        )
+        
+        return result
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+# ========================================
 # STARTUP EVENT
 # ========================================
 
