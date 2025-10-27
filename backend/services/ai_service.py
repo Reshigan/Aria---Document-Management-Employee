@@ -1,11 +1,12 @@
 """
-AI Service - OpenAI GPT-4 Integration for Bot Intelligence
+AI Service - Local Ollama Integration for Bot Intelligence
+Supports both Ollama (local, free) and OpenAI (cloud, paid)
 """
 
 import os
 import json
+import httpx
 from typing import Dict, List, Optional, Any
-from openai import AsyncOpenAI
 from pydantic import BaseModel
 
 
@@ -26,28 +27,38 @@ class AIResponse(BaseModel):
 class AIService:
     """
     AI Service for Bot Intelligence
-    Uses OpenAI GPT-4 for natural language processing
+    Default: Uses local Ollama (free, private, fast)
+    Fallback: OpenAI GPT-4 (requires API key)
     """
     
     def __init__(self):
         """Initialize AI Service"""
-        self.api_key = os.getenv("OPENAI_API_KEY")
+        # Determine AI provider
+        self.provider = os.getenv("AI_PROVIDER", "ollama").lower()  # ollama or openai
         
-        if not self.api_key:
-            # For development, use a placeholder
-            self.api_key = "sk-placeholder"
-            self.enabled = False
-        else:
+        # Ollama configuration (default)
+        self.ollama_base_url = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
+        self.ollama_model = os.getenv("OLLAMA_MODEL", "llama3.2")  # llama3.2, mistral, mixtral, phi3
+        
+        # OpenAI configuration (fallback)
+        self.openai_api_key = os.getenv("OPENAI_API_KEY")
+        self.openai_model = os.getenv("OPENAI_MODEL", "gpt-4-turbo-preview")
+        
+        # Set up based on provider
+        if self.provider == "ollama":
             self.enabled = True
-        
-        # Initialize OpenAI client
-        if self.enabled:
-            self.client = AsyncOpenAI(api_key=self.api_key)
+            self.default_model = self.ollama_model
+            print(f"✅ AI Service initialized with Ollama ({self.ollama_model}) at {self.ollama_base_url}")
+        elif self.provider == "openai" and self.openai_api_key:
+            self.enabled = True
+            self.default_model = self.openai_model
+            print(f"✅ AI Service initialized with OpenAI ({self.openai_model})")
         else:
-            self.client = None
+            self.enabled = False
+            self.default_model = "none"
+            print("⚠️  AI Service disabled - No provider configured")
         
-        self.default_model = "gpt-4-turbo-preview"
-        self.fallback_model = "gpt-3.5-turbo"
+        self.client = httpx.AsyncClient(timeout=120.0)
     
     async def chat_completion(
         self,
@@ -62,7 +73,7 @@ class AIService:
         
         Args:
             messages: List of messages
-            model: Model to use (defaults to gpt-4-turbo-preview)
+            model: Model to use
             temperature: Temperature (0-1, lower = more deterministic)
             max_tokens: Max tokens to generate
             response_format: Response format (e.g., {"type": "json_object"})
@@ -70,16 +81,108 @@ class AIService:
         Returns:
             AIResponse
         """
-        if not self.enabled or not self.client:
-            # Return mock response if API key not configured
+        if not self.enabled:
             return AIResponse(
-                content="AI service not configured. Please set OPENAI_API_KEY environment variable.",
+                content="AI service not configured. Please install Ollama or set OPENAI_API_KEY.",
                 confidence=0.0,
                 tokens_used=0,
-                model="mock"
+                model="none"
             )
         
+        if self.provider == "ollama":
+            return await self._ollama_completion(messages, model, temperature, max_tokens, response_format)
+        elif self.provider == "openai":
+            return await self._openai_completion(messages, model, temperature, max_tokens, response_format)
+        else:
+            return AIResponse(
+                content="No AI provider configured",
+                confidence=0.0,
+                tokens_used=0,
+                model="none"
+            )
+    
+    async def _ollama_completion(
+        self,
+        messages: List[AIMessage],
+        model: Optional[str],
+        temperature: float,
+        max_tokens: int,
+        response_format: Optional[Dict]
+    ) -> AIResponse:
+        """Get completion from local Ollama"""
         try:
+            # Prepare messages for Ollama
+            message_dicts = [{"role": msg.role, "content": msg.content} for msg in messages]
+            
+            # Build prompt (Ollama chat format)
+            payload = {
+                "model": model or self.default_model,
+                "messages": message_dicts,
+                "stream": False,
+                "options": {
+                    "temperature": temperature,
+                    "num_predict": max_tokens
+                }
+            }
+            
+            # Add JSON format instruction if requested
+            if response_format and response_format.get("type") == "json_object":
+                payload["format"] = "json"
+            
+            # Call Ollama API
+            response = await self.client.post(
+                f"{self.ollama_base_url}/api/chat",
+                json=payload
+            )
+            
+            if response.status_code != 200:
+                raise Exception(f"Ollama API error: {response.status_code} - {response.text}")
+            
+            result = response.json()
+            
+            # Extract response
+            content = result.get("message", {}).get("content", "")
+            tokens_used = result.get("eval_count", 0) + result.get("prompt_eval_count", 0)
+            
+            # Calculate confidence
+            confidence = min(0.95, 0.75 + (len(content) / 1000))
+            
+            return AIResponse(
+                content=content,
+                confidence=confidence,
+                tokens_used=tokens_used,
+                model=result.get("model", model or self.default_model)
+            )
+        
+        except httpx.ConnectError:
+            return AIResponse(
+                content="⚠️ Could not connect to Ollama. Please ensure Ollama is running: `ollama serve`",
+                confidence=0.0,
+                tokens_used=0,
+                model="error"
+            )
+        except Exception as e:
+            print(f"Ollama Error: {str(e)}")
+            return AIResponse(
+                content=f"Error calling Ollama: {str(e)}",
+                confidence=0.0,
+                tokens_used=0,
+                model="error"
+            )
+    
+    async def _openai_completion(
+        self,
+        messages: List[AIMessage],
+        model: Optional[str],
+        temperature: float,
+        max_tokens: int,
+        response_format: Optional[Dict]
+    ) -> AIResponse:
+        """Get completion from OpenAI"""
+        try:
+            from openai import AsyncOpenAI
+            client = AsyncOpenAI(api_key=self.openai_api_key)
+            
             # Prepare messages
             message_dicts = [{"role": msg.role, "content": msg.content} for msg in messages]
             
@@ -94,13 +197,13 @@ class AIService:
             if response_format:
                 completion_kwargs["response_format"] = response_format
             
-            response = await self.client.chat.completions.create(**completion_kwargs)
+            response = await client.chat.completions.create(**completion_kwargs)
             
             # Extract response
             content = response.choices[0].message.content
             tokens_used = response.usage.total_tokens
             
-            # Calculate confidence (simple heuristic)
+            # Calculate confidence
             confidence = min(0.95, 0.7 + (len(content) / 1000))
             
             return AIResponse(
@@ -111,10 +214,9 @@ class AIService:
             )
         
         except Exception as e:
-            # Log error and return error response
-            print(f"AI Service Error: {str(e)}")
+            print(f"OpenAI Error: {str(e)}")
             return AIResponse(
-                content=f"Error calling AI service: {str(e)}",
+                content=f"Error calling OpenAI: {str(e)}",
                 confidence=0.0,
                 tokens_used=0,
                 model="error"
