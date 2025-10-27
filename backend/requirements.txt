@@ -70,8 +70,8 @@ pdf2image==1.16.3
 pdfplumber==0.10.3
 Pillow==10.1.0
 
-# SAP integration
-pyrfc==3.2.0
+# SAP integration (optional - requires SAP NWRFC Library)
+# pyrfc==3.2.0
 
 # WhatsApp integration
 twilio==8.10.0
