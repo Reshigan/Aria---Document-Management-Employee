@@ -49,6 +49,26 @@ from .document_processing_models import (
     ContentExtractionResult, DocumentConversionResult, AIAnalysisResult,
     ProcessingType, ProcessingStatus
 )
+from .accounting import (
+    ChartOfAccounts, GeneralLedger, GeneralLedgerLine, TaxRate, FiscalPeriod,
+    AccountType, AccountSubType, JournalEntryType, JournalStatus
+)
+from .transactions import (
+    Customer, Supplier, Invoice, InvoiceLine, Bill, BillLine, Payment, PaymentAllocation,
+    InvoiceStatus, PaymentStatus, PaymentMethod, VATType
+)
+from .inventory import (
+    Product, Warehouse, StockLevel, StockMovement, StockAdjustment, StockAdjustmentLine,
+    ProductType, StockValuationMethod, StockMovementType
+)
+from .crm import (
+    Lead, Opportunity, Quote, QuoteLine, CRMActivity, Pipeline,
+    LeadStatus, LeadSource, OpportunityStage, QuoteStatus, CRMActivityType
+)
+from .hr import (
+    Employee, PayrollPeriod, PayrollEntry, LeaveRequest, IRP5Certificate, Recruitment, JobApplication,
+    EmploymentType, EmployeeStatus, LeaveType, LeaveRequestStatus, PayrollStatus
+)
 
 __all__ = [
     "Base",
@@ -90,6 +110,21 @@ __all__ = [
     "VersionStatus", "MergeStatus", "ConflictType", "ChangeType",
     "IntegrationType", "IntegrationStatus", "WebhookEventType",
     "ProcessingType", "ProcessingStatus",
+    # Accounting models
+    "ChartOfAccounts", "GeneralLedger", "GeneralLedgerLine", "TaxRate", "FiscalPeriod",
+    "AccountType", "AccountSubType", "JournalEntryType", "JournalStatus",
+    # Transaction models
+    "Customer", "Supplier", "Invoice", "InvoiceLine", "Bill", "BillLine", "Payment", "PaymentAllocation",
+    "InvoiceStatus", "PaymentStatus", "PaymentMethod", "VATType",
+    # Inventory models
+    "Product", "Warehouse", "StockLevel", "StockMovement", "StockAdjustment", "StockAdjustmentLine",
+    "ProductType", "StockValuationMethod", "StockMovementType",
+    # CRM models
+    "Lead", "Opportunity", "Quote", "QuoteLine", "CRMActivity", "Pipeline",
+    "LeadStatus", "LeadSource", "OpportunityStage", "QuoteStatus", "CRMActivityType",
+    # HR models
+    "Employee", "PayrollPeriod", "PayrollEntry", "LeaveRequest", "IRP5Certificate", "Recruitment", "JobApplication",
+    "EmploymentType", "EmployeeStatus", "LeaveType", "LeaveRequestStatus", "PayrollStatus",
     # Association tables
     "document_tags", "document_shares", "folder_permissions", "document_enhanced_tags"
 ]
