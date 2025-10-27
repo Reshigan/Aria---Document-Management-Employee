@@ -50,6 +50,28 @@ import PendingActions from './pages/PendingActions';
 import IntegrationsList from './pages/integrations/IntegrationsList';
 import IntegrationSync from './pages/integrations/IntegrationSync';
 
+// Manufacturing Module
+import ManufacturingDashboard from './pages/Manufacturing/ManufacturingDashboard';
+import BOMManagement from './pages/Manufacturing/BOMManagement';
+import WorkOrders from './pages/Manufacturing/WorkOrders';
+
+// Quality Management
+import QualityDashboard from './pages/Quality/QualityDashboard';
+import QualityInspections from './pages/Quality/QualityInspections';
+
+// Maintenance
+import AssetManagement from './pages/Maintenance/AssetManagement';
+
+// Procurement
+import RFQManagement from './pages/Procurement/RFQManagement';
+
+// Legal Pages
+import TermsOfService from './pages/Legal/TermsOfService';
+import PrivacyPolicy from './pages/Legal/PrivacyPolicy';
+
+// Pricing
+import PricingComplete from './pages/PricingComplete';
+
 // ARIA Voice Interface
 import { AriaVoiceInterface } from './components/aria/AriaVoiceInterface';
 
@@ -81,6 +103,9 @@ function App() {
         <Route path="/bots" element={<BotShowcase />} />
         <Route path="/bots-live" element={<BotsLive />} />
         <Route path="/api-test" element={<ApiTest />} />
+        <Route path="/pricing" element={<PricingComplete />} />
+        <Route path="/terms" element={<TermsOfService />} />
+        <Route path="/privacy" element={<PrivacyPolicy />} />
 
         {/* ============================================
             PROTECTED ROUTES (Authentication required)
@@ -298,6 +323,74 @@ function App() {
           <ProtectedRoute>
             <MainLayout>
               <IntegrationSync />
+            </MainLayout>
+          </ProtectedRoute>
+        } />
+
+        {/* ============================================
+            MANUFACTURING MODULE ROUTES
+            ============================================ */}
+        <Route path="/manufacturing/dashboard" element={
+          <ProtectedRoute>
+            <MainLayout>
+              <ManufacturingDashboard />
+            </MainLayout>
+          </ProtectedRoute>
+        } />
+
+        <Route path="/manufacturing/bom" element={
+          <ProtectedRoute>
+            <MainLayout>
+              <BOMManagement />
+            </MainLayout>
+          </ProtectedRoute>
+        } />
+
+        <Route path="/manufacturing/work-orders" element={
+          <ProtectedRoute>
+            <MainLayout>
+              <WorkOrders />
+            </MainLayout>
+          </ProtectedRoute>
+        } />
+
+        {/* ============================================
+            QUALITY MANAGEMENT ROUTES
+            ============================================ */}
+        <Route path="/quality/dashboard" element={
+          <ProtectedRoute>
+            <MainLayout>
+              <QualityDashboard />
+            </MainLayout>
+          </ProtectedRoute>
+        } />
+
+        <Route path="/quality/inspections" element={
+          <ProtectedRoute>
+            <MainLayout>
+              <QualityInspections />
+            </MainLayout>
+          </ProtectedRoute>
+        } />
+
+        {/* ============================================
+            MAINTENANCE ROUTES
+            ============================================ */}
+        <Route path="/maintenance/assets" element={
+          <ProtectedRoute>
+            <MainLayout>
+              <AssetManagement />
+            </MainLayout>
+          </ProtectedRoute>
+        } />
+
+        {/* ============================================
+            PROCUREMENT ROUTES
+            ============================================ */}
+        <Route path="/procurement/rfq" element={
+          <ProtectedRoute>
+            <MainLayout>
+              <RFQManagement />
             </MainLayout>
           </ProtectedRoute>
         } />

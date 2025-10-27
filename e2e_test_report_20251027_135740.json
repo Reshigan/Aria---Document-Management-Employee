@@ -1,0 +1,56 @@
+{
+  "total_tests": 25,
+  "passed": 13,
+  "failed": 12,
+  "errors": [
+    {
+      "test": "Bot Categories",
+      "message": "Missing categories: {'Operations & Supply Chain', 'Sales & CRM', 'Retail', 'Financial', 'HR & Compliance', 'Healthcare', 'Manufacturing', 'Support & Integration', 'Office 365 Integration'}"
+    },
+    {
+      "test": "Bot Execution: invoice-reconciliation",
+      "message": "Status: 404"
+    },
+    {
+      "test": "Bot Execution: demand_forecaster",
+      "message": "Status: 404"
+    },
+    {
+      "test": "MRP Bot Full Execution",
+      "message": "Response: {\n  \"status\": \"success\",\n  \"bot_id\": \"mrp_bot\",\n  \"bot_name\": \"MRP Bot\",\n  \"result\": {\n    \"status\": \"success\",\n    \"bot\": \"MRP Bot\",\n    \"production_order\": \"PO-4980\",\n    \"quantity\": 100,\n    \"mater"
+    },
+    {
+      "test": "Manufacturing: /erp/manufacturing/work-orders",
+      "message": "Status: 404"
+    },
+    {
+      "test": "Quality: /erp/quality/inspections",
+      "message": "Status: 404"
+    },
+    {
+      "test": "Maintenance: /erp/maintenance/assets",
+      "message": "Status: 404"
+    },
+    {
+      "test": "Procurement: /erp/procurement/rfq",
+      "message": "Status: 405"
+    },
+    {
+      "test": "ERP Module: financial",
+      "message": "Status: 404"
+    },
+    {
+      "test": "ERP Module: hr",
+      "message": "Status: 404"
+    },
+    {
+      "test": "ERP Module: crm",
+      "message": "Status: 404"
+    },
+    {
+      "test": "CORS Headers",
+      "message": "CORS configured: False"
+    }
+  ],
+  "timestamp": "2025-10-27T13:57:32.681546"
+}
