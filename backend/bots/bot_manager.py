@@ -71,12 +71,16 @@ class BotManager:
                 "financial", "🧾"),
         
         BotInfo("accounts_payable", "Accounts Payable Bot",
-                "Process vendor bills, schedule payments, manage approvals, and track aging",
-                "financial", "💸"),
+                "Automate supplier invoice processing from capture to payment with OCR and approval routing",
+                "financial", "💸", module_path="backend.bots.accounts_payable_bot"),
         
-        BotInfo("accounts_receivable", "Accounts Receivable Bot",
-                "Track customer invoices, send reminders, process payments, and manage collections",
-                "financial", "💵"),
+        BotInfo("ar_collections", "AR Collections Bot",
+                "Automate accounts receivable and reduce DSO by 15-20 days with smart collection workflows",
+                "financial", "💵", module_path="backend.bots.ar_collections_bot"),
+        
+        BotInfo("bank_reconciliation", "Bank Reconciliation Bot",
+                "Automatically match bank statements to accounting records and identify discrepancies",
+                "financial", "🏦", module_path="backend.bots.bank_reconciliation_bot"),
         
         BotInfo("financial_reporting", "Financial Reporting Bot",
                 "Generate P&L, balance sheet, cash flow statements, and custom reports",
@@ -91,9 +95,9 @@ class BotManager:
                 "Process sales orders, check inventory, create invoices, and update CRM",
                 "sales", "🛒"),
         
-        BotInfo("lead_management", "Lead Management Bot",
-                "Qualify leads, score prospects, assign to sales reps, and track pipeline",
-                "sales", "🎯"),
+        BotInfo("lead_qualification", "Lead Qualification Bot",
+                "Automatically score leads, qualify prospects, and route to sales team using AI",
+                "sales", "🎯", module_path="backend.bots.lead_qualification_bot"),
         
         BotInfo("customer_insights", "Customer Insights Bot",
                 "Analyze customer behavior, identify upsell opportunities, and predict churn",
