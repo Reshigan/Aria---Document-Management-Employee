@@ -395,8 +395,7 @@ async def query_bot(
             detail=f"Bot '{bot_id}' requires SARS Payroll feature (Growth or Professional tier)"
         )
     
-    # TODO: Load and execute actual bot
-    # For now, return mock response
+    # ✅ REAL BOT EXECUTION (No longer mock!)
     logger.info(
         f"Bot query: {bot_id} by user {current_user['user_id']} "
         f"in tenant {current_user['tenant_id']}: '{request.query}'"
@@ -406,8 +405,47 @@ async def query_bot(
     import uuid
     request_id = str(uuid.uuid4())
     
-    # Mock response (TODO: Replace with actual bot execution)
-    response_text = f"[Mock Response] Processing your request: '{request.query}' with {bot_info['name']}"
+    # Initialize Bot Intelligence Service
+    from services.bot_intelligence_service import BotIntelligenceService
+    bot_service = BotIntelligenceService(db, current_user["tenant_id"])
+    
+    # Prepare user context
+    user_context = {
+        "user_id": current_user["user_id"],
+        "tenant_id": current_user["tenant_id"],
+        "timestamp": datetime.utcnow().isoformat()
+    }
+    
+    # Route to appropriate bot handler
+    bot_handlers = {
+        "invoice_reconciliation": bot_service.invoice_reconciliation_query,
+        "bbbee_compliance": bot_service.bbbee_compliance_query,
+        "expense_management": bot_service.expense_management_query,
+        "payroll": bot_service.payroll_sa_query,
+        "ar_collections": bot_service.ar_collections_query,
+        "leave_management": bot_service.leave_management_query,
+        "inventory_reorder": bot_service.inventory_reorder_query,
+        "lead_qualification": bot_service.lead_qualification_query,
+    }
+    
+    # Execute bot or fall back to general query
+    bot_handler = bot_handlers.get(bot_id, bot_service.general_query)
+    
+    try:
+        # Execute bot with real AI and data
+        bot_result = await bot_handler(request.query, user_context)
+        
+        response_text = bot_result.get("response", "Bot processing complete")
+        confidence = bot_result.get("confidence", 0.85)
+        suggestions = bot_result.get("suggestions", [])
+        actions_taken = bot_result.get("actions_taken", [])
+        
+    except Exception as e:
+        logger.error(f"Bot execution error: {str(e)}")
+        response_text = f"I encountered an issue processing your request: {str(e)}. Please try rephrasing your question."
+        confidence = 0.3
+        suggestions = ["Try a simpler query", "Check if data exists in the system"]
+        actions_taken = ["Error occurred during processing"]
     
     # Update tenant usage
     tenant.bot_requests_count += 1
@@ -418,9 +456,9 @@ async def query_bot(
         bot_name=bot_info["name"],
         query=request.query,
         response=response_text,
-        confidence=0.95,
-        suggestions=["Try asking for more details", "View related reports"],
-        actions_taken=["Query processed", "Context analyzed"],
+        confidence=confidence,
+        suggestions=suggestions,
+        actions_taken=actions_taken,
         timestamp=datetime.utcnow(),
         request_id=request_id
     )
