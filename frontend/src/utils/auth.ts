@@ -1,14 +1,14 @@
 export const setTokens = (accessToken: string, refreshToken: string) => {
-  localStorage.setItem('access_token', accessToken);
-  localStorage.setItem('refresh_token', refreshToken);
+  localStorage.setItem('aria_access_token', accessToken);
+  localStorage.setItem('aria_refresh_token', refreshToken);
 };
 
-export const getAccessToken = () => localStorage.getItem('access_token');
-export const getRefreshToken = () => localStorage.getItem('refresh_token');
+export const getAccessToken = () => localStorage.getItem('aria_access_token');
+export const getRefreshToken = () => localStorage.getItem('aria_refresh_token');
 
 export const clearTokens = () => {
-  localStorage.removeItem('access_token');
-  localStorage.removeItem('refresh_token');
+  localStorage.removeItem('aria_access_token');
+  localStorage.removeItem('aria_refresh_token');
 };
 
 export const isAuthenticated = () => !!getAccessToken();

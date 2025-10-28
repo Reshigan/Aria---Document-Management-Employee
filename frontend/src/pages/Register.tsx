@@ -81,12 +81,8 @@ export default function Register() {
       const response = await authAPI.register({
         email: formData.email,
         password: formData.password,
-        first_name: formData.first_name,
-        last_name: formData.last_name,
-        company_name: formData.company_name,
-        company_registration: formData.company_registration,
-        phone: formData.phone,
-        province: formData.province
+        full_name: `${formData.first_name} ${formData.last_name}`,
+        organization_name: formData.company_name
       });
 
       const { access_token, refresh_token } = response.data;

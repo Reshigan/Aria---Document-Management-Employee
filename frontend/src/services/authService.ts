@@ -209,7 +209,7 @@ class AuthService {
    * Get refresh token
    */
   getRefreshToken(): string | null {
-    return localStorage.setItem(REFRESH_TOKEN_KEY);
+    return localStorage.getItem(REFRESH_TOKEN_KEY);
   }
 
   /**
