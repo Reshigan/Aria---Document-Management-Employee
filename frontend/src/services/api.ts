@@ -1,6 +1,9 @@
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+// Use relative URL in production, localhost in development
+const API_BASE_URL = import.meta.env.VITE_API_URL || (
+  import.meta.env.PROD ? '' : 'http://localhost:8000'
+);
 
 const api = axios.create({
   baseURL: `${API_BASE_URL}/api`,
@@ -30,8 +33,13 @@ api.interceptors.response.use(
 );
 
 export const authAPI = {
-  login: (email: string, password: string) => 
-    api.post('/auth/login', { email, password }),
+  login: (email: string, password: string) => {
+    // Backend expects JSON with email and password fields
+    return api.post('/auth/login', {
+      email: email,
+      password: password
+    });
+  },
   register: (data: any) => 
     api.post('/auth/register', data),
   refresh: (refresh_token: string) => 

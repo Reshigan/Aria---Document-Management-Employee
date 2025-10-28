@@ -2,9 +2,11 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authAPI } from '../services/api';
 import { setTokens } from '../utils/auth';
+import { useAuthStore } from '../store/authStore';
 
 export default function Login() {
   const navigate = useNavigate();
+  const login = useAuthStore(state => state.login);
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -19,13 +21,24 @@ export default function Login() {
     setLoading(true);
 
     try {
+      console.log('Attempting login with:', formData.email);
       const response = await authAPI.login(formData.email, formData.password);
-      const { access_token, refresh_token } = response.data;
+      console.log('Login response:', response);
+      const { access_token, refresh_token, user } = response.data;
       
+      // Set tokens in localStorage
       setTokens(access_token, refresh_token);
+      
+      // Update authStore with user and token
+      login(access_token, user);
+      
+      console.log('Tokens and user set, navigating to dashboard');
       navigate('/dashboard');
     } catch (err: any) {
-      setError(err.response?.data?.detail || 'Login failed. Please check your credentials.');
+      console.error('Login error:', err);
+      console.error('Error response:', err.response);
+      const errorMessage = err.response?.data?.detail || err.message || 'Login failed. Please check your credentials.';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }

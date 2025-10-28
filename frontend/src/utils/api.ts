@@ -11,7 +11,7 @@ export const apiClient = axios.create({
 
 // Add auth token interceptor
 apiClient.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem('aria_access_token');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
