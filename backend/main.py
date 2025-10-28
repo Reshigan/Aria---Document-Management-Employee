@@ -231,6 +231,14 @@ app.include_router(enterprise_integrations_router)
 from erp.financial.routes import router as financial_erp_router
 app.include_router(financial_erp_router)
 
+# Include Reporting Engine
+from erp.reporting.routes import router as reporting_router
+app.include_router(reporting_router)
+
+# Include Configuration & Customization
+from erp.config.routes import router as config_router
+app.include_router(config_router)
+
 # Pydantic models
 class UserLogin(PydanticBaseModel):
     username: str
