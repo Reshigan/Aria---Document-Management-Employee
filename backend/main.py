@@ -227,6 +227,10 @@ app.include_router(enterprise_integrations_router)
 # TEMPORARILY DISABLED - MISSING DEPS: from api.document.advanced_processing import router as advanced_processing_router
 # TEMPORARILY DISABLED - MISSING DEPS: app.include_router(advanced_processing_router)
 
+# Include Financial ERP Module
+from erp.financial.routes import router as financial_erp_router
+app.include_router(financial_erp_router)
+
 # Pydantic models
 class UserLogin(PydanticBaseModel):
     username: str
@@ -1354,6 +1358,77 @@ async def websocket_notifications(websocket: WebSocket, user_id: int, db: Sessio
         print(f"WebSocket error: {e}")
     finally:
         service.websocket_manager.disconnect(websocket, user_id)
+
+
+# ============================================================================
+# PDF DOCUMENT GENERATION
+# ============================================================================
+
+from utils.pdf_generator import pdf_generator
+from fastapi.responses import HTMLResponse
+
+@app.post("/api/documents/pdf/invoice")
+async def generate_invoice_pdf(invoice_data: dict):
+    """Generate tax invoice PDF"""
+    result = pdf_generator.generate_tax_invoice(invoice_data)
+    return result
+
+@app.post("/api/documents/pdf/purchase-order")
+async def generate_po_pdf(po_data: dict):
+    """Generate purchase order PDF"""
+    result = pdf_generator.generate_purchase_order(po_data)
+    return result
+
+@app.post("/api/documents/pdf/quotation")
+async def generate_quotation_pdf(quote_data: dict):
+    """Generate quotation PDF"""
+    result = pdf_generator.generate_quotation(quote_data)
+    return result
+
+@app.post("/api/documents/pdf/payslip")
+async def generate_payslip_pdf(payslip_data: dict):
+    """Generate payslip PDF"""
+    result = pdf_generator.generate_payslip(payslip_data)
+    return result
+
+@app.get("/api/documents/pdf/preview/{doc_type}")
+async def preview_pdf(doc_type: str):
+    """Preview PDF document"""
+    sample_data = {
+        "invoice": {
+            "invoice_number": "INV-2025-001",
+            "date": "2025-10-28",
+            "due_date": "2025-11-28",
+            "customer_name": "ABC Company (Pty) Ltd",
+            "customer_address": "456 Business Road, Johannesburg, 2001",
+            "customer_vat": "4987654321",
+            "items": [
+                {"description": "Widget A", "quantity": 10, "unit_price": 500},
+                {"description": "Widget B", "quantity": 5, "unit_price": 750},
+                {"description": "Service Fee", "quantity": 1, "unit_price": 1000}
+            ]
+        },
+        "purchase_order": {
+            "po_number": "PO-2025-001",
+            "date": "2025-10-28",
+            "supplier_name": "XYZ Suppliers Ltd",
+            "supplier_address": "789 Industrial Park, Pretoria, 0001",
+            "items": [
+                {"description": "Raw Material A", "quantity": 100, "unit_price": 250},
+                {"description": "Raw Material B", "quantity": 50, "unit_price": 450}
+            ]
+        }
+    }
+    
+    if doc_type == "invoice":
+        result = pdf_generator.generate_tax_invoice(sample_data["invoice"])
+    elif doc_type == "purchase-order":
+        result = pdf_generator.generate_purchase_order(sample_data["purchase_order"])
+    else:
+        raise HTTPException(status_code=404, detail="Document type not found")
+    
+    return HTMLResponse(content=result["html_content"])
+
 
 if __name__ == "__main__":
     import uvicorn
