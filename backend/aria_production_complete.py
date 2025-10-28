@@ -2538,6 +2538,24 @@ async def dashboard_overview(user: dict = Depends(get_current_user)):
         "system_version": "3.0.0"
     }
 
+@app.get("/api/analytics/overview")
+async def analytics_overview(user: dict = Depends(get_current_user)):
+    """Analytics overview endpoint for dashboard"""
+    stats = get_bot_execution_stats(user_id=user["id"])
+
+    return {
+        "total_bots": len(ALL_BOTS),
+        "total_interactions": stats.get("total_executions", 0),
+        "total_executions": stats.get("total_executions", 0),
+        "success_rate": round(stats.get("success_rate", 0), 1),
+        "avg_confidence": 0.94,
+        "time_saved_hours": round(stats.get("total_executions", 0) * 0.5, 1),
+        "bots_active": len(ALL_BOTS),
+        "executions_today": stats.get("executions_today", 0),
+        "erp_modules": len(ERP_MODULES),
+        "system_version": "3.0.0"
+    }
+
 @app.get("/api/analytics/bots")
 async def bot_analytics(user: dict = Depends(get_current_user)):
     """Bot execution analytics"""

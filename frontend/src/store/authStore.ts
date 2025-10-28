@@ -22,17 +22,18 @@ interface AuthState {
 
 export const useAuthStore = create<AuthState>((set) => ({
   user: JSON.parse(localStorage.getItem('user') || 'null'),
-  token: localStorage.getItem('token'),
-  isAuthenticated: !!localStorage.getItem('token'),
+  token: localStorage.getItem('access_token') || localStorage.getItem('token'),
+  isAuthenticated: !!(localStorage.getItem('access_token') || localStorage.getItem('token')),
   
   login: (token, user) => {
-    localStorage.setItem('token', token);
+    localStorage.setItem('access_token', token);
     localStorage.setItem('user', JSON.stringify(user));
     set({ token, user, isAuthenticated: true });
   },
   
   logout: () => {
-    localStorage.removeItem('token');
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('token'); // Remove old key for cleanup
     localStorage.removeItem('user');
     set({ token: null, user: null, isAuthenticated: false });
   },
