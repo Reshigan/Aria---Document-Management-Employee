@@ -42,7 +42,8 @@ except ImportError:
 try:
     from faker import Faker
     HAS_FAKER = True
-    faker = Faker(['en_ZA', 'en_GB'])
+    # Use en_GB as en_ZA is not available in all faker versions
+    faker = Faker('en_GB')
 except ImportError:
     HAS_FAKER = False
     faker = None

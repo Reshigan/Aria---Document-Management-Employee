@@ -1,0 +1,81 @@
+module,test_name,status,duration,timestamp,error,details
+ARIA,MRP Bot,FAIL,0.09835,2025-10-29 04:48:15.106353,,{'bot_id': 'mrp_bot'}
+ARIA,Production Scheduler,FAIL,0.098243,2025-10-29 04:48:15.204673,,{'bot_id': 'production_scheduler'}
+ARIA,Quality Predictor,FAIL,0.098183,2025-10-29 04:48:15.302900,,{'bot_id': 'quality_predictor'}
+ARIA,Predictive Maintenance,FAIL,0.098087,2025-10-29 04:48:15.401034,,{'bot_id': 'predictive_maintenance'}
+ARIA,Inventory Optimizer,FAIL,0.098272,2025-10-29 04:48:15.499355,,{'bot_id': 'inventory_optimizer'}
+ARIA,Patient Scheduling,FAIL,0.098124,2025-10-29 04:48:15.597546,,{'bot_id': 'patient_scheduling'}
+ARIA,Medical Records,FAIL,0.098819,2025-10-29 04:48:15.696418,,{'bot_id': 'medical_records'}
+ARIA,Insurance Claims,FAIL,0.098172,2025-10-29 04:48:15.794633,,{'bot_id': 'insurance_claims'}
+ARIA,Lab Results,FAIL,0.098169,2025-10-29 04:48:15.892850,,{'bot_id': 'lab_results'}
+ARIA,Prescription Management,FAIL,0.098223,2025-10-29 04:48:15.991118,,{'bot_id': 'prescription_management'}
+ARIA,Demand Forecasting,FAIL,0.098337,2025-10-29 04:48:16.089500,,{'bot_id': 'demand_forecasting'}
+ARIA,Price Optimization,FAIL,0.098328,2025-10-29 04:48:16.187880,,{'bot_id': 'price_optimization'}
+ARIA,Customer Segmentation,FAIL,0.098097,2025-10-29 04:48:16.286022,,{'bot_id': 'customer_segmentation'}
+ARIA,Store Performance,FAIL,0.098217,2025-10-29 04:48:16.384283,,{'bot_id': 'store_performance'}
+ARIA,Loyalty Program,FAIL,0.099396,2025-10-29 04:48:16.483720,,{'bot_id': 'loyalty_program'}
+ARIA,Customer Support,FAIL,0.097977,2025-10-29 04:48:16.581737,,{'bot_id': 'customer_support'}
+ARIA,Accounts Payable,FAIL,0.098156,2025-10-29 04:48:16.679932,,{'bot_id': 'accounts_payable'}
+ARIA,Accounts Receivable,FAIL,0.098239,2025-10-29 04:48:16.778224,,{'bot_id': 'accounts_receivable'}
+ARIA,Bank Reconciliation,FAIL,0.098321,2025-10-29 04:48:16.876589,,{'bot_id': 'bank_reconciliation'}
+ARIA,Invoice Reconciliation,FAIL,0.099219,2025-10-29 04:48:16.975853,,{'bot_id': 'invoice_reconciliation'}
+ARIA,Expense Management,FAIL,0.098226,2025-10-29 04:48:17.074126,,{'bot_id': 'expense_management'}
+ARIA,Payroll SA,FAIL,0.098517,2025-10-29 04:48:17.172687,,{'bot_id': 'payroll_sa'}
+ARIA,General Ledger,FAIL,0.100134,2025-10-29 04:48:17.272884,,{'bot_id': 'general_ledger'}
+ARIA,Financial Reporting,FAIL,0.09819,2025-10-29 04:48:17.371117,,{'bot_id': 'financial_reporting'}
+ARIA,Tax Filing (SARS),FAIL,0.100378,2025-10-29 04:48:17.471542,,{'bot_id': 'tax_filing'}
+ARIA,Asset Management,FAIL,0.098187,2025-10-29 04:48:17.569773,,{'bot_id': 'asset_management'}
+ARIA,Cash Flow Forecasting,FAIL,0.098207,2025-10-29 04:48:17.668031,,{'bot_id': 'cash_flow_forecasting'}
+ARIA,Budget Planning,FAIL,0.098233,2025-10-29 04:48:17.766309,,{'bot_id': 'budget_planning'}
+ARIA,BBBEE Compliance,FAIL,0.099678,2025-10-29 04:48:17.866033,,{'bot_id': 'bbbee_compliance'}
+ARIA,PAYE Compliance,FAIL,0.099797,2025-10-29 04:48:17.965876,,{'bot_id': 'paye_compliance'}
+ARIA,UIF Compliance,FAIL,0.098239,2025-10-29 04:48:18.064159,,{'bot_id': 'uif_compliance'}
+ARIA,VAT Compliance,FAIL,0.098183,2025-10-29 04:48:18.162388,,{'bot_id': 'vat_compliance'}
+ARIA,Audit Trail,FAIL,0.098215,2025-10-29 04:48:18.260648,,{'bot_id': 'audit_trail'}
+ARIA,Lead Qualification,FAIL,0.098207,2025-10-29 04:48:18.358907,,{'bot_id': 'lead_qualification'}
+ARIA,Lead Management,FAIL,0.098171,2025-10-29 04:48:18.457126,,{'bot_id': 'lead_management'}
+ARIA,Sales Pipeline,FAIL,0.098834,2025-10-29 04:48:18.556012,,{'bot_id': 'sales_pipeline'}
+ARIA,Quote Generation,FAIL,0.098267,2025-10-29 04:48:18.654327,,{'bot_id': 'quote_generation'}
+ARIA,Email Campaign,FAIL,0.098064,2025-10-29 04:48:18.752459,,{'bot_id': 'email_campaign'}
+ARIA,Sales Forecasting,FAIL,0.098169,2025-10-29 04:48:18.850668,,{'bot_id': 'sales_forecasting'}
+ARIA,Contract Management,FAIL,0.098152,2025-10-29 04:48:18.948868,,{'bot_id': 'contract_management'}
+ARIA,Customer Onboarding,FAIL,0.098778,2025-10-29 04:48:19.047693,,{'bot_id': 'customer_onboarding'}
+ARIA,Recruitment,FAIL,0.098408,2025-10-29 04:48:19.146147,,{'bot_id': 'recruitment'}
+ARIA,Employee Onboarding,FAIL,0.098454,2025-10-29 04:48:19.244669,,{'bot_id': 'employee_onboarding'}
+ARIA,Leave Management,FAIL,0.098647,2025-10-29 04:48:19.343397,,{'bot_id': 'leave_management'}
+ARIA,Performance Review,FAIL,0.09837,2025-10-29 04:48:19.441838,,{'bot_id': 'performance_review'}
+ARIA,Training Management,FAIL,0.099799,2025-10-29 04:48:19.541709,,{'bot_id': 'training_management'}
+ARIA,Time & Attendance,FAIL,0.098354,2025-10-29 04:48:19.640125,,{'bot_id': 'time_attendance'}
+ARIA,Benefits Management,FAIL,0.099603,2025-10-29 04:48:19.739789,,{'bot_id': 'benefits_management'}
+ARIA,Employee Exit,FAIL,0.09841,2025-10-29 04:48:19.838261,,{'bot_id': 'employee_exit'}
+ARIA,Purchase Order,FAIL,0.098294,2025-10-29 04:48:19.936619,,{'bot_id': 'purchase_order'}
+ARIA,Supplier Management,FAIL,0.100123,2025-10-29 04:48:20.036796,,{'bot_id': 'supplier_management'}
+ARIA,RFQ Management,FAIL,0.098251,2025-10-29 04:48:20.135093,,{'bot_id': 'rfq_management'}
+ARIA,Goods Receipt,FAIL,0.098099,2025-10-29 04:48:20.233236,,{'bot_id': 'goods_receipt'}
+ARIA,Supplier Evaluation,FAIL,0.098668,2025-10-29 04:48:20.331944,,{'bot_id': 'supplier_evaluation'}
+ARIA,Procurement Contract,FAIL,0.098179,2025-10-29 04:48:20.430174,,{'bot_id': 'procurement_contract'}
+ARIA,Spend Analytics,FAIL,0.099527,2025-10-29 04:48:20.529752,,{'bot_id': 'spend_analytics'}
+ARIA,Document Classification,FAIL,0.098027,2025-10-29 04:48:20.627843,,{'bot_id': 'document_classification'}
+ARIA,Document Extraction (OCR),FAIL,0.098313,2025-10-29 04:48:20.726199,,{'bot_id': 'document_extraction'}
+ARIA,Document Approval Workflow,FAIL,0.098317,2025-10-29 04:48:20.824562,,{'bot_id': 'document_approval'}
+ARIA,Version Control,FAIL,0.098165,2025-10-29 04:48:20.922775,,{'bot_id': 'version_control'}
+ARIA,Archive Management,FAIL,0.099962,2025-10-29 04:48:21.022787,,{'bot_id': 'archive_management'}
+ARIA,Search & Retrieval,FAIL,0.098033,2025-10-29 04:48:21.120865,,{'bot_id': 'search_retrieval'}
+ARIA,Email Bot,FAIL,0.098184,2025-10-29 04:48:21.219092,,{'bot_id': 'email_bot'}
+ARIA,SMS Bot,FAIL,0.098846,2025-10-29 04:48:21.317986,,{'bot_id': 'sms_bot'}
+ARIA,WhatsApp Bot,FAIL,0.098245,2025-10-29 04:48:21.416276,,{'bot_id': 'whatsapp_bot'}
+ARIA,Teams Integration,FAIL,0.099386,2025-10-29 04:48:21.515710,,{'bot_id': 'teams_integration'}
+ARIA,Slack Integration,FAIL,0.098064,2025-10-29 04:48:21.613820,,{'bot_id': 'slack_integration'}
+ERP,Financial Management,PASS,0.100097,2025-10-29 04:48:21.814976,,{'module_id': 'financial'}
+ERP,Human Resources,PASS,0.100087,2025-10-29 04:48:21.915124,,{'module_id': 'hr'}
+ERP,Customer Relationship Management,PASS,0.100088,2025-10-29 04:48:22.015273,,{'module_id': 'crm'}
+ERP,Procurement Management,PASS,0.100087,2025-10-29 04:48:22.115423,,{'module_id': 'procurement'}
+ERP,Manufacturing Management,PASS,0.100089,2025-10-29 04:48:22.215576,,{'module_id': 'manufacturing'}
+ERP,Quality Management,PASS,0.10008,2025-10-29 04:48:22.315724,,{'module_id': 'quality'}
+ERP,Inventory & Warehouse,PASS,0.100084,2025-10-29 04:48:22.415867,,{'module_id': 'inventory'}
+ERP,Compliance & Reporting,PASS,0.100082,2025-10-29 04:48:22.516007,,{'module_id': 'compliance'}
+WORKFLOW,Procure-to-Pay Workflow,PASS,0.200091,2025-10-29 04:48:22.716229,,
+WORKFLOW,Order-to-Cash Workflow,PASS,0.200094,2025-10-29 04:48:22.916389,,
+WORKFLOW,Hire-to-Retire Workflow,PASS,0.200088,2025-10-29 04:48:23.116542,,
+WORKFLOW,Plan-to-Produce Workflow,PASS,0.200082,2025-10-29 04:48:23.316686,,
+WORKFLOW,Record-to-Report Workflow,PASS,0.200081,2025-10-29 04:48:23.516831,,
