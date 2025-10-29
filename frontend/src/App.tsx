@@ -72,6 +72,9 @@ import PrivacyPolicy from './pages/Legal/PrivacyPolicy';
 // Pricing
 import PricingComplete from './pages/PricingComplete';
 
+// Theme Preview
+import ThemePreview from './pages/ThemePreview';
+
 // ARIA Voice Interface
 import { AriaVoiceInterface } from './components/aria/AriaVoiceInterface';
 
@@ -106,6 +109,7 @@ function App() {
         <Route path="/pricing" element={<PricingComplete />} />
         <Route path="/terms" element={<TermsOfService />} />
         <Route path="/privacy" element={<PrivacyPolicy />} />
+        <Route path="/theme-preview" element={<ThemePreview />} />
 
         {/* ============================================
             PROTECTED ROUTES (Authentication required)
