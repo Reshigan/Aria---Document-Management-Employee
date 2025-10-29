@@ -70,7 +70,7 @@ export const AriaVoiceInterface: React.FC = () => {
       formData.append('audio', audioBlob, 'recording.wav');
       
       // Send to Aria voice endpoint
-      const response = await fetch('/api/v1/aria/voice/interact', {
+      const response = await fetch('/api/aria/voice/interact', {
         method: 'POST',
         body: formData,
         headers: {
@@ -124,7 +124,7 @@ export const AriaVoiceInterface: React.FC = () => {
     
     try {
       // Send to Aria chat endpoint
-      const response = await fetch('/api/v1/aria/chat', {
+      const response = await fetch('/api/aria/chat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

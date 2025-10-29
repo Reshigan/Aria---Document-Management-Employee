@@ -212,6 +212,8 @@ rsync -avz --delete -e "ssh -i $SSH_KEY -o StrictHostKeyChecking=no" \
     --exclude='*.pyc' \
     --exclude='.env' \
     --exclude='aria.db' \
+    --exclude='venv/' \
+    --exclude='uploads/' \
     "$REPO_DIR/backend/" "$SERVER_USER@$SERVER_IP:$SERVER_BACKEND_DIR/" || error_exit "Failed to sync backend"
 log_success "Backend files synced"
 

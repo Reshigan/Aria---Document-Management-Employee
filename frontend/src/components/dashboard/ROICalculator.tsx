@@ -24,7 +24,7 @@ const ROICalculator: React.FC = () => {
 
   const fetchROI = async () => {
     try {
-      const response = await apiClient.get('/api/v1/reporting/roi/calculate');
+      const response = await apiClient.get('/api/reporting/roi/calculate');
       setRoiData(response.data);
       setLoading(false);
     } catch (error) {

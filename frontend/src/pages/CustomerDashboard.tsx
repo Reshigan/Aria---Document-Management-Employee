@@ -52,17 +52,17 @@ export const CustomerDashboard: React.FC = () => {
       };
 
       // Load metrics
-      const metricsRes = await fetch('/api/v1/aria/growth/embedding-score', { headers });
+      const metricsRes = await fetch('/api/aria/growth/embedding-score', { headers });
       const metricsData = await metricsRes.json();
       setMetrics(metricsData);
 
       // Load health
-      const healthRes = await fetch('/api/v1/aria/growth/health', { headers });
+      const healthRes = await fetch('/api/aria/growth/health', { headers });
       const healthData = await healthRes.json();
       setHealth(healthData);
 
       // Load opportunities
-      const oppRes = await fetch('/api/v1/aria/growth/opportunities', { headers });
+      const oppRes = await fetch('/api/aria/growth/opportunities', { headers });
       const oppData = await oppRes.json();
       setOpportunities(oppData.opportunities);
 

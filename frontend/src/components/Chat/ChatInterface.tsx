@@ -49,7 +49,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
 
   const loadConversation = async (convId: string) => {
     try {
-      const response = await fetch(`/api/v1/bot/conversations/${convId}`, {
+      const response = await fetch(`/api/bot/conversations/${convId}`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
@@ -82,7 +82,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
     abortControllerRef.current = new AbortController();
 
     try {
-      const response = await fetch('/api/v1/bot/chat/stream', {
+      const response = await fetch('/api/bot/chat/stream', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

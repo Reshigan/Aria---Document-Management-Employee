@@ -6,7 +6,7 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || (
 );
 
 const api = axios.create({
-  baseURL: `${API_BASE_URL}/api/v1`,
+  baseURL: `${API_BASE_URL}/api`,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -76,7 +76,7 @@ export const erpAPI = {
 
 export const healthAPI = {
   check: () =>
-    axios.get(`${API_BASE_URL}/api/v1/health`),
+    axios.get(`${API_BASE_URL}/api/health`),
 };
 
 export const tenantsAPI = {
