@@ -1,127 +1,187 @@
-# ARIA Document Management - Enterprise Deployment Guide
+# 🚀 ARIA DEPLOYMENT GUIDE
 
-## 🚀 Production System Status: ✅ FULLY OPERATIONAL
+## Quick Start
 
-**Production URL:** https://aria.vantax.co.za  
-**Server:** ubuntu@3.8.139.178  
-**Status:** Enterprise system deployed and running successfully
-
-### System Overview
-- **Domain**: aria.vantax.co.za
-- **Backend API**: FastAPI running on port 8000
-- **Frontend**: Next.js running on port 12001
-- **SSL**: Let's Encrypt certificate active
-- **Database**: SQLite with aiosqlite async driver
-- **Reverse Proxy**: Nginx with security headers
-- **Authentication**: JWT with bcrypt password hashing
-
-### ✅ Completed Deployment Tasks
-
-#### 1. Backend API Deployment
-- **Status**: ✅ OPERATIONAL
-- **Container**: `aria-backend` running successfully
-- **Port**: 8000 (internal), accessible via nginx reverse proxy
-- **Health Check**: `/api/v1/health` endpoint responding
-- **API Documentation**: Available at `/api/v1/docs`
-
-#### 2. Database & Services
-- **PostgreSQL**: ✅ Running and connected
-- **Redis**: ✅ Running for caching
-- **RabbitMQ**: ✅ Running for message queuing
-- **All services**: Healthy and operational
-
-#### 3. SSL/HTTPS Configuration
-- **Certificate**: ✅ Let's Encrypt SSL active
-- **Domain**: aria.vantax.co.za resolving correctly
-- **Security**: HTTPS enforced with security headers
-- **Auto-renewal**: Configured via certbot
-
-#### 4. Nginx Reverse Proxy
-- **Configuration**: ✅ Complete with rate limiting
-- **Backend Proxy**: `/api/*` → `http://localhost:8000`
-- **Frontend Proxy**: `/*` → `http://localhost:3000`
-- **Security Headers**: HSTS, CSP, X-Frame-Options configured
-
-#### 5. Node.js & Frontend Setup
-- **Node.js**: v18.20.8 installed
-- **npm**: v10.8.2 installed
-- **Next.js Project**: Ready for deployment
-- **Environment**: NEXT_PUBLIC_API_URL configured
-
-### 🔧 Key Fixes Applied
-
-#### Backend Issues Resolved:
-1. **Missing Models**: Created `backend/models/base.py`, `user.py`, `document.py`
-2. **Dockerfile**: Fixed PYTHONPATH and module imports
-3. **Dependencies**: Added missing packages (aiohttp, uuid)
-4. **Startup Script**: Created proper container initialization
-5. **Disk Space**: Optimized container size and dependencies
-
-#### Infrastructure Setup:
-1. **Docker Compose**: All services orchestrated properly
-2. **Network Configuration**: Internal container communication
-3. **Volume Mounts**: Persistent data storage configured
-4. **Environment Variables**: Secure configuration management
-
-### 📊 System Health Status
-
-```
-✅ FastAPI Backend: RUNNING (port 8000)
-✅ PostgreSQL Database: CONNECTED
-✅ Redis Cache: ACTIVE
-✅ RabbitMQ: OPERATIONAL
-✅ Nginx Reverse Proxy: CONFIGURED
-✅ SSL Certificate: VALID (aria.vantax.co.za)
-🔄 Frontend: READY FOR DEPLOYMENT
+### Deploy to Production (Automated)
+```bash
+./deploy_production_automated.sh
 ```
 
-### 🌐 API Endpoints Verified
-
-- `GET /` → Welcome message
-- `GET /api/v1/health` → System health check
-- `GET /api/v1/docs` → Interactive API documentation
-- `GET /api/v1/openapi.json` → OpenAPI specification
-
-### 🔒 Security Features
-
-- **HTTPS Only**: HTTP redirects to HTTPS
-- **Security Headers**: 
-  - Strict-Transport-Security
-  - Content-Security-Policy
-  - X-Frame-Options: DENY
-  - X-Content-Type-Options: nosniff
-- **Rate Limiting**: 100 requests per minute per IP
-- **SSL Grade**: A+ rating configuration
-
-### 📝 Next Steps
-
-1. **Frontend Deployment**: Complete React/Next.js build and serve
-2. **Production Optimization**: Enable production mode
-3. **Monitoring**: Set up application monitoring
-4. **Backup Strategy**: Implement database backup automation
-
-### 🛠 Technical Stack
-
-- **Backend**: FastAPI (Python 3.11)
-- **Frontend**: Next.js (React 18)
-- **Database**: PostgreSQL 15
-- **Cache**: Redis 7
-- **Message Queue**: RabbitMQ 3
-- **Web Server**: Nginx 1.18
-- **SSL**: Let's Encrypt (Certbot)
-- **Containerization**: Docker & Docker Compose
-- **OS**: Ubuntu 22.04 LTS
-
-### 📞 Support Information
-
-- **Domain**: aria.vantax.co.za
-- **API Base URL**: https://aria.vantax.co.za/api
-- **Documentation**: https://aria.vantax.co.za/api/v1/docs
-- **Health Check**: https://aria.vantax.co.za/api/v1/health
+### Rollback Deployment
+```bash
+./rollback_deployment.sh
+```
 
 ---
 
-**Deployment completed successfully on**: October 5, 2025  
-**System Status**: OPERATIONAL  
-**SSL Status**: ACTIVE  
-**API Status**: RESPONDING  
+## Critical Fix Applied
+
+### Problem: `/api/auth/login` vs `/api/v1/auth/login`
+
+**Root Cause:** Line 9 of `frontend/src/services/api.ts` was missing `/v1`:
+```typescript
+// WRONG (was causing "Not Found" errors)
+baseURL: `${API_BASE_URL}/api`
+
+// CORRECT (fixed)
+baseURL: `${API_BASE_URL}/api/v1`
+```
+
+**This single typo caused 10+ failed deployments!**
+
+---
+
+## Automated Deployment Features
+
+✅ **One-Command Deployment** - No manual steps  
+✅ **Git-First Workflow** - All changes committed  
+✅ **Cache Busting** - Forces browser reload  
+✅ **Process Cleanup** - Kills old backends  
+✅ **Build Verification** - Tests after deploy  
+✅ **Automatic Rollback** - If anything fails  
+✅ **Build Manifest** - Tracks deployment version  
+
+---
+
+## Usage
+
+```bash
+# Deploy to production
+./deploy_production_automated.sh
+
+# If deployment fails, rollback
+./rollback_deployment.sh
+```
+
+---
+
+## What The Script Does
+
+1. ✅ Commits any uncommitted Git changes
+2. ✅ Builds frontend with correct API config (`/api/v1`)
+3. ✅ Creates build manifest with commit hash
+4. ✅ Kills all old uvicorn processes
+5. ✅ Backs up current deployment
+6. ✅ Deploys new frontend and backend
+7. ✅ Restarts backend service
+8. ✅ Reloads nginx with cache-busting headers
+9. ✅ Tests all critical endpoints
+10. ✅ Reports success/failure
+
+---
+
+## Verification After Deployment
+
+### Must Pass These Tests:
+```bash
+# Health check
+curl https://aria.vantax.co.za/api/v1/health
+# Expected: {"status":"healthy","bots":67,"modules":8}
+
+# Login test
+curl -X POST https://aria.vantax.co.za/api/v1/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"admin@vantax.co.za","password":"Admin@123"}'
+# Expected: {"access_token":"..."}
+
+# Frontend test
+curl -I https://aria.vantax.co.za/
+# Expected: HTTP/1.1 200 OK
+```
+
+### Browser Test:
+1. Open https://aria.vantax.co.za/login
+2. **Hard refresh:** `Ctrl+Shift+R` (Linux/Windows) or `Cmd+Shift+R` (Mac)
+3. Login with: admin@vantax.co.za / Admin@123
+4. Should work without "Not Found" error
+
+---
+
+## Troubleshooting
+
+### Still getting "Not Found" after deployment?
+
+**Problem:** Browser cached old JavaScript  
+**Solution:** Hard refresh multiple times:
+- Chrome: `Ctrl+Shift+R` or `Ctrl+F5`
+- Firefox: `Ctrl+Shift+R` or `Ctrl+F5`
+- Safari: `Cmd+Option+R`
+- Or: Open in incognito/private mode
+
+### Multiple backend processes running?
+
+```bash
+ssh -i /workspace/project/Vantax-2.pem ubuntu@3.8.139.178 \
+  'ps aux | grep uvicorn | grep -v grep'
+  
+# Kill them all
+ssh -i /workspace/project/Vantax-2.pem ubuntu@3.8.139.178 \
+  'pkill -9 -f uvicorn && sudo systemctl restart aria-backend'
+```
+
+### API endpoint mismatch?
+
+Verify the deployed frontend has `/v1`:
+```bash
+ssh -i /workspace/project/Vantax-2.pem ubuntu@3.8.139.178 \
+  'grep -oP "baseURL.*?v1" /var/www/aria/frontend/dist/assets/*.js'
+# Should output: baseURL:..."/api/v1"
+```
+
+---
+
+## Files Modified
+
+### Fixed Files (Committed to Git):
+1. ✅ `frontend/src/services/api.ts` - Added `/v1` to baseURL
+2. ✅ `deploy_production_automated.sh` - Full automation
+3. ✅ `rollback_deployment.sh` - One-command rollback
+4. ✅ `DEPLOYMENT.md` - This documentation
+5. ✅ `DEPLOYMENT_ISSUES_ANALYSIS.md` - Root cause analysis
+
+---
+
+## Important Notes
+
+### ⚠️ Never Edit These Files on the Server:
+- Frontend files in `/var/www/aria/frontend/`
+- Backend files in `/var/www/aria/backend/`
+- **Always make changes in Git, then deploy!**
+
+### ✅ Always Do This:
+1. Edit files in the Git repository
+2. Commit changes
+3. Run `./deploy_production_automated.sh`
+4. Test in browser (with hard refresh)
+
+---
+
+## Monitoring
+
+```bash
+# Backend logs
+ssh -i /workspace/project/Vantax-2.pem ubuntu@3.8.139.178 \
+  'sudo journalctl -u aria-backend -f'
+
+# Nginx logs
+ssh -i /workspace/project/Vantax-2.pem ubuntu@3.8.139.178 \
+  'sudo tail -f /var/log/nginx/access.log'
+```
+
+---
+
+## Production System Status
+
+**✅ DEPLOYED AND READY:**
+- 67 AI Bots operational
+- 8 ERP Modules configured
+- Backend API: `/api/v1/*`
+- Frontend: React + Vite
+- SSL: Let's Encrypt
+- Domain: https://aria.vantax.co.za
+
+---
+
+**Last Updated:** October 29, 2025  
+**Production URL:** https://aria.vantax.co.za  
+**Status:** ✅ READY FOR PRODUCTION
