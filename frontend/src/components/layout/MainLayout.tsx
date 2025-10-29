@@ -112,33 +112,45 @@ export const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }
   };
 
   return (
-    <div className="flex h-screen bg-gray-50">
-      {/* Sidebar */}
+    <div className="flex h-screen" style={{ backgroundColor: 'var(--color-bg-default)' }}>
+      {/* Sidebar - Vanta X Theme: Navy Blue Background */}
       <aside
         className={`${
           sidebarOpen ? 'w-64' : 'w-20'
-        } bg-white border-r border-gray-200 transition-all duration-300 flex flex-col`}
+        } transition-all duration-300 flex flex-col`}
+        style={{ 
+          backgroundColor: 'var(--color-sidebar-bg)',
+          borderRight: '1px solid rgba(255, 255, 255, 0.1)'
+        }}
       >
         {/* Logo & Toggle */}
-        <div className="h-16 flex items-center justify-between px-4 border-b border-gray-200">
+        <div className="h-16 flex items-center justify-between px-4" style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.1)' }}>
           {sidebarOpen && (
             <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">AR</span>
+              <div 
+                className="w-8 h-8 rounded-lg flex items-center justify-center" 
+                style={{ backgroundColor: 'var(--color-accent)' }}
+              >
+                <span style={{ color: 'var(--color-primary)', fontWeight: 'bold', fontSize: '0.875rem' }}>AR</span>
               </div>
-              <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              <span className="text-xl font-bold" style={{ color: 'var(--color-text-inverse)' }}>
                 ARIA
               </span>
             </div>
           )}
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+            className="p-2 rounded-lg transition-colors"
+            style={{ 
+              color: 'var(--color-text-inverse)',
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--color-sidebar-hover)'}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
           >
             {sidebarOpen ? (
-              <X className="w-5 h-5 text-gray-600" />
+              <X className="w-5 h-5" />
             ) : (
-              <Menu className="w-5 h-5 text-gray-600" />
+              <Menu className="w-5 h-5" />
             )}
           </button>
         </div>
@@ -152,11 +164,13 @@ export const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }
                   <>
                     <button
                       onClick={() => toggleMenu(item.path)}
-                      className={`w-full flex items-center justify-between px-3 py-2 rounded-lg transition-colors ${
-                        isActive(item.path)
-                          ? 'bg-blue-50 text-blue-600'
-                          : 'text-gray-700 hover:bg-gray-100'
-                      }`}
+                      className="w-full flex items-center justify-between px-3 py-2 rounded-lg transition-colors"
+                      style={{
+                        backgroundColor: isActive(item.path) ? 'var(--color-sidebar-hover)' : 'transparent',
+                        color: isActive(item.path) ? 'var(--color-accent)' : 'var(--color-text-inverse)'
+                      }}
+                      onMouseEnter={(e) => !isActive(item.path) && (e.currentTarget.style.backgroundColor = 'var(--color-sidebar-hover)')}
+                      onMouseLeave={(e) => !isActive(item.path) && (e.currentTarget.style.backgroundColor = 'transparent')}
                     >
                       <div className="flex items-center space-x-3">
                         {item.icon}
@@ -176,11 +190,13 @@ export const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }
                           <li key={child.path}>
                             <Link
                               to={child.path}
-                              className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition-colors ${
-                                location.pathname === child.path
-                                  ? 'bg-blue-50 text-blue-600'
-                                  : 'text-gray-600 hover:bg-gray-100'
-                              }`}
+                              className="flex items-center space-x-2 px-3 py-2 rounded-lg transition-colors"
+                              style={{
+                                backgroundColor: location.pathname === child.path ? 'var(--color-sidebar-hover)' : 'transparent',
+                                color: location.pathname === child.path ? 'var(--color-accent)' : 'rgba(255, 255, 255, 0.7)'
+                              }}
+                              onMouseEnter={(e) => location.pathname !== child.path && (e.currentTarget.style.backgroundColor = 'var(--color-sidebar-hover)')}
+                              onMouseLeave={(e) => location.pathname !== child.path && (e.currentTarget.style.backgroundColor = 'transparent')}
                             >
                               {child.icon}
                               <span className="text-sm">{child.name}</span>
@@ -193,11 +209,13 @@ export const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }
                 ) : (
                   <Link
                     to={item.path}
-                    className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors ${
-                      isActive(item.path)
-                        ? 'bg-blue-50 text-blue-600'
-                        : 'text-gray-700 hover:bg-gray-100'
-                    }`}
+                    className="flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors"
+                    style={{
+                      backgroundColor: isActive(item.path) ? 'var(--color-sidebar-hover)' : 'transparent',
+                      color: isActive(item.path) ? 'var(--color-accent)' : 'var(--color-text-inverse)'
+                    }}
+                    onMouseEnter={(e) => !isActive(item.path) && (e.currentTarget.style.backgroundColor = 'var(--color-sidebar-hover)')}
+                    onMouseLeave={(e) => !isActive(item.path) && (e.currentTarget.style.backgroundColor = 'transparent')}
                   >
                     {item.icon}
                     {sidebarOpen && <span className="font-medium">{item.name}</span>}
