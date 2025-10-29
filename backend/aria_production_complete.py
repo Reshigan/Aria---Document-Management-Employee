@@ -2374,6 +2374,28 @@ async def get_bot_categories(user: dict = Depends(get_current_user)):
     
     return {"categories": categories}
 
+@app.get("/api/bots/stats")
+async def get_bots_stats(user: dict = Depends(get_current_user)):
+    """Get bot execution statistics"""
+    stats = get_bot_execution_stats(user_id=user["id"])
+    
+    # Get category breakdown
+    categories = {}
+    for bot_id, bot_class in ALL_BOTS.items():
+        category = bot_class.category
+        if category not in categories:
+            categories[category] = 0
+        categories[category] += 1
+    
+    return {
+        "total_bots": len(ALL_BOTS),
+        "total_executions": stats.get("total_executions", 0),
+        "success_rate": round(stats.get("success_rate", 0), 1),
+        "executions_today": stats.get("executions_today", 0),
+        "categories": categories,
+        "active_bots": len(ALL_BOTS)
+    }
+
 @app.post("/api/bots/execute")
 async def execute_bot(request: BotExecutionRequest, user: dict = Depends(get_current_user)):
     """Execute a bot"""
@@ -2521,6 +2543,7 @@ async def get_inspections_endpoint(user: dict = Depends(get_current_user)):
 
 # Analytics/Reporting
 @app.get("/api/v1/reporting/dashboard/overview")
+@app.get("/api/reporting/dashboard/overview")  # Alias for frontend compatibility
 async def dashboard_overview(user: dict = Depends(get_current_user)):
     """Dashboard overview with all metrics"""
     stats = get_bot_execution_stats(user_id=user["id"])

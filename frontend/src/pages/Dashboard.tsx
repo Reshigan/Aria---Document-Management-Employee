@@ -40,10 +40,10 @@ const Dashboard: React.FC = () => {
   const fetchDashboardData = async () => {
     try {
       const [overview, botStats] = await Promise.all([
-        apiClient.get('/api/reporting/dashboard/overview', {
+        apiClient.get('/reporting/dashboard/overview', {
           params: { days: selectedPeriod === '7d' ? 7 : selectedPeriod === '30d' ? 30 : 90 }
         }),
-        apiClient.get('/api/bots/stats')
+        apiClient.get('/bots/stats')
       ]);
 
       setData({

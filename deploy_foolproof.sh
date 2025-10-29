@@ -15,7 +15,7 @@ NC='\033[0m' # No Color
 
 # Production settings
 PROD_SERVER="3.8.139.178"
-SSH_KEY="Vantax-2.pem"
+SSH_KEY="/workspace/project/Vantax-2.pem"
 SSH_USER="ubuntu"
 BACKEND_PATH="/opt/aria"
 FRONTEND_PATH="/var/www/aria/frontend/dist"
