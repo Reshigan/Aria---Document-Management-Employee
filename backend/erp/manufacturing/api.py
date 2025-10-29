@@ -7,6 +7,7 @@ from .models import (
     BOM, BOMType, Routing, LaborTransaction, ShopFloorStatus,
     ProductionCost, ProductionMetrics
 )
+from .mrp_engine import MRPEngine, MRPParameters, MRPCalculationType, AdvancedScheduler
 
 router = APIRouter(prefix="/api/v1/erp/manufacturing", tags=["Manufacturing ERP"])
 
@@ -339,6 +340,342 @@ async def get_work_center_performance(from_date: str, to_date: str):
                 "efficiency": 88.5,
                 "downtime_hours": 18.0,
                 "orders_completed": 30
+            }
+        ]
+    }
+
+
+# ============================================================================
+# MRP (MATERIAL REQUIREMENTS PLANNING) ENDPOINTS
+# ============================================================================
+
+@router.post("/mrp/run")
+async def run_mrp(
+    planning_horizon_days: Optional[int] = 180,
+    calculation_type: Optional[str] = "regenerative",
+    include_wip: bool = True,
+    include_po: bool = True
+):
+    """
+    Run MRP calculation
+    
+    This calculates material requirements based on:
+    - Sales orders and forecasts (demand)
+    - Current inventory levels
+    - Bills of materials (BOMs)
+    - Production routings
+    - Lead times and safety stock
+    """
+    # Sample demand data (in production, query from sales orders & forecasts)
+    demand_data = [
+        {
+            "item_id": "ITEM-001",
+            "item_code": "WIDGET-A",
+            "item_name": "Widget Assembly A",
+            "quantity": 500,
+            "required_date": datetime.now() + timedelta(days=30),
+            "source_type": "sales_order",
+            "source_id": "SO-001",
+            "uom": "EA",
+            "lead_time_days": 7,
+            "safety_stock": 50
+        },
+        {
+            "item_id": "ITEM-002",
+            "item_code": "GADGET-B",
+            "item_name": "Gadget B",
+            "quantity": 300,
+            "required_date": datetime.now() + timedelta(days=45),
+            "source_type": "sales_order",
+            "source_id": "SO-002",
+            "uom": "EA",
+            "lead_time_days": 10,
+            "safety_stock": 30
+        }
+    ]
+    
+    # Sample inventory data
+    inventory_data = [
+        {
+            "item_id": "ITEM-001",
+            "on_hand": 150,
+            "allocated": 50,
+            "on_order": 200
+        },
+        {
+            "item_id": "ITEM-002",
+            "on_hand": 80,
+            "allocated": 30,
+            "on_order": 0
+        }
+    ]
+    
+    # Sample BOM data
+    bom_data = [
+        {
+            "item_id": "ITEM-001",
+            "item_code": "WIDGET-A",
+            "components": [
+                {
+                    "component_id": "COMP-001",
+                    "component_code": "FRAME-A",
+                    "component_name": "Frame A",
+                    "quantity": 1,
+                    "uom": "EA",
+                    "lead_time_days": 5,
+                    "safety_stock": 20
+                },
+                {
+                    "component_id": "COMP-002",
+                    "component_code": "MOTOR-B",
+                    "component_name": "Motor B",
+                    "quantity": 2,
+                    "uom": "EA",
+                    "lead_time_days": 14,
+                    "safety_stock": 10
+                }
+            ]
+        }
+    ]
+    
+    # Sample routing data
+    routing_data = [
+        {
+            "item_id": "ITEM-001",
+            "routing_code": "ROUTE-001",
+            "operations": [
+                {
+                    "operation_seq": 10,
+                    "work_center_id": "WC-001",
+                    "work_center_name": "Assembly Line 1",
+                    "operation_desc": "Assembly",
+                    "setup_time": 0.5,
+                    "run_time": 0.1
+                },
+                {
+                    "operation_seq": 20,
+                    "work_center_id": "WC-003",
+                    "work_center_name": "Quality Control",
+                    "operation_desc": "QC Inspection",
+                    "setup_time": 0.25,
+                    "run_time": 0.05
+                }
+            ]
+        }
+    ]
+    
+    # Configure and run MRP
+    calc_type = MRPCalculationType.REGENERATIVE if calculation_type == "regenerative" else MRPCalculationType.NET_CHANGE
+    parameters = MRPParameters(
+        planning_horizon_days=planning_horizon_days,
+        calculation_type=calc_type,
+        include_wip=include_wip,
+        include_po=include_po
+    )
+    
+    mrp_engine = MRPEngine(parameters)
+    results = mrp_engine.run_mrp(demand_data, inventory_data, bom_data, routing_data)
+    
+    return results
+
+
+@router.get("/mrp/planned-orders")
+async def get_planned_orders(
+    item_code: Optional[str] = None,
+    order_type: Optional[str] = None,
+    from_date: Optional[str] = None,
+    to_date: Optional[str] = None
+):
+    """Get planned orders from latest MRP run"""
+    return {
+        "status": "success",
+        "planned_orders": [
+            {
+                "order_type": "production",
+                "item_code": "WIDGET-A",
+                "item_name": "Widget Assembly A",
+                "quantity": 500,
+                "start_date": (datetime.now() + timedelta(days=23)).isoformat(),
+                "due_date": (datetime.now() + timedelta(days=30)).isoformat(),
+                "priority": 3,
+                "status": "planned"
+            },
+            {
+                "order_type": "purchase",
+                "item_code": "MOTOR-B",
+                "item_name": "Motor B",
+                "quantity": 1000,
+                "start_date": (datetime.now() + timedelta(days=9)).isoformat(),
+                "due_date": (datetime.now() + timedelta(days=23)).isoformat(),
+                "priority": 2,
+                "status": "planned"
+            }
+        ]
+    }
+
+
+@router.post("/mrp/firm-planned-order/{order_id}")
+async def firm_planned_order(order_id: str):
+    """Convert planned order to firm production or purchase order"""
+    return {
+        "status": "success",
+        "message": f"Planned order {order_id} converted to firm order",
+        "firm_order_id": f"PO-{datetime.now().strftime('%Y%m%d%H%M%S')}"
+    }
+
+
+# ============================================================================
+# CAPACITY PLANNING ENDPOINTS
+# ============================================================================
+
+@router.get("/capacity/requirements")
+async def get_capacity_requirements(
+    work_center_id: Optional[str] = None,
+    from_date: Optional[str] = None,
+    to_date: Optional[str] = None
+):
+    """Get capacity requirements by work center and date"""
+    return {
+        "status": "success",
+        "capacity_requirements": [
+            {
+                "work_center_id": "WC-001",
+                "work_center_name": "Assembly Line 1",
+                "date": (datetime.now() + timedelta(days=1)).isoformat(),
+                "required_hours": 12.5,
+                "available_hours": 16.0,
+                "utilization_pct": 78.1,
+                "overload": False
+            },
+            {
+                "work_center_id": "WC-001",
+                "work_center_name": "Assembly Line 1",
+                "date": (datetime.now() + timedelta(days=2)).isoformat(),
+                "required_hours": 18.0,
+                "available_hours": 16.0,
+                "utilization_pct": 112.5,
+                "overload": True
+            }
+        ],
+        "summary": {
+            "average_utilization": 85.3,
+            "overloaded_days": 1,
+            "total_days": 2
+        }
+    }
+
+
+@router.get("/capacity/work-center/{work_center_id}")
+async def get_work_center_capacity(work_center_id: str):
+    """Get detailed capacity analysis for specific work center"""
+    return {
+        "work_center_id": work_center_id,
+        "work_center_name": "Assembly Line 1",
+        "available_hours_per_day": 16.0,
+        "shifts": 2,
+        "efficiency": 85.0,
+        "utilization_7_days": 82.5,
+        "utilization_30_days": 78.3,
+        "overloaded_days_next_7": 2,
+        "overloaded_days_next_30": 5,
+        "bottleneck_score": 7.5,
+        "recommendations": [
+            "Consider adding overtime on days 2 and 5",
+            "Potential bottleneck - monitor closely"
+        ]
+    }
+
+
+# ============================================================================
+# ADVANCED SCHEDULING ENDPOINTS
+# ============================================================================
+
+@router.post("/scheduling/optimize")
+async def optimize_schedule(
+    work_center_ids: Optional[List[str]] = None,
+    from_date: Optional[str] = None,
+    to_date: Optional[str] = None
+):
+    """
+    Run advanced scheduling with finite capacity
+    
+    Optimizes production schedule considering:
+    - Work center capacity constraints
+    - Material availability
+    - Due dates and priorities
+    - Setup times and changeovers
+    """
+    # Sample work orders to schedule
+    work_orders = [
+        {
+            "id": "WO-001",
+            "item_code": "WIDGET-A",
+            "quantity": 500,
+            "due_date": (datetime.now() + timedelta(days=30)).isoformat(),
+            "priority": 3,
+            "estimated_hours": 50,
+            "work_center_id": "WC-001"
+        },
+        {
+            "id": "WO-002",
+            "item_code": "GADGET-B",
+            "quantity": 300,
+            "due_date": (datetime.now() + timedelta(days=20)).isoformat(),
+            "priority": 2,
+            "estimated_hours": 30,
+            "work_center_id": "WC-001"
+        }
+    ]
+    
+    # Sample work centers
+    work_centers = [
+        {
+            "work_center_id": "WC-001",
+            "name": "Assembly Line 1",
+            "available_hours": 16
+        },
+        {
+            "work_center_id": "WC-002",
+            "name": "Machining Center",
+            "available_hours": 24
+        }
+    ]
+    
+    scheduler = AdvancedScheduler()
+    results = scheduler.schedule_with_finite_capacity(work_orders, work_centers)
+    
+    return results
+
+
+@router.get("/scheduling/gantt-chart")
+async def get_gantt_chart(
+    work_center_ids: Optional[List[str]] = None,
+    from_date: Optional[str] = None,
+    to_date: Optional[str] = None
+):
+    """Get Gantt chart data for production schedule"""
+    return {
+        "status": "success",
+        "gantt_data": [
+            {
+                "work_order_id": "WO-001",
+                "item_code": "WIDGET-A",
+                "work_center_id": "WC-001",
+                "work_center_name": "Assembly Line 1",
+                "start_date": (datetime.now() + timedelta(days=1)).isoformat(),
+                "end_date": (datetime.now() + timedelta(days=4)).isoformat(),
+                "progress_pct": 0,
+                "status": "scheduled"
+            },
+            {
+                "work_order_id": "WO-002",
+                "item_code": "GADGET-B",
+                "work_center_id": "WC-001",
+                "work_center_name": "Assembly Line 1",
+                "start_date": (datetime.now() + timedelta(days=5)).isoformat(),
+                "end_date": (datetime.now() + timedelta(days=7)).isoformat(),
+                "progress_pct": 0,
+                "status": "scheduled"
             }
         ]
     }
