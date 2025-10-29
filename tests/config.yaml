@@ -1,0 +1,254 @@
+# ARIA Test Suite Configuration
+# This file defines test scenarios and configuration for standalone testing
+
+# API Configuration
+api:
+  base_url: "https://aria.vantax.co.za"
+  timeout: 30
+  retry_attempts: 3
+  retry_delay: 2  # seconds
+
+# Authentication
+auth:
+  email: "admin@vantax.co.za"
+  password: "admin123"
+
+# Test Configuration
+test:
+  # Mode: full, aria, erp, workflow
+  default_mode: "full"
+  
+  # Number of days to simulate
+  simulation_days: 30
+  
+  # Transactions per day
+  transactions_per_day:
+    invoices: 50
+    purchase_orders: 30
+    sales_orders: 75
+    payroll: 1  # Monthly
+    stock_movements: 100
+    
+  # Test data sizes
+  master_data:
+    companies: 20
+    suppliers: 50
+    customers: 100
+    employees: 150
+    products: 500
+
+# Module Configuration
+modules:
+  # ARIA Bots Configuration
+  aria:
+    enabled: true
+    categories:
+      - communication
+      - compliance
+      - crm
+      - documents
+      - financial
+      - healthcare
+      - hr
+      - manufacturing
+      - procurement
+      - retail
+    
+    # Test scenarios for each category
+    test_scenarios:
+      financial:
+        - invoice_processing
+        - payment_processing
+        - bank_reconciliation
+        - expense_management
+        - financial_reporting
+      
+      hr:
+        - payroll_processing
+        - employee_onboarding
+        - leave_management
+        - performance_review
+        - recruitment
+      
+      procurement:
+        - purchase_order_creation
+        - supplier_management
+        - rfq_processing
+        - goods_receipt
+        - invoice_matching
+      
+      crm:
+        - lead_management
+        - opportunity_tracking
+        - customer_service
+        - quote_generation
+        - sales_analytics
+  
+  # ERP Modules Configuration
+  erp:
+    enabled: true
+    modules:
+      - finance
+      - hr
+      - procurement
+      - sales
+      - inventory
+      - manufacturing
+      - crm
+      - reporting
+    
+    # Integration points
+    integrations:
+      sap: false
+      sage: false
+      xero: false
+      quickbooks: false
+
+# Workflow Testing
+workflows:
+  enabled: true
+  scenarios:
+    procure_to_pay:
+      steps:
+        - create_purchase_requisition
+        - approve_requisition
+        - create_purchase_order
+        - receive_goods
+        - match_invoice
+        - process_payment
+      
+    order_to_cash:
+      steps:
+        - receive_sales_order
+        - check_credit_limit
+        - check_inventory
+        - create_delivery
+        - generate_invoice
+        - receive_payment
+      
+    hire_to_retire:
+      steps:
+        - create_requisition
+        - post_job
+        - screen_candidates
+        - conduct_interviews
+        - make_offer
+        - onboard_employee
+        - manage_performance
+        - process_termination
+      
+    plan_to_produce:
+      steps:
+        - create_production_plan
+        - check_materials
+        - schedule_production
+        - issue_work_orders
+        - track_progress
+        - record_completion
+        - move_to_warehouse
+      
+    record_to_report:
+      steps:
+        - capture_transactions
+        - post_to_general_ledger
+        - run_trial_balance
+        - perform_reconciliations
+        - close_period
+        - generate_financial_statements
+
+# Error Simulation (Negative Testing)
+negative_testing:
+  enabled: true
+  scenarios:
+    - invalid_data
+    - missing_required_fields
+    - duplicate_records
+    - invalid_references
+    - permission_denied
+    - timeout_errors
+    - network_errors
+    - data_validation_errors
+  
+  error_rate: 0.1  # 10% of transactions will be negative tests
+
+# Reporting Configuration
+reporting:
+  output_dir: "test_output"
+  formats:
+    - json
+    - csv
+    - html
+  
+  include:
+    - summary_statistics
+    - detailed_results
+    - error_logs
+    - performance_metrics
+    - master_data_dump
+  
+  charts:
+    enabled: true
+    types:
+      - success_rate_by_module
+      - execution_time_distribution
+      - error_frequency
+      - transaction_volume
+
+# Performance Thresholds
+performance:
+  max_response_time: 5.0  # seconds
+  min_success_rate: 0.95  # 95%
+  max_error_rate: 0.05    # 5%
+
+# Standalone Mode Configuration
+standalone:
+  # ARIA standalone (without ERP)
+  aria_only:
+    enabled: true
+    database: "aria_standalone.db"
+    features:
+      - document_processing
+      - automation_bots
+      - workflow_automation
+      - analytics
+  
+  # ERP standalone (without ARIA)
+  erp_only:
+    enabled: true
+    database: "erp_standalone.db"
+    modules:
+      - all  # or specify individual modules
+  
+  # Shared configuration for both
+  shared:
+    authentication: "jwt"
+    file_storage: "local"  # or "s3", "azure"
+    cache: "redis"  # or "memcached", "none"
+    queue: "celery"  # or "rq", "none"
+
+# South African Specific Configuration
+south_african:
+  tax:
+    vat_rate: 0.15
+    paye_tables: "2024"
+    uif_rate: 0.01
+    sdl_rate: 0.01
+  
+  compliance:
+    bbbee_enabled: true
+    cipc_integration: false
+    sars_integration: false
+  
+  banking:
+    supported_banks:
+      - FNB
+      - Standard Bank
+      - ABSA
+      - Nedbank
+      - Capitec
+  
+  localization:
+    currency: "ZAR"
+    date_format: "YYYY-MM-DD"
+    timezone: "Africa/Johannesburg"
+    language: "en_ZA"

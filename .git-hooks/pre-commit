@@ -1,0 +1,52 @@
+#!/bin/bash
+#
+# Pre-commit hook to prevent deployment issues
+# Install: ln -sf ../../.git-hooks/pre-commit .git/hooks/pre-commit
+#
+
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m'
+
+ERRORS=0
+
+echo "🔍 Running pre-commit checks..."
+
+# Check for /api/v1 in frontend
+if git diff --cached --name-only | grep -q "^frontend/"; then
+    if git diff --cached | grep -E "^\+" | grep -q "api/v1"; then
+        echo -e "${RED}❌ Found /api/v1 in staged frontend changes${NC}"
+        echo -e "${YELLOW}   Production uses /api (without /v1)${NC}"
+        echo -e "${YELLOW}   Please change all /api/v1 to /api${NC}"
+        ERRORS=$((ERRORS + 1))
+    fi
+fi
+
+# Check database path in backend
+if git diff --cached --name-only | grep -q "database.py"; then
+    if git diff --cached backend/database.py | grep -E "^\+" | grep -q "aria\.db" | grep -v "aria_production.db"; then
+        echo -e "${RED}❌ Found aria.db (should be aria_production.db)${NC}"
+        echo -e "${YELLOW}   Production uses aria_production.db${NC}"
+        ERRORS=$((ERRORS + 1))
+    fi
+fi
+
+# Check deployment script paths
+if git diff --cached --name-only | grep -q "deploy.*\.sh"; then
+    if git diff --cached | grep -E "^\+" | grep -q "/var/www/aria/backend"; then
+        echo -e "${RED}❌ Found /var/www/aria/backend/ path${NC}"
+        echo -e "${YELLOW}   Production backend is at /opt/aria/${NC}"
+        ERRORS=$((ERRORS + 1))
+    fi
+fi
+
+if [ $ERRORS -gt 0 ]; then
+    echo ""
+    echo -e "${RED}❌ Pre-commit checks failed with $ERRORS error(s)${NC}"
+    echo -e "${YELLOW}💡 Fix the issues above or use 'git commit --no-verify' to skip checks${NC}"
+    exit 1
+fi
+
+echo -e "${GREEN}✅ Pre-commit checks passed${NC}"
+exit 0

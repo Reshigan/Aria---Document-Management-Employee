@@ -57,8 +57,8 @@ export const Landing: React.FC = () => {
             </h1>
             
             <p className="text-xl md:text-2xl text-gray-600 mb-12 max-w-3xl mx-auto font-light">
-              27 AI-powered automation bots ready to transform your business operations.
-              From invoices to compliance, we handle it all.
+              67 AI-powered automation bots and 8 complete ERP modules ready to transform your business operations.
+              From invoices to compliance, manufacturing to retail, we handle it all.
             </p>
             
             <div className="flex items-center justify-center space-x-4 mb-16">
@@ -114,8 +114,8 @@ export const Landing: React.FC = () => {
             {[
               {
                 icon: Brain,
-                title: '27 Specialized Bots',
-                description: 'Pre-built automation for finance, HR, sales, operations, and compliance. Deploy in hours, not months.'
+                title: '67 Specialized Bots + 8 ERP Modules',
+                description: 'Pre-built automation for finance, HR, sales, operations, compliance, manufacturing, procurement, and retail. Deploy in hours, not months.'
               },
               {
                 icon: Zap,
