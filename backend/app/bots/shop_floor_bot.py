@@ -4,12 +4,12 @@ from sqlalchemy.orm import Session
 
 logger = logging.getLogger(__name__)
 
-class WorkOrderBot:
+class ShopFloorBot:
     def __init__(self, db: Session = None):
-        self.bot_id = "work_order"
-        self.name = "WorkOrderBot"
+        self.bot_id = "shop_floor"
+        self.name = "ShopFloorBot"
         self.db = db
-        self.capabilities = ["create_work_order", "start_work", "complete_work"]
+        self.capabilities = ["track_production", "material_consumption", "shop_floor_report"]
     
     async def execute_async(self, query: str, context: Optional[Dict] = None) -> Dict:
         return self.execute(query, context)
