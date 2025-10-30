@@ -7,7 +7,12 @@ class OEECalculationBot(ERPBot):
         super().__init__(bot_id="oee_bot_001", name="OEE Calculation Bot",
                         description="Overall Equipment Effectiveness calculation and tracking")
 
-    async def execute(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+    def execute(self, context: dict) -> dict:
+        """Synchronous wrapper for async execute_async"""
+        import asyncio
+        return asyncio.run(self.execute_async(context))
+
+    async def execute_async(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
         action = input_data.get("action", "calculate_oee")
         if action == "calculate_oee": return await self._calculate(input_data)
         else: raise ValueError(f"Unknown action: {action}")
@@ -21,4 +26,8 @@ class OEECalculationBot(ERPBot):
     async def _calculate(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
         return {"success": True, "oee": 85.5, "availability": 95.0, "performance": 92.0, "quality": 98.0}
 
+# Create singleton instance
 oee_calculation_bot = OEECalculationBot()
+
+# Alias for test compatibility (test expects OeeCalculationBot)
+OeeCalculationBot = OEECalculationBot

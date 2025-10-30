@@ -28,6 +28,7 @@ class BotCapability(str, Enum):
     WORKFLOW = "workflow"              # Orchestrate multi-step processes
     INTEGRATION = "integration"        # Connect to external systems
     COMPLIANCE = "compliance"          # Ensure regulatory compliance
+    PREDICTIVE = "predictive"          # Predictive analytics and forecasting
 
 
 class BotPriority(str, Enum):

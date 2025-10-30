@@ -54,6 +54,8 @@ class TaxComplianceBot(FinancialBot):
             return await self._calculate_corporate_tax(input_data)
         elif action == "generate_efiling":
             return await self._generate_efiling_submission(input_data)
+        elif action == "status":
+            return {"success": True, "status": "operational", "name": self.name}
         else:
             raise ValueError(f"Unknown action: {action}")
     

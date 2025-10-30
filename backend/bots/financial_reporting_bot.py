@@ -23,8 +23,8 @@ class FinancialReportingBot(FinancialBot):
         return asyncio.run(self.execute_async(context))
 
     async def execute_async(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        action = input_data.get("action", "status", "generate_all")
-        period = input_data["period"]
+        action = input_data.get("action", "status")
+        period = input_data.get("period", "current")
         
         if action == "income_statement":
             return await self._generate_income_statement(period)
@@ -34,6 +34,8 @@ class FinancialReportingBot(FinancialBot):
             return await self._generate_cash_flow(period)
         elif action == "generate_all":
             return await self._generate_all_statements(period)
+        elif action == "status":
+            return {"success": True, "status": "operational", "name": self.name}
         else:
             raise ValueError(f"Unknown action: {action}")
     

@@ -53,7 +53,7 @@ class FinancialCloseBot(FinancialBot):
         }
         """
         action = input_data.get("action", "monthly_close")
-        period = input_data["period"]
+        period = input_data.get("period", "current")
         
         if action == "monthly_close":
             return await self._execute_monthly_close(period, input_data.get("close_type", "soft"))

@@ -7,7 +7,12 @@ class MESIntegrationBot(ERPBot):
         super().__init__(bot_id="mes_bot_001", name="MES Integration Bot",
                         description="Manufacturing Execution System integration, real-time data sync")
 
-    async def execute(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+    def execute(self, context: dict) -> dict:
+        """Synchronous wrapper for async execute_async"""
+        import asyncio
+        return asyncio.run(self.execute_async(context))
+
+    async def execute_async(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
         action = input_data.get("action", "sync_data")
         if action == "sync_data": return await self._sync(input_data)
         else: raise ValueError(f"Unknown action: {action}")
@@ -21,4 +26,8 @@ class MESIntegrationBot(ERPBot):
     async def _sync(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
         return {"success": True, "records_synced": 250, "status": "synchronized"}
 
+# Create singleton instance
 mes_integration_bot = MESIntegrationBot()
+
+# Alias for test compatibility (test expects MesIntegrationBot)
+MesIntegrationBot = MESIntegrationBot

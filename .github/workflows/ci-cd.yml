@@ -115,14 +115,25 @@ jobs:
         black --check . || echo "Black not configured"
         isort --check-only . || echo "isort not configured"
 
-    - name: Run tests
+    - name: Run bot tests (All 61 Bots)
       env:
         DATABASE_URL: postgresql://testuser:testpass@localhost:5432/aria_test
         REDIS_URL: redis://localhost:6379
         SECRET_KEY: test-secret-key-minimum-32-characters-long
         ENVIRONMENT: test
       run: |
-        python -m pytest tests/ -v --cov=. --cov-report=xml || echo "Tests not available"
+        echo "🤖 Testing all 61 ARIA bots..."
+        python tests/simple_e2e_test.py
+        echo "✅ Bot testing complete!"
+    
+    - name: Run pytest suite (if available)
+      env:
+        DATABASE_URL: postgresql://testuser:testpass@localhost:5432/aria_test
+        REDIS_URL: redis://localhost:6379
+        SECRET_KEY: test-secret-key-minimum-32-characters-long
+        ENVIRONMENT: test
+      run: |
+        python -m pytest tests/ -v --cov=. --cov-report=xml || echo "Pytest not configured"
 
     - name: Upload coverage reports
       uses: codecov/codecov-action@v3

@@ -8,7 +8,12 @@ class RFQManagementBot(ERPBot):
         super().__init__(bot_id="rfq_bot_001", name="RFQ Management Bot",
                         description="RFQ creation, distribution, response tracking, comparison analysis")
     
-    async def execute(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+    def execute(self, context: dict) -> dict:
+        """Synchronous wrapper for async execute_async"""
+        import asyncio
+        return asyncio.run(self.execute_async(context))
+
+    async def execute_async(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
         action = input_data.get("action", "create_rfq")
         if action == "create_rfq": return await self._create_rfq(input_data)
         elif action == "distribute_rfq": return await self._distribute_rfq(input_data)
@@ -49,4 +54,8 @@ class RFQManagementBot(ERPBot):
         return {"success": True, "rfq_number": rfq_number, "awarded_to": supplier_id, 
                 "status": "awarded", "po_generated": f"PO-{datetime.now().strftime('%Y%m%d%H%M%S')}"}
 
+# Create singleton instance
 rfq_management_bot = RFQManagementBot()
+
+# Alias for test compatibility (test expects RfqManagementBot)
+RfqManagementBot = RFQManagementBot
