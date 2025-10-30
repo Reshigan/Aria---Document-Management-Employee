@@ -5,12 +5,12 @@ from ..models.document import Document
 
 logger = logging.getLogger(__name__)
 
-class DocumentClassificationBot:
+class DocumentSearchBot:
     def __init__(self, db: Session = None):
-        self.bot_id = "document_classification"
-        self.name = "Document Classification Bot"
+        self.bot_id = "document_search"
+        self.name = "Document Search Bot"
         self.db = db
-        self.capabilities = ["classify_document", "update_category"]
+        self.capabilities = ["search_documents", "search_by_category"]
     
     async def execute_async(self, query: str, context: Optional[Dict] = None) -> Dict:
         return self.execute(query, context)
@@ -21,17 +21,12 @@ class DocumentClassificationBot:
         context = context or {}
         action = context.get('action', '').lower()
         try:
-            if action == 'classify_document':
-                doc_id = context.get('document_id')
-                category = context.get('category', 'GENERAL')
-                doc = self.db.query(Document).filter_by(id=doc_id).first()
-                if doc:
-                    doc.category = category
-                    self.db.commit()
-                    return {'success': True, 'document_id': doc_id, 'category': category, 'bot_id': self.bot_id}
-                return {'success': False, 'error': 'Document not found', 'bot_id': self.bot_id}
+            if action == 'search_documents':
+                keyword = context.get('keyword', '')
+                docs = self.db.query(Document).filter(Document.document_name.like(f'%{keyword}%')).limit(10).all()
+                results = [{'id': d.id, 'name': d.document_name, 'type': d.document_type} for d in docs]
+                return {'success': True, 'results': results, 'count': len(results), 'bot_id': self.bot_id}
             return {'success': False, 'error': f'Unknown action: {action}', 'bot_id': self.bot_id}
         except Exception as e:
-            self.db.rollback()
             logger.error(f"Error: {str(e)}")
             return {'success': False, 'error': str(e), 'bot_id': self.bot_id}

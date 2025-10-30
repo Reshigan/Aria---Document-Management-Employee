@@ -5,12 +5,12 @@ from ..models.document import Document
 
 logger = logging.getLogger(__name__)
 
-class DocumentClassificationBot:
+class DocumentWorkflowBot:
     def __init__(self, db: Session = None):
-        self.bot_id = "document_classification"
-        self.name = "Document Classification Bot"
+        self.bot_id = "document_workflow"
+        self.name = "Document Workflow Bot"
         self.db = db
-        self.capabilities = ["classify_document", "update_category"]
+        self.capabilities = ["route_document", "approve_document"]
     
     async def execute_async(self, query: str, context: Optional[Dict] = None) -> Dict:
         return self.execute(query, context)
@@ -21,14 +21,13 @@ class DocumentClassificationBot:
         context = context or {}
         action = context.get('action', '').lower()
         try:
-            if action == 'classify_document':
+            if action == 'approve_document':
                 doc_id = context.get('document_id')
-                category = context.get('category', 'GENERAL')
                 doc = self.db.query(Document).filter_by(id=doc_id).first()
                 if doc:
-                    doc.category = category
+                    doc.status = 'APPROVED'
                     self.db.commit()
-                    return {'success': True, 'document_id': doc_id, 'category': category, 'bot_id': self.bot_id}
+                    return {'success': True, 'document_id': doc_id, 'status': 'APPROVED', 'bot_id': self.bot_id}
                 return {'success': False, 'error': 'Document not found', 'bot_id': self.bot_id}
             return {'success': False, 'error': f'Unknown action: {action}', 'bot_id': self.bot_id}
         except Exception as e:

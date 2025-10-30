@@ -1,16 +1,16 @@
 import logging
 from typing import Dict, Optional
 from sqlalchemy.orm import Session
-from ..models.document import Document
+from ..models.document import Document, DocumentVersion
 
 logger = logging.getLogger(__name__)
 
-class DocumentClassificationBot:
+class VersionControlBot:
     def __init__(self, db: Session = None):
-        self.bot_id = "document_classification"
-        self.name = "Document Classification Bot"
+        self.bot_id = "version_control"
+        self.name = "Version Control Bot"
         self.db = db
-        self.capabilities = ["classify_document", "update_category"]
+        self.capabilities = ["create_version", "list_versions"]
     
     async def execute_async(self, query: str, context: Optional[Dict] = None) -> Dict:
         return self.execute(query, context)
@@ -21,14 +21,15 @@ class DocumentClassificationBot:
         context = context or {}
         action = context.get('action', '').lower()
         try:
-            if action == 'classify_document':
+            if action == 'create_version':
                 doc_id = context.get('document_id')
-                category = context.get('category', 'GENERAL')
                 doc = self.db.query(Document).filter_by(id=doc_id).first()
                 if doc:
-                    doc.category = category
+                    ver_count = self.db.query(DocumentVersion).filter_by(document_id=doc_id).count()
+                    version = DocumentVersion(document_id=doc_id, version_number=ver_count + 1)
+                    self.db.add(version)
                     self.db.commit()
-                    return {'success': True, 'document_id': doc_id, 'category': category, 'bot_id': self.bot_id}
+                    return {'success': True, 'version_id': version.id, 'version_number': version.version_number, 'bot_id': self.bot_id}
                 return {'success': False, 'error': 'Document not found', 'bot_id': self.bot_id}
             return {'success': False, 'error': f'Unknown action: {action}', 'bot_id': self.bot_id}
         except Exception as e:

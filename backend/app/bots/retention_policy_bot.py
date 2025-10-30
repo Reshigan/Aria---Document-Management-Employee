@@ -1,16 +1,17 @@
 import logging
 from typing import Dict, Optional
 from sqlalchemy.orm import Session
+from datetime import datetime, timedelta
 from ..models.document import Document
 
 logger = logging.getLogger(__name__)
 
-class DocumentClassificationBot:
+class RetentionPolicyBot:
     def __init__(self, db: Session = None):
-        self.bot_id = "document_classification"
-        self.name = "Document Classification Bot"
+        self.bot_id = "retention_policy"
+        self.name = "Retention Policy Bot"
         self.db = db
-        self.capabilities = ["classify_document", "update_category"]
+        self.capabilities = ["set_retention", "archive_documents"]
     
     async def execute_async(self, query: str, context: Optional[Dict] = None) -> Dict:
         return self.execute(query, context)
@@ -21,14 +22,14 @@ class DocumentClassificationBot:
         context = context or {}
         action = context.get('action', '').lower()
         try:
-            if action == 'classify_document':
+            if action == 'set_retention':
                 doc_id = context.get('document_id')
-                category = context.get('category', 'GENERAL')
+                years = context.get('retention_years', 7)
                 doc = self.db.query(Document).filter_by(id=doc_id).first()
                 if doc:
-                    doc.category = category
+                    doc.retention_date = (datetime.utcnow() + timedelta(days=365*years)).date()
                     self.db.commit()
-                    return {'success': True, 'document_id': doc_id, 'category': category, 'bot_id': self.bot_id}
+                    return {'success': True, 'document_id': doc_id, 'retention_date': doc.retention_date.isoformat(), 'bot_id': self.bot_id}
                 return {'success': False, 'error': 'Document not found', 'bot_id': self.bot_id}
             return {'success': False, 'error': f'Unknown action: {action}', 'bot_id': self.bot_id}
         except Exception as e:
