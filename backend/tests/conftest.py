@@ -1,79 +1,111 @@
 """
-Pytest Configuration and Fixtures
+Test configuration and fixtures for ARIA ERP backend tests.
 """
+import os
 import pytest
-import asyncio
-from typing import Generator, AsyncGenerator
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from httpx import AsyncClient
+from sqlalchemy.pool import StaticPool
 
-# Test database
-SQLALCHEMY_TEST_DATABASE_URL = "sqlite:///./test.db"
+from app.main import app
+from app.core.database import Base, get_db
+from app.core.security import get_password_hash, create_access_token
+from app.models.user import User
 
-@pytest.fixture(scope="session")
-def event_loop():
-    """Create event loop for async tests"""
-    loop = asyncio.get_event_loop_policy().new_event_loop()
-    yield loop
-    loop.close()
+# Test database URL (in-memory SQLite)
+SQLALCHEMY_DATABASE_URL = "sqlite:///:memory:"
 
-@pytest.fixture
-def test_db():
-    """Create test database"""
-    from backend.models.base import Base
-    engine = create_engine(SQLALCHEMY_TEST_DATABASE_URL, connect_args={"check_same_thread": False})
+# Create test engine
+engine = create_engine(
+    SQLALCHEMY_DATABASE_URL,
+    connect_args={"check_same_thread": False},
+    poolclass=StaticPool,
+)
+
+TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+
+@pytest.fixture(scope="function")
+def db_session():
+    """Create a fresh database session for each test."""
     Base.metadata.create_all(bind=engine)
-    
-    TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-    db = TestingSessionLocal()
-    
+    session = TestingSessionLocal()
     try:
-        yield db
+        yield session
     finally:
-        db.close()
+        session.close()
         Base.metadata.drop_all(bind=engine)
 
-@pytest.fixture
-async def async_client() -> AsyncGenerator:
-    """Create async test client"""
-    from backend.main import app
-    async with AsyncClient(app=app, base_url="http://test") as client:
-        yield client
+
+@pytest.fixture(scope="function")
+def client(db_session):
+    """Create a test client with database session override."""
+    def override_get_db():
+        try:
+            yield db_session
+        finally:
+            pass
+    
+    app.dependency_overrides[get_db] = override_get_db
+    with TestClient(app) as test_client:
+        yield test_client
+    app.dependency_overrides.clear()
+
 
 @pytest.fixture
-def test_user_data():
-    """Sample user data"""
-    return {
-        "email": "test@example.com",
-        "password": "TestPass123!",
-        "full_name": "Test User"
-    }
+def test_user(db_session):
+    """Create a test user."""
+    user = User(
+        email="test@example.com",
+        first_name="Test",
+        last_name="User",
+        password_hash=get_password_hash("testpass123"),
+        is_active=True,
+        role="user"
+    )
+    db_session.add(user)
+    db_session.commit()
+    db_session.refresh(user)
+    return user
+
 
 @pytest.fixture
-def test_document_data():
-    """Sample document data"""
-    return {
-        "title": "Test Document",
-        "content": "This is a test document for processing.",
-        "doc_type": "text"
-    }
+def admin_user(db_session):
+    """Create an admin test user."""
+    user = User(
+        email="admin@example.com",
+        first_name="Admin",
+        last_name="User",
+        password_hash=get_password_hash("admin123"),
+        is_active=True,
+        role="admin"
+    )
+    db_session.add(user)
+    db_session.commit()
+    db_session.refresh(user)
+    return user
+
 
 @pytest.fixture
-def test_conversation_data():
-    """Sample conversation data"""
-    return {
-        "bot_template_id": "doc_qa",
-        "message": "What is this document about?"
-    }
+def user_token(test_user):
+    """Generate JWT token for test user."""
+    return create_access_token(subject=test_user.id)
+
 
 @pytest.fixture
-def mock_llm_response():
-    """Mock LLM response"""
-    return {
-        "role": "assistant",
-        "content": "This is a mock AI response for testing purposes.",
-        "model": "gpt-4",
-        "tokens": 50
-    }
+def admin_token(admin_user):
+    """Generate JWT token for admin user."""
+    return create_access_token(subject=admin_user.id)
+
+
+@pytest.fixture
+def auth_headers(user_token):
+    """Generate authentication headers."""
+    return {"Authorization": f"Bearer {user_token}"}
+
+
+@pytest.fixture
+def admin_headers(admin_token):
+    """Generate admin authentication headers."""
+    return {"Authorization": f"Bearer {admin_token}"}

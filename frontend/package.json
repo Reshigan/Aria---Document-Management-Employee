@@ -1,15 +1,11 @@
 {
-  "name": "aria-frontend",
+  "name": "aria-erp-frontend",
   "version": "1.0.0",
-  "private": true,
-  "description": "Aria AI-Native ERP Platform - Frontend",
+  "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host 0.0.0.0 --port 12001",
     "build": "vite build",
-    "build:check": "tsc && vite build",
-    "preview": "vite preview",
-    "lint": "eslint src --ext ts,tsx",
-    "format": "prettier --write 'src/**/*.{ts,tsx,css}'"
+    "preview": "vite preview --host 0.0.0.0 --port 12001"
   },
   "dependencies": {
     "react": "^18.2.0",
@@ -17,29 +13,17 @@
     "react-router-dom": "^6.20.0",
     "axios": "^1.6.2",
     "zustand": "^4.4.7",
-    "@tanstack/react-query": "^5.12.0",
-    "date-fns": "^2.30.0",
-    "recharts": "^2.10.3",
     "lucide-react": "^0.294.0",
-    "@mui/material": "^5.14.20",
-    "@mui/icons-material": "^5.14.19",
-    "@emotion/react": "^11.11.1",
-    "@emotion/styled": "^11.11.0",
-    "framer-motion": "^10.16.16",
-    "react-dropzone": "^14.2.3"
+    "recharts": "^2.10.3"
   },
   "devDependencies": {
     "@types/react": "^18.2.43",
     "@types/react-dom": "^18.2.17",
-    "@typescript-eslint/eslint-plugin": "^6.14.0",
-    "@typescript-eslint/parser": "^6.14.0",
     "@vitejs/plugin-react": "^4.2.1",
-    "autoprefixer": "^10.4.16",
-    "eslint": "^8.55.0",
-    "postcss": "^8.4.32",
-    "prettier": "^3.1.1",
-    "tailwindcss": "^3.3.6",
     "typescript": "^5.3.3",
-    "vite": "^5.0.7"
+    "vite": "^5.0.8",
+    "tailwindcss": "^3.3.6",
+    "postcss": "^8.4.32",
+    "autoprefixer": "^10.4.16"
   }
 }

@@ -1,445 +1,406 @@
-# 🚀 ARIA v3.0 - Quick Start Guide
+# 🚀 ARIA ERP - Quick Start Guide
 
-## System Status: ✅ PRODUCTION READY
-
-**Live URL:** https://aria.vantax.co.za  
-**Version:** 3.0.0  
-**Status:** 100% Operational  
-**Test Pass Rate:** 100% (10/10 tests passing)  
+Get ARIA ERP running in under 5 minutes!
 
 ---
 
-## 🎯 What's Deployed
+## Option 1: Docker (Fastest) 🐳
 
-### ✅ 67 Production-Ready Bots
-
-Organized across **10 categories**:
-- **Manufacturing:** 5 bots (MRP, Production, Quality, Maintenance, Supply Chain)
-- **Healthcare:** 5 bots (Patient, Appointment, Pharmacy, Lab, Billing)
-- **Retail:** 6 bots (Inventory, POS, Loyalty, Supplier, Store, E-commerce)
-- **Financial:** 12 bots (GL, AR, AP, Bank Rec, Invoice, Expense, Payroll, Tax, Budget, Assets, Cash Flow, Audit)
-- **Compliance:** 5 bots (POPIA, B-BBEE, SARS, Labor Law, Safety)
-- **CRM:** 8 bots (Lead, Pipeline, Contact, Quote, Opportunity, Analytics, Service, Email)
-- **HR:** 8 bots (Recruitment, Onboarding, Leave, Performance, Training, Payroll, EEP, Skills)
-- **Procurement:** 7 bots (Requisition, PO, Vendor, Goods Receipt, Invoice, Contracts, Spend)
-- **Documents:** 6 bots (Invoice, Contract, Compliance, Reports, Email, Data)
-- **Communication:** 5 bots (Email, Meeting, Notification, Messaging, Announcement)
-
-### ✅ 8 Complete ERP Modules
-
-Each with **6-7 features**:
-1. **Financial Management** (7 features)
-2. **Human Resources** (7 features)
-3. **Customer Relationship Management** (6 features)
-4. **Procurement Management** (6 features)
-5. **Manufacturing Management** (6 features)
-6. **Quality Management** (6 features)
-7. **Inventory & Warehouse** (6 features)
-8. **Compliance & Reporting** (6 features)
-
-**Total:** 50 ERP features across 8 modules
-
----
-
-## 🔐 Access & Login
-
-### Default Admin Account
-```
-Email: admin@aria.local
-Password: Admin123!
-```
-
-### Creating New Users
-1. Go to https://aria.vantax.co.za
-2. Click "Register"
-3. Fill in:
-   - Email address
-   - Password (min 8 characters)
-   - Full name
-   - Organization name (optional)
-4. Click "Create Account"
-5. Login with your credentials
-
----
-
-## 🚀 Quick Actions
-
-### View All Bots
-```
-GET https://aria.vantax.co.za/api/bots
-```
-
-Returns all 67 bots with their details.
-
-### Execute a Bot
-```
-POST https://aria.vantax.co.za/api/bots/{bot_id}/execute
-Authorization: Bearer {your_token}
-
-Body:
-{
-  "parameters": {
-    "param1": "value1",
-    "param2": "value2"
-  }
-}
-```
-
-### Access ERP Modules
-```
-GET https://aria.vantax.co.za/api/erp/modules
-```
-
-Returns all 8 ERP modules with their features.
-
-### View Dashboard
-```
-GET https://aria.vantax.co.za/api/dashboard/overview
-Authorization: Bearer {your_token}
-```
-
-Returns bot count, execution stats, and system overview.
-
----
-
-## 🧪 Testing
-
-### Run Full Test Suite
 ```bash
-cd /workspace/project
-python3 test_aria_complete.py
+# 1. Clone repository
+git clone https://github.com/yourusername/aria-erp.git
+cd aria-erp
+
+# 2. Start services
+docker-compose up -d
+
+# 3. Done! Access your application
+# Frontend: http://localhost:5173
+# Backend: http://localhost:8000/docs
 ```
 
-**Expected Result:**
-```
-Total Tests: 10
-Passed: 10
-Failed: 0
-Success Rate: 100.0%
-```
+**Login with:**
+- Email: `admin@example.com`
+- Password: `admin123`
 
-### Test Individual Components
+---
 
-#### 1. Health Check
+## Option 2: Local Development 💻
+
+### Prerequisites
+- Python 3.10+
+- Node.js 18+
+- npm 9+
+
+### Backend Setup
+
 ```bash
-curl https://aria.vantax.co.za/api/health
+# 1. Navigate to backend
+cd backend
+
+# 2. Create virtual environment
+python -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
+
+# 3. Install dependencies
+pip install -r requirements.txt
+
+# 4. Start backend server
+uvicorn app.main:app --reload --port 12000
+
+# ✅ Backend running at http://localhost:12000
 ```
 
-Response:
-```json
-{
-  "status": "healthy",
-  "version": "3.0.0",
-  "bots": 67,
-  "erp_modules": 8
-}
-```
+### Frontend Setup (New Terminal)
 
-#### 2. Login
 ```bash
-curl -X POST https://aria.vantax.co.za/api/auth/login \
+# 1. Navigate to frontend
+cd frontend
+
+# 2. Install dependencies
+npm install
+
+# 3. Start development server
+npm run dev
+
+# ✅ Frontend running at http://localhost:12001
+```
+
+---
+
+## Option 3: Production Deploy 🚀
+
+### On Ubuntu/Debian Server
+
+```bash
+# 1. Clone repository
+git clone https://github.com/yourusername/aria-erp.git
+cd aria-erp
+
+# 2. Run deployment script
+sudo bash deploy/deploy.sh
+
+# 3. Follow the prompts
+# - Configure environment variables
+# - Setup domain name
+# - Enable SSL (optional)
+
+# ✅ Production deployed!
+```
+
+---
+
+## 📋 First Steps After Installation
+
+### 1. Login to System
+- Open http://localhost:5173 (or http://localhost:12001)
+- Use default credentials:
+  - Email: `admin@example.com`
+  - Password: `admin123`
+
+### 2. Explore Dashboard
+- View real-time metrics
+- Check revenue charts
+- See customer statistics
+
+### 3. Create Your First Customer
+- Navigate to "Customers" in sidebar
+- Click "Add Customer" button
+- Fill in customer details
+- Click "Create Customer"
+
+### 4. Explore AI Bots
+- Navigate to "AI Bots" in sidebar
+- Browse 67 intelligent automation bots
+- Filter by category
+- Click on a bot to see details
+- Try executing a bot
+
+### 5. Check API Documentation
+- Open http://localhost:8000/docs (or http://localhost:12000/docs)
+- Explore 33+ REST API endpoints
+- Try interactive API testing
+
+---
+
+## 🎯 Common Tasks
+
+### Create a Customer
+```bash
+# Via API
+curl -X POST http://localhost:8000/api/v1/customers \
   -H "Content-Type: application/json" \
-  -d '{"email":"admin@aria.local","password":"Admin123!"}'
-```
-
-#### 3. List Bots
-```bash
-curl https://aria.vantax.co.za/api/bots \
-  -H "Authorization: Bearer {token}"
-```
-
----
-
-## 🎯 Sample Bot Executions
-
-### 1. MRP Bot (Material Requirements Planning)
-```bash
-curl -X POST https://aria.vantax.co.za/api/bots/mrp_bot/execute \
-  -H "Authorization: Bearer {token}" \
-  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_TOKEN" \
   -d '{
-    "parameters": {
-      "product_id": "PROD-001",
-      "quantity_required": 100,
-      "due_date": "2025-11-15"
-    }
+    "name": "Acme Corp",
+    "email": "contact@acme.com",
+    "phone": "+27123456789",
+    "company": "Acme Corporation"
   }'
 ```
 
-### 2. Invoice Reconciliation Bot
+### Create an Invoice
 ```bash
-curl -X POST https://aria.vantax.co.za/api/bots/invoice_reconciliation/execute \
-  -H "Authorization: Bearer {token}" \
+# Via API
+curl -X POST http://localhost:8000/api/v1/invoices \
   -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_TOKEN" \
   -d '{
-    "parameters": {
-      "invoice_number": "INV-2025-001",
-      "vendor": "Supplier ABC"
-    }
+    "customer_id": 1,
+    "invoice_number": "INV-001",
+    "total_amount": 1000.00,
+    "status": "pending"
   }'
 ```
 
-### 3. Lead Qualification Bot
+### List All Bots
 ```bash
-curl -X POST https://aria.vantax.co.za/api/bots/lead_qualification/execute \
-  -H "Authorization: Bearer {token}" \
+# Via API
+curl http://localhost:8000/api/v1/bots \
+  -H "Authorization: Bearer YOUR_TOKEN"
+```
+
+---
+
+## 🔧 Troubleshooting
+
+### Backend Won't Start
+
+**Problem**: Port 8000/12000 already in use
+
+**Solution**:
+```bash
+# Find process using port
+lsof -i :8000  # or :12000
+
+# Kill the process
+kill -9 <PID>
+
+# Or use different port
+uvicorn app.main:app --reload --port 8001
+```
+
+### Frontend Won't Start
+
+**Problem**: Port 5173/12001 already in use
+
+**Solution**:
+```bash
+# Vite will automatically try next available port
+# Or specify port manually in package.json
+```
+
+### Database Not Found
+
+**Problem**: `aria_erp.db` not created
+
+**Solution**:
+```bash
+# Database is created automatically on first run
+# Just restart the backend server
+cd backend
+uvicorn app.main:app --reload --port 12000
+```
+
+### Docker Issues
+
+**Problem**: Docker containers won't start
+
+**Solution**:
+```bash
+# Check Docker is running
+docker --version
+
+# Rebuild containers
+docker-compose down
+docker-compose build --no-cache
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+```
+
+### Authentication Errors
+
+**Problem**: "Unauthorized" errors
+
+**Solution**:
+```bash
+# 1. Get access token
+curl -X POST http://localhost:8000/api/v1/auth/login \
   -H "Content-Type: application/json" \
   -d '{
-    "parameters": {
-      "lead_id": "LEAD-001",
-      "company": "XYZ Corp",
-      "budget": 50000
-    }
+    "email": "admin@example.com",
+    "password": "admin123"
   }'
-```
 
-### 4. Recruitment Bot
-```bash
-curl -X POST https://aria.vantax.co.za/api/bots/recruitment/execute \
-  -H "Authorization: Bearer {token}" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "parameters": {
-      "position": "Software Developer",
-      "department": "Engineering"
-    }
-  }'
-```
-
-### 5. Purchase Order Bot
-```bash
-curl -X POST https://aria.vantax.co.za/api/bots/purchase_order/execute \
-  -H "Authorization: Bearer {token}" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "parameters": {
-      "vendor": "Supplier XYZ",
-      "items": ["Item A", "Item B"],
-      "total_amount": 10000
-    }
-  }'
+# 2. Use token in requests
+curl http://localhost:8000/api/v1/customers \
+  -H "Authorization: Bearer YOUR_TOKEN_HERE"
 ```
 
 ---
 
-## 📊 ERP Module Examples
+## 📊 System Status Check
 
-### 1. Financial Management
+Run this command to check if everything is working:
+
 ```bash
-curl https://aria.vantax.co.za/api/erp/financial \
-  -H "Authorization: Bearer {token}"
+bash check-system.sh
 ```
 
-Features:
-- General Ledger
-- Accounts Payable/Receivable
-- Bank Reconciliation
-- Financial Reporting
-- Budget Management
-- Tax Management
-- Audit Trail
-
-### 2. Manufacturing BOM
-```bash
-curl -X POST https://aria.vantax.co.za/api/manufacturing/bom \
-  -H "Authorization: Bearer {token}" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "product_code": "FIN-001",
-    "product_name": "Finished Product",
-    "quantity": 100,
-    "materials": [
-      {"material_code": "RAW-001", "quantity": 2, "unit": "kg"},
-      {"material_code": "RAW-002", "quantity": 5, "unit": "pcs"}
-    ]
-  }'
-```
-
-### 3. HR Module
-```bash
-curl https://aria.vantax.co.za/api/erp/hr \
-  -H "Authorization: Bearer {token}"
-```
-
-Features:
-- Employee Management
-- Payroll Processing
-- Leave Management
-- Performance Reviews
-- Recruitment
-- Training & Development
-- Employment Equity
+This will verify:
+- ✅ Backend API is running
+- ✅ Frontend is accessible
+- ✅ Database exists
+- ✅ Docker status
+- ✅ Dependencies installed
 
 ---
 
-## 🔧 Server Management
+## 🌐 Access Points
 
-### Check Service Status
-```bash
-ssh user@3.8.139.178
-sudo systemctl status aria.service
-```
+### Development
+| Service | URL | Description |
+|---------|-----|-------------|
+| Frontend | http://localhost:12001 | Main application UI |
+| Backend API | http://localhost:12000 | REST API server |
+| API Docs | http://localhost:12000/docs | Interactive API documentation |
+| Health Check | http://localhost:12000/health | System health status |
 
-### Restart Service
-```bash
-sudo systemctl restart aria.service
-```
-
-### View Logs
-```bash
-# Real-time logs
-sudo journalctl -u aria.service -f
-
-# Last 100 lines
-sudo journalctl -u aria.service -n 100
-```
-
-### Check Process
-```bash
-ps aux | grep uvicorn
-```
-
-Expected: 4 worker processes running
+### Production (after deployment)
+| Service | URL | Description |
+|---------|-----|-------------|
+| Application | https://your-domain.com | Main application |
+| API | https://your-domain.com/api | REST API |
+| Docs | https://your-domain.com/docs | API documentation |
 
 ---
 
-## 📈 System Performance
+## 🎓 Learning Resources
 
-### Current Metrics
-- **Uptime:** 99.9%
-- **Response Time:** <100ms average
-- **Concurrent Users:** Up to 100
-- **Bot Executions:** Unlimited
-- **Database:** SQLite (can scale to PostgreSQL)
-- **Workers:** 4 uvicorn workers
+### Documentation
+- [README.md](README.md) - Project overview
+- [DEPLOYMENT.md](DEPLOYMENT.md) - Deployment guide
+- [PRODUCTION_READY.md](PRODUCTION_READY.md) - Build status
 
-### Resource Usage
-- **CPU:** <5% idle, <30% under load
-- **Memory:** ~200MB per worker (800MB total)
-- **Disk:** 100MB backend + 50MB frontend + database
+### API Documentation
+- Interactive Swagger UI: http://localhost:12000/docs
+- OpenAPI JSON: http://localhost:12000/openapi.json
 
----
-
-## 🐛 Troubleshooting
-
-### Issue: Service not responding
-```bash
-# Check if service is running
-sudo systemctl status aria.service
-
-# If not running, start it
-sudo systemctl start aria.service
-
-# Check logs for errors
-sudo journalctl -u aria.service -n 50
-```
-
-### Issue: Can't login
-1. Check if backend is running: `curl https://aria.vantax.co.za/api/health`
-2. Verify credentials are correct
-3. Check browser console for errors
-4. Clear browser cache and cookies
-
-### Issue: Bot execution fails
-1. Check if bot ID is correct (67 valid bot IDs)
-2. Verify authentication token is valid
-3. Check required parameters for the bot
-4. View execution history: `GET /api/bots/{bot_id}/executions`
-
-### Issue: SSL certificate error
-```bash
-# Check certificate expiry
-sudo certbot certificates
-
-# Renew if needed
-sudo certbot renew
-```
+### Video Tutorials (Coming Soon)
+- System Overview
+- Creating Your First Customer
+- Managing Invoices
+- Using AI Bots
+- Deployment Guide
 
 ---
 
-## 📚 Documentation
+## 💡 Tips & Best Practices
 
-- **Full Deployment Guide:** See `DEPLOYMENT_v3.0.md`
-- **API Documentation:** https://aria.vantax.co.za/docs
-- **Test Script:** `test_aria_complete.py`
-- **Backend Code:** `backend/aria_production_complete.py`
+### Development
+1. **Always use virtual environments** for Python
+2. **Run backend and frontend in separate terminals**
+3. **Check API docs** before making API calls
+4. **Use dev tools** in browser for debugging
+5. **Keep dependencies updated**
 
----
+### Production
+1. **Change default credentials** immediately
+2. **Use environment variables** for secrets
+3. **Enable SSL/HTTPS** with Let's Encrypt
+4. **Setup automated backups** for database
+5. **Monitor logs** regularly
+6. **Use PostgreSQL** instead of SQLite
 
-## 🎉 Success Indicators
-
-### ✅ All Systems Operational
-- [x] Backend running (4 workers)
-- [x] Frontend deployed
-- [x] Database initialized
-- [x] SSL certificate valid
-- [x] Health endpoint responding
-- [x] 67 bots available
-- [x] 8 ERP modules available
-- [x] Authentication working
-- [x] Bot execution working
-- [x] Dashboard working
-- [x] Analytics working
-
-### ✅ 100% Test Pass Rate
-```
-✓ Health Check
-✓ User Registration
-✓ User Login
-✓ List All Bots (67)
-✓ Bot Categories (10)
-✓ Execute Sample Bots (5)
-✓ ERP Modules (8)
-✓ Manufacturing BOM
-✓ Dashboard Overview
-✓ Bot Analytics
-```
+### Security
+1. **Never commit .env files** to git
+2. **Use strong passwords** for admin accounts
+3. **Enable rate limiting** in production
+4. **Keep system updated** with security patches
+5. **Use firewall rules** to protect services
 
 ---
 
 ## 🚀 Next Steps
 
-1. **Create your account** at https://aria.vantax.co.za
-2. **Explore the 67 bots** available
-3. **Test bot executions** with sample data
-4. **Access ERP modules** for your business needs
-5. **View analytics** and execution history
-6. **Customize bots** for your workflows
+After getting the system running:
+
+1. ✅ **Change Admin Password**
+   - Login → Profile → Change Password
+
+2. ✅ **Configure Environment**
+   - Edit `.env` file
+   - Set database credentials
+   - Configure email (SMTP)
+   - Add API keys
+
+3. ✅ **Add Your Data**
+   - Import customers
+   - Create products/services
+   - Setup accounts
+   - Configure suppliers
+
+4. ✅ **Explore AI Bots**
+   - Browse bot categories
+   - Read bot descriptions
+   - Test bot execution
+   - Configure bot workflows
+
+5. ✅ **Customize Settings**
+   - Company information
+   - Tax settings
+   - Currency preferences
+   - Email templates
 
 ---
 
-## 📞 Support
+## 📞 Get Help
 
-For technical support or questions:
-- Review `DEPLOYMENT_v3.0.md` for detailed information
-- Check server logs: `sudo journalctl -u aria.service -f`
-- Run test suite: `python3 test_aria_complete.py`
-- Contact system administrator
+### Having Issues?
 
----
+1. **Check System Status**
+   ```bash
+   bash check-system.sh
+   ```
 
-## 🎯 Quick Reference
+2. **View Logs**
+   ```bash
+   # Backend logs
+   cd backend && tail -f app.log
+   
+   # Frontend logs
+   cd frontend && npm run dev
+   
+   # Docker logs
+   docker-compose logs -f
+   ```
 
-| Component | Location | Status |
-|-----------|----------|--------|
-| Live Site | https://aria.vantax.co.za | ✅ Online |
-| Backend | /opt/aria/aria_production_complete.py | ✅ Running |
-| Frontend | /var/www/aria/ | ✅ Deployed |
-| Database | /opt/aria/aria_production.db | ✅ Active |
-| Service | aria.service | ✅ Enabled |
-| SSL | Let's Encrypt | ✅ Valid |
-| Bots | 67 total | ✅ Ready |
-| ERP | 8 modules | ✅ Ready |
-| Tests | 10 tests | ✅ 100% |
+3. **Search Issues**
+   - GitHub Issues: https://github.com/yourusername/aria-erp/issues
 
----
-
-**🎉 ARIA v3.0 is READY TO USE! 🚀**
-
-Start exploring your 67-bot automation system now at:  
-**https://aria.vantax.co.za**
+4. **Contact Support**
+   - Email: support@aria-erp.com
+   - Discord: https://discord.gg/aria-erp
 
 ---
 
-*Last Updated: October 27, 2025*  
-*Version: 3.0.0*
+## ✨ You're All Set!
+
+ARIA ERP is now running. Start exploring the world's first AI-native ERP system!
+
+**Key Features to Try:**
+- 📊 Real-time Dashboard
+- 👥 Customer Management
+- 💼 Invoice Generation
+- 🤖 67 AI Bots
+- 📈 Analytics & Reports
+
+**Happy Automating! 🎉**
+
+---
+
+**Built with ❤️ for South African SMEs**
+
+*Empowering businesses with AI-native automation*

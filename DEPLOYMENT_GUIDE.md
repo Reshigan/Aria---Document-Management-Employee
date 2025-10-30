@@ -1,505 +1,321 @@
-# 🚀 ARIA Deployment Guide - Complete System
+# ARIA ERP - Deployment Guide
 
-## 📋 Table of Contents
-1. [System Overview](#system-overview)
-2. [Prerequisites](#prerequisites)
-3. [Quick Start](#quick-start)
-4. [Production Deployment](#production-deployment)
-5. [API Endpoints](#api-endpoints)
-6. [Testing](#testing)
-7. [Email Configuration](#email-configuration)
-8. [Troubleshooting](#troubleshooting)
+## 🚀 Production Deployment
 
----
+### Prerequisites
+- Docker & Docker Compose installed
+- Domain name configured (optional)
+- SSL certificates (optional, for HTTPS)
 
-## 🎯 System Overview
+### Quick Start
 
-**Aria** is an intelligent AI-powered document management and business automation system featuring:
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd aria-erp
+   ```
 
-### Phase 1 (Complete ✅)
-- **15 Advanced Bots** across 3 industries (Manufacturing, Healthcare, Retail)
-- **ERP System** with Manufacturing & Quality modules
-- **Authentication** with JWT tokens and role-based access
-- **RESTful API** with full CRUD operations
+2. **Configure environment**
+   ```bash
+   cp .env.example .env
+   # Edit .env with your production values
+   nano .env
+   ```
 
-### Phase 2 (Complete ✅)
-- **Aria AI Controller** - Intelligent orchestration brain
-- **Natural Language Processing** - Understand plain English requests
-- **Bot Orchestration** - Intelligent routing and multi-bot workflows
-- **ERP Integration** - Seamless bot-database connectivity
-- **Email Interface** - Email-based interactions with Aria
+3. **Generate secret keys**
+   ```bash
+   python3 -c "import secrets; print('SECRET_KEY=' + secrets.token_urlsafe(32))"
+   python3 -c "import secrets; print('JWT_SECRET_KEY=' + secrets.token_urlsafe(32))"
+   ```
 
----
+4. **Build and start services**
+   ```bash
+   docker-compose up -d --build
+   ```
 
-## ✅ Prerequisites
+5. **Initialize database**
+   ```bash
+   docker-compose exec backend python init_db.py
+   ```
 
-### Required
-- Python 3.8+
-- pip (Python package manager)
+6. **Verify deployment**
+   ```bash
+   curl http://localhost:8000/health
+   ```
 
-### Python Packages
-```bash
-pip install fastapi uvicorn pydantic sqlalchemy pyjwt passlib pytest
+### Service URLs
+
+- **Backend API**: http://localhost:8000
+- **API Documentation**: http://localhost:8000/docs
+- **Frontend**: http://localhost:5173 (dev) or http://localhost:3000 (production)
+
+### Default Admin Credentials
+
+```
+Email: admin@aria-erp.com
+Password: AdminPass123!
 ```
 
-### Optional (for advanced features)
-- Gmail account (for email interface)
-- Redis (for production task queuing)
-- PostgreSQL (for production database)
+⚠️ **IMPORTANT**: Change these credentials immediately after first login!
 
----
+## 📊 System Status
 
-## 🚀 Quick Start
+### Verified Components
 
-### 1. Clone Repository
-```bash
-git clone https://github.com/Reshigan/Aria---Document-Management-Employee.git
-cd Aria---Document-Management-Employee/backend
-```
+✅ **Authentication System**
+- JWT token generation and validation
+- User registration and login
+- Password hashing (bcrypt)
+- Role-based access control
 
-### 2. Install Dependencies
-```bash
-pip install -r requirements.txt
-# If requirements.txt doesn't exist:
-pip install fastapi uvicorn pydantic sqlalchemy pyjwt passlib pytest
-```
+✅ **Bot System** (61 bots available)
+- 10 categories
+- 61 fully functional bots
+- Bot execution framework
+- Status monitoring
 
-### 3. Start Server
-```bash
-python api_phase1_complete.py
-```
+### Bot Categories
 
-Server will start on: `http://localhost:12001`
+1. **Accounting** (3 bots)
+   - Financial Close Bot
+   - Financial Reporting Bot
+   - General Ledger Bot
 
-### 4. Test Phase 2 Components
-```bash
-python test_phase2_aria.py
-```
+2. **Banking & Treasury** (2 bots)
+   - Bank Reconciliation Bot
+   - Payment Processing Bot
 
-Expected output: `✅ ALL PHASE 2 TESTS PASSED!`
+3. **Sales & CRM** (6 bots)
+   - Lead Management Bot
+   - Opportunity Tracking Bot
+   - Customer Support Bot
+   - Quote Generation Bot
+   - Order Processing Bot
+   - Sales Analytics Bot
 
----
+4. **General Operations** (25 bots)
+   - Various operational bots
 
-## 🌐 Production Deployment
+5. **Supply Chain** (6 bots)
+   - Inventory management
+   - Procurement
+   - Logistics
 
-### Option 1: Direct Deployment (Simple)
+6. **Document Management** (6 bots)
+   - Document processing
+   - Archive management
+   - Data extraction
 
-```bash
-# 1. Start the server
-python api_phase1_complete.py
+7. **Manufacturing** (3 bots)
+   - Production planning
+   - Quality control
+   - Equipment maintenance
 
-# The server will run on port 12001
-# Access at: http://your-domain:12001
-```
+8. **Human Resources** (3 bots)
+   - Employee onboarding
+   - Time tracking
+   - Performance management
 
-### Option 2: Docker Deployment (Recommended)
+9. **Compliance & Regulatory** (3 bots)
+   - Audit management
+   - Tax compliance
+   - BBBEE compliance
 
-```dockerfile
-# Dockerfile
-FROM python:3.10-slim
-
-WORKDIR /app
-COPY backend/ /app/
-RUN pip install fastapi uvicorn pydantic sqlalchemy pyjwt passlib
-
-EXPOSE 12001
-CMD ["python", "api_phase1_complete.py"]
-```
-
-```bash
-# Build and run
-docker build -t aria-system .
-docker run -p 12001:12001 aria-system
-```
-
-### Option 3: Production Server (uvicorn)
-
-```bash
-# Install uvicorn with production extras
-pip install uvicorn[standard]
-
-# Run with production settings
-uvicorn api_phase1_complete:app \
-  --host 0.0.0.0 \
-  --port 12001 \
-  --workers 4 \
-  --log-level info
-```
-
-### Environment Variables
-
-Create `.env` file:
-```bash
-# Database
-DATABASE_URL=sqlite:///./aria_database.db  # or postgresql://...
-
-# JWT Secret
-JWT_SECRET=your-secret-key-here-change-in-production
-JWT_ALGORITHM=HS256
-JWT_EXPIRE_MINUTES=30
-
-# Email Configuration (Optional)
-EMAIL_HOST=smtp.gmail.com
-EMAIL_PORT=587
-EMAIL_USERNAME=your-email@gmail.com
-EMAIL_PASSWORD=your-app-password
-EMAIL_USE_TLS=true
-
-# Server
-SERVER_HOST=0.0.0.0
-SERVER_PORT=12001
-```
-
----
-
-## 📡 API Endpoints
-
-### Authentication
-```bash
-# Register User
-POST /api/auth/register
-{
-  "email": "user@example.com",
-  "password": "securepassword123",
-  "full_name": "John Doe"
-}
-
-# Login
-POST /api/auth/login
-{
-  "email": "user@example.com",
-  "password": "securepassword123"
-}
-# Returns: {"access_token": "...", "token_type": "bearer"}
-```
-
-### Aria AI Controller (Phase 2 🆕)
-
-```bash
-# Chat with Aria (Natural Language)
-POST /api/aria/chat
-Authorization: Bearer <token>
-{
-  "message": "Plan production for 500 units of Widget A",
-  "conversation_id": null,
-  "auto_execute_workflows": true
-}
-
-# Get System Status
-GET /api/aria/status
-Authorization: Bearer <token>
-
-# Get Help
-GET /api/aria/help?category=manufacturing
-Authorization: Bearer <token>
-
-# Execute Custom Workflow
-POST /api/aria/workflow
-Authorization: Bearer <token>
-[
-  {
-    "name": "check_inventory",
-    "bot": "inventory_optimizer",
-    "params": {"product": "Widget A"}
-  }
-]
-```
-
-### Bots (Phase 1)
-```bash
-# List All Bots
-GET /api/bots
-Authorization: Bearer <token>
-
-# Execute Bot
-POST /api/bots/{bot_id}/execute
-Authorization: Bearer <token>
-{
-  "product": "Widget A",
-  "quantity": 500
-}
-```
-
-### ERP System (Phase 1)
-```bash
-# Manufacturing Module
-GET /api/erp/manufacturing/boms
-POST /api/erp/manufacturing/boms
-GET /api/erp/manufacturing/work-orders
-POST /api/erp/manufacturing/work-orders
-
-# Quality Module
-GET /api/erp/quality/inspections
-POST /api/erp/quality/inspections
-```
-
----
+10. **Financial Operations** (4 bots)
+    - Various financial operations
 
 ## 🧪 Testing
 
-### Run All Tests
+### Run automated tests
 ```bash
-# Phase 1 Tests (22 tests)
-python test_api_complete.py
-
-# Phase 2 Tests (19 tests)
-python test_phase2_aria.py
-
-# Total: 41 tests
+python3 test_erp.py
 ```
 
-### Test Coverage
-- ✅ Authentication (login, register, JWT)
-- ✅ 15 Bot executions
-- ✅ ERP module operations
-- ✅ NLP intent recognition
-- ✅ Bot orchestration
-- ✅ Aria AI controller
-- ✅ Conversation management
-
----
-
-## 📧 Email Configuration
-
-### Gmail Setup
-
-1. **Enable 2-Factor Authentication**
-   - Go to Google Account settings
-   - Security → 2-Step Verification → Enable
-
-2. **Generate App Password**
-   - Security → App passwords
-   - Select "Mail" and "Other"
-   - Copy the generated password
-
-3. **Configure Email Interface**
-```python
-from email_interface import get_email_interface
-
-# Initialize email interface
-email_interface = get_email_interface(
-    smtp_host="smtp.gmail.com",
-    smtp_port=587,
-    imap_host="imap.gmail.com",
-    imap_port=993,
-    username="your-email@gmail.com",
-    password="your-app-password",
-    use_tls=True
-)
-
-# Start listening for emails
-await email_interface.start_listening(check_interval=60)
+Expected output:
+```
+✅ All tests passed!
+The ERP system is ready for deployment!
 ```
 
-### Email Usage Examples
+### Manual testing
 
-**Send email to Aria:**
-```
-To: aria@your-domain.com
-Subject: Production Planning Request
+1. **Test authentication**
+   ```bash
+   curl -X POST "http://localhost:8000/api/v1/auth/login" \
+     -H "Content-Type: application/x-www-form-urlencoded" \
+     -d "username=admin@aria-erp.com&password=AdminPass123!"
+   ```
 
-Hi Aria,
+2. **Test bot listing**
+   ```bash
+   TOKEN="<your-token>"
+   curl "http://localhost:8000/api/v1/bots/" \
+     -H "Authorization: Bearer $TOKEN"
+   ```
 
-Can you plan production for 500 units of Widget A?
-We need them by December 15th.
+3. **Test bot execution**
+   ```bash
+   curl -X POST "http://localhost:8000/api/v1/bots/financial_close_bot/execute" \
+     -H "Authorization: Bearer $TOKEN" \
+     -H "Content-Type: application/json" \
+     -d '{"action": "test"}'
+   ```
 
-Thanks!
-```
+## 🔧 Maintenance
 
-**Aria's Response:**
-```
-Subject: Re: Production Planning Request
-
-Hi there!
-
-I've analyzed your production request. Here's what I found:
-
-✅ Production Plan Created
-   - Product: Widget A
-   - Quantity: 500 units
-   - Work Order: WO-1234
-   - Estimated Completion: December 12, 2025
-   - Total Cost: $12,450
-
-Your production order is ready to proceed!
-
-Best regards,
-Aria AI Controller
-```
-
----
-
-## 🔧 Troubleshooting
-
-### Common Issues
-
-#### 1. Server won't start
+### View logs
 ```bash
-# Check if port 12001 is available
-netstat -an | grep 12001
+# All services
+docker-compose logs -f
 
-# Try different port
-# Edit api_phase1_complete.py, change port to 8000
+# Specific service
+docker-compose logs -f backend
+docker-compose logs -f frontend
 ```
 
-#### 2. Authentication fails
+### Database backup
 ```bash
-# Verify JWT secret is set
-# Check user exists in database
-# Try re-registering user
+# SQLite
+cp backend/aria_erp.db backend/aria_erp.db.backup
+
+# PostgreSQL
+docker-compose exec postgres pg_dump -U aria_user aria_erp > backup.sql
 ```
 
-#### 3. Aria not responding
+### Update application
 ```bash
-# Check if Phase 2 modules loaded
-# Look for: "✅ Aria AI Controller loaded successfully"
-# If not, check imports and dependencies
+git pull
+docker-compose down
+docker-compose up -d --build
 ```
 
-#### 4. Bot execution errors
+### Stop services
 ```bash
-# Verify bot parameters
-# Check bot_orchestrator statistics:
-GET /api/aria/status
+docker-compose down
 ```
 
-#### 5. Email interface not working
+### Clean restart
 ```bash
-# Verify Gmail app password
-# Check SMTP/IMAP settings
-# Test with: python -c "import smtplib; print('OK')"
+docker-compose down -v  # Removes volumes
+docker-compose up -d --build
 ```
 
-### Debug Mode
+## 🌐 Production Considerations
 
-Enable detailed logging:
-```python
-# In api_phase1_complete.py
-import logging
-logging.basicConfig(level=logging.DEBUG)
+### Security
+
+1. **Change default credentials**
+2. **Use strong secret keys**
+3. **Enable HTTPS with SSL certificates**
+4. **Configure firewall rules**
+5. **Regular security updates**
+
+### Database
+
+For production, use PostgreSQL instead of SQLite:
+
+```yaml
+# docker-compose.yml
+environment:
+  - DATABASE_URL=postgresql://user:password@postgres:5432/aria_erp
 ```
 
-### Database Issues
+### Scaling
 
-Reset database:
+- Use a reverse proxy (nginx) for load balancing
+- Separate frontend and backend servers
+- Use Redis for caching and session storage
+- Consider Kubernetes for container orchestration
+
+### Monitoring
+
+- Set up application monitoring (Prometheus, Grafana)
+- Configure error tracking (Sentry)
+- Set up uptime monitoring
+- Enable audit logging
+
+## 📝 Architecture
+
+### Backend (FastAPI)
+- RESTful API with JWT authentication
+- 61 specialized bots for various ERP functions
+- SQLAlchemy ORM with support for SQLite/PostgreSQL
+- Async processing with background tasks
+
+### Frontend (React + TypeScript)
+- Modern responsive UI with Tailwind CSS
+- Real-time updates
+- Role-based dashboard
+- Mobile-friendly design
+
+### Database Schema
+- User and company management
+- Financial records (invoices, payments, ledger)
+- Inventory and products
+- Document management
+- Comprehensive audit trails
+
+## 🆘 Troubleshooting
+
+### Backend won't start
 ```bash
-rm aria_database.db
-python api_phase1_complete.py  # Will recreate tables
+# Check logs
+docker-compose logs backend
+
+# Common issues:
+# - Database connection failed: Check DATABASE_URL
+# - Port already in use: Change port in docker-compose.yml
+# - Missing dependencies: Rebuild with --build flag
 ```
 
----
-
-## 📊 System Architecture
-
-```
-┌─────────────────────────────────────────────────┐
-│               USER INTERFACES                    │
-│  (Web, Mobile App, Email, API, Chat)           │
-└────────────────┬────────────────────────────────┘
-                 │
-┌────────────────▼────────────────────────────────┐
-│         ARIA AI CONTROLLER                      │
-│  (Natural Language Processing & Orchestration)  │
-└────┬─────────────────────────────────┬──────────┘
-     │                                  │
-┌────▼──────────┐              ┌───────▼──────────┐
-│   NLP ENGINE   │              │ BOT ORCHESTRATOR │
-│ Intent Recog.  │              │ Intelligent Route│
-│ Param Extract  │              │ Multi-bot Flows  │
-└────────────────┘              └───────┬──────────┘
-                                        │
-                        ┌───────────────┴───────────────┐
-                        │                               │
-                ┌───────▼────────┐            ┌─────────▼────────┐
-                │   15 BOTS      │            │  ERP INTEGRATION │
-                │ Manufacturing  │◄───────────┤  Bot-DB Connector│
-                │ Healthcare     │            │  BOM, WO, QI     │
-                │ Retail         │            └─────────┬────────┘
-                └────────────────┘                      │
-                                               ┌────────▼────────┐
-                                               │  ERP DATABASE   │
-                                               │ Manufacturing   │
-                                               │ Quality Control │
-                                               └─────────────────┘
+### Database errors
+```bash
+# Reset database (⚠️ DESTROYS ALL DATA)
+docker-compose down -v
+docker-compose up -d
+docker-compose exec backend python init_db.py
 ```
 
----
-
-## 📈 Performance Metrics
-
-### Response Times (Typical)
-- NLP Intent Recognition: 5-20ms
-- Single Bot Execution: 50-200ms
-- Multi-bot Workflow: 100-500ms
-- Database Query: 10-50ms
-- Total API Response: 100-800ms
-
-### Capacity
-- Concurrent Users: 1000+ (with 4 workers)
-- Requests per Second: 500+
-- Bot Executions per Minute: 10,000+
-
----
-
-## 🔐 Security Checklist
-
-### Production Deployment
-
-- [ ] Change `JWT_SECRET` to strong random value
-- [ ] Enable HTTPS/TLS
-- [ ] Configure firewall rules
-- [ ] Set up rate limiting
-- [ ] Enable CORS with specific origins
-- [ ] Use environment variables for secrets
-- [ ] Set up monitoring and logging
-- [ ] Configure backup strategy
-- [ ] Enable database encryption
-- [ ] Implement API key rotation
-
----
+### Frontend can't connect to backend
+```bash
+# Check VITE_API_URL in .env
+# Ensure backend is running: curl http://localhost:8000/health
+# Check CORS settings in backend
+```
 
 ## 📞 Support
 
-### Issues
-- GitHub Issues: https://github.com/Reshigan/Aria---Document-Management-Employee/issues
+For issues or questions:
+1. Check logs: `docker-compose logs`
+2. Verify health: `curl http://localhost:8000/health`
+3. Run tests: `python3 test_erp.py`
 
-### Documentation
-- Architecture Analysis: `ARCHITECTURE_ANALYSIS.md`
-- API Documentation: Available at `/docs` when server is running
+## ✅ Deployment Checklist
 
-### Quick Links
-- API Interactive Docs: `http://localhost:12001/docs`
-- Alternative API Docs: `http://localhost:12001/redoc`
+- [ ] Environment variables configured
+- [ ] Secret keys generated
+- [ ] Database initialized
+- [ ] Admin password changed
+- [ ] HTTPS/SSL configured (production)
+- [ ] Backup strategy in place
+- [ ] Monitoring configured
+- [ ] Firewall rules set
+- [ ] All tests passing
+- [ ] Documentation reviewed
+
+## 🎉 Success Criteria
+
+Your ARIA ERP is successfully deployed when:
+
+✅ Health check returns 200 OK
+✅ Login works with admin credentials
+✅ All 61 bots are listed
+✅ Bot execution returns valid responses
+✅ Frontend loads without errors
+✅ API documentation accessible at /docs
 
 ---
 
-## 🎉 Success Checklist
-
-After deployment, verify:
-
-- [ ] Server starts without errors
-- [ ] Can access `/docs` endpoint
-- [ ] User registration works
-- [ ] User login returns JWT token
-- [ ] Bot listing returns 15 bots
-- [ ] Aria chat endpoint responds
-- [ ] Phase 1 tests pass (22/22)
-- [ ] Phase 2 tests pass (19/19)
-- [ ] ERP endpoints accessible
-- [ ] Email interface configured (optional)
-
----
-
-## 🚀 You're Ready!
-
-**Congratulations!** Your Aria AI system is now fully deployed and operational.
-
-### Next Steps
-1. Create admin user account
-2. Configure email interface (if needed)
-3. Customize bot parameters for your business
-4. Integrate with frontend application
-5. Monitor system performance
-6. Train team on Aria capabilities
-
-**Happy Automating! 🤖✨**
+**Version**: 1.0.0  
+**Last Updated**: 2025-10-27  
+**Status**: ✅ Production Ready

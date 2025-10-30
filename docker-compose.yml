@@ -1,63 +1,80 @@
+# ARIA ERP - Docker Compose for Local Development
+
 version: '3.8'
 
 services:
+  # PostgreSQL Database
   postgres:
     image: postgres:15-alpine
+    container_name: aria_postgres
     environment:
-      POSTGRES_USER: aria
+      POSTGRES_USER: aria_user
       POSTGRES_PASSWORD: aria_password
-      POSTGRES_DB: aria_db
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
+      POSTGRES_DB: aria_erp
     ports:
       - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U aria"]
+      test: ["CMD-SHELL", "pg_isready -U aria_user"]
       interval: 10s
       timeout: 5s
       retries: 5
 
+  # Redis (for caching and queues)
   redis:
     image: redis:7-alpine
+    container_name: aria_redis
     ports:
       - "6379:6379"
     volumes:
       - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
 
+  # Backend API (FastAPI)
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    environment:
-      DATABASE_URL: postgresql://aria:aria_password@postgres:5432/aria_db
-      REDIS_URL: redis://redis:6379
-      SECRET_KEY: ${SECRET_KEY:-CHANGE_THIS_IN_PRODUCTION_12345678901234567890}
-      OPENAI_API_KEY: ${OPENAI_API_KEY}
-      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+    container_name: aria_backend
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    volumes:
+      - ./backend:/app
     ports:
       - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://aria_user:aria_password@postgres:5432/aria_erp
+      - REDIS_URL=redis://redis:6379/0
+      - SECRET_KEY=dev-secret-key-change-in-production
+      - JWT_SECRET_KEY=dev-jwt-secret-key-change-in-production
     depends_on:
       postgres:
         condition: service_healthy
       redis:
-        condition: service_started
-    volumes:
-      - ./backend:/app
-      - ./uploads:/app/uploads
-    command: uvicorn backend.main:app --host 0.0.0.0 --port 8000 --reload
+        condition: service_healthy
+    restart: unless-stopped
 
+  # Frontend (React + Vite)
   frontend:
     build:
       context: ./frontend
-      dockerfile: Dockerfile
-    ports:
-      - "12000:12000"
+      dockerfile: Dockerfile.dev
+    container_name: aria_frontend
+    command: npm run dev -- --host 0.0.0.0
     volumes:
       - ./frontend:/app
       - /app/node_modules
+    ports:
+      - "5173:5173"
     environment:
-      VITE_API_URL: http://localhost:8000
-    command: npm run dev
+      - VITE_API_URL=http://localhost:8000
+    depends_on:
+      - backend
+    restart: unless-stopped
 
 volumes:
   postgres_data:

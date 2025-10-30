@@ -1,44 +1,63 @@
-/**
- * Auth Store - Zustand state management
- */
-import { create } from 'zustand';
+import { create } from 'zustand'
+import api from '../services/api'
+import type { User, LoginRequest, RegisterRequest, AuthResponse } from '../types'
 
-interface User {
-  id: number;
-  email: string;
-  full_name: string;
-  organization_id: number;
-  organization_name?: string;
+interface AuthStore {
+  user: User | null
+  isAuthenticated: boolean
+  isLoading: boolean
+  login: (credentials: LoginRequest) => Promise<void>
+  register: (data: RegisterRequest) => Promise<void>
+  logout: () => void
+  checkAuth: () => Promise<void>
 }
 
-interface AuthState {
-  user: User | null;
-  token: string | null;
-  isAuthenticated: boolean;
-  login: (token: string, user: User) => void;
-  logout: () => void;
-  updateUser: (user: Partial<User>) => void;
-}
+export const useAuthStore = create<AuthStore>((set) => ({
+  user: null,
+  isAuthenticated: false,
+  isLoading: true,
 
-export const useAuthStore = create<AuthState>((set) => ({
-  user: JSON.parse(localStorage.getItem('user') || 'null'),
-  token: localStorage.getItem('access_token') || localStorage.getItem('token'),
-  isAuthenticated: !!(localStorage.getItem('access_token') || localStorage.getItem('token')),
-  
-  login: (token, user) => {
-    localStorage.setItem('access_token', token);
-    localStorage.setItem('user', JSON.stringify(user));
-    set({ token, user, isAuthenticated: true });
+  login: async (credentials) => {
+    const formData = new FormData()
+    formData.append('username', credentials.email)
+    formData.append('password', credentials.password)
+    
+    const response = await api.post<AuthResponse>('/auth/login', formData, {
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    })
+    
+    localStorage.setItem('access_token', response.data.access_token)
+    localStorage.setItem('refresh_token', response.data.refresh_token)
+    set({ user: response.data.user, isAuthenticated: true })
   },
-  
+
+  register: async (data) => {
+    const response = await api.post<AuthResponse>('/auth/register', data)
+    localStorage.setItem('access_token', response.data.access_token)
+    localStorage.setItem('refresh_token', response.data.refresh_token)
+    set({ user: response.data.user, isAuthenticated: true })
+  },
+
   logout: () => {
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('token'); // Remove old key for cleanup
-    localStorage.removeItem('user');
-    set({ token: null, user: null, isAuthenticated: false });
+    localStorage.removeItem('access_token')
+    localStorage.removeItem('refresh_token')
+    set({ user: null, isAuthenticated: false })
   },
-  
-  updateUser: (updates) => set((state) => ({
-    user: state.user ? { ...state.user, ...updates } : null
-  })),
-}));
+
+  checkAuth: async () => {
+    const token = localStorage.getItem('access_token')
+    if (!token) {
+      set({ isLoading: false })
+      return
+    }
+    
+    try {
+      const response = await api.get<User>('/auth/me')
+      set({ user: response.data, isAuthenticated: true, isLoading: false })
+    } catch (error) {
+      localStorage.removeItem('access_token')
+      localStorage.removeItem('refresh_token')
+      set({ user: null, isAuthenticated: false, isLoading: false })
+    }
+  },
+}))

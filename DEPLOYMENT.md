@@ -1,187 +1,362 @@
-# 🚀 ARIA DEPLOYMENT GUIDE
+# ARIA ERP - Deployment Guide
 
-## Quick Start
+## 🚀 Quick Start Deployment
 
-### Deploy to Production (Automated)
+### Prerequisites
+- Ubuntu 20.04+ or Debian 11+ server
+- Minimum 2GB RAM, 2 CPU cores
+- Docker and Docker Compose installed
+- Domain name pointed to server IP (optional, for SSL)
+
+### One-Command Deployment
 ```bash
-./deploy_production_automated.sh
+sudo bash deploy/deploy.sh
 ```
 
-### Rollback Deployment
+This script will:
+1. Install all dependencies (Docker, Nginx, etc.)
+2. Clone/update the repository
+3. Generate secure environment variables
+4. Build and start all services
+5. Setup systemd service
+6. Configure Nginx
+7. Setup automated backups
+
+---
+
+## 📦 Manual Deployment
+
+### 1. Clone Repository
 ```bash
-./rollback_deployment.sh
+git clone https://github.com/yourusername/aria-erp.git
+cd aria-erp
 ```
 
----
-
-## Critical Fix Applied
-
-### Problem: `/api/auth/login` vs `/api/v1/auth/login`
-
-**Root Cause:** Line 9 of `frontend/src/services/api.ts` was missing `/v1`:
-```typescript
-// WRONG (was causing "Not Found" errors)
-baseURL: `${API_BASE_URL}/api`
-
-// CORRECT (fixed)
-baseURL: `${API_BASE_URL}/api/v1`
-```
-
-**This single typo caused 10+ failed deployments!**
-
----
-
-## Automated Deployment Features
-
-✅ **One-Command Deployment** - No manual steps  
-✅ **Git-First Workflow** - All changes committed  
-✅ **Cache Busting** - Forces browser reload  
-✅ **Process Cleanup** - Kills old backends  
-✅ **Build Verification** - Tests after deploy  
-✅ **Automatic Rollback** - If anything fails  
-✅ **Build Manifest** - Tracks deployment version  
-
----
-
-## Usage
-
+### 2. Configure Environment
 ```bash
-# Deploy to production
-./deploy_production_automated.sh
-
-# If deployment fails, rollback
-./rollback_deployment.sh
+cp .env.example .env
+nano .env  # Edit with your settings
 ```
 
----
-
-## What The Script Does
-
-1. ✅ Commits any uncommitted Git changes
-2. ✅ Builds frontend with correct API config (`/api/v1`)
-3. ✅ Creates build manifest with commit hash
-4. ✅ Kills all old uvicorn processes
-5. ✅ Backs up current deployment
-6. ✅ Deploys new frontend and backend
-7. ✅ Restarts backend service
-8. ✅ Reloads nginx with cache-busting headers
-9. ✅ Tests all critical endpoints
-10. ✅ Reports success/failure
-
----
-
-## Verification After Deployment
-
-### Must Pass These Tests:
+### 3. Start Services
 ```bash
-# Health check
-curl https://aria.vantax.co.za/api/v1/health
-# Expected: {"status":"healthy","bots":67,"modules":8}
+# Development
+docker-compose up -d
 
-# Login test
-curl -X POST https://aria.vantax.co.za/api/v1/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"email":"admin@vantax.co.za","password":"Admin@123"}'
-# Expected: {"access_token":"..."}
-
-# Frontend test
-curl -I https://aria.vantax.co.za/
-# Expected: HTTP/1.1 200 OK
+# Production
+docker-compose -f docker-compose.prod.yml up -d
 ```
 
-### Browser Test:
-1. Open https://aria.vantax.co.za/login
-2. **Hard refresh:** `Ctrl+Shift+R` (Linux/Windows) or `Cmd+Shift+R` (Mac)
-3. Login with: admin@vantax.co.za / Admin@123
-4. Should work without "Not Found" error
+### 4. Access Application
+- **Frontend:** http://localhost:5173
+- **Backend API:** http://localhost:8000
+- **API Docs:** http://localhost:8000/docs
 
 ---
 
-## Troubleshooting
+## 🏭 Production Configuration
 
-### Still getting "Not Found" after deployment?
-
-**Problem:** Browser cached old JavaScript  
-**Solution:** Hard refresh multiple times:
-- Chrome: `Ctrl+Shift+R` or `Ctrl+F5`
-- Firefox: `Ctrl+Shift+R` or `Ctrl+F5`
-- Safari: `Cmd+Option+R`
-- Or: Open in incognito/private mode
-
-### Multiple backend processes running?
+### Database Setup
+The application uses PostgreSQL in production:
 
 ```bash
-ssh -i /workspace/project/Vantax-2.pem ubuntu@3.8.139.178 \
-  'ps aux | grep uvicorn | grep -v grep'
-  
-# Kill them all
-ssh -i /workspace/project/Vantax-2.pem ubuntu@3.8.139.178 \
-  'pkill -9 -f uvicorn && sudo systemctl restart aria-backend'
+# Access database
+docker-compose exec postgres psql -U aria_user -d aria_erp
+
+# Backup database
+docker exec aria_postgres pg_dump -U aria_user aria_erp > backup.sql
+
+# Restore database
+docker exec -i aria_postgres psql -U aria_user -d aria_erp < backup.sql
 ```
 
-### API endpoint mismatch?
-
-Verify the deployed frontend has `/v1`:
+### SSL/HTTPS Setup
 ```bash
-ssh -i /workspace/project/Vantax-2.pem ubuntu@3.8.139.178 \
-  'grep -oP "baseURL.*?v1" /var/www/aria/frontend/dist/assets/*.js'
-# Should output: baseURL:..."/api/v1"
+# Install Certbot
+sudo apt install certbot python3-certbot-nginx
+
+# Get SSL certificate
+sudo certbot --nginx -d yourdomain.com -d www.yourdomain.com
+
+# Auto-renewal (already configured)
+sudo certbot renew --dry-run
 ```
 
----
-
-## Files Modified
-
-### Fixed Files (Committed to Git):
-1. ✅ `frontend/src/services/api.ts` - Added `/v1` to baseURL
-2. ✅ `deploy_production_automated.sh` - Full automation
-3. ✅ `rollback_deployment.sh` - One-command rollback
-4. ✅ `DEPLOYMENT.md` - This documentation
-5. ✅ `DEPLOYMENT_ISSUES_ANALYSIS.md` - Root cause analysis
-
----
-
-## Important Notes
-
-### ⚠️ Never Edit These Files on the Server:
-- Frontend files in `/var/www/aria/frontend/`
-- Backend files in `/var/www/aria/backend/`
-- **Always make changes in Git, then deploy!**
-
-### ✅ Always Do This:
-1. Edit files in the Git repository
-2. Commit changes
-3. Run `./deploy_production_automated.sh`
-4. Test in browser (with hard refresh)
-
----
-
-## Monitoring
-
+### Nginx Configuration
 ```bash
-# Backend logs
-ssh -i /workspace/project/Vantax-2.pem ubuntu@3.8.139.178 \
-  'sudo journalctl -u aria-backend -f'
+# Test configuration
+sudo nginx -t
 
-# Nginx logs
-ssh -i /workspace/project/Vantax-2.pem ubuntu@3.8.139.178 \
-  'sudo tail -f /var/log/nginx/access.log'
+# Reload Nginx
+sudo systemctl reload nginx
+
+# View logs
+sudo tail -f /var/log/nginx/access.log
+sudo tail -f /var/log/nginx/error.log
 ```
 
 ---
 
-## Production System Status
+## 🔧 Service Management
 
-**✅ DEPLOYED AND READY:**
-- 67 AI Bots operational
-- 8 ERP Modules configured
-- Backend API: `/api/v1/*`
-- Frontend: React + Vite
-- SSL: Let's Encrypt
-- Domain: https://aria.vantax.co.za
+### Systemd Commands
+```bash
+# Start services
+sudo systemctl start aria-erp
+
+# Stop services
+sudo systemctl stop aria-erp
+
+# Restart services
+sudo systemctl restart aria-erp
+
+# View status
+sudo systemctl status aria-erp
+
+# Enable auto-start
+sudo systemctl enable aria-erp
+```
+
+### Docker Commands
+```bash
+# View logs
+docker-compose logs -f
+
+# View specific service logs
+docker-compose logs -f backend
+docker-compose logs -f frontend
+
+# Restart a service
+docker-compose restart backend
+
+# Rebuild and restart
+docker-compose up -d --build
+
+# Stop all services
+docker-compose down
+
+# Stop and remove volumes
+docker-compose down -v
+```
 
 ---
 
-**Last Updated:** October 29, 2025  
-**Production URL:** https://aria.vantax.co.za  
-**Status:** ✅ READY FOR PRODUCTION
+## 📊 Monitoring & Maintenance
+
+### Health Checks
+```bash
+# Backend health
+curl http://localhost:8000/health
+
+# Frontend health
+curl http://localhost:5173
+
+# Check service status
+docker-compose ps
+```
+
+### Database Backups
+Automated daily backups are configured in `/etc/cron.daily/aria-backup`
+
+Manual backup:
+```bash
+# Create backup
+docker exec aria_postgres pg_dump -U aria_user aria_erp | gzip > backup_$(date +%Y%m%d).sql.gz
+
+# Restore backup
+gunzip < backup_20231027.sql.gz | docker exec -i aria_postgres psql -U aria_user -d aria_erp
+```
+
+### Log Management
+```bash
+# View application logs
+docker-compose logs -f backend
+docker-compose logs -f frontend
+
+# Clear logs
+docker-compose logs --tail=0 backend
+
+# Export logs
+docker-compose logs --no-color backend > backend.log
+```
+
+### Performance Monitoring
+```bash
+# Resource usage
+docker stats
+
+# Disk usage
+docker system df
+
+# Clean up unused images
+docker system prune -a
+```
+
+---
+
+## 🔒 Security Hardening
+
+### 1. Firewall Configuration
+```bash
+# Allow SSH
+sudo ufw allow 22/tcp
+
+# Allow HTTP/HTTPS
+sudo ufw allow 80/tcp
+sudo ufw allow 443/tcp
+
+# Enable firewall
+sudo ufw enable
+```
+
+### 2. Update Environment Variables
+Edit `.env` and change all default values:
+- `SECRET_KEY` - Use strong random value
+- `JWT_SECRET_KEY` - Use strong random value
+- `POSTGRES_PASSWORD` - Use strong password
+- `ALLOWED_ORIGINS` - Set to your domain only
+
+### 3. Setup Fail2Ban
+```bash
+sudo apt install fail2ban
+sudo systemctl enable fail2ban
+```
+
+### 4. Regular Updates
+```bash
+# Update system
+sudo apt update && sudo apt upgrade -y
+
+# Update Docker images
+docker-compose pull
+docker-compose up -d
+```
+
+---
+
+## 🌍 Multi-Server Deployment
+
+### Load Balancer Setup
+For high-traffic deployments, use a load balancer:
+
+```nginx
+upstream backend_servers {
+    server backend1:8000;
+    server backend2:8000;
+    server backend3:8000;
+}
+
+upstream frontend_servers {
+    server frontend1:3000;
+    server frontend2:3000;
+}
+
+server {
+    location / {
+        proxy_pass http://frontend_servers;
+    }
+    
+    location /api/ {
+        proxy_pass http://backend_servers;
+    }
+}
+```
+
+### Database Replication
+Set up PostgreSQL replication for high availability:
+- Primary database for writes
+- Read replicas for queries
+- Automatic failover with pgpool
+
+---
+
+## 📱 Platform-Specific Deployments
+
+### AWS Deployment
+1. Launch EC2 instance (t3.medium or larger)
+2. Configure security groups (ports 80, 443, 22)
+3. Use RDS for PostgreSQL
+4. Use ElastiCache for Redis
+5. Use S3 for file storage
+6. Use CloudFront for CDN
+
+### DigitalOcean Deployment
+1. Create Droplet (2GB RAM minimum)
+2. Use Managed PostgreSQL
+3. Use Managed Redis
+4. Use Spaces for file storage
+5. Use Load Balancer for scaling
+
+### Google Cloud Deployment
+1. Create Compute Engine instance
+2. Use Cloud SQL for PostgreSQL
+3. Use Memorystore for Redis
+4. Use Cloud Storage for files
+5. Use Cloud Load Balancing
+
+---
+
+## 🐛 Troubleshooting
+
+### Backend Won't Start
+```bash
+# Check logs
+docker-compose logs backend
+
+# Common issues:
+# - Database not ready: Wait 30s and restart
+# - Port in use: Change port in docker-compose.yml
+# - Missing dependencies: Rebuild image
+docker-compose build --no-cache backend
+```
+
+### Frontend Won't Start
+```bash
+# Check logs
+docker-compose logs frontend
+
+# Common issues:
+# - Node modules: Rebuild image
+docker-compose build --no-cache frontend
+# - API connection: Check VITE_API_URL in .env
+```
+
+### Database Connection Issues
+```bash
+# Test database connection
+docker-compose exec backend python -c "from app.core.database import engine; print(engine.connect())"
+
+# Reset database
+docker-compose down -v
+docker-compose up -d
+```
+
+### SSL Certificate Issues
+```bash
+# Renew certificate
+sudo certbot renew --force-renewal
+
+# Check certificate expiry
+sudo certbot certificates
+```
+
+---
+
+## 📞 Support
+
+For deployment issues:
+1. Check logs: `docker-compose logs -f`
+2. Verify configuration: `cat .env`
+3. Test connectivity: `curl http://localhost:8000/health`
+4. Contact support: support@aria-erp.com
+
+---
+
+## 📝 Version History
+
+- **v1.0.0** (2024-10-27) - Initial production release
+  - 67 AI Bots integrated
+  - Full ERP functionality
+  - Docker deployment ready
+  - Production-grade security
+
