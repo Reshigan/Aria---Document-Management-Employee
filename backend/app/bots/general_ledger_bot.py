@@ -1,13 +1,16 @@
 """
 General Ledger Bot
 Handles GL postings, journal entries, and account reconciliation
+REAL IMPLEMENTATION - NO MOCK DATA!
 """
 from typing import Dict, Any, List, Optional
 from datetime import datetime, date
 from decimal import Decimal
 import logging
+from sqlalchemy.orm import Session
 
 from .base_bot import FinancialBot, BotCapability, BotPriority
+from ..services.general_ledger_service import GeneralLedgerService
 
 logger = logging.getLogger(__name__)
 
@@ -24,12 +27,14 @@ class GeneralLedgerBot(FinancialBot):
     - Period close checks
     """
     
-    def __init__(self):
+    def __init__(self, db: Session = None):
         super().__init__(
             bot_id="gl_bot_001",
             name="General Ledger Bot",
-            description="Automates GL postings, journal entries, and account reconciliation"
+            description="Automates GL postings, journal entries, and account reconciliation - REAL IMPLEMENTATION"
         )
+        self.db = db
+        self.gl_service = GeneralLedgerService(db) if db else None
         
     async def execute(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -110,108 +115,42 @@ class GeneralLedgerBot(FinancialBot):
     
     async def _post_journal_entry(self, journal_entry: Dict[str, Any]) -> Dict[str, Any]:
         """
-        Post a journal entry to the GL
-        
-        Validates:
-        - Entry is balanced (debits = credits)
-        - All accounts exist and are active
-        - Period is open
-        - No negative amounts
+        Post a journal entry to the GL using REAL service
         """
-        # Validate balanced entry
-        total_debits = sum(line.get("debit", 0) for line in journal_entry["lines"])
-        total_credits = sum(line.get("credit", 0) for line in journal_entry["lines"])
-        
-        if abs(total_debits - total_credits) > 0.01:  # Allow for rounding
+        if not self.gl_service:
             return {
                 "success": False,
-                "error": "Journal entry is not balanced",
-                "total_debits": total_debits,
-                "total_credits": total_credits,
-                "difference": total_debits - total_credits
+                "error": "Database connection not available"
             }
         
-        # Validate accounts
-        invalid_accounts = []
-        for line in journal_entry["lines"]:
-            account = line.get("account")
-            if not self._is_valid_account(account):
-                invalid_accounts.append(account)
+        # Use the real GL service to post
+        result = self.gl_service.post_journal_entry(journal_entry)
         
-        if invalid_accounts:
-            return {
-                "success": False,
-                "error": "Invalid accounts",
-                "invalid_accounts": invalid_accounts
-            }
+        if result['success']:
+            logger.info(f"Successfully posted journal entry: {result['reference']}")
         
-        # Create GL document number
-        doc_number = self._generate_doc_number("JE")
-        
-        # Post entry (in production, this would write to database)
-        logger.info(f"Posting journal entry {doc_number}: {journal_entry}")
-        
-        # Create audit trail
-        audit_trail = {
-            "doc_number": doc_number,
-            "date": journal_entry["date"],
-            "description": journal_entry["description"],
-            "reference": journal_entry.get("reference"),
-            "total_amount": total_debits,
-            "posted_by": "system",  # In production, use actual user
-            "posted_at": datetime.now().isoformat(),
-            "status": "posted"
-        }
-        
-        return {
-            "success": True,
-            "message": "Journal entry posted successfully",
-            "doc_number": doc_number,
-            "total_debits": total_debits,
-            "total_credits": total_credits,
-            "audit_trail": audit_trail,
-            "gl_entries": journal_entry["lines"]
-        }
+        return result
     
     async def _generate_trial_balance(self, as_of_date: Optional[str] = None) -> Dict[str, Any]:
         """
-        Generate trial balance report
-        
-        Shows all accounts with their debit/credit balances
+        Generate trial balance report using REAL data
         """
+        if not self.gl_service:
+            return {
+                "success": False,
+                "error": "Database connection not available"
+            }
+        
         if as_of_date is None:
             as_of_date = date.today().isoformat()
         
-        # In production, query from database
-        # For now, return sample data
-        trial_balance = [
-            {"account": "1100", "account_name": "Cash", "debit": 50000, "credit": 0},
-            {"account": "1200", "account_name": "Accounts Receivable", "debit": 75000, "credit": 0},
-            {"account": "1500", "account_name": "Inventory", "debit": 120000, "credit": 0},
-            {"account": "1600", "account_name": "Fixed Assets", "debit": 250000, "credit": 0},
-            {"account": "1650", "account_name": "Accumulated Depreciation", "debit": 0, "credit": 50000},
-            {"account": "2100", "account_name": "Accounts Payable", "debit": 0, "credit": 45000},
-            {"account": "3000", "account_name": "Share Capital", "debit": 0, "credit": 200000},
-            {"account": "3100", "account_name": "Retained Earnings", "debit": 0, "credit": 125000},
-            {"account": "4000", "account_name": "Sales Revenue", "debit": 0, "credit": 300000},
-            {"account": "5000", "account_name": "Cost of Sales", "debit": 180000, "credit": 0},
-            {"account": "6100", "account_name": "Salaries", "debit": 35000, "credit": 0},
-            {"account": "6200", "account_name": "Depreciation", "debit": 10000, "credit": 0},
-        ]
+        # Use real trial balance service
+        result = self.gl_service.get_trial_balance(as_of_date, include_zero_balances=False)
         
-        total_debits = sum(item["debit"] for item in trial_balance)
-        total_credits = sum(item["credit"] for item in trial_balance)
+        if result['success']:
+            logger.info(f"Generated trial balance for {as_of_date}: {result['account_count']} accounts")
         
-        return {
-            "success": True,
-            "as_of_date": as_of_date,
-            "trial_balance": trial_balance,
-            "total_debits": total_debits,
-            "total_credits": total_credits,
-            "balanced": abs(total_debits - total_credits) < 0.01,
-            "currency": self.currency,
-            "generated_at": datetime.now().isoformat()
-        }
+        return result
     
     async def _reconcile_account(self, account_number: str, bank_statement: List[Dict]) -> Dict[str, Any]:
         """
