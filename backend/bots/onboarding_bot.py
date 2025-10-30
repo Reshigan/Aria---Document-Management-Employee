@@ -8,7 +8,13 @@ class OnboardingBot(ERPBot):
         super().__init__(bot_id="onboarding_bot_001", name="Onboarding Bot",
                         description="Onboarding checklist, documentation, IT setup, training schedule")
 
-    async def execute(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+
+    def execute(self, context: dict) -> dict:
+        """Synchronous wrapper for async execute_async"""
+        import asyncio
+        return asyncio.run(self.execute_async(context))
+
+    async def execute_async(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
         action = input_data.get("action", "create_onboarding")
         actions = {"create_onboarding": self._create, "track_progress": self._track,
                    "setup_it": self._setup_it, "compliance_docs": self._compliance}

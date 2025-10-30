@@ -8,7 +8,13 @@ class SupplierManagementBot(ERPBot):
         super().__init__(bot_id="sup_mgmt_bot_001", name="Supplier Management Bot",
                         description="Supplier onboarding, performance tracking, compliance, risk assessment")
     
-    async def execute(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+
+    def execute(self, context: dict) -> dict:
+        """Synchronous wrapper for async execute_async"""
+        import asyncio
+        return asyncio.run(self.execute_async(context))
+
+    async def execute_async(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
         action = input_data.get("action", "create_supplier")
         if action == "create_supplier": return await self._create_supplier(input_data)
         elif action == "evaluate_performance": return await self._evaluate_supplier(input_data)

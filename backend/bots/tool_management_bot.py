@@ -7,7 +7,13 @@ class ToolManagementBot(ERPBot):
         super().__init__(bot_id="tool_bot_001", name="Tool Management Bot",
                         description="Tool tracking, calibration, maintenance, lifecycle management")
 
-    async def execute(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+
+    def execute(self, context: dict) -> dict:
+        """Synchronous wrapper for async execute_async"""
+        import asyncio
+        return asyncio.run(self.execute_async(context))
+
+    async def execute_async(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
         action = input_data.get("action", "track_tool")
         if action == "track_tool": return await self._track(input_data)
         else: raise ValueError(f"Unknown action: {action}")

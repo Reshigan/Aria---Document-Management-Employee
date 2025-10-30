@@ -8,7 +8,13 @@ class SourceToPayBot(ERPBot):
         super().__init__(bot_id="s2p_bot_001", name="Source-to-Pay Bot",
                         description="Complete S2P process: sourcing, contracting, ordering, receiving, invoicing, payment")
     
-    async def execute(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+
+    def execute(self, context: dict) -> dict:
+        """Synchronous wrapper for async execute_async"""
+        import asyncio
+        return asyncio.run(self.execute_async(context))
+
+    async def execute_async(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
         action = input_data.get("action", "process_request")
         actions = {"process_request": self._process, "track_cycle": self._track,
                    "optimize": self._optimize, "kpis": self._calculate_kpis}

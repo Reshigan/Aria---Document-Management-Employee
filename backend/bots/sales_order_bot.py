@@ -8,7 +8,13 @@ class SalesOrderBot(ERPBot):
         super().__init__(bot_id="so_bot_001", name="Sales Order Bot",
                         description="Sales order creation, credit check, fulfillment, invoicing")
 
-    async def execute(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+
+    def execute(self, context: dict) -> dict:
+        """Synchronous wrapper for async execute_async"""
+        import asyncio
+        return asyncio.run(self.execute_async(context))
+
+    async def execute_async(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
         action = input_data.get("action", "create_order")
         if action == "create_order": return await self._create(input_data)
         elif action == "credit_check": return await self._credit_check(input_data)

@@ -7,7 +7,13 @@ class SalesAnalyticsBot(ERPBot):
         super().__init__(bot_id="sales_analytics_bot_001", name="Sales Analytics Bot",
                         description="Sales dashboards, KPIs, forecasting, trend analysis, rep performance")
 
-    async def execute(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+
+    def execute(self, context: dict) -> dict:
+        """Synchronous wrapper for async execute_async"""
+        import asyncio
+        return asyncio.run(self.execute_async(context))
+
+    async def execute_async(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
         action = input_data.get("action", "sales_dashboard")
         if action == "sales_dashboard": return await self._dashboard()
         elif action == "rep_performance": return await self._rep_performance(input_data)

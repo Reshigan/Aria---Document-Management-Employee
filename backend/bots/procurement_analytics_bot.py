@@ -8,7 +8,13 @@ class ProcurementAnalyticsBot(ERPBot):
         super().__init__(bot_id="proc_analytics_bot_001", name="Procurement Analytics Bot",
                         description="Spend analysis, savings tracking, category insights, dashboards")
     
-    async def execute(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+
+    def execute(self, context: dict) -> dict:
+        """Synchronous wrapper for async execute_async"""
+        import asyncio
+        return asyncio.run(self.execute_async(context))
+
+    async def execute_async(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
         action = input_data.get("action", "spend_analysis")
         if action == "spend_analysis": return await self._analyze_spend(input_data)
         elif action == "savings_tracking": return await self._track_savings(input_data)

@@ -48,6 +48,11 @@ class ExpenseManagementBot:
         self.name = "Expense Management Bot"
         self.description = "Track expenses, categorize costs, enforce policies, and approve claims"
     
+
+    def get_capabilities(self):
+        """Return bot capabilities"""
+        return ["expense_tracking", "approval", "reimbursement"]
+
     async def execute_async(self, query: str, context: Optional[Dict] = None) -> Dict:
         """Execute bot query asynchronously"""
         return self.execute(query, context)

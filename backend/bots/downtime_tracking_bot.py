@@ -7,7 +7,13 @@ class DowntimeTrackingBot(ERPBot):
         super().__init__(bot_id="downtime_bot_001", name="Downtime Tracking Bot",
                         description="Downtime recording, root cause analysis, reporting")
 
-    async def execute(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+
+    def execute(self, context: dict) -> dict:
+        """Synchronous wrapper for async execute_async"""
+        import asyncio
+        return asyncio.run(self.execute_async(context))
+
+    async def execute_async(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
         action = input_data.get("action", "record_downtime")
         if action == "record_downtime": return await self._record(input_data)
         else: raise ValueError(f"Unknown action: {action}")

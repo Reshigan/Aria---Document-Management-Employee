@@ -16,8 +16,14 @@ class FinancialReportingBot(FinancialBot):
             description="Generates income statements, balance sheets, cash flow statements, and management reports"
         )
         
-    async def execute(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        action = input_data.get("action", "generate_all")
+
+    def execute(self, context: dict) -> dict:
+        """Synchronous wrapper for async execute_async"""
+        import asyncio
+        return asyncio.run(self.execute_async(context))
+
+    async def execute_async(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+        action = input_data.get("action", "status", "generate_all")
         period = input_data["period"]
         
         if action == "income_statement":

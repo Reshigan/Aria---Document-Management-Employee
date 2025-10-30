@@ -8,7 +8,13 @@ class AuditManagementBot(ERPBot):
         super().__init__(bot_id="audit_bot_001", name="Audit Management Bot",
                         description="Audit planning, execution, findings tracking, corrective actions")
 
-    async def execute(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+
+    def execute(self, context: dict) -> dict:
+        """Synchronous wrapper for async execute_async"""
+        import asyncio
+        return asyncio.run(self.execute_async(context))
+
+    async def execute_async(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
         action = input_data.get("action", "create_audit")
         if action == "create_audit": return await self._create(input_data)
         elif action == "record_finding": return await self._finding(input_data)

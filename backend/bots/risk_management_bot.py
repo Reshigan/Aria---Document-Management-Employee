@@ -8,7 +8,13 @@ class RiskManagementBot(ERPBot):
         super().__init__(bot_id="risk_bot_001", name="Risk Management Bot",
                         description="Risk identification, assessment, mitigation, monitoring, reporting")
 
-    async def execute(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+
+    def execute(self, context: dict) -> dict:
+        """Synchronous wrapper for async execute_async"""
+        import asyncio
+        return asyncio.run(self.execute_async(context))
+
+    async def execute_async(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
         action = input_data.get("action", "create_risk")
         if action == "create_risk": return await self._create(input_data)
         elif action == "assess_risk": return await self._assess(input_data)

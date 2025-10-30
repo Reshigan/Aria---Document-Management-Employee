@@ -8,7 +8,13 @@ class LeadManagementBot(ERPBot):
         super().__init__(bot_id="lead_bot_001", name="Lead Management Bot",
                         description="Lead capture, qualification, scoring, assignment, nurturing")
 
-    async def execute(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+
+    def execute(self, context: dict) -> dict:
+        """Synchronous wrapper for async execute_async"""
+        import asyncio
+        return asyncio.run(self.execute_async(context))
+
+    async def execute_async(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
         action = input_data.get("action", "create_lead")
         if action == "create_lead": return await self._create_lead(input_data)
         elif action == "qualify_lead": return await self._qualify(input_data)

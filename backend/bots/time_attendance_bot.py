@@ -8,7 +8,13 @@ class TimeAttendanceBot(ERPBot):
         super().__init__(bot_id="time_bot_001", name="Time & Attendance Bot",
                         description="Clock in/out, timesheet, overtime tracking")
 
-    async def execute(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+
+    def execute(self, context: dict) -> dict:
+        """Synchronous wrapper for async execute_async"""
+        import asyncio
+        return asyncio.run(self.execute_async(context))
+
+    async def execute_async(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
         action = input_data.get("action", "clock_in")
         if action == "clock_in": return await self._clock_in(input_data)
         elif action == "clock_out": return await self._clock_out(input_data)

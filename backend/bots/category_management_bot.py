@@ -7,7 +7,13 @@ class CategoryManagementBot(ERPBot):
         super().__init__(bot_id="category_mgmt_bot_001", name="Category Management Bot",
                         description="Category strategy, market analysis, supplier selection, benchmarking")
     
-    async def execute(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+
+    def execute(self, context: dict) -> dict:
+        """Synchronous wrapper for async execute_async"""
+        import asyncio
+        return asyncio.run(self.execute_async(context))
+
+    async def execute_async(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
         action = input_data.get("action", "category_strategy")
         actions = {"category_strategy": self._strategy, "market_analysis": self._market_analysis,
                    "supplier_selection": self._select_suppliers, "benchmark": self._benchmark}

@@ -7,7 +7,13 @@ class OperatorInstructionsBot(ERPBot):
         super().__init__(bot_id="operator_bot_001", name="Operator Instructions Bot",
                         description="Digital work instructions, SOPs, visual aids, training materials")
 
-    async def execute(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+
+    def execute(self, context: dict) -> dict:
+        """Synchronous wrapper for async execute_async"""
+        import asyncio
+        return asyncio.run(self.execute_async(context))
+
+    async def execute_async(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
         action = input_data.get("action", "get_instructions")
         if action == "get_instructions": return await self._get_instructions(input_data)
         else: raise ValueError(f"Unknown action: {action}")

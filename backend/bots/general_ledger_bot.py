@@ -31,7 +31,13 @@ class GeneralLedgerBot(FinancialBot):
             description="Automates GL postings, journal entries, and account reconciliation"
         )
         
-    async def execute(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+
+    def execute(self, context: dict) -> dict:
+        """Synchronous wrapper for async execute_async"""
+        import asyncio
+        return asyncio.run(self.execute_async(context))
+
+    async def execute_async(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
         """
         Execute GL operations
         

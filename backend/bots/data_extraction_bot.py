@@ -7,7 +7,13 @@ class DataExtractionBot(ERPBot):
         super().__init__(bot_id="data_ext_bot_001", name="Data Extraction Bot",
                         description="OCR, table extraction, form extraction, entity recognition")
 
-    async def execute(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+
+    def execute(self, context: dict) -> dict:
+        """Synchronous wrapper for async execute_async"""
+        import asyncio
+        return asyncio.run(self.execute_async(context))
+
+    async def execute_async(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
         action = input_data.get("action", "extract")
         if action == "extract": return await self._extract(input_data)
         else: raise ValueError(f"Unknown action: {action}")

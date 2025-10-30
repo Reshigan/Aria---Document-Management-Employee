@@ -37,8 +37,14 @@ class TaxComplianceBot(FinancialBot):
         self.uif_max = 17712  # Annual UIF ceiling
         self.sdl_rate = 0.01  # 1% of payroll
         
-    async def execute(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        action = input_data.get("action")
+
+    def execute(self, context: dict) -> dict:
+        """Synchronous wrapper for async execute_async"""
+        import asyncio
+        return asyncio.run(self.execute_async(context))
+
+    async def execute_async(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+        action = input_data.get("action", "status")
         
         if action == "calculate_vat":
             return await self._calculate_vat_return(input_data)

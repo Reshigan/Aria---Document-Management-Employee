@@ -81,6 +81,11 @@ class BBBEEComplianceBot:
         self.name = "BBBEE Compliance Bot"
         self.description = "Calculate BBBEE scorecard, track ownership, verify suppliers, and generate reports"
     
+
+    def get_capabilities(self):
+        """Return bot capabilities"""
+        return ["compliance", "reporting", "calculation"]
+
     async def execute_async(self, query: str, context: Optional[Dict] = None) -> Dict:
         """Execute bot query asynchronously"""
         return self.execute(query, context)

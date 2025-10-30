@@ -7,7 +7,13 @@ class SupplierRiskBot(ERPBot):
         super().__init__(bot_id="sup_risk_bot_001", name="Supplier Risk Bot",
                         description="Financial risk, operational risk, compliance risk, mitigation strategies")
     
-    async def execute(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+
+    def execute(self, context: dict) -> dict:
+        """Synchronous wrapper for async execute_async"""
+        import asyncio
+        return asyncio.run(self.execute_async(context))
+
+    async def execute_async(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
         action = input_data.get("action", "assess_risk")
         actions = {"assess_risk": self._assess, "monitor": self._monitor,
                    "mitigation": self._mitigation, "alerts": self._alerts}

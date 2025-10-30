@@ -8,7 +8,13 @@ class CustomerServiceBot(ERPBot):
         super().__init__(bot_id="cs_bot_001", name="Customer Service Bot",
                         description="Ticket management, case resolution, SLA tracking, customer feedback")
 
-    async def execute(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+
+    def execute(self, context: dict) -> dict:
+        """Synchronous wrapper for async execute_async"""
+        import asyncio
+        return asyncio.run(self.execute_async(context))
+
+    async def execute_async(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
         action = input_data.get("action", "create_ticket")
         if action == "create_ticket": return await self._create_ticket(input_data)
         elif action == "assign_ticket": return await self._assign(input_data)

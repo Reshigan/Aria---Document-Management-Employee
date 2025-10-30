@@ -7,7 +7,13 @@ class ArchiveManagementBot(ERPBot):
         super().__init__(bot_id="archive_bot_001", name="Archive Management Bot",
                         description="Document archiving, retention policies, retrieval, compliance")
 
-    async def execute(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+
+    def execute(self, context: dict) -> dict:
+        """Synchronous wrapper for async execute_async"""
+        import asyncio
+        return asyncio.run(self.execute_async(context))
+
+    async def execute_async(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
         action = input_data.get("action", "archive")
         if action == "archive": return await self._archive(input_data)
         elif action == "retrieve": return await self._retrieve(input_data)

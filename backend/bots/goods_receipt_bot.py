@@ -8,7 +8,13 @@ class GoodsReceiptBot(ERPBot):
         super().__init__(bot_id="grn_bot_001", name="Goods Receipt Bot",
                         description="GRN creation, quality inspection, 3-way matching, stock update")
     
-    async def execute(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+
+    def execute(self, context: dict) -> dict:
+        """Synchronous wrapper for async execute_async"""
+        import asyncio
+        return asyncio.run(self.execute_async(context))
+
+    async def execute_async(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
         action = input_data.get("action", "create_grn")
         if action == "create_grn": return await self._create_grn(input_data)
         elif action == "three_way_match": return await self._three_way_match(input_data)

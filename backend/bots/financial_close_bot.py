@@ -35,7 +35,13 @@ class FinancialCloseBot(FinancialBot):
         )
         self.close_checklist = self._initialize_checklist()
         
-    async def execute(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+
+    def execute(self, context: dict) -> dict:
+        """Synchronous wrapper for async execute_async"""
+        import asyncio
+        return asyncio.run(self.execute_async(context))
+
+    async def execute_async(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
         """
         Execute financial close
         

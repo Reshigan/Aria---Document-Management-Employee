@@ -7,7 +7,13 @@ class WorkflowAutomationBot(ERPBot):
         super().__init__(bot_id="workflow_bot_001", name="Workflow Automation Bot",
                         description="Process automation, approval workflows, notifications, escalations")
 
-    async def execute(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+
+    def execute(self, context: dict) -> dict:
+        """Synchronous wrapper for async execute_async"""
+        import asyncio
+        return asyncio.run(self.execute_async(context))
+
+    async def execute_async(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
         action = input_data.get("action", "start_workflow")
         if action == "start_workflow": return await self._start(input_data)
         elif action == "track_workflow": return await self._track(input_data)

@@ -8,7 +8,13 @@ class PolicyManagementBot(ERPBot):
         super().__init__(bot_id="policy_bot_001", name="Policy Management Bot",
                         description="Policy creation, versioning, approvals, distribution, compliance tracking")
 
-    async def execute(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+
+    def execute(self, context: dict) -> dict:
+        """Synchronous wrapper for async execute_async"""
+        import asyncio
+        return asyncio.run(self.execute_async(context))
+
+    async def execute_async(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
         action = input_data.get("action", "create_policy")
         if action == "create_policy": return await self._create(input_data)
         elif action == "review_policy": return await self._review(input_data)

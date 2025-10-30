@@ -8,7 +8,13 @@ class QuoteGenerationBot(ERPBot):
         super().__init__(bot_id="quote_bot_001", name="Quote Generation Bot",
                         description="Quote creation, pricing, approvals, versioning, PDF generation")
 
-    async def execute(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+
+    def execute(self, context: dict) -> dict:
+        """Synchronous wrapper for async execute_async"""
+        import asyncio
+        return asyncio.run(self.execute_async(context))
+
+    async def execute_async(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
         action = input_data.get("action", "create_quote")
         if action == "create_quote": return await self._create(input_data)
         elif action == "apply_discount": return await self._discount(input_data)

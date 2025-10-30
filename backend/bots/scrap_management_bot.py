@@ -7,7 +7,13 @@ class ScrapManagementBot(ERPBot):
         super().__init__(bot_id="scrap_bot_001", name="Scrap Management Bot",
                         description="Scrap recording, root cause analysis, cost tracking")
 
-    async def execute(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+
+    def execute(self, context: dict) -> dict:
+        """Synchronous wrapper for async execute_async"""
+        import asyncio
+        return asyncio.run(self.execute_async(context))
+
+    async def execute_async(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
         action = input_data.get("action", "record_scrap")
         if action == "record_scrap": return await self._record(input_data)
         else: raise ValueError(f"Unknown action: {action}")

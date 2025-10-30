@@ -7,7 +7,13 @@ class DataValidationBot(ERPBot):
         super().__init__(bot_id="data_val_bot_001", name="Data Validation Bot",
                         description="Data quality checks, validation rules, cleansing, deduplication")
 
-    async def execute(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+
+    def execute(self, context: dict) -> dict:
+        """Synchronous wrapper for async execute_async"""
+        import asyncio
+        return asyncio.run(self.execute_async(context))
+
+    async def execute_async(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
         action = input_data.get("action", "validate")
         if action == "validate": return await self._validate(input_data)
         else: raise ValueError(f"Unknown action: {action}")

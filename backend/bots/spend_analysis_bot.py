@@ -7,7 +7,13 @@ class SpendAnalysisBot(ERPBot):
         super().__init__(bot_id="spend_analysis_bot_001", name="Spend Analysis Bot",
                         description="Spend cube analysis, tail spend, maverick spend detection")
     
-    async def execute(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+
+    def execute(self, context: dict) -> dict:
+        """Synchronous wrapper for async execute_async"""
+        import asyncio
+        return asyncio.run(self.execute_async(context))
+
+    async def execute_async(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
         action = input_data.get("action", "spend_cube")
         actions = {"spend_cube": self._spend_cube, "tail_spend": self._tail_spend,
                    "maverick_spend": self._maverick_spend, "opportunities": self._find_opportunities}

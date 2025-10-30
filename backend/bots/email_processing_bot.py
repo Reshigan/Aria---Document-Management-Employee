@@ -7,7 +7,13 @@ class EmailProcessingBot(ERPBot):
         super().__init__(bot_id="email_bot_001", name="Email Processing Bot",
                         description="Email parsing, attachment extraction, auto-routing, classification")
 
-    async def execute(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+
+    def execute(self, context: dict) -> dict:
+        """Synchronous wrapper for async execute_async"""
+        import asyncio
+        return asyncio.run(self.execute_async(context))
+
+    async def execute_async(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
         action = input_data.get("action", "process_email")
         if action == "process_email": return await self._process(input_data)
         elif action == "extract_attachments": return await self._extract(input_data)

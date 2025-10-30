@@ -61,6 +61,11 @@ class PayrollSABot:
         self.name = "Payroll Bot (South Africa)"
         self.description = "Process payroll, calculate PAYE/UIF/SDL, generate IRP5s, and file with SARS"
     
+
+    def get_capabilities(self):
+        """Return bot capabilities"""
+        return ["payroll", "compliance", "reporting"]
+
     async def execute_async(self, query: str, context: Optional[Dict] = None) -> Dict:
         """Execute bot query asynchronously"""
         return self.execute(query, context)

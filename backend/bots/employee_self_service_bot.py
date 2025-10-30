@@ -7,7 +7,13 @@ class EmployeeSelfServiceBot(ERPBot):
         super().__init__(bot_id="ess_bot_001", name="Employee Self-Service Bot",
                         description="Profile management, payslip, tax certificates")
 
-    async def execute(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+
+    def execute(self, context: dict) -> dict:
+        """Synchronous wrapper for async execute_async"""
+        import asyncio
+        return asyncio.run(self.execute_async(context))
+
+    async def execute_async(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
         action = input_data.get("action", "get_profile")
         if action == "get_profile": return await self._profile(input_data)
         elif action == "payslip": return await self._payslip(input_data)

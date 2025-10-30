@@ -16,7 +16,13 @@ class PurchaseOrderBot(ERPBot):
             description="Automates purchase order creation, approval workflows, 3-way matching, and tracking"
         )
         
-    async def execute(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+
+    def execute(self, context: dict) -> dict:
+        """Synchronous wrapper for async execute_async"""
+        import asyncio
+        return asyncio.run(self.execute_async(context))
+
+    async def execute_async(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
         action = input_data.get("action", "create_po")
         
         if action == "create_po":

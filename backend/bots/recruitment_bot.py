@@ -8,7 +8,13 @@ class RecruitmentBot(ERPBot):
         super().__init__(bot_id="recruitment_bot_001", name="Recruitment Bot",
                         description="Job posting, candidate screening, interview scheduling, offer management")
     
-    async def execute(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+
+    def execute(self, context: dict) -> dict:
+        """Synchronous wrapper for async execute_async"""
+        import asyncio
+        return asyncio.run(self.execute_async(context))
+
+    async def execute_async(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
         action = input_data.get("action", "post_job")
         actions = {"post_job": self._post_job, "screen_candidates": self._screen,
                    "schedule_interview": self._schedule, "generate_offer": self._offer}

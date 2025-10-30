@@ -26,6 +26,11 @@ class InvoiceReconciliationBot:
         self.name = "Invoice Reconciliation Bot"
         self.description = "Automatically match invoices to payments, flag discrepancies, and reconcile accounts"
     
+
+    def get_capabilities(self):
+        """Return bot capabilities"""
+        return ["reconciliation", "matching", "reporting"]
+
     async def execute_async(self, query: str, context: Optional[Dict] = None) -> Dict:
         """Execute bot query asynchronously"""
         return self.execute(query, context)

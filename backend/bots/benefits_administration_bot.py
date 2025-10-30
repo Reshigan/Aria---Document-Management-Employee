@@ -7,7 +7,13 @@ class BenefitsAdministrationBot(ERPBot):
         super().__init__(bot_id="benefits_bot_001", name="Benefits Administration Bot",
                         description="Medical aid, provident fund, leave management")
 
-    async def execute(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+
+    def execute(self, context: dict) -> dict:
+        """Synchronous wrapper for async execute_async"""
+        import asyncio
+        return asyncio.run(self.execute_async(context))
+
+    async def execute_async(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
         action = input_data.get("action", "benefits_summary")
         if action == "benefits_summary": return await self._summary(input_data)
         elif action == "leave_request": return await self._leave(input_data)

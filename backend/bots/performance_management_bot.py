@@ -8,7 +8,13 @@ class PerformanceManagementBot(ERPBot):
         super().__init__(bot_id="perf_bot_001", name="Performance Management Bot",
                         description="Performance reviews, goal setting, 360 feedback")
 
-    async def execute(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+
+    def execute(self, context: dict) -> dict:
+        """Synchronous wrapper for async execute_async"""
+        import asyncio
+        return asyncio.run(self.execute_async(context))
+
+    async def execute_async(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
         action = input_data.get("action", "set_goals")
         if action == "set_goals": return await self._set_goals(input_data)
         elif action == "conduct_review": return await self._review(input_data)

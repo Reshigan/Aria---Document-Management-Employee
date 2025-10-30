@@ -16,7 +16,13 @@ class ProductionSchedulingBot(ERPBot):
             description="Automates production scheduling, capacity planning, and shop floor optimization"
         )
         
-    async def execute(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+
+    def execute(self, context: dict) -> dict:
+        """Synchronous wrapper for async execute_async"""
+        import asyncio
+        return asyncio.run(self.execute_async(context))
+
+    async def execute_async(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
         action = input_data.get("action", "create_schedule")
         
         if action == "create_schedule":
