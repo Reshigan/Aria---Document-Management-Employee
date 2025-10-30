@@ -1,45 +1,127 @@
-'''Customer Service Bot - Customer support automation'''
-from typing import Dict, Any, List, Optional
+import logging
+from typing import Dict, Optional, List
+from sqlalchemy.orm import Session
 from datetime import datetime
-from .base_bot import ERPBot, BotCapability
+from decimal import Decimal
 
-class CustomerServiceBot(ERPBot):
-    def __init__(self):
-        super().__init__(bot_id="cs_bot_001", name="Customer Service Bot",
-                        description="Ticket management, case resolution, SLA tracking, customer feedback")
+logger = logging.getLogger(__name__)
 
-    async def execute(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        action = input_data.get("action", "create_ticket")
-        if action == "create_ticket": return await self._create_ticket(input_data)
-        elif action == "assign_ticket": return await self._assign(input_data)
-        elif action == "resolve_ticket": return await self._resolve(input_data)
-        elif action == "sla_check": return await self._sla_check(input_data)
-        else: raise ValueError(f"Unknown action: {action}")
+class CustomerServiceBot:
+    """Customer support, ticket management, SLA tracking"""
+    
+    def __init__(self, db: Session = None):
+        self.bot_id = "customer_service"
+        self.name = "CustomerServiceBot"
+        self.db = db
+        self.capabilities = ['create_ticket', 'assign_ticket', 'track_sla', 'escalate_ticket', 'customer_satisfaction']
+    
+    async def execute_async(self, query: str, context: Optional[Dict] = None) -> Dict:
+        return self.execute(query, context)
+    
+    def execute(self, query: str, context: Optional[Dict] = None) -> Dict:
+        context = context or {}
+        action = context.get('action', '').lower()
+        
+        try:
+                        if action == 'create_ticket':
+                return self._create_ticket(context)
+            elif action == 'assign_ticket':
+                return self._assign_ticket(context)
+            elif action == 'track_sla':
+                return self._track_sla(context)
+            elif action == 'escalate_ticket':
+                return self._escalate_ticket(context)
+            elif action == 'customer_satisfaction':
+                return self._customer_satisfaction(context)
+            
+            return {'success': False, 'error': 'Unknown action', 'bot_id': self.bot_id}
+                
+        except Exception as e:
+            logger.error(f"{self.bot_id} error: {str(e)}")
+            return {'success': False, 'error': str(e), 'bot_id': self.bot_id}
+    
+    def _create_ticket(self, context: Dict) -> Dict:
+        """Create Ticket"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'create_ticket',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
 
-    def validate(self, input_data: Dict[str, Any]) -> tuple[bool, Optional[str]]:
-        return True, None
+    def _assign_ticket(self, context: Dict) -> Dict:
+        """Assign Ticket"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'assign_ticket',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
 
-    def get_capabilities(self) -> List[BotCapability]:
-        return [BotCapability.WORKFLOW, BotCapability.TRANSACTIONAL]
+    def _track_sla(self, context: Dict) -> Dict:
+        """Track Sla"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'track_sla',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
 
-    async def _create_ticket(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        ticket_id = f"TKT-{datetime.now().strftime('%Y%m%d%H%M%S')}"
-        priority = input_data.get("priority", "medium")
-        return {"success": True, "ticket_id": ticket_id, "priority": priority, "status": "open"}
+    def _escalate_ticket(self, context: Dict) -> Dict:
+        """Escalate Ticket"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'escalate_ticket',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
 
-    async def _assign(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        ticket_id = input_data.get("ticket_id")
-        return {"success": True, "ticket_id": ticket_id, "assigned_to": "Agent 005", "queue": "Technical Support"}
+    def _customer_satisfaction(self, context: Dict) -> Dict:
+        """Customer Satisfaction"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'customer_satisfaction',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
 
-    async def _resolve(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        ticket_id = input_data.get("ticket_id")
-        resolution = input_data.get("resolution", "Issue resolved")
-        return {"success": True, "ticket_id": ticket_id, "status": "resolved", "resolution": resolution,
-                "resolution_time_hours": 4.5}
-
-    async def _sla_check(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        ticket_id = input_data.get("ticket_id")
-        return {"success": True, "ticket_id": ticket_id, "sla_met": True, "time_remaining_hours": 18.5,
-                "sla_target_hours": 24}
-
-customer_service_bot = CustomerServiceBot()

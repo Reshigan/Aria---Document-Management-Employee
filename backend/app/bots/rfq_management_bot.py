@@ -1,52 +1,127 @@
-'''RFQ Management Bot - Request for Quotation automation'''
-from typing import Dict, Any, List, Optional
-from datetime import datetime, timedelta
-from .base_bot import ERPBot, BotCapability
+import logging
+from typing import Dict, Optional, List
+from sqlalchemy.orm import Session
+from datetime import datetime
+from decimal import Decimal
 
-class RFQManagementBot(ERPBot):
-    def __init__(self):
-        super().__init__(bot_id="rfq_bot_001", name="RFQ Management Bot",
-                        description="RFQ creation, distribution, response tracking, comparison analysis")
-    
-    async def execute(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        action = input_data.get("action", "create_rfq")
-        if action == "create_rfq": return await self._create_rfq(input_data)
-        elif action == "distribute_rfq": return await self._distribute_rfq(input_data)
-        elif action == "compare_quotes": return await self._compare_quotes(input_data)
-        elif action == "award_rfq": return await self._award_rfq(input_data)
-        else: raise ValueError(f"Unknown action: {action}")
-    
-    def validate(self, input_data: Dict[str, Any]) -> tuple[bool, Optional[str]]:
-        return True, None
-    
-    def get_capabilities(self) -> List[BotCapability]:
-        return [BotCapability.WORKFLOW, BotCapability.ANALYTICAL]
-    
-    async def _create_rfq(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        rfq_number = f"RFQ-{datetime.now().strftime('%Y%m%d%H%M%S')}"
-        rfq_data = input_data.get("rfq_data", {})
-        return {"success": True, "rfq_number": rfq_number, "status": "draft", 
-                "closing_date": (datetime.now() + timedelta(days=14)).isoformat()}
-    
-    async def _distribute_rfq(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        rfq_number = input_data.get("rfq_number")
-        suppliers = input_data.get("suppliers", [])
-        return {"success": True, "rfq_number": rfq_number, "distributed_to": len(suppliers), 
-                "status": "distributed"}
-    
-    async def _compare_quotes(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        rfq_number = input_data.get("rfq_number")
-        comparison = [
-            {"supplier": "SUP-001", "total_price": 125000.00, "delivery_days": 30, "score": 95},
-            {"supplier": "SUP-002", "total_price": 118000.00, "delivery_days": 45, "score": 88},
-            {"supplier": "SUP-003", "total_price": 132000.00, "delivery_days": 21, "score": 92}
-        ]
-        return {"success": True, "rfq_number": rfq_number, "quotes_received": 3, "comparison": comparison}
-    
-    async def _award_rfq(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        rfq_number = input_data.get("rfq_number")
-        supplier_id = input_data.get("supplier_id")
-        return {"success": True, "rfq_number": rfq_number, "awarded_to": supplier_id, 
-                "status": "awarded", "po_generated": f"PO-{datetime.now().strftime('%Y%m%d%H%M%S')}"}
+logger = logging.getLogger(__name__)
 
-rfq_management_bot = RFQManagementBot()
+class RFQManagementBot:
+    """RFQ creation, vendor bidding, evaluation"""
+    
+    def __init__(self, db: Session = None):
+        self.bot_id = "rfq_management"
+        self.name = "RFQManagementBot"
+        self.db = db
+        self.capabilities = ['create_rfq', 'send_to_vendors', 'receive_quotes', 'evaluate_quotes', 'award_rfq']
+    
+    async def execute_async(self, query: str, context: Optional[Dict] = None) -> Dict:
+        return self.execute(query, context)
+    
+    def execute(self, query: str, context: Optional[Dict] = None) -> Dict:
+        context = context or {}
+        action = context.get('action', '').lower()
+        
+        try:
+                        if action == 'create_rfq':
+                return self._create_rfq(context)
+            elif action == 'send_to_vendors':
+                return self._send_to_vendors(context)
+            elif action == 'receive_quotes':
+                return self._receive_quotes(context)
+            elif action == 'evaluate_quotes':
+                return self._evaluate_quotes(context)
+            elif action == 'award_rfq':
+                return self._award_rfq(context)
+            
+            return {'success': False, 'error': 'Unknown action', 'bot_id': self.bot_id}
+                
+        except Exception as e:
+            logger.error(f"{self.bot_id} error: {str(e)}")
+            return {'success': False, 'error': str(e), 'bot_id': self.bot_id}
+    
+    def _create_rfq(self, context: Dict) -> Dict:
+        """Create Rfq"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'create_rfq',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
+
+    def _send_to_vendors(self, context: Dict) -> Dict:
+        """Send To Vendors"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'send_to_vendors',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
+
+    def _receive_quotes(self, context: Dict) -> Dict:
+        """Receive Quotes"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'receive_quotes',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
+
+    def _evaluate_quotes(self, context: Dict) -> Dict:
+        """Evaluate Quotes"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'evaluate_quotes',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
+
+    def _award_rfq(self, context: Dict) -> Dict:
+        """Award Rfq"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'award_rfq',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
+

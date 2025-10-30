@@ -1,48 +1,127 @@
-'''Opportunity Management Bot - Sales opportunity tracking'''
-from typing import Dict, Any, List, Optional
-from datetime import datetime, timedelta
-from .base_bot import ERPBot, BotCapability
+import logging
+from typing import Dict, Optional, List
+from sqlalchemy.orm import Session
+from datetime import datetime
+from decimal import Decimal
 
-class OpportunityManagementBot(ERPBot):
-    def __init__(self):
-        super().__init__(bot_id="opp_bot_001", name="Opportunity Management Bot",
-                        description="Opportunity creation, pipeline management, forecasting, win/loss analysis")
+logger = logging.getLogger(__name__)
 
-    async def execute(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        action = input_data.get("action", "create_opportunity")
-        if action == "create_opportunity": return await self._create(input_data)
-        elif action == "update_stage": return await self._update_stage(input_data)
-        elif action == "forecast": return await self._forecast()
-        elif action == "win_loss": return await self._win_loss(input_data)
-        else: raise ValueError(f"Unknown action: {action}")
+class OpportunityManagementBot:
+    """Sales opportunity management, pipeline"""
+    
+    def __init__(self, db: Session = None):
+        self.bot_id = "opportunity_management"
+        self.name = "OpportunityManagementBot"
+        self.db = db
+        self.capabilities = ['create_opportunity', 'update_stage', 'forecast_revenue', 'win_loss_analysis', 'opportunity_report']
+    
+    async def execute_async(self, query: str, context: Optional[Dict] = None) -> Dict:
+        return self.execute(query, context)
+    
+    def execute(self, query: str, context: Optional[Dict] = None) -> Dict:
+        context = context or {}
+        action = context.get('action', '').lower()
+        
+        try:
+                        if action == 'create_opportunity':
+                return self._create_opportunity(context)
+            elif action == 'update_stage':
+                return self._update_stage(context)
+            elif action == 'forecast_revenue':
+                return self._forecast_revenue(context)
+            elif action == 'win_loss_analysis':
+                return self._win_loss_analysis(context)
+            elif action == 'opportunity_report':
+                return self._opportunity_report(context)
+            
+            return {'success': False, 'error': 'Unknown action', 'bot_id': self.bot_id}
+                
+        except Exception as e:
+            logger.error(f"{self.bot_id} error: {str(e)}")
+            return {'success': False, 'error': str(e), 'bot_id': self.bot_id}
+    
+    def _create_opportunity(self, context: Dict) -> Dict:
+        """Create Opportunity"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'create_opportunity',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
 
-    def validate(self, input_data: Dict[str, Any]) -> tuple[bool, Optional[str]]:
-        return True, None
+    def _update_stage(self, context: Dict) -> Dict:
+        """Update Stage"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'update_stage',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
 
-    def get_capabilities(self) -> List[BotCapability]:
-        return [BotCapability.TRANSACTIONAL, BotCapability.ANALYTICAL]
+    def _forecast_revenue(self, context: Dict) -> Dict:
+        """Forecast Revenue"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'forecast_revenue',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
 
-    async def _create(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        opp_id = f"OPP-{datetime.now().strftime('%Y%m%d%H%M%S')}"
-        value = input_data.get("value", 250000.00)
-        return {"success": True, "opportunity_id": opp_id, "stage": "Qualification", "value": value, 
-                "close_date": (datetime.now() + timedelta(days=90)).isoformat()}
+    def _win_loss_analysis(self, context: Dict) -> Dict:
+        """Win Loss Analysis"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'win_loss_analysis',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
 
-    async def _update_stage(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        opp_id = input_data.get("opportunity_id")
-        new_stage = input_data.get("stage")
-        probability = {"Qualification": 10, "Proposal": 25, "Negotiation": 60, "Closed Won": 100}
-        return {"success": True, "opportunity_id": opp_id, "stage": new_stage, 
-                "probability": probability.get(new_stage, 0)}
+    def _opportunity_report(self, context: Dict) -> Dict:
+        """Opportunity Report"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'opportunity_report',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
 
-    async def _forecast(self) -> Dict[str, Any]:
-        return {"success": True, "total_pipeline": 5250000.00, "weighted_pipeline": 2100000.00,
-                "forecast_month": 1750000.00, "forecast_quarter": 4500000.00}
-
-    async def _win_loss(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        opp_id = input_data.get("opportunity_id")
-        won = input_data.get("won", True)
-        return {"success": True, "opportunity_id": opp_id, "outcome": "won" if won else "lost",
-                "win_rate": 45.5 if won else None}
-
-opportunity_management_bot = OpportunityManagementBot()

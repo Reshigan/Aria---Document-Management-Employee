@@ -1,42 +1,146 @@
-'''Source-to-Pay Bot - End-to-end P2P process automation'''
-from typing import Dict, Any, List, Optional
+import logging
+from typing import Dict, Optional, List
+from sqlalchemy.orm import Session
 from datetime import datetime
-from .base_bot import ERPBot, BotCapability
+from decimal import Decimal
 
-class SourceToPayBot(ERPBot):
-    def __init__(self):
-        super().__init__(bot_id="s2p_bot_001", name="Source-to-Pay Bot",
-                        description="Complete S2P process: sourcing, contracting, ordering, receiving, invoicing, payment")
-    
-    async def execute(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        action = input_data.get("action", "process_request")
-        actions = {"process_request": self._process, "track_cycle": self._track,
-                   "optimize": self._optimize, "kpis": self._calculate_kpis}
-        if action in actions: return await actions[action](input_data)
-        raise ValueError(f"Unknown action: {action}")
-    
-    def validate(self, input_data: Dict[str, Any]) -> tuple[bool, Optional[str]]:
-        return True, None
-    
-    def get_capabilities(self) -> List[BotCapability]:
-        return [BotCapability.WORKFLOW, BotCapability.TRANSACTIONAL]
-    
-    async def _process(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        request_id = f"S2P-{datetime.now().strftime('%Y%m%d%H%M%S')}"
-        return {"success": True, "request_id": request_id, "status": "in_progress",
-                "current_stage": "Sourcing", "progress": 20}
-    
-    async def _track(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        request_id = input_data.get("request_id")
-        return {"success": True, "stages": {"Sourcing": "complete", "Contracting": "complete",
-                "Ordering": "in_progress", "Receiving": "pending", "Payment": "pending"}}
-    
-    async def _optimize(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        return {"success": True, "recommendations": ["Automate approvals for <R5000",
-                "Consolidate suppliers", "Electronic invoicing"], "potential_savings": 125000.00}
-    
-    async def _calculate_kpis(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        return {"success": True, "cycle_time_days": 12.5, "cost_per_transaction": 45.00,
-                "automation_rate": 78.5, "exception_rate": 4.2}
+logger = logging.getLogger(__name__)
 
-source_to_pay_bot = SourceToPayBot()
+class SourceToPayBot:
+    """End-to-end S2P process automation"""
+    
+    def __init__(self, db: Session = None):
+        self.bot_id = "source_to_pay"
+        self.name = "SourceToPayBot"
+        self.db = db
+        self.capabilities = ['source_supplier', 'create_po', 'receive_goods', 'process_invoice', 'payment', 's2p_analytics']
+    
+    async def execute_async(self, query: str, context: Optional[Dict] = None) -> Dict:
+        return self.execute(query, context)
+    
+    def execute(self, query: str, context: Optional[Dict] = None) -> Dict:
+        context = context or {}
+        action = context.get('action', '').lower()
+        
+        try:
+                        if action == 'source_supplier':
+                return self._source_supplier(context)
+            elif action == 'create_po':
+                return self._create_po(context)
+            elif action == 'receive_goods':
+                return self._receive_goods(context)
+            elif action == 'process_invoice':
+                return self._process_invoice(context)
+            elif action == 'payment':
+                return self._payment(context)
+            elif action == 's2p_analytics':
+                return self._s2p_analytics(context)
+            
+            return {'success': False, 'error': 'Unknown action', 'bot_id': self.bot_id}
+                
+        except Exception as e:
+            logger.error(f"{self.bot_id} error: {str(e)}")
+            return {'success': False, 'error': str(e), 'bot_id': self.bot_id}
+    
+    def _source_supplier(self, context: Dict) -> Dict:
+        """Source Supplier"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'source_supplier',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
+
+    def _create_po(self, context: Dict) -> Dict:
+        """Create Po"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'create_po',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
+
+    def _receive_goods(self, context: Dict) -> Dict:
+        """Receive Goods"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'receive_goods',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
+
+    def _process_invoice(self, context: Dict) -> Dict:
+        """Process Invoice"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'process_invoice',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
+
+    def _payment(self, context: Dict) -> Dict:
+        """Payment"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'payment',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
+
+    def _s2p_analytics(self, context: Dict) -> Dict:
+        """S2P Analytics"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 's2p_analytics',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
+

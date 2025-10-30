@@ -1,48 +1,127 @@
-'''Supplier Performance Bot - KPI tracking and scorecarding'''
-from typing import Dict, Any, List, Optional
-from datetime import datetime, timedelta
-from .base_bot import ERPBot, BotCapability
+import logging
+from typing import Dict, Optional, List
+from sqlalchemy.orm import Session
+from datetime import datetime
+from decimal import Decimal
 
-class SupplierPerformanceBot(ERPBot):
-    def __init__(self):
-        super().__init__(bot_id="sup_perf_bot_001", name="Supplier Performance Bot",
-                        description="Performance KPIs, scorecarding, trend analysis, alerts")
-    
-    async def execute(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        action = input_data.get("action", "calculate_kpis")
-        if action == "calculate_kpis": return await self._calculate_kpis(input_data)
-        elif action == "scorecard": return await self._generate_scorecard(input_data)
-        elif action == "trend_analysis": return await self._analyze_trends(input_data)
-        elif action == "performance_alerts": return await self._check_alerts()
-        else: raise ValueError(f"Unknown action: {action}")
-    
-    def validate(self, input_data: Dict[str, Any]) -> tuple[bool, Optional[str]]:
-        return True, None
-    
-    def get_capabilities(self) -> List[BotCapability]:
-        return [BotCapability.ANALYTICAL]
-    
-    async def _calculate_kpis(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        supplier_id = input_data.get("supplier_id")
-        kpis = {"on_time_delivery": 95.5, "quality_rate": 98.2, "fill_rate": 99.1,
-                "lead_time_compliance": 94.8, "invoice_accuracy": 97.5}
-        return {"success": True, "supplier_id": supplier_id, "kpis": kpis}
-    
-    async def _generate_scorecard(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        supplier_id = input_data.get("supplier_id")
-        scorecard = {"overall_score": 96.2, "rating": "A", "ranking": 5,
-                     "areas_of_improvement": ["Lead time variance", "Communication"]}
-        return {"success": True, "supplier_id": supplier_id, "scorecard": scorecard}
-    
-    async def _analyze_trends(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        supplier_id = input_data.get("supplier_id")
-        trends = {"3_month_trend": "improving", "6_month_trend": "stable", 
-                  "year_over_year": "+2.5%"}
-        return {"success": True, "supplier_id": supplier_id, "trends": trends}
-    
-    async def _check_alerts(self) -> Dict[str, Any]:
-        alerts = [{"supplier": "SUP-003", "metric": "on_time_delivery", "value": 78.5, 
-                   "threshold": 90.0, "severity": "high"}]
-        return {"success": True, "alerts": alerts}
+logger = logging.getLogger(__name__)
 
-supplier_performance_bot = SupplierPerformanceBot()
+class SupplierPerformanceBot:
+    """Supplier KPI tracking, scorecards"""
+    
+    def __init__(self, db: Session = None):
+        self.bot_id = "supplier_performance"
+        self.name = "SupplierPerformanceBot"
+        self.db = db
+        self.capabilities = ['track_kpis', 'scorecard', 'performance_review', 'improvement_plan', 'supplier_ranking']
+    
+    async def execute_async(self, query: str, context: Optional[Dict] = None) -> Dict:
+        return self.execute(query, context)
+    
+    def execute(self, query: str, context: Optional[Dict] = None) -> Dict:
+        context = context or {}
+        action = context.get('action', '').lower()
+        
+        try:
+                        if action == 'track_kpis':
+                return self._track_kpis(context)
+            elif action == 'scorecard':
+                return self._scorecard(context)
+            elif action == 'performance_review':
+                return self._performance_review(context)
+            elif action == 'improvement_plan':
+                return self._improvement_plan(context)
+            elif action == 'supplier_ranking':
+                return self._supplier_ranking(context)
+            
+            return {'success': False, 'error': 'Unknown action', 'bot_id': self.bot_id}
+                
+        except Exception as e:
+            logger.error(f"{self.bot_id} error: {str(e)}")
+            return {'success': False, 'error': str(e), 'bot_id': self.bot_id}
+    
+    def _track_kpis(self, context: Dict) -> Dict:
+        """Track Kpis"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'track_kpis',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
+
+    def _scorecard(self, context: Dict) -> Dict:
+        """Scorecard"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'scorecard',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
+
+    def _performance_review(self, context: Dict) -> Dict:
+        """Performance Review"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'performance_review',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
+
+    def _improvement_plan(self, context: Dict) -> Dict:
+        """Improvement Plan"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'improvement_plan',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
+
+    def _supplier_ranking(self, context: Dict) -> Dict:
+        """Supplier Ranking"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'supplier_ranking',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
+

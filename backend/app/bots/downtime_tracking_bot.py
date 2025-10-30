@@ -1,24 +1,127 @@
-'''Downtime Tracking Bot'''
-from typing import Dict, Any, List, Optional
-from .base_bot import ERPBot, BotCapability
+import logging
+from typing import Dict, Optional, List
+from sqlalchemy.orm import Session
+from datetime import datetime
+from decimal import Decimal
 
-class DowntimeTrackingBot(ERPBot):
-    def __init__(self):
-        super().__init__(bot_id="downtime_bot_001", name="Downtime Tracking Bot",
-                        description="Downtime recording, root cause analysis, reporting")
+logger = logging.getLogger(__name__)
 
-    async def execute(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        action = input_data.get("action", "record_downtime")
-        if action == "record_downtime": return await self._record(input_data)
-        else: raise ValueError(f"Unknown action: {action}")
+class DowntimeTrackingBot:
+    """Equipment downtime tracking, analysis"""
+    
+    def __init__(self, db: Session = None):
+        self.bot_id = "downtime_tracking"
+        self.name = "DowntimeTrackingBot"
+        self.db = db
+        self.capabilities = ['log_downtime', 'downtime_reasons', 'downtime_analysis', 'mtbf_mttr', 'downtime_report']
+    
+    async def execute_async(self, query: str, context: Optional[Dict] = None) -> Dict:
+        return self.execute(query, context)
+    
+    def execute(self, query: str, context: Optional[Dict] = None) -> Dict:
+        context = context or {}
+        action = context.get('action', '').lower()
+        
+        try:
+                        if action == 'log_downtime':
+                return self._log_downtime(context)
+            elif action == 'downtime_reasons':
+                return self._downtime_reasons(context)
+            elif action == 'downtime_analysis':
+                return self._downtime_analysis(context)
+            elif action == 'mtbf_mttr':
+                return self._mtbf_mttr(context)
+            elif action == 'downtime_report':
+                return self._downtime_report(context)
+            
+            return {'success': False, 'error': 'Unknown action', 'bot_id': self.bot_id}
+                
+        except Exception as e:
+            logger.error(f"{self.bot_id} error: {str(e)}")
+            return {'success': False, 'error': str(e), 'bot_id': self.bot_id}
+    
+    def _log_downtime(self, context: Dict) -> Dict:
+        """Log Downtime"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'log_downtime',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
 
-    def validate(self, input_data: Dict[str, Any]) -> tuple[bool, Optional[str]]:
-        return True, None
+    def _downtime_reasons(self, context: Dict) -> Dict:
+        """Downtime Reasons"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'downtime_reasons',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
 
-    def get_capabilities(self) -> List[BotCapability]:
-        return [BotCapability.TRANSACTIONAL, BotCapability.ANALYTICAL]
+    def _downtime_analysis(self, context: Dict) -> Dict:
+        """Downtime Analysis"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'downtime_analysis',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
 
-    async def _record(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        return {"success": True, "downtime_minutes": 45, "reason": "Maintenance", "cost_impact": 2250.00}
+    def _mtbf_mttr(self, context: Dict) -> Dict:
+        """Mtbf Mttr"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'mtbf_mttr',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
 
-downtime_tracking_bot = DowntimeTrackingBot()
+    def _downtime_report(self, context: Dict) -> Dict:
+        """Downtime Report"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'downtime_report',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
+

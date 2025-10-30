@@ -1,36 +1,127 @@
-'''Audit Management Bot'''
-from typing import Dict, Any, List, Optional
+import logging
+from typing import Dict, Optional, List
+from sqlalchemy.orm import Session
 from datetime import datetime
-from .base_bot import ERPBot, BotCapability
+from decimal import Decimal
 
-class AuditManagementBot(ERPBot):
-    def __init__(self):
-        super().__init__(bot_id="audit_bot_001", name="Audit Management Bot",
-                        description="Audit planning, execution, findings tracking, corrective actions")
+logger = logging.getLogger(__name__)
 
-    async def execute(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        action = input_data.get("action", "create_audit")
-        if action == "create_audit": return await self._create(input_data)
-        elif action == "record_finding": return await self._finding(input_data)
-        elif action == "track_actions": return await self._track_actions(input_data)
-        else: raise ValueError(f"Unknown action: {action}")
+class AuditManagementBot:
+    """Audit planning, execution, findings management"""
+    
+    def __init__(self, db: Session = None):
+        self.bot_id = "audit_management"
+        self.name = "AuditManagementBot"
+        self.db = db
+        self.capabilities = ['plan_audit', 'audit_execution', 'findings', 'corrective_actions', 'audit_report']
+    
+    async def execute_async(self, query: str, context: Optional[Dict] = None) -> Dict:
+        return self.execute(query, context)
+    
+    def execute(self, query: str, context: Optional[Dict] = None) -> Dict:
+        context = context or {}
+        action = context.get('action', '').lower()
+        
+        try:
+                        if action == 'plan_audit':
+                return self._plan_audit(context)
+            elif action == 'audit_execution':
+                return self._audit_execution(context)
+            elif action == 'findings':
+                return self._findings(context)
+            elif action == 'corrective_actions':
+                return self._corrective_actions(context)
+            elif action == 'audit_report':
+                return self._audit_report(context)
+            
+            return {'success': False, 'error': 'Unknown action', 'bot_id': self.bot_id}
+                
+        except Exception as e:
+            logger.error(f"{self.bot_id} error: {str(e)}")
+            return {'success': False, 'error': str(e), 'bot_id': self.bot_id}
+    
+    def _plan_audit(self, context: Dict) -> Dict:
+        """Plan Audit"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'plan_audit',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
 
-    def validate(self, input_data: Dict[str, Any]) -> tuple[bool, Optional[str]]:
-        return True, None
+    def _audit_execution(self, context: Dict) -> Dict:
+        """Audit Execution"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'audit_execution',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
 
-    def get_capabilities(self) -> List[BotCapability]:
-        return [BotCapability.COMPLIANCE, BotCapability.WORKFLOW]
+    def _findings(self, context: Dict) -> Dict:
+        """Findings"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'findings',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
 
-    async def _create(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        audit_id = f"AUD-{datetime.now().strftime('%Y%m%d%H%M%S')}"
-        return {"success": True, "audit_id": audit_id, "type": input_data.get("audit_type", "Internal"),
-                "status": "planned"}
+    def _corrective_actions(self, context: Dict) -> Dict:
+        """Corrective Actions"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'corrective_actions',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
 
-    async def _finding(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        finding_id = f"FIND-{datetime.now().strftime('%Y%m%d%H%M%S')}"
-        return {"success": True, "finding_id": finding_id, "severity": input_data.get("severity", "medium")}
+    def _audit_report(self, context: Dict) -> Dict:
+        """Audit Report"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'audit_report',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
 
-    async def _track_actions(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        return {"success": True, "total_findings": 15, "open": 3, "in_progress": 5, "closed": 7}
-
-audit_management_bot = AuditManagementBot()

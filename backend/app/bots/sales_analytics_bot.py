@@ -1,42 +1,127 @@
-'''Sales Analytics Bot - Sales reporting and analytics'''
-from typing import Dict, Any, List, Optional
-from .base_bot import ERPBot, BotCapability
+import logging
+from typing import Dict, Optional, List
+from sqlalchemy.orm import Session
+from datetime import datetime
+from decimal import Decimal
 
-class SalesAnalyticsBot(ERPBot):
-    def __init__(self):
-        super().__init__(bot_id="sales_analytics_bot_001", name="Sales Analytics Bot",
-                        description="Sales dashboards, KPIs, forecasting, trend analysis, rep performance")
+logger = logging.getLogger(__name__)
 
-    async def execute(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        action = input_data.get("action", "sales_dashboard")
-        if action == "sales_dashboard": return await self._dashboard()
-        elif action == "rep_performance": return await self._rep_performance(input_data)
-        elif action == "product_analysis": return await self._product_analysis()
-        elif action == "customer_analysis": return await self._customer_analysis()
-        else: raise ValueError(f"Unknown action: {action}")
+class SalesAnalyticsBot:
+    """Sales analytics, KPI tracking, forecasting"""
+    
+    def __init__(self, db: Session = None):
+        self.bot_id = "sales_analytics"
+        self.name = "SalesAnalyticsBot"
+        self.db = db
+        self.capabilities = ['sales_dashboard', 'performance_metrics', 'trend_analysis', 'forecast', 'rep_performance']
+    
+    async def execute_async(self, query: str, context: Optional[Dict] = None) -> Dict:
+        return self.execute(query, context)
+    
+    def execute(self, query: str, context: Optional[Dict] = None) -> Dict:
+        context = context or {}
+        action = context.get('action', '').lower()
+        
+        try:
+                        if action == 'sales_dashboard':
+                return self._sales_dashboard(context)
+            elif action == 'performance_metrics':
+                return self._performance_metrics(context)
+            elif action == 'trend_analysis':
+                return self._trend_analysis(context)
+            elif action == 'forecast':
+                return self._forecast(context)
+            elif action == 'rep_performance':
+                return self._rep_performance(context)
+            
+            return {'success': False, 'error': 'Unknown action', 'bot_id': self.bot_id}
+                
+        except Exception as e:
+            logger.error(f"{self.bot_id} error: {str(e)}")
+            return {'success': False, 'error': str(e), 'bot_id': self.bot_id}
+    
+    def _sales_dashboard(self, context: Dict) -> Dict:
+        """Sales Dashboard"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'sales_dashboard',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
 
-    def validate(self, input_data: Dict[str, Any]) -> tuple[bool, Optional[str]]:
-        return True, None
+    def _performance_metrics(self, context: Dict) -> Dict:
+        """Performance Metrics"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'performance_metrics',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
 
-    def get_capabilities(self) -> List[BotCapability]:
-        return [BotCapability.ANALYTICAL]
+    def _trend_analysis(self, context: Dict) -> Dict:
+        """Trend Analysis"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'trend_analysis',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
 
-    async def _dashboard(self) -> Dict[str, Any]:
-        return {"success": True, "mtd_sales": 3250000.00, "ytd_sales": 28500000.00,
-                "target_achievement": 95.5, "active_opportunities": 125, "win_rate": 45.5}
+    def _forecast(self, context: Dict) -> Dict:
+        """Forecast"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'forecast',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
 
-    async def _rep_performance(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        rep_id = input_data.get("rep_id")
-        return {"success": True, "rep_id": rep_id, "sales": 1250000.00, "quota_achievement": 105.0,
-                "deals_won": 12, "average_deal_size": 104166.67, "ranking": 3}
+    def _rep_performance(self, context: Dict) -> Dict:
+        """Rep Performance"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'rep_performance',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
 
-    async def _product_analysis(self) -> Dict[str, Any]:
-        return {"success": True, "top_products": [
-            {"product": "Product A", "sales": 5000000.00, "units": 500},
-            {"product": "Product B", "sales": 3500000.00, "units": 700}]}
-
-    async def _customer_analysis(self) -> Dict[str, Any]:
-        return {"success": True, "total_customers": 450, "active_customers": 380,
-                "avg_customer_value": 75000.00, "churn_rate": 5.2, "nps_score": 72}
-
-sales_analytics_bot = SalesAnalyticsBot()

@@ -1,40 +1,127 @@
-'''Spend Analysis Bot - Deep spend analytics and optimization'''
-from typing import Dict, Any, List, Optional
-from .base_bot import ERPBot, BotCapability
+import logging
+from typing import Dict, Optional, List
+from sqlalchemy.orm import Session
+from datetime import datetime
+from decimal import Decimal
 
-class SpendAnalysisBot(ERPBot):
-    def __init__(self):
-        super().__init__(bot_id="spend_analysis_bot_001", name="Spend Analysis Bot",
-                        description="Spend cube analysis, tail spend, maverick spend detection")
-    
-    async def execute(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        action = input_data.get("action", "spend_cube")
-        actions = {"spend_cube": self._spend_cube, "tail_spend": self._tail_spend,
-                   "maverick_spend": self._maverick_spend, "opportunities": self._find_opportunities}
-        if action in actions: return await actions[action](input_data)
-        raise ValueError(f"Unknown action: {action}")
-    
-    def validate(self, input_data: Dict[str, Any]) -> tuple[bool, Optional[str]]:
-        return True, None
-    
-    def get_capabilities(self) -> List[BotCapability]:
-        return [BotCapability.ANALYTICAL]
-    
-    async def _spend_cube(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        return {"success": True, "total_spend": 25000000.00, "dimensions": {
-            "by_category": 15, "by_supplier": 87, "by_department": 12, "by_region": 4}}
-    
-    async def _tail_spend(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        return {"success": True, "tail_spend": 2500000.00, "percentage": 10.0,
-                "suppliers_count": 52, "optimization_potential": 375000.00}
-    
-    async def _maverick_spend(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        return {"success": True, "maverick_spend": 625000.00, "percentage": 2.5,
-                "non_contract_purchases": 48, "risk_level": "medium"}
-    
-    async def _find_opportunities(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        opportunities = [{"type": "Consolidation", "potential_savings": 250000.00},
-                         {"type": "Contract negotiation", "potential_savings": 180000.00}]
-        return {"success": True, "opportunities": opportunities, "total_potential": 430000.00}
+logger = logging.getLogger(__name__)
 
-spend_analysis_bot = SpendAnalysisBot()
+class SpendAnalysisBot:
+    """Spend analytics, categorization, optimization"""
+    
+    def __init__(self, db: Session = None):
+        self.bot_id = "spend_analysis"
+        self.name = "SpendAnalysisBot"
+        self.db = db
+        self.capabilities = ['analyze_spend', 'spend_categories', 'supplier_concentration', 'savings_opportunities', 'spend_trends']
+    
+    async def execute_async(self, query: str, context: Optional[Dict] = None) -> Dict:
+        return self.execute(query, context)
+    
+    def execute(self, query: str, context: Optional[Dict] = None) -> Dict:
+        context = context or {}
+        action = context.get('action', '').lower()
+        
+        try:
+                        if action == 'analyze_spend':
+                return self._analyze_spend(context)
+            elif action == 'spend_categories':
+                return self._spend_categories(context)
+            elif action == 'supplier_concentration':
+                return self._supplier_concentration(context)
+            elif action == 'savings_opportunities':
+                return self._savings_opportunities(context)
+            elif action == 'spend_trends':
+                return self._spend_trends(context)
+            
+            return {'success': False, 'error': 'Unknown action', 'bot_id': self.bot_id}
+                
+        except Exception as e:
+            logger.error(f"{self.bot_id} error: {str(e)}")
+            return {'success': False, 'error': str(e), 'bot_id': self.bot_id}
+    
+    def _analyze_spend(self, context: Dict) -> Dict:
+        """Analyze Spend"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'analyze_spend',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
+
+    def _spend_categories(self, context: Dict) -> Dict:
+        """Spend Categories"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'spend_categories',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
+
+    def _supplier_concentration(self, context: Dict) -> Dict:
+        """Supplier Concentration"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'supplier_concentration',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
+
+    def _savings_opportunities(self, context: Dict) -> Dict:
+        """Savings Opportunities"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'savings_opportunities',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
+
+    def _spend_trends(self, context: Dict) -> Dict:
+        """Spend Trends"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'spend_trends',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
+

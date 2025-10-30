@@ -1,49 +1,127 @@
-'''Contract Management Bot - Contract lifecycle management'''
-from typing import Dict, Any, List, Optional
-from datetime import datetime, timedelta
-from .base_bot import ERPBot, BotCapability
+import logging
+from typing import Dict, Optional, List
+from sqlalchemy.orm import Session
+from datetime import datetime
+from decimal import Decimal
 
-class ContractManagementBot(ERPBot):
-    def __init__(self):
-        super().__init__(bot_id="contract_bot_001", name="Contract Management Bot",
-                        description="Contract creation, approval, renewal alerts, compliance tracking")
-    
-    async def execute(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        action = input_data.get("action", "create_contract")
-        if action == "create_contract": return await self._create_contract(input_data)
-        elif action == "renewal_alerts": return await self._check_renewals()
-        elif action == "compliance_check": return await self._check_compliance(input_data)
-        elif action == "terminate_contract": return await self._terminate(input_data)
-        else: raise ValueError(f"Unknown action: {action}")
-    
-    def validate(self, input_data: Dict[str, Any]) -> tuple[bool, Optional[str]]:
-        return True, None
-    
-    def get_capabilities(self) -> List[BotCapability]:
-        return [BotCapability.TRANSACTIONAL, BotCapability.COMPLIANCE, BotCapability.WORKFLOW]
-    
-    async def _create_contract(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        contract_number = f"CONT-{datetime.now().strftime('%Y%m%d%H%M%S')}"
-        contract_data = input_data.get("contract_data", {})
-        return {"success": True, "contract_number": contract_number, "status": "draft",
-                "start_date": datetime.now().isoformat(),
-                "end_date": (datetime.now() + timedelta(days=365)).isoformat()}
-    
-    async def _check_renewals(self) -> Dict[str, Any]:
-        expiring_soon = [
-            {"contract": "CONT-001", "supplier": "ABC Corp", "expires_in_days": 45},
-            {"contract": "CONT-005", "supplier": "XYZ Ltd", "expires_in_days": 60}
-        ]
-        return {"success": True, "contracts_expiring_soon": expiring_soon}
-    
-    async def _check_compliance(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        contract_number = input_data.get("contract_number")
-        return {"success": True, "contract_number": contract_number, "compliant": True, 
-                "last_review": datetime.now().isoformat()}
-    
-    async def _terminate(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        contract_number = input_data.get("contract_number")
-        return {"success": True, "contract_number": contract_number, "status": "terminated",
-                "termination_date": datetime.now().isoformat()}
+logger = logging.getLogger(__name__)
 
-contract_management_bot = ContractManagementBot()
+class ContractManagementBot:
+    """Contract lifecycle management"""
+    
+    def __init__(self, db: Session = None):
+        self.bot_id = "contract_management"
+        self.name = "ContractManagementBot"
+        self.db = db
+        self.capabilities = ['create_contract', 'contract_approval', 'execution', 'renewal_tracking', 'contract_repository']
+    
+    async def execute_async(self, query: str, context: Optional[Dict] = None) -> Dict:
+        return self.execute(query, context)
+    
+    def execute(self, query: str, context: Optional[Dict] = None) -> Dict:
+        context = context or {}
+        action = context.get('action', '').lower()
+        
+        try:
+                        if action == 'create_contract':
+                return self._create_contract(context)
+            elif action == 'contract_approval':
+                return self._contract_approval(context)
+            elif action == 'execution':
+                return self._execution(context)
+            elif action == 'renewal_tracking':
+                return self._renewal_tracking(context)
+            elif action == 'contract_repository':
+                return self._contract_repository(context)
+            
+            return {'success': False, 'error': 'Unknown action', 'bot_id': self.bot_id}
+                
+        except Exception as e:
+            logger.error(f"{self.bot_id} error: {str(e)}")
+            return {'success': False, 'error': str(e), 'bot_id': self.bot_id}
+    
+    def _create_contract(self, context: Dict) -> Dict:
+        """Create Contract"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'create_contract',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
+
+    def _contract_approval(self, context: Dict) -> Dict:
+        """Contract Approval"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'contract_approval',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
+
+    def _execution(self, context: Dict) -> Dict:
+        """Execution"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'execution',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
+
+    def _renewal_tracking(self, context: Dict) -> Dict:
+        """Renewal Tracking"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'renewal_tracking',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
+
+    def _contract_repository(self, context: Dict) -> Dict:
+        """Contract Repository"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'contract_repository',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
+

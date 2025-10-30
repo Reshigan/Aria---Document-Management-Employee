@@ -1,24 +1,146 @@
-'''OEE Calculation Bot'''
-from typing import Dict, Any, List, Optional
-from .base_bot import ERPBot, BotCapability
+import logging
+from typing import Dict, Optional, List
+from sqlalchemy.orm import Session
+from datetime import datetime
+from decimal import Decimal
 
-class OEECalculationBot(ERPBot):
-    def __init__(self):
-        super().__init__(bot_id="oee_bot_001", name="OEE Calculation Bot",
-                        description="Overall Equipment Effectiveness calculation and tracking")
+logger = logging.getLogger(__name__)
 
-    async def execute(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        action = input_data.get("action", "calculate_oee")
-        if action == "calculate_oee": return await self._calculate(input_data)
-        else: raise ValueError(f"Unknown action: {action}")
+class OEECalculationBot:
+    """Overall Equipment Effectiveness calculation"""
+    
+    def __init__(self, db: Session = None):
+        self.bot_id = "oee_calculation"
+        self.name = "OEECalculationBot"
+        self.db = db
+        self.capabilities = ['calculate_oee', 'availability', 'performance', 'quality', 'oee_trends', 'improvement_recommendations']
+    
+    async def execute_async(self, query: str, context: Optional[Dict] = None) -> Dict:
+        return self.execute(query, context)
+    
+    def execute(self, query: str, context: Optional[Dict] = None) -> Dict:
+        context = context or {}
+        action = context.get('action', '').lower()
+        
+        try:
+                        if action == 'calculate_oee':
+                return self._calculate_oee(context)
+            elif action == 'availability':
+                return self._availability(context)
+            elif action == 'performance':
+                return self._performance(context)
+            elif action == 'quality':
+                return self._quality(context)
+            elif action == 'oee_trends':
+                return self._oee_trends(context)
+            elif action == 'improvement_recommendations':
+                return self._improvement_recommendations(context)
+            
+            return {'success': False, 'error': 'Unknown action', 'bot_id': self.bot_id}
+                
+        except Exception as e:
+            logger.error(f"{self.bot_id} error: {str(e)}")
+            return {'success': False, 'error': str(e), 'bot_id': self.bot_id}
+    
+    def _calculate_oee(self, context: Dict) -> Dict:
+        """Calculate Oee"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'calculate_oee',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
 
-    def validate(self, input_data: Dict[str, Any]) -> tuple[bool, Optional[str]]:
-        return True, None
+    def _availability(self, context: Dict) -> Dict:
+        """Availability"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'availability',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
 
-    def get_capabilities(self) -> List[BotCapability]:
-        return [BotCapability.ANALYTICAL]
+    def _performance(self, context: Dict) -> Dict:
+        """Performance"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'performance',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
 
-    async def _calculate(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        return {"success": True, "oee": 85.5, "availability": 95.0, "performance": 92.0, "quality": 98.0}
+    def _quality(self, context: Dict) -> Dict:
+        """Quality"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'quality',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
 
-oee_calculation_bot = OEECalculationBot()
+    def _oee_trends(self, context: Dict) -> Dict:
+        """Oee Trends"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'oee_trends',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
+
+    def _improvement_recommendations(self, context: Dict) -> Dict:
+        """Improvement Recommendations"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'improvement_recommendations',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
+

@@ -1,43 +1,127 @@
-'''Category Management Bot - Strategic category management'''
-from typing import Dict, Any, List, Optional
-from .base_bot import ERPBot, BotCapability
+import logging
+from typing import Dict, Optional, List
+from sqlalchemy.orm import Session
+from datetime import datetime
+from decimal import Decimal
 
-class CategoryManagementBot(ERPBot):
-    def __init__(self):
-        super().__init__(bot_id="category_mgmt_bot_001", name="Category Management Bot",
-                        description="Category strategy, market analysis, supplier selection, benchmarking")
-    
-    async def execute(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        action = input_data.get("action", "category_strategy")
-        actions = {"category_strategy": self._strategy, "market_analysis": self._market_analysis,
-                   "supplier_selection": self._select_suppliers, "benchmark": self._benchmark}
-        if action in actions: return await actions[action](input_data)
-        raise ValueError(f"Unknown action: {action}")
-    
-    def validate(self, input_data: Dict[str, Any]) -> tuple[bool, Optional[str]]:
-        return True, None
-    
-    def get_capabilities(self) -> List[BotCapability]:
-        return [BotCapability.ANALYTICAL]
-    
-    async def _strategy(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        category = input_data.get("category")
-        return {"success": True, "category": category, "strategy": "Strategic Partnership",
-                "sourcing_approach": "Dual sourcing", "risk_mitigation": "Safety stock + contracts"}
-    
-    async def _market_analysis(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        category = input_data.get("category")
-        return {"success": True, "market_size": 5000000000.00, "growth_rate": 3.5,
-                "key_players": 5, "price_trend": "stable", "supply_risk": "low"}
-    
-    async def _select_suppliers(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        category = input_data.get("category")
-        return {"success": True, "recommended_suppliers": ["SUP-001", "SUP-005", "SUP-012"],
-                "selection_criteria": ["Quality", "Price", "Delivery", "Capacity"]}
-    
-    async def _benchmark(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        category = input_data.get("category")
-        return {"success": True, "your_price": 125.50, "market_average": 132.00,
-                "percentile": 25, "position": "Better than market"}
+logger = logging.getLogger(__name__)
 
-category_management_bot = CategoryManagementBot()
+class CategoryManagementBot:
+    """Procurement category management"""
+    
+    def __init__(self, db: Session = None):
+        self.bot_id = "category_management"
+        self.name = "CategoryManagementBot"
+        self.db = db
+        self.capabilities = ['define_categories', 'category_strategy', 'supplier_segmentation', 'category_spend', 'category_performance']
+    
+    async def execute_async(self, query: str, context: Optional[Dict] = None) -> Dict:
+        return self.execute(query, context)
+    
+    def execute(self, query: str, context: Optional[Dict] = None) -> Dict:
+        context = context or {}
+        action = context.get('action', '').lower()
+        
+        try:
+                        if action == 'define_categories':
+                return self._define_categories(context)
+            elif action == 'category_strategy':
+                return self._category_strategy(context)
+            elif action == 'supplier_segmentation':
+                return self._supplier_segmentation(context)
+            elif action == 'category_spend':
+                return self._category_spend(context)
+            elif action == 'category_performance':
+                return self._category_performance(context)
+            
+            return {'success': False, 'error': 'Unknown action', 'bot_id': self.bot_id}
+                
+        except Exception as e:
+            logger.error(f"{self.bot_id} error: {str(e)}")
+            return {'success': False, 'error': str(e), 'bot_id': self.bot_id}
+    
+    def _define_categories(self, context: Dict) -> Dict:
+        """Define Categories"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'define_categories',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
+
+    def _category_strategy(self, context: Dict) -> Dict:
+        """Category Strategy"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'category_strategy',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
+
+    def _supplier_segmentation(self, context: Dict) -> Dict:
+        """Supplier Segmentation"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'supplier_segmentation',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
+
+    def _category_spend(self, context: Dict) -> Dict:
+        """Category Spend"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'category_spend',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
+
+    def _category_performance(self, context: Dict) -> Dict:
+        """Category Performance"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'category_performance',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
+

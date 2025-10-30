@@ -1,44 +1,127 @@
-'''Recruitment Bot - End-to-end recruitment automation'''
-from typing import Dict, Any, List, Optional
+import logging
+from typing import Dict, Optional, List
+from sqlalchemy.orm import Session
 from datetime import datetime
-from .base_bot import ERPBot, BotCapability
+from decimal import Decimal
 
-class RecruitmentBot(ERPBot):
-    def __init__(self):
-        super().__init__(bot_id="recruitment_bot_001", name="Recruitment Bot",
-                        description="Job posting, candidate screening, interview scheduling, offer management")
-    
-    async def execute(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        action = input_data.get("action", "post_job")
-        actions = {"post_job": self._post_job, "screen_candidates": self._screen,
-                   "schedule_interview": self._schedule, "generate_offer": self._offer}
-        if action in actions: return await actions[action](input_data)
-        raise ValueError(f"Unknown action: {action}")
-    
-    def validate(self, input_data: Dict[str, Any]) -> tuple[bool, Optional[str]]:
-        return True, None
-    
-    def get_capabilities(self) -> List[BotCapability]:
-        return [BotCapability.WORKFLOW, BotCapability.TRANSACTIONAL]
-    
-    async def _post_job(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        job_id = f"JOB-{datetime.now().strftime('%Y%m%d%H%M%S')}"
-        return {"success": True, "job_id": job_id, "posted_to": ["LinkedIn", "Indeed", "Company Site"]}
-    
-    async def _screen(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        job_id = input_data.get("job_id")
-        candidates = [{"name": "John Doe", "score": 92, "recommendation": "Interview"},
-                      {"name": "Jane Smith", "score": 88, "recommendation": "Interview"}]
-        return {"success": True, "job_id": job_id, "screened": 50, "shortlisted": 2, "candidates": candidates}
-    
-    async def _schedule(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        candidate_id = input_data.get("candidate_id")
-        return {"success": True, "candidate_id": candidate_id, "interview_date": 
-                (datetime.now().replace(hour=14, minute=0)).isoformat(), "type": "Video", "interviewer": "John Manager"}
-    
-    async def _offer(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        candidate_id = input_data.get("candidate_id")
-        return {"success": True, "candidate_id": candidate_id, "offer_id": f"OFF-{datetime.now().strftime('%Y%m%d')}",
-                "salary": 450000.00, "benefits": "Medical, Provident Fund, Car Allowance"}
+logger = logging.getLogger(__name__)
 
-recruitment_bot = RecruitmentBot()
+class RecruitmentBot:
+    """Recruitment process automation"""
+    
+    def __init__(self, db: Session = None):
+        self.bot_id = "recruitment"
+        self.name = "RecruitmentBot"
+        self.db = db
+        self.capabilities = ['post_job', 'candidate_screening', 'interview_scheduling', 'offer_management', 'recruitment_analytics']
+    
+    async def execute_async(self, query: str, context: Optional[Dict] = None) -> Dict:
+        return self.execute(query, context)
+    
+    def execute(self, query: str, context: Optional[Dict] = None) -> Dict:
+        context = context or {}
+        action = context.get('action', '').lower()
+        
+        try:
+                        if action == 'post_job':
+                return self._post_job(context)
+            elif action == 'candidate_screening':
+                return self._candidate_screening(context)
+            elif action == 'interview_scheduling':
+                return self._interview_scheduling(context)
+            elif action == 'offer_management':
+                return self._offer_management(context)
+            elif action == 'recruitment_analytics':
+                return self._recruitment_analytics(context)
+            
+            return {'success': False, 'error': 'Unknown action', 'bot_id': self.bot_id}
+                
+        except Exception as e:
+            logger.error(f"{self.bot_id} error: {str(e)}")
+            return {'success': False, 'error': str(e), 'bot_id': self.bot_id}
+    
+    def _post_job(self, context: Dict) -> Dict:
+        """Post Job"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'post_job',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
+
+    def _candidate_screening(self, context: Dict) -> Dict:
+        """Candidate Screening"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'candidate_screening',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
+
+    def _interview_scheduling(self, context: Dict) -> Dict:
+        """Interview Scheduling"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'interview_scheduling',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
+
+    def _offer_management(self, context: Dict) -> Dict:
+        """Offer Management"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'offer_management',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
+
+    def _recruitment_analytics(self, context: Dict) -> Dict:
+        """Recruitment Analytics"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'recruitment_analytics',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
+

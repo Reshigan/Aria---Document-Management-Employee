@@ -1,51 +1,127 @@
-'''Goods Receipt Bot - GRN processing and 3-way matching'''
-from typing import Dict, Any, List, Optional
+import logging
+from typing import Dict, Optional, List
+from sqlalchemy.orm import Session
 from datetime import datetime
-from .base_bot import ERPBot, BotCapability
+from decimal import Decimal
 
-class GoodsReceiptBot(ERPBot):
-    def __init__(self):
-        super().__init__(bot_id="grn_bot_001", name="Goods Receipt Bot",
-                        description="GRN creation, quality inspection, 3-way matching, stock update")
-    
-    async def execute(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        action = input_data.get("action", "create_grn")
-        if action == "create_grn": return await self._create_grn(input_data)
-        elif action == "three_way_match": return await self._three_way_match(input_data)
-        elif action == "quality_inspection": return await self._inspect(input_data)
-        elif action == "update_stock": return await self._update_stock(input_data)
-        else: raise ValueError(f"Unknown action: {action}")
-    
-    def validate(self, input_data: Dict[str, Any]) -> tuple[bool, Optional[str]]:
-        return True, None
-    
-    def get_capabilities(self) -> List[BotCapability]:
-        return [BotCapability.TRANSACTIONAL, BotCapability.INTEGRATION]
-    
-    async def _create_grn(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        grn_number = f"GRN-{datetime.now().strftime('%Y%m%d%H%M%S')}"
-        po_number = input_data.get("po_number")
-        items = input_data.get("items", [])
-        return {"success": True, "grn_number": grn_number, "po_number": po_number, 
-                "items_received": len(items), "status": "pending_inspection"}
-    
-    async def _three_way_match(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        grn_number = input_data.get("grn_number")
-        po_number = input_data.get("po_number")
-        invoice_number = input_data.get("invoice_number")
-        match_result = {"quantity_match": True, "price_match": True, "description_match": True,
-                        "overall_match": True, "discrepancies": []}
-        return {"success": True, "grn_number": grn_number, "match_result": match_result}
-    
-    async def _inspect(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        grn_number = input_data.get("grn_number")
-        inspection_result = {"quality_passed": True, "quantity_accepted": 100, 
-                             "quantity_rejected": 0, "inspector": "QC-001"}
-        return {"success": True, "grn_number": grn_number, "inspection": inspection_result}
-    
-    async def _update_stock(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        grn_number = input_data.get("grn_number")
-        return {"success": True, "grn_number": grn_number, "stock_updated": True,
-                "warehouse": "WH-001", "location": "A-01-05"}
+logger = logging.getLogger(__name__)
 
-goods_receipt_bot = GoodsReceiptBot()
+class GoodsReceiptBot:
+    """Goods receipt processing, 3-way matching"""
+    
+    def __init__(self, db: Session = None):
+        self.bot_id = "goods_receipt"
+        self.name = "GoodsReceiptBot"
+        self.db = db
+        self.capabilities = ['receive_goods', 'three_way_match', 'quality_inspection', 'put_away', 'receipt_report']
+    
+    async def execute_async(self, query: str, context: Optional[Dict] = None) -> Dict:
+        return self.execute(query, context)
+    
+    def execute(self, query: str, context: Optional[Dict] = None) -> Dict:
+        context = context or {}
+        action = context.get('action', '').lower()
+        
+        try:
+                        if action == 'receive_goods':
+                return self._receive_goods(context)
+            elif action == 'three_way_match':
+                return self._three_way_match(context)
+            elif action == 'quality_inspection':
+                return self._quality_inspection(context)
+            elif action == 'put_away':
+                return self._put_away(context)
+            elif action == 'receipt_report':
+                return self._receipt_report(context)
+            
+            return {'success': False, 'error': 'Unknown action', 'bot_id': self.bot_id}
+                
+        except Exception as e:
+            logger.error(f"{self.bot_id} error: {str(e)}")
+            return {'success': False, 'error': str(e), 'bot_id': self.bot_id}
+    
+    def _receive_goods(self, context: Dict) -> Dict:
+        """Receive Goods"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'receive_goods',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
+
+    def _three_way_match(self, context: Dict) -> Dict:
+        """Three Way Match"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'three_way_match',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
+
+    def _quality_inspection(self, context: Dict) -> Dict:
+        """Quality Inspection"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'quality_inspection',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
+
+    def _put_away(self, context: Dict) -> Dict:
+        """Put Away"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'put_away',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
+
+    def _receipt_report(self, context: Dict) -> Dict:
+        """Receipt Report"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'receipt_report',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
+

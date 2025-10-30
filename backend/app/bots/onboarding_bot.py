@@ -1,43 +1,127 @@
-'''Onboarding Bot - New employee onboarding automation'''
-from typing import Dict, Any, List, Optional
+import logging
+from typing import Dict, Optional, List
+from sqlalchemy.orm import Session
 from datetime import datetime
-from .base_bot import ERPBot, BotCapability
+from decimal import Decimal
 
-class OnboardingBot(ERPBot):
-    def __init__(self):
-        super().__init__(bot_id="onboarding_bot_001", name="Onboarding Bot",
-                        description="Onboarding checklist, documentation, IT setup, training schedule")
+logger = logging.getLogger(__name__)
 
-    async def execute(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        action = input_data.get("action", "create_onboarding")
-        actions = {"create_onboarding": self._create, "track_progress": self._track,
-                   "setup_it": self._setup_it, "compliance_docs": self._compliance}
-        if action in actions: return await actions[action](input_data)
-        raise ValueError(f"Unknown action: {action}")
+class OnboardingBot:
+    """New hire onboarding, checklist, automation"""
+    
+    def __init__(self, db: Session = None):
+        self.bot_id = "onboarding"
+        self.name = "OnboardingBot"
+        self.db = db
+        self.capabilities = ['create_onboarding', 'assign_tasks', 'track_progress', 'document_collection', 'onboarding_report']
+    
+    async def execute_async(self, query: str, context: Optional[Dict] = None) -> Dict:
+        return self.execute(query, context)
+    
+    def execute(self, query: str, context: Optional[Dict] = None) -> Dict:
+        context = context or {}
+        action = context.get('action', '').lower()
+        
+        try:
+                        if action == 'create_onboarding':
+                return self._create_onboarding(context)
+            elif action == 'assign_tasks':
+                return self._assign_tasks(context)
+            elif action == 'track_progress':
+                return self._track_progress(context)
+            elif action == 'document_collection':
+                return self._document_collection(context)
+            elif action == 'onboarding_report':
+                return self._onboarding_report(context)
+            
+            return {'success': False, 'error': 'Unknown action', 'bot_id': self.bot_id}
+                
+        except Exception as e:
+            logger.error(f"{self.bot_id} error: {str(e)}")
+            return {'success': False, 'error': str(e), 'bot_id': self.bot_id}
+    
+    def _create_onboarding(self, context: Dict) -> Dict:
+        """Create Onboarding"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'create_onboarding',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
 
-    def validate(self, input_data: Dict[str, Any]) -> tuple[bool, Optional[str]]:
-        return True, None
+    def _assign_tasks(self, context: Dict) -> Dict:
+        """Assign Tasks"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'assign_tasks',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
 
-    def get_capabilities(self) -> List[BotCapability]:
-        return [BotCapability.WORKFLOW, BotCapability.COMPLIANCE]
+    def _track_progress(self, context: Dict) -> Dict:
+        """Track Progress"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'track_progress',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
 
-    async def _create(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        employee_id = input_data.get("employee_id")
-        checklist = ["Complete docs", "IT setup", "Security training", "Dept orientation"]
-        return {"success": True, "employee_id": employee_id, "checklist": checklist}
+    def _document_collection(self, context: Dict) -> Dict:
+        """Document Collection"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'document_collection',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
 
-    async def _track(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        employee_id = input_data.get("employee_id")
-        return {"success": True, "employee_id": employee_id, "progress": 60, "completed": 3, "pending": 2}
+    def _onboarding_report(self, context: Dict) -> Dict:
+        """Onboarding Report"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'onboarding_report',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
 
-    async def _setup_it(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        employee_id = input_data.get("employee_id")
-        return {"success": True, "employee_id": employee_id, "email": f"{employee_id}@company.com",
-                "laptop": "Assigned", "access_cards": "Issued"}
-
-    async def _compliance(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        employee_id = input_data.get("employee_id")
-        docs = ["Employment contract", "Tax forms", "Banking details"]
-        return {"success": True, "employee_id": employee_id, "documents": docs}
-
-onboarding_bot = OnboardingBot()

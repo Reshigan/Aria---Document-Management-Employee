@@ -2,25 +2,18 @@ import logging
 from typing import Dict, Optional, List
 from sqlalchemy.orm import Session
 from datetime import datetime
+from decimal import Decimal
 
 logger = logging.getLogger(__name__)
 
 class PerformanceReviewBot:
-    """Manage employee performance reviews, ratings, and goals"""
+    """Performance review process management"""
     
     def __init__(self, db: Session = None):
         self.bot_id = "performance_review"
         self.name = "PerformanceReviewBot"
         self.db = db
-        self.capabilities = ["create_review", "submit_review", "set_goals", "track_goals"]
-        
-        self.rating_scale = {
-            1: 'Unsatisfactory',
-            2: 'Needs Improvement',
-            3: 'Meets Expectations',
-            4: 'Exceeds Expectations',
-            5: 'Outstanding'
-        }
+        self.capabilities = ['initiate_review', 'self_assessment', 'manager_assessment', 'review_meeting', 'review_analytics']
     
     async def execute_async(self, query: str, context: Optional[Dict] = None) -> Dict:
         return self.execute(query, context)
@@ -30,68 +23,105 @@ class PerformanceReviewBot:
         action = context.get('action', '').lower()
         
         try:
-            if action == 'create_review':
-                return self._create_review(context.get('data', {}))
-            elif action == 'submit_review':
-                return self._submit_review(context.get('review_id'), context.get('ratings'))
-            elif action == 'set_goals':
-                return self._set_goals(context.get('employee_id'), context.get('goals'))
-            elif action == 'track_goals':
-                return self._track_goals(context.get('employee_id'))
-            else:
-                return {'success': False, 'error': 'Unknown action', 'bot_id': self.bot_id}
+                        if action == 'initiate_review':
+                return self._initiate_review(context)
+            elif action == 'self_assessment':
+                return self._self_assessment(context)
+            elif action == 'manager_assessment':
+                return self._manager_assessment(context)
+            elif action == 'review_meeting':
+                return self._review_meeting(context)
+            elif action == 'review_analytics':
+                return self._review_analytics(context)
+            
+            return {'success': False, 'error': 'Unknown action', 'bot_id': self.bot_id}
                 
         except Exception as e:
-            logger.error(f"Performance review error: {str(e)}")
+            logger.error(f"{self.bot_id} error: {str(e)}")
             return {'success': False, 'error': str(e), 'bot_id': self.bot_id}
     
-    def _create_review(self, data: Dict) -> Dict:
-        return {
-            'success': True,
-            'review': {
-                'employee_id': data.get('employee_id'),
-                'reviewer_id': data.get('reviewer_id'),
-                'review_period': data.get('period'),
-                'status': 'draft',
-                'categories': {
-                    'quality_of_work': None,
-                    'productivity': None,
-                    'communication': None,
-                    'teamwork': None
-                }
-            },
-            'rating_scale': self.rating_scale,
-            'bot_id': self.bot_id
+    def _initiate_review(self, context: Dict) -> Dict:
+        """Initiate Review"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'initiate_review',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
         }
-    
-    def _submit_review(self, review_id: int, ratings: Dict) -> Dict:
-        if ratings:
-            overall_rating = sum(ratings.values()) / len(ratings)
-        else:
-            overall_rating = 0
         
         return {
             'success': True,
-            'review_id': review_id,
-            'ratings': ratings,
-            'overall_rating': overall_rating,
-            'performance_level': self.rating_scale.get(round(overall_rating), 'N/A'),
+            'result': result,
             'bot_id': self.bot_id
         }
-    
-    def _set_goals(self, employee_id: int, goals: List[Dict]) -> Dict:
+
+    def _self_assessment(self, context: Dict) -> Dict:
+        """Self Assessment"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'self_assessment',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
         return {
             'success': True,
-            'employee_id': employee_id,
-            'goals': goals,
-            'goal_count': len(goals),
+            'result': result,
             'bot_id': self.bot_id
         }
-    
-    def _track_goals(self, employee_id: int) -> Dict:
+
+    def _manager_assessment(self, context: Dict) -> Dict:
+        """Manager Assessment"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'manager_assessment',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
         return {
             'success': True,
-            'employee_id': employee_id,
-            'goals_summary': {'total_goals': 0, 'completed': 0, 'in_progress': 0},
+            'result': result,
             'bot_id': self.bot_id
         }
+
+    def _review_meeting(self, context: Dict) -> Dict:
+        """Review Meeting"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'review_meeting',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
+
+    def _review_analytics(self, context: Dict) -> Dict:
+        """Review Analytics"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'review_analytics',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
+

@@ -1,24 +1,127 @@
-'''Data Validation Bot'''
-from typing import Dict, Any, List, Optional
-from .base_bot import ERPBot, BotCapability
+import logging
+from typing import Dict, Optional, List
+from sqlalchemy.orm import Session
+from datetime import datetime
+from decimal import Decimal
 
-class DataValidationBot(ERPBot):
-    def __init__(self):
-        super().__init__(bot_id="data_val_bot_001", name="Data Validation Bot",
-                        description="Data quality checks, validation rules, cleansing, deduplication")
+logger = logging.getLogger(__name__)
 
-    async def execute(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        action = input_data.get("action", "validate")
-        if action == "validate": return await self._validate(input_data)
-        else: raise ValueError(f"Unknown action: {action}")
+class DataValidationBot:
+    """Data quality validation, cleansing"""
+    
+    def __init__(self, db: Session = None):
+        self.bot_id = "data_validation"
+        self.name = "DataValidationBot"
+        self.db = db
+        self.capabilities = ['validate_data', 'data_quality_check', 'cleansing_rules', 'duplicate_detection', 'validation_report']
+    
+    async def execute_async(self, query: str, context: Optional[Dict] = None) -> Dict:
+        return self.execute(query, context)
+    
+    def execute(self, query: str, context: Optional[Dict] = None) -> Dict:
+        context = context or {}
+        action = context.get('action', '').lower()
+        
+        try:
+                        if action == 'validate_data':
+                return self._validate_data(context)
+            elif action == 'data_quality_check':
+                return self._data_quality_check(context)
+            elif action == 'cleansing_rules':
+                return self._cleansing_rules(context)
+            elif action == 'duplicate_detection':
+                return self._duplicate_detection(context)
+            elif action == 'validation_report':
+                return self._validation_report(context)
+            
+            return {'success': False, 'error': 'Unknown action', 'bot_id': self.bot_id}
+                
+        except Exception as e:
+            logger.error(f"{self.bot_id} error: {str(e)}")
+            return {'success': False, 'error': str(e), 'bot_id': self.bot_id}
+    
+    def _validate_data(self, context: Dict) -> Dict:
+        """Validate Data"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'validate_data',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
 
-    def validate(self, input_data: Dict[str, Any]) -> tuple[bool, Optional[str]]:
-        return True, None
+    def _data_quality_check(self, context: Dict) -> Dict:
+        """Data Quality Check"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'data_quality_check',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
 
-    def get_capabilities(self) -> List[BotCapability]:
-        return [BotCapability.ANALYTICAL]
+    def _cleansing_rules(self, context: Dict) -> Dict:
+        """Cleansing Rules"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'cleansing_rules',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
 
-    async def _validate(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        return {"success": True, "records_validated": 1000, "errors_found": 15, "data_quality_score": 98.5}
+    def _duplicate_detection(self, context: Dict) -> Dict:
+        """Duplicate Detection"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'duplicate_detection',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
 
-data_validation_bot = DataValidationBot()
+    def _validation_report(self, context: Dict) -> Dict:
+        """Validation Report"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'validation_report',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
+

@@ -1,43 +1,127 @@
-'''Supplier Risk Bot - Supplier risk assessment and monitoring'''
-from typing import Dict, Any, List, Optional
-from .base_bot import ERPBot, BotCapability
+import logging
+from typing import Dict, Optional, List
+from sqlalchemy.orm import Session
+from datetime import datetime
+from decimal import Decimal
 
-class SupplierRiskBot(ERPBot):
-    def __init__(self):
-        super().__init__(bot_id="sup_risk_bot_001", name="Supplier Risk Bot",
-                        description="Financial risk, operational risk, compliance risk, mitigation strategies")
-    
-    async def execute(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        action = input_data.get("action", "assess_risk")
-        actions = {"assess_risk": self._assess, "monitor": self._monitor,
-                   "mitigation": self._mitigation, "alerts": self._alerts}
-        if action in actions: return await actions[action](input_data)
-        raise ValueError(f"Unknown action: {action}")
-    
-    def validate(self, input_data: Dict[str, Any]) -> tuple[bool, Optional[str]]:
-        return True, None
-    
-    def get_capabilities(self) -> List[BotCapability]:
-        return [BotCapability.ANALYTICAL, BotCapability.COMPLIANCE]
-    
-    async def _assess(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        supplier_id = input_data.get("supplier_id")
-        return {"success": True, "supplier_id": supplier_id, "risk_score": 25.5,
-                "risk_level": "low", "financial_risk": "low", "operational_risk": "medium",
-                "compliance_risk": "low", "cyber_risk": "low"}
-    
-    async def _monitor(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        return {"success": True, "monitoring_active": True, "suppliers_monitored": 87,
-                "high_risk": 3, "medium_risk": 12, "low_risk": 72}
-    
-    async def _mitigation(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        supplier_id = input_data.get("supplier_id")
-        strategies = ["Dual sourcing", "Safety stock", "Escrow accounts", "Performance bonds"]
-        return {"success": True, "supplier_id": supplier_id, "strategies": strategies}
-    
-    async def _alerts(self) -> Dict[str, Any]:
-        alerts = [{"supplier": "SUP-025", "risk_type": "financial", "severity": "high",
-                   "message": "Credit rating downgrade detected"}]
-        return {"success": True, "alerts": alerts, "alert_count": 1}
+logger = logging.getLogger(__name__)
 
-supplier_risk_bot = SupplierRiskBot()
+class SupplierRiskBot:
+    """Supplier risk assessment, monitoring, mitigation"""
+    
+    def __init__(self, db: Session = None):
+        self.bot_id = "supplier_risk"
+        self.name = "SupplierRiskBot"
+        self.db = db
+        self.capabilities = ['risk_assessment', 'risk_monitoring', 'risk_alerts', 'mitigation_plan', 'risk_report']
+    
+    async def execute_async(self, query: str, context: Optional[Dict] = None) -> Dict:
+        return self.execute(query, context)
+    
+    def execute(self, query: str, context: Optional[Dict] = None) -> Dict:
+        context = context or {}
+        action = context.get('action', '').lower()
+        
+        try:
+                        if action == 'risk_assessment':
+                return self._risk_assessment(context)
+            elif action == 'risk_monitoring':
+                return self._risk_monitoring(context)
+            elif action == 'risk_alerts':
+                return self._risk_alerts(context)
+            elif action == 'mitigation_plan':
+                return self._mitigation_plan(context)
+            elif action == 'risk_report':
+                return self._risk_report(context)
+            
+            return {'success': False, 'error': 'Unknown action', 'bot_id': self.bot_id}
+                
+        except Exception as e:
+            logger.error(f"{self.bot_id} error: {str(e)}")
+            return {'success': False, 'error': str(e), 'bot_id': self.bot_id}
+    
+    def _risk_assessment(self, context: Dict) -> Dict:
+        """Risk Assessment"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'risk_assessment',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
+
+    def _risk_monitoring(self, context: Dict) -> Dict:
+        """Risk Monitoring"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'risk_monitoring',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
+
+    def _risk_alerts(self, context: Dict) -> Dict:
+        """Risk Alerts"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'risk_alerts',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
+
+    def _mitigation_plan(self, context: Dict) -> Dict:
+        """Mitigation Plan"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'mitigation_plan',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
+
+    def _risk_report(self, context: Dict) -> Dict:
+        """Risk Report"""
+        data = context.get('data', {})
+        
+        result = {
+            'operation': 'risk_report',
+            'status': 'completed',
+            'data': data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        return {
+            'success': True,
+            'result': result,
+            'bot_id': self.bot_id
+        }
+
