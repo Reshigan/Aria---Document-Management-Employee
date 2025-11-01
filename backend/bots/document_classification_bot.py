@@ -1,30 +1,53 @@
-'''Document Classification Bot'''
-from typing import Dict, Any, List, Optional
-from .base_bot import ERPBot, BotCapability
+"""
+ARIA ERP - Document Classification Bot
+AI-powered document classification and routing
+"""
+import sqlite3
 
-class DocumentClassificationBot(ERPBot):
-    def __init__(self):
-        super().__init__(bot_id="doc_class_bot_001", name="Document Classification Bot",
-                        description="Document type classification, auto-tagging, metadata extraction")
+class DocumentClassificationBot:
+    CATEGORIES = {
+        'invoice': ['invoice', 'tax invoice', 'bill'],
+        'receipt': ['receipt', 'proof of payment'],
+        'statement': ['statement', 'account statement'],
+        'contract': ['agreement', 'contract', 'terms'],
+        'report': ['report', 'analysis', 'summary']
+    }
+    
+    def __init__(self, database_path: str = 'aria_erp_production.db'):
+        self.db_path = database_path
+    
+    def classify_document(self, file_name: str, content: str = '') -> dict:
+        """Classify document by analyzing name and content"""
+        file_lower = file_name.lower()
+        content_lower = content.lower()
+        
+        scores = {}
+        for category, keywords in self.CATEGORIES.items():
+            score = 0
+            for keyword in keywords:
+                if keyword in file_lower:
+                    score += 10
+                if keyword in content_lower:
+                    score += 5
+            scores[category] = score
+        
+        best_category = max(scores, key=scores.get)
+        confidence = scores[best_category] / 15 * 100
+        
+        return {
+            'filename': file_name,
+            'category': best_category,
+            'confidence': min(confidence, 95),
+            'suggested_action': f'Route to {best_category.upper()} processing'
+        }
 
+def main():
+    print("\n" + "="*60)
+    print("ARIA ERP - DOCUMENT CLASSIFICATION BOT")
+    print("="*60 + "\n")
+    print("✓ Bot ready - AI document routing")
+    print("✓ Categories: 5 types")
+    print("\n" + "="*60 + "\n")
 
-    def execute(self, context: dict) -> dict:
-        """Synchronous wrapper for async execute_async"""
-        import asyncio
-        return asyncio.run(self.execute_async(context))
-
-    async def execute_async(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        action = input_data.get("action", "classify")
-        if action == "classify": return await self._classify(input_data)
-        else: raise ValueError(f"Unknown action: {action}")
-
-    def validate(self, input_data: Dict[str, Any]) -> tuple[bool, Optional[str]]:
-        return True, None
-
-    def get_capabilities(self) -> List[BotCapability]:
-        return [BotCapability.ANALYTICAL]
-
-    async def _classify(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        return {"success": True, "document_type": "Invoice", "confidence": 97.5, "tags": ["Finance", "AP"]}
-
-document_classification_bot = DocumentClassificationBot()
+if __name__ == '__main__':
+    main()
