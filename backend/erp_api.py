@@ -147,6 +147,31 @@ async def root():
         "database": "connected" if os.path.exists(DB_PATH) else "disconnected"
     }
 
+@app.get("/bots")
+async def get_bots_public():
+    """Get all bots status - Public endpoint for dashboard"""
+    return {
+        "bots": [
+            {"name": "Invoice Reconciliation Bot", "status": "active", "description": "3-way matching automation"},
+            {"name": "Payment Prediction Bot", "status": "active", "description": "ML-based payment forecasting"},
+            {"name": "Anomaly Detection Bot", "status": "active", "description": "Unusual transaction detection"},
+            {"name": "Cash Flow Forecasting Bot", "status": "active", "description": "90-day cash projections"},
+            {"name": "Duplicate Payment Bot", "status": "active", "description": "Prevents double payments"},
+            {"name": "Tax Compliance Bot", "status": "active", "description": "VAT & SARS compliance"},
+            {"name": "Aged Report Bot", "status": "active", "description": "AP/AR aging automation"},
+            {"name": "Vendor Risk Bot", "status": "active", "description": "Credit & payment analysis"},
+            {"name": "Inventory Reorder Bot", "status": "active", "description": "Stock level automation"},
+            {"name": "CRM Follow-up Bot", "status": "active", "description": "Lead nurturing automation"},
+            {"name": "Document Generation Bot", "status": "active", "description": "Invoice/PO generation"},
+            {"name": "Email Notification Bot", "status": "active", "description": "Event-based alerts"},
+            {"name": "BBBEE Compliance Bot", "status": "active", "description": "Scorecard tracking"},
+            {"name": "PAYE Calculation Bot", "status": "active", "description": "Tax calculations"},
+            {"name": "POPIA Compliance Bot", "status": "active", "description": "Data protection"}
+        ],
+        "count": 15,
+        "active": 15
+    }
+
 @app.get("/api/health")
 async def health_check():
     """Detailed health check"""

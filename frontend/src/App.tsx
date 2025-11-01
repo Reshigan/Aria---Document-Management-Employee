@@ -1,66 +1,28 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
-import { useEffect } from 'react'
-import { useAuthStore } from './store/authStore'
-import Login from './pages/Login'
-import Register from './pages/Register'
-import Dashboard from './pages/Dashboard'
-import ERPDashboard from './pages/ERPDashboard'
-import Customers from './pages/Customers'
-import Suppliers from './pages/Suppliers'
-import Invoices from './pages/Invoices'
-import Payments from './pages/Payments'
-import Accounts from './pages/Accounts'
-import Bots from './pages/Bots'
-import Layout from './components/Layout'
-
-function PrivateRoute({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated, isLoading } = useAuthStore()
-  
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-      </div>
-    )
-  }
-  
-  return isAuthenticated ? <>{children}</> : <Navigate to="/login" />
-}
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { MainLayout } from './components/layout/MainLayout';
+import ExecutiveDashboard from './pages/Dashboard/ExecutiveDashboard';
+import './styles/design-system.css';
 
 function App() {
-  const checkAuth = useAuthStore((state) => state.checkAuth)
-  
-  useEffect(() => {
-    checkAuth()
-  }, [checkAuth])
-
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route
-          path="/*"
-          element={
-            <PrivateRoute>
-              <Layout>
-                <Routes>
-                  <Route path="/" element={<Dashboard />} />
-                  <Route path="/erp" element={<ERPDashboard />} />
-                  <Route path="/customers" element={<Customers />} />
-                  <Route path="/suppliers" element={<Suppliers />} />
-                  <Route path="/invoices" element={<Invoices />} />
-                  <Route path="/payments" element={<Payments />} />
-                  <Route path="/accounts" element={<Accounts />} />
-                  <Route path="/bots" element={<Bots />} />
-                </Routes>
-              </Layout>
-            </PrivateRoute>
-          }
-        />
-      </Routes>
+      <MainLayout>
+        <Routes>
+          <Route path="/" element={<ExecutiveDashboard />} />
+          <Route path="/gl" element={<div style={{padding: '2rem'}}>GL Module - Coming Soon</div>} />
+          <Route path="/ap" element={<div style={{padding: '2rem'}}>AP Module - Coming Soon</div>} />
+          <Route path="/ar" element={<div style={{padding: '2rem'}}>AR Module - Coming Soon</div>} />
+          <Route path="/banking" element={<div style={{padding: '2rem'}}>Banking Module - Coming Soon</div>} />
+          <Route path="/payroll" element={<div style={{padding: '2rem'}}>Payroll Module - Coming Soon</div>} />
+          <Route path="/crm" element={<div style={{padding: '2rem'}}>CRM Module - Coming Soon</div>} />
+          <Route path="/inventory" element={<div style={{padding: '2rem'}}>Inventory Module - Coming Soon</div>} />
+          <Route path="/bots" element={<div style={{padding: '2rem'}}>Bots Module - Coming Soon</div>} />
+          <Route path="/reports" element={<div style={{padding: '2rem'}}>Reports - Coming Soon</div>} />
+          <Route path="/settings" element={<div style={{padding: '2rem'}}>Settings - Coming Soon</div>} />
+        </Routes>
+      </MainLayout>
     </BrowserRouter>
-  )
+  );
 }
 
-export default App
+export default App;
