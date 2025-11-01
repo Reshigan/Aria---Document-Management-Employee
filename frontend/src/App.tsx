@@ -4,6 +4,7 @@ import { useAuthStore } from './store/authStore'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import Dashboard from './pages/Dashboard'
+import ERPDashboard from './pages/ERPDashboard'
 import Customers from './pages/Customers'
 import Suppliers from './pages/Suppliers'
 import Invoices from './pages/Invoices'
@@ -45,6 +46,7 @@ function App() {
               <Layout>
                 <Routes>
                   <Route path="/" element={<Dashboard />} />
+                  <Route path="/erp" element={<ERPDashboard />} />
                   <Route path="/customers" element={<Customers />} />
                   <Route path="/suppliers" element={<Suppliers />} />
                   <Route path="/invoices" element={<Invoices />} />
