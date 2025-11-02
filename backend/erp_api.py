@@ -634,6 +634,567 @@ async def startup_event():
     print(f"Bots: 15 active")
     print("="*60)
 
+# ============================================================================
+# Dashboard Endpoints
+# ============================================================================
+
+@app.get("/api/dashboard/stats")
+async def get_dashboard_stats(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Get dashboard statistics"""
+    return {
+        "total_receivables": 487500.00,
+        "overdue_receivables": 125000.00,
+        "current_receivables": 362500.00,
+        "total_payables": 325000.00,
+        "overdue_payables": 75000.00,
+        "current_payables": 250000.00,
+        "total_revenue": 1250000.00,
+        "revenue_growth": 15.5,
+        "total_expenses": 875000.00,
+        "expense_growth": 8.2,
+        "cash_in": 950000.00,
+        "cash_out": 720000.00,
+        "net_cash_flow": 230000.00,
+        "profit": 375000.00
+    }
+
+@app.get("/api/dashboard/recent-activity")
+async def get_recent_activity(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Get recent invoices and payments"""
+    return {
+        "recent_invoices": [
+            {
+                "id": "inv_001",
+                "invoice_number": "INV-2024-001",
+                "invoice_date": "2024-10-25",
+                "due_date": "2024-11-25",
+                "total_amount": 45000.00,
+                "status": "pending"
+            },
+            {
+                "id": "inv_002",
+                "invoice_number": "INV-2024-002",
+                "invoice_date": "2024-10-24",
+                "due_date": "2024-11-24",
+                "total_amount": 32500.00,
+                "status": "paid"
+            },
+            {
+                "id": "inv_003",
+                "invoice_number": "INV-2024-003",
+                "invoice_date": "2024-10-20",
+                "due_date": "2024-10-20",
+                "total_amount": 18750.00,
+                "status": "overdue"
+            }
+        ],
+        "recent_payments": [
+            {
+                "id": "pmt_001",
+                "payment_number": "PMT-2024-001",
+                "payment_date": "2024-10-26",
+                "amount": 32500.00,
+                "payment_method": "EFT"
+            },
+            {
+                "id": "pmt_002",
+                "payment_number": "PMT-2024-002",
+                "payment_date": "2024-10-25",
+                "amount": 15000.00,
+                "payment_method": "Card"
+            }
+        ]
+    }
+
+# ============================================================================
+# ARIA Voice Endpoints
+# ============================================================================
+
+@app.get("/api/aria/voice")
+async def get_aria_voice_status(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Get ARIA voice assistant status"""
+    return {
+        "status": "active",
+        "version": "2.0.0",
+        "available": True,
+        "last_interaction": datetime.now().isoformat()
+    }
+
+# ============================================================================
+# Pending Actions Endpoints
+# ============================================================================
+
+@app.get("/api/pending-actions")
+async def get_pending_actions(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Get pending actions for current user"""
+    return {
+        "actions": [
+            {
+                "id": 1,
+                "type": "Invoice Approval",
+                "description": "Approve invoice #INV-1234 from Supplier A",
+                "amount": 15000,
+                "priority": "high",
+                "created_at": "2024-10-26T10:30:00"
+            },
+            {
+                "id": 2,
+                "type": "Expense Claim",
+                "description": "Review expense claim from John Doe",
+                "amount": 850,
+                "priority": "medium",
+                "created_at": "2024-10-25T14:20:00"
+            },
+            {
+                "id": 3,
+                "type": "Leave Request",
+                "description": "Approve leave request from Jane Smith",
+                "amount": None,
+                "priority": "low",
+                "created_at": "2024-10-24T09:15:00"
+            }
+        ],
+        "count": 3
+    }
+
+# ============================================================================
+# Workflows Endpoints
+# ============================================================================
+
+@app.get("/api/workflows")
+async def get_workflows(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Get all workflows"""
+    return {
+        "workflows": [
+            {
+                "id": "WF-001",
+                "type": "Procure-to-Pay",
+                "initiator": "John Doe",
+                "status": "In Progress",
+                "step": "3/5",
+                "created_at": "2024-10-20T08:00:00"
+            },
+            {
+                "id": "WF-002",
+                "type": "Order-to-Cash",
+                "initiator": "Jane Smith",
+                "status": "Pending Approval",
+                "step": "2/4",
+                "created_at": "2024-10-21T10:30:00"
+            }
+        ],
+        "workflow_types": [
+            {"id": "p2p", "name": "Procure-to-Pay", "description": "PR → RFQ → PO → GRN → Invoice"},
+            {"id": "o2c", "name": "Order-to-Cash", "description": "Quote → Order → Delivery → Invoice"},
+            {"id": "h2r", "name": "Hire-to-Retire", "description": "Recruit → Onboard → Payroll → Exit"}
+        ]
+    }
+
+# ============================================================================
+# Bot Reports Endpoints
+# ============================================================================
+
+@app.get("/api/reports/analytics")
+async def get_bot_analytics(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Get bot analytics data"""
+    return {
+        "total_bots": 26,
+        "active_bots": 26,
+        "inactive_bots": 0,
+        "total_tasks": 15420,
+        "completed_tasks": 14893,
+        "failed_tasks": 127,
+        "success_rate": 96.6,
+        "average_response_time": 2.3,
+        "monthly_savings": 145000.00
+    }
+
+@app.get("/api/reports/tasks")
+async def get_bot_tasks(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Get bot task queue"""
+    return {
+        "tasks": [
+            {
+                "id": "task_001",
+                "bot": "Invoice Processing Bot",
+                "description": "Process supplier invoice #INV-5678",
+                "status": "processing",
+                "priority": "high",
+                "created_at": "2024-10-27T09:15:00"
+            },
+            {
+                "id": "task_002",
+                "bot": "Email Classification Bot",
+                "description": "Classify 45 incoming emails",
+                "status": "queued",
+                "priority": "medium",
+                "created_at": "2024-10-27T09:20:00"
+            },
+            {
+                "id": "task_003",
+                "bot": "Document OCR Bot",
+                "description": "Extract data from PO documents",
+                "status": "completed",
+                "priority": "normal",
+                "created_at": "2024-10-27T08:30:00"
+            }
+        ],
+        "total": 45,
+        "queued": 12,
+        "processing": 8,
+        "completed": 25
+    }
+
+@app.get("/api/reports/performance")
+async def get_bot_performance(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Get bot performance metrics"""
+    return {
+        "bots": [
+            {
+                "name": "Invoice Processing Bot",
+                "tasks_completed": 2340,
+                "success_rate": 98.5,
+                "avg_time": 1.8,
+                "savings": 23400.00
+            },
+            {
+                "name": "Email Classification Bot",
+                "tasks_completed": 8920,
+                "success_rate": 99.2,
+                "avg_time": 0.5,
+                "savings": 12600.00
+            },
+            {
+                "name": "Document OCR Bot",
+                "tasks_completed": 1560,
+                "success_rate": 95.8,
+                "avg_time": 3.2,
+                "savings": 18900.00
+            }
+        ],
+        "period": "last_30_days"
+    }
+
+# ============================================================================
+# Documents Endpoints
+# ============================================================================
+
+@app.get("/api/documents/templates")
+async def get_document_templates(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Get document templates"""
+    return {
+        "templates": [
+            {"id": 1, "category": "Sales", "name": "Quote", "description": "Sales quotation template"},
+            {"id": 2, "category": "Sales", "name": "Sales Order", "description": "Customer sales order"},
+            {"id": 3, "category": "Sales", "name": "Delivery Note", "description": "Goods delivery note"},
+            {"id": 4, "category": "Sales", "name": "Tax Invoice", "description": "VAT compliant invoice"},
+            {"id": 5, "category": "Sales", "name": "Credit Note", "description": "Customer credit note"},
+            {"id": 6, "category": "Purchase", "name": "Purchase Requisition", "description": "Internal purchase request"},
+            {"id": 7, "category": "Purchase", "name": "RFQ", "description": "Request for quotation"},
+            {"id": 8, "category": "Purchase", "name": "Purchase Order", "description": "Supplier purchase order"},
+            {"id": 9, "category": "Purchase", "name": "GRN", "description": "Goods received note"},
+            {"id": 10, "category": "HR/Payroll", "name": "Employment Contract", "description": "Employment agreement"},
+            {"id": 11, "category": "HR/Payroll", "name": "Payslip", "description": "Monthly payslip"},
+            {"id": 12, "category": "HR/Payroll", "name": "IRP5", "description": "Tax certificate"}
+        ]
+    }
+
+@app.post("/api/documents/generate")
+async def generate_document(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Generate a document from template"""
+    return {
+        "success": True,
+        "document_id": "doc_12345",
+        "document_url": "/api/documents/download/doc_12345",
+        "message": "Document generated successfully"
+    }
+
+@app.get("/api/documents/history")
+async def get_document_history(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Get document generation history"""
+    return {
+        "documents": [
+            {
+                "id": "doc_001",
+                "template": "Tax Invoice",
+                "number": "INV-2024-001",
+                "generated_by": "John Doe",
+                "generated_at": "2024-10-27T10:30:00",
+                "status": "sent"
+            },
+            {
+                "id": "doc_002",
+                "template": "Purchase Order",
+                "number": "PO-2024-045",
+                "generated_by": "Jane Smith",
+                "generated_at": "2024-10-26T14:20:00",
+                "status": "approved"
+            },
+            {
+                "id": "doc_003",
+                "template": "Quote",
+                "number": "QT-2024-089",
+                "generated_by": "John Doe",
+                "generated_at": "2024-10-25T09:15:00",
+                "status": "draft"
+            }
+        ],
+        "total": 156
+    }
+
+# ============================================================================
+# Financial Reports Endpoints
+# ============================================================================
+
+@app.get("/api/financial/profit-loss")
+async def get_profit_loss(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Get profit & loss statement"""
+    return {
+        "period": "October 2024",
+        "revenue": {
+            "sales": 1250000.00,
+            "other_income": 45000.00,
+            "total": 1295000.00
+        },
+        "cost_of_sales": 520000.00,
+        "gross_profit": 775000.00,
+        "expenses": {
+            "salaries": 280000.00,
+            "rent": 45000.00,
+            "utilities": 12000.00,
+            "marketing": 35000.00,
+            "other": 28000.00,
+            "total": 400000.00
+        },
+        "net_profit": 375000.00,
+        "net_profit_margin": 28.96
+    }
+
+@app.get("/api/financial/balance-sheet")
+async def get_balance_sheet(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Get balance sheet"""
+    return {
+        "date": "2024-10-27",
+        "assets": {
+            "current_assets": {
+                "cash": 450000.00,
+                "accounts_receivable": 487500.00,
+                "inventory": 320000.00,
+                "total": 1257500.00
+            },
+            "fixed_assets": {
+                "property": 2500000.00,
+                "equipment": 450000.00,
+                "vehicles": 280000.00,
+                "total": 3230000.00
+            },
+            "total_assets": 4487500.00
+        },
+        "liabilities": {
+            "current_liabilities": {
+                "accounts_payable": 325000.00,
+                "short_term_loans": 150000.00,
+                "total": 475000.00
+            },
+            "long_term_liabilities": {
+                "long_term_loans": 1200000.00,
+                "total": 1200000.00
+            },
+            "total_liabilities": 1675000.00
+        },
+        "equity": {
+            "share_capital": 2000000.00,
+            "retained_earnings": 812500.00,
+            "total": 2812500.00
+        },
+        "total_liabilities_equity": 4487500.00
+    }
+
+@app.get("/api/financial/cashflow")
+async def get_cashflow_statement(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Get cash flow statement"""
+    return {
+        "period": "October 2024",
+        "operating_activities": {
+            "cash_from_customers": 950000.00,
+            "cash_to_suppliers": -520000.00,
+            "cash_to_employees": -280000.00,
+            "other_operating": -45000.00,
+            "net_operating": 105000.00
+        },
+        "investing_activities": {
+            "purchase_equipment": -85000.00,
+            "sale_of_assets": 15000.00,
+            "net_investing": -70000.00
+        },
+        "financing_activities": {
+            "loan_proceeds": 50000.00,
+            "loan_repayments": -25000.00,
+            "dividends_paid": -30000.00,
+            "net_financing": -5000.00
+        },
+        "net_change": 30000.00,
+        "opening_balance": 420000.00,
+        "closing_balance": 450000.00
+    }
+
+# ============================================================================
+# Integrations Endpoints
+# ============================================================================
+
+@app.get("/api/integrations")
+async def get_integrations(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Get all integrations"""
+    return {
+        "integrations": [
+            {
+                "id": "sage_one",
+                "name": "Sage One",
+                "type": "ERP",
+                "status": "connected",
+                "last_sync": "2024-10-27T09:30:00",
+                "enabled": True
+            },
+            {
+                "id": "xero",
+                "name": "Xero",
+                "type": "Accounting",
+                "status": "not_connected",
+                "last_sync": None,
+                "enabled": False
+            },
+            {
+                "id": "shopify",
+                "name": "Shopify",
+                "type": "E-commerce",
+                "status": "connected",
+                "last_sync": "2024-10-27T10:15:00",
+                "enabled": True
+            },
+            {
+                "id": "office365",
+                "name": "Microsoft 365",
+                "type": "Email",
+                "status": "connected",
+                "last_sync": "2024-10-27T10:45:00",
+                "enabled": True
+            }
+        ]
+    }
+
+@app.get("/api/integrations/sync")
+async def get_sync_status(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Get integration sync status"""
+    return {
+        "syncs": [
+            {
+                "integration": "Sage One",
+                "status": "completed",
+                "records_synced": 245,
+                "started_at": "2024-10-27T09:25:00",
+                "completed_at": "2024-10-27T09:30:00",
+                "errors": 0
+            },
+            {
+                "integration": "Shopify",
+                "status": "in_progress",
+                "records_synced": 89,
+                "started_at": "2024-10-27T10:10:00",
+                "completed_at": None,
+                "errors": 0
+            },
+            {
+                "integration": "Microsoft 365",
+                "status": "completed",
+                "records_synced": 156,
+                "started_at": "2024-10-27T10:40:00",
+                "completed_at": "2024-10-27T10:45:00",
+                "errors": 2
+            }
+        ],
+        "last_sync": "2024-10-27T10:45:00"
+    }
+
+# ============================================================================
+# Admin Endpoints
+# ============================================================================
+
+@app.get("/api/admin/company-settings")
+async def get_company_settings(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Get company settings"""
+    return {
+        "company_name": "Vanta X Pty Ltd",
+        "registration_number": "2024/123456/07",
+        "vat_number": "4123456789",
+        "address": "123 Business Street, Sandton, Johannesburg, 2196",
+        "phone": "+27 11 234 5678",
+        "email": "info@vantax.co.za",
+        "website": "https://vantax.co.za",
+        "fiscal_year_end": "February",
+        "currency": "ZAR",
+        "timezone": "Africa/Johannesburg"
+    }
+
+@app.get("/api/admin/users")
+async def get_users(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Get all users"""
+    return {
+        "users": [
+            {
+                "id": "user_001",
+                "full_name": "John Doe",
+                "email": "john@vantax.co.za",
+                "role": "Administrator",
+                "status": "active",
+                "last_login": "2024-10-27T09:15:00"
+            },
+            {
+                "id": "user_002",
+                "full_name": "Jane Smith",
+                "email": "jane@vantax.co.za",
+                "role": "Manager",
+                "status": "active",
+                "last_login": "2024-10-27T08:30:00"
+            },
+            {
+                "id": "user_003",
+                "full_name": "Bob Johnson",
+                "email": "bob@vantax.co.za",
+                "role": "User",
+                "status": "active",
+                "last_login": "2024-10-26T16:45:00"
+            }
+        ],
+        "total": 3
+    }
+
+@app.get("/api/admin/system")
+async def get_system_settings(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Get system settings"""
+    return {
+        "version": "2.0.0",
+        "environment": "production",
+        "database": {
+            "type": "SQLite",
+            "size": "245 MB",
+            "last_backup": "2024-10-27T02:00:00"
+        },
+        "storage": {
+            "total": "100 GB",
+            "used": "24.5 GB",
+            "available": "75.5 GB"
+        },
+        "performance": {
+            "uptime": "30 days",
+            "avg_response_time": "125ms",
+            "requests_per_minute": 450
+        },
+        "maintenance": {
+            "scheduled": None,
+            "last_maintenance": "2024-10-01T02:00:00"
+        }
+    }
+
 @app.on_event("shutdown")
 async def shutdown_event():
     """Application shutdown tasks"""
