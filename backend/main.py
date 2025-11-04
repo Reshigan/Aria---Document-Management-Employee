@@ -239,6 +239,10 @@ app.include_router(reporting_router)
 from erp.config.routes import router as config_router
 app.include_router(config_router)
 
+# Include Order-to-Cash Module
+from modules.order_to_cash_module import router as order_to_cash_router
+app.include_router(order_to_cash_router)
+
 # Pydantic models
 class UserLogin(PydanticBaseModel):
     username: str
