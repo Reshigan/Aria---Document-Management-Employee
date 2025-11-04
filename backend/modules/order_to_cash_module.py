@@ -132,6 +132,74 @@ class StockMovementResponse(BaseModel):
     class Config:
         from_attributes = True
 
+class QuoteLineCreate(BaseModel):
+    line_number: int
+    product_id: UUID
+    description: Optional[str] = None
+    quantity: Decimal
+    unit_price: Decimal
+    discount_percent: Decimal = Decimal("0.00")
+    tax_rate: Decimal = Decimal("15.00")  # SA VAT
+
+class QuoteLineResponse(BaseModel):
+    id: UUID
+    quote_id: UUID
+    line_number: int
+    product_id: UUID
+    description: Optional[str]
+    quantity: Decimal
+    unit_price: Decimal
+    discount_percent: Decimal
+    tax_rate: Decimal
+    line_total: Decimal
+
+    class Config:
+        from_attributes = True
+
+class QuoteCreate(BaseModel):
+    customer_id: Optional[UUID] = None
+    customer_email: Optional[str] = None
+    customer_name: Optional[str] = None
+    quote_date: date
+    valid_until: Optional[date] = None
+    warehouse_id: Optional[UUID] = None
+    notes: Optional[str] = None
+    terms_and_conditions: Optional[str] = None
+    email_subject: Optional[str] = None
+    email_body: Optional[str] = None
+    lines: List[QuoteLineCreate]
+
+class QuoteResponse(BaseModel):
+    id: UUID
+    company_id: UUID
+    quote_number: str
+    customer_id: Optional[UUID]
+    customer_email: Optional[str]
+    customer_name: Optional[str]
+    quote_date: date
+    valid_until: Optional[date]
+    status: str
+    warehouse_id: Optional[UUID]
+    subtotal: Decimal
+    tax_amount: Decimal
+    total_amount: Decimal
+    notes: Optional[str]
+    terms_and_conditions: Optional[str]
+    email_subject: Optional[str]
+    email_body: Optional[str]
+    email_message_id: Optional[str]
+    created_by: Optional[UUID]
+    approved_by: Optional[UUID]
+    approved_at: Optional[datetime]
+    sent_at: Optional[datetime]
+    accepted_at: Optional[datetime]
+    sales_order_id: Optional[UUID]
+    created_at: datetime
+    lines: List[QuoteLineResponse] = []
+
+    class Config:
+        from_attributes = True
+
 class SalesOrderLineCreate(BaseModel):
     line_number: int
     product_id: UUID
