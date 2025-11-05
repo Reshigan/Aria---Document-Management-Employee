@@ -4,10 +4,17 @@ Provides endpoints for asset management, depreciation, and disposal
 """
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
+from sqlalchemy import and_, or_
 from typing import List, Optional
-from datetime import date
+from datetime import date, datetime
 from decimal import Decimal
 from pydantic import BaseModel, Field
+
+from core.database import get_db
+from core.auth import get_current_user
+from models.user import User
+from app.models.fixed_asset import FixedAsset, AssetStatus
+from app.services.fixed_assets_service import FixedAssetsService
 
 router = APIRouter(prefix="/api/fixed-assets", tags=["Fixed Assets"])
 
@@ -23,142 +30,151 @@ class FixedAssetCreate(BaseModel):
     purchase_cost: Decimal = Field(gt=0)
     salvage_value: Decimal = Field(default=Decimal("0"), ge=0)
     useful_life_years: Optional[int] = Field(None, gt=0)
+    asset_account_number: str = "1500"  # Default Fixed Assets account
+    depreciation_expense_account: str = "6300"  # Default Depreciation Expense
+    accumulated_depreciation_account: str = "1510"  # Default Accumulated Depreciation
 
+class FixedAssetResponse(BaseModel):
+    id: int
+    asset_code: str
+    asset_name: str
+    asset_category: str
+    acquisition_date: date
+    purchase_cost: Decimal
+    accumulated_depreciation: Decimal
+    net_book_value: Decimal
+    status: str
+    location: Optional[str]
+    department: Optional[str]
+    created_at: date
 
-@router.post("/")
-def create_fixed_asset(asset: FixedAssetCreate):
+    class Config:
+        from_attributes = True
+
+# ===================== ENDPOINTS =====================
+
+@router.post("/", response_model=dict, status_code=status.HTTP_201_CREATED)
+def create_fixed_asset(
+    asset: FixedAssetCreate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
     """Create a new fixed asset"""
-    from random import randint
-    asset_code = f"{asset.asset_category[:3].upper()}{randint(10000, 99999)}"
+    service = FixedAssetsService(db)
     
-    return {
-        "success": True,
-        "asset_id": randint(1, 10000),
-        "asset_code": asset_code,
-        "asset_name": asset.asset_name,
-        "purchase_cost": float(asset.purchase_cost),
-        "message": "Asset created successfully"
-    }
+    asset_data = asset.dict()
+    asset_data['created_by'] = current_user.id
+    
+    result = service.create_asset(asset_data)
+    
+    if not result['success']:
+        raise HTTPException(status_code=400, detail=result['error'])
+    
+    return result
 
-@router.get("/")
+@router.get("/", response_model=List[FixedAssetResponse])
 def list_fixed_assets(
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=1000),
     category: Optional[str] = None,
-    status: Optional[str] = None
+    status: Optional[str] = None,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     """List fixed assets with optional filters"""
-    mock_assets = [
-        {
-            "id": 1,
-            "asset_code": "COM00001",
-            "asset_name": "Dell Laptop - Finance Dept",
-            "asset_category": "Computer Equipment",
-            "acquisition_date": "2024-01-15",
-            "purchase_cost": 15000.00,
-            "accumulated_depreciation": 3750.00,
-            "net_book_value": 11250.00,
-            "status": "ACTIVE",
-            "location": "Head Office",
-            "department": "Finance",
-            "created_at": "2024-01-15"
-        },
-        {
-            "id": 2,
-            "asset_code": "FUR00001",
-            "asset_name": "Office Desk - Executive",
-            "asset_category": "Furniture",
-            "acquisition_date": "2024-02-20",
-            "purchase_cost": 8500.00,
-            "accumulated_depreciation": 1700.00,
-            "net_book_value": 6800.00,
-            "status": "ACTIVE",
-            "location": "Head Office",
-            "department": "Executive",
-            "created_at": "2024-02-20"
-        },
-        {
-            "id": 3,
-            "asset_code": "VEH00001",
-            "asset_name": "Toyota Hilux - Sales",
-            "asset_category": "Vehicles",
-            "acquisition_date": "2023-06-10",
-            "purchase_cost": 450000.00,
-            "accumulated_depreciation": 112500.00,
-            "net_book_value": 337500.00,
-            "status": "ACTIVE",
-            "location": "Cape Town Branch",
-            "department": "Sales",
-            "created_at": "2023-06-10"
-        }
-    ]
+    query = db.query(FixedAsset)
     
-    filtered = mock_assets
     if category:
-        filtered = [a for a in filtered if a["asset_category"] == category]
+        query = query.filter(FixedAsset.asset_category == category)
     if status:
-        filtered = [a for a in filtered if a["status"] == status]
+        query = query.filter(FixedAsset.status == status)
     
-    return filtered[skip:skip+limit]
+    assets = query.order_by(FixedAsset.asset_code).offset(skip).limit(limit).all()
+    return assets
 
-@router.get("/{asset_id}")
-def get_fixed_asset(asset_id: int):
+@router.get("/{asset_id}", response_model=FixedAssetResponse)
+def get_fixed_asset(
+    asset_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
     """Get a specific fixed asset"""
-    if asset_id == 1:
-        return {
-            "id": 1,
-            "asset_code": "COM00001",
-            "asset_name": "Dell Laptop - Finance Dept",
-            "asset_category": "Computer Equipment",
-            "acquisition_date": "2024-01-15",
-            "purchase_cost": 15000.00,
-            "accumulated_depreciation": 3750.00,
-            "net_book_value": 11250.00,
-            "status": "ACTIVE",
-            "location": "Head Office",
-            "department": "Finance",
-            "created_at": "2024-01-15"
-        }
-    raise HTTPException(status_code=404, detail="Asset not found")
+    asset = db.query(FixedAsset).filter(FixedAsset.id == asset_id).first()
+    
+    if not asset:
+        raise HTTPException(status_code=404, detail="Asset not found")
+    
+    return asset
 
 @router.delete("/{asset_id}")
-def delete_fixed_asset(asset_id: int):
-    """Delete a fixed asset"""
-    return {"success": True, "message": "Asset deleted successfully"}
+def delete_fixed_asset(
+    asset_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Delete a fixed asset (soft delete by marking as RETIRED)"""
+    asset = db.query(FixedAsset).filter(FixedAsset.id == asset_id).first()
+    
+    if not asset:
+        raise HTTPException(status_code=404, detail="Asset not found")
+    
+    asset.status = AssetStatus.RETIRED
+    asset.updated_at = datetime.utcnow()
+    db.commit()
+    
+    return {"success": True, "message": "Asset retired successfully"}
+
+@router.post("/{asset_id}/depreciate")
+def depreciate_asset(
+    asset_id: int,
+    period_end_date: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Calculate and post depreciation for an asset"""
+    service = FixedAssetsService(db)
+    result = service.calculate_depreciation(asset_id, period_end_date)
+    
+    if not result['success']:
+        raise HTTPException(status_code=400, detail=result['error'])
+    
+    return result
+
+@router.post("/{asset_id}/dispose")
+def dispose_asset(
+    asset_id: int,
+    disposal_date: str,
+    disposal_proceeds: Decimal = Decimal("0"),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Dispose of a fixed asset"""
+    service = FixedAssetsService(db)
+    
+    disposal_data = {
+        'asset_id': asset_id,
+        'disposal_date': disposal_date,
+        'disposal_proceeds': disposal_proceeds
+    }
+    
+    result = service.dispose_asset(disposal_data)
+    
+    if not result['success']:
+        raise HTTPException(status_code=400, detail=result['error'])
+    
+    return result
 
 @router.get("/reports/register")
-def get_asset_register(category: Optional[str] = None):
+def get_asset_register(
+    category: Optional[str] = None,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
     """Get asset register report"""
-    mock_assets = [
-        {
-            "asset_code": "COM00001",
-            "asset_name": "Dell Laptop - Finance Dept",
-            "category": "Computer Equipment",
-            "acquisition_date": "2024-01-15",
-            "purchase_cost": 15000.00,
-            "accumulated_depreciation": 3750.00,
-            "net_book_value": 11250.00,
-            "status": "ACTIVE",
-            "location": "Head Office",
-            "department": "Finance"
-        }
-    ]
+    service = FixedAssetsService(db)
+    result = service.get_asset_register(category)
     
-    filtered = mock_assets
-    if category:
-        filtered = [a for a in filtered if a["category"] == category]
+    if not result['success']:
+        raise HTTPException(status_code=400, detail=result['error'])
     
-    total_cost = sum(a["purchase_cost"] for a in filtered)
-    total_depreciation = sum(a["accumulated_depreciation"] for a in filtered)
-    total_nbv = sum(a["net_book_value"] for a in filtered)
-    
-    return {
-        "success": True,
-        "assets": filtered,
-        "count": len(filtered),
-        "totals": {
-            "purchase_cost": total_cost,
-            "accumulated_depreciation": total_depreciation,
-            "net_book_value": total_nbv
-        }
-    }
+    return result

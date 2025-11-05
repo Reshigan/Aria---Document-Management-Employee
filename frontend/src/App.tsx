@@ -40,6 +40,10 @@ import AriaChat from './pages/Aria/AriaChat';
 import CustomersPage from './pages/AR/Customers';
 import SuppliersPage from './pages/AP/Suppliers';
 import ProductsPage from './pages/Inventory/Products';
+import BankAccounts from './pages/Banking/BankAccounts';
+import Bills from './pages/AP/Bills';
+import VATReturnsPage from './pages/Tax/VATReturnsPage';
+import FinancialReports from './pages/Reports/FinancialReports';
 import './styles/design-system.css';
 
 function App() {
@@ -64,7 +68,8 @@ function App() {
           <Route path="/gl" element={<GeneralLedger />} />
           
           {/* Accounts Payable */}
-          <Route path="/ap" element={<InvoiceList />} />
+          <Route path="/ap" element={<Bills />} />
+          <Route path="/ap/bills" element={<Bills />} />
           <Route path="/ap/invoices" element={<InvoiceList />} />
           <Route path="/ap/invoices/new" element={<InvoiceForm />} />
           <Route path="/ap/purchase-orders" element={<PurchaseOrders />} />
@@ -78,6 +83,7 @@ function App() {
           
           {/* Banking */}
           <Route path="/banking" element={<BankingDashboard />} />
+          <Route path="/banking/accounts" element={<BankAccounts />} />
           
           {/* Fixed Assets */}
           <Route path="/fixed-assets" element={<FixedAssetsDashboard />} />
@@ -91,6 +97,7 @@ function App() {
           
           {/* Tax */}
           <Route path="/tax/vat" element={<VATReturns />} />
+          <Route path="/tax/vat-returns" element={<VATReturnsPage />} />
           
           {/* CRM */}
           <Route path="/crm" element={<CRMDashboard />} />
@@ -118,7 +125,8 @@ function App() {
           <Route path="/automation/mailroom" element={<Mailroom />} />
           
           {/* Reports */}
-          <Route path="/reports" element={<AgedReceivablesReport />} />
+          <Route path="/reports" element={<FinancialReports />} />
+          <Route path="/reports/financial" element={<FinancialReports />} />
           <Route path="/reports/ar-aging" element={<AgedReceivablesReport />} />
           <Route path="/reports/stock-valuation" element={<StockValuationReport />} />
           <Route path="/reports/vat-summary" element={<VATSummaryReport />} />

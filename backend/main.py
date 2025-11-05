@@ -263,6 +263,22 @@ app.include_router(procurement_router)
 from app.api.fixed_assets import router as fixed_assets_router
 app.include_router(fixed_assets_router)
 
+# Include Banking Module
+from app.api.banking import router as banking_router
+app.include_router(banking_router)
+
+# Include Accounts Payable Module
+from app.api.ap import router as ap_router
+app.include_router(ap_router)
+
+# Include VAT/Tax Module
+from app.api.vat import router as vat_router
+app.include_router(vat_router)
+
+# Include Financial Reports Module
+from app.api.reports import router as reports_router
+app.include_router(reports_router)
+
 # Pydantic models
 class UserLogin(PydanticBaseModel):
     username: str
