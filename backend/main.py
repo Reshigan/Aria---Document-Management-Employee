@@ -73,9 +73,16 @@ from schemas.security_schemas import (
     RoleCreate, UserRoleAssignment, SecurityDashboard
 )
 
-# Database setup
-DATABASE_URL = "sqlite:///./aria.db"
-engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
+# Database setup - NO SQLITE FALLBACK
+DATABASE_URL = os.getenv("DATABASE_URL")
+if not DATABASE_URL:
+    raise RuntimeError("DATABASE_URL environment variable is required. No SQLite fallback allowed.")
+
+if DATABASE_URL.startswith("postgresql"):
+    engine = create_engine(DATABASE_URL, pool_pre_ping=True)
+else:
+    raise RuntimeError(f"Only PostgreSQL is supported. Got: {DATABASE_URL.split(':')[0]}")
+
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 # Tables already exist, don't recreate them
