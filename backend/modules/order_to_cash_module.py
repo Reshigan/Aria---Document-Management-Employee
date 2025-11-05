@@ -377,7 +377,7 @@ async def list_products(
     params["limit"] = limit
     params["skip"] = skip
     
-    result = db.execute(query, params)
+    result = db.execute(text(query), params)
     products = []
     for row in result:
         products.append(ProductResponse(
@@ -409,7 +409,7 @@ async def create_product(
                   reorder_quantity, is_active, created_at
     """
     try:
-        result = db.execute(query, {
+        result = db.execute(text(query), {
             "id": str(product_id),
             "company_id": str(company_id),
             "code": product.code,
@@ -450,7 +450,7 @@ async def get_product(
         FROM products
         WHERE id = :product_id AND company_id = :company_id
     """
-    result = db.execute(query, {"product_id": str(product_id), "company_id": str(company_id)})
+    result = db.execute(text(query), {"product_id": str(product_id), "company_id": str(company_id)})
     row = result.fetchone()
     if not row:
         raise HTTPException(status_code=404, detail="Product not found")
@@ -478,7 +478,7 @@ async def list_warehouses(
         WHERE company_id = :company_id AND is_active = true
         ORDER BY code
     """
-    result = db.execute(query, {"company_id": str(company_id)})
+    result = db.execute(text(query), {"company_id": str(company_id)})
     warehouses = []
     for row in result:
         warehouses.append(WarehouseResponse(
@@ -506,7 +506,7 @@ async def create_warehouse(
         RETURNING id, company_id, code, name, address_line1, city, country, is_active, created_at
     """
     try:
-        result = db.execute(query, {
+        result = db.execute(text(query), {
             "id": str(warehouse_id),
             "company_id": str(company_id),
             "code": warehouse.code,
@@ -552,7 +552,7 @@ async def list_storage_locations(
     
     query += " ORDER BY code"
     
-    result = db.execute(query, params)
+    result = db.execute(text(query), params)
     locations = []
     for row in result:
         locations.append(StorageLocationResponse(
@@ -577,7 +577,7 @@ async def create_storage_location(
         RETURNING id, company_id, warehouse_id, code, name, is_active, created_at
     """
     try:
-        result = db.execute(query, {
+        result = db.execute(text(query), {
             "id": str(location_id),
             "company_id": str(company_id),
             "warehouse_id": str(location.warehouse_id),
@@ -629,7 +629,7 @@ async def list_stock_on_hand(
     
     query += " ORDER BY p.code, w.code"
     
-    result = db.execute(query, params)
+    result = db.execute(text(query), params)
     stock_list = []
     for row in result:
         stock_list.append(StockOnHandResponse(
@@ -666,7 +666,7 @@ async def create_stock_movement(
                       movement_type, quantity, unit_cost, reference_type, reference_id,
                       transaction_date, notes, created_by
         """
-        result = db.execute(query, {
+        result = db.execute(text(query), {
             "id": str(movement_id),
             "company_id": str(company_id),
             "product_id": str(movement.product_id),
@@ -752,7 +752,7 @@ async def list_stock_movements(
     params["limit"] = limit
     params["skip"] = skip
     
-    result = db.execute(query, params)
+    result = db.execute(text(query), params)
     movements = []
     for row in result:
         movements.append(StockMovementResponse(
@@ -799,7 +799,7 @@ async def list_sales_orders(
     params["limit"] = limit
     params["skip"] = skip
     
-    result = db.execute(query, params)
+    result = db.execute(text(query), params)
     orders = []
     for row in result:
         orders.append(SalesOrderResponse(
@@ -845,7 +845,7 @@ async def create_sales_order(
                       status, warehouse_id, subtotal, tax_amount, total_amount, notes,
                       created_by, approved_by, approved_at, created_at
         """
-        result = db.execute(query, {
+        result = db.execute(text(query), {
             "id": str(order_id),
             "company_id": str(company_id),
             "order_number": order_number,
@@ -919,7 +919,7 @@ async def get_sales_order(
         JOIN customers c ON so.customer_id = c.id
         WHERE so.id = :order_id AND so.company_id = :company_id
     """
-    result = db.execute(query, {"order_id": str(order_id), "company_id": str(company_id)})
+    result = db.execute(text(query), {"order_id": str(order_id), "company_id": str(company_id)})
     row = result.fetchone()
     if not row:
         raise HTTPException(status_code=404, detail="Sales order not found")
@@ -967,7 +967,7 @@ async def approve_sales_order(
             WHERE id = :order_id AND company_id = :company_id AND status = 'draft'
             RETURNING id
         """
-        result = db.execute(query, {
+        result = db.execute(text(query), {
             "order_id": str(order_id),
             "company_id": str(company_id),
             "user_id": str(user_id) if user_id else None
@@ -1019,7 +1019,7 @@ async def list_deliveries(
     params["limit"] = limit
     params["skip"] = skip
     
-    result = db.execute(query, params)
+    result = db.execute(text(query), params)
     deliveries = []
     for row in result:
         deliveries.append(DeliveryResponse(
@@ -1061,7 +1061,7 @@ async def create_delivery(
                       warehouse_id, delivery_date, status, tracking_number, carrier,
                       notes, signed_document_url, signed_at, created_by, created_at
         """
-        result = db.execute(query, {
+        result = db.execute(text(query), {
             "id": str(delivery_id),
             "company_id": str(company_id),
             "delivery_number": delivery_number,
@@ -1141,7 +1141,7 @@ async def get_delivery(
         JOIN warehouses w ON d.warehouse_id = w.id
         WHERE d.id = :delivery_id AND d.company_id = :company_id
     """
-    result = db.execute(query, {"delivery_id": str(delivery_id), "company_id": str(company_id)})
+    result = db.execute(text(query), {"delivery_id": str(delivery_id), "company_id": str(company_id)})
     row = result.fetchone()
     if not row:
         raise HTTPException(status_code=404, detail="Delivery not found")
