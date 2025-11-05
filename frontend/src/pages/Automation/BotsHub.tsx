@@ -40,8 +40,8 @@ export default function BotsHub() {
   const loadBots = async () => {
     try {
       setLoading(true);
-      const response = await api.get('/bots');
-      setBots(response.data);
+      const response = await api.get('/api/bots/marketplace/');
+      setBots(response.data.bots || []);
       setError(null);
     } catch (err: any) {
       console.error('Error loading bots:', err);
@@ -86,13 +86,20 @@ export default function BotsHub() {
   };
 
   const handleRunBot = async (botId: string) => {
+    const query = prompt('Enter your request for the bot:');
+    if (!query) return;
+    
     try {
-      await api.post(`/bots/${botId}/run`);
-      alert('Bot execution started!');
+      const response = await api.post(`/api/bots/marketplace/${botId}/execute`, {
+        query,
+        context: {}
+      });
+      alert(`Bot executed successfully!\n\nResponse: ${response.data.response}\n\nConfidence: ${(response.data.confidence * 100).toFixed(0)}%`);
       loadBots();
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error running bot:', err);
-      alert('Failed to run bot. This feature is coming soon!');
+      const message = err.response?.data?.detail || 'Failed to run bot';
+      alert(message);
     }
   };
 

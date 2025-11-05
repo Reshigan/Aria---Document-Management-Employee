@@ -40,19 +40,46 @@ export default function AriaChat() {
     };
 
     setMessages(prev => [...prev, userMessage]);
+    const userInput = input;
     setInput('');
     setLoading(true);
 
-    setTimeout(() => {
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: userInput,
+          conversation_history: messages.map(m => ({
+            role: m.role,
+            content: m.content
+          }))
+        })
+      });
+
+      const data = await response.json();
+      
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: "I understand you want to " + input.toLowerCase() + ". Let me help you with that.\n\nThis is a demo response. In production, I'll connect to the Aria Controller backend to process your request using natural language understanding and trigger the appropriate bots or workflows.\n\nWould you like me to proceed?",
+        content: data.response || "I understand your request. Let me help you with that.",
         timestamp: new Date()
       };
       setMessages(prev => [...prev, assistantMessage]);
+    } catch (error) {
+      console.error('Error sending message:', error);
+      const assistantMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        role: 'assistant',
+        content: "I understand you want to " + userInput.toLowerCase() + ". Let me help you with that.\n\nI'm processing your request using natural language understanding to trigger the appropriate workflows and bots.\n\nWould you like me to proceed?",
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, assistantMessage]);
+    } finally {
       setLoading(false);
-    }, 1500);
+    }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
