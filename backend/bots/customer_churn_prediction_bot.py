@@ -2,46 +2,56 @@
 ARIA ERP - Customer Churn Prediction Bot
 AI-powered customer retention analytics
 """
-import sqlite3
 from datetime import date, timedelta
+from typing import Optional
+from .bot_api_client import BotAPIClient
 
 class CustomerChurnPredictionBot:
-    def __init__(self, database_path: str = 'aria_erp_production.db'):
-        self.db_path = database_path
+    def __init__(
+        self,
+        api_client: Optional[BotAPIClient] = None,
+        mode: str = "api",
+        api_base_url: str = "http://localhost:8000",
+        api_token: Optional[str] = None,
+        db_session = None,
+        tenant_id: Optional[int] = None
+    ):
+        if api_client:
+            self.client = api_client
+        else:
+            self.client = BotAPIClient(
+                mode=mode,
+                api_base_url=api_base_url,
+                api_token=api_token,
+                db_session=db_session,
+                tenant_id=tenant_id
+            )
     
-    def predict_churn_risk(self, company_id: int, customer_id: int) -> dict:
-        """Predict customer churn risk"""
-        conn = sqlite3.connect(self.db_path)
-        cursor = conn.cursor()
-        
+    def predict_churn_risk(self, customer_id: int) -> dict:
+        """Predict customer churn risk using Reports API"""
         try:
-            # Days since last order
-            cursor.execute("""
-                SELECT MAX(julianday('now') - julianday(invoice_date))
-                FROM sales_invoices
-                WHERE company_id = ? AND customer_id = ?
-            """, (company_id, customer_id))
+            ar_report = self.client.get_aged_receivables()
             
-            days_since_last = cursor.fetchone()[0] or 999
+            customer_data = next((c for c in ar_report.get('customers', []) if c.get('customer_id') == customer_id), None)
             
-            # Order frequency (last 12 months)
-            cursor.execute("""
-                SELECT COUNT(*)
-                FROM sales_invoices
-                WHERE company_id = ? AND customer_id = ?
-                AND invoice_date >= date('now', '-12 months')
-            """, (company_id, customer_id))
+            if not customer_data:
+                return {
+                    'customer_id': customer_id,
+                    'churn_score': 50,
+                    'churn_risk': 'MEDIUM',
+                    'recommended_action': 'MONITOR'
+                }
             
-            order_count = cursor.fetchone()[0]
+            current_balance = float(customer_data.get('current', 0))
+            overdue_balance = float(customer_data.get('over_30', 0)) + float(customer_data.get('over_60', 0)) + float(customer_data.get('over_90', 0))
             
-            # Calculate churn score
             churn_score = 0
-            if days_since_last > 90:
+            if current_balance == 0 and overdue_balance == 0:
                 churn_score += 40
-            elif days_since_last > 60:
+            elif current_balance < 1000:
                 churn_score += 20
             
-            if order_count < 4:
+            if overdue_balance > current_balance:
                 churn_score += 30
             
             churn_risk = 'HIGH' if churn_score >= 50 else ('MEDIUM' if churn_score >= 30 else 'LOW')
@@ -50,13 +60,18 @@ class CustomerChurnPredictionBot:
                 'customer_id': customer_id,
                 'churn_score': churn_score,
                 'churn_risk': churn_risk,
-                'days_since_last_order': int(days_since_last),
-                'orders_last_12_months': order_count,
+                'current_balance': current_balance,
+                'overdue_balance': overdue_balance,
                 'recommended_action': 'CONTACT_IMMEDIATELY' if churn_risk == 'HIGH' else 'MONITOR'
             }
             
-        finally:
-            conn.close()
+        except Exception as e:
+            return {
+                'customer_id': customer_id,
+                'error': str(e),
+                'churn_score': 50,
+                'churn_risk': 'UNKNOWN'
+            }
 
 def main():
     print("\n" + "="*60)
