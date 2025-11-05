@@ -25,6 +25,11 @@ import AgedReceivablesReport from './pages/Reports/AgedReceivablesReport';
 import StockValuationReport from './pages/Reports/StockValuationReport';
 import VATSummaryReport from './pages/Reports/VATSummaryReport';
 import BankingDashboard from './pages/Banking/BankingDashboard';
+import ChatInterface from './components/Chat/ChatInterface';
+import SystemSettings from './pages/admin/SystemSettings';
+import CompanySettings from './pages/admin/CompanySettings';
+import BotConfiguration from './pages/admin/BotConfiguration';
+import UserManagement from './pages/admin/UserManagement';
 import './styles/design-system.css';
 
 function App() {
@@ -95,6 +100,16 @@ function App() {
           
           {/* Settings */}
           <Route path="/settings" element={<Settings />} />
+          
+          {/* Aria Chat */}
+          <Route path="/chat" element={<ChatInterface />} />
+          <Route path="/aria" element={<ChatInterface />} />
+          
+          {/* Admin */}
+          <Route path="/admin/system" element={<SystemSettings />} />
+          <Route path="/admin/company" element={<CompanySettings />} />
+          <Route path="/admin/bots" element={<BotConfiguration />} />
+          <Route path="/admin/users" element={<UserManagement />} />
         </Routes>
       </MainLayout>
     </BrowserRouter>
