@@ -32,6 +32,10 @@ import BotConfiguration from './pages/admin/BotConfiguration';
 import UserManagement from './pages/admin/UserManagement';
 import BotsHub from './pages/Automation/BotsHub';
 import Mailroom from './pages/Automation/Mailroom';
+import FixedAssetsDashboard from './pages/FixedAssets/FixedAssetsDashboard';
+import ProjectsDashboard from './pages/Projects/ProjectsDashboard';
+import VATReturns from './pages/Tax/VATReturns';
+import PurchaseOrders from './pages/AP/PurchaseOrders';
 import './styles/design-system.css';
 
 function App() {
@@ -59,6 +63,7 @@ function App() {
           <Route path="/ap" element={<InvoiceList />} />
           <Route path="/ap/invoices" element={<InvoiceList />} />
           <Route path="/ap/invoices/new" element={<InvoiceForm />} />
+          <Route path="/ap/purchase-orders" element={<PurchaseOrders />} />
           <Route path="/ap/suppliers" element={<Suppliers />} />
           
           {/* Accounts Receivable */}
@@ -70,9 +75,18 @@ function App() {
           {/* Banking */}
           <Route path="/banking" element={<BankingDashboard />} />
           
+          {/* Fixed Assets */}
+          <Route path="/fixed-assets" element={<FixedAssetsDashboard />} />
+          
           {/* Payroll */}
           <Route path="/payroll" element={<PayrollDashboard />} />
           <Route path="/payroll/employees" element={<PayrollDashboard />} />
+          
+          {/* Projects */}
+          <Route path="/projects" element={<ProjectsDashboard />} />
+          
+          {/* Tax */}
+          <Route path="/tax/vat" element={<VATReturns />} />
           
           {/* CRM */}
           <Route path="/crm" element={<CRMDashboard />} />
