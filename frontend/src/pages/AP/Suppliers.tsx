@@ -428,15 +428,15 @@ export default function Suppliers() {
                       }}
                     >
                       <option value="">Not Specified</option>
-                      <option value="1">Level 1 (135%)</option>
-                      <option value="2">Level 2 (125%)</option>
-                      <option value="3">Level 3 (110%)</option>
-                      <option value="4">Level 4 (100%)</option>
-                      <option value="5">Level 5 (80%)</option>
-                      <option value="6">Level 6 (60%)</option>
-                      <option value="7">Level 7 (50%)</option>
-                      <option value="8">Level 8 (10%)</option>
-                      <option value="0">Non-Compliant (0%)</option>
+                      <option value="level_1">Level 1 (135%)</option>
+                      <option value="level_2">Level 2 (125%)</option>
+                      <option value="level_3">Level 3 (110%)</option>
+                      <option value="level_4">Level 4 (100%)</option>
+                      <option value="level_5">Level 5 (80%)</option>
+                      <option value="level_6">Level 6 (60%)</option>
+                      <option value="level_7">Level 7 (50%)</option>
+                      <option value="level_8">Level 8 (10%)</option>
+                      <option value="non_compliant">Non-Compliant (0%)</option>
                     </select>
                   </div>
                   <div>
