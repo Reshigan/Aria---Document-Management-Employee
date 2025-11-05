@@ -47,6 +47,7 @@ api.interceptors.response.use(
 );
 
 export default api;
+export { api }; // Named export for compatibility
 
 // API functions
 export const auth = {
