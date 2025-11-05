@@ -3,13 +3,9 @@ import { MainLayout } from './components/layout/MainLayout';
 import ExecutiveDashboard from './pages/Dashboard/ExecutiveDashboard';
 import Quotes from './pages/ERP/Quotes';
 import SalesOrders from './pages/ERP/SalesOrders';
-import SalesOrderDetail from './pages/ERP/SalesOrderDetail';
 import Deliveries from './pages/ERP/Deliveries';
-import DeliveryDetail from './pages/ERP/DeliveryDetail';
 import WMSStock from './pages/ERP/WMSStock';
 import GeneralLedger from './pages/ERP/GeneralLedger';
-import InvoiceDetail from './pages/ERP/InvoiceDetail';
-import ReceiptDetail from './pages/ERP/ReceiptDetail';
 import ERPDashboard from './pages/ERPDashboard';
 import BotRegistry from './pages/BotRegistry';
 import Settings from './pages/Settings';
@@ -51,9 +47,9 @@ function App() {
           {/* Order-to-Cash */}
           <Route path="/quotes" element={<Quotes />} />
           <Route path="/sales-orders" element={<SalesOrders />} />
-          <Route path="/sales-orders/:id" element={<SalesOrderDetail />} />
+          <Route path="/sales-orders/new" element={<SalesOrders />} />
           <Route path="/deliveries" element={<Deliveries />} />
-          <Route path="/deliveries/:id" element={<DeliveryDetail />} />
+          <Route path="/deliveries/new" element={<Deliveries />} />
           <Route path="/wms-stock" element={<WMSStock />} />
           
           {/* General Ledger */}
@@ -69,9 +65,7 @@ function App() {
           <Route path="/ar" element={<CRMDashboard />} />
           <Route path="/ar/customers" element={<CRMDashboard />} />
           <Route path="/ar/invoices" element={<InvoiceList />} />
-          <Route path="/ar/invoices/:id" element={<InvoiceDetail />} />
-          <Route path="/ar/receipts/new" element={<ReceiptDetail />} />
-          <Route path="/ar/receipts/:id" element={<ReceiptDetail />} />
+          <Route path="/ar/invoices/new" element={<InvoiceList />} />
           
           {/* Banking */}
           <Route path="/banking" element={<BankingDashboard />} />
