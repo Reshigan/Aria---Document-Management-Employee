@@ -34,6 +34,8 @@ import SystemSettings from './pages/admin/SystemSettings';
 import CompanySettings from './pages/admin/CompanySettings';
 import BotConfiguration from './pages/admin/BotConfiguration';
 import UserManagement from './pages/admin/UserManagement';
+import BotsHub from './pages/Automation/BotsHub';
+import Mailroom from './pages/Automation/Mailroom';
 import './styles/design-system.css';
 
 function App() {
@@ -98,8 +100,10 @@ function App() {
           <Route path="/manufacturing/bom" element={<BOMManagement />} />
           <Route path="/manufacturing/work-orders" element={<WorkOrders />} />
           
-          {/* Bots */}
+          {/* Automation */}
           <Route path="/bots" element={<BotRegistry />} />
+          <Route path="/automation/bots" element={<BotsHub />} />
+          <Route path="/automation/mailroom" element={<Mailroom />} />
           
           {/* Reports */}
           <Route path="/reports" element={<AgedReceivablesReport />} />
