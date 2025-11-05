@@ -470,7 +470,7 @@ export default function SalesOrders() {
           <option value="cancelled">Cancelled</option>
         </select>
         <button
-          onClick={fetchOrders}
+          onClick={loadOrders}
           style={{
             padding: '0.5rem 1.5rem',
             background: '#2563eb',
