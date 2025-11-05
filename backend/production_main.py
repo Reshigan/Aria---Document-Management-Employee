@@ -47,6 +47,30 @@ app.add_middleware(
 )
 
 # ========================================
+# ========================================
+
+try:
+    from modules.sap_integration import router as sap_integration_router
+    app.include_router(sap_integration_router)
+    print("✅ SAP Integration module loaded")
+except Exception as e:
+    print(f"⚠️ SAP Integration module not loaded: {e}")
+
+try:
+    from modules.master_data_module import router as master_data_router
+    app.include_router(master_data_router)
+    print("✅ Master Data module loaded")
+except Exception as e:
+    print(f"⚠️ Master Data module not loaded: {e}")
+
+try:
+    from modules.order_to_cash_module import router as order_to_cash_router
+    app.include_router(order_to_cash_router)
+    print("✅ Order-to-Cash module loaded")
+except Exception as e:
+    print(f"⚠️ Order-to-Cash module not loaded: {e}")
+
+# ========================================
 # REQUEST/RESPONSE MODELS
 # ========================================
 
