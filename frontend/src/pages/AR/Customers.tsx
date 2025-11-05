@@ -42,7 +42,7 @@ export default function Customers() {
   const loadCustomers = async () => {
     try {
       setLoading(true);
-      const response = await api.get('/api/erp/master-data/customers');
+      const response = await api.get('/erp/master-data/customers');
       setCustomers(response.data);
     } catch (error) {
       console.error('Error loading customers:', error);
@@ -55,9 +55,9 @@ export default function Customers() {
     e.preventDefault();
     try {
       if (editingCustomer) {
-        await api.put(`/api/erp/master-data/customers/${editingCustomer.id}`, formData);
+        await api.put(`/erp/master-data/customers/${editingCustomer.id}`, formData);
       } else {
-        await api.post('/api/erp/master-data/customers', formData);
+        await api.post('/erp/master-data/customers', formData);
       }
       setShowForm(false);
       setEditingCustomer(null);
@@ -88,7 +88,7 @@ export default function Customers() {
   const handleDelete = async (id: string) => {
     if (!confirm('Are you sure you want to delete this customer?')) return;
     try {
-      await api.delete(`/api/erp/master-data/customers/${id}`);
+      await api.delete(`/erp/master-data/customers/${id}`);
       loadCustomers();
     } catch (error) {
       console.error('Error deleting customer:', error);
