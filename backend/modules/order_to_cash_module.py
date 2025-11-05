@@ -320,7 +320,7 @@ def get_db():
         db.close()
 
 def get_company_id(db: Session = Depends(get_db)) -> UUID:
-    result = db.execute("SELECT id FROM companies LIMIT 1")
+    result = db.execute(text("SELECT id FROM companies LIMIT 1"))
     row = result.fetchone()
     if not row:
         raise HTTPException(status_code=400, detail="No company found")
