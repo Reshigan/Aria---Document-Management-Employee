@@ -13,9 +13,9 @@ import Customers from './pages/Customers';
 import Suppliers from './pages/Suppliers';
 import InvoiceList from './pages/Financial/InvoiceList';
 import InvoiceForm from './pages/Financial/InvoiceForm';
-import EmployeeDirectory from './pages/HR/EmployeeDirectory';
+import PayrollDashboard from './pages/HR/PayrollDashboard';
 import CRMDashboard from './pages/CRM/CRMDashboard';
-import SupplierList from './pages/Procurement/SupplierList';
+import ProcurementDashboard from './pages/Procurement/ProcurementDashboard';
 import ProductCatalog from './pages/Procurement/ProductCatalog';
 import RFQManagement from './pages/Procurement/RFQManagement';
 import ManufacturingDashboard from './pages/Manufacturing/ManufacturingDashboard';
@@ -61,8 +61,8 @@ function App() {
           <Route path="/banking" element={<BankingDashboard />} />
           
           {/* Payroll */}
-          <Route path="/payroll" element={<EmployeeDirectory />} />
-          <Route path="/payroll/employees" element={<EmployeeDirectory />} />
+          <Route path="/payroll" element={<PayrollDashboard />} />
+          <Route path="/payroll/employees" element={<PayrollDashboard />} />
           
           {/* CRM */}
           <Route path="/crm" element={<CRMDashboard />} />
@@ -74,9 +74,9 @@ function App() {
           <Route path="/inventory/stock" element={<WMSStock />} />
           
           {/* Procurement */}
-          <Route path="/procurement" element={<SupplierList />} />
-          <Route path="/procurement/suppliers" element={<Suppliers />} />
-          <Route path="/procurement/rfq" element={<RFQManagement />} />
+          <Route path="/procurement" element={<ProcurementDashboard />} />
+          <Route path="/procurement/suppliers" element={<ProcurementDashboard />} />
+          <Route path="/procurement/rfq" element={<ProcurementDashboard />} />
           <Route path="/procurement/products" element={<ProductCatalog />} />
           
           {/* Manufacturing */}
