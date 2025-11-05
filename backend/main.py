@@ -255,6 +255,14 @@ app.include_router(sap_integration_router)
 from modules.ar_invoice_module import router as ar_invoice_router
 app.include_router(ar_invoice_router)
 
+# Include Procurement Module
+from app.api.procurement import router as procurement_router
+app.include_router(procurement_router)
+
+# Include Fixed Assets Module
+from app.api.fixed_assets import router as fixed_assets_router
+app.include_router(fixed_assets_router)
+
 # Pydantic models
 class UserLogin(PydanticBaseModel):
     username: str

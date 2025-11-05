@@ -30,6 +30,16 @@ import SystemSettings from './pages/admin/SystemSettings';
 import CompanySettings from './pages/admin/CompanySettings';
 import BotConfiguration from './pages/admin/BotConfiguration';
 import UserManagement from './pages/admin/UserManagement';
+import BotsHub from './pages/Automation/BotsHub';
+import Mailroom from './pages/Automation/Mailroom';
+import FixedAssetsDashboard from './pages/FixedAssets/FixedAssetsDashboard';
+import ProjectsDashboard from './pages/Projects/ProjectsDashboard';
+import VATReturns from './pages/Tax/VATReturns';
+import PurchaseOrders from './pages/AP/PurchaseOrders';
+import AriaChat from './pages/Aria/AriaChat';
+import CustomersPage from './pages/AR/Customers';
+import SuppliersPage from './pages/AP/Suppliers';
+import ProductsPage from './pages/Inventory/Products';
 import './styles/design-system.css';
 
 function App() {
@@ -45,7 +55,9 @@ function App() {
           {/* Order-to-Cash */}
           <Route path="/quotes" element={<Quotes />} />
           <Route path="/sales-orders" element={<SalesOrders />} />
+          <Route path="/sales-orders/new" element={<SalesOrders />} />
           <Route path="/deliveries" element={<Deliveries />} />
+          <Route path="/deliveries/new" element={<Deliveries />} />
           <Route path="/wms-stock" element={<WMSStock />} />
           
           {/* General Ledger */}
@@ -55,19 +67,30 @@ function App() {
           <Route path="/ap" element={<InvoiceList />} />
           <Route path="/ap/invoices" element={<InvoiceList />} />
           <Route path="/ap/invoices/new" element={<InvoiceForm />} />
-          <Route path="/ap/suppliers" element={<Suppliers />} />
+          <Route path="/ap/purchase-orders" element={<PurchaseOrders />} />
+          <Route path="/ap/suppliers" element={<SuppliersPage />} />
           
           {/* Accounts Receivable */}
           <Route path="/ar" element={<CRMDashboard />} />
-          <Route path="/ar/customers" element={<CRMDashboard />} />
+          <Route path="/ar/customers" element={<CustomersPage />} />
           <Route path="/ar/invoices" element={<InvoiceList />} />
+          <Route path="/ar/invoices/new" element={<InvoiceList />} />
           
           {/* Banking */}
           <Route path="/banking" element={<BankingDashboard />} />
           
+          {/* Fixed Assets */}
+          <Route path="/fixed-assets" element={<FixedAssetsDashboard />} />
+          
           {/* Payroll */}
           <Route path="/payroll" element={<PayrollDashboard />} />
           <Route path="/payroll/employees" element={<PayrollDashboard />} />
+          
+          {/* Projects */}
+          <Route path="/projects" element={<ProjectsDashboard />} />
+          
+          {/* Tax */}
+          <Route path="/tax/vat" element={<VATReturns />} />
           
           {/* CRM */}
           <Route path="/crm" element={<CRMDashboard />} />
@@ -75,7 +98,7 @@ function App() {
           
           {/* Inventory */}
           <Route path="/inventory" element={<WMSStock />} />
-          <Route path="/inventory/products" element={<ProductCatalog />} />
+          <Route path="/inventory/products" element={<ProductsPage />} />
           <Route path="/inventory/stock" element={<WMSStock />} />
           
           {/* Procurement */}
@@ -89,8 +112,10 @@ function App() {
           <Route path="/manufacturing/bom" element={<BOMManagement />} />
           <Route path="/manufacturing/work-orders" element={<WorkOrders />} />
           
-          {/* Bots */}
+          {/* Automation */}
           <Route path="/bots" element={<BotRegistry />} />
+          <Route path="/automation/bots" element={<BotsHub />} />
+          <Route path="/automation/mailroom" element={<Mailroom />} />
           
           {/* Reports */}
           <Route path="/reports" element={<AgedReceivablesReport />} />
