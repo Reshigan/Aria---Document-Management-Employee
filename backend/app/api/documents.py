@@ -92,6 +92,7 @@ async def process_document(
         
         doc_type = doc_type_hint or doc_classification.get('category', 'unknown')
         confidence = doc_classification.get('confidence', 0.0)
+        sap_posting = doc_classification.get('sap_posting', {})
         
         ocr_data = {}
         line_items = []
@@ -163,6 +164,7 @@ async def process_document(
             'file_path': str(file_path),
             'doc_type': doc_type,
             'classification_confidence': confidence,
+            'sap_posting': sap_posting,
             'header': header_fields,
             'lines': line_items,
             'field_confidence': field_confidence,
