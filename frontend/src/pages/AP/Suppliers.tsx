@@ -63,10 +63,17 @@ export default function Suppliers() {
     e.preventDefault();
     e.stopPropagation();
     try {
+      const cleanedData = {
+        ...formData,
+        bbbee_certificate_expiry: formData.bbbee_certificate_expiry && formData.bbbee_certificate_expiry.trim() !== '' 
+          ? formData.bbbee_certificate_expiry 
+          : undefined
+      };
+      
       if (editingSupplier) {
-        await api.put(`/erp/master-data/suppliers/${editingSupplier.id}`, formData);
+        await api.put(`/erp/master-data/suppliers/${editingSupplier.id}`, cleanedData);
       } else {
-        await api.post('/erp/master-data/suppliers', formData);
+        await api.post('/erp/master-data/suppliers', cleanedData);
       }
       setShowForm(false);
       setEditingSupplier(null);
