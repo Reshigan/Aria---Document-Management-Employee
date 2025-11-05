@@ -1,0 +1,384 @@
+import React, { ReactNode } from 'react';
+import { ArrowLeft, Save, Check, X, FileText, Mail, Printer } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+
+interface TransactionLayoutProps {
+  title: string;
+  documentNumber?: string;
+  status?: string;
+  children: ReactNode;
+  onSave?: () => void;
+  onApprove?: () => void;
+  onPost?: () => void;
+  onCancel?: () => void;
+  onPrint?: () => void;
+  onEmail?: () => void;
+  backUrl?: string;
+  showActions?: boolean;
+  loading?: boolean;
+}
+
+export function TransactionLayout({
+  title,
+  documentNumber,
+  status,
+  children,
+  onSave,
+  onApprove,
+  onPost,
+  onCancel,
+  onPrint,
+  onEmail,
+  backUrl,
+  showActions = true,
+  loading = false
+}: TransactionLayoutProps) {
+  const navigate = useNavigate();
+
+  const getStatusColor = (status?: string) => {
+    const colors: Record<string, string> = {
+      draft: '#6b7280',
+      approved: '#3b82f6',
+      posted: '#10b981',
+      cancelled: '#ef4444',
+      unpaid: '#f59e0b',
+      partial: '#8b5cf6',
+      paid: '#10b981'
+    };
+    return colors[status || 'draft'] || '#6b7280';
+  };
+
+  const getStatusLabel = (status?: string) => {
+    const labels: Record<string, string> = {
+      draft: 'Draft',
+      approved: 'Approved',
+      posted: 'Posted',
+      cancelled: 'Cancelled',
+      unpaid: 'Unpaid',
+      partial: 'Partially Paid',
+      paid: 'Paid'
+    };
+    return labels[status || 'draft'] || status || 'Draft';
+  };
+
+  return (
+    <div style={{ minHeight: '100vh', background: '#f9fafb' }}>
+      {/* Header */}
+      <div style={{
+        background: 'white',
+        borderBottom: '1px solid #e5e7eb',
+        padding: '1rem 2rem',
+        position: 'sticky',
+        top: 0,
+        zIndex: 100
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            {backUrl && (
+              <button
+                onClick={() => navigate(backUrl)}
+                style={{
+                  padding: '0.5rem',
+                  background: 'transparent',
+                  border: 'none',
+                  color: '#6b7280',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center'
+                }}
+              >
+                <ArrowLeft size={20} />
+              </button>
+            )}
+            <div>
+              <h1 style={{ fontSize: '1.5rem', fontWeight: '600', margin: 0 }}>
+                {title}
+              </h1>
+              {documentNumber && (
+                <p style={{ fontSize: '0.875rem', color: '#6b7280', margin: '0.25rem 0 0 0' }}>
+                  {documentNumber}
+                </p>
+              )}
+            </div>
+            {status && (
+              <span style={{
+                padding: '0.25rem 0.75rem',
+                borderRadius: '9999px',
+                fontSize: '0.75rem',
+                fontWeight: '600',
+                color: 'white',
+                background: getStatusColor(status),
+                textTransform: 'uppercase'
+              }}>
+                {getStatusLabel(status)}
+              </span>
+            )}
+          </div>
+
+          {showActions && (
+            <div style={{ display: 'flex', gap: '0.5rem' }}>
+              {onPrint && (
+                <button
+                  onClick={onPrint}
+                  disabled={loading}
+                  style={{
+                    padding: '0.5rem 1rem',
+                    background: 'white',
+                    border: '1px solid #d1d5db',
+                    borderRadius: '0.375rem',
+                    fontSize: '0.875rem',
+                    fontWeight: '500',
+                    color: '#374151',
+                    cursor: loading ? 'not-allowed' : 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    opacity: loading ? 0.5 : 1
+                  }}
+                >
+                  <Printer size={16} />
+                  Print
+                </button>
+              )}
+              {onEmail && (
+                <button
+                  onClick={onEmail}
+                  disabled={loading}
+                  style={{
+                    padding: '0.5rem 1rem',
+                    background: 'white',
+                    border: '1px solid #d1d5db',
+                    borderRadius: '0.375rem',
+                    fontSize: '0.875rem',
+                    fontWeight: '500',
+                    color: '#374151',
+                    cursor: loading ? 'not-allowed' : 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    opacity: loading ? 0.5 : 1
+                  }}
+                >
+                  <Mail size={16} />
+                  Email
+                </button>
+              )}
+              {onCancel && status === 'draft' && (
+                <button
+                  onClick={onCancel}
+                  disabled={loading}
+                  style={{
+                    padding: '0.5rem 1rem',
+                    background: 'white',
+                    border: '1px solid #d1d5db',
+                    borderRadius: '0.375rem',
+                    fontSize: '0.875rem',
+                    fontWeight: '500',
+                    color: '#ef4444',
+                    cursor: loading ? 'not-allowed' : 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    opacity: loading ? 0.5 : 1
+                  }}
+                >
+                  <X size={16} />
+                  Cancel
+                </button>
+              )}
+              {onApprove && status === 'draft' && (
+                <button
+                  onClick={onApprove}
+                  disabled={loading}
+                  style={{
+                    padding: '0.5rem 1rem',
+                    background: '#3b82f6',
+                    border: 'none',
+                    borderRadius: '0.375rem',
+                    fontSize: '0.875rem',
+                    fontWeight: '500',
+                    color: 'white',
+                    cursor: loading ? 'not-allowed' : 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    opacity: loading ? 0.5 : 1
+                  }}
+                >
+                  <Check size={16} />
+                  Approve
+                </button>
+              )}
+              {onPost && (status === 'approved' || status === 'draft') && (
+                <button
+                  onClick={onPost}
+                  disabled={loading}
+                  style={{
+                    padding: '0.5rem 1rem',
+                    background: '#10b981',
+                    border: 'none',
+                    borderRadius: '0.375rem',
+                    fontSize: '0.875rem',
+                    fontWeight: '500',
+                    color: 'white',
+                    cursor: loading ? 'not-allowed' : 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    opacity: loading ? 0.5 : 1
+                  }}
+                >
+                  <FileText size={16} />
+                  Post
+                </button>
+              )}
+              {onSave && status === 'draft' && (
+                <button
+                  onClick={onSave}
+                  disabled={loading}
+                  style={{
+                    padding: '0.5rem 1rem',
+                    background: '#2563eb',
+                    border: 'none',
+                    borderRadius: '0.375rem',
+                    fontSize: '0.875rem',
+                    fontWeight: '500',
+                    color: 'white',
+                    cursor: loading ? 'not-allowed' : 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    opacity: loading ? 0.5 : 1
+                  }}
+                >
+                  <Save size={16} />
+                  Save
+                </button>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Content */}
+      <div style={{ padding: '2rem' }}>
+        {children}
+      </div>
+    </div>
+  );
+}
+
+interface TransactionCardProps {
+  title: string;
+  children: ReactNode;
+  actions?: ReactNode;
+}
+
+export function TransactionCard({ title, children, actions }: TransactionCardProps) {
+  return (
+    <div style={{
+      background: 'white',
+      borderRadius: '0.5rem',
+      boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+      marginBottom: '1.5rem'
+    }}>
+      <div style={{
+        padding: '1rem 1.5rem',
+        borderBottom: '1px solid #e5e7eb',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between'
+      }}>
+        <h2 style={{ fontSize: '1.125rem', fontWeight: '600', margin: 0 }}>
+          {title}
+        </h2>
+        {actions && <div>{actions}</div>}
+      </div>
+      <div style={{ padding: '1.5rem' }}>
+        {children}
+      </div>
+    </div>
+  );
+}
+
+interface TransactionFieldProps {
+  label: string;
+  value?: string | number | null;
+  type?: 'text' | 'email' | 'date' | 'number' | 'textarea' | 'select';
+  options?: { value: string; label: string }[];
+  onChange?: (value: string) => void;
+  required?: boolean;
+  disabled?: boolean;
+  placeholder?: string;
+  rows?: number;
+}
+
+export function TransactionField({
+  label,
+  value,
+  type = 'text',
+  options,
+  onChange,
+  required,
+  disabled,
+  placeholder,
+  rows = 3
+}: TransactionFieldProps) {
+  const inputStyle = {
+    width: '100%',
+    padding: '0.5rem',
+    border: '1px solid #d1d5db',
+    borderRadius: '0.375rem',
+    fontSize: '0.875rem',
+    background: disabled ? '#f9fafb' : 'white',
+    color: disabled ? '#6b7280' : '#111827'
+  };
+
+  return (
+    <div>
+      <label style={{
+        display: 'block',
+        fontSize: '0.875rem',
+        fontWeight: '500',
+        marginBottom: '0.5rem',
+        color: '#374151'
+      }}>
+        {label} {required && <span style={{ color: '#ef4444' }}>*</span>}
+      </label>
+      {type === 'textarea' ? (
+        <textarea
+          value={value || ''}
+          onChange={(e) => onChange?.(e.target.value)}
+          disabled={disabled}
+          placeholder={placeholder}
+          rows={rows}
+          style={{ ...inputStyle, resize: 'vertical' }}
+        />
+      ) : type === 'select' ? (
+        <select
+          value={value || ''}
+          onChange={(e) => onChange?.(e.target.value)}
+          disabled={disabled}
+          style={inputStyle}
+        >
+          <option value="">Select...</option>
+          {options?.map((opt) => (
+            <option key={opt.value} value={opt.value}>
+              {opt.label}
+            </option>
+          ))}
+        </select>
+      ) : (
+        <input
+          type={type}
+          value={value || ''}
+          onChange={(e) => onChange?.(e.target.value)}
+          disabled={disabled}
+          required={required}
+          placeholder={placeholder}
+          style={inputStyle}
+        />
+      )}
+    </div>
+  );
+}
