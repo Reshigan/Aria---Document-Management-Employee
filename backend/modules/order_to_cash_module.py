@@ -328,7 +328,7 @@ class DeliveryResponse(BaseModel):
         from_attributes = True
 
 def get_db():
-    from core.database import SessionLocal
+    from core.database_pg import SessionLocal
     db = SessionLocal()
     try:
         yield db

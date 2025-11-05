@@ -52,7 +52,7 @@ class PriceListType(str, Enum):
 # ============================================================================
 
 def get_db():
-    from core.database import SessionLocal
+    from core.database_pg import SessionLocal
     db = SessionLocal()
     try:
         yield db
