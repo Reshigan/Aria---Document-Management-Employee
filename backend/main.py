@@ -263,6 +263,10 @@ app.include_router(procurement_router)
 from app.api.fixed_assets import router as fixed_assets_router
 app.include_router(fixed_assets_router)
 
+# Include Banking Module
+from app.api.banking import router as banking_router
+app.include_router(banking_router)
+
 # Pydantic models
 class UserLogin(PydanticBaseModel):
     username: str
