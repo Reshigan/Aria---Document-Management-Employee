@@ -3,7 +3,7 @@ ARIA ERP - Document Processing API
 Handles document upload, OCR, classification, and posting to ERP
 """
 from fastapi import APIRouter, UploadFile, File, HTTPException, Depends, Form
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, StreamingResponse
 from sqlalchemy.orm import Session
 from typing import Optional, List
 from datetime import datetime, date
@@ -12,6 +12,8 @@ import os
 import hashlib
 import shutil
 from pathlib import Path
+import io
+import json
 
 from app.database import get_db
 from app.auth import get_current_user
@@ -323,3 +325,195 @@ async def send_to_controller(
         'status': 'queued',
         'note': 'Controller integration coming soon - will process via email/workflow engine'
     }
+
+
+@router.post("/export-excel")
+async def export_to_excel(
+    doc_type: str = Form(...),
+    header: str = Form(...),
+    lines: str = Form(...),
+    sap_posting: str = Form(None),
+    current_user: User = Depends(get_current_user)
+):
+    """
+    Export extracted document data to Excel for manual SAP upload
+    
+    Creates a formatted Excel file with:
+    - Header sheet with document details
+    - Line items sheet with all line details
+    - SAP posting instructions
+    - Ready for manual upload to SAP
+    
+    Args:
+        doc_type: Document type (invoice, credit_note, etc.)
+        header: JSON string of header fields
+        lines: JSON string of line items
+        sap_posting: JSON string of SAP posting suggestions
+    
+    Returns:
+        Excel file download
+    """
+    try:
+        from openpyxl import Workbook
+        from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
+        from openpyxl.utils import get_column_letter
+        
+        header_data = json.loads(header) if isinstance(header, str) else header
+        line_items = json.loads(lines) if isinstance(lines, str) else lines
+        sap_data = json.loads(sap_posting) if sap_posting and isinstance(sap_posting, str) else {}
+        
+        wb = Workbook()
+        
+        ws_header = wb.active
+        ws_header.title = "Document Header"
+        
+        header_fill = PatternFill(start_color="4472C4", end_color="4472C4", fill_type="solid")
+        header_font = Font(bold=True, color="FFFFFF", size=12)
+        border = Border(
+            left=Side(style='thin'),
+            right=Side(style='thin'),
+            top=Side(style='thin'),
+            bottom=Side(style='thin')
+        )
+        
+        ws_header['A1'] = 'ARIA ERP - Document Export for SAP'
+        ws_header['A1'].font = Font(bold=True, size=14, color="4472C4")
+        ws_header.merge_cells('A1:D1')
+        
+        ws_header['A2'] = f'Document Type: {doc_type.upper().replace("_", " ")}'
+        ws_header['A2'].font = Font(bold=True, size=11)
+        ws_header.merge_cells('A2:D2')
+        
+        ws_header['A3'] = f'Exported: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}'
+        ws_header['A3'].font = Font(italic=True, size=10)
+        ws_header.merge_cells('A3:D3')
+        
+        if sap_data:
+            row = 5
+            ws_header[f'A{row}'] = 'SAP Posting Instructions'
+            ws_header[f'A{row}'].font = Font(bold=True, size=12, color="C00000")
+            ws_header.merge_cells(f'A{row}:D{row}')
+            
+            row += 1
+            ws_header[f'A{row}'] = 'SAP Module:'
+            ws_header[f'A{row}'].font = Font(bold=True)
+            ws_header[f'B{row}'] = sap_data.get('module', 'N/A')
+            ws_header[f'B{row}'].fill = PatternFill(start_color="FFF2CC", end_color="FFF2CC", fill_type="solid")
+            
+            row += 1
+            ws_header[f'A{row}'] = 'Transaction Code:'
+            ws_header[f'A{row}'].font = Font(bold=True)
+            ws_header[f'B{row}'] = sap_data.get('tcode', 'N/A')
+            ws_header[f'B{row}'].fill = PatternFill(start_color="FFF2CC", end_color="FFF2CC", fill_type="solid")
+            ws_header[f'B{row}'].font = Font(bold=True, size=12, color="C00000")
+            
+            row += 1
+            ws_header[f'A{row}'] = 'Description:'
+            ws_header[f'A{row}'].font = Font(bold=True)
+            ws_header[f'B{row}'] = sap_data.get('description', 'N/A')
+            ws_header.merge_cells(f'B{row}:D{row}')
+            
+            row += 1
+            ws_header[f'A{row}'] = 'Rationale:'
+            ws_header[f'A{row}'].font = Font(bold=True)
+            ws_header[f'B{row}'] = sap_data.get('rationale', 'N/A')
+            ws_header.merge_cells(f'B{row}:D{row}')
+            ws_header[f'B{row}'].alignment = Alignment(wrap_text=True)
+            
+            row += 2
+        else:
+            row = 7
+        
+        ws_header[f'A{row}'] = 'Document Details'
+        ws_header[f'A{row}'].font = Font(bold=True, size=12)
+        ws_header[f'A{row}'].fill = header_fill
+        ws_header[f'B{row}'].fill = header_fill
+        ws_header.merge_cells(f'A{row}:B{row}')
+        
+        row += 1
+        header_fields = [
+            ('Supplier/Vendor', header_data.get('supplier_name', '')),
+            ('Invoice Number', header_data.get('invoice_number', '')),
+            ('Invoice Date', header_data.get('invoice_date', '')),
+            ('Due Date', header_data.get('due_date', '')),
+            ('Net Amount', header_data.get('net_amount', 0)),
+            ('VAT Amount', header_data.get('vat_amount', 0)),
+            ('Total Amount', header_data.get('total_amount', 0))
+        ]
+        
+        for field_name, field_value in header_fields:
+            ws_header[f'A{row}'] = field_name
+            ws_header[f'A{row}'].font = Font(bold=True)
+            ws_header[f'A{row}'].border = border
+            ws_header[f'B{row}'] = field_value
+            ws_header[f'B{row}'].border = border
+            if isinstance(field_value, (int, float)):
+                ws_header[f'B{row}'].number_format = '#,##0.00'
+            row += 1
+        
+        ws_header.column_dimensions['A'].width = 25
+        ws_header.column_dimensions['B'].width = 30
+        ws_header.column_dimensions['C'].width = 20
+        ws_header.column_dimensions['D'].width = 20
+        
+        if line_items:
+            ws_lines = wb.create_sheet("Line Items")
+            
+            headers = ['Line #', 'Description', 'Quantity', 'Unit Price', 'Discount %', 'Tax Rate %', 'Line Total']
+            for col_num, header_text in enumerate(headers, 1):
+                cell = ws_lines.cell(row=1, column=col_num)
+                cell.value = header_text
+                cell.font = header_font
+                cell.fill = header_fill
+                cell.alignment = Alignment(horizontal='center', vertical='center')
+                cell.border = border
+            
+            for row_num, line in enumerate(line_items, 2):
+                ws_lines.cell(row=row_num, column=1, value=row_num - 1).border = border
+                ws_lines.cell(row=row_num, column=2, value=line.get('description', '')).border = border
+                
+                qty_cell = ws_lines.cell(row=row_num, column=3, value=float(line.get('quantity', 0)))
+                qty_cell.number_format = '#,##0.00'
+                qty_cell.border = border
+                
+                price_cell = ws_lines.cell(row=row_num, column=4, value=float(line.get('unit_price', 0)))
+                price_cell.number_format = '#,##0.00'
+                price_cell.border = border
+                
+                disc_cell = ws_lines.cell(row=row_num, column=5, value=float(line.get('discount_percent', 0)))
+                disc_cell.number_format = '0.00'
+                disc_cell.border = border
+                
+                tax_cell = ws_lines.cell(row=row_num, column=6, value=float(line.get('tax_rate', 15)))
+                tax_cell.number_format = '0.00'
+                tax_cell.border = border
+                
+                total_cell = ws_lines.cell(row=row_num, column=7, value=float(line.get('total', 0)))
+                total_cell.number_format = '#,##0.00'
+                total_cell.border = border
+            
+            ws_lines.column_dimensions['A'].width = 10
+            ws_lines.column_dimensions['B'].width = 50
+            ws_lines.column_dimensions['C'].width = 12
+            ws_lines.column_dimensions['D'].width = 15
+            ws_lines.column_dimensions['E'].width = 12
+            ws_lines.column_dimensions['F'].width = 12
+            ws_lines.column_dimensions['G'].width = 15
+        
+        output = io.BytesIO()
+        wb.save(output)
+        output.seek(0)
+        
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        filename = f"ARIA_SAP_Export_{doc_type}_{timestamp}.xlsx"
+        
+        return StreamingResponse(
+            output,
+            media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            headers={
+                "Content-Disposition": f"attachment; filename={filename}"
+            }
+        )
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Excel export failed: {str(e)}")
