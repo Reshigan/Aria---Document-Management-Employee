@@ -10,13 +10,26 @@ const api = axios.create({
   },
 });
 
-// Request interceptor - add auth token
+// Request interceptor - add auth token and company_id
 api.interceptors.request.use((config) => {
   // Check both 'token' and 'access_token' for backwards compatibility
   const token = localStorage.getItem('access_token') || localStorage.getItem('token');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+  
+  const companyId = localStorage.getItem('aria_company_id');
+  if (companyId) {
+    config.headers['X-Company-ID'] = companyId;
+    
+    if (config.method === 'get') {
+      config.params = {
+        ...config.params,
+        company_id: companyId,
+      };
+    }
+  }
+  
   return config;
 });
 
