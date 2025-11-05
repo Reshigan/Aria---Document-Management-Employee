@@ -4,7 +4,7 @@ Handles Sales Orders, Deliveries, Invoices, and WMS
 """
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
-from sqlalchemy import func, and_, or_
+from sqlalchemy import func, and_, or_, text
 from typing import List, Optional
 from datetime import datetime, date
 from pydantic import BaseModel, Field
