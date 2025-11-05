@@ -13,7 +13,13 @@ import {
   FileText,
   Settings,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  ShoppingCart,
+  Truck,
+  Receipt,
+  Mail,
+  BarChart3,
+  Wrench
 } from 'lucide-react';
 import './Sidebar.css';
 
@@ -26,6 +32,10 @@ interface NavItem {
 
 const navigation: NavItem[] = [
   { label: 'Dashboard', icon: <LayoutDashboard size={20} />, path: '/' },
+  { label: 'Quotes', icon: <FileText size={20} />, path: '/quotes', color: '#8b5cf6' },
+  { label: 'Sales Orders', icon: <ShoppingCart size={20} />, path: '/sales-orders', color: '#10b981' },
+  { label: 'Deliveries', icon: <Truck size={20} />, path: '/deliveries', color: '#06b6d4' },
+  { label: 'Invoices', icon: <Receipt size={20} />, path: '/ar/invoices', color: '#f59e0b' },
   { label: 'General Ledger', icon: <BookOpen size={20} />, path: '/gl', color: '#8b5cf6' },
   { label: 'Accounts Payable', icon: <FileDown size={20} />, path: '/ap', color: '#ef4444' },
   { label: 'Accounts Receivable', icon: <FileUp size={20} />, path: '/ar', color: '#10b981' },
@@ -33,8 +43,10 @@ const navigation: NavItem[] = [
   { label: 'Payroll', icon: <Wallet size={20} />, path: '/payroll', color: '#f59e0b' },
   { label: 'CRM', icon: <Users size={20} />, path: '/crm', color: '#6366f1' },
   { label: 'Inventory', icon: <Package size={20} />, path: '/inventory', color: '#8b5cf6' },
-  { label: 'Automation Bots', icon: <Bot size={20} />, path: '/bots', color: '#ec4899' },
-  { label: 'Reports', icon: <FileText size={20} />, path: '/reports' },
+  { label: 'Manufacturing', icon: <Wrench size={20} />, path: '/manufacturing', color: '#f97316' },
+  { label: 'Automation Bots', icon: <Bot size={20} />, path: '/automation/bots', color: '#ec4899' },
+  { label: 'Mailroom', icon: <Mail size={20} />, path: '/automation/mailroom', color: '#a855f7' },
+  { label: 'Reports', icon: <BarChart3 size={20} />, path: '/reports' },
   { label: 'Settings', icon: <Settings size={20} />, path: '/settings' },
 ];
 
