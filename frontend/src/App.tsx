@@ -14,7 +14,7 @@ import Suppliers from './pages/Suppliers';
 import InvoiceList from './pages/Financial/InvoiceList';
 import InvoiceForm from './pages/Financial/InvoiceForm';
 import EmployeeDirectory from './pages/HR/EmployeeDirectory';
-import CustomerList from './pages/CRM/CustomerList';
+import CRMDashboard from './pages/CRM/CRMDashboard';
 import SupplierList from './pages/Procurement/SupplierList';
 import ProductCatalog from './pages/Procurement/ProductCatalog';
 import RFQManagement from './pages/Procurement/RFQManagement';
@@ -53,8 +53,8 @@ function App() {
           <Route path="/ap/suppliers" element={<SupplierList />} />
           
           {/* Accounts Receivable */}
-          <Route path="/ar" element={<CustomerList />} />
-          <Route path="/ar/customers" element={<CustomerList />} />
+          <Route path="/ar" element={<CRMDashboard />} />
+          <Route path="/ar/customers" element={<CRMDashboard />} />
           <Route path="/ar/invoices" element={<InvoiceList />} />
           
           {/* Banking */}
@@ -65,7 +65,7 @@ function App() {
           <Route path="/payroll/employees" element={<EmployeeDirectory />} />
           
           {/* CRM */}
-          <Route path="/crm" element={<CustomerList />} />
+          <Route path="/crm" element={<CRMDashboard />} />
           <Route path="/crm/customers" element={<Customers />} />
           
           {/* Inventory */}
