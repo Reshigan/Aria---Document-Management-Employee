@@ -24,6 +24,7 @@ import WorkOrders from './pages/Manufacturing/WorkOrders';
 import AgedReceivablesReport from './pages/Reports/AgedReceivablesReport';
 import StockValuationReport from './pages/Reports/StockValuationReport';
 import VATSummaryReport from './pages/Reports/VATSummaryReport';
+import BankingDashboard from './pages/Banking/BankingDashboard';
 import './styles/design-system.css';
 
 function App() {
@@ -57,7 +58,7 @@ function App() {
           <Route path="/ar/invoices" element={<InvoiceList />} />
           
           {/* Banking */}
-          <Route path="/banking" element={<div style={{padding: '2rem'}}>Banking Module - Coming Soon</div>} />
+          <Route path="/banking" element={<BankingDashboard />} />
           
           {/* Payroll */}
           <Route path="/payroll" element={<EmployeeDirectory />} />
