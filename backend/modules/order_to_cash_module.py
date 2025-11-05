@@ -14,6 +14,22 @@ from decimal import Decimal
 router = APIRouter(prefix="/api/erp/order-to-cash", tags=["Order-to-Cash"])
 
 
+@router.get("/health")
+async def health_check():
+    """Health check endpoint for Order-to-Cash module"""
+    return {
+        "status": "healthy",
+        "module": "order_to_cash",
+        "version": "1.0.0",
+        "features": [
+            "quote_to_cash_workflow",
+            "wms_with_storage_locations",
+            "multi_company_support",
+            "email_driven_quotes"
+        ]
+    }
+
+
 class ProductCreate(BaseModel):
     code: str
     name: str
