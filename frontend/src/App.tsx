@@ -55,7 +55,7 @@ function App() {
           <Route path="/ap" element={<InvoiceList />} />
           <Route path="/ap/invoices" element={<InvoiceList />} />
           <Route path="/ap/invoices/new" element={<InvoiceForm />} />
-          <Route path="/ap/suppliers" element={<SupplierList />} />
+          <Route path="/ap/suppliers" element={<Suppliers />} />
           
           {/* Accounts Receivable */}
           <Route path="/ar" element={<CRMDashboard />} />

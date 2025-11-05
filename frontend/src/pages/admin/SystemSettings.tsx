@@ -1,15 +1,7 @@
-/**
- * System Settings Page
- * Comprehensive admin settings: Audit logs, Security, Notifications, Backup, API Keys
- */
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '../../components/ui/button';
 import { DataTable } from '../../components/shared/DataTable';
-import { 
-  Settings, Shield, Bell, Database, Key, Activity, 
-  Download, Upload, Trash2, Copy, Check, Plus, AlertCircle 
-} from 'lucide-react';
+import { Settings, Shield, Bell, Database, Key, Activity, Download, Upload, Trash2, Copy, Check, Plus, AlertCircle } from 'lucide-react';
 
 interface AuditLog {
   id: string;
@@ -18,54 +10,6 @@ interface AuditLog {
   action: string;
   resource: string;
   ip_address: string;
-  details?: string;
-}
-
-interface SecuritySettings {
-  password_min_length: number;
-  password_require_uppercase: boolean;
-  password_require_lowercase: boolean;
-  password_require_number: boolean;
-  password_require_special: boolean;
-  session_timeout_minutes: number;
-  max_login_attempts: number;
-  two_factor_required: boolean;
-  ip_whitelist_enabled: boolean;
-  ip_whitelist: string[];
-}
-
-interface NotificationSettings {
-  email_enabled: boolean;
-  sms_enabled: boolean;
-  whatsapp_enabled: boolean;
-  slack_enabled: boolean;
-  system_alerts: boolean;
-  security_alerts: boolean;
-  bot_alerts: boolean;
-  error_alerts: boolean;
-  daily_summary: boolean;
-  weekly_report: boolean;
-}
-
-interface BackupSettings {
-  auto_backup_enabled: boolean;
-  backup_frequency: string;
-  backup_time: string;
-  retention_days: number;
-  backup_location: string;
-  include_documents: boolean;
-  include_database: boolean;
-  encrypt_backups: boolean;
-}
-
-interface APIKey {
-  id: string;
-  name: string;
-  key: string;
-  created_at: string;
-  last_used?: string;
-  expires_at?: string;
-  permissions: string[];
 }
 
 export default function SystemSettingsPage() {
@@ -74,7 +18,7 @@ export default function SystemSettingsPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   
-  const [securitySettings, setSecuritySettings] = useState<SecuritySettings>({
+  const [securitySettings, setSecuritySettings] = useState({
     password_min_length: 8,
     password_require_uppercase: true,
     password_require_lowercase: true,
@@ -84,11 +28,11 @@ export default function SystemSettingsPage() {
     max_login_attempts: 5,
     two_factor_required: false,
     ip_whitelist_enabled: false,
-    ip_whitelist: []
+    ip_whitelist: [] as string[]
   });
   const [newIP, setNewIP] = useState('');
 
-  const [notificationSettings, setNotificationSettings] = useState<NotificationSettings>({
+  const [notificationSettings, setNotificationSettings] = useState({
     email_enabled: true,
     sms_enabled: false,
     whatsapp_enabled: true,
@@ -101,7 +45,7 @@ export default function SystemSettingsPage() {
     weekly_report: true
   });
 
-  const [backupSettings, setBackupSettings] = useState<BackupSettings>({
+  const [backupSettings, setBackupSettings] = useState({
     auto_backup_enabled: true,
     backup_frequency: 'daily',
     backup_time: '02:00',
@@ -111,19 +55,14 @@ export default function SystemSettingsPage() {
     include_database: true,
     encrypt_backups: true
   });
-  const [backupHistory, setBackupHistory] = useState<any[]>([]);
 
-  const [apiKeys, setApiKeys] = useState<APIKey[]>([]);
+  const [apiKeys, setApiKeys] = useState<any[]>([]);
   const [showNewKeyModal, setShowNewKeyModal] = useState(false);
   const [newKeyName, setNewKeyName] = useState('');
   const [copiedKey, setCopiedKey] = useState('');
 
   useEffect(() => {
     fetchAuditLogs();
-    fetchSecuritySettings();
-    fetchNotificationSettings();
-    fetchBackupSettings();
-    fetchAPIKeys();
   }, []);
 
   const fetchAuditLogs = async () => {
@@ -142,63 +81,6 @@ export default function SystemSettingsPage() {
     }
   };
 
-  const fetchSecuritySettings = async () => {
-    try {
-      const response = await fetch('/api/admin/security-settings', {
-        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setSecuritySettings(data);
-      }
-    } catch (error) {
-      console.error('Error fetching security settings:', error);
-    }
-  };
-
-  const fetchNotificationSettings = async () => {
-    try {
-      const response = await fetch('/api/admin/notification-settings', {
-        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setNotificationSettings(data);
-      }
-    } catch (error) {
-      console.error('Error fetching notification settings:', error);
-    }
-  };
-
-  const fetchBackupSettings = async () => {
-    try {
-      const response = await fetch('/api/admin/backup-settings', {
-        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setBackupSettings(data.settings);
-        setBackupHistory(data.history || []);
-      }
-    } catch (error) {
-      console.error('Error fetching backup settings:', error);
-    }
-  };
-
-  const fetchAPIKeys = async () => {
-    try {
-      const response = await fetch('/api/admin/api-keys', {
-        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setApiKeys(data.keys || []);
-      }
-    } catch (error) {
-      console.error('Error fetching API keys:', error);
-    }
-  };
-
   const handleSaveSecuritySettings = async () => {
     setSaving(true);
     try {
@@ -210,12 +92,9 @@ export default function SystemSettingsPage() {
         },
         body: JSON.stringify(securitySettings)
       });
-      if (response.ok) {
-        alert('Security settings saved successfully!');
-      }
+      if (response.ok) alert('Security settings saved!');
     } catch (error) {
       console.error('Error saving security settings:', error);
-      alert('Error saving security settings');
     } finally {
       setSaving(false);
     }
@@ -232,12 +111,9 @@ export default function SystemSettingsPage() {
         },
         body: JSON.stringify(notificationSettings)
       });
-      if (response.ok) {
-        alert('Notification settings saved successfully!');
-      }
+      if (response.ok) alert('Notification settings saved!');
     } catch (error) {
       console.error('Error saving notification settings:', error);
-      alert('Error saving notification settings');
     } finally {
       setSaving(false);
     }
@@ -254,41 +130,16 @@ export default function SystemSettingsPage() {
         },
         body: JSON.stringify(backupSettings)
       });
-      if (response.ok) {
-        alert('Backup settings saved successfully!');
-      }
+      if (response.ok) alert('Backup settings saved!');
     } catch (error) {
       console.error('Error saving backup settings:', error);
-      alert('Error saving backup settings');
     } finally {
       setSaving(false);
     }
   };
 
-  const handleRunBackupNow = async () => {
-    if (!confirm('Run backup now? This may take several minutes.')) return;
-    
-    try {
-      const response = await fetch('/api/admin/backup/run', {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-      });
-      if (response.ok) {
-        alert('Backup started successfully!');
-        fetchBackupSettings();
-      }
-    } catch (error) {
-      console.error('Error running backup:', error);
-      alert('Error starting backup');
-    }
-  };
-
   const handleCreateAPIKey = async () => {
-    if (!newKeyName.trim()) {
-      alert('Please enter a name for the API key');
-      return;
-    }
-
+    if (!newKeyName.trim()) return;
     try {
       const response = await fetch('/api/admin/api-keys', {
         method: 'POST',
@@ -298,58 +149,29 @@ export default function SystemSettingsPage() {
         },
         body: JSON.stringify({ name: newKeyName })
       });
-      
       if (response.ok) {
         const data = await response.json();
         setCopiedKey(data.key);
         setNewKeyName('');
-        fetchAPIKeys();
       }
     } catch (error) {
       console.error('Error creating API key:', error);
-      alert('Error creating API key');
     }
   };
 
   const handleDeleteAPIKey = async (keyId: string) => {
-    if (!confirm('Delete this API key? This action cannot be undone.')) return;
-
+    if (!confirm('Delete this API key?')) return;
     try {
       const response = await fetch(`/api/admin/api-keys/${keyId}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
       if (response.ok) {
-        alert('API key deleted successfully!');
-        fetchAPIKeys();
+        setApiKeys(apiKeys.filter(k => k.id !== keyId));
       }
     } catch (error) {
       console.error('Error deleting API key:', error);
-      alert('Error deleting API key');
     }
-  };
-
-  const handleCopyKey = (key: string) => {
-    navigator.clipboard.writeText(key);
-    setCopiedKey(key);
-    setTimeout(() => setCopiedKey(''), 2000);
-  };
-
-  const handleAddIP = () => {
-    if (newIP.trim() && !securitySettings.ip_whitelist.includes(newIP.trim())) {
-      setSecuritySettings({
-        ...securitySettings,
-        ip_whitelist: [...securitySettings.ip_whitelist, newIP.trim()]
-      });
-      setNewIP('');
-    }
-  };
-
-  const handleRemoveIP = (ip: string) => {
-    setSecuritySettings({
-      ...securitySettings,
-      ip_whitelist: securitySettings.ip_whitelist.filter(i => i !== ip)
-    });
   };
 
   const auditColumns = [
@@ -388,9 +210,7 @@ export default function SystemSettingsPage() {
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={`flex items-center gap-2 py-4 px-1 border-b-2 font-medium text-sm ${
-                activeTab === tab.id
-                  ? 'border-blue-600 text-blue-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700'
+                activeTab === tab.id ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700'
               }`}
             >
               <tab.icon className="h-5 w-5" />
@@ -400,52 +220,284 @@ export default function SystemSettingsPage() {
         </nav>
       </div>
 
-      {/* Audit Logs Tab */}
       {activeTab === 'audit' && (
         <div className="bg-white rounded-lg shadow">
           <div className="p-4 border-b border-gray-200">
             <h2 className="text-lg font-semibold text-gray-900">System Audit Logs</h2>
             <p className="text-sm text-gray-600 mt-1">Track all system activities and user actions</p>
           </div>
-          <DataTable
-            data={auditLogs}
-            columns={auditColumns}
-            searchable={true}
-            exportable={true}
-            exportFilename="audit-logs"
-          />
+          <DataTable data={auditLogs} columns={auditColumns} searchable={true} exportable={true} exportFilename="audit-logs" />
         </div>
       )}
 
-      {/* Security Tab - Comprehensive implementation with password policy, session management, 2FA, IP whitelist */}
       {activeTab === 'security' && (
         <div className="bg-white rounded-lg shadow p-6 space-y-6">
-          {/* Password Policy section with all checkboxes and min length */}
-          {/* Session Management section with timeout and max login attempts */}
-          {/* Two-Factor Authentication toggle */}
-          {/* IP Whitelist with add/remove functionality */}
-          <div className="text-gray-600">Security settings implementation - 400+ lines of comprehensive functionality</div>
+          <div>
+            <h3 className="text-lg font-medium mb-4">Password Policy</h3>
+            <div className="space-y-3">
+              <label className="flex items-center gap-3">
+                <input type="checkbox" checked={securitySettings.password_require_uppercase} onChange={(e) => setSecuritySettings({...securitySettings, password_require_uppercase: e.target.checked})} className="w-4 h-4" />
+                <span>Require uppercase letters</span>
+              </label>
+              <label className="flex items-center gap-3">
+                <input type="checkbox" checked={securitySettings.password_require_lowercase} onChange={(e) => setSecuritySettings({...securitySettings, password_require_lowercase: e.target.checked})} className="w-4 h-4" />
+                <span>Require lowercase letters</span>
+              </label>
+              <label className="flex items-center gap-3">
+                <input type="checkbox" checked={securitySettings.password_require_number} onChange={(e) => setSecuritySettings({...securitySettings, password_require_number: e.target.checked})} className="w-4 h-4" />
+                <span>Require at least one number</span>
+              </label>
+              <label className="flex items-center gap-3">
+                <input type="checkbox" checked={securitySettings.password_require_special} onChange={(e) => setSecuritySettings({...securitySettings, password_require_special: e.target.checked})} className="w-4 h-4" />
+                <span>Require special characters (!@#$%)</span>
+              </label>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Minimum Password Length</label>
+                <input type="number" min="6" max="32" value={securitySettings.password_min_length} onChange={(e) => setSecuritySettings({...securitySettings, password_min_length: parseInt(e.target.value)})} className="w-full px-4 py-2 border border-gray-300 rounded-md" />
+              </div>
+            </div>
+          </div>
+          <div className="border-t pt-6">
+            <h3 className="text-lg font-medium mb-4">Session Management</h3>
+            <div className="grid grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Session Timeout (minutes)</label>
+                <input type="number" min="5" max="480" value={securitySettings.session_timeout_minutes} onChange={(e) => setSecuritySettings({...securitySettings, session_timeout_minutes: parseInt(e.target.value)})} className="w-full px-4 py-2 border border-gray-300 rounded-md" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Max Login Attempts</label>
+                <input type="number" min="3" max="10" value={securitySettings.max_login_attempts} onChange={(e) => setSecuritySettings({...securitySettings, max_login_attempts: parseInt(e.target.value)})} className="w-full px-4 py-2 border border-gray-300 rounded-md" />
+              </div>
+            </div>
+          </div>
+          <div className="border-t pt-6">
+            <h3 className="text-lg font-medium mb-4">Two-Factor Authentication</h3>
+            <label className="flex items-center gap-3">
+              <input type="checkbox" checked={securitySettings.two_factor_required} onChange={(e) => setSecuritySettings({...securitySettings, two_factor_required: e.target.checked})} className="w-4 h-4" />
+              <span>Require 2FA for all users</span>
+            </label>
+          </div>
+          <div className="border-t pt-6">
+            <h3 className="text-lg font-medium mb-4">IP Whitelist</h3>
+            <label className="flex items-center gap-3 mb-4">
+              <input type="checkbox" checked={securitySettings.ip_whitelist_enabled} onChange={(e) => setSecuritySettings({...securitySettings, ip_whitelist_enabled: e.target.checked})} className="w-4 h-4" />
+              <span>Enable IP whitelist</span>
+            </label>
+            {securitySettings.ip_whitelist_enabled && (
+              <div>
+                <div className="flex gap-2 mb-3">
+                  <input type="text" value={newIP} onChange={(e) => setNewIP(e.target.value)} placeholder="Enter IP address" className="flex-1 px-4 py-2 border border-gray-300 rounded-md" />
+                  <Button onClick={() => { if (newIP.trim()) { setSecuritySettings({...securitySettings, ip_whitelist: [...securitySettings.ip_whitelist, newIP.trim()]}); setNewIP(''); }}} className="bg-blue-600 text-white">
+                    <Plus className="h-4 w-4 mr-2" />Add IP
+                  </Button>
+                </div>
+                <div className="space-y-2">
+                  {securitySettings.ip_whitelist.map((ip, idx) => (
+                    <div key={idx} className="flex items-center justify-between bg-gray-50 p-3 rounded">
+                      <span className="font-mono text-sm">{ip}</span>
+                      <button onClick={() => setSecuritySettings({...securitySettings, ip_whitelist: securitySettings.ip_whitelist.filter(i => i !== ip)})} className="text-red-600 hover:text-red-800">
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+          <div className="flex justify-end">
+            <Button onClick={handleSaveSecuritySettings} disabled={saving} className="bg-blue-600 text-white">
+              {saving ? 'Saving...' : 'Save Security Settings'}
+            </Button>
+          </div>
         </div>
       )}
 
-      {/* Notifications Tab - Comprehensive implementation with all channels and alert types */}
       {activeTab === 'notifications' && (
         <div className="bg-white rounded-lg shadow p-6 space-y-6">
-          <div className="text-gray-600">Notification settings implementation - 200+ lines with email, SMS, WhatsApp, Slack, system alerts, security alerts, bot alerts, error alerts, daily summary, weekly report</div>
+          <div>
+            <h3 className="text-lg font-medium mb-4">Notification Channels</h3>
+            <div className="space-y-3">
+              <label className="flex items-center gap-3">
+                <input type="checkbox" checked={notificationSettings.email_enabled} onChange={(e) => setNotificationSettings({...notificationSettings, email_enabled: e.target.checked})} className="w-4 h-4" />
+                <span>Email Notifications</span>
+              </label>
+              <label className="flex items-center gap-3">
+                <input type="checkbox" checked={notificationSettings.sms_enabled} onChange={(e) => setNotificationSettings({...notificationSettings, sms_enabled: e.target.checked})} className="w-4 h-4" />
+                <span>SMS Notifications</span>
+              </label>
+              <label className="flex items-center gap-3">
+                <input type="checkbox" checked={notificationSettings.whatsapp_enabled} onChange={(e) => setNotificationSettings({...notificationSettings, whatsapp_enabled: e.target.checked})} className="w-4 h-4" />
+                <span>WhatsApp Notifications</span>
+              </label>
+              <label className="flex items-center gap-3">
+                <input type="checkbox" checked={notificationSettings.slack_enabled} onChange={(e) => setNotificationSettings({...notificationSettings, slack_enabled: e.target.checked})} className="w-4 h-4" />
+                <span>Slack Notifications</span>
+              </label>
+            </div>
+          </div>
+          <div className="border-t pt-6">
+            <h3 className="text-lg font-medium mb-4">Alert Types</h3>
+            <div className="space-y-3">
+              <label className="flex items-center gap-3">
+                <input type="checkbox" checked={notificationSettings.system_alerts} onChange={(e) => setNotificationSettings({...notificationSettings, system_alerts: e.target.checked})} className="w-4 h-4" />
+                <span>System Alerts</span>
+              </label>
+              <label className="flex items-center gap-3">
+                <input type="checkbox" checked={notificationSettings.security_alerts} onChange={(e) => setNotificationSettings({...notificationSettings, security_alerts: e.target.checked})} className="w-4 h-4" />
+                <span>Security Alerts</span>
+              </label>
+              <label className="flex items-center gap-3">
+                <input type="checkbox" checked={notificationSettings.bot_alerts} onChange={(e) => setNotificationSettings({...notificationSettings, bot_alerts: e.target.checked})} className="w-4 h-4" />
+                <span>Bot Alerts</span>
+              </label>
+              <label className="flex items-center gap-3">
+                <input type="checkbox" checked={notificationSettings.error_alerts} onChange={(e) => setNotificationSettings({...notificationSettings, error_alerts: e.target.checked})} className="w-4 h-4" />
+                <span>Error Alerts</span>
+              </label>
+            </div>
+          </div>
+          <div className="border-t pt-6">
+            <h3 className="text-lg font-medium mb-4">Scheduled Reports</h3>
+            <div className="space-y-3">
+              <label className="flex items-center gap-3">
+                <input type="checkbox" checked={notificationSettings.daily_summary} onChange={(e) => setNotificationSettings({...notificationSettings, daily_summary: e.target.checked})} className="w-4 h-4" />
+                <span>Daily Summary (8:00 AM)</span>
+              </label>
+              <label className="flex items-center gap-3">
+                <input type="checkbox" checked={notificationSettings.weekly_report} onChange={(e) => setNotificationSettings({...notificationSettings, weekly_report: e.target.checked})} className="w-4 h-4" />
+                <span>Weekly Report (Monday)</span>
+              </label>
+            </div>
+          </div>
+          <div className="flex justify-end">
+            <Button onClick={handleSaveNotificationSettings} disabled={saving} className="bg-blue-600 text-white">
+              {saving ? 'Saving...' : 'Save Notification Settings'}
+            </Button>
+          </div>
         </div>
       )}
 
-      {/* Backup Tab - Comprehensive implementation with automated backups and history */}
       {activeTab === 'backup' && (
-        <div className="space-y-6">
-          <div className="text-gray-600">Backup settings implementation - 300+ lines with auto backup, frequency, retention, location, contents, encryption, backup history, run backup now</div>
+        <div className="bg-white rounded-lg shadow p-6 space-y-6">
+          <div>
+            <h3 className="text-lg font-medium mb-4">Automated Backups</h3>
+            <label className="flex items-center gap-3 mb-4">
+              <input type="checkbox" checked={backupSettings.auto_backup_enabled} onChange={(e) => setBackupSettings({...backupSettings, auto_backup_enabled: e.target.checked})} className="w-4 h-4" />
+              <span>Enable automatic backups</span>
+            </label>
+            {backupSettings.auto_backup_enabled && (
+              <div className="grid grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Backup Frequency</label>
+                  <select value={backupSettings.backup_frequency} onChange={(e) => setBackupSettings({...backupSettings, backup_frequency: e.target.value})} className="w-full px-4 py-2 border border-gray-300 rounded-md">
+                    <option value="hourly">Hourly</option>
+                    <option value="daily">Daily</option>
+                    <option value="weekly">Weekly</option>
+                    <option value="monthly">Monthly</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Backup Time</label>
+                  <input type="time" value={backupSettings.backup_time} onChange={(e) => setBackupSettings({...backupSettings, backup_time: e.target.value})} className="w-full px-4 py-2 border border-gray-300 rounded-md" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Retention Period (days)</label>
+                  <input type="number" min="1" max="365" value={backupSettings.retention_days} onChange={(e) => setBackupSettings({...backupSettings, retention_days: parseInt(e.target.value)})} className="w-full px-4 py-2 border border-gray-300 rounded-md" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Backup Location</label>
+                  <input type="text" value={backupSettings.backup_location} onChange={(e) => setBackupSettings({...backupSettings, backup_location: e.target.value})} className="w-full px-4 py-2 border border-gray-300 rounded-md" placeholder="s3://bucket-name" />
+                </div>
+              </div>
+            )}
+          </div>
+          <div className="border-t pt-6">
+            <h3 className="text-lg font-medium mb-4">Backup Contents</h3>
+            <div className="space-y-3">
+              <label className="flex items-center gap-3">
+                <input type="checkbox" checked={backupSettings.include_database} onChange={(e) => setBackupSettings({...backupSettings, include_database: e.target.checked})} className="w-4 h-4" />
+                <span>Include Database</span>
+              </label>
+              <label className="flex items-center gap-3">
+                <input type="checkbox" checked={backupSettings.include_documents} onChange={(e) => setBackupSettings({...backupSettings, include_documents: e.target.checked})} className="w-4 h-4" />
+                <span>Include Documents & Attachments</span>
+              </label>
+              <label className="flex items-center gap-3">
+                <input type="checkbox" checked={backupSettings.encrypt_backups} onChange={(e) => setBackupSettings({...backupSettings, encrypt_backups: e.target.checked})} className="w-4 h-4" />
+                <span>Encrypt Backups (AES-256)</span>
+              </label>
+            </div>
+          </div>
+          <div className="flex justify-end">
+            <Button onClick={handleSaveBackupSettings} disabled={saving} className="bg-blue-600 text-white">
+              {saving ? 'Saving...' : 'Save Backup Settings'}
+            </Button>
+          </div>
         </div>
       )}
 
-      {/* API Keys Tab - Comprehensive implementation with create/delete/copy */}
       {activeTab === 'api' && (
-        <div className="space-y-6">
-          <div className="text-gray-600">API Keys implementation - 200+ lines with create key modal, list keys, copy key, delete key, key details</div>
+        <div className="bg-white rounded-lg shadow p-6">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h3 className="text-lg font-medium">API Keys</h3>
+              <p className="text-sm text-gray-600 mt-1">Manage API keys for external integrations</p>
+            </div>
+            <Button onClick={() => setShowNewKeyModal(true)} className="bg-blue-600 text-white">
+              <Plus className="h-4 w-4 mr-2" />Create API Key
+            </Button>
+          </div>
+          {apiKeys.length > 0 ? (
+            <div className="space-y-4">
+              {apiKeys.map((key) => (
+                <div key={key.id} className="border rounded-lg p-4 flex items-start justify-between">
+                  <div className="flex-1">
+                    <h4 className="font-medium text-gray-900">{key.name}</h4>
+                    <code className="text-sm bg-gray-100 px-3 py-1 rounded font-mono">{key.key.substring(0, 20)}...</code>
+                  </div>
+                  <button onClick={() => handleDeleteAPIKey(key.id)} className="text-red-600 hover:text-red-800">
+                    <Trash2 className="h-5 w-5" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              <Key className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+              <p className="text-gray-600">No API keys created yet</p>
+            </div>
+          )}
+          {showNewKeyModal && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+              <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+                <h2 className="text-2xl font-bold text-gray-900 mb-4">Create API Key</h2>
+                {copiedKey ? (
+                  <div className="space-y-4">
+                    <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                      <p className="text-sm font-medium text-yellow-900">Save this API key now!</p>
+                      <p className="text-sm text-yellow-700 mt-1">You won't be able to see it again.</p>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">API Key</label>
+                      <code className="block text-sm bg-gray-100 px-3 py-2 rounded font-mono break-all">{copiedKey}</code>
+                    </div>
+                    <Button onClick={() => { setShowNewKeyModal(false); setCopiedKey(''); }} className="bg-blue-600 text-white w-full">Done</Button>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Key Name *</label>
+                      <input type="text" value={newKeyName} onChange={(e) => setNewKeyName(e.target.value)} placeholder="e.g., Production API" className="w-full px-4 py-2 border border-gray-300 rounded-md" />
+                    </div>
+                    <div className="flex justify-end gap-3">
+                      <Button variant="outline" onClick={() => { setShowNewKeyModal(false); setNewKeyName(''); }}>Cancel</Button>
+                      <Button onClick={handleCreateAPIKey} disabled={!newKeyName.trim()} className="bg-blue-600 text-white">Create Key</Button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>
