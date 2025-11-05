@@ -271,6 +271,10 @@ app.include_router(banking_router)
 from app.api.ap import router as ap_router
 app.include_router(ap_router)
 
+# Include VAT/Tax Module
+from app.api.vat import router as vat_router
+app.include_router(vat_router)
+
 # Pydantic models
 class UserLogin(PydanticBaseModel):
     username: str
