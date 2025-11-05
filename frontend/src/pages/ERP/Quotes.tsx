@@ -1,5 +1,8 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import { api } from '../../lib/api';
+import { LineItemsTable, LineItem } from '../../components/LineItemsTable';
+import { ConfirmDialog } from '../../components/ConfirmDialog';
+import { Plus, Search, Filter, Eye, Edit, Trash2, Check, Send, X, FileText } from 'lucide-react';
 
 interface Quote {
   id: string;
@@ -13,16 +16,52 @@ interface Quote {
   tax_amount: number;
   total_amount: number;
   notes: string;
+  warehouse_id?: string;
+  customer_id?: string;
+  lines?: LineItem[];
+}
+
+interface Product {
+  id: string;
+  code: string;
+  name: string;
+  selling_price: number;
+  unit_of_measure: string;
+}
+
+interface Customer {
+  id: string;
+  name: string;
+  email: string;
 }
 
 export default function Quotes() {
   const [quotes, setQuotes] = useState<Quote[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [customers, setCustomers] = useState<Customer[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showDetailModal, setShowDetailModal] = useState(false);
+  const [selectedQuote, setSelectedQuote] = useState<Quote | null>(null);
+  const [formData, setFormData] = useState<Partial<Quote>>({
+    customer_name: '',
+    customer_email: '',
+    quote_date: new Date().toISOString().split('T')[0],
+    valid_until: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+    notes: '',
+    status: 'draft'
+  });
+  const [lineItems, setLineItems] = useState<LineItem[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchQuotes();
+    loadQuotes();
+    loadProducts();
+    loadCustomers();
   }, [searchTerm, statusFilter]);
 
   const fetchQuotes = async () => {
