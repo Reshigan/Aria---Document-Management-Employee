@@ -36,6 +36,7 @@ import FixedAssetsDashboard from './pages/FixedAssets/FixedAssetsDashboard';
 import ProjectsDashboard from './pages/Projects/ProjectsDashboard';
 import VATReturns from './pages/Tax/VATReturns';
 import PurchaseOrders from './pages/AP/PurchaseOrders';
+import AriaChat from './pages/Aria/AriaChat';
 import './styles/design-system.css';
 
 function App() {
