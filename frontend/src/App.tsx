@@ -44,6 +44,7 @@ import BankAccounts from './pages/Banking/BankAccounts';
 import Bills from './pages/AP/Bills';
 import VATReturnsPage from './pages/Tax/VATReturnsPage';
 import FinancialReports from './pages/Reports/FinancialReports';
+import DocumentUpload from './pages/AskAria/DocumentUpload';
 import './styles/design-system.css';
 
 function App() {
@@ -137,6 +138,8 @@ function App() {
           {/* Aria Chat */}
           <Route path="/chat" element={<ChatInterface />} />
           <Route path="/aria" element={<ChatInterface />} />
+          <Route path="/ask-aria" element={<DocumentUpload />} />
+          <Route path="/aria/upload" element={<DocumentUpload />} />
           
           {/* Admin */}
           <Route path="/admin/system" element={<SystemSettings />} />

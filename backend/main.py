@@ -279,6 +279,10 @@ app.include_router(vat_router)
 from app.api.reports import router as reports_router
 app.include_router(reports_router)
 
+# Include Document Processing Module
+from app.api.documents import router as documents_router
+app.include_router(documents_router)
+
 # Pydantic models
 class UserLogin(PydanticBaseModel):
     username: str
