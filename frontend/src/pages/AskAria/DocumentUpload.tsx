@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { Upload, FileText, AlertCircle, CheckCircle, Loader, Send, Save } from 'lucide-react';
+import { Upload, FileText, AlertCircle, CheckCircle, Loader, Send, Save, Download } from 'lucide-react';
 
 interface LineItem {
   description: string;
@@ -15,6 +15,13 @@ interface ProcessedDocument {
   file_path: string;
   doc_type: string;
   classification_confidence: number;
+  sap_posting?: {
+    module: string;
+    tcode: string;
+    description: string;
+    rationale: string;
+    confidence: number;
+  };
   header: {
     supplier_name: string;
     invoice_number: string;
@@ -181,6 +188,46 @@ export default function DocumentUpload() {
       ...processedDoc,
       lines: newLines
     });
+  };
+
+  const handleExportToExcel = async () => {
+    if (!processedDoc) return;
+
+    try {
+      const formData = new FormData();
+      formData.append('doc_type', processedDoc.doc_type);
+      formData.append('header', JSON.stringify(processedDoc.header));
+      formData.append('lines', JSON.stringify(processedDoc.lines));
+      if (processedDoc.sap_posting) {
+        formData.append('sap_posting', JSON.stringify(processedDoc.sap_posting));
+      }
+
+      const response = await fetch('/api/documents/export-excel', {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to export to Excel');
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `ARIA_SAP_Export_${processedDoc.doc_type}_${new Date().toISOString().slice(0, 10)}.xlsx`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      
+      setSuccess('Excel file downloaded successfully!');
+    } catch (err: any) {
+      setError(err.message || 'Failed to export to Excel');
+    }
   };
 
   const getConfidenceColor = (confidence: number) => {
