@@ -57,8 +57,8 @@ export const Landing: React.FC = () => {
             </h1>
             
             <p className="text-xl md:text-2xl text-gray-600 mb-12 max-w-3xl mx-auto font-light">
-              67 AI-powered automation bots and 8 complete ERP modules ready to transform your business operations.
-              From invoices to compliance, manufacturing to retail, we handle it all.
+              67 AI-powered automation bots and 11 complete ERP modules ready to transform your business operations.
+              From invoices to compliance, manufacturing to retail, SAP integration to master data management, we handle it all.
             </p>
             
             <div className="flex items-center justify-center space-x-4 mb-16">
@@ -114,18 +114,18 @@ export const Landing: React.FC = () => {
             {[
               {
                 icon: Brain,
-                title: '67 Specialized Bots + 8 ERP Modules',
-                description: 'Pre-built automation for finance, HR, sales, operations, compliance, manufacturing, procurement, and retail. Deploy in hours, not months.'
+                title: '67 Specialized Bots + 11 ERP Modules',
+                description: 'Pre-built automation for finance, HR, sales, operations, compliance, manufacturing, procurement, retail, master data, order-to-cash, and SAP integration. Deploy in hours, not months.'
               },
               {
                 icon: Zap,
-                title: 'Intelligent Automation',
-                description: '95% accuracy on invoice reconciliation. Auto-matching, duplicate detection, and 3-way matching built-in.'
+                title: 'SAP Integration + Intelligent Automation',
+                description: 'Works standalone OR integrates with SAP ECC/S/4HANA. 95% accuracy on invoice reconciliation. Auto-matching, duplicate detection, and 3-way matching built-in.'
               },
               {
                 icon: CheckCircle,
                 title: 'South African DNA',
-                description: 'BBBEE compliance, SARS integration, UIF, SDL, and PAYE automation. Built specifically for SA businesses.'
+                description: 'ONLY ERP with automated BBBEE scorecard calculation (109 points). SARS integration, UIF, SDL, and PAYE automation. Built specifically for SA businesses.'
               }
             ].map((feature, i) => (
               <motion.div

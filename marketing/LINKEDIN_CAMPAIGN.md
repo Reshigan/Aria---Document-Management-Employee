@@ -39,12 +39,18 @@ R45K/month vs R150-400K for SAP/Dynamics/Odoo
 📈 **95% Adoption Rate**
 Because it's as easy as sending an email
 
-25 intelligent bots covering:
-- Finance (GL, AP, AR, Bank Rec, Financial Close)
-- Sales (Leads, Quotes, Orders, Renewals)
-- HR (Payroll with SARS compliance!)
-- Operations (Inventory, Manufacturing, Warehouse)
-- Compliance (BBBEE, Audit, Expense)
+67 intelligent bots covering:
+- Finance (12 bots: GL, AP, AR, Bank Rec, Remittance, Financial Close, Forecasting)
+- Sales/CRM (8 bots: Leads, Quotes, Orders, Renewals, Churn Prediction)
+- HR (8 bots: Recruitment, Onboarding, Leave Management, Payroll with SARS compliance!)
+- Manufacturing (5 bots: MRP, Production Scheduling, Quality Prediction)
+- Procurement (7 bots: PO, RFQ, Supplier Evaluation, Spend Analysis)
+- Compliance (5 bots: BBBEE, PAYE, UIF, VAT, Audit)
+- Document Management (6 bots: OCR, Classification, Workflow)
+- Retail (6 bots: Demand Forecasting, Pricing, Inventory Optimization)
+- Healthcare (5 bots: Patient Scheduling, Claims, Lab Results)
+- Communication (5 bots: Email, SMS, WhatsApp, Teams, Slack)
+- Master Data (1 bot: Natural language CRUD for all master data)
 
 Built by Vanta X in South Africa for the world 🇿🇦
 
@@ -89,8 +95,12 @@ Aria responds (10 seconds):
 
 ### Slide 5: CTA
 **NO GLOBAL ERP HAS THIS**
-SAP ❌ Odoo ❌ Dynamics ❌ NetSuite ❌
+SAP ❌ Odoo ❌ Dynamics ❌ NetSuite ❌ Xero ❌
 **Aria ✅**
+
+Plus: Aria can integrate WITH SAP ECC/S/4HANA!
+Work standalone OR alongside your existing SAP system.
+
 Book a demo: **aria.vantax.co.za**
 
 ---
@@ -141,7 +151,9 @@ Drop a comment if you want to see a demo 👇
 | **BBBEE Automation** | ✅ YES (ONLY ONE!) | ❌ Manual | ❌ Manual |
 | **SARS Payroll** | ✅ Full automation | ⚠️ Limited | ⚠️ Limited |
 | **Annual Law Updates** | ✅ Automatic | ❌ Manual | ❌ Manual |
-| **AI-Native** | ✅ YES | ❌ Bolt-on | ❌ None |
+| **SAP Integration** | ✅ ECC + S/4HANA | ✅ Native | ⚠️ Limited | ❌ None |
+| **AI Bots** | ✅ 67 bots | ❌ None | ❌ None | ❌ None |
+| **AI-Native** | ✅ YES | ❌ Bolt-on | ❌ None | ❌ None |
 
 **THE VERDICT:**
 Aria = **5x cheaper, 10x faster, 2x adoption, ONLY BBBEE solution**
@@ -198,7 +210,8 @@ The world's first AI-native ERP.
 Email: "Show me cash flow"
 Get instant answer. **5 seconds.**
 
-25 intelligent bots. Complete business automation.
+67 intelligent bots. Complete business automation.
+11 ERP modules including SAP integration.
 
 And here's the game-changer for South Africa:
 

@@ -52,7 +52,7 @@ class PriceListType(str, Enum):
 # ============================================================================
 
 def get_db():
-    from core.database import SessionLocal
+    from core.database_pg import SessionLocal
     db = SessionLocal()
     try:
         yield db
@@ -146,8 +146,8 @@ async def list_customers(
 ):
     """List all customers with optional filtering"""
     query = """
-        SELECT id, company_id, code, name, customer_type, parent_customer_id,
-               email, phone, vat_number, credit_limit, payment_terms_days,
+        SELECT id, company_id, customer_number, name, customer_type, NULL as parent_customer_id,
+               email, phone, vat_number, credit_limit, payment_terms,
                is_active, created_at
         FROM customers
         WHERE company_id = :company_id AND is_active = true
@@ -155,10 +155,10 @@ async def list_customers(
     params = {"company_id": str(company_id)}
     
     if search:
-        query += " AND (code ILIKE :search OR name ILIKE :search OR email ILIKE :search)"
+        query += " AND (customer_number ILIKE :search OR name ILIKE :search OR email ILIKE :search)"
         params["search"] = f"%{search}%"
     
-    query += " ORDER BY code LIMIT :limit OFFSET :skip"
+    query += " ORDER BY customer_number LIMIT :limit OFFSET :skip"
     params["limit"] = limit
     params["skip"] = skip
     
@@ -184,16 +184,16 @@ async def create_customer(
     customer_id = uuid4()
     query = text("""
         INSERT INTO customers (
-            id, company_id, code, name, customer_type, parent_customer_id,
-            email, phone, vat_number, credit_limit, payment_terms_days,
+            id, company_id, customer_number, name, customer_type,
+            email, phone, vat_number, credit_limit, payment_terms,
             is_active, created_at, updated_at
         ) VALUES (
-            :id, :company_id, :code, :name, :customer_type, :parent_customer_id,
-            :email, :phone, :vat_number, :credit_limit, :payment_terms_days,
+            :id, :company_id, :customer_number, :name, :customer_type,
+            :email, :phone, :vat_number, :credit_limit, :payment_terms,
             true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
         )
-        RETURNING id, company_id, code, name, customer_type, parent_customer_id,
-                  email, phone, vat_number, credit_limit, payment_terms_days,
+        RETURNING id, company_id, customer_number, name, customer_type, NULL as parent_customer_id,
+                  email, phone, vat_number, credit_limit, payment_terms,
                   is_active, created_at
     """)
     
@@ -201,15 +201,14 @@ async def create_customer(
         result = db.execute(query, {
             "id": str(customer_id),
             "company_id": str(company_id),
-            "code": customer.code,
+            "customer_number": customer.code,
             "name": customer.name,
             "customer_type": customer.customer_type.value,
-            "parent_customer_id": str(customer.parent_customer_id) if customer.parent_customer_id else None,
             "email": customer.email,
             "phone": customer.phone,
             "vat_number": customer.vat_number,
             "credit_limit": float(customer.credit_limit),
-            "payment_terms_days": customer.payment_terms_days
+            "payment_terms": customer.payment_terms_days
         })
         db.commit()
         row = result.fetchone()
@@ -239,9 +238,9 @@ async def list_suppliers(
 ):
     """List all suppliers with optional filtering"""
     query = """
-        SELECT id, company_id, code, name, supplier_type,
+        SELECT id, company_id, supplier_number, name, supplier_type,
                email, phone, vat_number,
-               bbbee_level, bbbee_certificate_number, bbbee_expiry_date,
+               bbbee_level, NULL as bbbee_certificate_number, bbbee_certificate_expiry,
                is_active, created_at
         FROM suppliers
         WHERE company_id = :company_id AND is_active = true
@@ -249,14 +248,14 @@ async def list_suppliers(
     params = {"company_id": str(company_id)}
     
     if search:
-        query += " AND (code ILIKE :search OR name ILIKE :search OR email ILIKE :search)"
+        query += " AND (supplier_number ILIKE :search OR name ILIKE :search OR email ILIKE :search)"
         params["search"] = f"%{search}%"
     
     if bbbee_level:
         query += " AND bbbee_level = :bbbee_level"
-        params["bbbee_level"] = bbbee_level.value
+        params["bbbee_level"] = int(bbbee_level.value.split('_')[1]) if bbbee_level.value != 'non_compliant' else 0
     
-    query += " ORDER BY code LIMIT :limit OFFSET :skip"
+    query += " ORDER BY supplier_number LIMIT :limit OFFSET :skip"
     params["limit"] = limit
     params["skip"] = skip
     
@@ -281,19 +280,19 @@ async def create_supplier(
     supplier_id = uuid4()
     query = text("""
         INSERT INTO suppliers (
-            id, company_id, code, name, supplier_type,
+            id, company_id, supplier_number, name, supplier_type,
             email, phone, vat_number,
-            bbbee_level, bbbee_certificate_number, bbbee_expiry_date,
+            bbbee_level, bbbee_certificate_expiry,
             is_active, created_at, updated_at
         ) VALUES (
-            :id, :company_id, :code, :name, :supplier_type,
+            :id, :company_id, :supplier_number, :name, :supplier_type,
             :email, :phone, :vat_number,
-            :bbbee_level, :bbbee_certificate_number, :bbbee_expiry_date,
+            :bbbee_level, :bbbee_certificate_expiry,
             true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
         )
-        RETURNING id, company_id, code, name, supplier_type,
+        RETURNING id, company_id, supplier_number, name, supplier_type,
                   email, phone, vat_number,
-                  bbbee_level, bbbee_certificate_number, bbbee_expiry_date,
+                  bbbee_level, NULL as bbbee_certificate_number, bbbee_certificate_expiry,
                   is_active, created_at
     """)
     
@@ -301,15 +300,14 @@ async def create_supplier(
         result = db.execute(query, {
             "id": str(supplier_id),
             "company_id": str(company_id),
-            "code": supplier.code,
+            "supplier_number": supplier.code,
             "name": supplier.name,
             "supplier_type": supplier.supplier_type.value,
             "email": supplier.email,
             "phone": supplier.phone,
             "vat_number": supplier.vat_number,
-            "bbbee_level": supplier.bbbee_level.value if supplier.bbbee_level else None,
-            "bbbee_certificate_number": supplier.bbbee_certificate_number,
-            "bbbee_expiry_date": supplier.bbbee_expiry_date
+            "bbbee_level": int(supplier.bbbee_level.value.split('_')[1]) if supplier.bbbee_level and supplier.bbbee_level.value != 'non_compliant' else 0,
+            "bbbee_certificate_expiry": supplier.bbbee_expiry_date
         })
         db.commit()
         row = result.fetchone()
