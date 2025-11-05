@@ -2,60 +2,61 @@
 ARIA ERP - Revenue Forecasting Bot
 AI-powered revenue prediction using ML models
 """
-import sqlite3
 from decimal import Decimal
+from typing import Optional
+from .bot_api_client import BotAPIClient
 
 class RevenueForecastingBot:
-    def __init__(self, database_path: str = 'aria_erp_production.db'):
-        self.db_path = database_path
+    def __init__(
+        self,
+        api_client: Optional[BotAPIClient] = None,
+        mode: str = "api",
+        api_base_url: str = "http://localhost:8000",
+        api_token: Optional[str] = None,
+        db_session = None,
+        tenant_id: Optional[int] = None
+    ):
+        if api_client:
+            self.client = api_client
+        else:
+            self.client = BotAPIClient(
+                mode=mode,
+                api_base_url=api_base_url,
+                api_token=api_token,
+                db_session=db_session,
+                tenant_id=tenant_id
+            )
     
-    def forecast_revenue(self, company_id: int, months_ahead: int = 3) -> dict:
-        """Forecast revenue for next N months"""
-        conn = sqlite3.connect(self.db_path)
-        cursor = conn.cursor()
-        
+    def forecast_revenue(self, months_ahead: int = 3) -> dict:
+        """Forecast revenue for next N months using Reports API"""
         try:
-            # Historical revenue (last 12 months)
-            cursor.execute("""
-                SELECT 
-                    strftime('%Y-%m', invoice_date) as month,
-                    SUM(total_amount) as revenue
-                FROM sales_invoices
-                WHERE company_id = ?
-                AND invoice_date >= date('now', '-12 months')
-                AND status != 'CANCELLED'
-                GROUP BY month
-                ORDER BY month
-            """, (company_id,))
+            ar_report = self.client.get_aged_receivables()
+            current_ar = Decimal(str(ar_report.get('grand_total', 0)))
             
-            historical = []
-            total_historical = Decimal('0')
-            for row in cursor.fetchall():
-                revenue = Decimal(str(row[1]))
-                historical.append({'month': row[0], 'revenue': float(revenue)})
-                total_historical += revenue
-            
-            # Simple moving average forecast
-            avg_monthly = total_historical / len(historical) if historical else Decimal('0')
+            avg_monthly = current_ar / Decimal('3')
             
             forecasts = []
             for i in range(1, months_ahead + 1):
-                # Apply 5% growth trend
                 forecasted = avg_monthly * Decimal('1.05') ** i
                 forecasts.append({
                     'month': f"M+{i}",
                     'forecasted_revenue': float(forecasted),
-                    'confidence': 85 - (i * 5)  # Confidence decreases with distance
+                    'confidence': 85 - (i * 5)
                 })
             
             return {
-                'historical_months': len(historical),
+                'current_ar': float(current_ar),
                 'avg_monthly_revenue': float(avg_monthly),
                 'forecasts': forecasts
             }
             
-        finally:
-            conn.close()
+        except Exception as e:
+            return {
+                'error': str(e),
+                'current_ar': 0.0,
+                'avg_monthly_revenue': 0.0,
+                'forecasts': []
+            }
 
 def main():
     print("\n" + "="*60)

@@ -2,64 +2,63 @@
 ARIA ERP - Anomaly Detection Bot
 AI-powered fraud and anomaly detection across all transactions
 """
-import sqlite3
 from decimal import Decimal
+from typing import Optional
+from .bot_api_client import BotAPIClient
 
 class AnomalyDetectionBot:
-    def __init__(self, database_path: str = 'aria_erp_production.db'):
-        self.db_path = database_path
+    def __init__(
+        self,
+        api_client: Optional[BotAPIClient] = None,
+        mode: str = "api",
+        api_base_url: str = "http://localhost:8000",
+        api_token: Optional[str] = None,
+        db_session = None,
+        tenant_id: Optional[int] = None
+    ):
+        if api_client:
+            self.client = api_client
+        else:
+            self.client = BotAPIClient(
+                mode=mode,
+                api_base_url=api_base_url,
+                api_token=api_token,
+                db_session=db_session,
+                tenant_id=tenant_id
+            )
     
-    def detect_anomalies(self, company_id: int) -> dict:
-        """Detect suspicious transactions"""
-        conn = sqlite3.connect(self.db_path)
-        cursor = conn.cursor()
+    def detect_anomalies(self) -> dict:
+        """Detect suspicious transactions using Reports and AP APIs"""
+        anomalies = []
         
         try:
-            anomalies = []
+            bills = self.client.get_vendor_bills()
             
-            # Large unusual transactions
-            cursor.execute("""
-                SELECT 'LARGE_EXPENSE' as type, id, total_amount, description
-                FROM expense_claims
-                WHERE company_id = ? AND total_amount > (
-                    SELECT AVG(total_amount) * 3 FROM expense_claims WHERE company_id = ?
-                )
-                LIMIT 5
-            """, (company_id, company_id))
-            
-            for row in cursor.fetchall():
-                anomalies.append({
-                    'type': row[0],
-                    'record_id': row[1],
-                    'amount': float(row[2]),
-                    'description': row[3],
-                    'severity': 'HIGH'
-                })
-            
-            # Duplicate invoices
-            cursor.execute("""
-                SELECT 'DUPLICATE_INVOICE', COUNT(*), invoice_number, SUM(total_amount)
-                FROM sales_invoices
-                WHERE company_id = ?
-                GROUP BY invoice_number
-                HAVING COUNT(*) > 1
-            """, (company_id,))
-            
-            for row in cursor.fetchall():
-                anomalies.append({
-                    'type': row[0],
-                    'count': row[1],
-                    'invoice_number': row[2],
-                    'total_amount': float(row[3]),
-                    'severity': 'CRITICAL'
-                })
+            if bills:
+                amounts = [Decimal(str(b['total_amount'])) for b in bills]
+                avg_amount = sum(amounts) / len(amounts)
+                
+                for bill in bills:
+                    amount = Decimal(str(bill['total_amount']))
+                    if amount > avg_amount * 3:
+                        anomalies.append({
+                            'type': 'LARGE_BILL',
+                            'bill_number': bill['bill_number'],
+                            'amount': float(amount),
+                            'severity': 'HIGH'
+                        })
             
             return {
                 'anomalies_detected': len(anomalies),
                 'anomalies': anomalies
             }
-        finally:
-            conn.close()
+            
+        except Exception as e:
+            return {
+                'error': str(e),
+                'anomalies_detected': 0,
+                'anomalies': []
+            }
 
 def main():
     print("\n" + "="*60)

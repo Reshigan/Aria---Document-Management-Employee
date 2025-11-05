@@ -2,15 +2,32 @@
 ARIA ERP - OCR Invoice Processing Bot
 Extracts data from PDF/image invoices using OCR
 """
-
-import sqlite3
-from datetime import datetime
+from datetime import datetime, date
 from decimal import Decimal
+from typing import Optional
 import re
+from .bot_api_client import BotAPIClient
 
 class OCRInvoiceBot:
-    def __init__(self, database_path: str = 'aria_erp_production.db'):
-        self.db_path = database_path
+    def __init__(
+        self,
+        api_client: Optional[BotAPIClient] = None,
+        mode: str = "api",
+        api_base_url: str = "http://localhost:8000",
+        api_token: Optional[str] = None,
+        db_session = None,
+        tenant_id: Optional[int] = None
+    ):
+        if api_client:
+            self.client = api_client
+        else:
+            self.client = BotAPIClient(
+                mode=mode,
+                api_base_url=api_base_url,
+                api_token=api_token,
+                db_session=db_session,
+                tenant_id=tenant_id
+            )
     
     def extract_invoice_data(self, file_path: str) -> dict:
         """Extract structured data from invoice image/PDF"""
@@ -29,51 +46,38 @@ class OCRInvoiceBot:
             'confidence_score': 0.95
         }
     
-    def auto_create_invoice(self, company_id: int, ocr_data: dict) -> dict:
-        """Automatically create invoice from OCR data"""
-        conn = sqlite3.connect(self.db_path)
-        cursor = conn.cursor()
-        
+    def auto_create_invoice(self, ocr_data: dict, vendor_id: int) -> dict:
+        """Automatically create invoice from OCR data using AP API"""
         try:
-            # Find matching supplier
-            cursor.execute("""
-                SELECT id FROM suppliers
-                WHERE company_id = ? AND supplier_name LIKE ?
-                LIMIT 1
-            """, (company_id, f"%{ocr_data['supplier_name']}%"))
+            bill_data = {
+                'vendor_id': vendor_id,
+                'bill_date': ocr_data['invoice_date'],
+                'due_date': ocr_data['due_date'],
+                'vendor_invoice_number': ocr_data['invoice_number'],
+                'lines': []
+            }
             
-            supplier = cursor.fetchone()
-            if not supplier:
-                return {'error': 'Supplier not found'}
+            for item in ocr_data.get('line_items', []):
+                bill_data['lines'].append({
+                    'line_number': len(bill_data['lines']) + 1,
+                    'description': item['description'],
+                    'quantity': item['quantity'],
+                    'unit_price': item['unit_price'],
+                    'discount_percent': 0,
+                    'tax_rate': 15
+                })
             
-            # Create invoice
-            cursor.execute("""
-                INSERT INTO purchase_invoices (
-                    company_id, supplier_id, invoice_number,
-                    invoice_date, due_date, total_amount,
-                    vat_amount, status, created_at
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-            """, (
-                company_id, supplier[0], ocr_data['invoice_number'],
-                ocr_data['invoice_date'], ocr_data['due_date'],
-                ocr_data['total_amount'], ocr_data['vat_amount'],
-                'PENDING_APPROVAL', datetime.now()
-            ))
-            
-            invoice_id = cursor.lastrowid
-            conn.commit()
+            result = self.client.create_vendor_bill(bill_data)
             
             return {
                 'success': True,
-                'invoice_id': invoice_id,
-                'confidence': ocr_data['confidence_score']
+                'bill_id': result.get('id'),
+                'bill_number': result.get('bill_number'),
+                'confidence': ocr_data.get('confidence_score', 0.95)
             }
             
         except Exception as e:
-            conn.rollback()
             return {'error': str(e)}
-        finally:
-            conn.close()
 
 def main():
     print("\n" + "="*60)

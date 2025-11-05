@@ -2,70 +2,74 @@
 ARIA ERP - Invoice Reconciliation Bot
 Production-grade bot with 3-way matching and GL posting
 """
-
-import sqlite3
 from datetime import datetime
 from decimal import Decimal
 from typing import Dict, List, Optional
 import json
+from .bot_api_client import BotAPIClient
 
 class InvoiceReconciliationBot:
     """Production-grade Invoice Reconciliation Bot with 3-way matching"""
     
-    def __init__(self, database_path: str = 'aria_erp_production.db'):
-        self.db_path = database_path
+    def __init__(
+        self,
+        api_client: Optional[BotAPIClient] = None,
+        mode: str = "api",
+        api_base_url: str = "http://localhost:8000",
+        api_token: Optional[str] = None,
+        db_session = None,
+        tenant_id: Optional[int] = None
+    ):
+        if api_client:
+            self.client = api_client
+        else:
+            self.client = BotAPIClient(
+                mode=mode,
+                api_base_url=api_base_url,
+                api_token=api_token,
+                db_session=db_session,
+                tenant_id=tenant_id
+            )
         self.tolerance_percent = Decimal('2.0')
         self.auto_approve_threshold = Decimal('10000.00')
         
-    def execute_reconciliation(self, company_id: int, user_id: int) -> Dict:
-        """Execute full invoice reconciliation process"""
-        conn = sqlite3.connect(self.db_path)
-        cursor = conn.cursor()
-        
+    def execute_reconciliation(self) -> Dict:
+        """Execute full invoice reconciliation process using AP API"""
         stats = {'total': 0, 'approved': 0, 'review': 0, 'failed': 0}
         log = []
         
         try:
-            # Get pending invoices
-            cursor.execute("""
-                SELECT si.id, si.invoice_number, si.total_amount, si.supplier_id,
-                       si.purchase_order_id, s.name as supplier_name
-                FROM supplier_invoices si
-                JOIN suppliers s ON si.supplier_id = s.id
-                WHERE si.company_id = ? AND si.status = 'APPROVED'
-                AND si.journal_entry_id IS NULL
-            """, (company_id,))
+            bills = self.client.get_vendor_bills(status='DRAFT')
+            log.append(f"Found {len(bills)} bills to process")
             
-            invoices = cursor.fetchall()
-            log.append(f"Found {len(invoices)} invoices to process")
-            
-            for inv in invoices:
-                inv_id, inv_num, total, supp_id, po_id, supp_name = inv
+            for bill in bills:
                 stats['total'] += 1
                 
                 try:
-                    # Perform 3-way match
-                    if po_id and Decimal(str(total)) <= self.auto_approve_threshold:
-                        # Auto-approve and post to GL
-                        self._post_to_gl(cursor, company_id, user_id, inv_id, inv_num, 
-                                        total, supp_id, supp_name)
-                        stats['approved'] += 1
-                        log.append(f"✓ Auto-approved: {inv_num} (R{total:,.2f})")
+                    bill_id = bill['id']
+                    bill_number = bill['bill_number']
+                    total = Decimal(str(bill['total_amount']))
+                    po_id = bill.get('purchase_order_id')
+                    
+                    if po_id and total <= self.auto_approve_threshold:
+                        result = self.client.approve_vendor_bill(bill_id)
+                        if result.get('success'):
+                            stats['approved'] += 1
+                            log.append(f"✓ Auto-approved: {bill_number} (R{total:,.2f})")
+                        else:
+                            stats['failed'] += 1
+                            log.append(f"✗ Failed to approve: {bill_number}")
                     else:
                         stats['review'] += 1
-                        log.append(f"⚠ Review required: {inv_num}")
+                        log.append(f"⚠ Review required: {bill_number}")
                 except Exception as e:
                     stats['failed'] += 1
-                    log.append(f"✗ Failed: {inv_num} - {str(e)}")
+                    log.append(f"✗ Failed: {str(e)}")
             
-            conn.commit()
             return {'success': True, 'stats': stats, 'log': log}
             
         except Exception as e:
-            conn.rollback()
             return {'success': False, 'error': str(e), 'log': log}
-        finally:
-            conn.close()
     
     def _post_to_gl(self, cursor, company_id, user_id, inv_id, inv_num, 
                     total, supp_id, supp_name):
