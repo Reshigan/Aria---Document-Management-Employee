@@ -766,6 +766,300 @@ async def list_stock_movements(
 # ============================================================================
 # ============================================================================
 
+@router.get("/quotes", response_model=List[QuoteResponse])
+async def list_quotes(
+    skip: int = 0,
+    limit: int = 100,
+    search: Optional[str] = None,
+    status: Optional[str] = None,
+    company_id: UUID = Depends(get_company_id),
+    db: Session = Depends(get_db)
+):
+    """List all quotes for the company"""
+    query = """
+        SELECT id, company_id, quote_number, customer_id, customer_email, customer_name,
+               quote_date, valid_until, status, warehouse_id, subtotal, tax_amount, total_amount,
+               notes, terms_and_conditions, email_subject, email_body, email_message_id,
+               created_by, approved_by, approved_at, sent_at, accepted_at, sales_order_id, created_at
+        FROM quotes
+        WHERE company_id = :company_id
+    """
+    params = {"company_id": str(company_id)}
+    
+    if search:
+        query += " AND (customer_email ILIKE :search OR customer_name ILIKE :search OR quote_number ILIKE :search)"
+        params["search"] = f"%{search}%"
+    
+    if status:
+        query += " AND status = :status"
+        params["status"] = status
+    
+    query += " ORDER BY created_at DESC LIMIT :limit OFFSET :skip"
+    params["limit"] = limit
+    params["skip"] = skip
+    
+    result = db.execute(text(query), params)
+    quotes = []
+    for row in result:
+        quotes.append(QuoteResponse(
+            id=row[0], company_id=row[1], quote_number=row[2], customer_id=row[3],
+            customer_email=row[4], customer_name=row[5], quote_date=row[6],
+            valid_until=row[7], status=row[8], warehouse_id=row[9],
+            subtotal=row[10], tax_amount=row[11], total_amount=row[12],
+            notes=row[13], terms_and_conditions=row[14], email_subject=row[15],
+            email_body=row[16], email_message_id=row[17], created_by=row[18],
+            approved_by=row[19], approved_at=row[20], sent_at=row[21],
+            accepted_at=row[22], sales_order_id=row[23], created_at=row[24],
+            lines=[]
+        ))
+    return quotes
+
+@router.post("/quotes", response_model=QuoteResponse)
+async def create_quote(
+    quote: QuoteCreate,
+    company_id: UUID = Depends(get_company_id),
+    user_id: Optional[UUID] = Depends(get_user_id),
+    db: Session = Depends(get_db)
+):
+    """Create a new quote"""
+    quote_id = uuid4()
+    
+    count_result = db.execute(text("SELECT COUNT(*) FROM quotes WHERE company_id = :company_id"), 
+                             {"company_id": str(company_id)})
+    count = count_result.fetchone()[0]
+    quote_number = f"QT-{datetime.now().year}-{count + 1:05d}"
+    
+    subtotal = sum(line.quantity * line.unit_price * (1 - line.discount_percent / 100) for line in quote.lines)
+    tax_amount = sum(line.quantity * line.unit_price * (1 - line.discount_percent / 100) * line.tax_rate / 100 for line in quote.lines)
+    total_amount = subtotal + tax_amount
+    
+    try:
+        db.execute(text("""
+            INSERT INTO quotes (id, company_id, quote_number, customer_id, customer_email, customer_name,
+                              quote_date, valid_until, status, warehouse_id, subtotal, tax_amount, total_amount,
+                              notes, terms_and_conditions, email_subject, email_body, created_by, created_at, updated_at)
+            VALUES (:id, :company_id, :quote_number, :customer_id, :customer_email, :customer_name,
+                    :quote_date, :valid_until, 'draft', :warehouse_id, :subtotal, :tax_amount, :total_amount,
+                    :notes, :terms_and_conditions, :email_subject, :email_body, :created_by, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+        """), {
+            "id": str(quote_id),
+            "company_id": str(company_id),
+            "quote_number": quote_number,
+            "customer_id": str(quote.customer_id) if quote.customer_id else None,
+            "customer_email": quote.customer_email,
+            "customer_name": quote.customer_name,
+            "quote_date": quote.quote_date,
+            "valid_until": quote.valid_until,
+            "warehouse_id": str(quote.warehouse_id) if quote.warehouse_id else None,
+            "subtotal": float(subtotal),
+            "tax_amount": float(tax_amount),
+            "total_amount": float(total_amount),
+            "notes": quote.notes,
+            "terms_and_conditions": quote.terms_and_conditions,
+            "email_subject": quote.email_subject,
+            "email_body": quote.email_body,
+            "created_by": str(user_id) if user_id else None
+        })
+        
+        for line in quote.lines:
+            line_id = uuid4()
+            line_total = line.quantity * line.unit_price * (1 - line.discount_percent / 100) * (1 + line.tax_rate / 100)
+            db.execute(text("""
+                INSERT INTO quote_lines (id, quote_id, line_number, product_id, description, quantity,
+                                        unit_price, discount_percent, tax_rate, line_total, created_at, updated_at)
+                VALUES (:id, :quote_id, :line_number, :product_id, :description, :quantity,
+                        :unit_price, :discount_percent, :tax_rate, :line_total, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+            """), {
+                "id": str(line_id),
+                "quote_id": str(quote_id),
+                "line_number": line.line_number,
+                "product_id": str(line.product_id),
+                "description": line.description,
+                "quantity": float(line.quantity),
+                "unit_price": float(line.unit_price),
+                "discount_percent": float(line.discount_percent),
+                "tax_rate": float(line.tax_rate),
+                "line_total": float(line_total)
+            })
+        
+        db.commit()
+        
+        return QuoteResponse(
+            id=quote_id, company_id=company_id, quote_number=quote_number,
+            customer_id=quote.customer_id, customer_email=quote.customer_email,
+            customer_name=quote.customer_name, quote_date=quote.quote_date,
+            valid_until=quote.valid_until, status='draft', warehouse_id=quote.warehouse_id,
+            subtotal=subtotal, tax_amount=tax_amount, total_amount=total_amount,
+            notes=quote.notes, terms_and_conditions=quote.terms_and_conditions,
+            email_subject=quote.email_subject, email_body=quote.email_body,
+            email_message_id=None, created_by=user_id, approved_by=None,
+            approved_at=None, sent_at=None, accepted_at=None, sales_order_id=None,
+            created_at=datetime.now(), lines=[]
+        )
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=400, detail=f"Error creating quote: {str(e)}")
+
+@router.post("/quotes/{quote_id}/approve")
+async def approve_quote(
+    quote_id: UUID,
+    company_id: UUID = Depends(get_company_id),
+    user_id: Optional[UUID] = Depends(get_user_id),
+    db: Session = Depends(get_db)
+):
+    """Approve a quote"""
+    try:
+        db.execute(text("""
+            UPDATE quotes
+            SET status = 'approved', approved_by = :user_id, approved_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP
+            WHERE id = :quote_id AND company_id = :company_id AND status = 'draft'
+        """), {
+            "quote_id": str(quote_id),
+            "company_id": str(company_id),
+            "user_id": str(user_id) if user_id else None
+        })
+        db.commit()
+        return {"message": "Quote approved successfully", "quote_id": str(quote_id)}
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=400, detail=f"Error approving quote: {str(e)}")
+
+@router.post("/quotes/{quote_id}/send")
+async def send_quote(
+    quote_id: UUID,
+    company_id: UUID = Depends(get_company_id),
+    db: Session = Depends(get_db)
+):
+    """Send a quote to customer"""
+    try:
+        db.execute(text("""
+            UPDATE quotes
+            SET status = 'sent', sent_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP
+            WHERE id = :quote_id AND company_id = :company_id AND status = 'approved'
+        """), {
+            "quote_id": str(quote_id),
+            "company_id": str(company_id)
+        })
+        db.commit()
+        return {"message": "Quote sent successfully", "quote_id": str(quote_id)}
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=400, detail=f"Error sending quote: {str(e)}")
+
+@router.post("/quotes/{quote_id}/accept")
+async def accept_quote(
+    quote_id: UUID,
+    company_id: UUID = Depends(get_company_id),
+    user_id: Optional[UUID] = Depends(get_user_id),
+    db: Session = Depends(get_db)
+):
+    """Accept a quote and convert to sales order"""
+    try:
+        quote_query = """
+            SELECT customer_id, warehouse_id, quote_date, notes
+            FROM quotes
+            WHERE id = :quote_id AND company_id = :company_id AND status = 'sent'
+        """
+        quote_result = db.execute(text(quote_query), {"quote_id": str(quote_id), "company_id": str(company_id)})
+        quote_row = quote_result.fetchone()
+        if not quote_row:
+            raise HTTPException(status_code=404, detail="Quote not found or not in sent status")
+        
+        customer_id, warehouse_id, quote_date, notes = quote_row
+        
+        so_id = uuid4()
+        count_result = db.execute(text("SELECT COUNT(*) FROM sales_orders WHERE company_id = :company_id"), 
+                                 {"company_id": str(company_id)})
+        count = count_result.fetchone()[0]
+        so_number = f"SO-{datetime.now().year}-{count + 1:05d}"
+        
+        lines_query = """
+            SELECT product_id, description, quantity, unit_price, discount_percent, tax_rate, line_total
+            FROM quote_lines
+            WHERE quote_id = :quote_id
+            ORDER BY line_number
+        """
+        lines_result = db.execute(text(lines_query), {"quote_id": str(quote_id)})
+        
+        subtotal = Decimal("0.00")
+        tax_amount = Decimal("0.00")
+        
+        db.execute(text("""
+            INSERT INTO sales_orders (id, company_id, order_number, customer_id, order_date, status,
+                                     warehouse_id, subtotal, tax_amount, total_amount, notes,
+                                     created_by, created_at, updated_at)
+            VALUES (:id, :company_id, :order_number, :customer_id, :order_date, 'draft',
+                    :warehouse_id, 0, 0, 0, :notes, :created_by, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+        """), {
+            "id": str(so_id),
+            "company_id": str(company_id),
+            "order_number": so_number,
+            "customer_id": str(customer_id),
+            "order_date": quote_date,
+            "warehouse_id": str(warehouse_id) if warehouse_id else None,
+            "notes": notes,
+            "created_by": str(user_id) if user_id else None
+        })
+        
+        line_number = 1
+        for line_row in lines_result:
+            line_id = uuid4()
+            product_id, description, quantity, unit_price, discount_percent, tax_rate, line_total = line_row
+            
+            subtotal += Decimal(str(quantity)) * Decimal(str(unit_price)) * (1 - Decimal(str(discount_percent)) / 100)
+            tax_amount += Decimal(str(quantity)) * Decimal(str(unit_price)) * (1 - Decimal(str(discount_percent)) / 100) * Decimal(str(tax_rate)) / 100
+            
+            db.execute(text("""
+                INSERT INTO sales_order_lines (id, sales_order_id, line_number, product_id, description,
+                                               quantity, unit_price, discount_percent, tax_rate, line_total,
+                                               quantity_delivered, quantity_invoiced, created_at, updated_at)
+                VALUES (:id, :sales_order_id, :line_number, :product_id, :description,
+                        :quantity, :unit_price, :discount_percent, :tax_rate, :line_total,
+                        0, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+            """), {
+                "id": str(line_id),
+                "sales_order_id": str(so_id),
+                "line_number": line_number,
+                "product_id": str(product_id),
+                "description": description,
+                "quantity": float(quantity),
+                "unit_price": float(unit_price),
+                "discount_percent": float(discount_percent),
+                "tax_rate": float(tax_rate),
+                "line_total": float(line_total)
+            })
+            line_number += 1
+        
+        total_amount = subtotal + tax_amount
+        db.execute(text("""
+            UPDATE sales_orders
+            SET subtotal = :subtotal, tax_amount = :tax_amount, total_amount = :total_amount
+            WHERE id = :so_id
+        """), {
+            "subtotal": float(subtotal),
+            "tax_amount": float(tax_amount),
+            "total_amount": float(total_amount),
+            "so_id": str(so_id)
+        })
+        
+        db.execute(text("""
+            UPDATE quotes
+            SET status = 'accepted', accepted_at = CURRENT_TIMESTAMP, sales_order_id = :so_id, updated_at = CURRENT_TIMESTAMP
+            WHERE id = :quote_id
+        """), {
+            "quote_id": str(quote_id),
+            "so_id": str(so_id)
+        })
+        
+        db.commit()
+        return {"message": "Quote accepted and converted to sales order", "sales_order_number": so_number, "sales_order_id": str(so_id)}
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=400, detail=f"Error accepting quote: {str(e)}")
+
+# ============================================================================
+# ============================================================================
+
 @router.get("/sales-orders", response_model=List[SalesOrderResponse])
 async def list_sales_orders(
     status: Optional[str] = None,
