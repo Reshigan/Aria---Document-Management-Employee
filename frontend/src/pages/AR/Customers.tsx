@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Users, Plus, Search, Edit, Trash2, Building2, Mail, Phone } from 'lucide-react';
 import { api } from '../../lib/api';
 
@@ -34,10 +34,18 @@ export default function Customers() {
     credit_limit: 0,
     payment_terms: 'Net 30'
   });
+  const modalRef = useRef<HTMLDivElement>(null);
+  const firstFocusableRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     loadCustomers();
   }, []);
+
+  useEffect(() => {
+    if (showForm && firstFocusableRef.current) {
+      firstFocusableRef.current.focus();
+    }
+  }, [showForm]);
 
   const loadCustomers = async () => {
     try {
@@ -53,6 +61,7 @@ export default function Customers() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     try {
       if (editingCustomer) {
         await api.put(`/erp/master-data/customers/${editingCustomer.id}`, formData);
@@ -66,6 +75,37 @@ export default function Customers() {
     } catch (error) {
       console.error('Error saving customer:', error);
       alert('Error saving customer. Please try again.');
+    }
+  };
+
+  const handleModalKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      setShowForm(false);
+      setEditingCustomer(null);
+      resetForm();
+      return;
+    }
+
+    if (e.key === 'Tab') {
+      const focusableElements = modalRef.current?.querySelectorAll(
+        'input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled])'
+      );
+      if (!focusableElements || focusableElements.length === 0) return;
+
+      const firstElement = focusableElements[0] as HTMLElement;
+      const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
+
+      if (e.shiftKey) {
+        if (document.activeElement === firstElement) {
+          e.preventDefault();
+          lastElement.focus();
+        }
+      } else {
+        if (document.activeElement === lastElement) {
+          e.preventDefault();
+          firstElement.focus();
+        }
+      }
     }
   };
 
@@ -196,28 +236,44 @@ export default function Customers() {
 
       {/* Form Modal */}
       {showForm && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background: 'rgba(0,0,0,0.5)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 1000
-        }}>
-          <div style={{
-            background: 'white',
-            borderRadius: '0.5rem',
-            padding: '2rem',
-            width: '90%',
-            maxWidth: '600px',
-            maxHeight: '90vh',
-            overflow: 'auto'
-          }}>
-            <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1.5rem' }}>
+        <div 
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'rgba(0,0,0,0.5)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000
+          }}
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              setShowForm(false);
+              setEditingCustomer(null);
+              resetForm();
+            }
+          }}
+        >
+          <div 
+            ref={modalRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="modal-title"
+            onKeyDown={handleModalKeyDown}
+            style={{
+              background: 'white',
+              borderRadius: '0.5rem',
+              padding: '2rem',
+              width: '90%',
+              maxWidth: '600px',
+              maxHeight: '90vh',
+              overflow: 'auto'
+            }}
+          >
+            <h2 id="modal-title" style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1.5rem' }}>
               {editingCustomer ? 'Edit Customer' : 'Add Customer'}
             </h2>
             <form onSubmit={handleSubmit}>
@@ -227,6 +283,7 @@ export default function Customers() {
                     Customer Code *
                   </label>
                   <input
+                    ref={firstFocusableRef}
                     type="text"
                     required
                     value={formData.code}
