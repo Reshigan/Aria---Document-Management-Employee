@@ -239,5 +239,46 @@
         </div>
         <p class="footer-bottom">© 2025 Vanta X Holdings. All rights reserved.</p>
     </footer>
+
+    <!-- Dynamic Stats Script -->
+    <script>
+        // Fetch real-time bot and module counts from API
+        async function updateStats() {
+            try {
+                const response = await fetch('https://aria.vantax.co.za/api/system/stats');
+                const data = await response.json();
+                
+                // Update bot count in hero section
+                const botCountElements = document.querySelectorAll('.stat-number');
+                if (botCountElements[0]) {
+                    botCountElements[0].textContent = data.bots_count;
+                }
+                
+                // Update bot count in features section
+                const featureCards = document.querySelectorAll('.feature-card h3');
+                featureCards.forEach(card => {
+                    if (card.textContent.includes('Bots')) {
+                        card.textContent = `${data.bots_count} Bots`;
+                    }
+                });
+                
+                // Update bot count in pricing section
+                const pricingLists = document.querySelectorAll('.pricing-card ul li');
+                pricingLists.forEach(item => {
+                    if (item.textContent.includes('All') && item.textContent.includes('bots')) {
+                        item.innerHTML = `✅ All ${data.bots_count} bots`;
+                    }
+                });
+                
+                console.log('Stats updated:', data);
+            } catch (error) {
+                console.error('Failed to fetch stats:', error);
+                // Fallback to hardcoded values if API fails
+            }
+        }
+        
+        // Update stats on page load
+        document.addEventListener('DOMContentLoaded', updateStats);
+    </script>
 </body>
 </html>
