@@ -119,6 +119,13 @@ try:
 except Exception as e:
     print(f"⚠️ Comprehensive Reporting module not loaded: {e}")
 
+try:
+    from modules.aria_chat_module import router as aria_chat_router
+    app.include_router(aria_chat_router)
+    print("✅ ARIA Chat module loaded")
+except Exception as e:
+    print(f"⚠️ ARIA Chat module not loaded: {e}")
+
 # ========================================
 # REQUEST/RESPONSE MODELS
 # ========================================
