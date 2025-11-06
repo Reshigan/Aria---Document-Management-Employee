@@ -1698,3 +1698,367 @@ async def ship_delivery(
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=400, detail=f"Error shipping delivery: {str(e)}")
+
+
+class InvoiceLineCreate(BaseModel):
+    line_number: int
+    product_id: UUID
+    description: str
+    quantity: Decimal
+    unit_price: Decimal
+    tax_rate: Decimal = Decimal("0.15")
+    discount_percentage: Decimal = Decimal("0")
+
+class InvoiceLineResponse(BaseModel):
+    id: UUID
+    invoice_id: UUID
+    line_number: int
+    product_id: UUID
+    description: str
+    quantity: Decimal
+    unit_price: Decimal
+    line_total: Decimal
+    tax_rate: Decimal
+    tax_amount: Decimal
+    discount_percentage: Decimal
+    discount_amount: Decimal
+    
+    class Config:
+        from_attributes = True
+
+class InvoiceCreate(BaseModel):
+    delivery_id: Optional[UUID] = None
+    sales_order_id: Optional[UUID] = None
+    customer_id: UUID
+    invoice_date: date
+    due_date: date
+    customer_po_number: Optional[str] = None
+    lines: List[InvoiceLineCreate]
+
+class InvoiceResponse(BaseModel):
+    id: UUID
+    company_id: UUID
+    invoice_number: str
+    customer_id: UUID
+    customer_name: Optional[str] = None
+    invoice_date: date
+    due_date: date
+    subtotal: Decimal
+    tax_amount: Decimal
+    total_amount: Decimal
+    balance_due: Decimal
+    status: str
+    delivery_id: Optional[UUID] = None
+    sales_order_id: Optional[UUID] = None
+    created_at: datetime
+    lines: List[InvoiceLineResponse] = []
+    
+    class Config:
+        from_attributes = True
+
+@router.get("/invoices", response_model=List[InvoiceResponse])
+async def list_invoices(
+    company_id: UUID = Depends(get_company_id),
+    db: Session = Depends(get_db)
+):
+    """List all customer invoices"""
+    query = """
+        SELECT i.id, i.company_id, i.invoice_number, i.customer_id, c.name as customer_name,
+               i.invoice_date, i.due_date, i.subtotal, i.tax_amount, i.total_amount,
+               i.balance_due, i.status, i.delivery_id, i.sales_order_id, i.created_at
+        FROM customer_invoices i
+        JOIN customers c ON i.customer_id = c.id
+        WHERE i.company_id = :company_id
+        ORDER BY i.created_at DESC
+    """
+    result = db.execute(text(query), {"company_id": str(company_id)})
+    invoices = []
+    for row in result:
+        invoices.append(InvoiceResponse(
+            id=row[0], company_id=row[1], invoice_number=row[2], customer_id=row[3],
+            customer_name=row[4], invoice_date=row[5], due_date=row[6], subtotal=row[7],
+            tax_amount=row[8], total_amount=row[9], balance_due=row[10], status=row[11],
+            delivery_id=row[12], sales_order_id=row[13], created_at=row[14]
+        ))
+    return invoices
+
+@router.post("/invoices", response_model=InvoiceResponse)
+async def create_invoice(
+    invoice: InvoiceCreate,
+    company_id: UUID = Depends(get_company_id),
+    db: Session = Depends(get_db)
+):
+    """Create a customer invoice from delivery or sales order"""
+    try:
+        invoice_id = uuid4()
+        user_id = get_user_id(db)
+        
+        count_result = db.execute(
+            text("SELECT COUNT(*) FROM customer_invoices WHERE company_id = :company_id"),
+            {"company_id": str(company_id)}
+        )
+        count = count_result.scalar()
+        invoice_number = f"INV-{datetime.now().year}-{str(count + 1).zfill(5)}"
+        
+        # Calculate totals
+        subtotal = Decimal("0")
+        tax_amount = Decimal("0")
+        
+        for line in invoice.lines:
+            line_subtotal = line.quantity * line.unit_price
+            discount_amt = line_subtotal * (line.discount_percentage / Decimal("100"))
+            line_subtotal_after_discount = line_subtotal - discount_amt
+            line_tax = line_subtotal_after_discount * line.tax_rate
+            
+            subtotal += line_subtotal_after_discount
+            tax_amount += line_tax
+        
+        total_amount = subtotal + tax_amount
+        
+        db.execute(text("""
+            INSERT INTO customer_invoices (id, company_id, customer_id, invoice_number,
+                                          invoice_date, due_date, customer_po_number,
+                                          sales_order_id, delivery_id, subtotal, tax_amount,
+                                          total_amount, paid_amount, balance_due, status,
+                                          created_by, created_at, updated_at)
+            VALUES (:id, :company_id, :customer_id, :invoice_number,
+                    :invoice_date, :due_date, :customer_po_number,
+                    :sales_order_id, :delivery_id, :subtotal, :tax_amount,
+                    :total_amount, 0, :balance_due, 'draft',
+                    :created_by, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+        """), {
+            "id": str(invoice_id),
+            "company_id": str(company_id),
+            "customer_id": str(invoice.customer_id),
+            "invoice_number": invoice_number,
+            "invoice_date": invoice.invoice_date,
+            "due_date": invoice.due_date,
+            "customer_po_number": invoice.customer_po_number,
+            "sales_order_id": str(invoice.sales_order_id) if invoice.sales_order_id else None,
+            "delivery_id": str(invoice.delivery_id) if invoice.delivery_id else None,
+            "subtotal": float(subtotal),
+            "tax_amount": float(tax_amount),
+            "total_amount": float(total_amount),
+            "balance_due": float(total_amount),
+            "created_by": str(user_id)
+        })
+        
+        for line in invoice.lines:
+            line_id = uuid4()
+            line_subtotal = line.quantity * line.unit_price
+            discount_amt = line_subtotal * (line.discount_percentage / Decimal("100"))
+            line_subtotal_after_discount = line_subtotal - discount_amt
+            line_tax = line_subtotal_after_discount * line.tax_rate
+            line_total = line_subtotal_after_discount + line_tax
+            
+            db.execute(text("""
+                INSERT INTO invoice_line_items (id, invoice_id, line_number, product_id,
+                                               description, quantity, unit_price, line_total,
+                                               tax_rate, tax_amount, discount_percentage, discount_amount,
+                                               created_at, updated_at)
+                VALUES (:id, :invoice_id, :line_number, :product_id,
+                        :description, :quantity, :unit_price, :line_total,
+                        :tax_rate, :tax_amount, :discount_percentage, :discount_amount,
+                        CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+            """), {
+                "id": str(line_id),
+                "invoice_id": str(invoice_id),
+                "line_number": line.line_number,
+                "product_id": str(line.product_id),
+                "description": line.description,
+                "quantity": float(line.quantity),
+                "unit_price": float(line.unit_price),
+                "line_total": float(line_total),
+                "tax_rate": float(line.tax_rate),
+                "tax_amount": float(line_tax),
+                "discount_percentage": float(line.discount_percentage),
+                "discount_amount": float(discount_amt)
+            })
+        
+        db.commit()
+        
+        query = """
+            SELECT i.id, i.company_id, i.invoice_number, i.customer_id, c.name as customer_name,
+                   i.invoice_date, i.due_date, i.subtotal, i.tax_amount, i.total_amount,
+                   i.balance_due, i.status, i.delivery_id, i.sales_order_id, i.created_at
+            FROM customer_invoices i
+            JOIN customers c ON i.customer_id = c.id
+            WHERE i.id = :invoice_id
+        """
+        result = db.execute(text(query), {"invoice_id": str(invoice_id)})
+        row = result.fetchone()
+        
+        return InvoiceResponse(
+            id=row[0], company_id=row[1], invoice_number=row[2], customer_id=row[3],
+            customer_name=row[4], invoice_date=row[5], due_date=row[6], subtotal=row[7],
+            tax_amount=row[8], total_amount=row[9], balance_due=row[10], status=row[11],
+            delivery_id=row[12], sales_order_id=row[13], created_at=row[14]
+        )
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=400, detail=f"Error creating invoice: {str(e)}")
+
+@router.post("/invoices/{invoice_id}/post")
+async def post_invoice(
+    invoice_id: UUID,
+    company_id: UUID = Depends(get_company_id),
+    db: Session = Depends(get_db)
+):
+    """Post invoice (change status to posted)"""
+    try:
+        db.execute(text("""
+            UPDATE customer_invoices
+            SET status = 'posted', updated_at = CURRENT_TIMESTAMP
+            WHERE id = :invoice_id AND company_id = :company_id
+        """), {
+            "invoice_id": str(invoice_id),
+            "company_id": str(company_id)
+        })
+        db.commit()
+        return {"message": "Invoice posted successfully", "invoice_id": str(invoice_id)}
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=400, detail=f"Error posting invoice: {str(e)}")
+
+
+class PaymentCreate(BaseModel):
+    payment_type: str  # "customer" or "supplier"
+    customer_id: Optional[UUID] = None
+    supplier_id: Optional[UUID] = None
+    payment_date: date
+    amount: Decimal
+    payment_method: str  # "cash", "check", "eft", "credit_card"
+    reference: Optional[str] = None
+    check_number: Optional[str] = None
+    bank_account_id: Optional[UUID] = None
+
+class PaymentResponse(BaseModel):
+    id: UUID
+    company_id: UUID
+    payment_number: str
+    payment_type: str
+    customer_id: Optional[UUID]
+    supplier_id: Optional[UUID]
+    payment_date: date
+    amount: Decimal
+    payment_method: str
+    reference: Optional[str]
+    status: str
+    created_at: datetime
+    
+    class Config:
+        from_attributes = True
+
+@router.post("/payments", response_model=PaymentResponse)
+async def create_payment(
+    payment: PaymentCreate,
+    company_id: UUID = Depends(get_company_id),
+    db: Session = Depends(get_db)
+):
+    """Create a payment (customer or supplier)"""
+    try:
+        payment_id = uuid4()
+        user_id = get_user_id(db)
+        
+        # Generate payment number
+        count_result = db.execute(
+            text("SELECT COUNT(*) FROM payments WHERE company_id = :company_id"),
+            {"company_id": str(company_id)}
+        )
+        count = count_result.scalar()
+        payment_number = f"PMT-{datetime.now().year}-{str(count + 1).zfill(5)}"
+        
+        db.execute(text("""
+            INSERT INTO payments (id, company_id, payment_number, payment_type,
+                                 customer_id, supplier_id, payment_date, amount,
+                                 payment_method, reference, check_number, bank_account_id,
+                                 status, created_by, created_at, updated_at)
+            VALUES (:id, :company_id, :payment_number, :payment_type,
+                    :customer_id, :supplier_id, :payment_date, :amount,
+                    :payment_method, :reference, :check_number, :bank_account_id,
+                    'unallocated', :created_by, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+        """), {
+            "id": str(payment_id),
+            "company_id": str(company_id),
+            "payment_number": payment_number,
+            "payment_type": payment.payment_type,
+            "customer_id": str(payment.customer_id) if payment.customer_id else None,
+            "supplier_id": str(payment.supplier_id) if payment.supplier_id else None,
+            "payment_date": payment.payment_date,
+            "amount": float(payment.amount),
+            "payment_method": payment.payment_method,
+            "reference": payment.reference,
+            "check_number": payment.check_number,
+            "bank_account_id": str(payment.bank_account_id) if payment.bank_account_id else None,
+            "created_by": str(user_id)
+        })
+        
+        db.commit()
+        
+        query = """
+            SELECT id, company_id, payment_number, payment_type, customer_id, supplier_id,
+                   payment_date, amount, payment_method, reference, status, created_at
+            FROM payments
+            WHERE id = :payment_id
+        """
+        result = db.execute(text(query), {"payment_id": str(payment_id)})
+        row = result.fetchone()
+        
+        return PaymentResponse(
+            id=row[0], company_id=row[1], payment_number=row[2], payment_type=row[3],
+            customer_id=row[4], supplier_id=row[5], payment_date=row[6], amount=row[7],
+            payment_method=row[8], reference=row[9], status=row[10], created_at=row[11]
+        )
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=400, detail=f"Error creating payment: {str(e)}")
+
+@router.post("/payments/{payment_id}/allocate")
+async def allocate_payment(
+    payment_id: UUID,
+    invoice_id: UUID,
+    amount: Decimal,
+    company_id: UUID = Depends(get_company_id),
+    db: Session = Depends(get_db)
+):
+    """Allocate payment to invoice"""
+    try:
+        allocation_id = uuid4()
+        
+        db.execute(text("""
+            INSERT INTO payment_allocations (id, payment_id, customer_invoice_id,
+                                            amount, created_at, updated_at)
+            VALUES (:id, :payment_id, :customer_invoice_id,
+                    :amount, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+        """), {
+            "id": str(allocation_id),
+            "payment_id": str(payment_id),
+            "customer_invoice_id": str(invoice_id),
+            "amount": float(amount)
+        })
+        
+        db.execute(text("""
+            UPDATE customer_invoices
+            SET paid_amount = paid_amount + :amount,
+                balance_due = balance_due - :amount,
+                updated_at = CURRENT_TIMESTAMP
+            WHERE id = :invoice_id
+        """), {
+            "amount": float(amount),
+            "invoice_id": str(invoice_id)
+        })
+        
+        # Update payment status
+        db.execute(text("""
+            UPDATE payments
+            SET status = 'allocated', updated_at = CURRENT_TIMESTAMP
+            WHERE id = :payment_id
+        """), {
+            "payment_id": str(payment_id)
+        })
+        
+        db.commit()
+        return {"message": "Payment allocated successfully", "allocation_id": str(allocation_id)}
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=400, detail=f"Error allocating payment: {str(e)}")
