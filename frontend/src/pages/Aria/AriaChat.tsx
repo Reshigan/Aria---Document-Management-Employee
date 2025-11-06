@@ -1,11 +1,24 @@
 import { useState, useRef, useEffect } from 'react';
-import { MessageSquare, Send, Bot, User, Loader } from 'lucide-react';
+import { MessageSquare, Send, Bot, User, Loader, Paperclip, X } from 'lucide-react';
 
 interface Message {
   id: string;
   role: 'user' | 'assistant';
   content: string;
   timestamp: Date;
+  file?: {
+    name: string;
+    size: number;
+  };
+  documentAnalysis?: {
+    document_type: string;
+    document_subtype: string;
+    sap_transaction: string;
+    summary: any;
+    gl_postings: any[];
+    sap_export: any;
+    recommendations: string[];
+  };
 }
 
 export default function AriaChat() {
@@ -13,13 +26,15 @@ export default function AriaChat() {
     {
       id: '1',
       role: 'assistant',
-      content: "Hi! I'm Aria, your AI business assistant. I can help you with:\n\n• Creating sales orders, invoices, and quotes\n• Processing deliveries and stock movements\n• Managing customers, suppliers, and products\n• Running financial reports and analytics\n• Automating workflows with 67 specialized bots\n• Answering questions about your business data\n\nWhat would you like to do today?",
+      content: "Hi! I'm Aria, your AI business assistant. I can help you with:\n\n• Creating sales orders, invoices, and quotes\n• Processing deliveries and stock movements\n• Managing customers, suppliers, and products\n• Running financial reports and analytics\n• Automating workflows with 67 specialized bots\n• Answering questions about your business data\n• Analyzing documents you upload (PDF, images, text)\n\nWhat would you like to do today?",
       timestamp: new Date()
     }
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -30,34 +45,55 @@ export default function AriaChat() {
   }, [messages]);
 
   const handleSend = async () => {
-    if (!input.trim() || loading) return;
+    if ((!input.trim() && !selectedFile) || loading) return;
 
     const userMessage: Message = {
       id: Date.now().toString(),
       role: 'user',
-      content: input,
-      timestamp: new Date()
+      content: input || 'Uploaded a file',
+      timestamp: new Date(),
+      file: selectedFile ? {
+        name: selectedFile.name,
+        size: selectedFile.size
+      } : undefined
     };
 
     setMessages(prev => [...prev, userMessage]);
     const userInput = input;
+    const fileToUpload = selectedFile;
     setInput('');
+    setSelectedFile(null);
     setLoading(true);
 
     try {
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          message: userInput,
-          conversation_history: messages.map(m => ({
-            role: m.role,
-            content: m.content
-          }))
-        })
-      });
+      let response;
+      
+      if (fileToUpload) {
+        const formData = new FormData();
+        formData.append('file', fileToUpload);
+        if (userInput) {
+          formData.append('message', userInput);
+        }
+        
+        response = await fetch('/api/chat/upload', {
+          method: 'POST',
+          body: formData
+        });
+      } else {
+        response = await fetch('/api/chat', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            message: userInput,
+            conversation_history: messages.map(m => ({
+              role: m.role,
+              content: m.content
+            }))
+          })
+        });
+      }
 
       const data = await response.json();
       
@@ -65,7 +101,8 @@ export default function AriaChat() {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
         content: data.response || "I understand your request. Let me help you with that.",
-        timestamp: new Date()
+        timestamp: new Date(),
+        documentAnalysis: data.document_analysis
       };
       setMessages(prev => [...prev, assistantMessage]);
     } catch (error) {
@@ -82,10 +119,91 @@ export default function AriaChat() {
     }
   };
 
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 10 * 1024 * 1024) {
+        alert('File size must be less than 10MB');
+        return;
+      }
+      
+      const allowedTypes = [
+        'application/pdf', 
+        'image/jpeg', 
+        'image/png', 
+        'image/jpg', 
+        'text/plain',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // .xlsx
+        'application/vnd.ms-excel' // .xls
+      ];
+      if (!allowedTypes.includes(file.type)) {
+        alert('Please upload PDF, Excel, image (JPG/PNG), or text file');
+        return;
+      }
+      
+      setSelectedFile(file);
+    }
+  };
+
+  const handleRemoveFile = () => {
+    setSelectedFile(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSend();
+    }
+  };
+
+  const handlePostToERP = async (filename: string) => {
+    alert(`Posting ${filename} to ARIA ERP... This will create GL entries in the system.`);
+  };
+
+  const handleExportToSAP = async (filename: string, analysis: any) => {
+    if (!analysis?.sap_export?.records) {
+      alert('No SAP export data available');
+      return;
+    }
+
+    const records = analysis.sap_export.records;
+    const headers = Object.keys(records[0]);
+    const csv = [
+      headers.join(','),
+      ...records.map((r: any) => headers.map(h => r[h]).join(','))
+    ].join('\n');
+
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `SAP_Export_${analysis.sap_transaction}_${Date.now()}.csv`;
+    a.click();
+    window.URL.revokeObjectURL(url);
+  };
+
+  const handleViewDetails = (analysis: any) => {
+    const details = JSON.stringify(analysis, null, 2);
+    const newWindow = window.open('', '_blank');
+    if (newWindow) {
+      newWindow.document.write(`
+        <html>
+          <head>
+            <title>Document Analysis Details</title>
+            <style>
+              body { font-family: monospace; padding: 2rem; background: #1f2937; color: #f3f4f6; }
+              pre { white-space: pre-wrap; word-wrap: break-word; }
+            </style>
+          </head>
+          <body>
+            <h1>Document Analysis Details</h1>
+            <pre>${details}</pre>
+          </body>
+        </html>
+      `);
     }
   };
 
@@ -183,6 +301,113 @@ export default function AriaChat() {
                 <div style={{ whiteSpace: 'pre-wrap', lineHeight: '1.6' }}>
                   {message.content}
                 </div>
+                
+                {/* Document Analysis Results */}
+                {message.documentAnalysis && (
+                  <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid #e5e7eb' }}>
+                    {/* Document Type Badge */}
+                    <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem', flexWrap: 'wrap' }}>
+                      <span style={{
+                        padding: '0.25rem 0.75rem',
+                        background: '#667eea',
+                        color: 'white',
+                        borderRadius: '9999px',
+                        fontSize: '0.75rem',
+                        fontWeight: '600'
+                      }}>
+                        {message.documentAnalysis.document_type}
+                      </span>
+                      <span style={{
+                        padding: '0.25rem 0.75rem',
+                        background: '#10b981',
+                        color: 'white',
+                        borderRadius: '9999px',
+                        fontSize: '0.75rem',
+                        fontWeight: '600'
+                      }}>
+                        SAP: {message.documentAnalysis.sap_transaction}
+                      </span>
+                    </div>
+
+                    {/* GL Postings Summary */}
+                    {message.documentAnalysis.gl_postings && message.documentAnalysis.gl_postings.length > 0 && (
+                      <div style={{ 
+                        marginTop: '1rem',
+                        padding: '0.75rem',
+                        background: 'white',
+                        borderRadius: '0.5rem',
+                        border: '1px solid #e5e7eb'
+                      }}>
+                        <div style={{ fontWeight: '600', marginBottom: '0.5rem', fontSize: '0.875rem' }}>
+                          📊 GL Postings ({message.documentAnalysis.gl_postings.length} entries)
+                        </div>
+                        <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>
+                          Total Debit: R{message.documentAnalysis.gl_postings.reduce((sum: number, p: any) => sum + (p.debit || 0), 0).toFixed(2)} | 
+                          Total Credit: R{message.documentAnalysis.gl_postings.reduce((sum: number, p: any) => sum + (p.credit || 0), 0).toFixed(2)}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Action Buttons */}
+                    <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem', flexWrap: 'wrap' }}>
+                      <button
+                        onClick={() => handlePostToERP(message.file?.name || 'document')}
+                        style={{
+                          padding: '0.5rem 1rem',
+                          background: '#10b981',
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: '0.5rem',
+                          fontSize: '0.75rem',
+                          fontWeight: '600',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s'
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.background = '#059669'}
+                        onMouseLeave={(e) => e.currentTarget.style.background = '#10b981'}
+                      >
+                        📝 Post to ARIA ERP
+                      </button>
+                      <button
+                        onClick={() => handleExportToSAP(message.file?.name || 'document', message.documentAnalysis)}
+                        style={{
+                          padding: '0.5rem 1rem',
+                          background: '#3b82f6',
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: '0.5rem',
+                          fontSize: '0.75rem',
+                          fontWeight: '600',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s'
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.background = '#2563eb'}
+                        onMouseLeave={(e) => e.currentTarget.style.background = '#3b82f6'}
+                      >
+                        💾 Export to SAP
+                      </button>
+                      <button
+                        onClick={() => handleViewDetails(message.documentAnalysis)}
+                        style={{
+                          padding: '0.5rem 1rem',
+                          background: '#6b7280',
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: '0.5rem',
+                          fontSize: '0.75rem',
+                          fontWeight: '600',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s'
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.background = '#4b5563'}
+                        onMouseLeave={(e) => e.currentTarget.style.background = '#6b7280'}
+                      >
+                        🔍 View Details
+                      </button>
+                    </div>
+                  </div>
+                )}
+                
                 <div style={{ 
                   fontSize: '0.75rem', 
                   marginTop: '0.5rem',
@@ -271,12 +496,76 @@ export default function AriaChat() {
           borderTop: '1px solid #e5e7eb',
           background: 'white'
         }}>
+          {selectedFile && (
+            <div style={{
+              marginBottom: '1rem',
+              padding: '0.75rem 1rem',
+              background: '#f3f4f6',
+              borderRadius: '0.5rem',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <Paperclip size={16} style={{ color: '#667eea' }} />
+                <span style={{ fontSize: '0.875rem', color: '#374151' }}>
+                  {selectedFile.name} ({(selectedFile.size / 1024).toFixed(1)} KB)
+                </span>
+              </div>
+              <button
+                onClick={handleRemoveFile}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  padding: '0.25rem',
+                  display: 'flex',
+                  alignItems: 'center'
+                }}
+              >
+                <X size={16} style={{ color: '#6b7280' }} />
+              </button>
+            </div>
+          )}
           <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-end' }}>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".pdf,.jpg,.jpeg,.png,.txt,.xlsx,.xls"
+              onChange={handleFileSelect}
+              style={{ display: 'none' }}
+            />
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              disabled={loading}
+              style={{
+                padding: '0.75rem',
+                background: 'white',
+                border: '2px solid #e5e7eb',
+                borderRadius: '0.75rem',
+                cursor: loading ? 'not-allowed' : 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                transition: 'all 0.2s'
+              }}
+              onMouseEnter={(e) => {
+                if (!loading) {
+                  e.currentTarget.style.borderColor = '#667eea';
+                  e.currentTarget.style.background = '#f3f4f6';
+                }
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = '#e5e7eb';
+                e.currentTarget.style.background = 'white';
+              }}
+            >
+              <Paperclip size={20} style={{ color: '#667eea' }} />
+            </button>
             <textarea
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyPress={handleKeyPress}
-              placeholder="Type your message or request..."
+              placeholder={selectedFile ? "Add a message about this file..." : "Type your message or upload a file..."}
               rows={1}
               style={{
                 flex: 1,
@@ -294,16 +583,16 @@ export default function AriaChat() {
             />
             <button
               onClick={handleSend}
-              disabled={!input.trim() || loading}
+              disabled={(!input.trim() && !selectedFile) || loading}
               style={{
                 padding: '0.75rem 1.5rem',
-                background: input.trim() && !loading ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' : '#e5e7eb',
+                background: (input.trim() || selectedFile) && !loading ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' : '#e5e7eb',
                 color: 'white',
                 border: 'none',
                 borderRadius: '0.75rem',
                 fontSize: '0.875rem',
                 fontWeight: '600',
-                cursor: input.trim() && !loading ? 'pointer' : 'not-allowed',
+                cursor: (input.trim() || selectedFile) && !loading ? 'pointer' : 'not-allowed',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '0.5rem',
@@ -320,7 +609,7 @@ export default function AriaChat() {
             marginTop: '0.75rem',
             textAlign: 'center'
           }}>
-            Press Enter to send • Shift+Enter for new line
+            Press Enter to send • Shift+Enter for new line • Upload Excel, PDF, images, or text files for intelligent analysis
           </div>
         </div>
       </div>
