@@ -6,6 +6,31 @@
     <title>Aria - The World's First AI-Native ERP | Vanta X</title>
     <meta name="description" content="Aria is the world's first AI-native ERP platform. No UI. No training. Just ask Aria. Built for South Africa with BBBEE compliance and SARS payroll automation.">
     <link rel="stylesheet" href="styles.css">
+    <script>
+        // Fetch system stats dynamically from API
+        fetch('https://aria.vantax.co.za/api/system/stats')
+            .then(response => response.json())
+            .then(data => {
+                // Update bot count in hero section
+                const botCountElement = document.querySelector('.hero-stats .stat-number');
+                if (botCountElement && data.bots_count) {
+                    botCountElement.textContent = data.bots_count;
+                }
+                
+                // Update bot count in features section
+                const featureBotCount = document.querySelector('.feature-card h3');
+                if (featureBotCount && data.bots_count) {
+                    featureBotCount.textContent = `${data.bots_count} Bots`;
+                }
+                
+                // Update bot count in pricing section
+                const pricingBotCount = document.querySelector('.pricing-card:last-child ul li:first-child');
+                if (pricingBotCount && data.bots_count) {
+                    pricingBotCount.textContent = `✅ All ${data.bots_count} bots`;
+                }
+            })
+            .catch(error => console.log('Using static bot count'));
+    </script>
 </head>
 <body>
     <!-- Navigation -->
