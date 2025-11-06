@@ -1167,10 +1167,10 @@ async def accept_quote(
             
             db.execute(text("""
                 INSERT INTO sales_order_lines (id, sales_order_id, line_number, product_id, description,
-                                               quantity, unit_price, discount_percent, tax_rate, line_total,
+                                               quantity, unit_price, discount_percent, tax_rate,
                                                quantity_delivered, quantity_invoiced, created_at, updated_at)
                 VALUES (:id, :sales_order_id, :line_number, :product_id, :description,
-                        :quantity, :unit_price, :discount_percent, :tax_rate, :line_total,
+                        :quantity, :unit_price, :discount_percent, :tax_rate,
                         0, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
             """), {
                 "id": str(line_id),
@@ -1181,8 +1181,7 @@ async def accept_quote(
                 "quantity": float(quantity),
                 "unit_price": float(unit_price),
                 "discount_percent": float(discount_percent),
-                "tax_rate": float(tax_rate),
-                "line_total": float(line_total)
+                "tax_rate": float(tax_rate)
             })
             line_number += 1
         
