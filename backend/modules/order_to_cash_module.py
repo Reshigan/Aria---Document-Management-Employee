@@ -1555,7 +1555,7 @@ async def create_delivery(
         customer_name = customer_row[0] if customer_row else None
         
         warehouse_result = db.execute(
-            "SELECT name FROM warehouses WHERE id = :warehouse_id",
+            text("SELECT name FROM warehouses WHERE id = :warehouse_id"),
             {"warehouse_id": str(delivery.warehouse_id)}
         )
         warehouse_row = warehouse_result.fetchone()
