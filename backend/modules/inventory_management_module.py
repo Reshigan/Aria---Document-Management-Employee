@@ -17,7 +17,7 @@ router = APIRouter(prefix="/api/erp/inventory", tags=["Inventory Management"])
 
 def get_db():
     """Get database session"""
-    from backend.database import get_db as _get_db
+    from database import get_db as _get_db
     return next(_get_db())
 
 def get_company_id() -> UUID:
