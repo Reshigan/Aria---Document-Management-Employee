@@ -15,7 +15,7 @@ import pytesseract
 import json
 
 from services.ai.llm_service import llm_service
-from services.document_analyzer import document_analyzer
+from services.document_analyzer_v2 import document_analyzer_v2
 
 logger = logging.getLogger(__name__)
 
@@ -125,7 +125,7 @@ async def chat_with_file(
                 tmp_file.flush()
                 
                 try:
-                    document_analysis = document_analyzer.analyze_excel(tmp_file.name)
+                    document_analysis = document_analyzer_v2.analyze_excel(tmp_file.name)
                     
                     response_text = _format_document_analysis(document_analysis, file.filename)
                     
@@ -393,26 +393,11 @@ async def analyze_and_export(
 @router.get("/document-types")
 async def get_supported_document_types():
     """Get list of supported document types for intelligent analysis"""
+    supported_types = document_analyzer_v2.get_supported_types()
+    
     return {
-        "supported_types": [
-            {
-                "type": "remittance_advice",
-                "name": "Remittance Advice",
-                "description": "Supplier payment remittance with GL postings",
-                "features": ["gl_postings", "sap_export", "recommendations"]
-            },
-            {
-                "type": "invoice",
-                "name": "Invoice",
-                "description": "Customer or supplier invoice",
-                "features": ["coming_soon"]
-            },
-            {
-                "type": "payment",
-                "name": "Payment",
-                "description": "Payment transaction",
-                "features": ["coming_soon"]
-            }
-        ],
-        "file_formats": [".xlsx", ".xls", ".pdf", ".jpg", ".png", ".txt"]
+        "supported_types": supported_types,
+        "file_formats": [".xlsx", ".xls", ".pdf", ".jpg", ".png", ".txt"],
+        "total_types": sum(len(cat["types"]) for cat in supported_types),
+        "categories": [cat["category"] for cat in supported_types]
     }
