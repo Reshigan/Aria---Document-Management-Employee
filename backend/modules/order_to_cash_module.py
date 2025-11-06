@@ -1335,7 +1335,7 @@ async def create_sales_order(
         db.commit()
         
         customer_result = db.execute(
-            "SELECT name FROM customers WHERE id = :customer_id",
+            text("SELECT name FROM customers WHERE id = :customer_id"),
             {"customer_id": str(order.customer_id)}
         )
         customer_row = customer_result.fetchone()
