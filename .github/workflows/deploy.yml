@@ -36,7 +36,7 @@ jobs:
       
       - name: Run Node.js security audit
         run: |
-          cd frontend-vite
+          cd frontend
           npm audit --audit-level moderate || true
 
   # Backend Tests
@@ -76,12 +76,12 @@ jobs:
       
       - name: Install dependencies
         run: |
-          cd frontend-vite
+          cd frontend
           npm install
       
       - name: Build production
         run: |
-          cd frontend-vite
+          cd frontend
           npm run build
 
   # Deploy to Production
@@ -118,21 +118,20 @@ jobs:
             cd ..
             
             # Install frontend dependencies and build
-            cd frontend-vite
+            cd frontend
             npm install || true
             npm run build || true
             cd ..
             
-            # Restart services with PM2
-            pm2 restart aria-backend || true
-            pm2 restart aria-frontend-vite || true
+            # Restart backend service
+            sudo systemctl restart aria-backend || true
             
             # Reload nginx
             sudo nginx -t && sudo systemctl reload nginx
             
             # Health checks
             sleep 5
-            curl -f https://aria.vantax.co.za/api/health || echo "Health check warning"
+            curl -f https://aria.vantax.co.za/health || echo "Health check warning"
             
             echo "🎉 WORLD-CLASS DEPLOYMENT COMPLETED!"
             echo "🔗 Live URL: https://aria.vantax.co.za"
