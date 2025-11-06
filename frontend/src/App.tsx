@@ -136,8 +136,8 @@ function App() {
           <Route path="/settings" element={<Settings />} />
           
           {/* Aria Chat */}
-          <Route path="/chat" element={<ChatInterface />} />
-          <Route path="/aria" element={<ChatInterface />} />
+          <Route path="/chat" element={<AriaChat />} />
+          <Route path="/aria" element={<AriaChat />} />
           <Route path="/ask-aria" element={<DocumentUpload />} />
           <Route path="/aria/upload" element={<DocumentUpload />} />
           
