@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Building2, Plus, Search, Edit, Trash2, Mail, Phone, Award } from 'lucide-react';
 import { api } from '../../lib/api';
 
@@ -34,15 +34,23 @@ export default function Suppliers() {
     bbbee_certificate_number: '',
     bbbee_expiry_date: ''
   });
+  const modalRef = useRef<HTMLDivElement>(null);
+  const firstFocusableRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     loadSuppliers();
   }, []);
 
+  useEffect(() => {
+    if (showForm && firstFocusableRef.current) {
+      firstFocusableRef.current.focus();
+    }
+  }, [showForm]);
+
   const loadSuppliers = async () => {
     try {
       setLoading(true);
-      const response = await api.get('/api/erp/master-data/suppliers');
+      const response = await api.get('/erp/master-data/suppliers');
       setSuppliers(response.data);
     } catch (error) {
       console.error('Error loading suppliers:', error);
@@ -53,11 +61,19 @@ export default function Suppliers() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     try {
+      const cleanedData = {
+        ...formData,
+        bbbee_certificate_expiry: formData.bbbee_certificate_expiry && formData.bbbee_certificate_expiry.trim() !== '' 
+          ? formData.bbbee_certificate_expiry 
+          : undefined
+      };
+      
       if (editingSupplier) {
-        await api.put(`/api/erp/master-data/suppliers/${editingSupplier.id}`, formData);
+        await api.put(`/erp/master-data/suppliers/${editingSupplier.id}`, cleanedData);
       } else {
-        await api.post('/api/erp/master-data/suppliers', formData);
+        await api.post('/erp/master-data/suppliers', cleanedData);
       }
       setShowForm(false);
       setEditingSupplier(null);
@@ -66,6 +82,37 @@ export default function Suppliers() {
     } catch (error) {
       console.error('Error saving supplier:', error);
       alert('Error saving supplier. Please try again.');
+    }
+  };
+
+  const handleModalKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      setShowForm(false);
+      setEditingSupplier(null);
+      resetForm();
+      return;
+    }
+
+    if (e.key === 'Tab') {
+      const focusableElements = modalRef.current?.querySelectorAll(
+        'input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled])'
+      );
+      if (!focusableElements || focusableElements.length === 0) return;
+
+      const firstElement = focusableElements[0] as HTMLElement;
+      const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
+
+      if (e.shiftKey) {
+        if (document.activeElement === firstElement) {
+          e.preventDefault();
+          lastElement.focus();
+        }
+      } else {
+        if (document.activeElement === lastElement) {
+          e.preventDefault();
+          firstElement.focus();
+        }
+      }
     }
   };
 
@@ -88,7 +135,7 @@ export default function Suppliers() {
   const handleDelete = async (id: string) => {
     if (!confirm('Are you sure you want to delete this supplier?')) return;
     try {
-      await api.delete(`/api/erp/master-data/suppliers/${id}`);
+      await api.delete(`/erp/master-data/suppliers/${id}`);
       loadSuppliers();
     } catch (error) {
       console.error('Error deleting supplier:', error);
@@ -209,28 +256,44 @@ export default function Suppliers() {
 
       {/* Form Modal */}
       {showForm && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background: 'rgba(0,0,0,0.5)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 1000
-        }}>
-          <div style={{
-            background: 'white',
-            borderRadius: '0.5rem',
-            padding: '2rem',
-            width: '90%',
-            maxWidth: '600px',
-            maxHeight: '90vh',
-            overflow: 'auto'
-          }}>
-            <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1.5rem' }}>
+        <div 
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'rgba(0,0,0,0.5)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000
+          }}
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              setShowForm(false);
+              setEditingSupplier(null);
+              resetForm();
+            }
+          }}
+        >
+          <div 
+            ref={modalRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="modal-title"
+            onKeyDown={handleModalKeyDown}
+            style={{
+              background: 'white',
+              borderRadius: '0.5rem',
+              padding: '2rem',
+              width: '90%',
+              maxWidth: '600px',
+              maxHeight: '90vh',
+              overflow: 'auto'
+            }}
+          >
+            <h2 id="modal-title" style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1.5rem' }}>
               {editingSupplier ? 'Edit Supplier' : 'Add Supplier'}
             </h2>
             <form onSubmit={handleSubmit}>
@@ -240,6 +303,7 @@ export default function Suppliers() {
                     Supplier Code *
                   </label>
                   <input
+                    ref={firstFocusableRef}
                     type="text"
                     required
                     value={formData.code}
@@ -371,15 +435,15 @@ export default function Suppliers() {
                       }}
                     >
                       <option value="">Not Specified</option>
-                      <option value="1">Level 1 (135%)</option>
-                      <option value="2">Level 2 (125%)</option>
-                      <option value="3">Level 3 (110%)</option>
-                      <option value="4">Level 4 (100%)</option>
-                      <option value="5">Level 5 (80%)</option>
-                      <option value="6">Level 6 (60%)</option>
-                      <option value="7">Level 7 (50%)</option>
-                      <option value="8">Level 8 (10%)</option>
-                      <option value="0">Non-Compliant (0%)</option>
+                      <option value="level_1">Level 1 (135%)</option>
+                      <option value="level_2">Level 2 (125%)</option>
+                      <option value="level_3">Level 3 (110%)</option>
+                      <option value="level_4">Level 4 (100%)</option>
+                      <option value="level_5">Level 5 (80%)</option>
+                      <option value="level_6">Level 6 (60%)</option>
+                      <option value="level_7">Level 7 (50%)</option>
+                      <option value="level_8">Level 8 (10%)</option>
+                      <option value="non_compliant">Non-Compliant (0%)</option>
                     </select>
                   </div>
                   <div>
