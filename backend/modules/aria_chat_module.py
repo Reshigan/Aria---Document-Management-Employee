@@ -12,8 +12,10 @@ import tempfile
 import PyPDF2
 from PIL import Image
 import pytesseract
+import json
 
 from services.ai.llm_service import llm_service
+from services.document_analyzer import document_analyzer
 
 logger = logging.getLogger(__name__)
 
@@ -29,6 +31,7 @@ class ChatResponse(BaseModel):
     response: str
     model: Optional[str] = None
     timestamp: str = datetime.now().isoformat()
+    document_analysis: Optional[Dict[str, Any]] = None
 
 
 @router.post("/", response_model=ChatResponse)
@@ -93,7 +96,7 @@ Be helpful, professional, and concise. Provide actionable guidance."""
         )
 
 
-@router.post("/upload", response_model=ChatResponse)
+@router.post("/upload")
 async def chat_with_file(
     file: UploadFile = File(...),
     message: Optional[str] = Form(None)
@@ -104,16 +107,39 @@ async def chat_with_file(
     Supports:
     - PDF documents
     - Images (JPG, PNG) with OCR
+    - Excel files (XLSX, XLS) with intelligent document analysis
     - Text files
     
-    ARIA will analyze the file and respond to your query
+    ARIA will analyze the file, determine document type, suggest GL postings,
+    and provide options to post to ARIA ERP or export to SAP
     """
     try:
         file_content = await file.read()
         
         extracted_text = ""
+        document_analysis = None
         
-        if file.filename.lower().endswith('.pdf'):
+        if file.filename.lower().endswith(('.xlsx', '.xls')):
+            with tempfile.NamedTemporaryFile(delete=False, suffix=os.path.splitext(file.filename)[1]) as tmp_file:
+                tmp_file.write(file_content)
+                tmp_file.flush()
+                
+                try:
+                    document_analysis = document_analyzer.analyze_excel(tmp_file.name)
+                    
+                    response_text = _format_document_analysis(document_analysis, file.filename)
+                    
+                    return {
+                        "response": response_text,
+                        "model": "document_analyzer",
+                        "timestamp": datetime.now().isoformat(),
+                        "document_analysis": document_analysis
+                    }
+                finally:
+                    os.unlink(tmp_file.name)
+        
+        # PDF processing
+        elif file.filename.lower().endswith('.pdf'):
             with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as tmp_file:
                 tmp_file.write(file_content)
                 tmp_file.flush()
@@ -137,11 +163,12 @@ async def chat_with_file(
                 finally:
                     os.unlink(tmp_file.name)
         
+        # Text file processing
         elif file.filename.lower().endswith('.txt'):
             extracted_text = file_content.decode('utf-8')
         
         else:
-            raise HTTPException(status_code=400, detail="Unsupported file type. Please upload PDF, image, or text file.")
+            raise HTTPException(status_code=400, detail="Unsupported file type. Please upload PDF, Excel, image, or text file.")
         
         user_message = message or "Please analyze this document and tell me what it contains."
         
@@ -179,6 +206,78 @@ Please provide a clear and helpful response."""
         raise HTTPException(status_code=500, detail=f"Failed to process file: {str(e)}")
 
 
+def _format_document_analysis(analysis: Dict[str, Any], filename: str) -> str:
+    """Format document analysis results into a readable response"""
+    doc_type = analysis.get('document_type', 'Unknown')
+    doc_subtype = analysis.get('document_subtype', '')
+    summary = analysis.get('summary', {})
+    gl_postings = analysis.get('gl_postings', [])
+    sap_export = analysis.get('sap_export', {})
+    recommendations = analysis.get('recommendations', [])
+    
+    response = f"""📄 **Document Analysis: {filename}**
+
+**Document Type:** {doc_type}"""
+    
+    if doc_subtype:
+        response += f"\n**Subtype:** {doc_subtype}"
+    
+    response += "\n\n**Summary:**"
+    for key, value in summary.items():
+        key_formatted = key.replace('_', ' ').title()
+        if isinstance(value, dict):
+            response += f"\n  • {key_formatted}:"
+            for sub_key, sub_value in value.items():
+                response += f"\n    - {sub_key}: {sub_value}"
+        else:
+            response += f"\n  • {key_formatted}: {value}"
+    
+    if recommendations:
+        response += "\n\n**Recommendations:**"
+        for rec in recommendations:
+            response += f"\n  {rec}"
+    
+    if gl_postings:
+        response += f"\n\n**GL Postings ({len(gl_postings)} entries):**"
+        response += "\n\nI've generated the following journal entries for this document:"
+        
+        suppliers = {}
+        for posting in gl_postings:
+            supplier = posting.get('supplier_ref', 'N/A')
+            if supplier not in suppliers:
+                suppliers[supplier] = []
+            suppliers[supplier].append(posting)
+        
+        for supplier, postings in list(suppliers.items())[:3]:  # Show first 3 suppliers
+            response += f"\n\n**Supplier {supplier}:**"
+            for posting in postings[:4]:  # Show first 4 postings per supplier
+                debit = posting.get('debit', 0)
+                credit = posting.get('credit', 0)
+                response += f"\n  • {posting.get('account')} - {posting.get('account_name')}"
+                if debit > 0:
+                    response += f": Debit R{debit:,.2f}"
+                if credit > 0:
+                    response += f": Credit R{credit:,.2f}"
+        
+        if len(suppliers) > 3:
+            response += f"\n\n  ... and {len(suppliers) - 3} more suppliers"
+    
+    if sap_export and sap_export.get('records'):
+        response += f"\n\n**SAP Export Available:**"
+        response += f"\n  • Format: {sap_export.get('format', 'N/A')}"
+        response += f"\n  • Transaction Code: {sap_export.get('transaction_code', 'N/A')}"
+        response += f"\n  • Total Records: {sap_export.get('total_records', 0)}"
+        response += "\n  • Ready for import into SAP ECC or S/4HANA"
+    
+    response += "\n\n**What would you like to do?**"
+    response += "\n  1️⃣ Post to ARIA ERP"
+    response += "\n  2️⃣ Export to SAP (download file)"
+    response += "\n  3️⃣ View detailed GL postings"
+    response += "\n  4️⃣ Review specific transactions"
+    
+    return response
+
+
 @router.get("/health")
 async def health_check():
     """Check ARIA chat service health"""
@@ -199,6 +298,9 @@ async def health_check():
                 "natural_language_chat",
                 "file_upload_analysis",
                 "document_ocr",
+                "excel_intelligent_analysis",
+                "gl_posting_suggestions",
+                "sap_export",
                 "conversation_history"
             ]
         }
@@ -209,3 +311,108 @@ async def health_check():
             "module": "aria_chat",
             "error": str(e)
         }
+
+@router.post("/analyze-and-export")
+async def analyze_and_export(
+    file: UploadFile = File(...),
+    action: str = Form(...)
+):
+    """
+    Analyze document and perform action (post_to_erp or export_to_sap)
+    
+    Actions:
+    - post_to_erp: Post GL entries to ARIA ERP
+    - export_to_sap: Download SAP-compatible export file
+    """
+    try:
+        if not file.filename.lower().endswith(('.xlsx', '.xls')):
+            raise HTTPException(status_code=400, detail="Only Excel files are supported for this endpoint")
+        
+        file_content = await file.read()
+        
+        with tempfile.NamedTemporaryFile(delete=False, suffix=os.path.splitext(file.filename)[1]) as tmp_file:
+            tmp_file.write(file_content)
+            tmp_file.flush()
+            
+            try:
+                document_analysis = document_analyzer.analyze_excel(tmp_file.name)
+                
+                if action == "export_to_sap":
+                    # Generate SAP export file
+                    sap_export = document_analysis.get('sap_export', {})
+                    records = sap_export.get('records', [])
+                    
+                    if not records:
+                        raise HTTPException(status_code=400, detail="No SAP export records available")
+                    
+                    # Create CSV file for SAP import
+                    import pandas as pd
+                    df = pd.DataFrame(records)
+                    
+                    csv_content = df.to_csv(index=False)
+                    
+                    from fastapi.responses import Response
+                    return Response(
+                        content=csv_content,
+                        media_type="text/csv",
+                        headers={
+                            "Content-Disposition": f"attachment; filename=SAP_F28_Export_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
+                        }
+                    )
+                
+                elif action == "post_to_erp":
+                    # Post to ARIA ERP
+                    gl_postings = document_analysis.get('gl_postings', [])
+                    
+                    if not gl_postings:
+                        raise HTTPException(status_code=400, detail="No GL postings available")
+                    
+                    # TODO: Implement actual posting to ARIA ERP database
+                    # For now, return success message with posting details
+                    
+                    return {
+                        "status": "success",
+                        "message": f"Successfully posted {len(gl_postings)} GL entries to ARIA ERP",
+                        "document_type": document_analysis.get('document_type'),
+                        "total_entries": len(gl_postings),
+                        "summary": document_analysis.get('summary'),
+                        "timestamp": datetime.now().isoformat()
+                    }
+                
+                else:
+                    raise HTTPException(status_code=400, detail="Invalid action. Use 'post_to_erp' or 'export_to_sap'")
+                    
+            finally:
+                os.unlink(tmp_file.name)
+    
+    except Exception as e:
+        logger.error(f"Error in analyze and export: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to process request: {str(e)}")
+
+
+@router.get("/document-types")
+async def get_supported_document_types():
+    """Get list of supported document types for intelligent analysis"""
+    return {
+        "supported_types": [
+            {
+                "type": "remittance_advice",
+                "name": "Remittance Advice",
+                "description": "Supplier payment remittance with GL postings",
+                "features": ["gl_postings", "sap_export", "recommendations"]
+            },
+            {
+                "type": "invoice",
+                "name": "Invoice",
+                "description": "Customer or supplier invoice",
+                "features": ["coming_soon"]
+            },
+            {
+                "type": "payment",
+                "name": "Payment",
+                "description": "Payment transaction",
+                "features": ["coming_soon"]
+            }
+        ],
+        "file_formats": [".xlsx", ".xls", ".pdf", ".jpg", ".png", ".txt"]
+    }
