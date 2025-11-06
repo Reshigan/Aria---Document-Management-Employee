@@ -343,7 +343,7 @@ def get_company_id(db: Session = Depends(get_db)) -> UUID:
     return row[0]
 
 def get_user_id(db: Session = Depends(get_db)) -> Optional[UUID]:
-    result = db.execute("SELECT id FROM users LIMIT 1")
+    result = db.execute(text("SELECT id FROM users LIMIT 1"))
     row = result.fetchone()
     return row[0] if row else None
 
