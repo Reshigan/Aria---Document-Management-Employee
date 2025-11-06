@@ -150,11 +150,13 @@ async def create_journal_entry(entry: JournalEntryCreate):
                 )
         
         for line in entry.lines:
+            logger.info(f"Validating account: code={line.account_code}, company_id={entry.company_id}")
             account = await conn.fetchrow(
                 "SELECT code, name, is_active FROM chart_of_accounts WHERE code = $1 AND company_id = $2",
                 line.account_code,
                 entry.company_id
             )
+            logger.info(f"Account query result: {account}")
             
             if not account:
                 raise HTTPException(
