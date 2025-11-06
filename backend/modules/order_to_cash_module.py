@@ -1527,14 +1527,14 @@ async def create_delivery(
         
         for line in delivery.lines:
             line_id = uuid4()
-            db.execute("""
+            db.execute(text("""
                 INSERT INTO delivery_lines (id, delivery_id, sales_order_line_id, line_number,
                                            product_id, description, quantity, storage_location_id,
                                            created_at, updated_at)
                 VALUES (:id, :delivery_id, :sales_order_line_id, :line_number,
                         :product_id, :description, :quantity, :storage_location_id,
                         CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
-            """, {
+            """), {
                 "id": str(line_id),
                 "delivery_id": str(delivery_id),
                 "sales_order_line_id": str(line.sales_order_line_id) if line.sales_order_line_id else None,
@@ -1548,7 +1548,7 @@ async def create_delivery(
         db.commit()
         
         customer_result = db.execute(
-            "SELECT name FROM customers WHERE id = :customer_id",
+            text("SELECT name FROM customers WHERE id = :customer_id"),
             {"customer_id": str(delivery.customer_id)}
         )
         customer_row = customer_result.fetchone()
@@ -1633,13 +1633,13 @@ async def ship_delivery(
             FROM delivery_lines
             WHERE delivery_id = :delivery_id
         """
-        lines_result = db.execute(lines_query, {"delivery_id": str(delivery_id)})
+        lines_result = db.execute(text(lines_query), {"delivery_id": str(delivery_id)})
         
         warehouse_query = """
             SELECT warehouse_id FROM deliveries
             WHERE id = :delivery_id AND company_id = :company_id
         """
-        warehouse_result = db.execute(warehouse_query, {
+        warehouse_result = db.execute(text(warehouse_query), {
             "delivery_id": str(delivery_id),
             "company_id": str(company_id)
         })
@@ -1652,14 +1652,14 @@ async def ship_delivery(
             product_id, quantity, storage_location_id = line_row
             movement_id = uuid4()
             
-            db.execute("""
+            db.execute(text("""
                 INSERT INTO stock_movements (id, company_id, product_id, warehouse_id, storage_location_id,
                                             movement_type, quantity, reference_type, reference_id,
                                             transaction_date, created_at)
                 VALUES (:id, :company_id, :product_id, :warehouse_id, :storage_location_id,
                         'issue', :quantity, 'delivery', :delivery_id,
                         CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
-            """, {
+            """), {
                 "id": str(movement_id),
                 "company_id": str(company_id),
                 "product_id": str(product_id),
@@ -1669,7 +1669,7 @@ async def ship_delivery(
                 "delivery_id": str(delivery_id)
             })
             
-            db.execute("""
+            db.execute(text("""
                 UPDATE stock_on_hand
                 SET quantity_on_hand = quantity_on_hand - :quantity,
                     last_movement_date = CURRENT_TIMESTAMP,
@@ -1677,18 +1677,18 @@ async def ship_delivery(
                 WHERE product_id = :product_id
                   AND warehouse_id = :warehouse_id
                   AND (storage_location_id = :storage_location_id OR (storage_location_id IS NULL AND :storage_location_id IS NULL))
-            """, {
+            """), {
                 "quantity": float(quantity),
                 "product_id": str(product_id),
                 "warehouse_id": str(warehouse_id),
                 "storage_location_id": str(storage_location_id) if storage_location_id else None
             })
         
-        db.execute("""
+        db.execute(text("""
             UPDATE deliveries
             SET status = 'shipped', updated_at = CURRENT_TIMESTAMP
             WHERE id = :delivery_id AND company_id = :company_id
-        """, {
+        """), {
             "delivery_id": str(delivery_id),
             "company_id": str(company_id)
         })
