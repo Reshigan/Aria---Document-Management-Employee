@@ -70,6 +70,41 @@ try:
 except Exception as e:
     print(f"⚠️ Order-to-Cash module not loaded: {e}")
 
+try:
+    from modules.procure_to_pay_module import router as procure_to_pay_router
+    app.include_router(procure_to_pay_router)
+    print("✅ Procure-to-Pay module loaded")
+except Exception as e:
+    print(f"⚠️ Procure-to-Pay module not loaded: {e}")
+
+try:
+    from modules.inventory_management_module import router as inventory_management_router
+    app.include_router(inventory_management_router)
+    print("✅ Inventory Management module loaded")
+except Exception as e:
+    print(f"⚠️ Inventory Management module not loaded: {e}")
+
+try:
+    from modules.payroll_leave_module import router as payroll_leave_router
+    app.include_router(payroll_leave_router)
+    print("✅ Payroll & Leave Management module loaded")
+except Exception as e:
+    print(f"⚠️ Payroll & Leave Management module not loaded: {e}")
+
+try:
+    from modules.banking_reconciliation_module import router as banking_reconciliation_router
+    app.include_router(banking_reconciliation_router)
+    print("✅ Banking & Reconciliation module loaded")
+except Exception as e:
+    print(f"⚠️ Banking & Reconciliation module not loaded: {e}")
+
+try:
+    from modules.manufacturing_module import router as manufacturing_router
+    app.include_router(manufacturing_router)
+    print("✅ Manufacturing module loaded")
+except Exception as e:
+    print(f"⚠️ Manufacturing module not loaded: {e}")
+
 # ========================================
 # REQUEST/RESPONSE MODELS
 # ========================================
