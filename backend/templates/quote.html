@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quote {{ quote.number }}</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 2cm;
+        }
+        
+        body {
+            font-family: 'Helvetica', 'Arial', sans-serif;
+            font-size: 10pt;
+            line-height: 1.4;
+            color: #333;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #17a2b8;
+            padding-bottom: 20px;
+        }
+        
+        .company-info {
+            flex: 1;
+        }
+        
+        .company-logo {
+            max-width: 150px;
+            max-height: 80px;
+            margin-bottom: 10px;
+        }
+        
+        .company-name {
+            font-size: 18pt;
+            font-weight: bold;
+            color: #17a2b8;
+            margin-bottom: 5px;
+        }
+        
+        .company-details {
+            font-size: 9pt;
+            color: #666;
+        }
+        
+        .quote-title {
+            text-align: right;
+            flex: 1;
+        }
+        
+        .quote-title h1 {
+            font-size: 24pt;
+            color: #17a2b8;
+            margin: 0 0 10px 0;
+        }
+        
+        .quote-meta {
+            font-size: 10pt;
+            text-align: right;
+        }
+        
+        .quote-meta strong {
+            color: #333;
+        }
+        
+        .addresses {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+        
+        .address-block {
+            flex: 1;
+            padding: 15px;
+            background: #f9f9f9;
+            border-left: 3px solid #17a2b8;
+        }
+        
+        .address-block h3 {
+            margin: 0 0 10px 0;
+            font-size: 11pt;
+            color: #17a2b8;
+        }
+        
+        .address-block p {
+            margin: 3px 0;
+            font-size: 9pt;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        
+        table thead {
+            background: #17a2b8;
+            color: white;
+        }
+        
+        table th {
+            padding: 10px;
+            text-align: left;
+            font-weight: bold;
+            font-size: 10pt;
+        }
+        
+        table td {
+            padding: 8px 10px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        table tbody tr:hover {
+            background: #f5f5f5;
+        }
+        
+        .text-right {
+            text-align: right;
+        }
+        
+        .totals {
+            float: right;
+            width: 300px;
+            margin-top: 20px;
+        }
+        
+        .totals table {
+            margin-bottom: 0;
+        }
+        
+        .totals td {
+            padding: 5px 10px;
+            border: none;
+        }
+        
+        .totals .total-row {
+            font-weight: bold;
+            font-size: 12pt;
+            background: #f0f0f0;
+            border-top: 2px solid #17a2b8;
+        }
+        
+        .footer {
+            clear: both;
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+            font-size: 9pt;
+            color: #666;
+        }
+        
+        .validity {
+            margin-top: 20px;
+            padding: 15px;
+            background: #d1ecf1;
+            border-left: 3px solid #17a2b8;
+            font-size: 10pt;
+        }
+        
+        .qr-code {
+            float: right;
+            margin-left: 20px;
+        }
+        
+        .qr-code img {
+            width: 100px;
+            height: 100px;
+        }
+        
+        .terms {
+            margin-top: 20px;
+            font-size: 8pt;
+            color: #999;
+        }
+        
+        .acceptance {
+            margin-top: 30px;
+            padding: 15px;
+            background: #f9f9f9;
+            border: 1px solid #17a2b8;
+        }
+        
+        .acceptance h3 {
+            margin: 0 0 15px 0;
+            font-size: 11pt;
+            color: #17a2b8;
+        }
+        
+        .signature-line {
+            margin-top: 30px;
+            border-top: 2px solid #333;
+            padding-top: 10px;
+            width: 60%;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="company-info">
+            {% if company.logo_url %}
+            <img src="{{ company.logo_url }}" alt="{{ company.name }}" class="company-logo">
+            {% endif %}
+            <div class="company-name">{{ company.name }}</div>
+            <div class="company-details">
+                <p>{{ company.address }}</p>
+                <p>Tel: {{ company.phone }} | Email: {{ company.email }}</p>
+                <p>VAT No: {{ company.vat_number }} | Reg No: {{ company.registration_number }}</p>
+            </div>
+        </div>
+        <div class="quote-title">
+            <h1>QUOTATION</h1>
+            <div class="quote-meta">
+                <p><strong>Quote No:</strong> {{ quote.number }}</p>
+                <p><strong>Date:</strong> {{ quote.date | date }}</p>
+                <p><strong>Valid Until:</strong> {{ quote.valid_until | date }}</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="addresses">
+        <div class="address-block" style="margin-right: 20px;">
+            <h3>Quote For:</h3>
+            <p><strong>{{ quote.customer.name }}</strong></p>
+            <p>{{ quote.customer.address }}</p>
+            {% if quote.customer.contact_person %}
+            <p>Contact: {{ quote.customer.contact_person }}</p>
+            {% endif %}
+            {% if quote.customer.phone %}
+            <p>Tel: {{ quote.customer.phone }}</p>
+            {% endif %}
+            {% if quote.customer.email %}
+            <p>Email: {{ quote.customer.email }}</p>
+            {% endif %}
+        </div>
+        
+        {% if qr_code %}
+        <div class="qr-code">
+            <img src="data:image/png;base64,{{ qr_code }}" alt="QR Code">
+            <p style="text-align: center; font-size: 8pt; margin-top: 5px;">Scan to verify</p>
+        </div>
+        {% endif %}
+    </div>
+    
+    <div class="validity">
+        <p><strong>This quotation is valid until {{ quote.valid_until | date }}</strong></p>
+        <p>Please contact us if you have any questions or require any clarifications.</p>
+    </div>
+    
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 50%;">Description</th>
+                <th style="width: 15%;" class="text-right">Quantity</th>
+                <th style="width: 15%;" class="text-right">Unit Price</th>
+                <th style="width: 20%;" class="text-right">Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in quote.items %}
+            <tr>
+                <td>{{ item.description }}</td>
+                <td class="text-right">{{ item.quantity }}</td>
+                <td class="text-right">{{ item.unit_price | currency }}</td>
+                <td class="text-right">{{ item.total | currency }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <div class="totals">
+        <table>
+            <tr>
+                <td>Subtotal:</td>
+                <td class="text-right">{{ quote.subtotal | currency }}</td>
+            </tr>
+            <tr>
+                <td>VAT (15%):</td>
+                <td class="text-right">{{ quote.vat_amount | currency }}</td>
+            </tr>
+            <tr class="total-row">
+                <td>Total:</td>
+                <td class="text-right">{{ quote.total | currency }}</td>
+            </tr>
+        </table>
+    </div>
+    
+    <div class="footer">
+        <div class="acceptance">
+            <h3>Acceptance of Quotation</h3>
+            <p>I/We accept the above quotation and agree to the terms and conditions stated.</p>
+            
+            <div class="signature-line">
+                <p>Signature: _________________________________</p>
+                <p>Name: _____________________________________</p>
+                <p>Date: _____________________________________</p>
+            </div>
+        </div>
+        
+        <div class="terms">
+            <p><strong>Terms & Conditions:</strong></p>
+            <p>1. This quotation is valid for 30 days from the date of issue.</p>
+            <p>2. Prices are subject to change without notice after the validity period.</p>
+            <p>3. Payment terms: 50% deposit on acceptance, balance on delivery.</p>
+            <p>4. Delivery time: 14-21 working days from receipt of deposit.</p>
+            <p>5. All prices include VAT at 15%.</p>
+        </div>
+        
+        <p style="text-align: center; margin-top: 20px; font-size: 8pt;">
+            Generated on {{ generated_at | datetime }} | This is a computer-generated document.
+        </p>
+        <p style="text-align: center; font-size: 8pt;">
+            To accept this quotation, please sign and return to {{ company.email }}
+        </p>
+    </div>
+</body>
+</html>

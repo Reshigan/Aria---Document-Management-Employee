@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice {{ invoice.number }}</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 2cm;
+        }
+        
+        body {
+            font-family: 'Helvetica', 'Arial', sans-serif;
+            font-size: 10pt;
+            line-height: 1.4;
+            color: #333;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #0066cc;
+            padding-bottom: 20px;
+        }
+        
+        .company-info {
+            flex: 1;
+        }
+        
+        .company-logo {
+            max-width: 150px;
+            max-height: 80px;
+            margin-bottom: 10px;
+        }
+        
+        .company-name {
+            font-size: 18pt;
+            font-weight: bold;
+            color: #0066cc;
+            margin-bottom: 5px;
+        }
+        
+        .company-details {
+            font-size: 9pt;
+            color: #666;
+        }
+        
+        .invoice-title {
+            text-align: right;
+            flex: 1;
+        }
+        
+        .invoice-title h1 {
+            font-size: 24pt;
+            color: #0066cc;
+            margin: 0 0 10px 0;
+        }
+        
+        .invoice-meta {
+            font-size: 10pt;
+            text-align: right;
+        }
+        
+        .invoice-meta strong {
+            color: #333;
+        }
+        
+        .addresses {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+        
+        .address-block {
+            flex: 1;
+            padding: 15px;
+            background: #f9f9f9;
+            border-left: 3px solid #0066cc;
+        }
+        
+        .address-block h3 {
+            margin: 0 0 10px 0;
+            font-size: 11pt;
+            color: #0066cc;
+        }
+        
+        .address-block p {
+            margin: 3px 0;
+            font-size: 9pt;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        
+        table thead {
+            background: #0066cc;
+            color: white;
+        }
+        
+        table th {
+            padding: 10px;
+            text-align: left;
+            font-weight: bold;
+            font-size: 10pt;
+        }
+        
+        table td {
+            padding: 8px 10px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        table tbody tr:hover {
+            background: #f5f5f5;
+        }
+        
+        .text-right {
+            text-align: right;
+        }
+        
+        .totals {
+            float: right;
+            width: 300px;
+            margin-top: 20px;
+        }
+        
+        .totals table {
+            margin-bottom: 0;
+        }
+        
+        .totals td {
+            padding: 5px 10px;
+            border: none;
+        }
+        
+        .totals .total-row {
+            font-weight: bold;
+            font-size: 12pt;
+            background: #f0f0f0;
+            border-top: 2px solid #0066cc;
+        }
+        
+        .footer {
+            clear: both;
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+            font-size: 9pt;
+            color: #666;
+        }
+        
+        .payment-details {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f9f9f9;
+            border-left: 3px solid #0066cc;
+        }
+        
+        .payment-details h3 {
+            margin: 0 0 10px 0;
+            font-size: 11pt;
+            color: #0066cc;
+        }
+        
+        .payment-details p {
+            margin: 3px 0;
+        }
+        
+        .qr-code {
+            float: right;
+            margin-left: 20px;
+        }
+        
+        .qr-code img {
+            width: 100px;
+            height: 100px;
+        }
+        
+        .terms {
+            margin-top: 20px;
+            font-size: 8pt;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="company-info">
+            {% if company.logo_url %}
+            <img src="{{ company.logo_url }}" alt="{{ company.name }}" class="company-logo">
+            {% endif %}
+            <div class="company-name">{{ company.name }}</div>
+            <div class="company-details">
+                <p>{{ company.address }}</p>
+                <p>Tel: {{ company.phone }} | Email: {{ company.email }}</p>
+                <p>VAT No: {{ company.vat_number }} | Reg No: {{ company.registration_number }}</p>
+            </div>
+        </div>
+        <div class="invoice-title">
+            <h1>INVOICE</h1>
+            <div class="invoice-meta">
+                <p><strong>Invoice No:</strong> {{ invoice.number }}</p>
+                <p><strong>Date:</strong> {{ invoice.date | date }}</p>
+                <p><strong>Due Date:</strong> {{ invoice.due_date | date }}</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="addresses">
+        <div class="address-block" style="margin-right: 20px;">
+            <h3>Bill To:</h3>
+            <p><strong>{{ invoice.customer.name }}</strong></p>
+            <p>{{ invoice.customer.address }}</p>
+            {% if invoice.customer.vat_number %}
+            <p>VAT No: {{ invoice.customer.vat_number }}</p>
+            {% endif %}
+        </div>
+        
+        {% if qr_code %}
+        <div class="qr-code">
+            <img src="data:image/png;base64,{{ qr_code }}" alt="QR Code">
+            <p style="text-align: center; font-size: 8pt; margin-top: 5px;">Scan to verify</p>
+        </div>
+        {% endif %}
+    </div>
+    
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 50%;">Description</th>
+                <th style="width: 15%;" class="text-right">Quantity</th>
+                <th style="width: 15%;" class="text-right">Unit Price</th>
+                <th style="width: 20%;" class="text-right">Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in invoice.items %}
+            <tr>
+                <td>{{ item.description }}</td>
+                <td class="text-right">{{ item.quantity }}</td>
+                <td class="text-right">{{ item.unit_price | currency }}</td>
+                <td class="text-right">{{ item.total | currency }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <div class="totals">
+        <table>
+            <tr>
+                <td>Subtotal:</td>
+                <td class="text-right">{{ invoice.subtotal | currency }}</td>
+            </tr>
+            <tr>
+                <td>VAT (15%):</td>
+                <td class="text-right">{{ invoice.vat_amount | currency }}</td>
+            </tr>
+            <tr class="total-row">
+                <td>Total:</td>
+                <td class="text-right">{{ invoice.total | currency }}</td>
+            </tr>
+        </table>
+    </div>
+    
+    <div class="footer">
+        <div class="payment-details">
+            <h3>Payment Details</h3>
+            <p><strong>Bank:</strong> {{ company.bank_name }}</p>
+            <p><strong>Account Number:</strong> {{ company.bank_account }}</p>
+            <p><strong>Branch Code:</strong> {{ company.bank_branch }}</p>
+            <p><strong>Reference:</strong> {{ invoice.number }}</p>
+        </div>
+        
+        <div class="terms">
+            <p><strong>Terms & Conditions:</strong></p>
+            <p>Payment is due within 30 days of invoice date. Interest at 2% per month will be charged on overdue accounts.</p>
+            <p>Please use the invoice number as payment reference.</p>
+        </div>
+        
+        <p style="text-align: center; margin-top: 20px; font-size: 8pt;">
+            Generated on {{ generated_at | datetime }} | This is a computer-generated document and does not require a signature.
+        </p>
+    </div>
+</body>
+</html>

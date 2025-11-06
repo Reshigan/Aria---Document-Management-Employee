@@ -17,8 +17,12 @@ router = APIRouter(prefix="/api/erp/banking", tags=["Banking & Reconciliation"])
 
 def get_db():
     """Get database session"""
-    from backend.database import get_db as _get_db
-    return next(_get_db())
+    from core.database_pg import SessionLocal
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
 def get_company_id() -> UUID:
     """Get company ID from context - placeholder for now"""

@@ -105,6 +105,20 @@ try:
 except Exception as e:
     print(f"⚠️ Manufacturing module not loaded: {e}")
 
+try:
+    from modules.document_templates_module import router as document_templates_router
+    app.include_router(document_templates_router)
+    print("✅ Document Templates module loaded")
+except Exception as e:
+    print(f"⚠️ Document Templates module not loaded: {e}")
+
+try:
+    from modules.comprehensive_reporting_module import router as comprehensive_reporting_router
+    app.include_router(comprehensive_reporting_router)
+    print("✅ Comprehensive Reporting module loaded")
+except Exception as e:
+    print(f"⚠️ Comprehensive Reporting module not loaded: {e}")
+
 # ========================================
 # REQUEST/RESPONSE MODELS
 # ========================================
@@ -2367,6 +2381,16 @@ ERP_MODULES = {
 # Health check
 @app.get("/health")
 async def health_check():
+    return {
+        "status": "healthy",
+        "version": "3.0.0",
+        "bots": len(ALL_BOTS),
+        "erp_modules": len(ERP_MODULES)
+    }
+
+@app.get("/api/health")
+async def api_health_check():
+    """Alias for /health endpoint to support /api prefix"""
     return {
         "status": "healthy",
         "version": "3.0.0",
