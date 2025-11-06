@@ -866,9 +866,9 @@ async def create_quote(
             line_total = line.quantity * line.unit_price * (1 - line.discount_percent / 100) * (1 + line.tax_rate / 100)
             db.execute(text("""
                 INSERT INTO quote_lines (id, quote_id, line_number, product_id, description, quantity,
-                                        unit_price, discount_percent, tax_rate, line_total, created_at, updated_at)
+                                        unit_price, discount_percent, tax_rate, created_at, updated_at)
                 VALUES (:id, :quote_id, :line_number, :product_id, :description, :quantity,
-                        :unit_price, :discount_percent, :tax_rate, :line_total, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+                        :unit_price, :discount_percent, :tax_rate, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
             """), {
                 "id": str(line_id),
                 "quote_id": str(quote_id),
@@ -878,8 +878,7 @@ async def create_quote(
                 "quantity": float(line.quantity),
                 "unit_price": float(line.unit_price),
                 "discount_percent": float(line.discount_percent),
-                "tax_rate": float(line.tax_rate),
-                "line_total": float(line_total)
+                "tax_rate": float(line.tax_rate)
             })
         
         db.commit()
