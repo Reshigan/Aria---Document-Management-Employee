@@ -45,6 +45,7 @@ import Bills from './pages/AP/Bills';
 import VATReturnsPage from './pages/Tax/VATReturnsPage';
 import FinancialReports from './pages/Reports/FinancialReports';
 import DocumentUpload from './pages/AskAria/DocumentUpload';
+import ComprehensiveReports from './pages/Reports/ComprehensiveReports';
 import './styles/design-system.css';
 
 function App() {
@@ -126,7 +127,8 @@ function App() {
           <Route path="/automation/mailroom" element={<Mailroom />} />
           
           {/* Reports */}
-          <Route path="/reports" element={<FinancialReports />} />
+          <Route path="/reports" element={<ComprehensiveReports />} />
+          <Route path="/reports/comprehensive" element={<ComprehensiveReports />} />
           <Route path="/reports/financial" element={<FinancialReports />} />
           <Route path="/reports/ar-aging" element={<AgedReceivablesReport />} />
           <Route path="/reports/stock-valuation" element={<StockValuationReport />} />

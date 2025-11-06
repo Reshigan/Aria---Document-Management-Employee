@@ -300,6 +300,12 @@ app.include_router(reports_router)
 from app.api.documents import router as documents_router
 app.include_router(documents_router)
 
+# Include Phase 1 Enhancement Modules
+from modules.document_templates_module import router as document_templates_router
+from modules.comprehensive_reporting_module import router as comprehensive_reporting_router
+app.include_router(document_templates_router)
+app.include_router(comprehensive_reporting_router)
+
 # Pydantic models
 class UserLogin(PydanticBaseModel):
     username: str

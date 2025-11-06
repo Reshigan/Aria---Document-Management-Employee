@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Purchase Order {{ purchase_order.number }}</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 2cm;
+        }
+        
+        body {
+            font-family: 'Helvetica', 'Arial', sans-serif;
+            font-size: 10pt;
+            line-height: 1.4;
+            color: #333;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #6c757d;
+            padding-bottom: 20px;
+        }
+        
+        .company-info {
+            flex: 1;
+        }
+        
+        .company-logo {
+            max-width: 150px;
+            max-height: 80px;
+            margin-bottom: 10px;
+        }
+        
+        .company-name {
+            font-size: 18pt;
+            font-weight: bold;
+            color: #6c757d;
+            margin-bottom: 5px;
+        }
+        
+        .company-details {
+            font-size: 9pt;
+            color: #666;
+        }
+        
+        .po-title {
+            text-align: right;
+            flex: 1;
+        }
+        
+        .po-title h1 {
+            font-size: 24pt;
+            color: #6c757d;
+            margin: 0 0 10px 0;
+        }
+        
+        .po-meta {
+            font-size: 10pt;
+            text-align: right;
+        }
+        
+        .po-meta strong {
+            color: #333;
+        }
+        
+        .addresses {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+        
+        .address-block {
+            flex: 1;
+            padding: 15px;
+            background: #f9f9f9;
+            border-left: 3px solid #6c757d;
+        }
+        
+        .address-block h3 {
+            margin: 0 0 10px 0;
+            font-size: 11pt;
+            color: #6c757d;
+        }
+        
+        .address-block p {
+            margin: 3px 0;
+            font-size: 9pt;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        
+        table thead {
+            background: #6c757d;
+            color: white;
+        }
+        
+        table th {
+            padding: 10px;
+            text-align: left;
+            font-weight: bold;
+            font-size: 10pt;
+        }
+        
+        table td {
+            padding: 8px 10px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        table tbody tr:hover {
+            background: #f5f5f5;
+        }
+        
+        .text-right {
+            text-align: right;
+        }
+        
+        .totals {
+            float: right;
+            width: 300px;
+            margin-top: 20px;
+        }
+        
+        .totals table {
+            margin-bottom: 0;
+        }
+        
+        .totals td {
+            padding: 5px 10px;
+            border: none;
+        }
+        
+        .totals .total-row {
+            font-weight: bold;
+            font-size: 12pt;
+            background: #f0f0f0;
+            border-top: 2px solid #6c757d;
+        }
+        
+        .footer {
+            clear: both;
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+            font-size: 9pt;
+            color: #666;
+        }
+        
+        .delivery-instructions {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f9f9f9;
+            border-left: 3px solid #6c757d;
+        }
+        
+        .delivery-instructions h3 {
+            margin: 0 0 10px 0;
+            font-size: 11pt;
+            color: #6c757d;
+        }
+        
+        .delivery-instructions p {
+            margin: 3px 0;
+        }
+        
+        .qr-code {
+            float: right;
+            margin-left: 20px;
+        }
+        
+        .qr-code img {
+            width: 100px;
+            height: 100px;
+        }
+        
+        .terms {
+            margin-top: 20px;
+            font-size: 8pt;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="company-info">
+            {% if company.logo_url %}
+            <img src="{{ company.logo_url }}" alt="{{ company.name }}" class="company-logo">
+            {% endif %}
+            <div class="company-name">{{ company.name }}</div>
+            <div class="company-details">
+                <p>{{ company.address }}</p>
+                <p>Tel: {{ company.phone }} | Email: {{ company.email }}</p>
+                <p>VAT No: {{ company.vat_number }} | Reg No: {{ company.registration_number }}</p>
+            </div>
+        </div>
+        <div class="po-title">
+            <h1>PURCHASE ORDER</h1>
+            <div class="po-meta">
+                <p><strong>PO No:</strong> {{ purchase_order.number }}</p>
+                <p><strong>Date:</strong> {{ purchase_order.date | date }}</p>
+                <p><strong>Required By:</strong> {{ purchase_order.required_date | date }}</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="addresses">
+        <div class="address-block" style="margin-right: 20px;">
+            <h3>Supplier:</h3>
+            <p><strong>{{ purchase_order.supplier.name }}</strong></p>
+            <p>{{ purchase_order.supplier.address }}</p>
+            {% if purchase_order.supplier.contact_person %}
+            <p>Contact: {{ purchase_order.supplier.contact_person }}</p>
+            {% endif %}
+            {% if purchase_order.supplier.phone %}
+            <p>Tel: {{ purchase_order.supplier.phone }}</p>
+            {% endif %}
+            {% if purchase_order.supplier.email %}
+            <p>Email: {{ purchase_order.supplier.email }}</p>
+            {% endif %}
+        </div>
+        
+        {% if qr_code %}
+        <div class="qr-code">
+            <img src="data:image/png;base64,{{ qr_code }}" alt="QR Code">
+            <p style="text-align: center; font-size: 8pt; margin-top: 5px;">Scan to verify</p>
+        </div>
+        {% endif %}
+    </div>
+    
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 10%;">Item No</th>
+                <th style="width: 40%;">Description</th>
+                <th style="width: 15%;" class="text-right">Quantity</th>
+                <th style="width: 15%;" class="text-right">Unit Price</th>
+                <th style="width: 20%;" class="text-right">Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in purchase_order.items %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ item.description }}</td>
+                <td class="text-right">{{ item.quantity }}</td>
+                <td class="text-right">{{ item.unit_price | currency }}</td>
+                <td class="text-right">{{ item.total | currency }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <div class="totals">
+        <table>
+            <tr>
+                <td>Subtotal:</td>
+                <td class="text-right">{{ purchase_order.subtotal | currency }}</td>
+            </tr>
+            <tr>
+                <td>VAT (15%):</td>
+                <td class="text-right">{{ purchase_order.vat_amount | currency }}</td>
+            </tr>
+            <tr class="total-row">
+                <td>Total:</td>
+                <td class="text-right">{{ purchase_order.total | currency }}</td>
+            </tr>
+        </table>
+    </div>
+    
+    <div class="footer">
+        <div class="delivery-instructions">
+            <h3>Delivery Instructions</h3>
+            <p><strong>Deliver To:</strong> {{ company.name }}</p>
+            <p><strong>Address:</strong> {{ company.address }}</p>
+            <p><strong>Required By:</strong> {{ purchase_order.required_date | date }}</p>
+            {% if purchase_order.delivery_notes %}
+            <p><strong>Notes:</strong> {{ purchase_order.delivery_notes }}</p>
+            {% endif %}
+        </div>
+        
+        <div class="terms">
+            <p><strong>Terms & Conditions:</strong></p>
+            <p>1. Please quote our PO number on all correspondence, delivery notes, and invoices.</p>
+            <p>2. Goods must be delivered by the required date specified above.</p>
+            <p>3. All goods must be inspected upon delivery and any discrepancies reported immediately.</p>
+            <p>4. Payment terms as per supplier agreement.</p>
+        </div>
+        
+        <p style="text-align: center; margin-top: 20px; font-size: 8pt;">
+            Generated on {{ generated_at | datetime }} | This is a computer-generated document and does not require a signature.
+        </p>
+    </div>
+</body>
+</html>
