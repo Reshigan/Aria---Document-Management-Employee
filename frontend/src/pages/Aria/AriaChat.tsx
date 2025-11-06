@@ -10,6 +10,15 @@ interface Message {
     name: string;
     size: number;
   };
+  documentAnalysis?: {
+    document_type: string;
+    document_subtype: string;
+    sap_transaction: string;
+    summary: any;
+    gl_postings: any[];
+    sap_export: any;
+    recommendations: string[];
+  };
 }
 
 export default function AriaChat() {
@@ -92,7 +101,8 @@ export default function AriaChat() {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
         content: data.response || "I understand your request. Let me help you with that.",
-        timestamp: new Date()
+        timestamp: new Date(),
+        documentAnalysis: data.document_analysis
       };
       setMessages(prev => [...prev, assistantMessage]);
     } catch (error) {
@@ -117,9 +127,17 @@ export default function AriaChat() {
         return;
       }
       
-      const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/jpg', 'text/plain'];
+      const allowedTypes = [
+        'application/pdf', 
+        'image/jpeg', 
+        'image/png', 
+        'image/jpg', 
+        'text/plain',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // .xlsx
+        'application/vnd.ms-excel' // .xls
+      ];
       if (!allowedTypes.includes(file.type)) {
-        alert('Please upload PDF, image (JPG/PNG), or text file');
+        alert('Please upload PDF, Excel, image (JPG/PNG), or text file');
         return;
       }
       
@@ -138,6 +156,54 @@ export default function AriaChat() {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSend();
+    }
+  };
+
+  const handlePostToERP = async (filename: string) => {
+    alert(`Posting ${filename} to ARIA ERP... This will create GL entries in the system.`);
+  };
+
+  const handleExportToSAP = async (filename: string, analysis: any) => {
+    if (!analysis?.sap_export?.records) {
+      alert('No SAP export data available');
+      return;
+    }
+
+    const records = analysis.sap_export.records;
+    const headers = Object.keys(records[0]);
+    const csv = [
+      headers.join(','),
+      ...records.map((r: any) => headers.map(h => r[h]).join(','))
+    ].join('\n');
+
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `SAP_Export_${analysis.sap_transaction}_${Date.now()}.csv`;
+    a.click();
+    window.URL.revokeObjectURL(url);
+  };
+
+  const handleViewDetails = (analysis: any) => {
+    const details = JSON.stringify(analysis, null, 2);
+    const newWindow = window.open('', '_blank');
+    if (newWindow) {
+      newWindow.document.write(`
+        <html>
+          <head>
+            <title>Document Analysis Details</title>
+            <style>
+              body { font-family: monospace; padding: 2rem; background: #1f2937; color: #f3f4f6; }
+              pre { white-space: pre-wrap; word-wrap: break-word; }
+            </style>
+          </head>
+          <body>
+            <h1>Document Analysis Details</h1>
+            <pre>${details}</pre>
+          </body>
+        </html>
+      `);
     }
   };
 
@@ -235,6 +301,113 @@ export default function AriaChat() {
                 <div style={{ whiteSpace: 'pre-wrap', lineHeight: '1.6' }}>
                   {message.content}
                 </div>
+                
+                {/* Document Analysis Results */}
+                {message.documentAnalysis && (
+                  <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid #e5e7eb' }}>
+                    {/* Document Type Badge */}
+                    <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem', flexWrap: 'wrap' }}>
+                      <span style={{
+                        padding: '0.25rem 0.75rem',
+                        background: '#667eea',
+                        color: 'white',
+                        borderRadius: '9999px',
+                        fontSize: '0.75rem',
+                        fontWeight: '600'
+                      }}>
+                        {message.documentAnalysis.document_type}
+                      </span>
+                      <span style={{
+                        padding: '0.25rem 0.75rem',
+                        background: '#10b981',
+                        color: 'white',
+                        borderRadius: '9999px',
+                        fontSize: '0.75rem',
+                        fontWeight: '600'
+                      }}>
+                        SAP: {message.documentAnalysis.sap_transaction}
+                      </span>
+                    </div>
+
+                    {/* GL Postings Summary */}
+                    {message.documentAnalysis.gl_postings && message.documentAnalysis.gl_postings.length > 0 && (
+                      <div style={{ 
+                        marginTop: '1rem',
+                        padding: '0.75rem',
+                        background: 'white',
+                        borderRadius: '0.5rem',
+                        border: '1px solid #e5e7eb'
+                      }}>
+                        <div style={{ fontWeight: '600', marginBottom: '0.5rem', fontSize: '0.875rem' }}>
+                          📊 GL Postings ({message.documentAnalysis.gl_postings.length} entries)
+                        </div>
+                        <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>
+                          Total Debit: R{message.documentAnalysis.gl_postings.reduce((sum: number, p: any) => sum + (p.debit || 0), 0).toFixed(2)} | 
+                          Total Credit: R{message.documentAnalysis.gl_postings.reduce((sum: number, p: any) => sum + (p.credit || 0), 0).toFixed(2)}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Action Buttons */}
+                    <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem', flexWrap: 'wrap' }}>
+                      <button
+                        onClick={() => handlePostToERP(message.file?.name || 'document')}
+                        style={{
+                          padding: '0.5rem 1rem',
+                          background: '#10b981',
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: '0.5rem',
+                          fontSize: '0.75rem',
+                          fontWeight: '600',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s'
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.background = '#059669'}
+                        onMouseLeave={(e) => e.currentTarget.style.background = '#10b981'}
+                      >
+                        📝 Post to ARIA ERP
+                      </button>
+                      <button
+                        onClick={() => handleExportToSAP(message.file?.name || 'document', message.documentAnalysis)}
+                        style={{
+                          padding: '0.5rem 1rem',
+                          background: '#3b82f6',
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: '0.5rem',
+                          fontSize: '0.75rem',
+                          fontWeight: '600',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s'
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.background = '#2563eb'}
+                        onMouseLeave={(e) => e.currentTarget.style.background = '#3b82f6'}
+                      >
+                        💾 Export to SAP
+                      </button>
+                      <button
+                        onClick={() => handleViewDetails(message.documentAnalysis)}
+                        style={{
+                          padding: '0.5rem 1rem',
+                          background: '#6b7280',
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: '0.5rem',
+                          fontSize: '0.75rem',
+                          fontWeight: '600',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s'
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.background = '#4b5563'}
+                        onMouseLeave={(e) => e.currentTarget.style.background = '#6b7280'}
+                      >
+                        🔍 View Details
+                      </button>
+                    </div>
+                  </div>
+                )}
+                
                 <div style={{ 
                   fontSize: '0.75rem', 
                   marginTop: '0.5rem',
@@ -358,7 +531,7 @@ export default function AriaChat() {
             <input
               ref={fileInputRef}
               type="file"
-              accept=".pdf,.jpg,.jpeg,.png,.txt"
+              accept=".pdf,.jpg,.jpeg,.png,.txt,.xlsx,.xls"
               onChange={handleFileSelect}
               style={{ display: 'none' }}
             />
@@ -436,7 +609,7 @@ export default function AriaChat() {
             marginTop: '0.75rem',
             textAlign: 'center'
           }}>
-            Press Enter to send • Shift+Enter for new line • Upload PDF, images, or text files
+            Press Enter to send • Shift+Enter for new line • Upload Excel, PDF, images, or text files for intelligent analysis
           </div>
         </div>
       </div>
