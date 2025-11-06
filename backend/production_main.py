@@ -2932,6 +2932,41 @@ async def aria_delegate(request: DelegateRequest, user: dict = Depends(get_curre
         }
 
 # ========================================
+# ========================================
+
+@app.get("/api/system/stats")
+async def get_system_stats():
+    """Get system statistics for marketing site and dashboards"""
+    return {
+        "bots_count": len(ALL_BOTS),
+        "modules_count": 8,
+        "modules": [
+            {"name": "SAP Integration", "status": "active"},
+            {"name": "Master Data Management", "status": "active"},
+            {"name": "Order-to-Cash", "status": "active"},
+            {"name": "Procure-to-Pay", "status": "active"},
+            {"name": "Inventory Management", "status": "active"},
+            {"name": "Payroll & Leave Management", "status": "active"},
+            {"name": "Banking & Reconciliation", "status": "active"},
+            {"name": "Manufacturing", "status": "active"}
+        ],
+        "bot_categories": {
+            "manufacturing": 5,
+            "healthcare": 5,
+            "retail": 6,
+            "financial": 12,
+            "compliance": 5,
+            "crm": 8,
+            "hr": 8,
+            "communication": 5,
+            "documents": 6,
+            "procurement": 7
+        },
+        "version": "3.0.0",
+        "status": "production"
+    }
+
+# ========================================
 # STARTUP EVENT
 # ========================================
 
