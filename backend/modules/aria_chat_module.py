@@ -361,23 +361,86 @@ async def analyze_and_export(
                     )
                 
                 elif action == "post_to_erp":
-                    # Post to ARIA ERP
+                    # Post to ARIA ERP using GL Posting Engine
                     gl_postings = document_analysis.get('gl_postings', [])
                     
                     if not gl_postings:
                         raise HTTPException(status_code=400, detail="No GL postings available")
                     
-                    # TODO: Implement actual posting to ARIA ERP database
-                    # For now, return success message with posting details
+                    from modules.gl_posting_module import JournalEntryCreate, JournalLineCreate, calculate_file_hash
+                    import asyncpg
+                    import os
                     
-                    return {
-                        "status": "success",
-                        "message": f"Successfully posted {len(gl_postings)} GL entries to ARIA ERP",
-                        "document_type": document_analysis.get('document_type'),
-                        "total_entries": len(gl_postings),
-                        "summary": document_analysis.get('summary'),
-                        "timestamp": datetime.now().isoformat()
-                    }
+                    file_hash = calculate_file_hash(file_content)
+                    
+                    database_url = os.getenv('DATABASE_URL')
+                    conn = await asyncpg.connect(database_url)
+                    
+                    try:
+                        company = await conn.fetchrow("SELECT id FROM companies LIMIT 1")
+                        if not company:
+                            raise HTTPException(status_code=400, detail="No company found. Please create a company first.")
+                        
+                        company_id = str(company['id'])
+                        
+                        doc_type = document_analysis.get('document_type', 'Unknown')
+                        doc_subtype = document_analysis.get('document_subtype', '')
+                        
+                        # Generate unique reference
+                        ref_prefix = "JE"
+                        if "Vendor" in doc_type:
+                            ref_prefix = "AP"
+                        elif "Customer" in doc_type:
+                            ref_prefix = "AR"
+                        
+                        reference = f"{ref_prefix}-{datetime.now().strftime('%Y%m%d-%H%M%S')}"
+                        
+                        lines = []
+                        for idx, posting in enumerate(gl_postings):
+                            account_code = str(posting.get('account', '9999'))
+                            debit = float(posting.get('debit', 0))
+                            credit = float(posting.get('credit', 0))
+                            description = posting.get('description', '')
+                            
+                            lines.append(JournalLineCreate(
+                                line_number=idx + 1,
+                                account_code=account_code,
+                                debit_amount=debit,
+                                credit_amount=credit,
+                                description=description
+                            ))
+                        
+                        # Create journal entry
+                        from modules.gl_posting_module import create_journal_entry
+                        
+                        entry_data = JournalEntryCreate(
+                            company_id=company_id,
+                            reference=reference,
+                            entry_date=datetime.now().date(),
+                            posting_date=datetime.now().date(),
+                            description=f"{doc_type} - {doc_subtype} from {file.filename}",
+                            source="DOCUMENT_UPLOAD",
+                            source_document_hash=file_hash,
+                            source_document_name=file.filename,
+                            lines=lines
+                        )
+                        
+                        result = await create_journal_entry(entry_data)
+                        
+                        return {
+                            "status": "success",
+                            "message": f"Successfully created journal entry {reference} with {len(gl_postings)} GL lines",
+                            "document_type": document_analysis.get('document_type'),
+                            "journal_entry_id": result.id,
+                            "reference": result.reference,
+                            "total_entries": len(gl_postings),
+                            "entry_status": result.status,
+                            "summary": document_analysis.get('summary'),
+                            "timestamp": datetime.now().isoformat(),
+                            "note": "Journal entry created in DRAFT status. Use POST /api/erp/gl/journal-entries/{id}/post to post to GL."
+                        }
+                    finally:
+                        await conn.close()
                 
                 else:
                     raise HTTPException(status_code=400, detail="Invalid action. Use 'post_to_erp' or 'export_to_sap'")

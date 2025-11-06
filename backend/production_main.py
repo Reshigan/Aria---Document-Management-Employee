@@ -126,6 +126,13 @@ try:
 except Exception as e:
     print(f"⚠️ ARIA Chat module not loaded: {e}")
 
+try:
+    from modules.gl_posting_module import router as gl_posting_router
+    app.include_router(gl_posting_router)
+    print("✅ GL Posting Engine module loaded")
+except Exception as e:
+    print(f"⚠️ GL Posting Engine module not loaded: {e}")
+
 # ========================================
 # REQUEST/RESPONSE MODELS
 # ========================================
