@@ -248,7 +248,9 @@ app.include_router(config_router)
 
 # Include Order-to-Cash Module
 from modules.order_to_cash_module import router as order_to_cash_router
+from modules.procure_to_pay_module import router as procure_to_pay_router
 app.include_router(order_to_cash_router)
+app.include_router(procure_to_pay_router)
 
 # Include Master Data Module
 from modules.master_data_module import router as master_data_router
