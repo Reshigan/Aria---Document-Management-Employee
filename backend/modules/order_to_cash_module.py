@@ -1493,7 +1493,7 @@ async def create_delivery(
     
     try:
         result = db.execute(
-            "SELECT COUNT(*) FROM deliveries WHERE company_id = :company_id",
+            text("SELECT COUNT(*) FROM deliveries WHERE company_id = :company_id"),
             {"company_id": str(company_id)}
         )
         count = result.fetchone()[0]
