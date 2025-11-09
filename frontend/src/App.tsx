@@ -46,6 +46,7 @@ import Bills from './pages/AP/Bills';
 import VATReturnsPage from './pages/Tax/VATReturnsPage';
 import FinancialReports from './pages/Reports/FinancialReports';
 import DocumentUpload from './pages/AskAria/DocumentUpload';
+import DocumentTemplates from './pages/ERP/DocumentTemplates';
 import './styles/design-system.css';
 
 function App() {
@@ -69,6 +70,9 @@ function App() {
           
           {/* General Ledger */}
           <Route path="/gl" element={<GeneralLedger />} />
+          
+          {/* Document Templates */}
+          <Route path="/documents/templates" element={<DocumentTemplates />} />
           
           {/* Accounts Payable */}
           <Route path="/ap" element={<Bills />} />
