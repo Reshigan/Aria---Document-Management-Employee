@@ -466,6 +466,162 @@ async def get_product(
 # ============================================================================
 # ============================================================================
 
+class CustomerCreate(BaseModel):
+    customer_number: Optional[str] = None
+    name: str
+    legal_name: Optional[str] = None
+    email: Optional[str] = None
+    phone: Optional[str] = None
+    website: Optional[str] = None
+    customer_type: Optional[str] = None
+    industry: Optional[str] = None
+    tax_number: Optional[str] = None
+    vat_number: Optional[str] = None
+    credit_limit: Optional[Decimal] = None
+    payment_terms: Optional[int] = None
+    currency: str = "ZAR"
+    billing_address_line1: Optional[str] = None
+    billing_city: Optional[str] = None
+    billing_country: str = "South Africa"
+
+class CustomerResponse(BaseModel):
+    company_id: UUID
+    customer_number: str
+    name: str
+    legal_name: Optional[str]
+    email: Optional[str]
+    phone: Optional[str]
+    website: Optional[str]
+    customer_type: Optional[str]
+    industry: Optional[str]
+    tax_number: Optional[str]
+    vat_number: Optional[str]
+    credit_limit: Optional[Decimal]
+    payment_terms: Optional[int]
+    currency: Optional[str]
+    billing_address_line1: Optional[str]
+    billing_city: Optional[str]
+    billing_country: Optional[str]
+    is_active: bool
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+@router.get("/customers", response_model=List[CustomerResponse])
+async def list_customers(
+    skip: int = 0,
+    limit: int = 100,
+    search: Optional[str] = None,
+    is_active: bool = True,
+    company_id: UUID = Depends(get_company_id),
+    db: Session = Depends(get_db)
+):
+    """List all customers for the company"""
+    query = """
+        SELECT company_id, customer_number, name, legal_name, email, phone, website,
+               customer_type, industry, tax_number, vat_number, credit_limit,
+               payment_terms, currency, billing_address_line1, billing_city,
+               billing_country, is_active, created_at
+        FROM customers
+        WHERE company_id = :company_id AND is_active = :is_active
+    """
+    params = {"company_id": str(company_id), "is_active": is_active}
+    
+    if search:
+        query += " AND (customer_number ILIKE :search OR name ILIKE :search OR email ILIKE :search)"
+        params["search"] = f"%{search}%"
+    
+    query += " ORDER BY customer_number LIMIT :limit OFFSET :skip"
+    params["limit"] = limit
+    params["skip"] = skip
+    
+    result = db.execute(text(query), params)
+    customers = []
+    for row in result:
+        customers.append(CustomerResponse(
+            company_id=row[0], customer_number=row[1], name=row[2], legal_name=row[3],
+            email=row[4], phone=row[5], website=row[6], customer_type=row[7],
+            industry=row[8], tax_number=row[9], vat_number=row[10], credit_limit=row[11],
+            payment_terms=row[12], currency=row[13], billing_address_line1=row[14],
+            billing_city=row[15], billing_country=row[16], is_active=row[17],
+            created_at=row[18]
+        ))
+    return customers
+
+@router.post("/customers", response_model=CustomerResponse)
+async def create_customer(
+    customer: CustomerCreate,
+    company_id: UUID = Depends(get_company_id),
+    db: Session = Depends(get_db)
+):
+    """Create a new customer"""
+    if not customer.customer_number:
+        result = db.execute(text("""
+            SELECT customer_number FROM customers 
+            WHERE company_id = :company_id 
+            ORDER BY customer_number DESC LIMIT 1
+        """), {"company_id": str(company_id)})
+        row = result.fetchone()
+        if row and row[0]:
+            last_num = int(row[0].split('-')[-1])
+            customer_number = f"CUST-{last_num + 1:06d}"
+        else:
+            customer_number = "CUST-000001"
+    else:
+        customer_number = customer.customer_number
+    
+    query = """
+        INSERT INTO customers (company_id, customer_number, name, legal_name, email, phone,
+                              website, customer_type, industry, tax_number, vat_number,
+                              credit_limit, payment_terms, currency, billing_address_line1,
+                              billing_city, billing_country, is_active, created_at, updated_at)
+        VALUES (:company_id, :customer_number, :name, :legal_name, :email, :phone,
+                :website, :customer_type, :industry, :tax_number, :vat_number,
+                :credit_limit, :payment_terms, :currency, :billing_address_line1,
+                :billing_city, :billing_country, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+        RETURNING company_id, customer_number, name, legal_name, email, phone, website,
+                  customer_type, industry, tax_number, vat_number, credit_limit,
+                  payment_terms, currency, billing_address_line1, billing_city,
+                  billing_country, is_active, created_at
+    """
+    try:
+        result = db.execute(text(query), {
+            "company_id": str(company_id),
+            "customer_number": customer_number,
+            "name": customer.name,
+            "legal_name": customer.legal_name,
+            "email": customer.email,
+            "phone": customer.phone,
+            "website": customer.website,
+            "customer_type": customer.customer_type,
+            "industry": customer.industry,
+            "tax_number": customer.tax_number,
+            "vat_number": customer.vat_number,
+            "credit_limit": float(customer.credit_limit) if customer.credit_limit else None,
+            "payment_terms": customer.payment_terms,
+            "currency": customer.currency,
+            "billing_address_line1": customer.billing_address_line1,
+            "billing_city": customer.billing_city,
+            "billing_country": customer.billing_country
+        })
+        db.commit()
+        row = result.fetchone()
+        return CustomerResponse(
+            company_id=row[0], customer_number=row[1], name=row[2], legal_name=row[3],
+            email=row[4], phone=row[5], website=row[6], customer_type=row[7],
+            industry=row[8], tax_number=row[9], vat_number=row[10], credit_limit=row[11],
+            payment_terms=row[12], currency=row[13], billing_address_line1=row[14],
+            billing_city=row[15], billing_country=row[16], is_active=row[17],
+            created_at=row[18]
+        )
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=400, detail=f"Error creating customer: {str(e)}")
+
+# ============================================================================
+# ============================================================================
+
 @router.get("/warehouses", response_model=List[WarehouseResponse])
 async def list_warehouses(
     company_id: UUID = Depends(get_company_id),
