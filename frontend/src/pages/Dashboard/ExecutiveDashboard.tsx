@@ -9,7 +9,7 @@ import {
 import axios from 'axios';
 import './ExecutiveDashboard.css';
 
-const API_URL = 'http://localhost:8000';
+const API_URL = import.meta.env.VITE_API_URL || 'https://aria.vantax.co.za';
 
 export const ExecutiveDashboard: React.FC = () => {
   const [bots, setBots] = useState<any[]>([]);
