@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { CompanyProvider } from './lib/company';
 import { MainLayout } from './components/layout/MainLayout';
 import ExecutiveDashboard from './pages/Dashboard/ExecutiveDashboard';
 import Quotes from './pages/ERP/Quotes';
@@ -50,8 +51,9 @@ import './styles/design-system.css';
 function App() {
   return (
     <BrowserRouter>
-      <MainLayout>
-        <Routes>
+      <CompanyProvider>
+        <MainLayout>
+          <Routes>
           {/* Dashboard */}
           <Route path="/" element={<ExecutiveDashboard />} />
           <Route path="/dashboard" element={<ExecutiveDashboard />} />
@@ -147,7 +149,8 @@ function App() {
           <Route path="/admin/bots" element={<BotConfiguration />} />
           <Route path="/admin/users" element={<UserManagement />} />
         </Routes>
-      </MainLayout>
+        </MainLayout>
+      </CompanyProvider>
     </BrowserRouter>
   );
 }
