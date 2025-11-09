@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import axios from 'axios';
 import { api } from '../../lib/api';
 import { LineItemsTable, LineItem } from '../../components/LineItemsTable';
 import { ConfirmDialog } from '../../components/ConfirmDialog';
@@ -64,7 +65,7 @@ export default function Quotes() {
     loadCustomers();
   }, [searchTerm, statusFilter]);
 
-  const fetchQuotes = async () => {
+  const loadQuotes = async () => {
     try {
       setLoading(true);
       const params: any = {};
@@ -75,15 +76,34 @@ export default function Quotes() {
       setQuotes(response.data);
     } catch (error) {
       console.error('Error fetching quotes:', error);
+      setError('Failed to load quotes');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadProducts = async () => {
+    try {
+      const response = await axios.get('/api/erp/order-to-cash/products');
+      setProducts(response.data);
+    } catch (error) {
+      console.error('Error fetching products:', error);
+    }
+  };
+
+  const loadCustomers = async () => {
+    try {
+      const response = await axios.get('/api/erp/order-to-cash/customers');
+      setCustomers(response.data);
+    } catch (error) {
+      console.error('Error fetching customers:', error);
     }
   };
 
   const approveQuote = async (quoteId: string) => {
     try {
       await axios.post(`/api/erp/order-to-cash/quotes/${quoteId}/approve`);
-      fetchQuotes();
+      loadQuotes();
     } catch (error) {
       console.error('Error approving quote:', error);
     }
@@ -92,7 +112,7 @@ export default function Quotes() {
   const sendQuote = async (quoteId: string) => {
     try {
       await axios.post(`/api/erp/order-to-cash/quotes/${quoteId}/send`);
-      fetchQuotes();
+      loadQuotes();
     } catch (error) {
       console.error('Error sending quote:', error);
     }
@@ -102,7 +122,7 @@ export default function Quotes() {
     try {
       const response = await axios.post(`/api/erp/order-to-cash/quotes/${quoteId}/accept`);
       alert(`Quote accepted! Sales Order ${response.data.sales_order_number} created.`);
-      fetchQuotes();
+      loadQuotes();
     } catch (error) {
       console.error('Error accepting quote:', error);
     }
@@ -170,7 +190,7 @@ export default function Quotes() {
           <option value="expired">Expired</option>
         </select>
         <button
-          onClick={fetchQuotes}
+          onClick={loadQuotes}
           style={{
             padding: '0.5rem 1.5rem',
             background: '#2563eb',
