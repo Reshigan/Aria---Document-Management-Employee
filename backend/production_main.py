@@ -127,6 +127,34 @@ except Exception as e:
     print(f"⚠️ Email Orchestration module not loaded: {e}")
 
 try:
+    from modules.vat_reporting_module import router as vat_reporting_router
+    app.include_router(vat_reporting_router)
+    print("✅ VAT Reporting module loaded")
+except Exception as e:
+    print(f"⚠️ VAT Reporting module not loaded: {e}")
+
+try:
+    from modules.wms_module import router as wms_router
+    app.include_router(wms_router)
+    print("✅ WMS module loaded")
+except Exception as e:
+    print(f"⚠️ WMS module not loaded: {e}")
+
+try:
+    from modules.sap_integration_module import router as sap_integration_module_router
+    app.include_router(sap_integration_module_router)
+    print("✅ SAP Integration module loaded")
+except Exception as e:
+    print(f"⚠️ SAP Integration module not loaded: {e}")
+
+try:
+    from modules.production_hardening_module import router as production_hardening_router
+    app.include_router(production_hardening_router)
+    print("✅ Production Hardening module loaded")
+except Exception as e:
+    print(f"⚠️ Production Hardening module not loaded: {e}")
+
+try:
     from modules.comprehensive_reporting_module import router as comprehensive_reporting_router
     app.include_router(comprehensive_reporting_router)
     print("✅ Comprehensive Reporting module loaded")
