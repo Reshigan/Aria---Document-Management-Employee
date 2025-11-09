@@ -182,6 +182,27 @@ try:
 except Exception as e:
     print(f"⚠️ RBAC module not loaded: {e}")
 
+try:
+    from modules.reporting_module import router as reporting_router
+    app.include_router(reporting_router)
+    print("✅ Comprehensive Reporting module loaded")
+except Exception as e:
+    print(f"⚠️ Comprehensive Reporting module not loaded: {e}")
+
+try:
+    from modules.document_generation_module import router as document_generation_router
+    app.include_router(document_generation_router)
+    print("✅ Document Generation module loaded")
+except Exception as e:
+    print(f"⚠️ Document Generation module not loaded: {e}")
+
+try:
+    from modules.workflow_orchestration_module import router as workflow_orchestration_router
+    app.include_router(workflow_orchestration_router)
+    print("✅ Workflow Orchestration module loaded")
+except Exception as e:
+    print(f"⚠️ Workflow Orchestration module not loaded: {e}")
+
 # ========================================
 # REQUEST/RESPONSE MODELS
 # ========================================

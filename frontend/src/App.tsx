@@ -52,6 +52,7 @@ import BankingReconciliation from './pages/ERP/BankingReconciliation';
 import VATReporting from './pages/ERP/VATReporting';
 import SAPIntegration from './pages/ERP/SAPIntegration';
 import ProductionMonitoring from './pages/ERP/ProductionMonitoring';
+import ComprehensiveReporting from './pages/ERP/ComprehensiveReporting';
 import './styles/design-system.css';
 
 function App() {
@@ -97,6 +98,10 @@ function App() {
           {/* Production Monitoring (Priority 12) */}
           <Route path="/production-monitoring" element={<ProductionMonitoring />} />
           <Route path="/admin/monitoring" element={<ProductionMonitoring />} />
+          
+          {/* Comprehensive Reporting (Priority 11) */}
+          <Route path="/comprehensive-reporting" element={<ComprehensiveReporting />} />
+          <Route path="/reports/comprehensive" element={<ComprehensiveReporting />} />
           
           {/* Accounts Payable */}
           <Route path="/ap" element={<Bills />} />
