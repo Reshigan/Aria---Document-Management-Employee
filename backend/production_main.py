@@ -113,6 +113,20 @@ except Exception as e:
     print(f"⚠️ Document Templates module not loaded: {e}")
 
 try:
+    from modules.printing_module import router as printing_router
+    app.include_router(printing_router)
+    print("✅ Printing module loaded")
+except Exception as e:
+    print(f"⚠️ Printing module not loaded: {e}")
+
+try:
+    from modules.email_orchestration_module import router as email_orchestration_router
+    app.include_router(email_orchestration_router)
+    print("✅ Email Orchestration module loaded")
+except Exception as e:
+    print(f"⚠️ Email Orchestration module not loaded: {e}")
+
+try:
     from modules.comprehensive_reporting_module import router as comprehensive_reporting_router
     app.include_router(comprehensive_reporting_router)
     print("✅ Comprehensive Reporting module loaded")
