@@ -47,6 +47,11 @@ import VATReturnsPage from './pages/Tax/VATReturnsPage';
 import FinancialReports from './pages/Reports/FinancialReports';
 import DocumentUpload from './pages/AskAria/DocumentUpload';
 import DocumentTemplates from './pages/ERP/DocumentTemplates';
+import ProcureToPay from './pages/ERP/ProcureToPay';
+import BankingReconciliation from './pages/ERP/BankingReconciliation';
+import VATReporting from './pages/ERP/VATReporting';
+import SAPIntegration from './pages/ERP/SAPIntegration';
+import ProductionMonitoring from './pages/ERP/ProductionMonitoring';
 import './styles/design-system.css';
 
 function App() {
@@ -73,6 +78,25 @@ function App() {
           
           {/* Document Templates */}
           <Route path="/documents/templates" element={<DocumentTemplates />} />
+          
+          {/* Procure-to-Pay (Priority 6) */}
+          <Route path="/procure-to-pay" element={<ProcureToPay />} />
+          <Route path="/procurement/procure-to-pay" element={<ProcureToPay />} />
+          
+          {/* Banking Reconciliation (Priority 7) */}
+          <Route path="/banking/reconciliation" element={<BankingReconciliation />} />
+          
+          {/* VAT Reporting (Priority 8) */}
+          <Route path="/vat-reporting" element={<VATReporting />} />
+          <Route path="/tax/vat-reporting" element={<VATReporting />} />
+          
+          {/* SAP Integration (Priority 10) */}
+          <Route path="/sap-integration" element={<SAPIntegration />} />
+          <Route path="/integration/sap" element={<SAPIntegration />} />
+          
+          {/* Production Monitoring (Priority 12) */}
+          <Route path="/production-monitoring" element={<ProductionMonitoring />} />
+          <Route path="/admin/monitoring" element={<ProductionMonitoring />} />
           
           {/* Accounts Payable */}
           <Route path="/ap" element={<Bills />} />
