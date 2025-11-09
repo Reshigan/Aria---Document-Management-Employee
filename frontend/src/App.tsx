@@ -53,6 +53,9 @@ import VATReporting from './pages/ERP/VATReporting';
 import SAPIntegration from './pages/ERP/SAPIntegration';
 import ProductionMonitoring from './pages/ERP/ProductionMonitoring';
 import ComprehensiveReporting from './pages/ERP/ComprehensiveReporting';
+import ERPCustomers from './pages/ERP/Customers';
+import ERPProducts from './pages/ERP/Products';
+import ERPSuppliers from './pages/ERP/Suppliers';
 import './styles/design-system.css';
 
 function App() {
@@ -73,6 +76,11 @@ function App() {
           <Route path="/deliveries" element={<Deliveries />} />
           <Route path="/deliveries/new" element={<Deliveries />} />
           <Route path="/wms-stock" element={<WMSStock />} />
+          
+          {/* ERP Master Data */}
+          <Route path="/erp/customers" element={<ERPCustomers />} />
+          <Route path="/erp/products" element={<ERPProducts />} />
+          <Route path="/erp/suppliers" element={<ERPSuppliers />} />
           
           {/* General Ledger */}
           <Route path="/gl" element={<GeneralLedger />} />
