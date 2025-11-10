@@ -210,6 +210,13 @@ try:
 except Exception as e:
     print(f"⚠️ Document Intake module not loaded: {e}")
 
+try:
+    from modules.field_service_module import router as field_service_router
+    app.include_router(field_service_router)
+    print("✅ Field Service module loaded")
+except Exception as e:
+    print(f"⚠️ Field Service module not loaded: {e}")
+
 # ========================================
 # REQUEST/RESPONSE MODELS
 # ========================================
