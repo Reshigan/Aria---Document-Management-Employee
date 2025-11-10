@@ -113,6 +113,48 @@ except Exception as e:
     print(f"⚠️ Document Templates module not loaded: {e}")
 
 try:
+    from modules.printing_module import router as printing_router
+    app.include_router(printing_router)
+    print("✅ Printing module loaded")
+except Exception as e:
+    print(f"⚠️ Printing module not loaded: {e}")
+
+try:
+    from modules.email_orchestration_module import router as email_orchestration_router
+    app.include_router(email_orchestration_router)
+    print("✅ Email Orchestration module loaded")
+except Exception as e:
+    print(f"⚠️ Email Orchestration module not loaded: {e}")
+
+try:
+    from modules.vat_reporting_module import router as vat_reporting_router
+    app.include_router(vat_reporting_router)
+    print("✅ VAT Reporting module loaded")
+except Exception as e:
+    print(f"⚠️ VAT Reporting module not loaded: {e}")
+
+try:
+    from modules.wms_module import router as wms_router
+    app.include_router(wms_router)
+    print("✅ WMS module loaded")
+except Exception as e:
+    print(f"⚠️ WMS module not loaded: {e}")
+
+try:
+    from modules.sap_integration_module import router as sap_integration_module_router
+    app.include_router(sap_integration_module_router)
+    print("✅ SAP Integration module loaded")
+except Exception as e:
+    print(f"⚠️ SAP Integration module not loaded: {e}")
+
+try:
+    from modules.production_hardening_module import router as production_hardening_router
+    app.include_router(production_hardening_router)
+    print("✅ Production Hardening module loaded")
+except Exception as e:
+    print(f"⚠️ Production Hardening module not loaded: {e}")
+
+try:
     from modules.comprehensive_reporting_module import router as comprehensive_reporting_router
     app.include_router(comprehensive_reporting_router)
     print("✅ Comprehensive Reporting module loaded")
@@ -125,6 +167,41 @@ try:
     print("✅ ARIA Chat module loaded")
 except Exception as e:
     print(f"⚠️ ARIA Chat module not loaded: {e}")
+
+try:
+    from modules.gl_posting_module import router as gl_posting_router
+    app.include_router(gl_posting_router)
+    print("✅ GL Posting Engine module loaded")
+except Exception as e:
+    print(f"⚠️ GL Posting Engine module not loaded: {e}")
+
+try:
+    from modules.rbac_module import router as rbac_router
+    app.include_router(rbac_router)
+    print("✅ RBAC module loaded")
+except Exception as e:
+    print(f"⚠️ RBAC module not loaded: {e}")
+
+try:
+    from modules.reporting_module import router as reporting_router
+    app.include_router(reporting_router)
+    print("✅ Comprehensive Reporting module loaded")
+except Exception as e:
+    print(f"⚠️ Comprehensive Reporting module not loaded: {e}")
+
+try:
+    from modules.document_generation_module import router as document_generation_router
+    app.include_router(document_generation_router)
+    print("✅ Document Generation module loaded")
+except Exception as e:
+    print(f"⚠️ Document Generation module not loaded: {e}")
+
+try:
+    from modules.workflow_orchestration_module import router as workflow_orchestration_router
+    app.include_router(workflow_orchestration_router)
+    print("✅ Workflow Orchestration module loaded")
+except Exception as e:
+    print(f"⚠️ Workflow Orchestration module not loaded: {e}")
 
 # ========================================
 # REQUEST/RESPONSE MODELS

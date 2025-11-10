@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { CompanyProvider } from './lib/company';
 import { MainLayout } from './components/layout/MainLayout';
 import ExecutiveDashboard from './pages/Dashboard/ExecutiveDashboard';
 import Quotes from './pages/ERP/Quotes';
@@ -45,13 +46,30 @@ import Bills from './pages/AP/Bills';
 import VATReturnsPage from './pages/Tax/VATReturnsPage';
 import FinancialReports from './pages/Reports/FinancialReports';
 import DocumentUpload from './pages/AskAria/DocumentUpload';
+import DocumentTemplates from './pages/ERP/DocumentTemplates';
+import ProcureToPay from './pages/ERP/ProcureToPay';
+import BankingReconciliation from './pages/ERP/BankingReconciliation';
+import VATReporting from './pages/ERP/VATReporting';
+import SAPIntegration from './pages/ERP/SAPIntegration';
+import ProductionMonitoring from './pages/ERP/ProductionMonitoring';
+import ComprehensiveReporting from './pages/ERP/ComprehensiveReporting';
+import ERPCustomers from './pages/ERP/Customers';
+import ERPProducts from './pages/ERP/Products';
+import ERPSuppliers from './pages/ERP/Suppliers';
+import ERPReceipts from './pages/ERP/Receipts';
+import QuoteDetail from './pages/ERP/QuoteDetail';
+import SalesOrderDetail from './pages/ERP/SalesOrderDetail';
+import DeliveryDetail from './pages/ERP/DeliveryDetail';
+import InvoiceDetail from './pages/ERP/InvoiceDetail';
+import ReceiptDetail from './pages/ERP/ReceiptDetail';
 import './styles/design-system.css';
 
 function App() {
   return (
     <BrowserRouter>
-      <MainLayout>
-        <Routes>
+      <CompanyProvider>
+        <MainLayout>
+          <Routes>
           {/* Dashboard */}
           <Route path="/" element={<ExecutiveDashboard />} />
           <Route path="/dashboard" element={<ExecutiveDashboard />} />
@@ -59,14 +77,56 @@ function App() {
           
           {/* Order-to-Cash */}
           <Route path="/quotes" element={<Quotes />} />
+          <Route path="/quotes/:id" element={<QuoteDetail />} />
+          <Route path="/erp/quotes" element={<Quotes />} />
+          <Route path="/erp/quotes/:id" element={<QuoteDetail />} />
           <Route path="/sales-orders" element={<SalesOrders />} />
+          <Route path="/sales-orders/:id" element={<SalesOrderDetail />} />
           <Route path="/sales-orders/new" element={<SalesOrders />} />
+          <Route path="/erp/sales-orders" element={<SalesOrders />} />
+          <Route path="/erp/sales-orders/:id" element={<SalesOrderDetail />} />
           <Route path="/deliveries" element={<Deliveries />} />
-          <Route path="/deliveries/new" element={<Deliveries />} />
+          <Route path="/deliveries/:id" element={<DeliveryDetail />} />
+          <Route path="/deliveries/new" element={<DeliveryDetail />} />
+          <Route path="/erp/deliveries" element={<Deliveries />} />
+          <Route path="/erp/deliveries/:id" element={<DeliveryDetail />} />
           <Route path="/wms-stock" element={<WMSStock />} />
+          
+          {/* ERP Master Data */}
+          <Route path="/erp/customers" element={<ERPCustomers />} />
+          <Route path="/erp/products" element={<ERPProducts />} />
+          <Route path="/erp/suppliers" element={<ERPSuppliers />} />
+          <Route path="/erp/receipts" element={<ERPReceipts />} />
+          <Route path="/ar/receipts" element={<ERPReceipts />} />
           
           {/* General Ledger */}
           <Route path="/gl" element={<GeneralLedger />} />
+          
+          {/* Document Templates */}
+          <Route path="/documents/templates" element={<DocumentTemplates />} />
+          
+          {/* Procure-to-Pay (Priority 6) */}
+          <Route path="/procure-to-pay" element={<ProcureToPay />} />
+          <Route path="/procurement/procure-to-pay" element={<ProcureToPay />} />
+          
+          {/* Banking Reconciliation (Priority 7) */}
+          <Route path="/banking/reconciliation" element={<BankingReconciliation />} />
+          
+          {/* VAT Reporting (Priority 8) */}
+          <Route path="/vat-reporting" element={<VATReporting />} />
+          <Route path="/tax/vat-reporting" element={<VATReporting />} />
+          
+          {/* SAP Integration (Priority 10) */}
+          <Route path="/sap-integration" element={<SAPIntegration />} />
+          <Route path="/integration/sap" element={<SAPIntegration />} />
+          
+          {/* Production Monitoring (Priority 12) */}
+          <Route path="/production-monitoring" element={<ProductionMonitoring />} />
+          <Route path="/admin/monitoring" element={<ProductionMonitoring />} />
+          
+          {/* Comprehensive Reporting (Priority 11) */}
+          <Route path="/comprehensive-reporting" element={<ComprehensiveReporting />} />
+          <Route path="/reports/comprehensive" element={<ComprehensiveReporting />} />
           
           {/* Accounts Payable */}
           <Route path="/ap" element={<Bills />} />
@@ -80,7 +140,10 @@ function App() {
           <Route path="/ar" element={<CRMDashboard />} />
           <Route path="/ar/customers" element={<CustomersPage />} />
           <Route path="/ar/invoices" element={<InvoiceList />} />
-          <Route path="/ar/invoices/new" element={<InvoiceList />} />
+          <Route path="/ar/invoices/:id" element={<InvoiceDetail />} />
+          <Route path="/ar/invoices/new" element={<InvoiceDetail />} />
+          <Route path="/ar/receipts/:id" element={<ReceiptDetail />} />
+          <Route path="/ar/receipts/new" element={<ReceiptDetail />} />
           
           {/* Banking */}
           <Route path="/banking" element={<BankingDashboard />} />
@@ -147,7 +210,8 @@ function App() {
           <Route path="/admin/bots" element={<BotConfiguration />} />
           <Route path="/admin/users" element={<UserManagement />} />
         </Routes>
-      </MainLayout>
+        </MainLayout>
+      </CompanyProvider>
     </BrowserRouter>
   );
 }

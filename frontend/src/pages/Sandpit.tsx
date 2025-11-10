@@ -130,7 +130,7 @@ export default function Sandpit() {
               status="operational"
             />
             <QuickLink
-              to="http://localhost:8000/docs"
+              to="https://aria.vantax.co.za/docs"
               icon={ExternalLink}
               title="Interactive API Docs"
               description="Swagger UI - Try every endpoint directly in your browser."
@@ -138,7 +138,7 @@ export default function Sandpit() {
               external
             />
             <QuickLink
-              to="http://localhost:8000/health"
+              to="https://aria.vantax.co.za/health"
               icon={Activity}
               title="Health Check"
               description="View system health status and loaded bots."
@@ -169,7 +169,7 @@ export default function Sandpit() {
               status="operational"
             />
             <QuickLink
-              to="http://localhost:8000/api/bots"
+              to="https://aria.vantax.co.za/api/bots"
               icon={Database}
               title="Bot API Endpoint"
               description="Direct JSON API endpoint for bot listing."
@@ -186,7 +186,7 @@ export default function Sandpit() {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <QuickLink
-              to="http://localhost:8000/api/erp/financial"
+              to="https://aria.vantax.co.za/api/erp/financial"
               icon={DollarSign}
               title="Financial Module"
               description="GL, AP, AR, Bank Reconciliation, Financial Reporting"
@@ -194,7 +194,7 @@ export default function Sandpit() {
               external
             />
             <QuickLink
-              to="http://localhost:8000/api/erp/hr"
+              to="https://aria.vantax.co.za/api/erp/hr"
               icon={Users}
               title="HR Module"
               description="Employee Management, Payroll, Leave, Performance"
@@ -202,7 +202,7 @@ export default function Sandpit() {
               external
             />
             <QuickLink
-              to="http://localhost:8000/api/erp/crm"
+              to="https://aria.vantax.co.za/api/erp/crm"
               icon={FileText}
               title="CRM Module"
               description="Contact Management, Sales Pipeline, Lead Management"
@@ -210,7 +210,7 @@ export default function Sandpit() {
               external
             />
             <QuickLink
-              to="http://localhost:8000/api/erp/procurement"
+              to="https://aria.vantax.co.za/api/erp/procurement"
               icon={FileText}
               title="Procurement Module"
               description="Purchase Orders, Vendor Management, Inventory"
@@ -218,7 +218,7 @@ export default function Sandpit() {
               external
             />
             <QuickLink
-              to="http://localhost:8000/api/erp/compliance"
+              to="https://aria.vantax.co.za/api/erp/compliance"
               icon={Shield}
               title="Compliance Module"
               description="BBBEE Tracking, Regulatory Compliance, Audit Trails"
@@ -286,8 +286,8 @@ export default function Sandpit() {
 
           <div className="mt-6 pt-6 border-t border-white/20">
             <p className="text-sm">
-              <strong>Backend API:</strong> http://localhost:8000 <br />
-              <strong>Frontend UI:</strong> https://work-1-rkasyntaaioiwqjt.prod-runtime.all-hands.dev <br />
+              <strong>Backend API:</strong> https://aria.vantax.co.za <br />
+              <strong>Frontend UI:</strong> https://aria.vantax.co.za <br />
               <strong>Status:</strong> All systems operational ✓
             </p>
           </div>
@@ -300,12 +300,12 @@ export default function Sandpit() {
             <div className="bg-gray-800 p-3 rounded">
               <span className="text-gray-400"># Test backend health</span>
               <br />
-              curl http://localhost:8000/health
+              curl https://aria.vantax.co.za/health
             </div>
             <div className="bg-gray-800 p-3 rounded">
               <span className="text-gray-400"># List all bots</span>
               <br />
-              curl http://localhost:8000/api/bots
+              curl https://aria.vantax.co.za/api/bots
             </div>
             <div className="bg-gray-800 p-3 rounded">
               <span className="text-gray-400"># Run automated tests</span>
