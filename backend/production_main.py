@@ -203,6 +203,13 @@ try:
 except Exception as e:
     print(f"⚠️ Workflow Orchestration module not loaded: {e}")
 
+try:
+    from modules.document_intake_module import router as document_intake_router
+    app.include_router(document_intake_router)
+    print("✅ Document Intake module loaded")
+except Exception as e:
+    print(f"⚠️ Document Intake module not loaded: {e}")
+
 # ========================================
 # REQUEST/RESPONSE MODELS
 # ========================================
