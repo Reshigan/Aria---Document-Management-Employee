@@ -57,12 +57,15 @@ import ERPCustomers from './pages/ERP/Customers';
 import ERPProducts from './pages/ERP/Products';
 import ERPSuppliers from './pages/ERP/Suppliers';
 import ERPReceipts from './pages/ERP/Receipts';
+import ERPInvoices from './pages/ERP/Invoices';
 import QuoteDetail from './pages/ERP/QuoteDetail';
 import SalesOrderDetail from './pages/ERP/SalesOrderDetail';
 import DeliveryDetail from './pages/ERP/DeliveryDetail';
 import InvoiceDetail from './pages/ERP/InvoiceDetail';
 import ReceiptDetail from './pages/ERP/ReceiptDetail';
 import PriceLists from './pages/ERP/PriceLists';
+import AccountsPayable from './pages/ERP/AccountsPayable';
+import AccountsReceivable from './pages/ERP/AccountsReceivable';
 import './styles/design-system.css';
 
 function App() {
@@ -104,6 +107,20 @@ function App() {
           
           {/* General Ledger */}
           <Route path="/gl" element={<GeneralLedger />} />
+          
+          {/* Accounts Payable */}
+          <Route path="/erp/accounts-payable" element={<AccountsPayable />} />
+          <Route path="/erp/ap" element={<AccountsPayable />} />
+          
+          {/* Accounts Receivable */}
+          <Route path="/erp/accounts-receivable" element={<AccountsReceivable />} />
+          <Route path="/erp/ar" element={<AccountsReceivable />} />
+          
+          {/* Invoices */}
+          <Route path="/erp/invoices" element={<ERPInvoices />} />
+          <Route path="/erp/invoices/:id" element={<InvoiceDetail />} />
+          <Route path="/invoices" element={<ERPInvoices />} />
+          <Route path="/invoices/:id" element={<InvoiceDetail />} />
           
           {/* Document Templates */}
           <Route path="/documents/templates" element={<DocumentTemplates />} />
