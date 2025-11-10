@@ -62,6 +62,7 @@ import SalesOrderDetail from './pages/ERP/SalesOrderDetail';
 import DeliveryDetail from './pages/ERP/DeliveryDetail';
 import InvoiceDetail from './pages/ERP/InvoiceDetail';
 import ReceiptDetail from './pages/ERP/ReceiptDetail';
+import PriceLists from './pages/ERP/PriceLists';
 import './styles/design-system.css';
 
 function App() {
@@ -98,6 +99,8 @@ function App() {
           <Route path="/erp/suppliers" element={<ERPSuppliers />} />
           <Route path="/erp/receipts" element={<ERPReceipts />} />
           <Route path="/ar/receipts" element={<ERPReceipts />} />
+          <Route path="/erp/price-lists" element={<PriceLists />} />
+          <Route path="/pricing/price-lists" element={<PriceLists />} />
           
           {/* General Ledger */}
           <Route path="/gl" element={<GeneralLedger />} />
