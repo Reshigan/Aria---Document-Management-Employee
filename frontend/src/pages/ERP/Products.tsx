@@ -257,15 +257,24 @@ export default function Products() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Category
+                Category / Hierarchy
               </label>
               <input
                 type="text"
                 value={formData.category || ''}
                 onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="e.g., Office Supplies"
+                placeholder="e.g., Electronics > Laptops > Gaming"
+                list="category-suggestions"
               />
+              <datalist id="category-suggestions">
+                {categories.map(cat => (
+                  <option key={cat} value={cat} />
+                ))}
+              </datalist>
+              <p className="text-xs text-gray-500 mt-1">
+                Use ">" to create hierarchies (e.g., "Electronics > Laptops > Gaming")
+              </p>
             </div>
 
             <div className="md:col-span-2">
