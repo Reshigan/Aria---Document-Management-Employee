@@ -273,7 +273,7 @@ export default function Products() {
                 ))}
               </datalist>
               <p className="text-xs text-gray-500 mt-1">
-                Use ">" to create hierarchies (e.g., "Electronics > Laptops > Gaming")
+                Use &quot;&gt;&quot; to create hierarchies (e.g., &quot;Electronics &gt; Laptops &gt; Gaming&quot;)
               </p>
             </div>
 
