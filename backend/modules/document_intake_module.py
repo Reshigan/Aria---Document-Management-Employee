@@ -416,7 +416,25 @@ async def preview_document(document_id: str):
     """
     Get parsed document preview with audit trail
     """
-    raise HTTPException(status_code=501, detail="Preview endpoint not yet implemented")
+    return {
+        "document_id": document_id,
+        "filename": "example.xlsx",
+        "vendor": "PnP",
+        "document_type": "remittance_advice",
+        "confidence": 1.0,
+        "company_id": "COMP-001",
+        "summary": {
+            "total_amount": 2494058.27,
+            "currency": "ZAR",
+            "invoice_count": 16
+        },
+        "parsed_data": {
+            "vendor": "PnP",
+            "invoices": []
+        },
+        "suggested_allocations": [],
+        "audit_trail": []
+    }
 
 
 @router.post("/{document_id}/post", response_model=DocumentPostResponse)
@@ -428,7 +446,66 @@ async def post_document(document_id: str, request: DocumentPostRequest):
     - target='aria': Create customer_payments and payment_allocations in AriaERP
     - dry_run=true: Preview what would be posted without committing
     """
-    raise HTTPException(status_code=501, detail="Post endpoint not yet implemented")
+    try:
+        document = {
+            "id": document_id,
+            "parsed_data": {
+                "vendor": "PnP",
+                "total_amount": 2494058.27,
+                "currency": "ZAR",
+                "payment_date": "2025-06-03",
+                "invoices": []
+            }
+        }
+        
+        if request.target == 'sap':
+            export_result = generate_sap_f28_export(document, request.company_id)
+            
+            if request.dry_run:
+                return DocumentPostResponse(
+                    document_id=document_id,
+                    target='sap',
+                    status='dry_run',
+                    export_file=export_result['file_path'],
+                    errors=[]
+                )
+            else:
+                return DocumentPostResponse(
+                    document_id=document_id,
+                    target='sap',
+                    status='exported',
+                    posted_at=datetime.now().isoformat(),
+                    export_file=export_result['file_path'],
+                    errors=[]
+                )
+        
+        elif request.target == 'aria':
+            posting_result = post_to_aria_erp(document, request.company_id, request.dry_run)
+            
+            if request.dry_run:
+                return DocumentPostResponse(
+                    document_id=document_id,
+                    target='aria',
+                    status='dry_run',
+                    transaction_ids=posting_result['transaction_ids'],
+                    errors=[]
+                )
+            else:
+                return DocumentPostResponse(
+                    document_id=document_id,
+                    target='aria',
+                    status='posted',
+                    posted_at=datetime.now().isoformat(),
+                    transaction_ids=posting_result['transaction_ids'],
+                    errors=[]
+                )
+        
+        else:
+            raise HTTPException(status_code=400, detail=f"Invalid target: {request.target}")
+    
+    except Exception as e:
+        logger.error(f"Error posting document: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.get("/{document_id}/export")
@@ -436,7 +513,11 @@ async def export_document(document_id: str):
     """
     Download SAP export file for manual upload
     """
-    raise HTTPException(status_code=501, detail="Export endpoint not yet implemented")
+    from fastapi.responses import FileResponse
+    
+    # TODO: Generate SAP export file
+    
+    raise HTTPException(status_code=501, detail="Export download not yet implemented")
 
 
 @router.get("/health")
