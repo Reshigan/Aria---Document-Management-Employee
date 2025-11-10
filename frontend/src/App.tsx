@@ -57,6 +57,8 @@ import ERPCustomers from './pages/ERP/Customers';
 import ERPProducts from './pages/ERP/Products';
 import ERPSuppliers from './pages/ERP/Suppliers';
 import ERPReceipts from './pages/ERP/Receipts';
+import QuoteDetail from './pages/ERP/QuoteDetail';
+import SalesOrderDetail from './pages/ERP/SalesOrderDetail';
 import './styles/design-system.css';
 
 function App() {
@@ -72,8 +74,14 @@ function App() {
           
           {/* Order-to-Cash */}
           <Route path="/quotes" element={<Quotes />} />
+          <Route path="/quotes/:id" element={<QuoteDetail />} />
+          <Route path="/erp/quotes" element={<Quotes />} />
+          <Route path="/erp/quotes/:id" element={<QuoteDetail />} />
           <Route path="/sales-orders" element={<SalesOrders />} />
+          <Route path="/sales-orders/:id" element={<SalesOrderDetail />} />
           <Route path="/sales-orders/new" element={<SalesOrders />} />
+          <Route path="/erp/sales-orders" element={<SalesOrders />} />
+          <Route path="/erp/sales-orders/:id" element={<SalesOrderDetail />} />
           <Route path="/deliveries" element={<Deliveries />} />
           <Route path="/deliveries/new" element={<Deliveries />} />
           <Route path="/wms-stock" element={<WMSStock />} />
