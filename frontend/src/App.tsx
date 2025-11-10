@@ -59,6 +59,9 @@ import ERPSuppliers from './pages/ERP/Suppliers';
 import ERPReceipts from './pages/ERP/Receipts';
 import QuoteDetail from './pages/ERP/QuoteDetail';
 import SalesOrderDetail from './pages/ERP/SalesOrderDetail';
+import DeliveryDetail from './pages/ERP/DeliveryDetail';
+import InvoiceDetail from './pages/ERP/InvoiceDetail';
+import ReceiptDetail from './pages/ERP/ReceiptDetail';
 import './styles/design-system.css';
 
 function App() {
@@ -83,7 +86,10 @@ function App() {
           <Route path="/erp/sales-orders" element={<SalesOrders />} />
           <Route path="/erp/sales-orders/:id" element={<SalesOrderDetail />} />
           <Route path="/deliveries" element={<Deliveries />} />
-          <Route path="/deliveries/new" element={<Deliveries />} />
+          <Route path="/deliveries/:id" element={<DeliveryDetail />} />
+          <Route path="/deliveries/new" element={<DeliveryDetail />} />
+          <Route path="/erp/deliveries" element={<Deliveries />} />
+          <Route path="/erp/deliveries/:id" element={<DeliveryDetail />} />
           <Route path="/wms-stock" element={<WMSStock />} />
           
           {/* ERP Master Data */}
@@ -134,7 +140,10 @@ function App() {
           <Route path="/ar" element={<CRMDashboard />} />
           <Route path="/ar/customers" element={<CustomersPage />} />
           <Route path="/ar/invoices" element={<InvoiceList />} />
-          <Route path="/ar/invoices/new" element={<InvoiceList />} />
+          <Route path="/ar/invoices/:id" element={<InvoiceDetail />} />
+          <Route path="/ar/invoices/new" element={<InvoiceDetail />} />
+          <Route path="/ar/receipts/:id" element={<ReceiptDetail />} />
+          <Route path="/ar/receipts/new" element={<ReceiptDetail />} />
           
           {/* Banking */}
           <Route path="/banking" element={<BankingDashboard />} />
