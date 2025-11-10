@@ -56,6 +56,7 @@ import ComprehensiveReporting from './pages/ERP/ComprehensiveReporting';
 import ERPCustomers from './pages/ERP/Customers';
 import ERPProducts from './pages/ERP/Products';
 import ERPSuppliers from './pages/ERP/Suppliers';
+import ERPReceipts from './pages/ERP/Receipts';
 import './styles/design-system.css';
 
 function App() {
@@ -81,6 +82,8 @@ function App() {
           <Route path="/erp/customers" element={<ERPCustomers />} />
           <Route path="/erp/products" element={<ERPProducts />} />
           <Route path="/erp/suppliers" element={<ERPSuppliers />} />
+          <Route path="/erp/receipts" element={<ERPReceipts />} />
+          <Route path="/ar/receipts" element={<ERPReceipts />} />
           
           {/* General Ledger */}
           <Route path="/gl" element={<GeneralLedger />} />
