@@ -83,7 +83,7 @@ export default function InvoiceDetail() {
   };
 
   const loadInvoice = async (invoiceId: string) => {
-    try:
+    try {
       setLoading(true);
       const response = await api.get(`/erp/order-to-cash/invoices/${invoiceId}`);
       const invoiceData = response.data;

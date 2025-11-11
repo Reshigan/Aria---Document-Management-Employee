@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { api } from '../../lib/api';
 import { ConfirmDialog } from '../../components/ConfirmDialog';
 import { Plus, Search, Edit, Trash2, Package, X } from 'lucide-react';
+import { formatCurrency } from '../../utils/formatters';
 
 interface Product {
   id: string;
