@@ -89,9 +89,10 @@ function App() {
           <Route path="/erp/quotes" element={<Quotes />} />
           <Route path="/erp/quotes/:id" element={<QuoteDetail />} />
           <Route path="/sales-orders" element={<SalesOrders />} />
+          <Route path="/sales-orders/new" element={<SalesOrderDetail />} />
           <Route path="/sales-orders/:id" element={<SalesOrderDetail />} />
-          <Route path="/sales-orders/new" element={<SalesOrders />} />
           <Route path="/erp/sales-orders" element={<SalesOrders />} />
+          <Route path="/erp/sales-orders/new" element={<SalesOrderDetail />} />
           <Route path="/erp/sales-orders/:id" element={<SalesOrderDetail />} />
           <Route path="/deliveries" element={<Deliveries />} />
           <Route path="/deliveries/:id" element={<DeliveryDetail />} />
