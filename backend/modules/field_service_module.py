@@ -5,8 +5,17 @@ Complete field service and operations management with bot automation
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from typing import Optional, List, Dict, Any
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 import logging
+import os
+import sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from core.erp_database import (
+    create_service_request as db_create_service_request,
+    get_service_request,
+    create_work_order as db_create_work_order,
+    update_work_order_status
+)
 
 logger = logging.getLogger(__name__)
 
@@ -338,17 +347,26 @@ async def create_service_request(request: ServiceRequestCreate):
             "priority": request.priority
         })
         
+        service_request = await db_create_service_request(
+            customer_id=request.customer_id or "CUST-000",
+            description=request.description,
+            priority=triage_result["priority"],
+            company_id=request.company_id,
+            contact_name=request.contact_name,
+            contact_phone=request.contact_phone,
+            location=request.site_address
+        )
         
         return ServiceRequestResponse(
-            id=1,
-            request_number="SR-2025-001",
-            company_id=request.company_id,
+            id=service_request['id'],
+            request_number=f"SR-{service_request['id']}",
+            company_id=service_request['company_id'],
             customer_name=request.customer_name,
             request_type=triage_result["request_type"],
-            priority=triage_result["priority"],
-            status="new",
-            description=request.description,
-            reported_date=datetime.now(),
+            priority=service_request['priority'],
+            status=service_request['status'],
+            description=service_request['description'],
+            reported_date=service_request['created_at'],
             assigned_to=triage_result.get("recommended_technician")
         )
     
@@ -378,19 +396,34 @@ async def create_work_order(request: WorkOrderCreate):
     try:
         schedule_result = SchedulingOptimizerBot.execute({
             "work_order": request.dict(),
-            "technicians": []  # TODO: Get available technicians
+            "technicians": []
         })
         
+        suggested_date = schedule_result.get("suggested_date")
+        if isinstance(suggested_date, str):
+            suggested_date = datetime.fromisoformat(suggested_date).date()
+        elif isinstance(suggested_date, datetime):
+            suggested_date = suggested_date.date()
+        else:
+            suggested_date = date.today()
+        
+        work_order = await db_create_work_order(
+            service_request_id=request.service_request_id,
+            technician_id=request.technician_id or "TECH-000",
+            scheduled_date=suggested_date,
+            company_id=request.company_id,
+            description=request.description
+        )
         
         return WorkOrderResponse(
-            id=1,
-            work_order_number="WO-2025-001",
-            company_id=request.company_id,
+            id=work_order['id'],
+            work_order_number=f"WO-{work_order['id']}",
+            company_id=work_order['company_id'],
             customer_name=request.customer_name,
             work_type=request.work_type,
             priority=request.priority,
-            status="draft",
-            scheduled_date=schedule_result.get("suggested_date"),
+            status=work_order['status'],
+            scheduled_date=work_order['scheduled_date'],
             technician_name=None,
             total_cost=None
         )
@@ -446,6 +479,8 @@ async def complete_work_order(work_order_id: int):
         billing_result = CompletionBillingBot.execute({
             "work_order": work_order
         })
+        
+        await update_work_order_status(str(work_order_id), 'completed', datetime.now())
         
         return billing_result
     
