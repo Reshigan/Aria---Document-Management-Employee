@@ -127,14 +127,6 @@ class DepreciationRunResponse(BaseModel):
         from_attributes = True
 
 
-def get_db():
-    """Get database session"""
-    from database import SessionLocal
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 
 def get_company_id():
