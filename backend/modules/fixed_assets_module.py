@@ -14,6 +14,7 @@ import os
 import logging
 
 from services.gl_posting_service import GLPostingService
+from core.database import get_db
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/erp/fixed-assets", tags=["Fixed Assets"])
