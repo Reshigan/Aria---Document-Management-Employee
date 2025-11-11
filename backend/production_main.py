@@ -231,6 +231,13 @@ try:
 except Exception as e:
     print(f"⚠️ Aria Controller Engine not loaded: {e}")
 
+try:
+    from modules.aria_email_integration import router as aria_email_integration_router
+    app.include_router(aria_email_integration_router)
+    print("✅ Aria Email Integration module loaded")
+except Exception as e:
+    print(f"⚠️ Aria Email Integration module not loaded: {e}")
+
 # ========================================
 # REQUEST/RESPONSE MODELS
 # ========================================
