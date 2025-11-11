@@ -52,9 +52,9 @@ export default function PurchaseOrders() {
     try {
       setLoading(true);
       const [posRes, suppliersRes, productsRes] = await Promise.all([
-        api.get('/api/procurement/purchase-orders'),
-        api.get('/api/procurement/suppliers'),
-        api.get('/api/procurement/products')
+        api.get('/erp/procure-to-pay/purchase-orders'),
+        api.get('/erp/master-data/suppliers'),
+        api.get('/erp/order-to-cash/products')
       ]);
       setPurchaseOrders(posRes.data);
       setSuppliers(suppliersRes.data);
@@ -82,7 +82,7 @@ export default function PurchaseOrders() {
         }))
       };
 
-      await api.post('/api/procurement/purchase-orders', payload);
+      await api.post('/erp/procure-to-pay/purchase-orders', payload);
       setShowModal(false);
       resetForm();
       loadData();
@@ -95,7 +95,7 @@ export default function PurchaseOrders() {
   const handleDelete = async (id: number) => {
     if (!confirm('Are you sure you want to delete this purchase order?')) return;
     try {
-      await api.delete(`/api/procurement/purchase-orders/${id}`);
+      await api.delete(`/erp/procure-to-pay/purchase-orders/${id}`);
       loadData();
     } catch (error) {
       console.error('Error deleting purchase order:', error);
@@ -105,7 +105,7 @@ export default function PurchaseOrders() {
 
   const handleApprove = async (id: number) => {
     try {
-      await api.post(`/api/procurement/purchase-orders/${id}/approve`);
+      await api.post(`/erp/procure-to-pay/purchase-orders/${id}/approve`);
       loadData();
     } catch (error) {
       console.error('Error approving purchase order:', error);
