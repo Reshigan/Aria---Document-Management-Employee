@@ -99,6 +99,13 @@ except Exception as e:
     print(f"⚠️ Banking & Reconciliation module not loaded: {e}")
 
 try:
+    from modules.admin_module import router as admin_router
+    app.include_router(admin_router)
+    print("✅ Admin module loaded")
+except Exception as e:
+    print(f"⚠️ Admin module not loaded: {e}")
+
+try:
     from modules.manufacturing_module import router as manufacturing_router
     app.include_router(manufacturing_router)
     print("✅ Manufacturing module loaded")

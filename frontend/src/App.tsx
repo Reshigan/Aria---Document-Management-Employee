@@ -31,6 +31,7 @@ import SystemSettings from './pages/admin/SystemSettings';
 import CompanySettings from './pages/admin/CompanySettings';
 import BotConfiguration from './pages/admin/BotConfiguration';
 import UserManagement from './pages/admin/UserManagement';
+import AdminDashboard from './pages/admin/AdminDashboard';
 import BotsHub from './pages/Automation/BotsHub';
 import Mailroom from './pages/Automation/Mailroom';
 import FixedAssetsDashboard from './pages/FixedAssets/FixedAssetsDashboard';
@@ -225,6 +226,8 @@ function App() {
           <Route path="/aria/upload" element={<DocumentUpload />} />
           
           {/* Admin */}
+          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/admin/system" element={<SystemSettings />} />
           <Route path="/admin/company" element={<CompanySettings />} />
           <Route path="/admin/bots" element={<BotConfiguration />} />
