@@ -19,6 +19,11 @@ interface Message {
     sap_export: any;
     recommendations: string[];
   };
+  intent?: any;
+  missingFields?: string[];
+  actionSuggestions?: Array<{label: string; value: string}>;
+  botsActivated?: string[];
+  executionResults?: any[];
 }
 
 export default function AriaChat() {
@@ -102,7 +107,12 @@ export default function AriaChat() {
         role: 'assistant',
         content: data.response || "I understand your request. Let me help you with that.",
         timestamp: new Date(),
-        documentAnalysis: data.document_analysis
+        documentAnalysis: data.document_analysis,
+        intent: data.intent,
+        missingFields: data.missing_fields,
+        actionSuggestions: data.action_suggestions,
+        botsActivated: data.bots_activated,
+        executionResults: data.execution_results
       };
       setMessages(prev => [...prev, assistantMessage]);
     } catch (error) {
@@ -302,6 +312,52 @@ export default function AriaChat() {
                   {message.content}
                 </div>
                 
+                {/* Missing Fields - Slot Filling UI */}
+                {message.missingFields && message.missingFields.length > 0 && (
+                  <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid #e5e7eb' }}>
+                    <div style={{ fontWeight: '600', marginBottom: '0.75rem', color: '#dc2626' }}>
+                      ℹ️ Required Information:
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                      {message.missingFields.map((field, idx) => (
+                        <div key={idx} style={{
+                          padding: '0.5rem 0.75rem',
+                          background: '#fef2f2',
+                          border: '1px solid #fecaca',
+                          borderRadius: '0.5rem',
+                          fontSize: '0.875rem',
+                          color: '#991b1b'
+                        }}>
+                          • {field}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Bots Activated */}
+                {message.botsActivated && message.botsActivated.length > 0 && (
+                  <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid #e5e7eb' }}>
+                    <div style={{ fontWeight: '600', marginBottom: '0.75rem', color: '#059669' }}>
+                      🤖 Bots Activated:
+                    </div>
+                    <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                      {message.botsActivated.map((bot, idx) => (
+                        <span key={idx} style={{
+                          padding: '0.25rem 0.75rem',
+                          background: '#d1fae5',
+                          color: '#065f46',
+                          borderRadius: '9999px',
+                          fontSize: '0.75rem',
+                          fontWeight: '600'
+                        }}>
+                          {bot}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 {/* Document Analysis Results */}
                 {message.documentAnalysis && (
                   <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid #e5e7eb' }}>
