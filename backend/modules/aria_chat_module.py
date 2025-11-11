@@ -1,6 +1,7 @@
 """
 ARIA Chat Module with LLM Integration and File Upload Support
 Provides natural language chat interface with document context
+Integrates with Aria Controller Engine for intent recognition and bot activation
 """
 from fastapi import APIRouter, UploadFile, File, Form, HTTPException
 from pydantic import BaseModel
@@ -25,6 +26,7 @@ router = APIRouter(prefix="/api/chat", tags=["ARIA Chat"])
 class ChatRequest(BaseModel):
     message: str
     conversation_history: Optional[List[Dict[str, str]]] = None
+    context: Optional[Dict[str, Any]] = {}
 
 
 class ChatResponse(BaseModel):
@@ -32,20 +34,76 @@ class ChatResponse(BaseModel):
     model: Optional[str] = None
     timestamp: str = datetime.now().isoformat()
     document_analysis: Optional[Dict[str, Any]] = None
+    intent: Optional[Dict[str, Any]] = None
+    missing_fields: Optional[List[str]] = None
+    action_suggestions: Optional[List[Dict[str, str]]] = None
+    bots_activated: Optional[List[str]] = None
+    execution_results: Optional[List[Dict[str, Any]]] = None
 
 
 @router.post("/", response_model=ChatResponse)
 async def chat(request: ChatRequest):
     """
-    Chat with ARIA using Ollama LLM
+    Chat with ARIA using Ollama LLM with Aria Controller Engine integration
     
     Supports natural language queries about:
-    - Business operations
-    - ERP workflows
+    - Business operations (creates sales orders, invoices, quotes, deliveries)
+    - ERP workflows (with proper slot-filling for required fields)
     - Document processing
     - General assistance
+    
+    When an action intent is detected, Aria Controller will:
+    1. Recognize the intent
+    2. Request missing required fields
+    3. Activate appropriate bots
+    4. Execute the workflow
     """
     try:
+        from modules.aria_controller_engine import aria_controller, AriaRequest
+        
+        intent_keywords = [
+            'create', 'approve', 'process', 'generate', 'deliver', 'ship', 
+            'invoice', 'quote', 'order', 'delivery', 'customer', 'supplier',
+            'product', 'remittance', 'payment', 'report', 'post'
+        ]
+        
+        message_lower = request.message.lower()
+        is_action_intent = any(keyword in message_lower for keyword in intent_keywords)
+        
+        if is_action_intent:
+            try:
+                aria_request = AriaRequest(
+                    message=request.message,
+                    context=request.context or {},
+                    attachments=[]
+                )
+                
+                controller_response = await aria_controller.process_request(aria_request)
+                
+                if controller_response.status == "needs_more_info":
+                    return ChatResponse(
+                        response=controller_response.message,
+                        model="aria_controller",
+                        intent=controller_response.intent,
+                        missing_fields=controller_response.next_steps,
+                        action_suggestions=[
+                            {"label": f"Provide {field}", "value": field} 
+                            for field in controller_response.next_steps
+                        ]
+                    )
+                
+                elif controller_response.status == "success":
+                    return ChatResponse(
+                        response=controller_response.message,
+                        model="aria_controller",
+                        intent=controller_response.intent,
+                        bots_activated=controller_response.bots_activated,
+                        execution_results=controller_response.execution_results
+                    )
+                
+            except Exception as controller_error:
+                logger.warning(f"Aria Controller error, falling back to LLM: {controller_error}")
+        
         messages = []
         
         messages.append({
@@ -64,7 +122,7 @@ Be helpful, professional, and concise. Provide actionable guidance."""
         })
         
         if request.conversation_history:
-            for msg in request.conversation_history[-10:]:  # Last 10 messages for context
+            for msg in request.conversation_history[-10:]:
                 messages.append({
                     'role': msg.get('role', 'user'),
                     'content': msg.get('content', '')
@@ -84,7 +142,7 @@ Be helpful, professional, and concise. Provide actionable guidance."""
             )
         else:
             return ChatResponse(
-                response=f"I understand you want to {request.message.lower()}. Let me help you with that.\n\nI'm processing your request using natural language understanding. What specific action would you like me to take?",
+                response=f"I understand you want to {request.message.lower()}. Let me help you with that.\n\nCould you provide more details about what you'd like to do?",
                 model="fallback"
             )
     
