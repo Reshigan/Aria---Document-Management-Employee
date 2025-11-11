@@ -196,7 +196,7 @@ async def chat_with_file(
                 finally:
                     os.unlink(tmp_file.name)
         
-        # PDF processing
+        # PDF processing with OCR fallback for scanned documents
         elif file.filename.lower().endswith('.pdf'):
             with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as tmp_file:
                 tmp_file.write(file_content)
@@ -207,6 +207,24 @@ async def chat_with_file(
                         pdf_reader = PyPDF2.PdfReader(pdf_file)
                         for page in pdf_reader.pages:
                             extracted_text += page.extract_text() + "\n"
+                    
+                    if len(extracted_text.strip()) < 50:
+                        logger.info(f"PDF has no text layer, using OCR for {file.filename}")
+                        try:
+                            from pdf2image import convert_from_path
+                            images = convert_from_path(tmp_file.name, dpi=300, first_page=1, last_page=min(5, len(pdf_reader.pages)))
+                            extracted_text = ""
+                            for i, image in enumerate(images):
+                                logger.info(f"OCR processing page {i+1}/{len(images)}")
+                                page_text = pytesseract.image_to_string(image, lang='eng')
+                                extracted_text += f"\n--- Page {i+1} ---\n{page_text}\n"
+                            logger.info(f"OCR extracted {len(extracted_text)} characters from {len(images)} pages")
+                        except ImportError:
+                            logger.warning("pdf2image not available, cannot OCR scanned PDFs")
+                            extracted_text = f"[Scanned PDF - OCR not available. Install pdf2image and poppler-utils to process scanned documents]"
+                        except Exception as ocr_error:
+                            logger.error(f"OCR error: {ocr_error}")
+                            extracted_text = f"[Scanned PDF - OCR failed: {str(ocr_error)}]"
                 finally:
                     os.unlink(tmp_file.name)
         
