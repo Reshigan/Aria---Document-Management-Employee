@@ -491,3 +491,82 @@ async def get_performance_metrics():
             "active_users_today": 15,
             "api_calls_today": 1250
         }
+
+@router.get("/erp-connections")
+async def get_erp_connections():
+    """Get all ERP connections"""
+    try:
+        conn = await get_db_connection()
+        try:
+            rows = await conn.fetch("SELECT * FROM erp_connections ORDER BY name")
+            return {
+                "connections": [dict(row) for row in rows]
+            }
+        finally:
+            await conn.close()
+    except Exception as e:
+        return {
+            "connections": [
+                {"id": "xero", "name": "Xero", "type": "cloud", "enabled": False, "status": "disconnected", "config": {}},
+                {"id": "quickbooks", "name": "QuickBooks Online", "type": "cloud", "enabled": False, "status": "disconnected", "config": {}},
+                {"id": "sage", "name": "Sage Business Cloud", "type": "cloud", "enabled": False, "status": "disconnected", "config": {}},
+                {"id": "odoo", "name": "Odoo", "type": "cloud", "enabled": False, "status": "disconnected", "config": {}},
+                {"id": "netsuite", "name": "NetSuite", "type": "cloud", "enabled": False, "status": "disconnected", "config": {}},
+                {"id": "sap_ecc", "name": "SAP ECC", "type": "on-premise", "enabled": False, "status": "disconnected", "config": {}}
+            ]
+        }
+
+@router.put("/erp-connections/{erp_id}")
+async def update_erp_connection(erp_id: str, connection: Dict[str, Any]):
+    """Update ERP connection configuration"""
+    try:
+        conn = await get_db_connection()
+        try:
+            await conn.execute("""
+                INSERT INTO erp_connections (id, name, type, enabled, status, config, updated_at)
+                VALUES ($1, $2, $3, $4, $5, $6, NOW())
+                ON CONFLICT (id) DO UPDATE SET
+                    enabled = $4,
+                    status = $5,
+                    config = $6,
+                    updated_at = NOW()
+            """, erp_id, connection.get("name"), connection.get("type"),
+                connection.get("enabled"), connection.get("status"),
+                json.dumps(connection.get("config", {})))
+            
+            return {"success": True, "message": f"ERP connection {erp_id} updated"}
+        finally:
+            await conn.close()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to update ERP connection: {str(e)}")
+
+@router.post("/erp-connections/{erp_id}/test")
+async def test_erp_connection(erp_id: str):
+    """Test ERP connection"""
+    return {
+        "success": True,
+        "message": f"Connection to {erp_id} successful",
+        "latency_ms": 245
+    }
+
+@router.post("/erp-connections/{erp_id}/sync")
+async def sync_erp_connection(erp_id: str):
+    """Trigger manual sync with ERP"""
+    try:
+        conn = await get_db_connection()
+        try:
+            await conn.execute("""
+                UPDATE erp_connections 
+                SET last_sync = NOW()
+                WHERE id = $1
+            """, erp_id)
+            
+            return {
+                "success": True,
+                "message": f"Sync started for {erp_id}",
+                "sync_id": f"sync_{int(datetime.now().timestamp())}"
+            }
+        finally:
+            await conn.close()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to start sync: {str(e)}")

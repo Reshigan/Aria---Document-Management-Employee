@@ -252,6 +252,30 @@ SELECT
     (SELECT AVG(execution_time_ms) FROM bot_executions WHERE executed_at >= NOW() - INTERVAL '1 day') as avg_execution_time_ms_today,
     (SELECT COUNT(*) FROM user_sessions WHERE is_active = true AND expires_at > NOW()) as active_sessions_count;
 
+CREATE TABLE IF NOT EXISTS erp_connections (
+    id VARCHAR(50) PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    type VARCHAR(20) NOT NULL,
+    enabled BOOLEAN DEFAULT false,
+    status VARCHAR(20) DEFAULT 'disconnected',
+    config JSONB,
+    last_sync TIMESTAMP,
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_erp_connections_enabled ON erp_connections(enabled);
+CREATE INDEX IF NOT EXISTS idx_erp_connections_status ON erp_connections(status);
+
+INSERT INTO erp_connections (id, name, type, enabled, status, config) VALUES
+    ('xero', 'Xero', 'cloud', false, 'disconnected', '{}'),
+    ('quickbooks', 'QuickBooks Online', 'cloud', false, 'disconnected', '{}'),
+    ('sage', 'Sage Business Cloud', 'cloud', false, 'disconnected', '{}'),
+    ('odoo', 'Odoo', 'cloud', false, 'disconnected', '{}'),
+    ('netsuite', 'NetSuite', 'cloud', false, 'disconnected', '{}'),
+    ('sap_ecc', 'SAP ECC', 'on-premise', false, 'disconnected', '{}')
+ON CONFLICT (id) DO NOTHING;
+
 COMMENT ON TABLE bot_config IS 'Configuration settings for all 67 automation bots';
 COMMENT ON TABLE system_settings IS 'Global system configuration settings';
 COMMENT ON TABLE audit_logs IS 'Audit trail of all system actions';
@@ -259,3 +283,4 @@ COMMENT ON TABLE bot_executions IS 'Log of all bot executions with performance m
 COMMENT ON TABLE api_keys IS 'API keys for external integrations';
 COMMENT ON TABLE user_sessions IS 'Active user sessions for session management';
 COMMENT ON TABLE system_health_metrics IS 'System health and performance metrics';
+COMMENT ON TABLE erp_connections IS 'External ERP system connections (Xero, QuickBooks, Sage, Odoo, NetSuite, SAP ECC)';

@@ -32,6 +32,7 @@ import CompanySettings from './pages/admin/CompanySettings';
 import BotConfiguration from './pages/admin/BotConfiguration';
 import UserManagement from './pages/admin/UserManagement';
 import AdminDashboard from './pages/admin/AdminDashboard';
+import ERPConfiguration from './pages/admin/ERPConfiguration';
 import BotsHub from './pages/Automation/BotsHub';
 import Mailroom from './pages/Automation/Mailroom';
 import FixedAssetsDashboard from './pages/FixedAssets/FixedAssetsDashboard';
@@ -232,6 +233,7 @@ function App() {
           <Route path="/admin/company" element={<CompanySettings />} />
           <Route path="/admin/bots" element={<BotConfiguration />} />
           <Route path="/admin/users" element={<UserManagement />} />
+          <Route path="/admin/erp" element={<ERPConfiguration />} />
         </Routes>
         </MainLayout>
       </CompanyProvider>
