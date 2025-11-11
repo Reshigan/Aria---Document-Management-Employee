@@ -631,10 +631,10 @@ export default function WMSStock() {
                         <td style={{ padding: '1rem', fontSize: '0.875rem', color: '#6b7280' }}>{product.description || '-'}</td>
                         <td style={{ padding: '1rem', fontSize: '0.875rem', textAlign: 'center' }}>{product.unit_of_measure}</td>
                         <td style={{ padding: '1rem', fontSize: '0.875rem', textAlign: 'right' }}>
-                          R {product.cost_price.toFixed(2)}
+                          {formatCurrency(product.cost_price)}
                         </td>
                         <td style={{ padding: '1rem', fontSize: '0.875rem', textAlign: 'right', fontWeight: '500' }}>
-                          R {product.selling_price.toFixed(2)}
+                          {formatCurrency(product.selling_price)}
                         </td>
                         <td style={{ padding: '1rem', textAlign: 'center' }}>
                           <span style={{
