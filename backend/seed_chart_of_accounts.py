@@ -4,10 +4,84 @@ IFRS/GAAP compliant with SA tax accounts
 """
 
 import sys
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from models.accounting import ChartOfAccounts, AccountType, AccountSubType
-from models.base import Base
+from sqlalchemy import create_engine, Column, String, Integer, Float, DateTime, Boolean, Text, ForeignKey, Enum as SQLEnum
+from sqlalchemy.orm import sessionmaker, declarative_base
+from datetime import datetime
+from enum import Enum
+
+Base = declarative_base()
+
+class AccountType(str, Enum):
+    """Chart of Accounts Types"""
+    ASSET = "asset"
+    LIABILITY = "liability"
+    EQUITY = "equity"
+    REVENUE = "revenue"
+    EXPENSE = "expense"
+
+class AccountSubType(str, Enum):
+    """Detailed Account Sub-types"""
+    # Assets
+    CURRENT_ASSET = "current_asset"
+    FIXED_ASSET = "fixed_asset"
+    INVENTORY = "inventory"
+    ACCOUNTS_RECEIVABLE = "accounts_receivable"
+    BANK = "bank"
+    CASH = "cash"
+    PREPAYMENTS = "prepayments"
+    
+    # Liabilities
+    CURRENT_LIABILITY = "current_liability"
+    LONG_TERM_LIABILITY = "long_term_liability"
+    ACCOUNTS_PAYABLE = "accounts_payable"
+    VAT_PAYABLE = "vat_payable"
+    PAYE_PAYABLE = "paye_payable"
+    UIF_PAYABLE = "uif_payable"
+    SDL_PAYABLE = "sdl_payable"
+    
+    # Equity
+    CAPITAL = "capital"
+    RETAINED_EARNINGS = "retained_earnings"
+    DRAWINGS = "drawings"
+    
+    # Revenue
+    SALES = "sales"
+    SERVICE_REVENUE = "service_revenue"
+    OTHER_INCOME = "other_income"
+    
+    # Expenses
+    COST_OF_SALES = "cost_of_sales"
+    OPERATING_EXPENSE = "operating_expense"
+    SALARY_EXPENSE = "salary_expense"
+    DEPRECIATION = "depreciation"
+    INTEREST_EXPENSE = "interest_expense"
+
+class ChartOfAccounts(Base):
+    """Chart of Accounts - SA Compliant"""
+    __tablename__ = "chart_of_accounts"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    tenant_id = Column(String(100), nullable=False, index=True)
+    account_code = Column(String(20), nullable=False, index=True)
+    account_name = Column(String(200), nullable=False)
+    description = Column(Text)
+    account_type = Column(SQLEnum(AccountType), nullable=False, index=True)
+    account_subtype = Column(SQLEnum(AccountSubType), nullable=False)
+    parent_account_id = Column(Integer, ForeignKey("chart_of_accounts.id"), nullable=True)
+    level = Column(Integer, default=1)
+    is_control_account = Column(Boolean, default=False)
+    is_system_account = Column(Boolean, default=False)
+    accepts_posting = Column(Boolean, default=True)
+    is_tax_account = Column(Boolean, default=False)
+    vat_rate = Column(Float, default=0.0)
+    debit_balance = Column(Float, default=0.0)
+    credit_balance = Column(Float, default=0.0)
+    current_balance = Column(Float, default=0.0)
+    sars_reporting_code = Column(String(20), nullable=True)
+    is_active = Column(Boolean, default=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_by = Column(String(100))
 
 STANDARD_ACCOUNTS = [
     {"code": "1000", "name": "Bank Account", "type": AccountType.ASSET, "subtype": AccountSubType.BANK, "system": True},
