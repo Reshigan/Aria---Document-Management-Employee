@@ -217,6 +217,13 @@ try:
 except Exception as e:
     print(f"⚠️ Field Service module not loaded: {e}")
 
+try:
+    from modules.aria_controller_engine import router as aria_controller_router
+    app.include_router(aria_controller_router)
+    print("✅ Aria Controller Engine loaded")
+except Exception as e:
+    print(f"⚠️ Aria Controller Engine not loaded: {e}")
+
 # ========================================
 # REQUEST/RESPONSE MODELS
 # ========================================
