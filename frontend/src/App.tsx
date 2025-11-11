@@ -45,6 +45,8 @@ import SuppliersPage from './pages/AP/Suppliers';
 import ProductsPage from './pages/Inventory/Products';
 import BankAccounts from './pages/Banking/BankAccounts';
 import Bills from './pages/AP/Bills';
+import BillDetail from './pages/AP/BillDetail';
+import PurchaseOrderDetail from './pages/AP/PurchaseOrderDetail';
 import VATReturnsPage from './pages/Tax/VATReturnsPage';
 import FinancialReports from './pages/Reports/FinancialReports';
 import DocumentUpload from './pages/AskAria/DocumentUpload';
@@ -153,9 +155,11 @@ function App() {
           {/* Accounts Payable */}
           <Route path="/ap" element={<Bills />} />
           <Route path="/ap/bills" element={<Bills />} />
+          <Route path="/ap/bills/:id" element={<BillDetail />} />
           <Route path="/ap/invoices" element={<InvoiceList />} />
           <Route path="/ap/invoices/new" element={<InvoiceForm />} />
           <Route path="/ap/purchase-orders" element={<PurchaseOrders />} />
+          <Route path="/ap/purchase-orders/:id" element={<PurchaseOrderDetail />} />
           <Route path="/ap/suppliers" element={<SuppliersPage />} />
           
           {/* Accounts Receivable */}

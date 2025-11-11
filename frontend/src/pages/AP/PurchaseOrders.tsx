@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ShoppingCart, Plus, Search, Trash2, Check } from 'lucide-react';
 import { api } from '../../lib/api';
 
@@ -29,6 +30,7 @@ interface Product {
 }
 
 export default function PurchaseOrders() {
+  const navigate = useNavigate();
   const [purchaseOrders, setPurchaseOrders] = useState<PurchaseOrder[]>([]);
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
@@ -211,7 +213,7 @@ export default function PurchaseOrders() {
           <option value="cancelled">Cancelled</option>
         </select>
         <button
-          onClick={() => { setShowModal(true); resetForm(); }}
+          onClick={() => navigate('/ap/purchase-orders/new')}
           style={{
             padding: '0.5rem 1.5rem',
             background: '#f97316',
@@ -268,7 +270,7 @@ export default function PurchaseOrders() {
             Create your first purchase order to order from suppliers
           </p>
           <button
-            onClick={() => { setShowModal(true); resetForm(); }}
+            onClick={() => navigate('/ap/purchase-orders/new')}
             style={{
               padding: '0.5rem 1.5rem',
               background: '#f97316',
@@ -300,7 +302,11 @@ export default function PurchaseOrders() {
               {filteredPOs.map((po) => {
                 const supplier = suppliers.find(s => s.id === po.supplier_id);
                 return (
-                  <tr key={po.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
+                  <tr 
+                    key={po.id} 
+                    style={{ borderBottom: '1px solid #e5e7eb', cursor: 'pointer' }}
+                    onClick={() => navigate(`/ap/purchase-orders/${po.id}`)}
+                  >
                     <td style={{ padding: '1rem', fontSize: '0.875rem', fontWeight: '500' }}>{po.po_number}</td>
                     <td style={{ padding: '1rem', fontSize: '0.875rem' }}>{supplier?.supplier_name || 'Unknown'}</td>
                     <td style={{ padding: '1rem', fontSize: '0.875rem', color: '#6b7280' }}>{new Date(po.order_date).toLocaleDateString()}</td>
@@ -317,7 +323,7 @@ export default function PurchaseOrders() {
                         {po.status}
                       </span>
                     </td>
-                    <td style={{ padding: '1rem', textAlign: 'right' }}>
+                    <td style={{ padding: '1rem', textAlign: 'right' }} onClick={(e) => e.stopPropagation()}>
                       <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
                         {po.status === 'draft' && (
                           <button
