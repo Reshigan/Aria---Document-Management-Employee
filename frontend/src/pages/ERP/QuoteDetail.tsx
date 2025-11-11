@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { api } from '../../lib/api';
 import { ArrowLeft, Mail, Check, X, FileText, User, Calendar, DollarSign, Package, Clock, Edit, Trash2 } from 'lucide-react';
 
 interface QuoteDetail {
@@ -75,7 +75,7 @@ export default function QuoteDetail() {
   const loadQuoteDetail = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`/api/erp/order-to-cash/quotes/${id}`);
+      const response = await api.get(`/erp/order-to-cash/quotes/${id}`);
       setQuote(response.data);
 
       if (response.data.customer_id) {
@@ -92,7 +92,7 @@ export default function QuoteDetail() {
 
   const loadCustomerDetails = async (customerId: string) => {
     try {
-      const response = await axios.get(`/api/erp/order-to-cash/customers/${customerId}`);
+      const response = await api.get(`/erp/order-to-cash/customers/${customerId}`);
       setCustomer(response.data);
     } catch (error) {
       console.error('Error loading customer:', error);
@@ -101,7 +101,7 @@ export default function QuoteDetail() {
 
   const loadRelatedOrders = async (customerId: string) => {
     try {
-      const response = await axios.get(`/api/erp/order-to-cash/sales-orders`, {
+      const response = await api.get(`/erp/order-to-cash/sales-orders`, {
         params: { customer_id: customerId }
       });
       setRelatedOrders(response.data);
@@ -113,7 +113,7 @@ export default function QuoteDetail() {
   const handleApprove = async () => {
     if (!quote) return;
     try {
-      await axios.post(`/api/erp/order-to-cash/quotes/${quote.id}/approve`);
+      await api.post(`/erp/order-to-cash/quotes/${quote.id}/approve`);
       loadQuoteDetail();
     } catch (error: any) {
       setError(error.response?.data?.detail || 'Failed to approve quote');
@@ -123,7 +123,7 @@ export default function QuoteDetail() {
   const handleSend = async () => {
     if (!quote) return;
     try {
-      await axios.post(`/api/erp/order-to-cash/quotes/${quote.id}/send`);
+      await api.post(`/erp/order-to-cash/quotes/${quote.id}/send`);
       alert('Quote sent successfully to customer email');
       loadQuoteDetail();
     } catch (error: any) {
@@ -134,7 +134,7 @@ export default function QuoteDetail() {
   const handleAccept = async () => {
     if (!quote) return;
     try {
-      const response = await axios.post(`/api/erp/order-to-cash/quotes/${quote.id}/accept`);
+      const response = await api.post(`/erp/order-to-cash/quotes/${quote.id}/accept`);
       alert(`Quote accepted! Sales Order ${response.data.sales_order_number} created.`);
       navigate(`/erp/sales-orders/${response.data.sales_order_id}`);
     } catch (error: any) {

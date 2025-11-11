@@ -48,7 +48,7 @@ export default function Receipts() {
       if (searchTerm) params.search = searchTerm;
       if (statusFilter !== 'all') params.status = statusFilter;
 
-      const response = await axios.get('/api/ar/receipts', { params });
+      const response = await api.get('/ar/receipts', { params });
       setReceipts(response.data);
       
       const totalAmount = response.data.reduce((sum: number, r: Receipt) => sum + r.amount, 0);

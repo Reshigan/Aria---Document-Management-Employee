@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
 import { api } from '../../lib/api';
 import { LineItemsTable, LineItem } from '../../components/LineItemsTable';
 import { ConfirmDialog } from '../../components/ConfirmDialog';
@@ -72,7 +71,7 @@ export default function Quotes() {
       if (searchTerm) params.search = searchTerm;
       if (statusFilter) params.status = statusFilter;
       
-      const response = await axios.get('/api/erp/order-to-cash/quotes', { params });
+      const response = await api.get('/erp/order-to-cash/quotes', { params });
       setQuotes(response.data);
     } catch (error) {
       console.error('Error fetching quotes:', error);
@@ -84,7 +83,7 @@ export default function Quotes() {
 
   const loadProducts = async () => {
     try {
-      const response = await axios.get('/api/erp/order-to-cash/products');
+      const response = await api.get('/erp/order-to-cash/products');
       setProducts(response.data);
     } catch (error) {
       console.error('Error fetching products:', error);
@@ -93,7 +92,7 @@ export default function Quotes() {
 
   const loadCustomers = async () => {
     try {
-      const response = await axios.get('/api/erp/order-to-cash/customers');
+      const response = await api.get('/erp/order-to-cash/customers');
       setCustomers(response.data);
     } catch (error) {
       console.error('Error fetching customers:', error);
@@ -102,7 +101,7 @@ export default function Quotes() {
 
   const approveQuote = async (quoteId: string) => {
     try {
-      await axios.post(`/api/erp/order-to-cash/quotes/${quoteId}/approve`);
+      await api.post(`/erp/order-to-cash/quotes/${quoteId}/approve`);
       loadQuotes();
     } catch (error) {
       console.error('Error approving quote:', error);
@@ -111,7 +110,7 @@ export default function Quotes() {
 
   const sendQuote = async (quoteId: string) => {
     try {
-      await axios.post(`/api/erp/order-to-cash/quotes/${quoteId}/send`);
+      await api.post(`/erp/order-to-cash/quotes/${quoteId}/send`);
       loadQuotes();
     } catch (error) {
       console.error('Error sending quote:', error);
@@ -120,7 +119,7 @@ export default function Quotes() {
 
   const acceptQuote = async (quoteId: string) => {
     try {
-      const response = await axios.post(`/api/erp/order-to-cash/quotes/${quoteId}/accept`);
+      const response = await api.post(`/erp/order-to-cash/quotes/${quoteId}/accept`);
       alert(`Quote accepted! Sales Order ${response.data.sales_order_number} created.`);
       loadQuotes();
     } catch (error) {
@@ -151,7 +150,7 @@ export default function Quotes() {
         return;
       }
 
-      const response = await axios.post('/api/erp/order-to-cash/quotes', {
+      const response = await api.post('/erp/order-to-cash/quotes', {
         customer_name: formData.customer_name,
         customer_email: formData.customer_email,
         customer_id: formData.customer_id || null,
