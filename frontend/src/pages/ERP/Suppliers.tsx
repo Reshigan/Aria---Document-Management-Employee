@@ -79,7 +79,7 @@ export default function Suppliers() {
   const loadSuppliers = async () => {
     try {
       setLoading(true);
-      const response = await api.get('/api/erp/master-data/suppliers');
+      const response = await api.get('/erp/master-data/suppliers');
       setSuppliers(response.data);
       setError(null);
     } catch (error: any) {
@@ -163,7 +163,7 @@ export default function Suppliers() {
       if (showEditModal && selectedSupplier) {
         await api.put(`/api/erp/master-data/suppliers/${selectedSupplier.id}`, formData);
       } else {
-        await api.post('/api/erp/master-data/suppliers', formData);
+        await api.post('/erp/master-data/suppliers', formData);
       }
 
       setShowCreateModal(false);

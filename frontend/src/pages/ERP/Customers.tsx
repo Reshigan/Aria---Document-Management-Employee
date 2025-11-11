@@ -76,7 +76,7 @@ export default function Customers() {
   const loadCustomers = async () => {
     try {
       setLoading(true);
-      const response = await api.get('/api/erp/order-to-cash/customers');
+      const response = await api.get('/erp/order-to-cash/customers');
       setCustomers(response.data);
       setError(null);
     } catch (error: any) {
@@ -158,7 +158,7 @@ export default function Customers() {
       if (showEditModal && selectedCustomer) {
         await api.put(`/api/erp/order-to-cash/customers/${selectedCustomer.id}`, formData);
       } else {
-        await api.post('/api/erp/order-to-cash/customers', formData);
+        await api.post('/erp/order-to-cash/customers', formData);
       }
 
       setShowCreateModal(false);

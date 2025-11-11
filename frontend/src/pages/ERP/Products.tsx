@@ -88,7 +88,7 @@ export default function Products() {
   const loadProducts = async () => {
     try {
       setLoading(true);
-      const response = await api.get('/api/erp/order-to-cash/products');
+      const response = await api.get('/erp/order-to-cash/products');
       setProducts(response.data);
       setError(null);
     } catch (error: any) {
@@ -101,7 +101,7 @@ export default function Products() {
 
   const loadProductStats = async () => {
     try {
-      const response = await api.get('/api/erp/order-to-cash/products/stats');
+      const response = await api.get('/erp/order-to-cash/products/stats');
       setProductStats(response.data);
     } catch (error: any) {
       console.error('Failed to load product stats:', error);
@@ -181,7 +181,7 @@ export default function Products() {
       if (showEditModal && selectedProduct) {
         await api.put(`/api/erp/order-to-cash/products/${selectedProduct.id}`, formData);
       } else {
-        await api.post('/api/erp/order-to-cash/products', formData);
+        await api.post('/erp/order-to-cash/products', formData);
       }
 
       setShowCreateModal(false);

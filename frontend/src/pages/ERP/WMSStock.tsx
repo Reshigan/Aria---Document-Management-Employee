@@ -74,7 +74,7 @@ export default function WMSStock() {
       const params: any = {};
       if (searchTerm) params.search = searchTerm;
       
-      const response = await api.get('/api/erp/order-to-cash/products', { params });
+      const response = await api.get('/erp/order-to-cash/products', { params });
       setProducts(response.data);
       setError(null);
     } catch (err: any) {
@@ -91,7 +91,7 @@ export default function WMSStock() {
       const params: any = {};
       if (warehouseFilter) params.warehouse_id = warehouseFilter;
       
-      const response = await api.get('/api/erp/order-to-cash/stock-on-hand', { params });
+      const response = await api.get('/erp/order-to-cash/stock-on-hand', { params });
       setStock(response.data);
       setError(null);
     } catch (err: any) {

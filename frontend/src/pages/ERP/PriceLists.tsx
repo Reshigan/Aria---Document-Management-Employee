@@ -86,7 +86,7 @@ export default function PriceLists() {
   const loadPriceLists = async () => {
     try {
       setLoading(true);
-      const response = await api.get('/api/erp/master-data/price-lists');
+      const response = await api.get('/erp/master-data/price-lists');
       setPriceLists(response.data);
       setError(null);
     } catch (error: any) {
@@ -100,8 +100,8 @@ export default function PriceLists() {
   const loadMasterData = async () => {
     try {
       const [customersRes, productsRes] = await Promise.all([
-        api.get('/api/erp/master-data/customers'),
-        api.get('/api/erp/order-to-cash/products')
+        api.get('/erp/master-data/customers'),
+        api.get('/erp/order-to-cash/products')
       ]);
       setCustomers(customersRes.data);
       setProducts(productsRes.data);
@@ -172,7 +172,7 @@ export default function PriceLists() {
       if (showEditModal && selectedPriceList) {
         await api.put(`/api/erp/master-data/price-lists/${selectedPriceList.id}`, formData);
       } else {
-        await api.post('/api/erp/master-data/price-lists', formData);
+        await api.post('/erp/master-data/price-lists', formData);
       }
 
       setShowCreateModal(false);
