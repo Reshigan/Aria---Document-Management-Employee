@@ -13,6 +13,14 @@ import hashlib
 import pandas as pd
 import json
 from pathlib import Path
+import sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from core.erp_database import (
+    create_document_intake,
+    get_document_intake,
+    update_document_status,
+    create_payment_allocation
+)
 
 logger = logging.getLogger(__name__)
 
@@ -416,25 +424,44 @@ async def preview_document(document_id: str):
     """
     Get parsed document preview with audit trail
     """
-    return {
-        "document_id": document_id,
-        "filename": "example.xlsx",
-        "vendor": "PnP",
-        "document_type": "remittance_advice",
-        "confidence": 1.0,
-        "company_id": "COMP-001",
-        "summary": {
-            "total_amount": 2494058.27,
-            "currency": "ZAR",
-            "invoice_count": 16
-        },
-        "parsed_data": {
-            "vendor": "PnP",
-            "invoices": []
-        },
-        "suggested_allocations": [],
-        "audit_trail": []
-    }
+    try:
+        document = await get_document_intake(document_id)
+        
+        if not document:
+            raise HTTPException(status_code=404, detail=f"Document {document_id} not found")
+        
+        parsed_data = document.get('parsed_data', {})
+        
+        invoices = parsed_data.get('invoices', [])
+        total_amount = sum(inv.get('amount', 0) for inv in invoices)
+        
+        return {
+            "document_id": document_id,
+            "filename": document.get('filename'),
+            "vendor": document.get('vendor'),
+            "document_type": document.get('document_type'),
+            "confidence": document.get('confidence', 1.0),
+            "company_id": document.get('company_id'),
+            "summary": {
+                "total_amount": total_amount,
+                "currency": "ZAR",
+                "invoice_count": len(invoices)
+            },
+            "parsed_data": parsed_data,
+            "suggested_allocations": [],
+            "audit_trail": [
+                {
+                    "timestamp": document.get('created_at'),
+                    "action": "document_uploaded",
+                    "user": "system"
+                }
+            ]
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error previewing document: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.post("/{document_id}/post", response_model=DocumentPostResponse)
@@ -447,62 +474,48 @@ async def post_document(document_id: str, request: DocumentPostRequest):
     - dry_run=true: Preview what would be posted without committing
     """
     try:
-        document = {
-            "id": document_id,
-            "parsed_data": {
-                "vendor": "PnP",
-                "total_amount": 2494058.27,
-                "currency": "ZAR",
-                "payment_date": "2025-06-03",
-                "invoices": []
-            }
-        }
+        document = await get_document_intake(document_id)
+        
+        if not document:
+            raise HTTPException(status_code=404, detail=f"Document {document_id} not found")
         
         if request.target == 'sap':
             export_result = generate_sap_f28_export(document, request.company_id)
             
-            if request.dry_run:
-                return DocumentPostResponse(
-                    document_id=document_id,
-                    target='sap',
-                    status='dry_run',
-                    export_file=export_result['file_path'],
-                    errors=[]
-                )
-            else:
-                return DocumentPostResponse(
-                    document_id=document_id,
-                    target='sap',
-                    status='exported',
-                    posted_at=datetime.now().isoformat(),
-                    export_file=export_result['file_path'],
-                    errors=[]
-                )
+            if not request.dry_run:
+                # Update document status
+                await update_document_status(document_id, 'exported', datetime.now())
+            
+            return DocumentPostResponse(
+                document_id=document_id,
+                target='sap',
+                status='dry_run' if request.dry_run else 'exported',
+                posted_at=None if request.dry_run else datetime.now().isoformat(),
+                export_file=export_result['file_path'],
+                errors=[]
+            )
         
         elif request.target == 'aria':
             posting_result = post_to_aria_erp(document, request.company_id, request.dry_run)
             
-            if request.dry_run:
-                return DocumentPostResponse(
-                    document_id=document_id,
-                    target='aria',
-                    status='dry_run',
-                    transaction_ids=posting_result['transaction_ids'],
-                    errors=[]
-                )
-            else:
-                return DocumentPostResponse(
-                    document_id=document_id,
-                    target='aria',
-                    status='posted',
-                    posted_at=datetime.now().isoformat(),
-                    transaction_ids=posting_result['transaction_ids'],
-                    errors=[]
-                )
+            if not request.dry_run:
+                # Update document status
+                await update_document_status(document_id, 'posted', datetime.now())
+            
+            return DocumentPostResponse(
+                document_id=document_id,
+                target='aria',
+                status='dry_run' if request.dry_run else 'posted',
+                posted_at=None if request.dry_run else datetime.now().isoformat(),
+                transaction_ids=posting_result['transaction_ids'],
+                errors=[]
+            )
         
         else:
             raise HTTPException(status_code=400, detail=f"Invalid target: {request.target}")
     
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Error posting document: {e}")
         raise HTTPException(status_code=500, detail=str(e))
