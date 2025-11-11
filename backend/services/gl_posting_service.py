@@ -311,3 +311,188 @@ class GLPostingService:
             raise
         finally:
             await conn.close()
+    
+    async def post_payroll_run(
+        self,
+        company_id: str,
+        payroll_run_id: str,
+        run_number: str,
+        payment_date: date,
+        total_gross: Decimal,
+        total_paye: Decimal,
+        total_uif: Decimal,
+        total_sdl: Decimal,
+        total_net: Decimal,
+        user_id: str = "system"
+    ) -> Optional[str]:
+        """
+        Post payroll run to GL (Wage Expense, Employer Costs, Liabilities)
+        
+        Journal Entry:
+        Dr Wage Expense (5100)
+        Dr Employer UIF (5110)
+        Dr Employer SDL (5111)
+        Cr Net Pay Liability (2300)
+        Cr PAYE Liability (2310)
+        Cr UIF Liability (2311)
+        Cr SDL Liability (2312)
+        """
+        conn = await self.get_connection()
+        
+        try:
+            employer_uif = total_uif  # Already includes both employee and employer
+            employer_sdl = total_sdl
+            
+            total_employer_costs = employer_uif + employer_sdl
+            total_debit = total_gross + total_employer_costs
+            total_credit = total_net + total_paye + employer_uif + employer_sdl
+            
+            # Create journal entry
+            journal_entry_id = await conn.fetchval(
+                """
+                INSERT INTO journal_entries (
+                    company_id, reference, entry_date, posting_date, description,
+                    source, source_document_id, status, total_debit, total_credit, created_at, created_by
+                ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+                RETURNING id
+                """,
+                company_id,
+                f"PAY-{run_number}",
+                payment_date,
+                payment_date,
+                f"Payroll Run {run_number}",
+                "PAYROLL",
+                payroll_run_id,
+                "POSTED",
+                float(total_debit),
+                float(total_credit),
+                datetime.now(),
+                user_id
+            )
+            
+            line_number = 1
+            
+            await conn.execute(
+                """
+                INSERT INTO journal_entry_lines (
+                    journal_entry_id, line_number, account_code, debit_amount, credit_amount, description, created_at
+                ) VALUES ($1, $2, $3, $4, $5, $6, $7)
+                """,
+                journal_entry_id,
+                line_number,
+                "5100",  # Wage Expense
+                float(total_gross),
+                0.0,
+                f"Wage Expense - Payroll {run_number}",
+                datetime.now()
+            )
+            line_number += 1
+            
+            if employer_uif > 0:
+                await conn.execute(
+                    """
+                    INSERT INTO journal_entry_lines (
+                        journal_entry_id, line_number, account_code, debit_amount, credit_amount, description, created_at
+                    ) VALUES ($1, $2, $3, $4, $5, $6, $7)
+                    """,
+                    journal_entry_id,
+                    line_number,
+                    "5110",  # Employer UIF
+                    float(employer_uif),
+                    0.0,
+                    f"Employer UIF - Payroll {run_number}",
+                    datetime.now()
+                )
+                line_number += 1
+            
+            if employer_sdl > 0:
+                await conn.execute(
+                    """
+                    INSERT INTO journal_entry_lines (
+                        journal_entry_id, line_number, account_code, debit_amount, credit_amount, description, created_at
+                    ) VALUES ($1, $2, $3, $4, $5, $6, $7)
+                    """,
+                    journal_entry_id,
+                    line_number,
+                    "5111",  # Employer SDL
+                    float(employer_sdl),
+                    0.0,
+                    f"Employer SDL - Payroll {run_number}",
+                    datetime.now()
+                )
+                line_number += 1
+            
+            await conn.execute(
+                """
+                INSERT INTO journal_entry_lines (
+                    journal_entry_id, line_number, account_code, debit_amount, credit_amount, description, created_at
+                ) VALUES ($1, $2, $3, $4, $5, $6, $7)
+                """,
+                journal_entry_id,
+                line_number,
+                "2300",  # Net Pay Liability
+                0.0,
+                float(total_net),
+                f"Net Pay Liability - Payroll {run_number}",
+                datetime.now()
+            )
+            line_number += 1
+            
+            if total_paye > 0:
+                await conn.execute(
+                    """
+                    INSERT INTO journal_entry_lines (
+                        journal_entry_id, line_number, account_code, debit_amount, credit_amount, description, created_at
+                    ) VALUES ($1, $2, $3, $4, $5, $6, $7)
+                    """,
+                    journal_entry_id,
+                    line_number,
+                    "2310",  # PAYE Liability
+                    0.0,
+                    float(total_paye),
+                    f"PAYE Liability - Payroll {run_number}",
+                    datetime.now()
+                )
+                line_number += 1
+            
+            if employer_uif > 0:
+                await conn.execute(
+                    """
+                    INSERT INTO journal_entry_lines (
+                        journal_entry_id, line_number, account_code, debit_amount, credit_amount, description, created_at
+                    ) VALUES ($1, $2, $3, $4, $5, $6, $7)
+                    """,
+                    journal_entry_id,
+                    line_number,
+                    "2311",  # UIF Liability
+                    0.0,
+                    float(employer_uif),
+                    f"UIF Liability - Payroll {run_number}",
+                    datetime.now()
+                )
+                line_number += 1
+            
+            if employer_sdl > 0:
+                await conn.execute(
+                    """
+                    INSERT INTO journal_entry_lines (
+                        journal_entry_id, line_number, account_code, debit_amount, credit_amount, description, created_at
+                    ) VALUES ($1, $2, $3, $4, $5, $6, $7)
+                    """,
+                    journal_entry_id,
+                    line_number,
+                    "2312",  # SDL Liability
+                    0.0,
+                    float(employer_sdl),
+                    f"SDL Liability - Payroll {run_number}",
+                    datetime.now()
+                )
+            
+            logger.info(f"✅ GL posting created for payroll run {run_number}: JE-{journal_entry_id}")
+            return str(journal_entry_id)
+            
+        except Exception as e:
+            logger.error(f"❌ Failed to post payroll run {run_number} to GL: {e}")
+            raise
+        finally:
+            await conn.close()

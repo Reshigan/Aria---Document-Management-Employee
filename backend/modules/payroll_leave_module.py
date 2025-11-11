@@ -11,8 +11,20 @@ from typing import List, Optional
 from uuid import UUID, uuid4
 from decimal import Decimal
 from datetime import datetime, date
+import os
+import logging
 
+logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/erp/payroll", tags=["Payroll & Leave Management"])
+
+try:
+    from services.gl_posting_service import GLPostingService
+    DATABASE_URL = os.getenv('DATABASE_URL', 'postgresql://postgres:postgres@localhost:5432/aria_erp')
+    gl_service = GLPostingService(DATABASE_URL)
+    GL_POSTING_ENABLED = True
+except Exception as e:
+    logger.warning(f"GL posting service not available: {e}")
+    GL_POSTING_ENABLED = False
 
 
 def get_db():
@@ -536,6 +548,38 @@ async def process_payroll_run(
             total_sdl += sdl
             total_net += net_salary
         
+        journal_entry_id = None
+        if GL_POSTING_ENABLED:
+            try:
+                run_query = """
+                    SELECT run_number, payment_date
+                    FROM payroll_runs
+                    WHERE id = :run_id
+                """
+                run_result = db.execute(text(run_query), {"run_id": str(run_id)})
+                run_row = run_result.fetchone()
+                
+                if run_row:
+                    journal_entry_id = await gl_service.post_payroll_run(
+                        company_id=str(company_id),
+                        payroll_run_id=str(run_id),
+                        run_number=run_row[0],
+                        payment_date=run_row[1],
+                        total_gross=total_gross,
+                        total_paye=total_paye,
+                        total_uif=total_uif,
+                        total_sdl=total_sdl,
+                        total_net=total_net,
+                        user_id=str(get_user_id(db))
+                    )
+                    
+                    if journal_entry_id:
+                        logger.info(f"Payroll run {run_row[0]} posted to GL: {journal_entry_id}")
+                    else:
+                        logger.warning(f"Payroll run {run_row[0]} GL posting failed, but continuing")
+            except Exception as e:
+                logger.error(f"GL posting error for payroll run: {e}")
+        
         db.execute(text("""
             UPDATE payroll_runs
             SET status = 'processed', total_gross = :total_gross, total_paye = :total_paye,
@@ -558,7 +602,8 @@ async def process_payroll_run(
             "run_id": str(run_id),
             "payslips_created": payslip_count,
             "total_gross": float(total_gross),
-            "total_net": float(total_net)
+            "total_net": float(total_net),
+            "journal_entry_id": journal_entry_id
         }
     except Exception as e:
         db.rollback()
