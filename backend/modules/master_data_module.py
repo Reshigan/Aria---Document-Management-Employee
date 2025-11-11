@@ -265,7 +265,7 @@ async def list_suppliers(
         suppliers.append(SupplierResponse(
             id=row[0], company_id=row[1], code=row[2], name=row[3],
             supplier_type=row[4], email=row[5], phone=row[6], vat_number=row[7],
-            bbbee_level=row[8], bbbee_certificate_number=row[9], bbbee_expiry_date=row[10],
+            bbbee_level=str(row[8]) if row[8] is not None else None, bbbee_certificate_number=row[9], bbbee_expiry_date=row[10],
             is_active=row[11], created_at=row[12]
         ))
     return suppliers
