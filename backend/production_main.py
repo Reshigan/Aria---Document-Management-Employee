@@ -3141,6 +3141,17 @@ async def startup_event():
     print("\n" + "=" * 60)
     print("🎯 System ready for deployment!")
     print("=" * 60)
+    
+    import os
+    if os.getenv('ARIA_CONTROLLER_ENABLED', 'false').lower() == 'true':
+        try:
+            from services.email_polling_service import start_email_polling
+            poll_interval = int(os.getenv('MAILBOX_POLL_INTERVAL', '300'))
+            import asyncio
+            asyncio.create_task(start_email_polling(poll_interval))
+            print(f"\n📧 Email polling service started (interval: {poll_interval}s)")
+        except Exception as e:
+            print(f"\n⚠️ Email polling service not started: {e}")
 
 if __name__ == "__main__":
     import uvicorn
