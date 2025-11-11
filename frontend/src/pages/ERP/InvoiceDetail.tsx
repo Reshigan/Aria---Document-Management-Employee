@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { api } from '../../lib/api';
 import { TransactionLayout, TransactionCard, TransactionField } from '../../components/TransactionLayout';
 import { LineItemsTable, LineItem } from '../../components/LineItemsTable';
-import { DollarSign } from 'lucide-react';
+import { DollarSign, Printer } from 'lucide-react';
 
 interface Invoice {
   id: string;
