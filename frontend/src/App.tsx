@@ -6,6 +6,10 @@ import SalesOrders from './pages/ERP/SalesOrders';
 import Deliveries from './pages/ERP/Deliveries';
 import WMSStock from './pages/ERP/WMSStock';
 import GeneralLedger from './pages/ERP/GeneralLedger';
+import PurchaseOrders from './pages/ERP/PurchaseOrders';
+import GoodsReceipts from './pages/ERP/GoodsReceipts';
+import WorkOrdersERP from './pages/ERP/WorkOrders';
+import Employees from './pages/ERP/Employees';
 import ERPDashboard from './pages/ERPDashboard';
 import BotRegistry from './pages/BotRegistry';
 import Settings from './pages/Settings';
@@ -67,7 +71,8 @@ function App() {
           
           {/* Payroll */}
           <Route path="/payroll" element={<PayrollDashboard />} />
-          <Route path="/payroll/employees" element={<PayrollDashboard />} />
+          <Route path="/payroll/employees" element={<Employees />} />
+          <Route path="/payroll/payslips" element={<PayrollDashboard />} />
           
           {/* CRM */}
           <Route path="/crm" element={<CRMDashboard />} />
@@ -79,15 +84,18 @@ function App() {
           <Route path="/inventory/stock" element={<WMSStock />} />
           
           {/* Procurement */}
-          <Route path="/procurement" element={<ProcurementDashboard />} />
+          <Route path="/procurement" element={<PurchaseOrders />} />
+          <Route path="/procurement/purchase-orders" element={<PurchaseOrders />} />
+          <Route path="/procurement/goods-receipts" element={<GoodsReceipts />} />
           <Route path="/procurement/suppliers" element={<ProcurementDashboard />} />
           <Route path="/procurement/rfq" element={<ProcurementDashboard />} />
           <Route path="/procurement/products" element={<ProductCatalog />} />
           
           {/* Manufacturing */}
-          <Route path="/manufacturing" element={<ManufacturingDashboard />} />
+          <Route path="/manufacturing" element={<WorkOrdersERP />} />
+          <Route path="/manufacturing/work-orders" element={<WorkOrdersERP />} />
           <Route path="/manufacturing/bom" element={<BOMManagement />} />
-          <Route path="/manufacturing/work-orders" element={<WorkOrders />} />
+          <Route path="/manufacturing/dashboard" element={<ManufacturingDashboard />} />
           
           {/* Bots */}
           <Route path="/bots" element={<BotRegistry />} />

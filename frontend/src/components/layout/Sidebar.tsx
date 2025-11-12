@@ -34,18 +34,23 @@ interface NavItem {
 const navigation: NavItem[] = [
   { label: 'Dashboard', icon: <LayoutDashboard size={20} />, path: '/' },
   { label: 'Ask ARIA', icon: <MessageSquare size={20} />, path: '/aria', color: '#ec4899' },
+  
   { label: 'General Ledger', icon: <BookOpen size={20} />, path: '/gl', color: '#8b5cf6' },
   { label: 'Accounts Payable', icon: <FileDown size={20} />, path: '/ap', color: '#ef4444' },
   { label: 'Accounts Receivable', icon: <FileUp size={20} />, path: '/ar', color: '#10b981' },
   { label: 'Banking', icon: <Building2 size={20} />, path: '/banking', color: '#06b6d4' },
+  
   { label: 'Payroll', icon: <Wallet size={20} />, path: '/payroll', color: '#f59e0b' },
+  
   { label: 'CRM', icon: <Users size={20} />, path: '/crm', color: '#6366f1' },
   { label: 'Quotes', icon: <FileSpreadsheet size={20} />, path: '/quotes', color: '#3b82f6' },
   { label: 'Sales Orders', icon: <ShoppingCart size={20} />, path: '/sales-orders', color: '#10b981' },
   { label: 'Deliveries', icon: <Truck size={20} />, path: '/deliveries', color: '#f59e0b' },
+  
   { label: 'Inventory', icon: <Package size={20} />, path: '/inventory', color: '#8b5cf6' },
   { label: 'Procurement', icon: <ShoppingBag size={20} />, path: '/procurement', color: '#6366f1' },
   { label: 'Manufacturing', icon: <Factory size={20} />, path: '/manufacturing', color: '#ef4444' },
+  
   { label: 'Automation Bots', icon: <Bot size={20} />, path: '/bots', color: '#ec4899' },
   { label: 'Reports', icon: <FileText size={20} />, path: '/reports' },
   { label: 'Admin', icon: <Shield size={20} />, path: '/admin/system', color: '#dc2626' },
