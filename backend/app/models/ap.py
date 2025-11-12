@@ -145,6 +145,7 @@ class VendorPayment(Base):
 
 class PaymentAllocation(Base):
     __tablename__ = "payment_allocations"
+    __table_args__ = {'extend_existing': True}
 
     id = Column(Integer, primary_key=True, index=True)
     payment_id = Column(Integer, ForeignKey("vendor_payments.id"), nullable=False, index=True)
