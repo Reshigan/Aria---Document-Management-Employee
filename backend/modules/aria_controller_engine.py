@@ -456,22 +456,39 @@ class ExecutionEngine:
         
         name = info.get("name")
         email = info.get("email")
+        phone = info.get("phone")
         
-        
-        customer_id = f"CUST-{datetime.now().strftime('%Y%m%d')}-001"
-        
-        return {
-            "bot": "master_data_bot",
-            "action": "create_customer",
-            "status": "success",
-            "message": f"Customer '{name}' created successfully",
-            "data": {
-                "customer_id": customer_id,
-                "name": name,
-                "email": email,
-                "created_at": datetime.now().isoformat()
+        try:
+            from services.crm.customer_service import create_customer_from_aria
+            
+            customer_data = create_customer_from_aria(
+                name=name,
+                email=email,
+                phone=phone,
+                tenant_id="default"
+            )
+            
+            return {
+                "bot": "master_data_bot",
+                "action": "create_customer",
+                "status": "success",
+                "message": f"Customer '{name}' created successfully with code {customer_data['customer_code']}",
+                "data": customer_data
             }
-        }
+        
+        except Exception as e:
+            logger.error(f"Error creating customer: {e}")
+            return {
+                "bot": "master_data_bot",
+                "action": "create_customer",
+                "status": "error",
+                "message": f"Failed to create customer: {str(e)}",
+                "data": {
+                    "name": name,
+                    "email": email,
+                    "error": str(e)
+                }
+            }
     
     async def _execute_create_service_request(self, info: Dict[str, Any], context: Dict[str, Any]) -> Dict[str, Any]:
         """Execute service request creation workflow"""

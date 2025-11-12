@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '../../components/ui/button';
 import { DataTable } from '../../components/shared/DataTable';
 import { Settings, Shield, Bell, Database, Key, Activity, Download, Upload, Trash2, Copy, Check, Plus, AlertCircle } from 'lucide-react';
+import api from '../../lib/api';
 
 interface AuditLog {
   id: string;
@@ -67,13 +68,8 @@ export default function SystemSettingsPage() {
 
   const fetchAuditLogs = async () => {
     try {
-      const response = await fetch('/api/admin/audit-logs', {
-        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setAuditLogs(data.logs || []);
-      }
+      const data = await api.get('/admin/audit-logs');
+      setAuditLogs(data.logs || []);
     } catch (error) {
       console.error('Error fetching audit logs:', error);
     } finally {
@@ -84,17 +80,11 @@ export default function SystemSettingsPage() {
   const handleSaveSecuritySettings = async () => {
     setSaving(true);
     try {
-      const response = await fetch('/api/admin/security-settings', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify(securitySettings)
-      });
-      if (response.ok) alert('Security settings saved!');
+      await api.put('/admin/security-settings', securitySettings);
+      alert('Security settings saved!');
     } catch (error) {
       console.error('Error saving security settings:', error);
+      alert('Failed to save security settings');
     } finally {
       setSaving(false);
     }
@@ -103,17 +93,11 @@ export default function SystemSettingsPage() {
   const handleSaveNotificationSettings = async () => {
     setSaving(true);
     try {
-      const response = await fetch('/api/admin/notification-settings', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify(notificationSettings)
-      });
-      if (response.ok) alert('Notification settings saved!');
+      await api.put('/admin/notification-settings', notificationSettings);
+      alert('Notification settings saved!');
     } catch (error) {
       console.error('Error saving notification settings:', error);
+      alert('Failed to save notification settings');
     } finally {
       setSaving(false);
     }
@@ -122,17 +106,11 @@ export default function SystemSettingsPage() {
   const handleSaveBackupSettings = async () => {
     setSaving(true);
     try {
-      const response = await fetch('/api/admin/backup-settings', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify(backupSettings)
-      });
-      if (response.ok) alert('Backup settings saved!');
+      await api.put('/admin/backup-settings', backupSettings);
+      alert('Backup settings saved!');
     } catch (error) {
       console.error('Error saving backup settings:', error);
+      alert('Failed to save backup settings');
     } finally {
       setSaving(false);
     }
@@ -141,36 +119,23 @@ export default function SystemSettingsPage() {
   const handleCreateAPIKey = async () => {
     if (!newKeyName.trim()) return;
     try {
-      const response = await fetch('/api/admin/api-keys', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify({ name: newKeyName })
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setCopiedKey(data.key);
-        setNewKeyName('');
-      }
+      const data = await api.post('/admin/api-keys', { name: newKeyName });
+      setCopiedKey(data.key);
+      setNewKeyName('');
     } catch (error) {
       console.error('Error creating API key:', error);
+      alert('Failed to create API key');
     }
   };
 
   const handleDeleteAPIKey = async (keyId: string) => {
     if (!confirm('Delete this API key?')) return;
     try {
-      const response = await fetch(`/api/admin/api-keys/${keyId}`, {
-        method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-      });
-      if (response.ok) {
-        setApiKeys(apiKeys.filter(k => k.id !== keyId));
-      }
+      await api.delete(`/admin/api-keys/${keyId}`);
+      setApiKeys(apiKeys.filter(k => k.id !== keyId));
     } catch (error) {
       console.error('Error deleting API key:', error);
+      alert('Failed to delete API key');
     }
   };
 
