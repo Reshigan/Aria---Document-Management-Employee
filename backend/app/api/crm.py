@@ -11,7 +11,8 @@ from decimal import Decimal
 
 from core.database import get_db
 from core.auth import get_current_user
-from models.crm import Customer, Lead, Opportunity, Quote, QuoteLine, Activity
+from models.crm import Lead, Opportunity, Quote, QuoteLine
+from models.transactions import Customer
 from models.user import User
 from pydantic import BaseModel, EmailStr, Field
 
