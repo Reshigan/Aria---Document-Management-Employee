@@ -8,13 +8,13 @@ from jose import JWTError, jwt
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
-import os
 
-from core.database import get_db as database_get_db
+from app.core.config import settings
+from app.core.database import SessionLocal
 
-# JWT Configuration
-SECRET_KEY = os.getenv("SECRET_KEY", "CHANGE_THIS_IN_PRODUCTION_12345678901234567890")
-ALGORITHM = "HS256"
+# JWT Configuration - use same settings as login endpoint
+SECRET_KEY = settings.JWT_SECRET_KEY
+ALGORITHM = settings.JWT_ALGORITHM
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7  # 7 days
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -61,7 +61,15 @@ class AuthService:
                 headers={"WWW-Authenticate": "Bearer"},
             )
 
-def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(database_get_db)):
+def get_db_session():
+    """Get database session from app.core.database"""
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db_session)):
     """Get current authenticated user
     
     Compatible with both token formats:
