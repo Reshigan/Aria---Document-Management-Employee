@@ -350,6 +350,66 @@ def get_user_id(db: Session = Depends(get_db)) -> Optional[UUID]:
 # ============================================================================
 # ============================================================================
 
+class CustomerResponse(BaseModel):
+    id: UUID
+    name: str
+    email: Optional[str]
+    phone: Optional[str]
+    address: Optional[str]
+    city: Optional[str]
+    country: Optional[str]
+    is_active: bool
+
+    class Config:
+        from_attributes = True
+
+@router.get("/customers", response_model=List[CustomerResponse])
+async def list_customers(
+    skip: int = 0,
+    limit: int = 100,
+    search: Optional[str] = None,
+    is_active: bool = True,
+    company_id: UUID = Depends(get_company_id),
+    db: Session = Depends(get_db)
+):
+    """List all customers for order-to-cash operations"""
+    query = """
+        SELECT id, name, email, phone, address, city, country, is_active
+        FROM customers
+        WHERE company_id = :company_id
+    """
+    params = {"company_id": str(company_id)}
+    
+    if search:
+        query += " AND (name ILIKE :search OR email ILIKE :search)"
+        params["search"] = f"%{search}%"
+    
+    if is_active is not None:
+        query += " AND is_active = :is_active"
+        params["is_active"] = is_active
+    
+    query += " ORDER BY name LIMIT :limit OFFSET :skip"
+    params["limit"] = limit
+    params["skip"] = skip
+    
+    result = db.execute(text(query), params)
+    customers = []
+    for row in result:
+        customers.append({
+            "id": row[0],
+            "name": row[1],
+            "email": row[2],
+            "phone": row[3],
+            "address": row[4],
+            "city": row[5],
+            "country": row[6],
+            "is_active": row[7]
+        })
+    return customers
+
+# ============================================================================
+# ============================================================================
+
 @router.get("/products", response_model=List[ProductResponse])
 async def list_products(
     skip: int = 0,
