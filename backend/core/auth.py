@@ -62,7 +62,12 @@ class AuthService:
             )
 
 def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(database_get_db)):
-    """Get current authenticated user"""
+    """Get current authenticated user
+    
+    Compatible with both token formats:
+    - Legacy: {"user_id": int}
+    - Current: {"sub": str(int), "email": str}
+    """
     from models.user import User
     
     credentials_exception = HTTPException(
@@ -73,14 +78,25 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
     
     try:
         payload = AuthService.decode_token(token)
-        user_id: int = payload.get("user_id")
+        
+        user_id = payload.get("user_id")
+        if user_id is None:
+            sub = payload.get("sub")
+            if sub is not None:
+                user_id = int(sub)
+        
         if user_id is None:
             raise credentials_exception
-    except JWTError:
+            
+    except (JWTError, ValueError, TypeError):
         raise credentials_exception
     
     user = db.query(User).filter(User.id == user_id).first()
     if user is None:
         raise credentials_exception
+    
+    if hasattr(user, 'organization_id') and user.organization_id is not None:
+        if not hasattr(user, 'tenant_id') or user.tenant_id is None:
+            user.tenant_id = user.organization_id
     
     return user
