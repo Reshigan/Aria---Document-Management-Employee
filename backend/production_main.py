@@ -140,6 +140,13 @@ try:
 except Exception as e:
     print(f"⚠️ Bots API not loaded: {e}")
 
+try:
+    from backend.api.gateway.routers.aria import router as aria_router
+    app.include_router(aria_router, prefix="/api")
+    print("✅ ARIA Controller API loaded")
+except Exception as e:
+    print(f"⚠️ ARIA Controller API not loaded: {e}")
+
 # ========================================
 # REQUEST/RESPONSE MODELS
 # ========================================
