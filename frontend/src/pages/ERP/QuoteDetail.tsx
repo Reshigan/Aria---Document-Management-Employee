@@ -147,7 +147,7 @@ export default function QuoteDetail() {
     if (!quote) return;
     if (!confirm('Are you sure you want to reject this quote?')) return;
     try {
-      await axios.post(`/api/erp/order-to-cash/quotes/${quote.id}/reject`);
+      await api.post(`/erp/order-to-cash/quotes/${quote.id}/reject`);
       loadQuoteDetail();
     } catch (error: any) {
       setError(error.response?.data?.detail || 'Failed to reject quote');
@@ -158,7 +158,7 @@ export default function QuoteDetail() {
     if (!quote) return;
     if (!confirm('Are you sure you want to delete this quote? This action cannot be undone.')) return;
     try {
-      await axios.delete(`/api/erp/order-to-cash/quotes/${quote.id}`);
+      await api.delete(`/erp/order-to-cash/quotes/${quote.id}`);
       navigate('/erp/quotes');
     } catch (error: any) {
       setError(error.response?.data?.detail || 'Failed to delete quote');
