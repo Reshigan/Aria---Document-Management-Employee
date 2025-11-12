@@ -14,7 +14,7 @@ from typing import List, Optional
 from pydantic import BaseModel
 from datetime import datetime
 
-from app.database import get_db
+from core.database import get_db
 from app.bots.bbbee_compliance_bot import bbbee_bot
 from app.models.bbbee import BbbeeScorecard, BbbeeCertificate, Company, BbbeeAlert
 

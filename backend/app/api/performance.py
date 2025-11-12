@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import Dict, Any, List, Optional
 from datetime import datetime, timedelta
-from app.database import get_db
+from core.database import get_db
 from app.services.cache_service import cache_service, performance_monitor, monitor_performance
 from pydantic import BaseModel
 

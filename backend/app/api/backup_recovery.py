@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from typing import List, Dict, Any, Optional
 from datetime import datetime
 from pydantic import BaseModel, Field
-from app.database import get_db
+from core.database import get_db
 from app.services.backup_recovery_service import BackupRecoveryService
 from app.services.cache_service import monitor_performance
 

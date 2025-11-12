@@ -15,7 +15,7 @@ from pathlib import Path
 import io
 import json
 
-from app.database import get_db
+from core.database import get_db
 from app.auth import get_current_user
 from app.models.user import User
 

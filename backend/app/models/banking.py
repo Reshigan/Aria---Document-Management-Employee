@@ -41,6 +41,7 @@ class RuleConditionType(str, enum.Enum):
 
 class BankAccount(Base):
     __tablename__ = "bank_accounts"
+    __table_args__ = {'extend_existing': True}
 
     id = Column(Integer, primary_key=True, index=True)
     tenant_id = Column(Integer, nullable=False, index=True)

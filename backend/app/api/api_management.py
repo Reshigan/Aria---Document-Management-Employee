@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from datetime import datetime, timedelta
-from app.database import get_db
+from core.database import get_db
 from app.services.api_management_service import APIManagementService
 from app.schemas.api_management import (
     APIKeyCreate, APIKeyUpdate, APIKeyResponse, APIKeyWithSecret, APIKeyListResponse,
