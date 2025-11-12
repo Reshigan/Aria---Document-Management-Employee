@@ -7,10 +7,10 @@ from passlib.context import CryptContext
 from jose import JWTError, jwt
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-from sqlalchemy.orm import Session
+from sqlalchemy import create_engine, text
+from sqlalchemy.orm import sessionmaker
 
 from app.core.config import settings
-from app.core.database import SessionLocal
 
 # JWT Configuration - use same settings as login endpoint
 SECRET_KEY = settings.JWT_SECRET_KEY
@@ -19,6 +19,22 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7  # 7 days
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/v1/auth/login")
+
+_auth_engine = create_engine(settings.DATABASE_URL, pool_pre_ping=True)
+_AuthSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=_auth_engine)
+
+
+class UserContext:
+    """Lightweight user context for authentication (no ORM relationships)"""
+    def __init__(self, id: int, email: str, full_name: str, is_active: bool, 
+                 organization_id: Optional[int] = None, company_id: Optional[str] = None):
+        self.id = id
+        self.email = email
+        self.full_name = full_name
+        self.is_active = is_active
+        self.organization_id = organization_id
+        self.company_id = company_id
+        self.tenant_id = organization_id  # Derive tenant_id from organization_id
 
 class AuthService:
     """Authentication service"""
@@ -61,23 +77,15 @@ class AuthService:
                 headers={"WWW-Authenticate": "Bearer"},
             )
 
-def get_db_session():
-    """Get database session from app.core.database"""
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
-def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db_session)):
-    """Get current authenticated user
+def get_current_user(token: str = Depends(oauth2_scheme)) -> UserContext:
+    """Get current authenticated user using raw SQL (avoids ORM model conflicts)
     
     Compatible with both token formats:
     - Legacy: {"user_id": int}
     - Current: {"sub": str(int), "email": str}
-    """
-    from app.models.user import User
     
+    Returns a UserContext object with user attributes (no ORM relationships)
+    """
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -99,12 +107,32 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
     except (JWTError, ValueError, TypeError):
         raise credentials_exception
     
-    user = db.query(User).filter(User.id == user_id).first()
-    if user is None:
-        raise credentials_exception
-    
-    if hasattr(user, 'organization_id') and user.organization_id is not None:
-        if not hasattr(user, 'tenant_id') or user.tenant_id is None:
-            user.tenant_id = user.organization_id
-    
-    return user
+    db = _AuthSessionLocal()
+    try:
+        result = db.execute(
+            text("SELECT id, email, full_name, is_active, organization_id, company_id FROM users WHERE id = :user_id"),
+            {"user_id": user_id}
+        )
+        row = result.fetchone()
+        
+        if row is None:
+            raise credentials_exception
+        
+        user = UserContext(
+            id=row[0],
+            email=row[1],
+            full_name=row[2],
+            is_active=row[3],
+            organization_id=row[4],
+            company_id=row[5]
+        )
+        
+        if not user.is_active:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Inactive user"
+            )
+        
+        return user
+    finally:
+        db.close()
