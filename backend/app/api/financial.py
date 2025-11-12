@@ -12,7 +12,9 @@ from decimal import Decimal
 from core.database import get_db
 from core.auth import get_current_user
 from models.transactions import (
-    Invoice, InvoiceLine, Payment, PaymentAllocation,
+    Invoice, InvoiceLine, Payment, PaymentAllocation
+)
+from models.accounting import (
     GeneralLedger, BankTransaction, BankReconciliation,
     TaxTransaction
 )
