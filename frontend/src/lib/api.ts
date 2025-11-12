@@ -80,9 +80,9 @@ export const aria = {
 };
 
 export const bots = {
-  listTemplates: () => api.get('/bot/templates'),
-  getTemplate: (id: string) => api.get(`/bot/templates/${id}`),
-  chat: (data: any) => api.post('/bot/chat', data),
+  listTemplates: () => api.get('/bots/templates'),
+  getTemplate: (id: string) => api.get(`/bots/templates/${id}`),
+  chat: (data: any) => api.post('/aria/chat', data),
 };
 
 export const workflows = {
