@@ -10,8 +10,16 @@ from datetime import datetime, date
 from pydantic import BaseModel, Field
 from uuid import UUID, uuid4
 from decimal import Decimal
+import os
+import logging
 
+from services.gl_posting_service import GLPostingService
+
+logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/erp/order-to-cash", tags=["Order-to-Cash"])
+
+DATABASE_URL = os.getenv('DATABASE_URL', 'postgresql://postgres:postgres@localhost:5432/aria_erp')
+gl_service = GLPostingService(DATABASE_URL)
 
 
 @router.get("/health")
@@ -1782,30 +1790,41 @@ async def ship_delivery(
     company_id: UUID = Depends(get_company_id),
     db: Session = Depends(get_db)
 ):
-    """Ship a delivery and post stock issue"""
+    """Ship a delivery and post stock issue + GL posting (COGS/Inventory)"""
     try:
-        lines_query = """
-            SELECT product_id, quantity, storage_location_id
-            FROM delivery_lines
-            WHERE delivery_id = :delivery_id
-        """
-        lines_result = db.execute(text(lines_query), {"delivery_id": str(delivery_id)})
-        
-        warehouse_query = """
-            SELECT warehouse_id FROM deliveries
+        delivery_query = """
+            SELECT delivery_number, delivery_date, warehouse_id
+            FROM deliveries
             WHERE id = :delivery_id AND company_id = :company_id
         """
-        warehouse_result = db.execute(text(warehouse_query), {
+        delivery_result = db.execute(text(delivery_query), {
             "delivery_id": str(delivery_id),
             "company_id": str(company_id)
         })
-        warehouse_row = warehouse_result.fetchone()
-        if not warehouse_row:
+        delivery_row = delivery_result.fetchone()
+        if not delivery_row:
             raise HTTPException(status_code=404, detail="Delivery not found")
-        warehouse_id = warehouse_row[0]
         
+        delivery_number, delivery_date, warehouse_id = delivery_row
+        
+        lines_query = """
+            SELECT dl.product_id, dl.quantity, dl.storage_location_id, p.standard_cost
+            FROM delivery_lines dl
+            JOIN products p ON dl.product_id = p.id
+            WHERE dl.delivery_id = :delivery_id
+        """
+        lines_result = db.execute(text(lines_query), {"delivery_id": str(delivery_id)})
+        
+        delivery_lines = []
         for line_row in lines_result:
-            product_id, quantity, storage_location_id = line_row
+            product_id, quantity, storage_location_id, cost_price = line_row
+            delivery_lines.append({
+                "product_id": product_id,
+                "quantity": quantity,
+                "storage_location_id": storage_location_id,
+                "cost_price": cost_price
+            })
+            
             movement_id = uuid4()
             
             db.execute(text("""
@@ -1850,7 +1869,25 @@ async def ship_delivery(
         })
         
         db.commit()
-        return {"message": "Delivery shipped successfully", "delivery_id": str(delivery_id)}
+        
+        try:
+            journal_entry_id = await gl_service.post_delivery(
+                company_id=str(company_id),
+                delivery_id=str(delivery_id),
+                delivery_number=delivery_number,
+                delivery_date=delivery_date,
+                lines=delivery_lines,
+                user_id="system"
+            )
+            logger.info(f"✅ GL posting created for delivery {delivery_number}: JE-{journal_entry_id}")
+        except Exception as gl_error:
+            logger.error(f"⚠️ GL posting failed for delivery {delivery_number}: {gl_error}")
+        
+        return {
+            "message": "Delivery shipped successfully",
+            "delivery_id": str(delivery_id),
+            "journal_entry_id": journal_entry_id if 'journal_entry_id' in locals() else None
+        }
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=400, detail=f"Error shipping delivery: {str(e)}")
@@ -2054,14 +2091,80 @@ async def create_invoice(
         db.rollback()
         raise HTTPException(status_code=400, detail=f"Error creating invoice: {str(e)}")
 
+@router.get("/invoices/{invoice_id}", response_model=InvoiceResponse)
+async def get_invoice(
+    invoice_id: UUID,
+    company_id: UUID = Depends(get_company_id),
+    db: Session = Depends(get_db)
+):
+    """Get invoice details with line items"""
+    query = """
+        SELECT i.id, i.company_id, i.invoice_number, i.customer_id, c.name as customer_name,
+               i.invoice_date, i.due_date, i.subtotal, i.tax_amount, i.total_amount,
+               i.balance_due, i.status, i.delivery_id, i.sales_order_id, i.created_at
+        FROM customer_invoices i
+        JOIN customers c ON i.customer_id = c.id
+        WHERE i.id = :invoice_id AND i.company_id = :company_id
+    """
+    result = db.execute(text(query), {"invoice_id": str(invoice_id), "company_id": str(company_id)})
+    row = result.fetchone()
+    
+    if not row:
+        raise HTTPException(status_code=404, detail="Invoice not found")
+    
+    lines_query = """
+        SELECT il.id, il.invoice_id, il.product_id, p.code as product_code, p.name as product_name,
+               il.description, il.quantity, il.unit_price, il.discount_percentage, il.tax_rate,
+               il.line_total
+        FROM invoice_lines il
+        JOIN products p ON il.product_id = p.id
+        WHERE il.invoice_id = :invoice_id
+        ORDER BY il.line_number
+    """
+    lines_result = db.execute(text(lines_query), {"invoice_id": str(invoice_id)})
+    
+    lines = []
+    for line_row in lines_result:
+        lines.append(InvoiceLineResponse(
+            id=line_row[0], invoice_id=line_row[1], product_id=line_row[2],
+            product_code=line_row[3], product_name=line_row[4], description=line_row[5],
+            quantity=line_row[6], unit_price=line_row[7], discount_percentage=line_row[8],
+            tax_rate=line_row[9], line_total=line_row[10]
+        ))
+    
+    invoice = InvoiceResponse(
+        id=row[0], company_id=row[1], invoice_number=row[2], customer_id=row[3],
+        customer_name=row[4], invoice_date=row[5], due_date=row[6], subtotal=row[7],
+        tax_amount=row[8], total_amount=row[9], balance_due=row[10], status=row[11],
+        delivery_id=row[12], sales_order_id=row[13], created_at=row[14], lines=lines
+    )
+    
+    return invoice
+
 @router.post("/invoices/{invoice_id}/post")
 async def post_invoice(
     invoice_id: UUID,
     company_id: UUID = Depends(get_company_id),
     db: Session = Depends(get_db)
 ):
-    """Post invoice (change status to posted)"""
+    """Post invoice (change status to posted) + GL posting (AR/Revenue/VAT)"""
     try:
+        invoice_query = """
+            SELECT i.invoice_number, i.invoice_date, c.name, i.subtotal, i.vat_amount, i.total_amount
+            FROM customer_invoices i
+            LEFT JOIN customers c ON i.customer_id = c.id
+            WHERE i.id = :invoice_id AND i.company_id = :company_id
+        """
+        invoice_result = db.execute(text(invoice_query), {
+            "invoice_id": str(invoice_id),
+            "company_id": str(company_id)
+        })
+        invoice_row = invoice_result.fetchone()
+        if not invoice_row:
+            raise HTTPException(status_code=404, detail="Invoice not found")
+        
+        invoice_number, invoice_date, customer_name, subtotal, vat_amount, total_amount = invoice_row
+        
         db.execute(text("""
             UPDATE customer_invoices
             SET status = 'posted', updated_at = CURRENT_TIMESTAMP
@@ -2071,7 +2174,28 @@ async def post_invoice(
             "company_id": str(company_id)
         })
         db.commit()
-        return {"message": "Invoice posted successfully", "invoice_id": str(invoice_id)}
+        
+        try:
+            journal_entry_id = await gl_service.post_invoice(
+                company_id=str(company_id),
+                invoice_id=str(invoice_id),
+                invoice_number=invoice_number,
+                invoice_date=invoice_date,
+                customer_name=customer_name or "Unknown Customer",
+                subtotal=Decimal(str(subtotal)),
+                vat_amount=Decimal(str(vat_amount)),
+                total_amount=Decimal(str(total_amount)),
+                user_id="system"
+            )
+            logger.info(f"✅ GL posting created for invoice {invoice_number}: JE-{journal_entry_id}")
+        except Exception as gl_error:
+            logger.error(f"⚠️ GL posting failed for invoice {invoice_number}: {gl_error}")
+        
+        return {
+            "message": "Invoice posted successfully",
+            "invoice_id": str(invoice_id),
+            "journal_entry_id": journal_entry_id if 'journal_entry_id' in locals() else None
+        }
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=400, detail=f"Error posting invoice: {str(e)}")

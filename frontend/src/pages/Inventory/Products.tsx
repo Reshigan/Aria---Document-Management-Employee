@@ -44,7 +44,7 @@ export default function Products() {
   const loadProducts = async () => {
     try {
       setLoading(true);
-      const response = await api.get('/api/erp/order-to-cash/products');
+      const response = await api.get('/erp/order-to-cash/products');
       setProducts(response.data);
     } catch (error) {
       console.error('Error loading products:', error);
@@ -57,9 +57,9 @@ export default function Products() {
     e.preventDefault();
     try {
       if (editingProduct) {
-        await api.put(`/api/erp/order-to-cash/products/${editingProduct.id}`, formData);
+        await api.put(`/erp/order-to-cash/products/${editingProduct.id}`, formData);
       } else {
-        await api.post('/api/erp/order-to-cash/products', formData);
+        await api.post('/erp/order-to-cash/products', formData);
       }
       setShowForm(false);
       setEditingProduct(null);
@@ -91,7 +91,7 @@ export default function Products() {
   const handleDelete = async (id: string) => {
     if (!confirm('Are you sure you want to delete this product?')) return;
     try {
-      await api.delete(`/api/erp/order-to-cash/products/${id}`);
+      await api.delete(`/erp/order-to-cash/products/${id}`);
       loadProducts();
     } catch (error) {
       console.error('Error deleting product:', error);

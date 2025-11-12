@@ -42,6 +42,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
     localStorage.removeItem('access_token')
     localStorage.removeItem('refresh_token')
     set({ user: null, isAuthenticated: false })
+    window.location.href = '/login'
   },
 
   checkAuth: async () => {

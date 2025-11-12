@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { api } from '../../lib/api';
-import { ArrowLeft, Check, Truck, FileText, User, Calendar, Package, DollarSign, Edit, Trash2, AlertCircle } from 'lucide-react';
+import { ArrowLeft, Check, Truck, FileText, User, Calendar, Package, DollarSign, Edit, Trash2, AlertCircle, Printer } from 'lucide-react';
+import { LineItemsTable, LineItem } from '../../components/LineItemsTable';
 
 interface SalesOrderDetail {
   id: string;
@@ -210,23 +211,40 @@ export default function SalesOrderDetail() {
     <div style={{ padding: '2rem', maxWidth: '1400px', margin: '0 auto' }}>
       {/* Header */}
       <div style={{ marginBottom: '2rem' }}>
-        <button
-          onClick={() => navigate('/erp/sales-orders')}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-            padding: '0.5rem 1rem',
-            background: 'white',
-            border: '1px solid #d1d5db',
-            borderRadius: '0.375rem',
-            cursor: 'pointer',
-            marginBottom: '1rem'
-          }}
-        >
-          <ArrowLeft size={16} />
-          Back to Sales Orders
-        </button>
+        <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
+          <button
+            onClick={() => navigate('/erp/sales-orders')}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              padding: '0.5rem 1rem',
+              background: 'white',
+              border: '1px solid #d1d5db',
+              borderRadius: '0.375rem',
+              cursor: 'pointer'
+            }}
+          >
+            <ArrowLeft size={16} />
+            Back to Sales Orders
+          </button>
+          <button
+            onClick={() => window.print()}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              padding: '0.5rem 1rem',
+              background: 'white',
+              border: '1px solid #d1d5db',
+              borderRadius: '0.375rem',
+              cursor: 'pointer'
+            }}
+          >
+            <Printer size={16} />
+            Print Order
+          </button>
+        </div>
 
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <div>
@@ -400,76 +418,12 @@ export default function SalesOrderDetail() {
 
           {/* Line Items */}
           <div style={{ background: 'white', borderRadius: '0.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', padding: '1.5rem' }}>
-            <h2 style={{ fontSize: '1.25rem', fontWeight: '600', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <Package size={20} />
-              Line Items
-            </h2>
-            
-            <div style={{ overflow: 'auto' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                <thead style={{ background: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
-                  <tr>
-                    <th style={{ padding: '0.75rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>#</th>
-                    <th style={{ padding: '0.75rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Product</th>
-                    <th style={{ padding: '0.75rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Description</th>
-                    <th style={{ padding: '0.75rem', textAlign: 'right', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Ordered</th>
-                    <th style={{ padding: '0.75rem', textAlign: 'right', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Delivered</th>
-                    <th style={{ padding: '0.75rem', textAlign: 'right', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Remaining</th>
-                    <th style={{ padding: '0.75rem', textAlign: 'right', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Unit Price</th>
-                    <th style={{ padding: '0.75rem', textAlign: 'right', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Total</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {order.lines.map((line) => (
-                    <tr key={line.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
-                      <td style={{ padding: '0.75rem', fontSize: '0.875rem' }}>{line.line_number}</td>
-                      <td style={{ padding: '0.75rem', fontSize: '0.875rem', fontWeight: '500' }}>
-                        {line.product_code || line.product_name || '-'}
-                      </td>
-                      <td style={{ padding: '0.75rem', fontSize: '0.875rem', color: '#6b7280' }}>{line.description}</td>
-                      <td style={{ padding: '0.75rem', fontSize: '0.875rem', textAlign: 'right' }}>{line.quantity}</td>
-                      <td style={{ padding: '0.75rem', fontSize: '0.875rem', textAlign: 'right', color: '#059669' }}>
-                        {line.quantity_delivered}
-                      </td>
-                      <td style={{ padding: '0.75rem', fontSize: '0.875rem', textAlign: 'right' }}>
-                        {line.quantity_remaining > 0 ? (
-                          <span style={{ color: '#d97706', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '0.25rem' }}>
-                            <AlertCircle size={14} />
-                            {line.quantity_remaining}
-                          </span>
-                        ) : (
-                          <span style={{ color: '#6b7280' }}>0</span>
-                        )}
-                      </td>
-                      <td style={{ padding: '0.75rem', fontSize: '0.875rem', textAlign: 'right' }}>
-                        R {line.unit_price.toFixed(2)}
-                      </td>
-                      <td style={{ padding: '0.75rem', fontSize: '0.875rem', textAlign: 'right', fontWeight: '500' }}>
-                        R {line.line_total.toFixed(2)}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            {/* Totals */}
-            <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid #e5e7eb' }}>
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '4rem' }}>
-                <div>
-                  <div style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.5rem' }}>Subtotal</div>
-                  <div style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.5rem' }}>Tax</div>
-                  <div style={{ fontSize: '1.125rem', fontWeight: '600', marginTop: '0.5rem' }}>Total</div>
-                </div>
-                <div style={{ textAlign: 'right' }}>
-                  <div style={{ fontSize: '0.875rem', marginBottom: '0.5rem' }}>R {order.subtotal.toFixed(2)}</div>
-                  <div style={{ fontSize: '0.875rem', marginBottom: '0.5rem' }}>R {order.tax_amount.toFixed(2)}</div>
-                  <div style={{ fontSize: '1.125rem', fontWeight: '600', marginTop: '0.5rem' }}>
-                    R {order.total_amount.toFixed(2)}
-                  </div>
-                </div>
-              </div>
-            </div>
+            <LineItemsTable
+              items={order.lines}
+              onChange={() => {}}
+              products={[]}
+              readOnly={true}
+            />
           </div>
 
           {/* Audit Trail */}

@@ -31,6 +31,8 @@ import SystemSettings from './pages/admin/SystemSettings';
 import CompanySettings from './pages/admin/CompanySettings';
 import BotConfiguration from './pages/admin/BotConfiguration';
 import UserManagement from './pages/admin/UserManagement';
+import AdminDashboard from './pages/admin/AdminDashboard';
+import ERPConfiguration from './pages/admin/ERPConfiguration';
 import BotsHub from './pages/Automation/BotsHub';
 import Mailroom from './pages/Automation/Mailroom';
 import FixedAssetsDashboard from './pages/FixedAssets/FixedAssetsDashboard';
@@ -43,6 +45,8 @@ import SuppliersPage from './pages/AP/Suppliers';
 import ProductsPage from './pages/Inventory/Products';
 import BankAccounts from './pages/Banking/BankAccounts';
 import Bills from './pages/AP/Bills';
+import BillDetail from './pages/AP/BillDetail';
+import PurchaseOrderDetail from './pages/AP/PurchaseOrderDetail';
 import VATReturnsPage from './pages/Tax/VATReturnsPage';
 import FinancialReports from './pages/Reports/FinancialReports';
 import DocumentUpload from './pages/AskAria/DocumentUpload';
@@ -57,11 +61,15 @@ import ERPCustomers from './pages/ERP/Customers';
 import ERPProducts from './pages/ERP/Products';
 import ERPSuppliers from './pages/ERP/Suppliers';
 import ERPReceipts from './pages/ERP/Receipts';
+import ERPInvoices from './pages/ERP/Invoices';
 import QuoteDetail from './pages/ERP/QuoteDetail';
 import SalesOrderDetail from './pages/ERP/SalesOrderDetail';
 import DeliveryDetail from './pages/ERP/DeliveryDetail';
 import InvoiceDetail from './pages/ERP/InvoiceDetail';
 import ReceiptDetail from './pages/ERP/ReceiptDetail';
+import PriceLists from './pages/ERP/PriceLists';
+import AccountsPayable from './pages/ERP/AccountsPayable';
+import AccountsReceivable from './pages/ERP/AccountsReceivable';
 import './styles/design-system.css';
 
 function App() {
@@ -81,9 +89,10 @@ function App() {
           <Route path="/erp/quotes" element={<Quotes />} />
           <Route path="/erp/quotes/:id" element={<QuoteDetail />} />
           <Route path="/sales-orders" element={<SalesOrders />} />
+          <Route path="/sales-orders/new" element={<SalesOrderDetail />} />
           <Route path="/sales-orders/:id" element={<SalesOrderDetail />} />
-          <Route path="/sales-orders/new" element={<SalesOrders />} />
           <Route path="/erp/sales-orders" element={<SalesOrders />} />
+          <Route path="/erp/sales-orders/new" element={<SalesOrderDetail />} />
           <Route path="/erp/sales-orders/:id" element={<SalesOrderDetail />} />
           <Route path="/deliveries" element={<Deliveries />} />
           <Route path="/deliveries/:id" element={<DeliveryDetail />} />
@@ -98,9 +107,25 @@ function App() {
           <Route path="/erp/suppliers" element={<ERPSuppliers />} />
           <Route path="/erp/receipts" element={<ERPReceipts />} />
           <Route path="/ar/receipts" element={<ERPReceipts />} />
+          <Route path="/erp/price-lists" element={<PriceLists />} />
+          <Route path="/pricing/price-lists" element={<PriceLists />} />
           
           {/* General Ledger */}
           <Route path="/gl" element={<GeneralLedger />} />
+          
+          {/* Accounts Payable */}
+          <Route path="/erp/accounts-payable" element={<AccountsPayable />} />
+          <Route path="/erp/ap" element={<AccountsPayable />} />
+          
+          {/* Accounts Receivable */}
+          <Route path="/erp/accounts-receivable" element={<AccountsReceivable />} />
+          <Route path="/erp/ar" element={<AccountsReceivable />} />
+          
+          {/* Invoices */}
+          <Route path="/erp/invoices" element={<ERPInvoices />} />
+          <Route path="/erp/invoices/:id" element={<InvoiceDetail />} />
+          <Route path="/invoices" element={<ERPInvoices />} />
+          <Route path="/invoices/:id" element={<InvoiceDetail />} />
           
           {/* Document Templates */}
           <Route path="/documents/templates" element={<DocumentTemplates />} />
@@ -131,9 +156,11 @@ function App() {
           {/* Accounts Payable */}
           <Route path="/ap" element={<Bills />} />
           <Route path="/ap/bills" element={<Bills />} />
+          <Route path="/ap/bills/:id" element={<BillDetail />} />
           <Route path="/ap/invoices" element={<InvoiceList />} />
           <Route path="/ap/invoices/new" element={<InvoiceForm />} />
           <Route path="/ap/purchase-orders" element={<PurchaseOrders />} />
+          <Route path="/ap/purchase-orders/:id" element={<PurchaseOrderDetail />} />
           <Route path="/ap/suppliers" element={<SuppliersPage />} />
           
           {/* Accounts Receivable */}
@@ -205,10 +232,13 @@ function App() {
           <Route path="/aria/upload" element={<DocumentUpload />} />
           
           {/* Admin */}
+          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/admin/system" element={<SystemSettings />} />
           <Route path="/admin/company" element={<CompanySettings />} />
           <Route path="/admin/bots" element={<BotConfiguration />} />
           <Route path="/admin/users" element={<UserManagement />} />
+          <Route path="/admin/erp" element={<ERPConfiguration />} />
         </Routes>
         </MainLayout>
       </CompanyProvider>

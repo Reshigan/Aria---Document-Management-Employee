@@ -9,6 +9,9 @@ from typing import List, Optional
 from datetime import date, datetime
 from decimal import Decimal
 from pydantic import BaseModel, Field
+import os
+import logging
+import asyncio
 
 from core.database import get_db
 from core.auth import get_current_user
@@ -17,8 +20,13 @@ from app.models.ap import (
     VendorBill, VendorBillLine, VendorPayment, PaymentAllocation, VendorCreditNote, VendorCreditNoteLine,
     BillStatus, PaymentStatus, PaymentMethod
 )
+from services.gl_posting_service import GLPostingService
 
+logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/ap", tags=["Accounts Payable"])
+
+DATABASE_URL = os.getenv('DATABASE_URL', 'postgresql://postgres:postgres@localhost:5432/aria_erp')
+gl_service = GLPostingService(DATABASE_URL)
 
 # ===================== SCHEMAS =====================
 
@@ -299,7 +307,7 @@ def approve_vendor_bill(
     return {"success": True, "message": "Bill approved successfully"}
 
 @router.post("/bills/{bill_id}/post")
-def post_vendor_bill(
+async def post_vendor_bill(
     bill_id: int,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
@@ -318,6 +326,39 @@ def post_vendor_bill(
     if bill.status != BillStatus.APPROVED:
         raise HTTPException(status_code=400, detail="Only approved bills can be posted")
     
+    bill_lines = db.query(VendorBillLine).filter(
+        VendorBillLine.bill_id == bill_id
+    ).all()
+    
+    lines_data = []
+    for line in bill_lines:
+        lines_data.append({
+            "description": line.description,
+            "line_total": float(line.line_total),
+            "tax_amount": float(line.tax_amount),
+            "expense_account_code": line.expense_account_code or "5300"
+        })
+    
+    # Post to GL
+    try:
+        journal_entry_id = await gl_service.post_supplier_bill(
+            company_id=str(current_user.tenant_id),
+            bill_id=str(bill_id),
+            bill_number=bill.bill_number,
+            bill_date=bill.bill_date,
+            lines=lines_data,
+            subtotal=bill.subtotal,
+            tax_amount=bill.tax_amount,
+            total_amount=bill.total_amount,
+            user_id=str(current_user.id)
+        )
+        
+        if journal_entry_id:
+            logger.info(f"Bill {bill.bill_number} posted to GL: {journal_entry_id}")
+        else:
+            logger.warning(f"Bill {bill.bill_number} GL posting failed, but continuing")
+    except Exception as e:
+        logger.error(f"GL posting error for bill {bill.bill_number}: {e}")
     
     bill.status = BillStatus.POSTED
     bill.posted_by_id = current_user.id
@@ -325,7 +366,11 @@ def post_vendor_bill(
     
     db.commit()
     
-    return {"success": True, "message": "Bill posted to GL successfully"}
+    return {
+        "success": True, 
+        "message": "Bill posted to GL successfully",
+        "journal_entry_id": journal_entry_id if 'journal_entry_id' in locals() else None
+    }
 
 
 @router.post("/payments", response_model=VendorPaymentResponse, status_code=status.HTTP_201_CREATED)

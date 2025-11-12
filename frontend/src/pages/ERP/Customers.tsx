@@ -76,7 +76,7 @@ export default function Customers() {
   const loadCustomers = async () => {
     try {
       setLoading(true);
-      const response = await api.get('/api/erp/order-to-cash/customers');
+      const response = await api.get('/erp/order-to-cash/customers');
       setCustomers(response.data);
       setError(null);
     } catch (error: any) {
@@ -158,7 +158,7 @@ export default function Customers() {
       if (showEditModal && selectedCustomer) {
         await api.put(`/api/erp/order-to-cash/customers/${selectedCustomer.id}`, formData);
       } else {
-        await api.post('/api/erp/order-to-cash/customers', formData);
+        await api.post('/erp/order-to-cash/customers', formData);
       }
 
       setShowCreateModal(false);
@@ -326,6 +326,33 @@ export default function Customers() {
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="South Africa"
               />
+            </div>
+
+            <div className="md:col-span-2 mt-4">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Customer Hierarchy</h3>
+            </div>
+
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Parent Customer (for customer groups)
+              </label>
+              <select
+                value={formData.parent_customer_id || ''}
+                onChange={(e) => setFormData({ ...formData, parent_customer_id: e.target.value || undefined })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="">None (Top-level customer)</option>
+                {customers
+                  .filter(c => c.id !== selectedCustomer?.id)
+                  .map(c => (
+                    <option key={c.id} value={c.id}>
+                      {c.code} - {c.name}
+                    </option>
+                  ))}
+              </select>
+              <p className="text-xs text-gray-500 mt-1">
+                Select a parent customer to create a customer hierarchy. Useful for customer groups or subsidiaries.
+              </p>
             </div>
 
             <div className="md:col-span-2 mt-4">

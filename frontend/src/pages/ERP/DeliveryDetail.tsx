@@ -167,7 +167,7 @@ export default function DeliveryDetail() {
     try {
       setLoading(true);
       setError(null);
-      const response = await api.post('/api/ar/invoices', {
+      const response = await api.post('/erp/order-to-cash/invoices', {
         customer_id: customerId,
         delivery_id: id,
         invoice_date: new Date().toISOString().split('T')[0],

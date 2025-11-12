@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Plus, Edit2, Trash2, FileText, DollarSign, Clock, CheckCircle, AlertCircle } from 'lucide-react';
 
 interface Bill {
@@ -16,6 +17,7 @@ interface Bill {
 }
 
 export default function Bills() {
+  const navigate = useNavigate();
   const [bills, setBills] = useState<Bill[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -136,10 +138,7 @@ export default function Bills() {
           <p style={{ color: '#6b7280' }}>Manage supplier bills and payments</p>
         </div>
         <button
-          onClick={() => {
-            setEditingBill(null);
-            setShowModal(true);
-          }}
+          onClick={() => navigate('/ap/bills/new')}
           style={{
             display: 'flex',
             alignItems: 'center',
@@ -244,7 +243,11 @@ export default function Bills() {
               bills.map((bill) => {
                 const statusStyle = getStatusColor(bill.status);
                 return (
-                  <tr key={bill.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
+                  <tr 
+                    key={bill.id} 
+                    style={{ borderBottom: '1px solid #e5e7eb', cursor: 'pointer' }}
+                    onClick={() => navigate(`/ap/bills/${bill.id}`)}
+                  >
                     <td style={{ padding: '1rem', fontWeight: '500' }}>{bill.bill_number}</td>
                     <td style={{ padding: '1rem' }}>{bill.supplier_name || `Supplier ${bill.supplier_id}`}</td>
                     <td style={{ padding: '1rem', color: '#6b7280' }}>
@@ -271,7 +274,7 @@ export default function Bills() {
                         {bill.status}
                       </span>
                     </td>
-                    <td style={{ padding: '1rem' }}>
+                    <td style={{ padding: '1rem' }} onClick={(e) => e.stopPropagation()}>
                       <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'center' }}>
                         <button
                           onClick={() => handleDelete(bill.id)}

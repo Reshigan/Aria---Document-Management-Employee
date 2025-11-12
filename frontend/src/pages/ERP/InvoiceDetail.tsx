@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { api } from '../../lib/api';
 import { TransactionLayout, TransactionCard, TransactionField } from '../../components/TransactionLayout';
 import { LineItemsTable, LineItem } from '../../components/LineItemsTable';
-import { DollarSign } from 'lucide-react';
+import { DollarSign, Printer } from 'lucide-react';
 
 interface Invoice {
   id: string;
@@ -85,7 +85,7 @@ export default function InvoiceDetail() {
   const loadInvoice = async (invoiceId: string) => {
     try {
       setLoading(true);
-      const response = await api.get(`/api/ar/invoices/${invoiceId}`);
+      const response = await api.get(`/erp/order-to-cash/invoices/${invoiceId}`);
       const invoiceData = response.data;
       setInvoice(invoiceData);
       setCustomerId(invoiceData.customer_id);

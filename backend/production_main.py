@@ -99,6 +99,20 @@ except Exception as e:
     print(f"⚠️ Banking & Reconciliation module not loaded: {e}")
 
 try:
+    from modules.fixed_assets_module import router as fixed_assets_router
+    app.include_router(fixed_assets_router)
+    print("✅ Fixed Assets module loaded")
+except Exception as e:
+    print(f"⚠️ Fixed Assets module not loaded: {e}")
+
+try:
+    from modules.admin_module import router as admin_router
+    app.include_router(admin_router)
+    print("✅ Admin module loaded")
+except Exception as e:
+    print(f"⚠️ Admin module not loaded: {e}")
+
+try:
     from modules.manufacturing_module import router as manufacturing_router
     app.include_router(manufacturing_router)
     print("✅ Manufacturing module loaded")
@@ -202,6 +216,34 @@ try:
     print("✅ Workflow Orchestration module loaded")
 except Exception as e:
     print(f"⚠️ Workflow Orchestration module not loaded: {e}")
+
+try:
+    from modules.document_intake_module import router as document_intake_router
+    app.include_router(document_intake_router)
+    print("✅ Document Intake module loaded")
+except Exception as e:
+    print(f"⚠️ Document Intake module not loaded: {e}")
+
+try:
+    from modules.field_service_module import router as field_service_router
+    app.include_router(field_service_router)
+    print("✅ Field Service module loaded")
+except Exception as e:
+    print(f"⚠️ Field Service module not loaded: {e}")
+
+try:
+    from modules.aria_controller_engine import router as aria_controller_router
+    app.include_router(aria_controller_router)
+    print("✅ Aria Controller Engine loaded")
+except Exception as e:
+    print(f"⚠️ Aria Controller Engine not loaded: {e}")
+
+try:
+    from modules.aria_email_integration import router as aria_email_integration_router
+    app.include_router(aria_email_integration_router)
+    print("✅ Aria Email Integration module loaded")
+except Exception as e:
+    print(f"⚠️ Aria Email Integration module not loaded: {e}")
 
 # ========================================
 # REQUEST/RESPONSE MODELS
@@ -3106,6 +3148,17 @@ async def startup_event():
     print("\n" + "=" * 60)
     print("🎯 System ready for deployment!")
     print("=" * 60)
+    
+    import os
+    if os.getenv('ARIA_CONTROLLER_ENABLED', 'false').lower() == 'true':
+        try:
+            from services.email_polling_service import start_email_polling
+            poll_interval = int(os.getenv('MAILBOX_POLL_INTERVAL', '300'))
+            import asyncio
+            asyncio.create_task(start_email_polling(poll_interval))
+            print(f"\n📧 Email polling service started (interval: {poll_interval}s)")
+        except Exception as e:
+            print(f"\n⚠️ Email polling service not started: {e}")
 
 if __name__ == "__main__":
     import uvicorn

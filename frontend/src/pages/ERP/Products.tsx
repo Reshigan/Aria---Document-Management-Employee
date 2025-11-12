@@ -88,7 +88,7 @@ export default function Products() {
   const loadProducts = async () => {
     try {
       setLoading(true);
-      const response = await api.get('/api/erp/order-to-cash/products');
+      const response = await api.get('/erp/order-to-cash/products');
       setProducts(response.data);
       setError(null);
     } catch (error: any) {
@@ -101,7 +101,7 @@ export default function Products() {
 
   const loadProductStats = async () => {
     try {
-      const response = await api.get('/api/erp/order-to-cash/products/stats');
+      const response = await api.get('/erp/order-to-cash/products/stats');
       setProductStats(response.data);
     } catch (error: any) {
       console.error('Failed to load product stats:', error);
@@ -181,7 +181,7 @@ export default function Products() {
       if (showEditModal && selectedProduct) {
         await api.put(`/api/erp/order-to-cash/products/${selectedProduct.id}`, formData);
       } else {
-        await api.post('/api/erp/order-to-cash/products', formData);
+        await api.post('/erp/order-to-cash/products', formData);
       }
 
       setShowCreateModal(false);
@@ -257,15 +257,24 @@ export default function Products() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Category
+                Category / Hierarchy
               </label>
               <input
                 type="text"
                 value={formData.category || ''}
                 onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="e.g., Office Supplies"
+                placeholder="e.g., Electronics > Laptops > Gaming"
+                list="category-suggestions"
               />
+              <datalist id="category-suggestions">
+                {categories.map(cat => (
+                  <option key={cat} value={cat} />
+                ))}
+              </datalist>
+              <p className="text-xs text-gray-500 mt-1">
+                Use &quot;&gt;&quot; to create hierarchies (e.g., &quot;Electronics &gt; Laptops &gt; Gaming&quot;)
+              </p>
             </div>
 
             <div className="md:col-span-2">
