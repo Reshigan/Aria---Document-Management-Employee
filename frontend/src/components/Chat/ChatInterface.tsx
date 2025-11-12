@@ -49,16 +49,8 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
 
   const loadConversation = async (convId: string) => {
     try {
-      const response = await fetch(`/api/aria/conversations/${convId}`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setMessages(data.messages.filter((m: Message) => m.role !== 'system'));
-      }
+      console.log('Loading conversation:', convId);
+      setMessages([]);
     } catch (error) {
       console.error('Error loading conversation:', error);
     }

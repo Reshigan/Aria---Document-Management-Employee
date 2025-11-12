@@ -80,8 +80,8 @@ export const aria = {
 };
 
 export const bots = {
-  listTemplates: () => api.get('/bots/templates'),
-  getTemplate: (id: string) => api.get(`/bots/templates/${id}`),
+  listTemplates: () => api.get('/bots'),
+  getTemplate: (id: string) => api.get(`/bots/${id}`),
   chat: (data: any) => api.post('/aria/chat', data),
 };
 
