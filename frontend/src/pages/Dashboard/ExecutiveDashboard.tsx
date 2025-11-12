@@ -9,7 +9,7 @@ import {
 import axios from 'axios';
 import './ExecutiveDashboard.css';
 
-const API_URL = 'http://localhost:8000';
+const API_URL = '/api';
 
 export const ExecutiveDashboard: React.FC = () => {
   const [bots, setBots] = useState<any[]>([]);
