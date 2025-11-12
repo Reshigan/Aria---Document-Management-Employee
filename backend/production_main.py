@@ -126,6 +126,13 @@ try:
 except Exception as e:
     print(f"⚠️ GL API not loaded: {e}")
 
+try:
+    from app.api.crm import router as crm_router
+    app.include_router(crm_router)
+    print("✅ CRM API loaded")
+except Exception as e:
+    print(f"⚠️ CRM API not loaded: {e}")
+
 # ========================================
 # REQUEST/RESPONSE MODELS
 # ========================================
