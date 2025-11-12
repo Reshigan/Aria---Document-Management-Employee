@@ -2,10 +2,11 @@
 ARIA ERP - Expense Approval Bot
 Automates expense claim approval with AI-powered fraud detection
 """
+
+import sqlite3
 from datetime import datetime, date
 from decimal import Decimal
-from typing import Dict, List, Optional
-from .bot_api_client import BotAPIClient
+from typing import Dict, List
 
 class ExpenseApprovalBot:
     """Automated Expense Approval with Fraud Detection"""
@@ -18,56 +19,73 @@ class ExpenseApprovalBot:
     }
     
     FRAUD_INDICATORS = {
-        'duplicate_claim': 50,
+        'duplicate_claim': 50,  # points
         'excessive_amount': 30,
         'frequent_claims': 20,
         'weekend_expense': 10,
         'round_number': 5
     }
     
-    def __init__(
-        self,
-        api_client: Optional[BotAPIClient] = None,
-        mode: str = "api",
-        api_base_url: str = "http://localhost:8000",
-        api_token: Optional[str] = None,
-        db_session = None,
-        tenant_id: Optional[int] = None
-    ):
-        if api_client:
-            self.client = api_client
-        else:
-            self.client = BotAPIClient(
-                mode=mode,
-                api_base_url=api_base_url,
-                api_token=api_token,
-                db_session=db_session,
-                tenant_id=tenant_id
-            )
+    def __init__(self, database_path: str = 'aria_erp_production.db'):
+        self.db_path = database_path
     
-    def process_expense_claim(self, bill_id: int) -> Dict:
-        """Process expense claim with automated approval logic using AP API"""
+    def process_expense_claim(
+        self,
+        company_id: int,
+        claim_id: int
+    ) -> Dict:
+        """Process expense claim with automated approval logic"""
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        
         try:
-            bills = self.client.get_vendor_bills()
+            # Get claim details
+            cursor.execute("""
+                SELECT e.id, e.employee_id, e.claim_date, e.total_amount,
+                       e.description, e.category, e.status,
+                       emp.first_name, emp.last_name, emp.department
+                FROM expense_claims e
+                JOIN employees emp ON e.employee_id = emp.id
+                WHERE e.id = ? AND e.company_id = ?
+            """, (claim_id, company_id))
             
-            bill = next((b for b in bills if b['id'] == bill_id), None)
-            if not bill:
-                return {'error': 'Bill not found'}
+            claim = cursor.fetchone()
+            if not claim:
+                return {'error': 'Claim not found'}
             
-            claim_amount = Decimal(str(bill['total_amount']))
+            claim_amount = Decimal(str(claim[3]))
             
-            fraud_score, fraud_reasons = self._detect_fraud(bill, bills)
+            # Run fraud detection
+            fraud_score, fraud_reasons = self._detect_fraud(cursor, claim_id, claim)
             
+            # Auto-approve if low fraud score and within threshold
             if fraud_score < 20 and claim_amount < self.APPROVAL_THRESHOLDS['EMPLOYEE']:
-                result = self.client.approve_vendor_bill(bill_id)
-                decision = 'APPROVED' if result.get('success') else 'FAILED'
+                cursor.execute("""
+                    UPDATE expense_claims SET
+                        status = 'APPROVED',
+                        approved_at = ?,
+                        approval_notes = ?
+                    WHERE id = ?
+                """, (datetime.now(), 'Auto-approved by AI', claim_id))
+                
+                conn.commit()
+                decision = 'APPROVED'
             elif fraud_score >= 50:
+                cursor.execute("""
+                    UPDATE expense_claims SET
+                        status = 'REJECTED',
+                        approved_at = ?,
+                        approval_notes = ?
+                    WHERE id = ?
+                """, (datetime.now(), f'Auto-rejected: {", ".join(fraud_reasons)}', claim_id))
+                
+                conn.commit()
                 decision = 'REJECTED'
             else:
                 decision = 'REVIEW_REQUIRED'
             
             return {
-                'bill_id': bill_id,
+                'claim_id': claim_id,
                 'decision': decision,
                 'fraud_score': fraud_score,
                 'fraud_reasons': fraud_reasons,
@@ -75,27 +93,53 @@ class ExpenseApprovalBot:
             }
             
         except Exception as e:
+            conn.rollback()
             return {'error': str(e)}
+        finally:
+            conn.close()
     
-    def _detect_fraud(self, bill: dict, all_bills: list) -> tuple:
+    def _detect_fraud(self, cursor, claim_id: int, claim: tuple) -> tuple:
         """Detect potential fraud indicators"""
         score = 0
         reasons = []
         
-        amount = Decimal(str(bill['total_amount']))
+        employee_id = claim[1]
+        claim_date = claim[2]
+        amount = Decimal(str(claim[3]))
+        description = claim[4]
         
+        # Check for duplicates
+        cursor.execute("""
+            SELECT COUNT(*) FROM expense_claims
+            WHERE employee_id = ? AND claim_date = ?
+            AND ABS(total_amount - ?) < 0.01
+            AND id != ?
+        """, (employee_id, claim_date, float(amount), claim_id))
+        
+        if cursor.fetchone()[0] > 0:
+            score += self.FRAUD_INDICATORS['duplicate_claim']
+            reasons.append('Duplicate claim detected')
+        
+        # Check excessive amount for category
         if amount > 5000:
             score += self.FRAUD_INDICATORS['excessive_amount']
             reasons.append('Excessive amount')
         
+        # Check round numbers (potential fabrication)
         if amount == int(amount) and amount > 100:
             score += self.FRAUD_INDICATORS['round_number']
             reasons.append('Suspicious round number')
         
-        vendor_bills = [b for b in all_bills if b['vendor_id'] == bill['vendor_id']]
-        if len(vendor_bills) > 5:
+        # Check frequent claims
+        cursor.execute("""
+            SELECT COUNT(*) FROM expense_claims
+            WHERE employee_id = ?
+            AND claim_date >= date('now', '-7 days')
+        """, (employee_id,))
+        
+        if cursor.fetchone()[0] > 5:
             score += self.FRAUD_INDICATORS['frequent_claims']
-            reasons.append('Unusually frequent bills from vendor')
+            reasons.append('Unusually frequent claims')
         
         return score, reasons
 

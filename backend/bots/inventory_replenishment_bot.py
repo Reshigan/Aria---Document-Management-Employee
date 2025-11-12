@@ -2,38 +2,50 @@
 ARIA ERP - Inventory Replenishment Bot
 Automated stock replenishment with demand forecasting
 """
+import sqlite3
 from decimal import Decimal
-from typing import Optional
-from .bot_api_client import BotAPIClient
 
 class InventoryReplenishmentBot:
-    def __init__(
-        self,
-        api_client: Optional[BotAPIClient] = None,
-        mode: str = "api",
-        api_base_url: str = "http://localhost:8000",
-        api_token: Optional[str] = None,
-        db_session = None,
-        tenant_id: Optional[int] = None
-    ):
-        if api_client:
-            self.client = api_client
-        else:
-            self.client = BotAPIClient(
-                mode=mode,
-                api_base_url=api_base_url,
-                api_token=api_token,
-                db_session=db_session,
-                tenant_id=tenant_id
-            )
+    def __init__(self, database_path: str = 'aria_erp_production.db'):
+        self.db_path = database_path
     
-    def check_replenishment_needs(self) -> dict:
-        """Check which products need replenishment (standalone bot - no API integration needed)"""
-        return {
-            'products_needing_reorder': 0,
-            'products': [],
-            'note': 'Inventory replenishment requires direct database access or dedicated inventory API'
-        }
+    def check_replenishment_needs(self, company_id: int) -> dict:
+        """Check which products need replenishment"""
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        
+        try:
+            cursor.execute("""
+                SELECT p.id, p.sku, p.product_name, p.current_stock,
+                       p.reorder_level, p.reorder_quantity,
+                       p.lead_time_days
+                FROM products p
+                WHERE p.company_id = ?
+                AND p.current_stock <= p.reorder_level
+                AND p.is_active = 1
+                ORDER BY (p.reorder_level - p.current_stock) DESC
+            """, (company_id,))
+            
+            products = []
+            for row in cursor.fetchall():
+                products.append({
+                    'product_id': row[0],
+                    'sku': row[1],
+                    'name': row[2],
+                    'current_stock': float(row[3]),
+                    'reorder_level': float(row[4]),
+                    'suggested_order_qty': float(row[5] or 0),
+                    'lead_time_days': row[6] or 7,
+                    'urgency': 'CRITICAL' if row[3] <= row[4] * 0.5 else 'HIGH'
+                })
+            
+            return {
+                'products_needing_reorder': len(products),
+                'products': products
+            }
+            
+        finally:
+            conn.close()
 
 def main():
     print("\n" + "="*60)

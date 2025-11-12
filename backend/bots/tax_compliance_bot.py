@@ -2,55 +2,60 @@
 ARIA ERP - Tax Compliance Bot
 Automated VAT, PAYE, and tax return preparation for South Africa
 """
+
+import sqlite3
 from datetime import datetime, date
 from decimal import Decimal
-from typing import Optional
-from .bot_api_client import BotAPIClient
 
 class TaxComplianceBot:
-    VAT_RATE = Decimal('0.15')
+    VAT_RATE = Decimal('0.15')  # 15% SA VAT
     
-    def __init__(
-        self,
-        api_client: Optional[BotAPIClient] = None,
-        mode: str = "api",
-        api_base_url: str = "http://localhost:8000",
-        api_token: Optional[str] = None,
-        db_session = None,
-        tenant_id: Optional[int] = None
-    ):
-        if api_client:
-            self.client = api_client
-        else:
-            self.client = BotAPIClient(
-                mode=mode,
-                api_base_url=api_base_url,
-                api_token=api_token,
-                db_session=db_session,
-                tenant_id=tenant_id
-            )
+    def __init__(self, database_path: str = 'aria_erp_production.db'):
+        self.db_path = database_path
     
-    def calculate_vat_return(self, year: int, period: int) -> dict:
-        """Calculate VAT return for a period using VAT API"""
-        vat_returns = self.client.get_vat_returns(year=year, period=period)
+    def calculate_vat_return(self, company_id: int, year: int, month: int) -> dict:
+        """Calculate VAT return for a period"""
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
         
-        if vat_returns:
-            vat_return = vat_returns[0]
+        try:
+            # Output VAT (sales)
+            cursor.execute("""
+                SELECT COALESCE(SUM(vat_amount), 0)
+                FROM sales_invoices
+                WHERE company_id = ?
+                AND strftime('%Y', invoice_date) = ?
+                AND strftime('%m', invoice_date) = ?
+                AND status != 'CANCELLED'
+            """, (company_id, str(year), f"{month:02d}"))
+            
+            output_vat = Decimal(str(cursor.fetchone()[0]))
+            
+            # Input VAT (purchases)
+            cursor.execute("""
+                SELECT COALESCE(SUM(vat_amount), 0)
+                FROM purchase_invoices
+                WHERE company_id = ?
+                AND strftime('%Y', invoice_date) = ?
+                AND strftime('%m', invoice_date) = ?
+                AND status != 'CANCELLED'
+            """, (company_id, str(year), f"{month:02d}"))
+            
+            input_vat = Decimal(str(cursor.fetchone()[0]))
+            
+            # Calculate net VAT payable
+            net_vat = output_vat - input_vat
+            
             return {
-                'period': f"{year}-{period:02d}",
-                'output_vat': float(vat_return.get('output_vat', 0)),
-                'input_vat': float(vat_return.get('input_vat', 0)),
-                'net_vat_payable': float(vat_return.get('net_vat', 0)),
-                'status': vat_return.get('status', 'DRAFT')
+                'period': f"{year}-{month:02d}",
+                'output_vat': float(output_vat),
+                'input_vat': float(input_vat),
+                'net_vat_payable': float(net_vat),
+                'status': 'PAYABLE' if net_vat > 0 else 'REFUND_DUE'
             }
-        else:
-            return {
-                'period': f"{year}-{period:02d}",
-                'output_vat': 0.0,
-                'input_vat': 0.0,
-                'net_vat_payable': 0.0,
-                'status': 'NOT_FOUND'
-            }
+            
+        finally:
+            conn.close()
     
     def generate_paye_submission(self, company_id: int, year: int, month: int) -> dict:
         """Generate PAYE submission file"""

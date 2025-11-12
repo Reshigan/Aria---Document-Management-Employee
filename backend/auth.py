@@ -21,11 +21,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 security = HTTPBearer()
 
 # Database setup (copied from main.py to avoid circular imports)
-DATABASE_URL = os.getenv("DATABASE_URL")
-if not DATABASE_URL:
-    raise RuntimeError("DATABASE_URL environment variable is required. No SQLite fallback allowed.")
-if not DATABASE_URL.startswith("postgresql"):
-    raise RuntimeError(f"Only PostgreSQL is supported. Got: {DATABASE_URL.split(':')[0]}")
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./aria.db")
 engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
