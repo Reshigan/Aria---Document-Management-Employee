@@ -10,6 +10,8 @@ from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 import os
 
+from core.database import get_db as database_get_db
+
 # JWT Configuration
 SECRET_KEY = os.getenv("SECRET_KEY", "CHANGE_THIS_IN_PRODUCTION_12345678901234567890")
 ALGORITHM = "HS256"
@@ -59,7 +61,7 @@ class AuthService:
                 headers={"WWW-Authenticate": "Bearer"},
             )
 
-def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(database_get_db)):
     """Get current authenticated user"""
     from models.user import User
     
@@ -82,12 +84,3 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
         raise credentials_exception
     
     return user
-
-def get_db():
-    """Database dependency"""
-    from backend.core.database import SessionLocal
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
