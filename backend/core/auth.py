@@ -61,7 +61,7 @@ class AuthService:
 
 def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
     """Get current authenticated user"""
-    from backend.models.user import User
+    from models.user import User
     
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
