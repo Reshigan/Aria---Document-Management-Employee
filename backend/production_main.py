@@ -133,6 +133,13 @@ try:
 except Exception as e:
     print(f"⚠️ CRM API not loaded: {e}")
 
+try:
+    from app.api.bots import router as bots_api_router
+    app.include_router(bots_api_router, prefix="/api")
+    print("✅ Bots API loaded")
+except Exception as e:
+    print(f"⚠️ Bots API not loaded: {e}")
+
 # ========================================
 # REQUEST/RESPONSE MODELS
 # ========================================
