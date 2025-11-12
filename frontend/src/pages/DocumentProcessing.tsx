@@ -40,7 +40,8 @@ const DocumentProcessing: React.FC = () => {
   const [loading, setLoading] = useState(false);
   
   const { addNotification } = useNotifications();
-  const { isConnected } = useWebSocket('ws://localhost:8000/ws', {
+  const wsUrl = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
+  const { isConnected } = useWebSocket(`${wsUrl}${window.location.host}/ws`, {
     onMessage: (data) => {
       // Handle WebSocket messages for real-time updates
       if (data.type === 'processing_update') {
