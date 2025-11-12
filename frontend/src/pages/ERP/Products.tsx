@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { api } from '../../lib/api';
+import api from '../../lib/api';
 import { ConfirmDialog } from '../../components/ConfirmDialog';
 import { Plus, Search, Edit, Trash2, Eye, Package, TrendingUp, X, BarChart3 } from 'lucide-react';
 

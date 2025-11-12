@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ShoppingCart, Plus, Search, Trash2, Check } from 'lucide-react';
-import { api } from '../../lib/api';
+import api from '../../lib/api';
 
 interface PurchaseOrder {
   id: number;
