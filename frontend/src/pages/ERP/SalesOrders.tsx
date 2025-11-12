@@ -470,7 +470,7 @@ export default function SalesOrders() {
           <option value="cancelled">Cancelled</option>
         </select>
         <button
-          onClick={fetchOrders}
+          onClick={loadOrders}
           style={{
             padding: '0.5rem 1.5rem',
             background: '#2563eb',
@@ -483,6 +483,25 @@ export default function SalesOrders() {
           }}
         >
           Refresh
+        </button>
+        <button
+          onClick={handleCreate}
+          style={{
+            padding: '0.5rem 1.5rem',
+            background: '#10b981',
+            color: 'white',
+            border: 'none',
+            borderRadius: '0.375rem',
+            fontSize: '0.875rem',
+            fontWeight: '500',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem'
+          }}
+        >
+          <Plus size={16} />
+          Create Sales Order
         </button>
       </div>
 
