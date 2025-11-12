@@ -9,7 +9,7 @@ import {
 import axios from 'axios';
 import './ExecutiveDashboard.css';
 
-const API_URL = import.meta.env.VITE_API_URL || 'https://aria.vantax.co.za';
+const API_URL = 'http://localhost:8000';
 
 export const ExecutiveDashboard: React.FC = () => {
   const [bots, setBots] = useState<any[]>([]);
@@ -36,8 +36,8 @@ export const ExecutiveDashboard: React.FC = () => {
         cash_position: 850000,
         ar_outstanding: arResponse.data.summary?.total_outstanding || 0,
         ap_outstanding: apResponse.data.summary?.total_outstanding || 0,
-        bot_count: botsResponse.data.bots?.length || 67,
-        active_bots: botsResponse.data.bots?.filter((b: any) => b.status === 'active').length || 67
+        bot_count: botsResponse.data.bots?.length || 15,
+        active_bots: botsResponse.data.bots?.filter((b: any) => b.status === 'active').length || 15
       });
 
       setLoading(false);
@@ -64,7 +64,7 @@ export const ExecutiveDashboard: React.FC = () => {
       <div className="dashboard-header">
         <div>
           <h1 style={{fontSize: '1.875rem', fontWeight: 700, marginBottom: '0.5rem'}}>Executive Dashboard</h1>
-          <p style={{color: 'var(--gray-600)'}}>Real-time financial overview powered by {metrics?.bot_count || 67} AI automation bots</p>
+          <p style={{color: 'var(--gray-600)'}}>Real-time financial overview powered by 15 AI automation bots</p>
         </div>
       </div>
 
@@ -103,17 +103,17 @@ export const ExecutiveDashboard: React.FC = () => {
 
       <Card style={{marginBottom: '1.5rem'}}>
         <CardHeader>
-          <CardTitle>🤖 Automation Bots - All {metrics?.active_bots || 67} Active</CardTitle>
+          <CardTitle>🤖 Automation Bots - All {metrics?.active_bots || 15} Active</CardTitle>
         </CardHeader>
         <CardBody>
           <div style={{display: 'flex', gap: '2rem', marginBottom: '1.5rem', padding: '1rem', backgroundColor: 'var(--gray-50)', borderRadius: '0.5rem'}}>
             <div>
               <div style={{fontSize: '0.875rem', color: 'var(--gray-600)'}}>Total Bots</div>
-              <div style={{fontSize: '1.5rem', fontWeight: 700}}>{metrics?.bot_count || 67}</div>
+              <div style={{fontSize: '1.5rem', fontWeight: 700}}>{metrics?.bot_count || 15}</div>
             </div>
             <div>
               <div style={{fontSize: '0.875rem', color: 'var(--gray-600)'}}>Active</div>
-              <div style={{fontSize: '1.5rem', fontWeight: 700, color: 'var(--success)'}}>{metrics?.active_bots || 67}</div>
+              <div style={{fontSize: '1.5rem', fontWeight: 700, color: 'var(--success)'}}>{metrics?.active_bots || 15}</div>
             </div>
             <div>
               <div style={{fontSize: '0.875rem', color: 'var(--gray-600)'}}>Transactions Today</div>

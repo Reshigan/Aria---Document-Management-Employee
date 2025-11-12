@@ -46,12 +46,7 @@ api.interceptors.response.use(
   }
 );
 
-(api as any).setCompanyId = (companyId: string) => {
-  localStorage.setItem('aria_company_id', companyId);
-};
-
 export default api;
-export { api }; // Named export for compatibility
 
 // API functions
 export const auth = {

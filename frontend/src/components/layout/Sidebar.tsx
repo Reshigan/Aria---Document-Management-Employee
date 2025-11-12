@@ -13,18 +13,7 @@ import {
   FileText,
   Settings,
   ChevronLeft,
-  ChevronRight,
-  ShoppingCart,
-  Truck,
-  Receipt,
-  Mail,
-  BarChart3,
-  Wrench,
-  MessageSquare,
-  Boxes,
-  FolderOpen,
-  Calculator,
-  TrendingUp
+  ChevronRight
 } from 'lucide-react';
 import './Sidebar.css';
 
@@ -37,28 +26,15 @@ interface NavItem {
 
 const navigation: NavItem[] = [
   { label: 'Dashboard', icon: <LayoutDashboard size={20} />, path: '/' },
-  { label: 'Ask Aria', icon: <MessageSquare size={20} />, path: '/aria', color: '#ec4899' },
-  { label: 'Quotes', icon: <FileText size={20} />, path: '/quotes', color: '#8b5cf6' },
-  { label: 'Sales Orders', icon: <ShoppingCart size={20} />, path: '/sales-orders', color: '#10b981' },
-  { label: 'Deliveries', icon: <Truck size={20} />, path: '/deliveries', color: '#06b6d4' },
-  { label: 'Invoices', icon: <Receipt size={20} />, path: '/ar/invoices', color: '#f59e0b' },
-  { label: 'Customers', icon: <Users size={20} />, path: '/ar/customers', color: '#6366f1' },
-  { label: 'Bills', icon: <FileDown size={20} />, path: '/ap/invoices', color: '#ef4444' },
-  { label: 'Purchase Orders', icon: <ShoppingCart size={20} />, path: '/ap/purchase-orders', color: '#f97316' },
-  { label: 'Suppliers', icon: <Building2 size={20} />, path: '/ap/suppliers', color: '#64748b' },
-  { label: 'Products', icon: <Package size={20} />, path: '/inventory/products', color: '#8b5cf6' },
-  { label: 'Stock', icon: <Boxes size={20} />, path: '/wms-stock', color: '#06b6d4' },
   { label: 'General Ledger', icon: <BookOpen size={20} />, path: '/gl', color: '#8b5cf6' },
+  { label: 'Accounts Payable', icon: <FileDown size={20} />, path: '/ap', color: '#ef4444' },
+  { label: 'Accounts Receivable', icon: <FileUp size={20} />, path: '/ar', color: '#10b981' },
   { label: 'Banking', icon: <Building2 size={20} />, path: '/banking', color: '#06b6d4' },
-  { label: 'Fixed Assets', icon: <FolderOpen size={20} />, path: '/fixed-assets', color: '#64748b' },
   { label: 'Payroll', icon: <Wallet size={20} />, path: '/payroll', color: '#f59e0b' },
-  { label: 'Projects', icon: <FolderOpen size={20} />, path: '/projects', color: '#6366f1' },
-  { label: 'VAT Returns', icon: <Calculator size={20} />, path: '/tax/vat', color: '#ef4444' },
-  { label: 'Manufacturing', icon: <Wrench size={20} />, path: '/manufacturing', color: '#f97316' },
   { label: 'CRM', icon: <Users size={20} />, path: '/crm', color: '#6366f1' },
-  { label: 'Automation Bots', icon: <Bot size={20} />, path: '/automation/bots', color: '#ec4899' },
-  { label: 'Mailroom', icon: <Mail size={20} />, path: '/automation/mailroom', color: '#a855f7' },
-  { label: 'Reports', icon: <TrendingUp size={20} />, path: '/reports' },
+  { label: 'Inventory', icon: <Package size={20} />, path: '/inventory', color: '#8b5cf6' },
+  { label: 'Automation Bots', icon: <Bot size={20} />, path: '/bots', color: '#ec4899' },
+  { label: 'Reports', icon: <FileText size={20} />, path: '/reports' },
   { label: 'Settings', icon: <Settings size={20} />, path: '/settings' },
 ];
 

@@ -40,7 +40,7 @@ const DocumentProcessing: React.FC = () => {
   const [loading, setLoading] = useState(false);
   
   const { addNotification } = useNotifications();
-  const { isConnected } = useWebSocket((import.meta.env.VITE_WS_URL || 'wss://aria.vantax.co.za/ws'), {
+  const { isConnected } = useWebSocket('ws://localhost:8000/ws', {
     onMessage: (data) => {
       // Handle WebSocket messages for real-time updates
       if (data.type === 'processing_update') {

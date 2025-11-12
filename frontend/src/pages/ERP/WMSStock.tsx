@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { api } from '../../lib/api';
 import { ConfirmDialog } from '../../components/ConfirmDialog';
 import { Plus, Search, Edit, Trash2, Package, X } from 'lucide-react';
-import { formatCurrency } from '../../utils/formatters';
 
 interface Product {
   id: string;
@@ -186,7 +185,7 @@ export default function WMSStock() {
   const getTotalValue = () => {
     return stock.reduce((sum, item) => {
       const product = products.find(p => p.id === item.product_id);
-      return sum + (item.quantity_on_hand * (product?.cost_price || 0));
+      return sum + (item.quantity_on_hand * (product?.selling_price || 0));
     }, 0);
   };
 
@@ -632,10 +631,10 @@ export default function WMSStock() {
                         <td style={{ padding: '1rem', fontSize: '0.875rem', color: '#6b7280' }}>{product.description || '-'}</td>
                         <td style={{ padding: '1rem', fontSize: '0.875rem', textAlign: 'center' }}>{product.unit_of_measure}</td>
                         <td style={{ padding: '1rem', fontSize: '0.875rem', textAlign: 'right' }}>
-                          {formatCurrency(product.cost_price)}
+                          R {product.cost_price.toFixed(2)}
                         </td>
                         <td style={{ padding: '1rem', fontSize: '0.875rem', textAlign: 'right', fontWeight: '500' }}>
-                          {formatCurrency(product.selling_price)}
+                          R {product.selling_price.toFixed(2)}
                         </td>
                         <td style={{ padding: '1rem', textAlign: 'center' }}>
                           <span style={{
@@ -807,17 +806,12 @@ export default function WMSStock() {
                       <th style={{ padding: '0.75rem 1rem', textAlign: 'right', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>On Hand</th>
                       <th style={{ padding: '0.75rem 1rem', textAlign: 'right', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Reserved</th>
                       <th style={{ padding: '0.75rem 1rem', textAlign: 'right', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Available</th>
-                      <th style={{ padding: '0.75rem 1rem', textAlign: 'right', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Cost Price</th>
-                      <th style={{ padding: '0.75rem 1rem', textAlign: 'right', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Cost Value</th>
                       <th style={{ padding: '0.75rem 1rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Last Movement</th>
                     </tr>
                   </thead>
                   <tbody>
                     {stock.map((item) => {
                       const isLowStock = item.quantity_available < 10;
-                      const product = products.find(p => p.id === item.product_id);
-                      const costPrice = product?.cost_price || 0;
-                      const costValue = item.quantity_on_hand * costPrice;
                       return (
                         <tr key={item.id} style={{ 
                           borderBottom: '1px solid #e5e7eb',
@@ -836,12 +830,6 @@ export default function WMSStock() {
                           <td style={{ padding: '1rem', fontSize: '0.875rem', textAlign: 'right', fontWeight: '500', color: isLowStock ? '#ef4444' : '#10b981' }}>
                             {item.quantity_available.toLocaleString()}
                             {isLowStock && <span style={{ marginLeft: '0.5rem', fontSize: '0.75rem' }}>⚠️</span>}
-                          </td>
-                          <td style={{ padding: '1rem', fontSize: '0.875rem', textAlign: 'right', color: '#6b7280' }}>
-                            {formatCurrency(costPrice)}
-                          </td>
-                          <td style={{ padding: '1rem', fontSize: '0.875rem', textAlign: 'right', fontWeight: '500' }}>
-                            {formatCurrency(costValue)}
                           </td>
                           <td style={{ padding: '1rem', fontSize: '0.875rem' }}>
                             {item.last_movement_date ? new Date(item.last_movement_date).toLocaleDateString() : '-'}

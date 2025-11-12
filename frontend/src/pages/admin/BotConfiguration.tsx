@@ -6,22 +6,20 @@ interface BotConfig {
   id: string;
   name: string;
   description: string;
-  category: string;
   enabled: boolean;
   auto_approval_limit?: number;
-  notification_email: boolean;
-  notification_whatsapp: boolean;
-  notification_in_app: boolean;
-  executions_count: number;
-  last_executed?: string;
+  notifications: {
+    email: boolean;
+    whatsapp: boolean;
+    in_app: boolean;
+  };
+  settings: Record<string, any>;
 }
 
 export default function BotConfigurationPage() {
   const [bots, setBots] = useState<BotConfig[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<string>('All');
-  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     fetchBotConfigs();
@@ -30,7 +28,7 @@ export default function BotConfigurationPage() {
   const fetchBotConfigs = async () => {
     try {
       const response = await fetch('/api/admin/bots/config', {
-        headers: { 'Authorization': `Bearer ${localStorage.getItem('access_token')}` }
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
       if (response.ok) {
         const data = await response.json();
@@ -69,10 +67,9 @@ export default function BotConfigurationPage() {
   const handleUpdateNotifications = async (botId: string, channel: string, value: boolean) => {
     setBots(bots.map(bot => {
       if (bot.id === botId) {
-        const fieldName = `notification_${channel}` as keyof BotConfig;
         return {
           ...bot,
-          [fieldName]: value
+          notifications: { ...bot.notifications, [channel]: value }
         };
       }
       return bot;
@@ -82,23 +79,18 @@ export default function BotConfigurationPage() {
   const handleSaveConfig = async () => {
     setSaving(true);
     try {
-      for (const bot of bots) {
-        await fetch(`/api/admin/bots/${bot.id}/config`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('access_token')}`
-          },
-          body: JSON.stringify({
-            enabled: bot.enabled,
-            auto_approval_limit: bot.auto_approval_limit,
-            notification_email: bot.notification_email,
-            notification_whatsapp: bot.notification_whatsapp,
-            notification_in_app: bot.notification_in_app
-          })
-        });
+      const response = await fetch('/api/admin/bots/config', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({ bots })
+      });
+
+      if (response.ok) {
+        alert('Bot configuration saved successfully!');
       }
-      alert('Bot configuration saved successfully!');
     } catch (error) {
       console.error('Error saving config:', error);
       alert('Error saving configuration');
@@ -106,15 +98,6 @@ export default function BotConfigurationPage() {
       setSaving(false);
     }
   };
-
-  const categories = ['All', ...Array.from(new Set(bots.map(b => b.category)))];
-  
-  const filteredBots = bots.filter(bot => {
-    const matchesCategory = selectedCategory === 'All' || bot.category === selectedCategory;
-    const matchesSearch = bot.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         bot.description.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesCategory && matchesSearch;
-  });
 
   if (loading) {
     return (
@@ -131,42 +114,16 @@ export default function BotConfigurationPage() {
           <Bot className="h-8 w-8" />
           Bot Configuration
         </h1>
-        <p className="text-gray-600 mt-2">Configure all 67 AI bots and automation settings</p>
-      </div>
-
-      <div className="mb-6 flex gap-4">
-        <input
-          type="text"
-          placeholder="Search bots..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="flex-1 px-4 py-2 border border-gray-300 rounded-md"
-        />
-        <select
-          value={selectedCategory}
-          onChange={(e) => setSelectedCategory(e.target.value)}
-          className="px-4 py-2 border border-gray-300 rounded-md"
-        >
-          {categories.map(cat => (
-            <option key={cat} value={cat}>{cat}</option>
-          ))}
-        </select>
-      </div>
-
-      <div className="mb-4 text-sm text-gray-600">
-        Showing {filteredBots.length} of {bots.length} bots
+        <p className="text-gray-600 mt-2">Configure AI bots and automation settings</p>
       </div>
 
       <div className="space-y-6">
-        {filteredBots.map((bot) => (
+        {bots.map((bot) => (
           <div key={bot.id} className="bg-white rounded-lg shadow p-6">
             <div className="flex items-start justify-between mb-4">
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-2">
                   <h3 className="text-xl font-bold text-gray-900">{bot.name}</h3>
-                  <span className="px-2 py-1 text-xs font-medium bg-gray-100 text-gray-700 rounded">
-                    {bot.category}
-                  </span>
                   {bot.enabled ? (
                     <span className="flex items-center gap-1 text-green-600 text-sm">
                       <CheckCircle className="h-4 w-4" />
@@ -180,12 +137,6 @@ export default function BotConfigurationPage() {
                   )}
                 </div>
                 <p className="text-gray-600">{bot.description}</p>
-                <div className="mt-2 flex gap-4 text-sm text-gray-500">
-                  <span>Executions: {bot.executions_count}</span>
-                  {bot.last_executed && (
-                    <span>Last used: {new Date(bot.last_executed).toLocaleDateString()}</span>
-                  )}
-                </div>
               </div>
               <label className="relative inline-flex items-center cursor-pointer">
                 <input
@@ -228,7 +179,7 @@ export default function BotConfigurationPage() {
                     <label className="flex items-center gap-3">
                       <input
                         type="checkbox"
-                        checked={bot.notification_email}
+                        checked={bot.notifications.email}
                         onChange={(e) => handleUpdateNotifications(bot.id, 'email', e.target.checked)}
                         className="w-4 h-4 text-blue-600 rounded"
                       />
@@ -238,7 +189,7 @@ export default function BotConfigurationPage() {
                     <label className="flex items-center gap-3">
                       <input
                         type="checkbox"
-                        checked={bot.notification_whatsapp}
+                        checked={bot.notifications.whatsapp}
                         onChange={(e) => handleUpdateNotifications(bot.id, 'whatsapp', e.target.checked)}
                         className="w-4 h-4 text-blue-600 rounded"
                       />
@@ -248,7 +199,7 @@ export default function BotConfigurationPage() {
                     <label className="flex items-center gap-3">
                       <input
                         type="checkbox"
-                        checked={bot.notification_in_app}
+                        checked={bot.notifications.in_app}
                         onChange={(e) => handleUpdateNotifications(bot.id, 'in_app', e.target.checked)}
                         className="w-4 h-4 text-blue-600 rounded"
                       />

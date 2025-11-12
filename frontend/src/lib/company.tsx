@@ -30,48 +30,31 @@ export function CompanyProvider({ children }: { children: ReactNode }) {
   const loadCompanies = async () => {
     try {
       setLoading(true);
+      const defaultCompany: Company = {
+        id: '00000000-0000-0000-0000-000000000001',
+        name: 'Default Company',
+        code: 'DEFAULT',
+      };
       
-      const response = await fetch('https://aria.vantax.co.za/api/erp/rbac/companies');
-      
-      if (!response.ok) {
-        throw new Error(`Failed to fetch companies: ${response.statusText}`);
-      }
-      
-      const data = await response.json();
-      const companiesList = data.companies || [];
-      
-      if (companiesList.length === 0) {
-        throw new Error('No companies found');
-      }
-      
-      const companiesWithCode = companiesList.map((c: any) => ({
-        ...c,
-        code: c.code || c.name.substring(0, 3).toUpperCase()
-      }));
-      
-      setCompanies(companiesWithCode);
+      setCompanies([defaultCompany]);
       
       const savedCompanyId = localStorage.getItem('aria_company_id');
-      let company = companiesWithCode.find((c: Company) => c.id === savedCompanyId);
-      
-      if (!company) {
-        company = companiesWithCode[0];
+      if (savedCompanyId === defaultCompany.id) {
+        setCurrentCompanyState(defaultCompany);
+      } else {
+        setCurrentCompanyState(defaultCompany);
+        api.setCompanyId(defaultCompany.id);
       }
-      
-      setCurrentCompanyState(company);
-      api.setCompanyId(company.id);
-      localStorage.setItem('aria_company_id', company.id);
     } catch (error) {
       console.error('Error loading companies:', error);
       const defaultCompany: Company = {
-        id: 'b0598135-52fd-4f67-ac56-8f0237e6355e',
-        name: 'ARIA Demo Company',
-        code: 'ARIA',
+        id: '00000000-0000-0000-0000-000000000001',
+        name: 'Default Company',
+        code: 'DEFAULT',
       };
       setCompanies([defaultCompany]);
       setCurrentCompanyState(defaultCompany);
       api.setCompanyId(defaultCompany.id);
-      localStorage.setItem('aria_company_id', defaultCompany.id);
     } finally {
       setLoading(false);
     }
@@ -80,9 +63,6 @@ export function CompanyProvider({ children }: { children: ReactNode }) {
   const setCurrentCompany = (company: Company) => {
     setCurrentCompanyState(company);
     api.setCompanyId(company.id);
-    localStorage.setItem('aria_company_id', company.id);
-    
-    window.dispatchEvent(new CustomEvent('companyChanged', { detail: company }));
   };
 
   return (

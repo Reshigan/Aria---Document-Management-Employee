@@ -89,7 +89,7 @@ export function LineItemsTable({
       product_code: product.code,
       product_name: product.name,
       description: product.name,
-      unit_price: Number(product.selling_price)
+      unit_price: product.selling_price
     });
     setShowProductSearch(null);
     setSearchTerm('');
@@ -260,7 +260,7 @@ export function LineItemsTable({
                                   <div style={{ fontWeight: '500' }}>{product.code}</div>
                                   <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>{product.name}</div>
                                   <div style={{ fontSize: '0.75rem', color: '#2563eb' }}>
-                                    R {Number(product.selling_price).toFixed(2)} / {product.unit_of_measure}
+                                    R {product.selling_price.toFixed(2)} / {product.unit_of_measure}
                                   </div>
                                 </div>
                               ))}

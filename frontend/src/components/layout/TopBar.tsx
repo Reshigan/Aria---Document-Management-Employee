@@ -1,6 +1,5 @@
 import React from 'react';
 import { Search, Bell, User } from 'lucide-react';
-import { CompanySwitcher } from '../CompanySwitcher';
 import './TopBar.css';
 
 export const TopBar: React.FC = () => {
@@ -16,8 +15,6 @@ export const TopBar: React.FC = () => {
       </div>
 
       <div className="topbar-actions">
-        <CompanySwitcher />
-        
         <button className="topbar-action-btn" title="Notifications">
           <Bell size={20} />
           <span className="topbar-badge">3</span>
