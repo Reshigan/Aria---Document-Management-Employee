@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Package, Plus, Search, Edit, Trash2, DollarSign, TrendingUp } from 'lucide-react';
-import { api } from '../../lib/api';
+import api from '../../lib/api';
 
 interface Product {
   id: string;

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { api } from '../../lib/api';
+import api from '../../lib/api';
 import { LineItemsTable, LineItem } from '../../components/LineItemsTable';
 import { ConfirmDialog } from '../../components/ConfirmDialog';
 import { Plus, Search, Filter, Eye, Edit, Trash2, Check, Send, X, FileText } from 'lucide-react';

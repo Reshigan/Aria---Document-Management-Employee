@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { api } from '../../lib/api';
+import api from '../../lib/api';
 import { ConfirmDialog } from '../../components/ConfirmDialog';
 import { Search, Truck, Package, CheckCircle, FileText, X } from 'lucide-react';
 

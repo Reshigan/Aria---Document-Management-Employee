@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { api } from '../../lib/api';
+import api from '../../lib/api';
 import { TransactionLayout, TransactionCard, TransactionField } from '../../components/TransactionLayout';
 import { LineItemsTable, LineItem } from '../../components/LineItemsTable';
 import { DollarSign, Printer } from 'lucide-react';

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Building2, Plus, Search, Edit, Trash2, Mail, Phone, Award } from 'lucide-react';
-import { api } from '../../lib/api';
+import api from '../../lib/api';
 
 interface Supplier {
   id: string;
