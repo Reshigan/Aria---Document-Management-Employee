@@ -366,7 +366,7 @@ class DocumentProcessor:
         
         return result
     
-    def _query_ollama(self, prompt: str, model: str = "llama3.2") -> Optional[str]:
+    def _query_ollama(self, prompt: str, model: str = "aria-classify") -> Optional[str]:
         """Query Ollama API for AI processing"""
         try:
             response = requests.post(
@@ -376,9 +376,9 @@ class DocumentProcessor:
                     "prompt": prompt,
                     "stream": False,
                     "options": {
-                        "temperature": 0.1,  # Low temperature for consistent results
+                        "temperature": 0.2,  # Low temperature for consistent results
                         "top_p": 0.9,
-                        "max_tokens": 1000
+                        "num_ctx": 2048  # Reduced context window to save memory
                     }
                 },
                 timeout=60

@@ -12,7 +12,7 @@ class OllamaService:
     
     def __init__(self, base_url: str = "http://localhost:11434"):
         self.base_url = base_url
-        self.default_model = "mistral:7b"
+        self.default_model = "aria-classify"
         
     def chat(
         self,
@@ -212,10 +212,10 @@ Response:"""
 
 # Recommended models for different tasks
 OLLAMA_MODELS = {
-    "document_extraction": "mistral:7b",  # Fast, accurate for structured data
-    "helpdesk": "llama2:13b",             # Better reasoning for conversations
-    "sales_order": "mistral:7b",          # Efficient for order processing
-    "classification": "phi-2",            # Microsoft's efficient model
-    "code_generation": "codellama:7b",    # For technical tasks
-    "general": "llama2:7b"                # General purpose
+    "document_extraction": "aria-classify",  # Custom model optimized for ARIA (1.3GB)
+    "helpdesk": "aria-classify",             # Lightweight for conversations
+    "sales_order": "aria-classify",          # Efficient for order processing
+    "classification": "aria-classify",       # Document classification
+    "code_generation": "llama3.2:1b",        # Smaller model for technical tasks
+    "general": "aria-classify"               # General purpose (default)
 }
