@@ -4,6 +4,7 @@
  */
 import React, { useState, useRef, useEffect } from 'react';
 import { Send, Bot, User, Loader, Sparkles, FileText, X, Copy, Check } from 'lucide-react';
+import api from '@/lib/api';
 
 interface Message {
   role: 'user' | 'assistant' | 'system';
@@ -74,74 +75,18 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
     abortControllerRef.current = new AbortController();
 
     try {
-      const response = await fetch('/api/aria/chat', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify({
-          message: input.trim(),
-          conversation_id: conversationId,
-          context: {}
-        }),
-        signal: abortControllerRef.current.signal
+      const response = await api.post('/aria/chat', {
+        message: input.trim(),
+        context: {}
       });
 
-      if (!response.ok) throw new Error('Failed to send message');
-
-      const contentType = response.headers.get('content-type');
-      
-      if (contentType?.includes('application/json')) {
-        const data = await response.json();
-        const assistantMessage: Message = {
-          role: 'assistant',
-          content: data.response || data.message || 'No response',
-          timestamp: new Date().toISOString()
-        };
-        setMessages(prev => [...prev, assistantMessage]);
-      } else {
-        const reader = response.body?.getReader();
-        const decoder = new TextDecoder();
-        let buffer = '';
-        let fullResponse = '';
-
-        if (reader) {
-          while (true) {
-            const { done, value } = await reader.read();
-            if (done) break;
-
-            buffer += decoder.decode(value, { stream: true });
-            const lines = buffer.split('\n');
-            buffer = lines.pop() || '';
-
-            for (const line of lines) {
-              if (line.startsWith('data: ')) {
-                const data = JSON.parse(line.slice(6));
-                
-                if (data.error) throw new Error(data.error);
-
-                if (!data.done) {
-                  fullResponse += data.chunk;
-                  setCurrentStreamingMessage(fullResponse);
-                } else {
-                  const assistantMessage: Message = {
-                    role: 'assistant',
-                    content: fullResponse,
-                    timestamp: new Date().toISOString()
-                  };
-                  setMessages(prev => [...prev, assistantMessage]);
-                  setCurrentStreamingMessage('');
-                  
-                  if (data.conversation_id && !conversationId) {
-                    onNewConversation?.(data.conversation_id);
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
+      const assistantMessage: Message = {
+        role: 'assistant',
+        content: response.data.response || response.data.message || 'No response',
+        timestamp: new Date().toISOString(),
+        metadata: response.data
+      };
+      setMessages(prev => [...prev, assistantMessage]);
     } catch (error: any) {
       if (error.name !== 'AbortError') {
         console.error('Error sending message:', error);
