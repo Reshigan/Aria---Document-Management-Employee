@@ -83,49 +83,59 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
         body: JSON.stringify({
           message: input.trim(),
           conversation_id: conversationId,
-          stream: true,
-          temperature: 0.7,
-          max_tokens: 2000
+          context: {}
         }),
         signal: abortControllerRef.current.signal
       });
 
       if (!response.ok) throw new Error('Failed to send message');
 
-      const reader = response.body?.getReader();
-      const decoder = new TextDecoder();
-      let buffer = '';
-      let fullResponse = '';
+      const contentType = response.headers.get('content-type');
+      
+      if (contentType?.includes('application/json')) {
+        const data = await response.json();
+        const assistantMessage: Message = {
+          role: 'assistant',
+          content: data.response || data.message || 'No response',
+          timestamp: new Date().toISOString()
+        };
+        setMessages(prev => [...prev, assistantMessage]);
+      } else {
+        const reader = response.body?.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+        let fullResponse = '';
 
-      if (reader) {
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
+        if (reader) {
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
 
-          buffer += decoder.decode(value, { stream: true });
-          const lines = buffer.split('\n');
-          buffer = lines.pop() || '';
+            buffer += decoder.decode(value, { stream: true });
+            const lines = buffer.split('\n');
+            buffer = lines.pop() || '';
 
-          for (const line of lines) {
-            if (line.startsWith('data: ')) {
-              const data = JSON.parse(line.slice(6));
-              
-              if (data.error) throw new Error(data.error);
-
-              if (!data.done) {
-                fullResponse += data.chunk;
-                setCurrentStreamingMessage(fullResponse);
-              } else {
-                const assistantMessage: Message = {
-                  role: 'assistant',
-                  content: fullResponse,
-                  timestamp: new Date().toISOString()
-                };
-                setMessages(prev => [...prev, assistantMessage]);
-                setCurrentStreamingMessage('');
+            for (const line of lines) {
+              if (line.startsWith('data: ')) {
+                const data = JSON.parse(line.slice(6));
                 
-                if (data.conversation_id && !conversationId) {
-                  onNewConversation?.(data.conversation_id);
+                if (data.error) throw new Error(data.error);
+
+                if (!data.done) {
+                  fullResponse += data.chunk;
+                  setCurrentStreamingMessage(fullResponse);
+                } else {
+                  const assistantMessage: Message = {
+                    role: 'assistant',
+                    content: fullResponse,
+                    timestamp: new Date().toISOString()
+                  };
+                  setMessages(prev => [...prev, assistantMessage]);
+                  setCurrentStreamingMessage('');
+                  
+                  if (data.conversation_id && !conversationId) {
+                    onNewConversation?.(data.conversation_id);
+                  }
                 }
               }
             }
