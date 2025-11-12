@@ -112,8 +112,8 @@ const CRMDashboard: React.FC = () => {
     setLeadsLoading(true);
     setError('');
     try {
-      const response = await api.get('/erp/crm/leads');
-      setLeads(response.data.leads || []);
+      const response = await api.get('/crm/leads');
+      setLeads(response.data || []);
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Failed to load leads');
     } finally {
@@ -155,9 +155,9 @@ const CRMDashboard: React.FC = () => {
     setError('');
     try {
       if (editingLead) {
-        await api.put(`/erp/crm/leads/${editingLead.id}`, leadForm);
+        await api.put(`/crm/leads/${editingLead.id}`, leadForm);
       } else {
-        await api.post('/erp/crm/leads', leadForm);
+        await api.post('/crm/leads', leadForm);
       }
       setShowLeadModal(false);
       loadLeads();
@@ -168,7 +168,7 @@ const CRMDashboard: React.FC = () => {
 
   const handleDeleteLead = async (id: number) => {
     try {
-      await api.delete(`/erp/crm/leads/${id}`);
+      await api.delete(`/crm/leads/${id}`);
       loadLeads();
       setDeleteConfirm({ show: false, type: 'lead', id: 0, name: '' });
     } catch (err: any) {
@@ -178,7 +178,7 @@ const CRMDashboard: React.FC = () => {
 
   const handleConvertLead = async (leadId: number) => {
     try {
-      await api.post(`/erp/crm/leads/${leadId}/convert`);
+      await api.post(`/crm/leads/${leadId}/convert`);
       loadLeads();
       loadOpportunities();
     } catch (err: any) {
@@ -190,8 +190,8 @@ const CRMDashboard: React.FC = () => {
     setOppsLoading(true);
     setError('');
     try {
-      const response = await api.get('/erp/crm/opportunities');
-      setOpportunities(response.data.opportunities || []);
+      const response = await api.get('/crm/opportunities');
+      setOpportunities(response.data || []);
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Failed to load opportunities');
     } finally {
@@ -236,9 +236,9 @@ const CRMDashboard: React.FC = () => {
       };
       
       if (editingOpp) {
-        await api.put(`/erp/crm/opportunities/${editingOpp.id}`, payload);
+        await api.put(`/crm/opportunities/${editingOpp.id}`, payload);
       } else {
-        await api.post('/erp/crm/opportunities', payload);
+        await api.post('/crm/opportunities', payload);
       }
       setShowOppModal(false);
       loadOpportunities();
@@ -249,7 +249,7 @@ const CRMDashboard: React.FC = () => {
 
   const handleDeleteOpportunity = async (id: number) => {
     try {
-      await api.delete(`/erp/crm/opportunities/${id}`);
+      await api.delete(`/crm/opportunities/${id}`);
       loadOpportunities();
       setDeleteConfirm({ show: false, type: 'opportunity', id: 0, name: '' });
     } catch (err: any) {
@@ -259,7 +259,7 @@ const CRMDashboard: React.FC = () => {
 
   const handleWinOpportunity = async (oppId: number) => {
     try {
-      await api.post(`/erp/crm/opportunities/${oppId}/win`);
+      await api.post(`/crm/opportunities/${oppId}/win`);
       loadOpportunities();
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Failed to mark opportunity as won');
@@ -270,8 +270,8 @@ const CRMDashboard: React.FC = () => {
     setCustomersLoading(true);
     setError('');
     try {
-      const response = await api.get('/erp/crm/customers');
-      setCustomers(response.data.customers || []);
+      const response = await api.get('/crm/customers');
+      setCustomers(response.data || []);
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Failed to load customers');
     } finally {
@@ -317,9 +317,9 @@ const CRMDashboard: React.FC = () => {
       };
       
       if (editingCustomer) {
-        await api.put(`/erp/crm/customers/${editingCustomer.id}`, payload);
+        await api.put(`/crm/customers/${editingCustomer.id}`, payload);
       } else {
-        await api.post('/erp/crm/customers', payload);
+        await api.post('/crm/customers', payload);
       }
       setShowCustomerModal(false);
       loadCustomers();
@@ -330,7 +330,7 @@ const CRMDashboard: React.FC = () => {
 
   const handleDeleteCustomer = async (id: number) => {
     try {
-      await api.delete(`/erp/crm/customers/${id}`);
+      await api.delete(`/crm/customers/${id}`);
       loadCustomers();
       setDeleteConfirm({ show: false, type: 'customer', id: 0, name: '' });
     } catch (err: any) {
