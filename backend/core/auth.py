@@ -110,7 +110,7 @@ def get_current_user(token: str = Depends(oauth2_scheme)) -> UserContext:
     db = _AuthSessionLocal()
     try:
         result = db.execute(
-            text("SELECT id, email, full_name, is_active, organization_id, company_id FROM users WHERE id = :user_id"),
+            text("SELECT id, email, is_active, organization_id, company_id FROM users WHERE id = :user_id"),
             {"user_id": user_id}
         )
         row = result.fetchone()
@@ -121,10 +121,10 @@ def get_current_user(token: str = Depends(oauth2_scheme)) -> UserContext:
         user = UserContext(
             id=row[0],
             email=row[1],
-            full_name=row[2],
-            is_active=row[3],
-            organization_id=row[4],
-            company_id=row[5]
+            full_name=row[1],  # Use email as full_name fallback
+            is_active=row[2],
+            organization_id=row[3],
+            company_id=row[4]
         )
         
         if not user.is_active:
