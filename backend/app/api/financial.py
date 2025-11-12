@@ -15,8 +15,7 @@ from models.transactions import (
     Invoice, InvoiceLine, Payment, PaymentAllocation
 )
 from models.accounting import (
-    GeneralLedger, BankTransaction, BankReconciliation,
-    TaxTransaction
+    GeneralLedger
 )
 from models.user import User
 from pydantic import BaseModel, Field
