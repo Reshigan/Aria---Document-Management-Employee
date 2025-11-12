@@ -13,7 +13,7 @@ from typing import Any, Dict, Optional
 from pathlib import Path
 
 # Create log directory if it doesn't exist
-LOG_DIR = Path("/var/log/aria")
+LOG_DIR = Path(os.getenv("LOG_DIR", "./logs"))
 LOG_DIR.mkdir(parents=True, exist_ok=True)
 
 class StructuredFormatter(logging.Formatter):

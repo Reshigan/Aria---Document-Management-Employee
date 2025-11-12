@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../lib/api';
-import ConfirmDialog from '../../components/ConfirmDialog';
+import { ConfirmDialog } from '../../components/ConfirmDialog';
 
 interface BankAccount {
   id: number;

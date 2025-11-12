@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
-import { api } from '../../lib/api';
+import api from '../../lib/api';
 import { TransactionLayout, TransactionCard, TransactionField } from '../../components/TransactionLayout';
 import { Trash2 } from 'lucide-react';
 
