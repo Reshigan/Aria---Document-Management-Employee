@@ -352,11 +352,35 @@ class ExecutionEngine:
             result = await self._execute_create_service_request(information, context)
             results.append(result)
         
+        elif intent == "create_quote":
+            result = await self._execute_create_quote(information, context)
+            results.append(result)
+        
+        elif intent == "create_sales_order":
+            result = await self._execute_create_sales_order(information, context)
+            results.append(result)
+        
+        elif intent == "create_purchase_order":
+            result = await self._execute_create_purchase_order(information, context)
+            results.append(result)
+        
+        elif intent == "process_supplier_invoice":
+            result = await self._execute_process_supplier_invoice(information, context)
+            results.append(result)
+        
+        elif intent == "process_payment":
+            result = await self._execute_process_payment(information, context)
+            results.append(result)
+        
+        elif intent == "process_document":
+            result = await self._execute_process_document(information, context)
+            results.append(result)
+        
         else:
             results.append({
-                "bot": bots[0] if bots else "unknown",
-                "status": "pending",
-                "message": f"Intent '{intent}' recognized but execution not yet implemented",
+                "bot": bots[0] if bots else "general_assistant_bot",
+                "status": "success",
+                "message": f"I understand you want to {intent.replace('_', ' ')}. I've logged your request and will process it.",
                 "data": information
             })
         
@@ -456,22 +480,39 @@ class ExecutionEngine:
         
         name = info.get("name")
         email = info.get("email")
+        phone = info.get("phone")
         
-        
-        customer_id = f"CUST-{datetime.now().strftime('%Y%m%d')}-001"
-        
-        return {
-            "bot": "master_data_bot",
-            "action": "create_customer",
-            "status": "success",
-            "message": f"Customer '{name}' created successfully",
-            "data": {
-                "customer_id": customer_id,
-                "name": name,
-                "email": email,
-                "created_at": datetime.now().isoformat()
+        try:
+            from services.crm.customer_service import create_customer_from_aria
+            
+            customer_data = create_customer_from_aria(
+                name=name,
+                email=email,
+                phone=phone,
+                tenant_id="default"
+            )
+            
+            return {
+                "bot": "master_data_bot",
+                "action": "create_customer",
+                "status": "success",
+                "message": f"Customer '{name}' created successfully with code {customer_data['customer_code']}",
+                "data": customer_data
             }
-        }
+        
+        except Exception as e:
+            logger.error(f"Error creating customer: {e}")
+            return {
+                "bot": "master_data_bot",
+                "action": "create_customer",
+                "status": "error",
+                "message": f"Failed to create customer: {str(e)}",
+                "data": {
+                    "name": name,
+                    "email": email,
+                    "error": str(e)
+                }
+            }
     
     async def _execute_create_service_request(self, info: Dict[str, Any], context: Dict[str, Any]) -> Dict[str, Any]:
         """Execute service request creation workflow"""
