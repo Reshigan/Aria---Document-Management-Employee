@@ -71,6 +71,13 @@ except Exception as e:
     print(f"⚠️ Order-to-Cash module not loaded: {e}")
 
 try:
+    from modules.rbac_module import router as rbac_router
+    app.include_router(rbac_router)
+    print("✅ RBAC module loaded")
+except Exception as e:
+    print(f"⚠️ RBAC module not loaded: {e}")
+
+try:
     from app.api.ap import router as ap_router
     app.include_router(ap_router)
     print("✅ Accounts Payable API loaded")
