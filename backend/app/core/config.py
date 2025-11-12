@@ -17,15 +17,15 @@ class Settings(BaseSettings):
     API_V1_PREFIX: str = "/api/v1"
     
     # Security
-    SECRET_KEY: str
-    JWT_SECRET_KEY: str
-    JWT_REFRESH_SECRET_KEY: str
+    SECRET_KEY: str = "CHANGE_THIS_IN_PRODUCTION_12345678901234567890"
+    JWT_SECRET_KEY: str = "CHANGE_THIS_IN_PRODUCTION_12345678901234567890"
+    JWT_REFRESH_SECRET_KEY: str = "CHANGE_THIS_REFRESH_SECRET_12345678901234567890"
     JWT_ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7
     
     # Database
-    DATABASE_URL: str
+    DATABASE_URL: str = "postgresql://aria:aria_password@localhost:5432/aria_db"
     DATABASE_POOL_SIZE: int = 5
     DATABASE_MAX_OVERFLOW: int = 10
     
@@ -65,6 +65,7 @@ class Settings(BaseSettings):
     class Config:
         env_file = ".env"
         case_sensitive = True
+        extra = "allow"  # Allow extra environment variables
 
 
 settings = Settings()
