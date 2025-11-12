@@ -374,7 +374,7 @@ async def list_customers(
 ):
     """List all customers for order-to-cash operations"""
     query = """
-        SELECT id, name, email, phone, address, city, country, is_active
+        SELECT id, name, email, phone, is_active
         FROM customers
         WHERE company_id = :company_id
     """
@@ -400,10 +400,10 @@ async def list_customers(
             "name": row[1],
             "email": row[2],
             "phone": row[3],
-            "address": row[4],
-            "city": row[5],
-            "country": row[6],
-            "is_active": row[7]
+            "address": None,
+            "city": None,
+            "country": None,
+            "is_active": row[4]
         })
     return customers
 
