@@ -2979,7 +2979,7 @@ async def aria_delegate(request: DelegateRequest, user: dict = Depends(get_curre
 
 @app.on_event("startup")
 async def startup_event():
-    """Print system information on startup"""
+    """Print system information on startup and start email polling"""
     print("\n" + "=" * 60)
     print("🚀 ARIA v3.0 - COMPLETE PRODUCTION SYSTEM")
     print("=" * 60)
@@ -3001,6 +3001,24 @@ async def startup_event():
     print("\n💼 ERP Modules:")
     for module_id, module_data in ERP_MODULES.items():
         print(f"   {module_data['icon']} {module_data['name']}")
+    
+    import os
+    import asyncio
+    if all([
+        os.getenv('OFFICE365_TENANT_ID'),
+        os.getenv('OFFICE365_CLIENT_ID'),
+        os.getenv('OFFICE365_CLIENT_SECRET')
+    ]):
+        try:
+            from services.email_polling_service import get_polling_service
+            polling_interval = int(os.getenv('EMAIL_POLL_INTERVAL', '60'))
+            email_service = get_polling_service(poll_interval=polling_interval)
+            asyncio.create_task(email_service.start())
+            print(f"\n📧 Email Polling: Enabled (interval: {polling_interval}s)")
+        except Exception as e:
+            print(f"\n⚠️  Email Polling: Failed to start - {e}")
+    else:
+        print("\n⚠️  Email Polling: Disabled (Office365 credentials not configured)")
     
     print("\n" + "=" * 60)
     print("🎯 System ready for deployment!")
