@@ -70,6 +70,48 @@ try:
 except Exception as e:
     print(f"⚠️ Order-to-Cash module not loaded: {e}")
 
+try:
+    from app.api.ap import router as ap_router
+    app.include_router(ap_router)
+    print("✅ Accounts Payable API loaded")
+except Exception as e:
+    print(f"⚠️ Accounts Payable API not loaded: {e}")
+
+try:
+    from app.api.banking import router as banking_router
+    app.include_router(banking_router)
+    print("✅ Banking API loaded")
+except Exception as e:
+    print(f"⚠️ Banking API not loaded: {e}")
+
+try:
+    from app.api.vat import router as vat_router
+    app.include_router(vat_router)
+    print("✅ VAT API loaded")
+except Exception as e:
+    print(f"⚠️ VAT API not loaded: {e}")
+
+try:
+    from app.api.reports import router as reports_router
+    app.include_router(reports_router)
+    print("✅ Reports API loaded")
+except Exception as e:
+    print(f"⚠️ Reports API not loaded: {e}")
+
+try:
+    from app.api.fixed_assets import router as fixed_assets_router
+    app.include_router(fixed_assets_router)
+    print("✅ Fixed Assets API loaded")
+except Exception as e:
+    print(f"⚠️ Fixed Assets API not loaded: {e}")
+
+try:
+    from app.api.financial import router as financial_router
+    app.include_router(financial_router)
+    print("✅ Financial API loaded")
+except Exception as e:
+    print(f"⚠️ Financial API not loaded: {e}")
+
 # ========================================
 # REQUEST/RESPONSE MODELS
 # ========================================
