@@ -33,15 +33,53 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Response interceptor - handle errors
+let refreshPromise: Promise<string> | null = null;
+
+// Response interceptor - handle errors and token refresh
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      window.location.href = '/login';
+  async (error) => {
+    const originalRequest = error.config;
+    
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+      
+      try {
+        if (!refreshPromise) {
+          const refreshToken = localStorage.getItem('refresh_token');
+          
+          if (!refreshToken) {
+            throw new Error('No refresh token available');
+          }
+          
+          refreshPromise = api.post('/auth/refresh', { refresh_token: refreshToken })
+            .then(response => {
+              const { access_token } = response.data;
+              localStorage.setItem('access_token', access_token);
+              localStorage.setItem('token', access_token); // Backwards compatibility
+              refreshPromise = null;
+              return access_token;
+            })
+            .catch(err => {
+              refreshPromise = null;
+              throw err;
+            });
+        }
+        
+        const newToken = await refreshPromise;
+        originalRequest.headers.Authorization = `Bearer ${newToken}`;
+        return api(originalRequest);
+        
+      } catch (refreshError) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('refresh_token');
+        localStorage.removeItem('user');
+        window.location.href = '/login';
+        return Promise.reject(refreshError);
+      }
     }
+    
     return Promise.reject(error);
   }
 );
