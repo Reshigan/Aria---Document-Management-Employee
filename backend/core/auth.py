@@ -84,6 +84,7 @@ def get_current_user(token: str = Depends(oauth2_scheme)) -> UserContext:
     - Legacy: {"user_id": int}
     - Current: {"sub": str(int), "email": str}
     
+    Looks up user by email (from JWT payload) to avoid UUID vs integer mismatch
     Returns a UserContext object with user attributes (no ORM relationships)
     """
     credentials_exception = HTTPException(
@@ -95,13 +96,8 @@ def get_current_user(token: str = Depends(oauth2_scheme)) -> UserContext:
     try:
         payload = AuthService.decode_token(token)
         
-        user_id = payload.get("user_id")
-        if user_id is None:
-            sub = payload.get("sub")
-            if sub is not None:
-                user_id = int(sub)
-        
-        if user_id is None:
+        email = payload.get("email")
+        if email is None:
             raise credentials_exception
             
     except (JWTError, ValueError, TypeError):
@@ -110,8 +106,8 @@ def get_current_user(token: str = Depends(oauth2_scheme)) -> UserContext:
     db = _AuthSessionLocal()
     try:
         result = db.execute(
-            text("SELECT id, email, is_active FROM users WHERE id = :user_id"),
-            {"user_id": user_id}
+            text("SELECT id, email, is_active, company_id FROM users WHERE email = :email"),
+            {"email": email}
         )
         row = result.fetchone()
         
@@ -124,7 +120,7 @@ def get_current_user(token: str = Depends(oauth2_scheme)) -> UserContext:
             full_name=row[1],  # Use email as full_name fallback
             is_active=row[2],
             organization_id=1,  # Default organization_id
-            company_id=None  # No company_id in schema
+            company_id=row[3]
         )
         
         if not user.is_active:
