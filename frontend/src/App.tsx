@@ -10,6 +10,7 @@ import PurchaseOrders from './pages/ERP/PurchaseOrders';
 import GoodsReceipts from './pages/ERP/GoodsReceipts';
 import WorkOrdersERP from './pages/ERP/WorkOrders';
 import Employees from './pages/ERP/Employees';
+import FieldService from './pages/ERP/FieldService';
 import ERPDashboard from './pages/ERPDashboard';
 import BotRegistry from './pages/BotRegistry';
 import Settings from './pages/Settings';
@@ -96,6 +97,11 @@ function App() {
           <Route path="/manufacturing/work-orders" element={<WorkOrdersERP />} />
           <Route path="/manufacturing/bom" element={<BOMManagement />} />
           <Route path="/manufacturing/dashboard" element={<ManufacturingDashboard />} />
+          
+          {/* Field Service */}
+          <Route path="/field-service" element={<FieldService />} />
+          <Route path="/field-service/requests" element={<FieldService />} />
+          <Route path="/field-service/work-orders" element={<FieldService />} />
           
           {/* Bots */}
           <Route path="/bots" element={<BotRegistry />} />

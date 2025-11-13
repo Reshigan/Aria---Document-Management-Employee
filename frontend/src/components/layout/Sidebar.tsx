@@ -20,7 +20,8 @@ import {
   MessageSquare,
   ShoppingBag,
   Factory,
-  Shield
+  Shield,
+  Wrench
 } from 'lucide-react';
 import './Sidebar.css';
 
@@ -50,6 +51,7 @@ const navigation: NavItem[] = [
   { label: 'Inventory', icon: <Package size={20} />, path: '/inventory', color: '#8b5cf6' },
   { label: 'Procurement', icon: <ShoppingBag size={20} />, path: '/procurement', color: '#6366f1' },
   { label: 'Manufacturing', icon: <Factory size={20} />, path: '/manufacturing', color: '#ef4444' },
+  { label: 'Field Service', icon: <Wrench size={20} />, path: '/field-service', color: '#14b8a6' },
   
   { label: 'Automation Bots', icon: <Bot size={20} />, path: '/bots', color: '#ec4899' },
   { label: 'Reports', icon: <FileText size={20} />, path: '/reports' },
