@@ -853,17 +853,403 @@ class BankStatementAnalyzer(BaseDocumentAnalyzer):
 # ============================================================================
 # ============================================================================
 
+class RemittanceAdviceAnalyzer(BaseDocumentAnalyzer):
+    """Customer Remittance Advice (F-28) - AR Payment with Invoice Clearing"""
+    
+    def detect(self, df: pd.DataFrame) -> bool:
+        cols = [str(c).lower() for c in df.columns]
+        return (any('remittance' in str(c).lower() or 'document no' in str(c).lower() or 'invoice' in str(c).lower() for c in cols) and
+                any('gross' in c or 'amount' in c or 'nett' in c or 'net' in c for c in cols) and
+                (any('discount' in c or 'deduction' in c or 'reference' in c for c in cols)))
+    
+    def analyze(self, df: pd.DataFrame) -> Dict[str, Any]:
+        doc_col = next((c for c in df.columns if 'document' in str(c).lower() and 'no' in str(c).lower()), None)
+        invoice_col = next((c for c in df.columns if 'invoice' in str(c).lower()), doc_col)
+        gross_col = next((c for c in df.columns if 'gross' in str(c).lower()), None)
+        discount_col = next((c for c in df.columns if 'discount' in str(c).lower()), None)
+        net_col = next((c for c in df.columns if 'nett' in str(c).lower() or 'net' in str(c).lower()), None)
+        ref_col = next((c for c in df.columns if 'reference' in str(c).lower() or 'supplier' in str(c).lower()), None)
+        
+        total_gross = df[gross_col].sum() if gross_col and pd.api.types.is_numeric_dtype(df[gross_col]) else 0
+        total_discount = df[discount_col].sum() if discount_col and pd.api.types.is_numeric_dtype(df[discount_col]) else 0
+        total_net = df[net_col].sum() if net_col and pd.api.types.is_numeric_dtype(df[net_col]) else 0
+        
+        return {
+            "document_type": "Remittance Advice",
+            "document_subtype": "AR Customer Payment with Invoice Clearing",
+            "sap_transaction": "F-28",
+            "summary": {
+                "total_invoices": len(df),
+                "total_gross": round(total_gross, 2),
+                "total_discount": round(total_discount, 2),
+                "total_net": round(total_net, 2)
+            },
+            "columns": {
+                "invoice": invoice_col,
+                "gross": gross_col,
+                "discount": discount_col,
+                "net": net_col,
+                "reference": ref_col
+            }
+        }
+    
+    def generate_gl_postings(self, df: pd.DataFrame, analysis: Dict[str, Any]) -> List[Dict[str, Any]]:
+        postings = []
+        cols = analysis['columns']
+        
+        for idx, row in df.iterrows():
+            gross = row[cols['gross']] if cols['gross'] and pd.notna(row[cols['gross']]) else 0
+            discount = row[cols['discount']] if cols['discount'] and pd.notna(row[cols['discount']]) else 0
+            net = row[cols['net']] if cols['net'] and pd.notna(row[cols['net']]) else 0
+            
+            if net != 0:
+                postings.append({
+                    "line_number": len(postings) + 1,
+                    "account": "1100",
+                    "account_name": "Bank - Current Account",
+                    "debit": abs(net) if net > 0 else 0,
+                    "credit": abs(net) if net < 0 else 0,
+                    "description": f"Customer payment - {row[cols['reference']] if cols['reference'] else idx}",
+                    "posting_key": "40" if net > 0 else "50"
+                })
+                
+                postings.append({
+                    "line_number": len(postings) + 1,
+                    "account": "1200",
+                    "account_name": "Accounts Receivable",
+                    "debit": abs(gross) if gross < 0 else 0,
+                    "credit": abs(gross) if gross > 0 else 0,
+                    "description": f"AR clearing - Invoice {row[cols['invoice']] if cols['invoice'] else idx}",
+                    "posting_key": "50" if gross > 0 else "40"
+                })
+                
+                if discount != 0:
+                    postings.append({
+                        "line_number": len(postings) + 1,
+                        "account": "4100",
+                        "account_name": "Sales Discounts",
+                        "debit": abs(discount) if discount > 0 else 0,
+                        "credit": abs(discount) if discount < 0 else 0,
+                        "description": f"Discount - Invoice {row[cols['invoice']] if cols['invoice'] else idx}",
+                        "posting_key": "40" if discount > 0 else "50"
+                    })
+        
+        return postings
+    
+    def generate_sap_export(self, df: pd.DataFrame, analysis: Dict[str, Any]) -> Dict[str, Any]:
+        records = []
+        cols = analysis['columns']
+        
+        for idx, row in df.iterrows():
+            gross = row[cols['gross']] if cols['gross'] and pd.notna(row[cols['gross']]) else 0
+            discount = row[cols['discount']] if cols['discount'] and pd.notna(row[cols['discount']]) else 0
+            net = row[cols['net']] if cols['net'] and pd.notna(row[cols['net']]) else 0
+            
+            if net != 0:
+                records.append({
+                    "Document_Date": datetime.now().strftime('%Y%m%d'),
+                    "Posting_Date": datetime.now().strftime('%Y%m%d'),
+                    "Document_Type": "DZ",
+                    "Company_Code": "1000",
+                    "Currency": "ZAR",
+                    "Reference": str(row[cols['reference']]) if cols['reference'] and pd.notna(row[cols['reference']]) else "",
+                    "Invoice_Number": str(row[cols['invoice']]) if cols['invoice'] and pd.notna(row[cols['invoice']]) else "",
+                    "Amount": abs(net),
+                    "Discount_Amount": abs(discount) if discount != 0 else 0,
+                    "Bank_Account": "1100",
+                    "Customer_Account": "1200"
+                })
+        
+        return {
+            "format": "SAP_F28_CUSTOMER_PAYMENT",
+            "transaction_code": "F-28",
+            "description": "Customer Payment with Invoice Clearing",
+            "total_records": len(records),
+            "records": records
+        }
+
+
+class VendorInvoicePOAnalyzer(BaseDocumentAnalyzer):
+    """Vendor Invoice with PO (MIRO)"""
+    
+    def detect(self, df: pd.DataFrame) -> bool:
+        cols = [str(c).lower() for c in df.columns]
+        return (any('po' in c or 'purchase' in c or 'order' in c for c in cols) and
+                any('vendor' in c or 'supplier' in c for c in cols) and
+                any('amount' in c or 'total' in c or 'value' in c for c in cols))
+    
+    def analyze(self, df: pd.DataFrame) -> Dict[str, Any]:
+        po_col = next((c for c in df.columns if 'po' in str(c).lower() or ('purchase' in str(c).lower() and 'order' in str(c).lower())), None)
+        vendor_col = next((c for c in df.columns if 'vendor' in str(c).lower() or 'supplier' in str(c).lower()), None)
+        amount_col = next((c for c in df.columns if 'amount' in str(c).lower() or 'total' in str(c).lower() or 'value' in str(c).lower()), None)
+        
+        total_amount = df[amount_col].sum() if amount_col and pd.api.types.is_numeric_dtype(df[amount_col]) else 0
+        
+        return {
+            "document_type": "Vendor Invoice (PO-Based)",
+            "document_subtype": "AP Invoice with Purchase Order",
+            "sap_transaction": "MIRO",
+            "summary": {
+                "total_invoices": len(df),
+                "unique_vendors": df[vendor_col].nunique() if vendor_col else 0,
+                "total_amount": round(total_amount, 2)
+            },
+            "columns": {
+                "po": po_col,
+                "vendor": vendor_col,
+                "amount": amount_col
+            }
+        }
+    
+    def generate_gl_postings(self, df: pd.DataFrame, analysis: Dict[str, Any]) -> List[Dict[str, Any]]:
+        postings = []
+        cols = analysis['columns']
+        
+        for idx, row in df.iterrows():
+            amount = row[cols['amount']] if cols['amount'] and pd.notna(row[cols['amount']]) else 0
+            
+            if amount != 0:
+                postings.append({
+                    "line_number": len(postings) + 1,
+                    "account": "5000",
+                    "account_name": "Cost of Goods Sold",
+                    "debit": abs(amount),
+                    "credit": 0,
+                    "description": f"PO {row[cols['po']] if cols['po'] else idx}",
+                    "posting_key": "40"
+                })
+                
+                postings.append({
+                    "line_number": len(postings) + 1,
+                    "account": "2100",
+                    "account_name": "Accounts Payable",
+                    "debit": 0,
+                    "credit": abs(amount),
+                    "description": f"Vendor {row[cols['vendor']] if cols['vendor'] else idx}",
+                    "posting_key": "50"
+                })
+        
+        return postings
+    
+    def generate_sap_export(self, df: pd.DataFrame, analysis: Dict[str, Any]) -> Dict[str, Any]:
+        records = []
+        cols = analysis['columns']
+        
+        for idx, row in df.iterrows():
+            amount = row[cols['amount']] if cols['amount'] and pd.notna(row[cols['amount']]) else 0
+            
+            if amount != 0:
+                records.append({
+                    "Document_Date": datetime.now().strftime('%Y%m%d'),
+                    "Posting_Date": datetime.now().strftime('%Y%m%d'),
+                    "PO_Number": str(row[cols['po']]) if cols['po'] and pd.notna(row[cols['po']]) else "",
+                    "Vendor": str(row[cols['vendor']]) if cols['vendor'] and pd.notna(row[cols['vendor']]) else "",
+                    "Amount": abs(amount),
+                    "Currency": "ZAR",
+                    "Company_Code": "1000"
+                })
+        
+        return {
+            "format": "SAP_MIRO_VENDOR_INVOICE",
+            "transaction_code": "MIRO",
+            "description": "Vendor Invoice with PO",
+            "total_records": len(records),
+            "records": records
+        }
+
+
+class VendorCreditMemoAnalyzer(BaseDocumentAnalyzer):
+    """Vendor Credit Memo (FB65)"""
+    
+    def detect(self, df: pd.DataFrame) -> bool:
+        cols = [str(c).lower() for c in df.columns]
+        return (any('credit' in c or 'memo' in c or 'return' in c for c in cols) and
+                any('vendor' in c or 'supplier' in c for c in cols) and
+                any('amount' in c or 'total' in c for c in cols))
+    
+    def analyze(self, df: pd.DataFrame) -> Dict[str, Any]:
+        vendor_col = next((c for c in df.columns if 'vendor' in str(c).lower() or 'supplier' in str(c).lower()), None)
+        amount_col = next((c for c in df.columns if 'amount' in str(c).lower() or 'total' in str(c).lower()), None)
+        
+        total_amount = df[amount_col].sum() if amount_col and pd.api.types.is_numeric_dtype(df[amount_col]) else 0
+        
+        return {
+            "document_type": "Vendor Credit Memo",
+            "document_subtype": "AP Credit Memo",
+            "sap_transaction": "FB65",
+            "summary": {
+                "total_memos": len(df),
+                "unique_vendors": df[vendor_col].nunique() if vendor_col else 0,
+                "total_amount": round(total_amount, 2)
+            },
+            "columns": {
+                "vendor": vendor_col,
+                "amount": amount_col
+            }
+        }
+    
+    def generate_gl_postings(self, df: pd.DataFrame, analysis: Dict[str, Any]) -> List[Dict[str, Any]]:
+        postings = []
+        cols = analysis['columns']
+        
+        for idx, row in df.iterrows():
+            amount = row[cols['amount']] if cols['amount'] and pd.notna(row[cols['amount']]) else 0
+            
+            if amount != 0:
+                postings.append({
+                    "line_number": len(postings) + 1,
+                    "account": "2100",
+                    "account_name": "Accounts Payable",
+                    "debit": abs(amount),
+                    "credit": 0,
+                    "description": f"Vendor credit - {row[cols['vendor']] if cols['vendor'] else idx}",
+                    "posting_key": "40"
+                })
+                
+                postings.append({
+                    "line_number": len(postings) + 1,
+                    "account": "5000",
+                    "account_name": "Cost of Goods Sold",
+                    "debit": 0,
+                    "credit": abs(amount),
+                    "description": f"Credit memo {idx}",
+                    "posting_key": "50"
+                })
+        
+        return postings
+    
+    def generate_sap_export(self, df: pd.DataFrame, analysis: Dict[str, Any]) -> Dict[str, Any]:
+        records = []
+        cols = analysis['columns']
+        
+        for idx, row in df.iterrows():
+            amount = row[cols['amount']] if cols['amount'] and pd.notna(row[cols['amount']]) else 0
+            
+            if amount != 0:
+                records.append({
+                    "Document_Date": datetime.now().strftime('%Y%m%d'),
+                    "Posting_Date": datetime.now().strftime('%Y%m%d'),
+                    "Document_Type": "KG",
+                    "Vendor": str(row[cols['vendor']]) if cols['vendor'] and pd.notna(row[cols['vendor']]) else "",
+                    "Amount": abs(amount),
+                    "Currency": "ZAR",
+                    "Company_Code": "1000"
+                })
+        
+        return {
+            "format": "SAP_FB65_VENDOR_CREDIT",
+            "transaction_code": "FB65",
+            "description": "Vendor Credit Memo",
+            "total_records": len(records),
+            "records": records
+        }
+
+
+class CustomerCreditMemoAnalyzer(BaseDocumentAnalyzer):
+    """Customer Credit Memo (FB75)"""
+    
+    def detect(self, df: pd.DataFrame) -> bool:
+        cols = [str(c).lower() for c in df.columns]
+        return (any('credit' in c or 'memo' in c or 'return' in c for c in cols) and
+                any('customer' in c or 'client' in c for c in cols) and
+                any('amount' in c or 'total' in c for c in cols))
+    
+    def analyze(self, df: pd.DataFrame) -> Dict[str, Any]:
+        customer_col = next((c for c in df.columns if 'customer' in str(c).lower() or 'client' in str(c).lower()), None)
+        amount_col = next((c for c in df.columns if 'amount' in str(c).lower() or 'total' in str(c).lower()), None)
+        
+        total_amount = df[amount_col].sum() if amount_col and pd.api.types.is_numeric_dtype(df[amount_col]) else 0
+        
+        return {
+            "document_type": "Customer Credit Memo",
+            "document_subtype": "AR Credit Memo",
+            "sap_transaction": "FB75",
+            "summary": {
+                "total_memos": len(df),
+                "unique_customers": df[customer_col].nunique() if customer_col else 0,
+                "total_amount": round(total_amount, 2)
+            },
+            "columns": {
+                "customer": customer_col,
+                "amount": amount_col
+            }
+        }
+    
+    def generate_gl_postings(self, df: pd.DataFrame, analysis: Dict[str, Any]) -> List[Dict[str, Any]]:
+        postings = []
+        cols = analysis['columns']
+        
+        for idx, row in df.iterrows():
+            amount = row[cols['amount']] if cols['amount'] and pd.notna(row[cols['amount']]) else 0
+            
+            if amount != 0:
+                postings.append({
+                    "line_number": len(postings) + 1,
+                    "account": "4000",
+                    "account_name": "Sales Revenue",
+                    "debit": abs(amount),
+                    "credit": 0,
+                    "description": f"Credit memo {idx}",
+                    "posting_key": "40"
+                })
+                
+                postings.append({
+                    "line_number": len(postings) + 1,
+                    "account": "1200",
+                    "account_name": "Accounts Receivable",
+                    "debit": 0,
+                    "credit": abs(amount),
+                    "description": f"Customer credit - {row[cols['customer']] if cols['customer'] else idx}",
+                    "posting_key": "50"
+                })
+        
+        return postings
+    
+    def generate_sap_export(self, df: pd.DataFrame, analysis: Dict[str, Any]) -> Dict[str, Any]:
+        records = []
+        cols = analysis['columns']
+        
+        for idx, row in df.iterrows():
+            amount = row[cols['amount']] if cols['amount'] and pd.notna(row[cols['amount']]) else 0
+            
+            if amount != 0:
+                records.append({
+                    "Document_Date": datetime.now().strftime('%Y%m%d'),
+                    "Posting_Date": datetime.now().strftime('%Y%m%d'),
+                    "Document_Type": "DG",
+                    "Customer": str(row[cols['customer']]) if cols['customer'] and pd.notna(row[cols['customer']]) else "",
+                    "Amount": abs(amount),
+                    "Currency": "ZAR",
+                    "Company_Code": "1000"
+                })
+        
+        return {
+            "format": "SAP_FB75_CUSTOMER_CREDIT",
+            "transaction_code": "FB75",
+            "description": "Customer Credit Memo",
+            "total_records": len(records),
+            "records": records
+        }
+
+
+# ============================================================================
+# ============================================================================
+
 class DocumentAnalyzerV2:
     """Main analyzer with pluggable document type analyzers"""
     
     def __init__(self):
         self.analyzers = [
-            # AP
-            VendorPaymentAnalyzer(),  # Check this first (more specific)
-            VendorInvoiceAnalyzer(),
-            # AR
+            # AR - Check remittance first (most specific)
+            RemittanceAdviceAnalyzer(),
             CustomerPaymentAnalyzer(),
+            CustomerCreditMemoAnalyzer(),
             CustomerInvoiceAnalyzer(),
+            # AP
+            VendorPaymentAnalyzer(),
+            VendorCreditMemoAnalyzer(),
+            VendorInvoicePOAnalyzer(),
+            VendorInvoiceAnalyzer(),
             JournalEntryAnalyzer(),
             GoodsReceiptAnalyzer(),
             GoodsIssueAnalyzer(),
@@ -930,7 +1316,9 @@ class DocumentAnalyzerV2:
                 "category": "Accounts Payable",
                 "types": [
                     {"name": "Vendor Invoice", "sap_code": "FB60", "description": "AP Invoice (Non-PO)"},
+                    {"name": "Vendor Invoice (PO-Based)", "sap_code": "MIRO", "description": "AP Invoice with Purchase Order"},
                     {"name": "Vendor Payment", "sap_code": "F-53", "description": "Outgoing Payment to Vendor"},
+                    {"name": "Vendor Credit Memo", "sap_code": "FB65", "description": "AP Credit Memo"},
                 ]
             },
             {
@@ -938,6 +1326,8 @@ class DocumentAnalyzerV2:
                 "types": [
                     {"name": "Customer Invoice", "sap_code": "FB70", "description": "AR Invoice"},
                     {"name": "Customer Payment", "sap_code": "F-28", "description": "Incoming Payment from Customer"},
+                    {"name": "Remittance Advice", "sap_code": "F-28", "description": "AR Customer Payment with Invoice Clearing"},
+                    {"name": "Customer Credit Memo", "sap_code": "FB75", "description": "AR Credit Memo"},
                 ]
             },
             {

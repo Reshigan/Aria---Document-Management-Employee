@@ -529,6 +529,132 @@ async def analyze_and_export(
         raise HTTPException(status_code=500, detail=f"Failed to process request: {str(e)}")
 
 
+@router.post("/export-from-analysis")
+async def export_from_analysis(
+    document_analysis: dict,
+    action: str = "export_to_sap"
+):
+    """
+    Export SAP CSV or post to ERP from OCR/analysis JSON (for PDF/image documents)
+    
+    This endpoint enables PDF/image documents to be exported to SAP after OCR analysis.
+    
+    Parameters:
+    - document_analysis: The analysis JSON from OCR (must include sap_export or gl_postings)
+    - action: Either 'export_to_sap' or 'post_to_erp'
+    
+    Returns:
+    - For export_to_sap: CSV file download
+    - For post_to_erp: Journal entry creation result
+    """
+    try:
+        if action == "export_to_sap":
+            sap_export = document_analysis.get('sap_export', {})
+            records = sap_export.get('records', [])
+            
+            if not records:
+                raise HTTPException(status_code=400, detail="No SAP export records available in analysis")
+            
+            import pandas as pd
+            df = pd.DataFrame(records)
+            
+            csv_content = df.to_csv(index=False)
+            
+            from fastapi.responses import Response
+            transaction_code = sap_export.get('transaction_code', 'EXPORT')
+            return Response(
+                content=csv_content,
+                media_type="text/csv",
+                headers={
+                    "Content-Disposition": f"attachment; filename=SAP_{transaction_code}_Export_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
+                }
+            )
+        
+        elif action == "post_to_erp":
+            gl_postings = document_analysis.get('gl_postings', [])
+            
+            if not gl_postings:
+                raise HTTPException(status_code=400, detail="No GL postings available in analysis")
+            
+            from modules.gl_posting_module import JournalEntryCreate, JournalLineCreate
+            import asyncpg
+            import os
+            
+            database_url = os.getenv('DATABASE_URL')
+            conn = await asyncpg.connect(database_url)
+            
+            try:
+                company = await conn.fetchrow("SELECT id FROM companies LIMIT 1")
+                if not company:
+                    raise HTTPException(status_code=400, detail="No company found. Please create a company first.")
+                
+                company_id = str(company['id'])
+                
+                doc_type = document_analysis.get('document_type', 'Unknown')
+                doc_subtype = document_analysis.get('document_subtype', '')
+                
+                ref_prefix = "JE"
+                if "Vendor" in doc_type:
+                    ref_prefix = "AP"
+                elif "Customer" in doc_type:
+                    ref_prefix = "AR"
+                
+                reference = f"{ref_prefix}-OCR-{datetime.now().strftime('%Y%m%d-%H%M%S')}"
+                
+                lines = []
+                for idx, posting in enumerate(gl_postings):
+                    account_code = str(posting.get('account', '9999'))
+                    debit = float(posting.get('debit', 0))
+                    credit = float(posting.get('credit', 0))
+                    description = posting.get('description', '')
+                    
+                    lines.append(JournalLineCreate(
+                        line_number=idx + 1,
+                        account_code=account_code,
+                        debit_amount=debit,
+                        credit_amount=credit,
+                        description=description
+                    ))
+                
+                from modules.gl_posting_module import create_journal_entry
+                
+                entry_data = JournalEntryCreate(
+                    company_id=company_id,
+                    reference=reference,
+                    entry_date=datetime.now().date(),
+                    posting_date=datetime.now().date(),
+                    description=f"{doc_type} - {doc_subtype} from OCR analysis",
+                    source="OCR_ANALYSIS",
+                    source_document_hash="",
+                    source_document_name="OCR Document",
+                    lines=lines
+                )
+                
+                result = await create_journal_entry(entry_data)
+                
+                return {
+                    "status": "success",
+                    "message": f"Successfully created journal entry {reference} with {len(gl_postings)} GL lines from OCR analysis",
+                    "document_type": document_analysis.get('document_type'),
+                    "journal_entry_id": result.id,
+                    "reference": result.reference,
+                    "total_entries": len(gl_postings),
+                    "entry_status": result.status,
+                    "summary": document_analysis.get('summary'),
+                    "timestamp": datetime.now().isoformat(),
+                    "note": "Journal entry created in DRAFT status. Use POST /api/erp/gl/journal-entries/{id}/post to post to GL."
+                }
+            finally:
+                await conn.close()
+        
+        else:
+            raise HTTPException(status_code=400, detail="Invalid action. Use 'post_to_erp' or 'export_to_sap'")
+    
+    except Exception as e:
+        logger.error(f"Error in export from analysis: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to process request: {str(e)}")
+
+
 @router.get("/document-types")
 async def get_supported_document_types():
     """Get list of supported document types for intelligent analysis"""

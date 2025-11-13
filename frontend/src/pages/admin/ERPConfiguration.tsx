@@ -3,6 +3,7 @@ import {
   Settings, Database, CheckCircle, XCircle, RefreshCw, 
   Key, Link, AlertCircle, Save, TestTube, ExternalLink
 } from 'lucide-react';
+import api from '../../lib/api';
 
 interface ERPConnection {
   id: string;
@@ -94,13 +95,8 @@ export default function ERPConfigurationPage() {
 
   const fetchConnections = async () => {
     try {
-      const response = await fetch('/api/admin/erp-connections', {
-        headers: { 'Authorization': `Bearer ${localStorage.getItem('access_token')}` }
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setConnections(data.connections);
-      }
+      const data = await api.get('/admin/erp-connections');
+      setConnections(data.connections || []);
     } catch (error) {
       console.error('Error fetching ERP connections:', error);
     } finally {
@@ -126,23 +122,13 @@ export default function ERPConfigurationPage() {
   const handleTestConnection = async (erpId: string) => {
     setTesting(erpId);
     try {
-      const response = await fetch(`/api/admin/erp-connections/${erpId}/test`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('access_token')}`
-        }
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setConnections(connections.map(conn => 
-          conn.id === erpId 
-            ? { ...conn, status: data.success ? 'connected' : 'error' }
-            : conn
-        ));
-        alert(data.success ? 'Connection successful!' : `Connection failed: ${data.message}`);
-      }
+      const data = await api.post(`/admin/erp-connections/${erpId}/test`, {});
+      setConnections(connections.map(conn => 
+        conn.id === erpId 
+          ? { ...conn, status: data.success ? 'connected' : 'error' }
+          : conn
+      ));
+      alert(data.success ? 'Connection successful!' : `Connection failed: ${data.message}`);
     } catch (error) {
       console.error('Error testing connection:', error);
       alert('Connection test failed');
@@ -155,18 +141,8 @@ export default function ERPConfigurationPage() {
     setSaving(true);
     try {
       const connection = connections.find(c => c.id === erpId);
-      const response = await fetch(`/api/admin/erp-connections/${erpId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('access_token')}`
-        },
-        body: JSON.stringify(connection)
-      });
-
-      if (response.ok) {
-        alert('Connection saved successfully!');
-      }
+      await api.put(`/admin/erp-connections/${erpId}`, connection);
+      alert('Connection saved successfully!');
     } catch (error) {
       console.error('Error saving connection:', error);
       alert('Error saving connection');
@@ -177,19 +153,9 @@ export default function ERPConfigurationPage() {
 
   const handleSyncNow = async (erpId: string) => {
     try {
-      const response = await fetch(`/api/admin/erp-connections/${erpId}/sync`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('access_token')}`
-        }
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        alert(`Sync started: ${data.message}`);
-        fetchConnections();
-      }
+      const data = await api.post(`/admin/erp-connections/${erpId}/sync`, {});
+      alert(`Sync started: ${data.message}`);
+      fetchConnections();
     } catch (error) {
       console.error('Error syncing:', error);
       alert('Error starting sync');

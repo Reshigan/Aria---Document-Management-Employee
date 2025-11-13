@@ -6,6 +6,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '../../components/ui/button';
 import { Save, Upload, Building2, FileText, Palette, CreditCard, AlertCircle } from 'lucide-react';
+import api from '../../lib/api';
 
 interface CompanySettings {
   id: string;
@@ -61,13 +62,8 @@ export default function CompanySettingsPage() {
 
   const fetchSettings = async () => {
     try {
-      const response = await fetch('/api/admin/company', {
-        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setSettings(data);
-      }
+      const data = await api.get('/admin/company');
+      setSettings(data);
     } catch (error) {
       console.error('Error fetching settings:', error);
     } finally {
@@ -98,20 +94,8 @@ export default function CompanySettingsPage() {
 
     setSaving(true);
     try {
-      const response = await fetch('/api/admin/company', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify(settings)
-      });
-
-      if (response.ok) {
-        alert('Settings saved successfully!');
-      } else {
-        alert('Error saving settings');
-      }
+      await api.put('/admin/company', settings);
+      alert('Settings saved successfully!');
     } catch (error) {
       console.error('Error saving settings:', error);
       alert('Error saving settings');
