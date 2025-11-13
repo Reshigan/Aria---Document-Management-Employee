@@ -336,6 +336,75 @@ class PayrollModule:
             conn.close()
 
 
+class PayrollRunRequest(BaseModel):
+    employees: List[Dict]
+    pay_period: str
+    company_id: str
+
+@router.post("/runs")
+async def create_payroll_run(request: PayrollRunRequest):
+    """Process payroll for a pay period"""
+    try:
+        payroll = PayrollModule()
+        
+        results = payroll.process_payroll(
+            employees=request.employees,
+            pay_period=request.pay_period,
+            company_id=request.company_id
+        )
+        
+        summary = payroll.get_payroll_summary(request.pay_period, request.company_id)
+        
+        return {
+            "status": "success",
+            "payroll_run_id": f"PR-{request.pay_period}",
+            "results": results,
+            "summary": summary
+        }
+    
+    except Exception as e:
+        logger.error(f"Error processing payroll: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/runs/{payroll_run_id}/post-to-gl")
+async def post_payroll_to_gl(payroll_run_id: str, company_id: str, pay_period: str):
+    """Post payroll to General Ledger"""
+    try:
+        payroll = PayrollModule()
+        
+        summary = payroll.get_payroll_summary(pay_period, company_id)
+        
+        await payroll._post_payroll_to_gl(
+            company_id=company_id,
+            pay_period=pay_period,
+            summary=summary
+        )
+        
+        return {
+            "status": "success",
+            "message": f"Payroll {payroll_run_id} posted to GL",
+            "gl_posted": True
+        }
+    
+    except Exception as e:
+        logger.error(f"Error posting payroll to GL: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/health")
+async def health_check():
+    """Health check endpoint"""
+    return {
+        "status": "healthy",
+        "module": "payroll",
+        "features": [
+            "PAYE calculation",
+            "UIF calculation",
+            "SDL calculation",
+            "GL integration"
+        ]
+    }
+
+
 def main():
     """CLI interface"""
     payroll = PayrollModule()
