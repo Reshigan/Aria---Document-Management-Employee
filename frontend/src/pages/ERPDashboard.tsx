@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-
-const API_BASE = '';
+import api from '../services/api';
 
 interface DashboardData {
   status: string;
