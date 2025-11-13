@@ -73,7 +73,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
     setCurrentStreamingMessage('');
 
     try {
-      const response = await api.post('/aria/chat', {
+      const response = await api.post('/api/chat/', {
         message: input.trim(),
         context: {}
       });

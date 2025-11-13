@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import api from '../../lib/api';
 import { TransactionLayout, TransactionCard, TransactionField } from '../../components/TransactionLayout';
+import { PostingStatus } from '../../components/PostingStatus';
+import { AutomationPanel } from '../../components/AutomationPanel';
 import { Trash2 } from 'lucide-react';
 
 interface Receipt {
@@ -19,6 +21,9 @@ interface Receipt {
   created_at: string;
   updated_at: string;
   allocations: ReceiptAllocation[];
+  journal_entry_id?: string;  // Backend uses journal_entry_id not gl_entry_id
+  posted_at?: string;
+  posted_by?: string;
 }
 
 interface ReceiptAllocation {
@@ -446,6 +451,30 @@ export default function ReceiptDetail() {
         </div>
 
         <div>
+          {receipt && (
+            <>
+              <div style={{ marginBottom: '1.5rem' }}>
+                <PostingStatus
+                  status={receipt.status}
+                  glEntryId={receipt.journal_entry_id}
+                  glPosted={receipt.status === 'posted'}
+                  postedAt={receipt.posted_at}
+                  postedBy={receipt.posted_by}
+                  onViewJournal={(entryId) => navigate(`/erp/general-ledger?entry=${entryId}`)}
+                />
+              </div>
+
+              <div style={{ marginBottom: '1.5rem' }}>
+                <AutomationPanel
+                  documentType="receipt"
+                  documentId={receipt.id}
+                  documentData={receipt}
+                  onExecutionComplete={() => loadReceipt(id!)}
+                />
+              </div>
+            </>
+          )}
+
           <TransactionCard title="Allocation Summary">
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>

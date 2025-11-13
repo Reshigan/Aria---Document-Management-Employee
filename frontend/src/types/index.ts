@@ -126,3 +126,5 @@ export interface RecentActivity {
   recent_invoices: Invoice[]
   recent_payments: Payment[]
 }
+
+export * from './erp';

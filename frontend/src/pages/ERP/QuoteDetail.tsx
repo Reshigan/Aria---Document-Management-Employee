@@ -3,6 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import api from '../../lib/api';
 import { ArrowLeft, Mail, Check, X, FileText, User, Calendar, DollarSign, Package, Clock, Edit, Trash2, Printer } from 'lucide-react';
 import { LineItemsTable, LineItem } from '../../components/LineItemsTable';
+import { PostingStatus } from '../../components/PostingStatus';
+import { AutomationPanel } from '../../components/AutomationPanel';
 
 interface QuoteDetail {
   id: string;
@@ -22,6 +24,10 @@ interface QuoteDetail {
   updated_at: string;
   created_by?: string;
   lines: QuoteLine[];
+  gl_entry_id?: string;
+  gl_posted?: boolean;
+  posted_at?: string;
+  posted_by?: string;
 }
 
 interface QuoteLine {
@@ -465,6 +471,24 @@ export default function QuoteDetail() {
 
         {/* Sidebar */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          {/* Posting Status */}
+          <PostingStatus
+            status={quote.status}
+            glEntryId={quote.gl_entry_id}
+            glPosted={quote.gl_posted}
+            postedAt={quote.posted_at}
+            postedBy={quote.posted_by}
+            onViewJournal={(entryId) => navigate(`/erp/general-ledger?entry=${entryId}`)}
+          />
+
+          {/* Automation Panel */}
+          <AutomationPanel
+            documentType="quote"
+            documentId={quote.id}
+            documentData={quote}
+            onExecutionComplete={() => loadQuoteDetail()}
+          />
+
           {/* Customer Info */}
           {customer && (
             <div style={{ background: 'white', borderRadius: '0.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', padding: '1.5rem' }}>

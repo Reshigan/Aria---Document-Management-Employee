@@ -3,6 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import api from '../../lib/api';
 import { TransactionLayout, TransactionCard, TransactionField } from '../../components/TransactionLayout';
 import { LineItemsTable, LineItem } from '../../components/LineItemsTable';
+import { PostingStatus } from '../../components/PostingStatus';
+import { AutomationPanel } from '../../components/AutomationPanel';
 import { FileText } from 'lucide-react';
 
 interface Delivery {
@@ -19,6 +21,10 @@ interface Delivery {
   created_at: string;
   updated_at: string;
   lines: LineItem[];
+  gl_entry_id?: string;
+  gl_posted?: boolean;
+  posted_at?: string;
+  posted_by?: string;
 }
 
 interface Customer {
@@ -279,6 +285,30 @@ export default function DeliveryDetail() {
         </div>
 
         <div>
+          {delivery && (
+            <>
+              <div style={{ marginBottom: '1.5rem' }}>
+                <PostingStatus
+                  status={delivery.status}
+                  glEntryId={delivery.gl_entry_id}
+                  glPosted={delivery.gl_posted}
+                  postedAt={delivery.posted_at}
+                  postedBy={delivery.posted_by}
+                  onViewJournal={(entryId) => navigate(`/erp/general-ledger?entry=${entryId}`)}
+                />
+              </div>
+
+              <div style={{ marginBottom: '1.5rem' }}>
+                <AutomationPanel
+                  documentType="delivery"
+                  documentId={delivery.id}
+                  documentData={delivery}
+                  onExecutionComplete={() => loadDelivery(id!)}
+                />
+              </div>
+            </>
+          )}
+
           {delivery?.status === 'shipped' && (
             <TransactionCard title="Actions">
               <button

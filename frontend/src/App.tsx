@@ -35,6 +35,7 @@ import SystemSettings from './pages/admin/SystemSettings';
 import CompanySettings from './pages/admin/CompanySettings';
 import BotConfiguration from './pages/admin/BotConfiguration';
 import UserManagement from './pages/admin/UserManagement';
+import AccountsReceivable from './pages/ERP/AccountsReceivable';
 import './styles/design-system.css';
 
 function App() {
@@ -64,8 +65,8 @@ function App() {
           <Route path="/ap/suppliers" element={<Suppliers />} />
           
           {/* Accounts Receivable */}
-          <Route path="/ar" element={<CRMDashboard />} />
-          <Route path="/ar/customers" element={<CRMDashboard />} />
+          <Route path="/ar" element={<AccountsReceivable />} />
+          <Route path="/ar/customers" element={<Customers />} />
           <Route path="/ar/invoices" element={<InvoiceList />} />
           
           {/* Banking */}
