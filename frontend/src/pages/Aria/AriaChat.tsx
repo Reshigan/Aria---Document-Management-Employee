@@ -24,6 +24,20 @@ interface Message {
   actionSuggestions?: Array<{label: string; value: string}>;
   botsActivated?: string[];
   executionResults?: any[];
+  responseType?: 'question' | 'form' | 'confirmation' | 'result' | 'error';
+  formSchema?: {
+    fields: Array<{
+      name: string;
+      label: string;
+      type: string;
+      required: boolean;
+      description?: string;
+      options?: Array<{value: string; label: string}>;
+    }>;
+  };
+  confirmationData?: any;
+  resultData?: any;
+  sessionId?: string;
 }
 
 export default function AriaChat() {
@@ -38,6 +52,8 @@ export default function AriaChat() {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [sessionId, setSessionId] = useState<string | null>(null);
+  const [formData, setFormData] = useState<Record<string, any>>({});
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -102,17 +118,26 @@ export default function AriaChat() {
 
       const data = await response.json();
       
+      if (data.session_id) {
+        setSessionId(data.session_id);
+      }
+      
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: data.response || "I understand your request. Let me help you with that.",
+        content: data.response || data.message || "I understand your request. Let me help you with that.",
         timestamp: new Date(),
         documentAnalysis: data.document_analysis,
         intent: data.intent,
         missingFields: data.missing_fields,
         actionSuggestions: data.action_suggestions,
         botsActivated: data.bots_activated,
-        executionResults: data.execution_results
+        executionResults: data.execution_results,
+        responseType: data.response_type,
+        formSchema: data.form_schema,
+        confirmationData: data.confirmation_data,
+        resultData: data.result_data,
+        sessionId: data.session_id
       };
       setMessages(prev => [...prev, assistantMessage]);
     } catch (error) {
@@ -312,6 +337,205 @@ export default function AriaChat() {
                   {message.content}
                 </div>
                 
+                {/* Form Rendering for Slot Collection */}
+                {message.responseType === 'form' && message.formSchema && (
+                  <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid #e5e7eb' }}>
+                    <div style={{ fontWeight: '600', marginBottom: '1rem', color: '#667eea' }}>
+                      📝 Please provide the following information:
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                      {message.formSchema.fields.map((field, idx) => (
+                        <div key={idx} style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                          <label style={{ fontSize: '0.875rem', fontWeight: '600', color: '#374151' }}>
+                            {field.label} {field.required && <span style={{ color: '#dc2626' }}>*</span>}
+                          </label>
+                          {field.description && (
+                            <span style={{ fontSize: '0.75rem', color: '#6b7280' }}>{field.description}</span>
+                          )}
+                          {field.type === 'select' && field.options ? (
+                            <select
+                              value={formData[field.name] || ''}
+                              onChange={(e) => setFormData({...formData, [field.name]: e.target.value})}
+                              style={{
+                                padding: '0.5rem',
+                                border: '1px solid #d1d5db',
+                                borderRadius: '0.5rem',
+                                fontSize: '0.875rem'
+                              }}
+                            >
+                              <option value="">Select {field.label}</option>
+                              {field.options.map((opt, oidx) => (
+                                <option key={oidx} value={opt.value}>{opt.label}</option>
+                              ))}
+                            </select>
+                          ) : field.type === 'table' ? (
+                            <div style={{
+                              padding: '0.75rem',
+                              background: '#f9fafb',
+                              border: '1px solid #e5e7eb',
+                              borderRadius: '0.5rem',
+                              fontSize: '0.875rem',
+                              color: '#6b7280'
+                            }}>
+                              Table input (add line items)
+                            </div>
+                          ) : field.type === 'date' ? (
+                            <input
+                              type="date"
+                              value={formData[field.name] || ''}
+                              onChange={(e) => setFormData({...formData, [field.name]: e.target.value})}
+                              style={{
+                                padding: '0.5rem',
+                                border: '1px solid #d1d5db',
+                                borderRadius: '0.5rem',
+                                fontSize: '0.875rem'
+                              }}
+                            />
+                          ) : field.type === 'number' ? (
+                            <input
+                              type="number"
+                              value={formData[field.name] || ''}
+                              onChange={(e) => setFormData({...formData, [field.name]: e.target.value})}
+                              style={{
+                                padding: '0.5rem',
+                                border: '1px solid #d1d5db',
+                                borderRadius: '0.5rem',
+                                fontSize: '0.875rem'
+                              }}
+                            />
+                          ) : (
+                            <input
+                              type="text"
+                              value={formData[field.name] || ''}
+                              onChange={(e) => setFormData({...formData, [field.name]: e.target.value})}
+                              placeholder={field.description}
+                              style={{
+                                padding: '0.5rem',
+                                border: '1px solid #d1d5db',
+                                borderRadius: '0.5rem',
+                                fontSize: '0.875rem'
+                              }}
+                            />
+                          )}
+                        </div>
+                      ))}
+                      <button
+                        onClick={() => {
+                          setInput('');
+                          handleSend();
+                        }}
+                        style={{
+                          padding: '0.75rem 1.5rem',
+                          background: '#667eea',
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: '0.5rem',
+                          fontSize: '0.875rem',
+                          fontWeight: '600',
+                          cursor: 'pointer',
+                          marginTop: '0.5rem'
+                        }}
+                      >
+                        Submit
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Confirmation Rendering */}
+                {message.responseType === 'confirmation' && message.confirmationData && (
+                  <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid #e5e7eb' }}>
+                    <div style={{ fontWeight: '600', marginBottom: '1rem', color: '#f59e0b' }}>
+                      ⚠️ Please confirm:
+                    </div>
+                    <div style={{
+                      padding: '1rem',
+                      background: '#fffbeb',
+                      border: '1px solid #fcd34d',
+                      borderRadius: '0.5rem',
+                      marginBottom: '1rem'
+                    }}>
+                      <pre style={{ fontSize: '0.875rem', whiteSpace: 'pre-wrap', margin: 0 }}>
+                        {JSON.stringify(message.confirmationData, null, 2)}
+                      </pre>
+                    </div>
+                    <div style={{ display: 'flex', gap: '0.5rem' }}>
+                      <button
+                        onClick={() => {
+                          setInput('confirm');
+                          handleSend();
+                        }}
+                        style={{
+                          padding: '0.75rem 1.5rem',
+                          background: '#10b981',
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: '0.5rem',
+                          fontSize: '0.875rem',
+                          fontWeight: '600',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        ✓ Confirm
+                      </button>
+                      <button
+                        onClick={() => {
+                          setInput('cancel');
+                          handleSend();
+                        }}
+                        style={{
+                          padding: '0.75rem 1.5rem',
+                          background: '#ef4444',
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: '0.5rem',
+                          fontSize: '0.875rem',
+                          fontWeight: '600',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        ✗ Cancel
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Result Rendering */}
+                {message.responseType === 'result' && message.resultData && (
+                  <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid #e5e7eb' }}>
+                    <div style={{ fontWeight: '600', marginBottom: '1rem', color: '#10b981' }}>
+                      ✅ Success!
+                    </div>
+                    <div style={{
+                      padding: '1rem',
+                      background: '#f0fdf4',
+                      border: '1px solid #86efac',
+                      borderRadius: '0.5rem'
+                    }}>
+                      {message.resultData.quote_number && (
+                        <div style={{ fontSize: '0.875rem', marginBottom: '0.5rem' }}>
+                          <strong>Quote Number:</strong> {message.resultData.quote_number}
+                        </div>
+                      )}
+                      {message.resultData.order_number && (
+                        <div style={{ fontSize: '0.875rem', marginBottom: '0.5rem' }}>
+                          <strong>Order Number:</strong> {message.resultData.order_number}
+                        </div>
+                      )}
+                      {message.resultData.invoice_number && (
+                        <div style={{ fontSize: '0.875rem', marginBottom: '0.5rem' }}>
+                          <strong>Invoice Number:</strong> {message.resultData.invoice_number}
+                        </div>
+                      )}
+                      {message.resultData.total_amount && (
+                        <div style={{ fontSize: '0.875rem', marginBottom: '0.5rem' }}>
+                          <strong>Total Amount:</strong> ${message.resultData.total_amount}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
                 {/* Missing Fields - Slot Filling UI */}
                 {message.missingFields && message.missingFields.length > 0 && (
                   <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid #e5e7eb' }}>
