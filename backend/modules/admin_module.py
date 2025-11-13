@@ -556,3 +556,87 @@ async def sync_erp_connection(erp_id: str):
             await conn.close()
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to start sync: {str(e)}")
+
+# ============================================================================
+# Company Settings Endpoints
+# ============================================================================
+
+class CompanySettings(BaseModel):
+    """Company settings model - Note: address, contact, bank_details not persisted to DB yet"""
+    id: Optional[str] = None
+    name: str
+    registration_number: str
+    vat_number: str
+    tax_number: str
+    bbbee_level: Optional[int] = None
+    bbbee_certificate_url: Optional[str] = None
+    bbbee_expiry_date: Optional[str] = None
+    sars_tax_number: Optional[str] = None
+    sars_paye_number: Optional[str] = None
+    sars_uif_number: Optional[str] = None
+    sars_sdl_number: Optional[str] = None
+    financial_year_end: Optional[str] = None
+    vat_rate: Optional[float] = 15.0
+    currency: Optional[str] = "ZAR"
+    logo_url: Optional[str] = None
+    primary_color: Optional[str] = None
+    secondary_color: Optional[str] = None
+    address: Optional[Dict[str, str]] = None
+    contact: Optional[Dict[str, str]] = None
+    bank_details: Optional[Dict[str, str]] = None
+
+@router.get("/company")
+async def get_company_settings():
+    """Get company settings - Returns empty dict if no settings exist"""
+    try:
+        conn = await get_db_connection()
+        try:
+            row = await conn.fetchrow("SELECT * FROM company_settings LIMIT 1")
+            if not row:
+                return {}
+            
+            return dict(row)
+        finally:
+            await conn.close()
+    except Exception as e:
+        return {}
+
+@router.put("/company")
+async def update_company_settings(settings: CompanySettings):
+    """Update company settings"""
+    try:
+        conn = await get_db_connection()
+        try:
+            existing = await conn.fetchrow("SELECT id FROM company_settings LIMIT 1")
+            
+            if existing:
+                await conn.execute("""
+                    UPDATE company_settings SET
+                        name = $1, registration_number = $2, vat_number = $3,
+                        tax_number = $4, bbbee_level = $5, sars_tax_number = $6,
+                        financial_year_end = $7, vat_rate = $8, currency = $9,
+                        logo_url = $10, primary_color = $11, secondary_color = $12,
+                        updated_at = NOW()
+                    WHERE id = $13
+                """, settings.name, settings.registration_number, settings.vat_number,
+                    settings.tax_number, settings.bbbee_level, settings.sars_tax_number,
+                    settings.financial_year_end, settings.vat_rate, settings.currency,
+                    settings.logo_url, settings.primary_color, settings.secondary_color,
+                    existing['id'])
+            else:
+                await conn.execute("""
+                    INSERT INTO company_settings (
+                        name, registration_number, vat_number, tax_number,
+                        bbbee_level, sars_tax_number, financial_year_end,
+                        vat_rate, currency, logo_url, primary_color, secondary_color
+                    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+                """, settings.name, settings.registration_number, settings.vat_number,
+                    settings.tax_number, settings.bbbee_level, settings.sars_tax_number,
+                    settings.financial_year_end, settings.vat_rate, settings.currency,
+                    settings.logo_url, settings.primary_color, settings.secondary_color)
+            
+            return {"success": True, "message": "Company settings updated successfully"}
+        finally:
+            await conn.close()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to update company settings: {str(e)}")
