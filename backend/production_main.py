@@ -224,6 +224,13 @@ try:
 except Exception as e:
     print(f"⚠️ ARIA Chat module not loaded: {e}")
 
+try:
+    from modules.conversation_orchestrator import router as conversation_router
+    app.include_router(conversation_router)
+    print("✅ Conversation Orchestrator module loaded")
+except Exception as e:
+    print(f"⚠️ Conversation Orchestrator module not loaded: {e}")
+
 # try:
 #     from api.gateway.routers.aria import router as aria_router
 #     app.include_router(aria_router, prefix="/api")
