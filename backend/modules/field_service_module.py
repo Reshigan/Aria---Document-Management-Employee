@@ -250,13 +250,21 @@ class PartsReservationBot(FieldServiceBot):
             
             purchase_orders_created = []
             if shortfall_parts:
+                from modules.erp_settings_service import get_setting
+                
+                default_supplier_id = await get_setting(
+                    company_id,
+                    "default_service_supplier_id",
+                    "00000000-0000-0000-0000-000000000001"
+                )
+                
                 service_api_key = os.getenv("SERVICE_API_KEY", "aria-internal-service-key-2025")
                 headers = {"X-Service-Key": service_api_key}
                 
                 async with httpx.AsyncClient() as client:
                     for shortfall in shortfall_parts:
                         po_data = {
-                            "supplier_id": "00000000-0000-0000-0000-000000000001",  # Default supplier
+                            "supplier_id": default_supplier_id,
                             "order_date": date.today().isoformat(),
                             "delivery_date": (date.today() + timedelta(days=7)).isoformat(),
                             "reference": f"WO-{work_order_id}-SHORTFALL",
@@ -368,6 +376,14 @@ class CompletionBillingBot(FieldServiceBot):
         total_cost = labor_cost + parts_cost
         
         try:
+            from modules.erp_settings_service import get_setting
+            
+            default_labor_product_id = await get_setting(
+                company_id,
+                "default_labor_product_id",
+                "00000000-0000-0000-0000-000000000001"
+            )
+            
             service_api_key = os.getenv("SERVICE_API_KEY", "aria-internal-service-key-2025")
             headers = {"X-Service-Key": service_api_key}
             
@@ -378,7 +394,7 @@ class CompletionBillingBot(FieldServiceBot):
                 if labor_hours > 0:
                     lines.append({
                         "line_number": line_num,
-                        "product_id": "00000000-0000-0000-0000-000000000001",  # Service/Labor product
+                        "product_id": default_labor_product_id,
                         "description": f"Field Service Labor - {labor_hours} hours @ ${hourly_rate}/hr",
                         "quantity": labor_hours,
                         "unit_price": hourly_rate,
