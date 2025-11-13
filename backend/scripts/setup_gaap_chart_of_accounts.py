@@ -95,25 +95,29 @@ async def setup_chart_of_accounts():
                     accounts_skipped += 1
                     continue
                 
-                await conn.execute(
-                    """
-                    INSERT INTO chart_of_accounts (
-                        id, company_id, code, name, account_type, category,
-                        is_active, current_balance, created_at, updated_at
-                    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-                    """,
-                    str(uuid4()),
-                    company_id,
-                    account['code'],
-                    account['name'],
-                    account['account_type'],
-                    account['category'],
-                    True,
-                    0.00,
-                    datetime.now(),
-                    datetime.now()
-                )
-                accounts_created += 1
+                try:
+                    await conn.execute(
+                        """
+                        INSERT INTO chart_of_accounts (
+                            id, company_id, code, name, account_type, category,
+                            is_active, current_balance, created_at, updated_at
+                        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+                        ON CONFLICT (code) DO NOTHING
+                        """,
+                        str(uuid4()),
+                        company_id,
+                        account['code'],
+                        account['name'],
+                        account['account_type'],
+                        account['category'],
+                        True,
+                        0.00,
+                        datetime.now(),
+                        datetime.now()
+                    )
+                    accounts_created += 1
+                except Exception as e:
+                    accounts_skipped += 1
             
             print(f"   ✅ Created {accounts_created} accounts")
             if accounts_skipped > 0:
