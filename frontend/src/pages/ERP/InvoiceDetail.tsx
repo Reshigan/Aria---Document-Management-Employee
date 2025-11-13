@@ -3,6 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import api from '../../lib/api';
 import { TransactionLayout, TransactionCard, TransactionField } from '../../components/TransactionLayout';
 import { LineItemsTable, LineItem } from '../../components/LineItemsTable';
+import { PostingStatus } from '../../components/PostingStatus';
+import { AutomationPanel } from '../../components/AutomationPanel';
 import { DollarSign, Printer } from 'lucide-react';
 
 interface Invoice {
@@ -26,6 +28,10 @@ interface Invoice {
   created_at: string;
   updated_at: string;
   lines: LineItem[];
+  gl_entry_id?: string;
+  gl_posted?: boolean;
+  posted_at?: string;
+  posted_by?: string;
 }
 
 interface Customer {
@@ -296,6 +302,30 @@ export default function InvoiceDetail() {
         </div>
 
         <div>
+          {invoice && (
+            <>
+              <div style={{ marginBottom: '1.5rem' }}>
+                <PostingStatus
+                  status={invoice.status}
+                  glEntryId={invoice.gl_entry_id}
+                  glPosted={invoice.gl_posted}
+                  postedAt={invoice.posted_at}
+                  postedBy={invoice.posted_by}
+                  onViewJournal={(entryId) => navigate(`/erp/general-ledger?entry=${entryId}`)}
+                />
+              </div>
+
+              <div style={{ marginBottom: '1.5rem' }}>
+                <AutomationPanel
+                  documentType="invoice"
+                  documentId={invoice.id}
+                  documentData={invoice}
+                  onExecutionComplete={() => loadInvoice(id!)}
+                />
+              </div>
+            </>
+          )}
+
           {invoice && invoice.status === 'posted' && (
             <TransactionCard title="Payment Status">
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>

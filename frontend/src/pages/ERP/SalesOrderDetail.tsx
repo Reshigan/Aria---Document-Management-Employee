@@ -3,6 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import api from '../../lib/api';
 import { ArrowLeft, Check, Truck, FileText, User, Calendar, Package, DollarSign, Edit, Trash2, AlertCircle, Printer } from 'lucide-react';
 import { LineItemsTable, LineItem } from '../../components/LineItemsTable';
+import { PostingStatus } from '../../components/PostingStatus';
+import { AutomationPanel } from '../../components/AutomationPanel';
 
 interface SalesOrderDetail {
   id: string;
@@ -23,6 +25,10 @@ interface SalesOrderDetail {
   created_at: string;
   updated_at: string;
   lines: OrderLine[];
+  gl_entry_id?: string;
+  gl_posted?: boolean;
+  posted_at?: string;
+  posted_by?: string;
 }
 
 interface OrderLine {
@@ -448,6 +454,24 @@ export default function SalesOrderDetail() {
 
         {/* Sidebar */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          {/* Posting Status */}
+          <PostingStatus
+            status={order.status}
+            glEntryId={order.gl_entry_id}
+            glPosted={order.gl_posted}
+            postedAt={order.posted_at}
+            postedBy={order.posted_by}
+            onViewJournal={(entryId) => navigate(`/erp/general-ledger?entry=${entryId}`)}
+          />
+
+          {/* Automation Panel */}
+          <AutomationPanel
+            documentType="sales_order"
+            documentId={order.id}
+            documentData={order}
+            onExecutionComplete={() => loadOrderDetail()}
+          />
+
           {/* Deliveries */}
           <div style={{ background: 'white', borderRadius: '0.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', padding: '1.5rem' }}>
             <h3 style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
