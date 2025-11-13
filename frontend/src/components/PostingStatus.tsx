@@ -115,7 +115,7 @@ export function PostingStatus({
             </span>
           </div>
           
-          {glEntryId && (
+          {glEntryId ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <span style={{ fontSize: '0.75rem', color: '#6b7280' }}>
                 Journal Entry: {glEntryId.substring(0, 8)}...
@@ -141,6 +141,10 @@ export function PostingStatus({
                 </button>
               )}
             </div>
+          ) : (
+            <div style={{ fontSize: '0.75rem', color: '#6b7280', fontStyle: 'italic' }}>
+              GL journal entry link unavailable
+            </div>
           )}
 
           {postedAt && (
@@ -154,6 +158,21 @@ export function PostingStatus({
               By: {postedBy}
             </div>
           )}
+        </div>
+      )}
+
+      {/* Show hint when document is posted but GL info is missing */}
+      {status === 'posted' && !glPosted && !glEntryId && (
+        <div style={{
+          marginTop: '0.75rem',
+          padding: '0.75rem',
+          background: '#fef3c7',
+          border: '1px solid #fde68a',
+          borderRadius: '0.375rem'
+        }}>
+          <div style={{ fontSize: '0.75rem', color: '#92400e' }}>
+            Document posted but GL posting status unavailable
+          </div>
         </div>
       )}
 

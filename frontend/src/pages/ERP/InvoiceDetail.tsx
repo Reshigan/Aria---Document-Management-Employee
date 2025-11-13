@@ -28,8 +28,7 @@ interface Invoice {
   created_at: string;
   updated_at: string;
   lines: LineItem[];
-  gl_entry_id?: string;
-  gl_posted?: boolean;
+  journal_entry_id?: string;  // Backend uses journal_entry_id not gl_entry_id
   posted_at?: string;
   posted_by?: string;
 }
@@ -307,8 +306,8 @@ export default function InvoiceDetail() {
               <div style={{ marginBottom: '1.5rem' }}>
                 <PostingStatus
                   status={invoice.status}
-                  glEntryId={invoice.gl_entry_id}
-                  glPosted={invoice.gl_posted}
+                  glEntryId={invoice.journal_entry_id}
+                  glPosted={invoice.status === 'posted'}
                   postedAt={invoice.posted_at}
                   postedBy={invoice.posted_by}
                   onViewJournal={(entryId) => navigate(`/erp/general-ledger?entry=${entryId}`)}

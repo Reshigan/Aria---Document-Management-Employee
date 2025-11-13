@@ -21,8 +21,7 @@ interface Receipt {
   created_at: string;
   updated_at: string;
   allocations: ReceiptAllocation[];
-  gl_entry_id?: string;
-  gl_posted?: boolean;
+  journal_entry_id?: string;  // Backend uses journal_entry_id not gl_entry_id
   posted_at?: string;
   posted_by?: string;
 }
@@ -457,8 +456,8 @@ export default function ReceiptDetail() {
               <div style={{ marginBottom: '1.5rem' }}>
                 <PostingStatus
                   status={receipt.status}
-                  glEntryId={receipt.gl_entry_id}
-                  glPosted={receipt.gl_posted}
+                  glEntryId={receipt.journal_entry_id}
+                  glPosted={receipt.status === 'posted'}
                   postedAt={receipt.posted_at}
                   postedBy={receipt.posted_by}
                   onViewJournal={(entryId) => navigate(`/erp/general-ledger?entry=${entryId}`)}
