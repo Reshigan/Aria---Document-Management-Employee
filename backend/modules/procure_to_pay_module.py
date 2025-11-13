@@ -13,6 +13,7 @@ from decimal import Decimal
 from datetime import datetime, date
 import httpx
 import logging
+import os
 
 logger = logging.getLogger(__name__)
 
@@ -46,7 +47,7 @@ async def post_to_gl(
     source: str = "PROCURE_TO_PAY"
 ) -> dict:
     """
-    Post journal entry to GL
+    Post journal entry to GL with service authentication
     
     Args:
         company_id: Company UUID
@@ -59,6 +60,9 @@ async def post_to_gl(
         dict with journal_entry_id and status
     """
     try:
+        service_api_key = os.getenv("SERVICE_API_KEY", "aria-internal-service-key-2025")
+        headers = {"X-Service-Key": service_api_key}
+        
         async with httpx.AsyncClient() as client:
             journal_entry = {
                 "company_id": str(company_id),
@@ -73,6 +77,7 @@ async def post_to_gl(
             response = await client.post(
                 "http://localhost:8000/api/erp/gl/journal-entries",
                 json=journal_entry,
+                headers=headers,
                 timeout=10.0
             )
             
@@ -86,6 +91,7 @@ async def post_to_gl(
             post_response = await client.post(
                 f"http://localhost:8000/api/erp/gl/journal-entries/{entry_id}/post",
                 json={"posted_by": "system"},
+                headers=headers,
                 timeout=10.0
             )
             

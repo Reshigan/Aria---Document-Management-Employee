@@ -2,7 +2,7 @@
 GL Posting Engine Module - Priority 1
 Implements real GL posting with double-entry validation, audit trail, and idempotency
 """
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, Header
 from pydantic import BaseModel, validator
 from typing import List, Optional, Dict, Any
 from datetime import datetime, date
@@ -10,10 +10,19 @@ from decimal import Decimal
 import hashlib
 import logging
 import asyncpg
+import os
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/erp/gl", tags=["GL Posting"])
+
+SERVICE_API_KEY = os.getenv("SERVICE_API_KEY", "aria-internal-service-key-2025")
+
+def verify_service_auth(x_service_key: Optional[str] = Header(None)):
+    """Verify service-to-service authentication"""
+    if x_service_key != SERVICE_API_KEY:
+        raise HTTPException(status_code=401, detail="Invalid service API key")
+    return True
 
 
 # ============================================================================
@@ -119,17 +128,28 @@ async def get_db_connection():
 # ============================================================================
 
 @router.post("/journal-entries", response_model=JournalEntryResponse)
-async def create_journal_entry(entry: JournalEntryCreate):
+async def create_journal_entry(
+    entry: JournalEntryCreate,
+    authenticated: bool = Depends(verify_service_auth)
+):
     """
     Create a new journal entry (DRAFT status)
     
     Features:
     - Double-entry validation (debits = credits)
-    - Idempotency check (prevents duplicate postings from same file)
+    - Idempotency check (prevents duplicate postings from same source)
     - Audit trail (user, timestamp, source file)
     - Account validation
+    - Service-to-service authentication
     """
     conn = await get_db_connection()
+    
+    if not entry.source_document_hash:
+        idempotency_data = f"{entry.company_id}|{entry.source}|{entry.reference}|"
+        sorted_lines = sorted(entry.lines, key=lambda x: (x.line_number, x.account_code))
+        for line in sorted_lines:
+            idempotency_data += f"{line.account_code}:{line.debit_amount}:{line.credit_amount}|"
+        entry.source_document_hash = hashlib.sha256(idempotency_data.encode()).hexdigest()
     
     try:
         if entry.source_document_hash:
@@ -248,7 +268,11 @@ async def create_journal_entry(entry: JournalEntryCreate):
 
 
 @router.post("/journal-entries/{entry_id}/post")
-async def post_journal_entry(entry_id: str, request: PostJournalEntryRequest):
+async def post_journal_entry(
+    entry_id: str,
+    request: PostJournalEntryRequest,
+    authenticated: bool = Depends(verify_service_auth)
+):
     """
     Post journal entry to GL (change status from DRAFT to POSTED)
     
@@ -256,6 +280,7 @@ async def post_journal_entry(entry_id: str, request: PostJournalEntryRequest):
     - Entry cannot be edited
     - Entry can only be reversed (not deleted)
     - Account balances are updated
+    - Service-to-service authentication required
     """
     conn = await get_db_connection()
     
