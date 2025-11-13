@@ -190,6 +190,13 @@ except Exception as e:
     print(f"⚠️ Reporting module not loaded: {e}")
 
 try:
+    from modules.aria_controller_engine import router as aria_controller_router
+    app.include_router(aria_controller_router)
+    print("✅ ARIA Controller loaded")
+except Exception as e:
+    print(f"⚠️ ARIA Controller not loaded: {e}")
+
+try:
     from app.api.bots import router as bots_api_router
     app.include_router(bots_api_router, prefix="/api")
     print("✅ Bots API loaded")

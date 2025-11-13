@@ -4,6 +4,8 @@ Production-grade SA payroll with PAYE, UIF, SDL, and pension calculations
 Compliant with South African tax legislation
 """
 
+from fastapi import APIRouter, HTTPException
+from pydantic import BaseModel
 import sqlite3
 from datetime import datetime, date
 from decimal import Decimal
@@ -13,6 +15,8 @@ import os
 import logging
 
 logger = logging.getLogger(__name__)
+
+router = APIRouter(prefix="/api/erp/payroll", tags=["Payroll"])
 
 class PayrollModule:
     """Complete Payroll Module for South Africa"""
