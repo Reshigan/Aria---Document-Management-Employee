@@ -63,7 +63,65 @@ export default function CompanySettingsPage() {
   const fetchSettings = async () => {
     try {
       const data = await api.get('/admin/company');
-      setSettings(data);
+      
+      if (!data || Object.keys(data).length === 0) {
+        setSettings({
+          id: '',
+          name: '',
+          registration_number: '',
+          vat_number: '',
+          tax_number: '',
+          bbbee_level: 0,
+          sars_tax_number: '',
+          financial_year_end: '',
+          vat_rate: 15.0,
+          currency: 'ZAR',
+          address: {
+            street: '',
+            city: '',
+            province: 'Gauteng',
+            postal_code: '',
+            country: 'South Africa'
+          },
+          contact: {
+            phone: '',
+            email: '',
+            website: ''
+          },
+          bank_details: {
+            bank_name: '',
+            account_holder: '',
+            account_number: '',
+            branch_code: '',
+            account_type: 'Current',
+            swift_code: ''
+          }
+        });
+      } else {
+        setSettings({
+          ...data,
+          address: data.address || {
+            street: '',
+            city: '',
+            province: 'Gauteng',
+            postal_code: '',
+            country: 'South Africa'
+          },
+          contact: data.contact || {
+            phone: '',
+            email: '',
+            website: ''
+          },
+          bank_details: data.bank_details || {
+            bank_name: '',
+            account_holder: '',
+            account_number: '',
+            branch_code: '',
+            account_type: 'Current',
+            swift_code: ''
+          }
+        });
+      }
     } catch (error) {
       console.error('Error fetching settings:', error);
     } finally {
@@ -79,8 +137,8 @@ export default function CompanySettingsPage() {
     if (!settings.name) newErrors.name = 'Company name is required';
     if (!settings.registration_number) newErrors.registration_number = 'Registration number is required';
     if (!settings.vat_number) newErrors.vat_number = 'VAT number is required';
-    if (!settings.address.street) newErrors.street = 'Street address is required';
-    if (!settings.contact.email) newErrors.email = 'Email is required';
+    if (!settings.address?.street) newErrors.street = 'Street address is required';
+    if (!settings.contact?.email) newErrors.email = 'Email is required';
     
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
