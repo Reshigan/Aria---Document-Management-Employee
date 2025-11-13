@@ -16,10 +16,15 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/erp/gl", tags=["GL Posting"])
 
+from modules.auth_composite import authorize_gl_request, AuthPrincipal
+
 SERVICE_API_KEY = os.getenv("SERVICE_API_KEY", "aria-internal-service-key-2025")
 
 def verify_service_auth(x_service_key: Optional[str] = Header(None)):
-    """Verify service-to-service authentication"""
+    """
+    [DEPRECATED] Use authorize_gl_request instead.
+    Verify service-to-service authentication
+    """
     if x_service_key != SERVICE_API_KEY:
         raise HTTPException(status_code=401, detail="Invalid service API key")
     return True
@@ -130,7 +135,7 @@ async def get_db_connection():
 @router.post("/journal-entries", response_model=JournalEntryResponse)
 async def create_journal_entry(
     entry: JournalEntryCreate,
-    authenticated: bool = Depends(verify_service_auth)
+    principal: AuthPrincipal = Depends(authorize_gl_request)
 ):
     """
     Create a new journal entry (DRAFT status)
@@ -140,7 +145,7 @@ async def create_journal_entry(
     - Idempotency check (prevents duplicate postings from same source)
     - Audit trail (user, timestamp, source file)
     - Account validation
-    - Service-to-service authentication
+    - Authentication: Accepts X-Service-Key header OR Bearer token (admin/finance roles only)
     """
     conn = await get_db_connection()
     
@@ -271,7 +276,7 @@ async def create_journal_entry(
 async def post_journal_entry(
     entry_id: str,
     request: PostJournalEntryRequest,
-    authenticated: bool = Depends(verify_service_auth)
+    principal: AuthPrincipal = Depends(authorize_gl_request)
 ):
     """
     Post journal entry to GL (change status from DRAFT to POSTED)
@@ -280,7 +285,7 @@ async def post_journal_entry(
     - Entry cannot be edited
     - Entry can only be reversed (not deleted)
     - Account balances are updated
-    - Service-to-service authentication required
+    - Authentication: Accepts X-Service-Key header OR Bearer token (admin/finance roles only)
     """
     conn = await get_db_connection()
     
