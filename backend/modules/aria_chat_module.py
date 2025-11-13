@@ -411,7 +411,7 @@ async def analyze_and_export(
             tmp_file.flush()
             
             try:
-                document_analysis = document_analyzer.analyze_excel(tmp_file.name)
+                document_analysis = document_analyzer_v2.analyze_excel(tmp_file.name)
                 
                 if action == "export_to_sap":
                     # Generate SAP export file
@@ -437,14 +437,15 @@ async def analyze_and_export(
                     )
                 
                 elif action == "post_to_erp":
-                    # Post to ARIA ERP using GL Posting Engine
+                    # Post to ARIA ERP using GL Posting HTTP endpoint
                     gl_postings = document_analysis.get('gl_postings', [])
                     
                     if not gl_postings:
                         raise HTTPException(status_code=400, detail="No GL postings available")
                     
-                    from modules.gl_posting_module import JournalEntryCreate, JournalLineCreate, calculate_file_hash
+                    from modules.gl_posting_module import calculate_file_hash
                     import asyncpg
+                    import httpx
                     import os
                     
                     file_hash = calculate_file_hash(file_content)
@@ -478,39 +479,53 @@ async def analyze_and_export(
                             credit = float(posting.get('credit', 0))
                             description = posting.get('description', '')
                             
-                            lines.append(JournalLineCreate(
-                                line_number=idx + 1,
-                                account_code=account_code,
-                                debit_amount=debit,
-                                credit_amount=credit,
-                                description=description
-                            ))
+                            lines.append({
+                                "line_number": idx + 1,
+                                "account_code": account_code,
+                                "debit_amount": debit,
+                                "credit_amount": credit,
+                                "description": description
+                            })
                         
-                        # Create journal entry
-                        from modules.gl_posting_module import create_journal_entry
+                        service_api_key = os.getenv('SERVICE_API_KEY')
+                        if not service_api_key:
+                            raise HTTPException(status_code=500, detail="SERVICE_API_KEY not configured")
                         
-                        entry_data = JournalEntryCreate(
-                            company_id=company_id,
-                            reference=reference,
-                            entry_date=datetime.now().date(),
-                            posting_date=datetime.now().date(),
-                            description=f"{doc_type} - {doc_subtype} from {file.filename}",
-                            source="DOCUMENT_UPLOAD",
-                            source_document_hash=file_hash,
-                            source_document_name=file.filename,
-                            lines=lines
-                        )
+                        entry_payload = {
+                            "company_id": company_id,
+                            "reference": reference,
+                            "entry_date": datetime.now().date().isoformat(),
+                            "posting_date": datetime.now().date().isoformat(),
+                            "description": f"{doc_type} - {doc_subtype} from {file.filename}",
+                            "source": "DOCUMENT_UPLOAD",
+                            "source_document_hash": file_hash,
+                            "source_document_name": file.filename,
+                            "lines": lines
+                        }
                         
-                        result = await create_journal_entry(entry_data)
+                        async with httpx.AsyncClient() as client:
+                            gl_response = await client.post(
+                                "http://localhost:8000/api/erp/gl/journal-entries",
+                                json=entry_payload,
+                                headers={"X-Service-Key": service_api_key}
+                            )
+                            
+                            if gl_response.status_code != 200:
+                                raise HTTPException(
+                                    status_code=gl_response.status_code,
+                                    detail=f"GL posting failed: {gl_response.text}"
+                                )
+                            
+                            result = gl_response.json()
                         
                         return {
                             "status": "success",
                             "message": f"Successfully created journal entry {reference} with {len(gl_postings)} GL lines",
                             "document_type": document_analysis.get('document_type'),
-                            "journal_entry_id": result.id,
-                            "reference": result.reference,
+                            "journal_entry_id": result.get('id'),
+                            "reference": result.get('reference', reference),
                             "total_entries": len(gl_postings),
-                            "entry_status": result.status,
+                            "entry_status": result.get('status', 'DRAFT'),
                             "summary": document_analysis.get('summary'),
                             "timestamp": datetime.now().isoformat(),
                             "note": "Journal entry created in DRAFT status. Use POST /api/erp/gl/journal-entries/{id}/post to post to GL."

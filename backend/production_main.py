@@ -162,6 +162,13 @@ except Exception as e:
     print(f"⚠️ GL Posting module not loaded: {e}")
 
 try:
+    from modules.aria_chat_module import router as aria_chat_router
+    app.include_router(aria_chat_router)
+    print("✅ ARIA Chat module loaded")
+except Exception as e:
+    print(f"⚠️ ARIA Chat module not loaded: {e}")
+
+try:
     from modules.procure_to_pay_module import router as procure_to_pay_router
     app.include_router(procure_to_pay_router)
     print("✅ Procure-to-Pay module loaded")

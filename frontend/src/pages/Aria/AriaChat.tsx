@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { MessageSquare, Send, Bot, User, Loader, Paperclip, X } from 'lucide-react';
+import api from '@/lib/api';
 
 interface Message {
   id: string;
@@ -38,6 +39,8 @@ export default function AriaChat() {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [lastUploadedFile, setLastUploadedFile] = useState<File | null>(null);
+  const [lastDocumentAnalysis, setLastDocumentAnalysis] = useState<any>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -71,7 +74,7 @@ export default function AriaChat() {
     setLoading(true);
 
     try {
-      let response;
+      let data;
       
       if (fileToUpload) {
         const formData = new FormData();
@@ -80,27 +83,27 @@ export default function AriaChat() {
           formData.append('message', userInput);
         }
         
-        response = await fetch('/api/chat/upload', {
-          method: 'POST',
-          body: formData
-        });
-      } else {
-        response = await fetch('/api/chat', {
-          method: 'POST',
+        const response = await api.post('/chat/upload', formData, {
           headers: {
-            'Content-Type': 'application/json',
+            'Content-Type': 'multipart/form-data',
           },
-          body: JSON.stringify({
-            message: userInput,
-            conversation_history: messages.map(m => ({
-              role: m.role,
-              content: m.content
-            }))
-          })
         });
+        data = response.data;
+        
+        setLastUploadedFile(fileToUpload);
+        if (data.document_analysis) {
+          setLastDocumentAnalysis(data.document_analysis);
+        }
+      } else {
+        const response = await api.post('/chat', {
+          message: userInput,
+          conversation_history: messages.map(m => ({
+            role: m.role,
+            content: m.content
+          }))
+        });
+        data = response.data;
       }
-
-      const data = await response.json();
       
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
@@ -170,29 +173,89 @@ export default function AriaChat() {
   };
 
   const handlePostToERP = async (filename: string) => {
-    alert(`Posting ${filename} to ARIA ERP... This will create GL entries in the system.`);
+    if (!lastUploadedFile) {
+      alert('No file available to post. Please upload a file first.');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', lastUploadedFile);
+      formData.append('action', 'post_to_erp');
+
+      const response = await api.post('/chat/analyze-and-export', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      const assistantMessage: Message = {
+        id: Date.now().toString(),
+        role: 'assistant',
+        content: `✅ ${response.data.message}\n\n📊 Journal Entry: ${response.data.reference}\n📝 Status: ${response.data.entry_status}\n📈 Total Entries: ${response.data.total_entries}\n\n${response.data.note}`,
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, assistantMessage]);
+    } catch (error: any) {
+      console.error('Error posting to ERP:', error);
+      const errorMessage: Message = {
+        id: Date.now().toString(),
+        role: 'assistant',
+        content: `❌ Failed to post to ARIA ERP: ${error.response?.data?.detail || error.message}`,
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, errorMessage]);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleExportToSAP = async (filename: string, analysis: any) => {
+    if (!lastUploadedFile) {
+      alert('No file available to export. Please upload a file first.');
+      return;
+    }
+
     if (!analysis?.sap_export?.records) {
       alert('No SAP export data available');
       return;
     }
 
-    const records = analysis.sap_export.records;
-    const headers = Object.keys(records[0]);
-    const csv = [
-      headers.join(','),
-      ...records.map((r: any) => headers.map(h => r[h]).join(','))
-    ].join('\n');
+    setLoading(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', lastUploadedFile);
+      formData.append('action', 'export_to_sap');
 
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `SAP_Export_${analysis.sap_transaction}_${Date.now()}.csv`;
-    a.click();
-    window.URL.revokeObjectURL(url);
+      const response = await api.post('/chat/analyze-and-export', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+        responseType: 'blob',
+      });
+
+      const blob = new Blob([response.data], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `SAP_Export_${analysis.sap_transaction}_${Date.now()}.csv`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+
+      const assistantMessage: Message = {
+        id: Date.now().toString(),
+        role: 'assistant',
+        content: `✅ SAP export file downloaded successfully!\n\n📁 File: SAP_Export_${analysis.sap_transaction}_${Date.now()}.csv\n📊 Transaction: ${analysis.sap_transaction}\n📈 Records: ${analysis.sap_export.records.length}`,
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, assistantMessage]);
+    } catch (error: any) {
+      console.error('Error exporting to SAP:', error);
+      alert(`Failed to export to SAP: ${error.response?.data?.detail || error.message}`);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleViewDetails = (analysis: any) => {
