@@ -317,6 +317,23 @@ class BotActivator:
 class ExecutionEngine:
     """Execute work through activated bots"""
     
+    async def _call_bot(self, bot_func, *args, **kwargs):
+        """
+        Helper to call bot functions that may be sync or async
+        Handles both coroutine functions and regular functions transparently
+        """
+        import asyncio
+        import inspect
+        
+        result = bot_func(*args, **kwargs)
+        
+        if inspect.iscoroutine(result):
+            return await result
+        elif inspect.isawaitable(result):
+            return await result
+        else:
+            return result
+    
     async def execute(
         self,
         intent: str,
@@ -350,6 +367,18 @@ class ExecutionEngine:
         
         elif intent == "create_service_request":
             result = await self._execute_create_service_request(information, context)
+            results.append(result)
+        
+        elif intent == "complete_work_order":
+            result = await self._execute_complete_work_order(information, context)
+            results.append(result)
+        
+        elif intent == "reserve_parts":
+            result = await self._execute_reserve_parts(information, context)
+            results.append(result)
+        
+        elif intent == "release_manufacturing_order":
+            result = await self._execute_release_manufacturing_order(information, context)
             results.append(result)
         
         elif intent == "create_quote":

@@ -183,6 +183,13 @@ except Exception as e:
     print(f"⚠️ Payroll module not loaded: {e}")
 
 try:
+    from modules.reporting_module import router as reporting_module_router
+    app.include_router(reporting_module_router)
+    print("✅ Reporting module loaded")
+except Exception as e:
+    print(f"⚠️ Reporting module not loaded: {e}")
+
+try:
     from app.api.bots import router as bots_api_router
     app.include_router(bots_api_router, prefix="/api")
     print("✅ Bots API loaded")
