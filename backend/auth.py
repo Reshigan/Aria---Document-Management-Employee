@@ -5,13 +5,12 @@ Authentication utilities
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
 from jose import JWTError, jwt
 from datetime import datetime, timedelta
 import os
 
 from models import User
+from core.database_pg import SessionLocal
 
 # JWT Configuration
 SECRET_KEY = os.getenv("SECRET_KEY", "AriaProductionSecretKey2024VantaxSecure!")
@@ -19,11 +18,6 @@ ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 security = HTTPBearer()
-
-# Database setup (copied from main.py to avoid circular imports)
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./aria.db")
-engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 def get_db():
     db = SessionLocal()
