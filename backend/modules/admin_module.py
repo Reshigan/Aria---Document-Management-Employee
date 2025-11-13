@@ -562,6 +562,7 @@ async def sync_erp_connection(erp_id: str):
 # ============================================================================
 
 class CompanySettings(BaseModel):
+    """Company settings model - Note: address, contact, bank_details not persisted to DB yet"""
     id: Optional[str] = None
     name: str
     registration_number: str
@@ -586,7 +587,7 @@ class CompanySettings(BaseModel):
 
 @router.get("/company")
 async def get_company_settings():
-    """Get company settings"""
+    """Get company settings - Returns empty dict if no settings exist"""
     try:
         conn = await get_db_connection()
         try:
