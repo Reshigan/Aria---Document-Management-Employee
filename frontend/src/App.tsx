@@ -55,6 +55,7 @@ function App() {
           
           {/* General Ledger */}
           <Route path="/gl" element={<GeneralLedger />} />
+          <Route path="/general-ledger" element={<GeneralLedger />} />
           
           {/* Accounts Payable */}
           <Route path="/ap" element={<InvoiceList />} />
@@ -118,6 +119,7 @@ function App() {
           {/* Aria Chat */}
           <Route path="/chat" element={<ChatInterface />} />
           <Route path="/aria" element={<ChatInterface />} />
+          <Route path="/ask-aria" element={<ChatInterface />} />
           
           {/* Admin */}
           <Route path="/admin/system" element={<SystemSettings />} />
