@@ -16,13 +16,19 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: '20'
           cache: 'npm'
           cache-dependency-path: frontend/package-lock.json
       
+      - name: Print Node and npm versions
+        working-directory: ./frontend
+        run: |
+          node -v
+          npm -v
+      
       - name: Install dependencies
         working-directory: ./frontend
-        run: npm ci
+        run: npm ci --no-audit --no-fund
       
       - name: Build frontend
         working-directory: ./frontend
@@ -46,11 +52,11 @@ jobs:
         with:
           python-version: '3.11'
       
-      - name: Install dependencies
+      - name: Print Python and pip versions
         working-directory: ./backend
         run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt || echo "No requirements.txt found, skipping"
+          python --version
+          pip --version
       
       - name: Run backend checks
         working-directory: ./backend
