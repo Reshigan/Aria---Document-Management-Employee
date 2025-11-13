@@ -8,6 +8,11 @@ import sqlite3
 from datetime import datetime, date
 from decimal import Decimal
 from typing import Dict, List, Optional, Tuple
+import httpx
+import os
+import logging
+
+logger = logging.getLogger(__name__)
 
 class PayrollModule:
     """Complete Payroll Module for South Africa"""
