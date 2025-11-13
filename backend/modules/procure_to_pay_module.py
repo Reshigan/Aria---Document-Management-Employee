@@ -11,6 +11,10 @@ from typing import List, Optional
 from uuid import UUID, uuid4
 from decimal import Decimal
 from datetime import datetime, date
+import httpx
+import logging
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/erp/procure-to-pay", tags=["Procure-to-Pay"])
 
@@ -33,6 +37,67 @@ def get_user_id(db: Session) -> UUID:
     result = db.execute(text("SELECT id FROM users LIMIT 1"))
     row = result.fetchone()
     return row[0] if row else UUID("00000000-0000-0000-0000-000000000001")
+
+async def post_to_gl(
+    company_id: UUID,
+    reference: str,
+    description: str,
+    lines: List[dict],
+    source: str = "PROCURE_TO_PAY"
+) -> dict:
+    """
+    Post journal entry to GL
+    
+    Args:
+        company_id: Company UUID
+        reference: Transaction reference (e.g., PO-001)
+        description: Transaction description
+        lines: List of journal lines with account_code, debit_amount, credit_amount
+        source: Source system identifier
+    
+    Returns:
+        dict with journal_entry_id and status
+    """
+    try:
+        async with httpx.AsyncClient() as client:
+            journal_entry = {
+                "company_id": str(company_id),
+                "reference": reference,
+                "entry_date": date.today().isoformat(),
+                "posting_date": date.today().isoformat(),
+                "description": description,
+                "source": source,
+                "lines": lines
+            }
+            
+            response = await client.post(
+                "http://localhost:8000/api/erp/gl/journal-entries",
+                json=journal_entry,
+                timeout=10.0
+            )
+            
+            if response.status_code != 200:
+                logger.error(f"Failed to create journal entry: {response.text}")
+                return {"status": "error", "message": response.text}
+            
+            entry_data = response.json()
+            entry_id = entry_data["id"]
+            
+            post_response = await client.post(
+                f"http://localhost:8000/api/erp/gl/journal-entries/{entry_id}/post",
+                json={"posted_by": "system"},
+                timeout=10.0
+            )
+            
+            if post_response.status_code != 200:
+                logger.error(f"Failed to post journal entry: {post_response.text}")
+                return {"status": "error", "message": post_response.text, "entry_id": entry_id}
+            
+            return {"status": "success", "entry_id": entry_id, "posted": True}
+    
+    except Exception as e:
+        logger.error(f"Error posting to GL: {e}")
+        return {"status": "error", "message": str(e)}
 
 
 class PurchaseOrderLineCreate(BaseModel):
@@ -355,9 +420,24 @@ async def approve_purchase_order(
     company_id: UUID = Depends(get_company_id),
     db: Session = Depends(get_db)
 ):
-    """Approve purchase order"""
+    """Approve purchase order and post to GL"""
     try:
         user_id = get_user_id(db)
+        
+        po_query = """
+            SELECT po_number, total_amount, subtotal, tax_amount
+            FROM purchase_orders
+            WHERE id = :po_id AND company_id = :company_id AND status = 'draft'
+        """
+        po_result = db.execute(text(po_query), {
+            "po_id": str(po_id),
+            "company_id": str(company_id)
+        })
+        po_row = po_result.fetchone()
+        if not po_row:
+            raise HTTPException(status_code=404, detail="Purchase order not found or already approved")
+        
+        po_number, total_amount, subtotal, tax_amount = po_row
         
         db.execute(text("""
             UPDATE purchase_orders
@@ -371,7 +451,45 @@ async def approve_purchase_order(
         })
         
         db.commit()
-        return {"message": "Purchase order approved successfully", "po_id": str(po_id)}
+        
+        gl_lines = [
+            {
+                "line_number": 1,
+                "account_code": "1400",
+                "debit_amount": str(subtotal),
+                "credit_amount": "0.00",
+                "description": f"Purchase Order {po_number} - Inventory"
+            },
+            {
+                "line_number": 2,
+                "account_code": "1450",
+                "debit_amount": str(tax_amount),
+                "credit_amount": "0.00",
+                "description": f"Purchase Order {po_number} - VAT Recoverable"
+            },
+            {
+                "line_number": 3,
+                "account_code": "2000",
+                "debit_amount": "0.00",
+                "credit_amount": str(total_amount),
+                "description": f"Purchase Order {po_number} - Accounts Payable"
+            }
+        ]
+        
+        gl_result = await post_to_gl(
+            company_id=company_id,
+            reference=po_number,
+            description=f"Purchase Order {po_number} Approved",
+            lines=gl_lines,
+            source="PURCHASE_ORDER"
+        )
+        
+        return {
+            "message": "Purchase order approved successfully",
+            "po_id": str(po_id),
+            "gl_posted": gl_result.get("status") == "success",
+            "gl_entry_id": gl_result.get("entry_id")
+        }
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=400, detail=f"Error approving purchase order: {str(e)}")
