@@ -549,20 +549,97 @@ class WorkflowRegistry:
     # ========================================================================
     
     async def _execute_create_quote(self, slots: Dict[str, Any], company_id: str) -> Dict[str, Any]:
-        """Execute quote creation"""
-        return {
-            "success": True,
-            "quote_id": f"QT-{uuid.uuid4().hex[:8].upper()}",
-            "message": "Quote created successfully"
-        }
+        """Execute quote creation by calling ERP API"""
+        import httpx
+        from datetime import date
+        
+        try:
+            quote_data = {
+                "customer_id": slots.get("customer_id"),
+                "quote_date": date.today().isoformat(),
+                "valid_until": slots.get("valid_until", (date.today() + timedelta(days=30)).isoformat()),
+                "notes": slots.get("notes", ""),
+                "lines": slots.get("line_items", [])
+            }
+            
+            service_api_key = os.getenv("SERVICE_API_KEY", "aria-internal-service-key-2025")
+            headers = {"X-Service-Key": service_api_key}
+            
+            async with httpx.AsyncClient() as client:
+                response = await client.post(
+                    "http://localhost:8000/api/erp/order-to-cash/quotes",
+                    json=quote_data,
+                    headers=headers,
+                    timeout=30.0
+                )
+                
+                if response.status_code == 200:
+                    result = response.json()
+                    return {
+                        "success": True,
+                        "quote_id": result["id"],
+                        "quote_number": result["quote_number"],
+                        "total_amount": result["total_amount"],
+                        "message": f"Quote {result['quote_number']} created successfully"
+                    }
+                else:
+                    logger.error(f"Failed to create quote: {response.text}")
+                    return {
+                        "success": False,
+                        "message": f"Failed to create quote: {response.text}"
+                    }
+        except Exception as e:
+            logger.error(f"Error creating quote: {e}")
+            return {
+                "success": False,
+                "message": f"Error creating quote: {str(e)}"
+            }
     
     async def _execute_create_sales_order(self, slots: Dict[str, Any], company_id: str) -> Dict[str, Any]:
-        """Execute sales order creation"""
-        return {
-            "success": True,
-            "order_id": f"SO-{uuid.uuid4().hex[:8].upper()}",
-            "message": "Sales order created successfully"
-        }
+        """Execute sales order creation by calling ERP API"""
+        import httpx
+        from datetime import date
+        
+        try:
+            order_data = {
+                "customer_id": slots.get("customer_id"),
+                "order_date": date.today().isoformat(),
+                "required_date": slots.get("delivery_date"),
+                "notes": slots.get("delivery_address", ""),
+                "lines": slots.get("line_items", [])
+            }
+            
+            service_api_key = os.getenv("SERVICE_API_KEY", "aria-internal-service-key-2025")
+            headers = {"X-Service-Key": service_api_key}
+            
+            async with httpx.AsyncClient() as client:
+                response = await client.post(
+                    "http://localhost:8000/api/erp/order-to-cash/sales-orders",
+                    json=order_data,
+                    headers=headers,
+                    timeout=30.0
+                )
+                
+                if response.status_code == 200:
+                    result = response.json()
+                    return {
+                        "success": True,
+                        "order_id": result["id"],
+                        "order_number": result["order_number"],
+                        "total_amount": result["total_amount"],
+                        "message": f"Sales order {result['order_number']} created successfully"
+                    }
+                else:
+                    return {
+                        "success": False,
+                        "message": f"Failed to create sales order: {response.text}"
+                    }
+        except Exception as e:
+            logger.error(f"Error creating sales order: {e}")
+            return {
+                "success": False,
+                "message": f"Error creating sales order: {str(e)}"
+            }
     
     async def _execute_create_delivery(self, slots: Dict[str, Any], company_id: str) -> Dict[str, Any]:
         """Execute delivery creation"""
@@ -573,12 +650,49 @@ class WorkflowRegistry:
         }
     
     async def _execute_create_invoice(self, slots: Dict[str, Any], company_id: str) -> Dict[str, Any]:
-        """Execute invoice creation"""
-        return {
-            "success": True,
-            "invoice_id": f"INV-{uuid.uuid4().hex[:8].upper()}",
-            "message": "Invoice created successfully"
-        }
+        """Execute invoice creation by calling AR API"""
+        import httpx
+        from datetime import date
+        
+        try:
+            invoice_data = {
+                "customer_id": slots.get("customer_id"),
+                "invoice_date": date.today().isoformat(),
+                "due_date": (date.today() + timedelta(days=30)).isoformat(),
+                "line_items": slots.get("line_items", [])
+            }
+            
+            service_api_key = os.getenv("SERVICE_API_KEY", "aria-internal-service-key-2025")
+            headers = {"X-Service-Key": service_api_key}
+            
+            async with httpx.AsyncClient() as client:
+                response = await client.post(
+                    "http://localhost:8000/api/ar/invoices",
+                    json=invoice_data,
+                    headers=headers,
+                    timeout=30.0
+                )
+                
+                if response.status_code == 200:
+                    result = response.json()
+                    return {
+                        "success": True,
+                        "invoice_id": result["id"],
+                        "invoice_number": result.get("invoice_number", "INV-NEW"),
+                        "total_amount": result.get("total_amount", 0),
+                        "message": f"Invoice created successfully"
+                    }
+                else:
+                    return {
+                        "success": False,
+                        "message": f"Failed to create invoice: {response.text}"
+                    }
+        except Exception as e:
+            logger.error(f"Error creating invoice: {e}")
+            return {
+                "success": False,
+                "message": f"Error creating invoice: {str(e)}"
+            }
     
     async def _execute_create_purchase_order(self, slots: Dict[str, Any], company_id: str) -> Dict[str, Any]:
         """Execute purchase order creation"""
@@ -655,8 +769,25 @@ class WorkflowRegistry:
     # ========================================================================
     
     async def _generate_quote_pdf(self, slots: Dict[str, Any], result: Dict[str, Any]) -> bytes:
-        """Generate quote PDF"""
-        return b"PDF content"
+        """Generate quote PDF using PDF service"""
+        from services.pdf_service import get_pdf_service
+        
+        pdf_service = get_pdf_service()
+        
+        quote_data = {
+            "quote_number": result.get("quote_number", "QT-NEW"),
+            "customer_name": slots.get("customer_name", "Customer"),
+            "customer_email": slots.get("customer_email", ""),
+            "quote_date": slots.get("quote_date", date.today()),
+            "valid_until": slots.get("valid_until", date.today()),
+            "line_items": slots.get("line_items", []),
+            "subtotal": result.get("subtotal", 0),
+            "tax_amount": result.get("tax_amount", 0),
+            "total_amount": result.get("total_amount", 0),
+            "notes": slots.get("notes", "")
+        }
+        
+        return pdf_service.generate_quote_pdf(quote_data)
     
     async def _generate_order_pdf(self, slots: Dict[str, Any], result: Dict[str, Any]) -> bytes:
         """Generate order PDF"""
