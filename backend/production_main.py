@@ -119,12 +119,12 @@ try:
 except Exception as e:
     print(f"⚠️ Financial API not loaded: {e}")
 
-try:
-    from app.api.gl import router as gl_router
-    app.include_router(gl_router)
-    print("✅ GL API loaded")
-except Exception as e:
-    print(f"⚠️ GL API not loaded: {e}")
+# try:
+#     from app.api.gl import router as gl_router
+#     app.include_router(gl_router)
+#     print("✅ GL API loaded")
+# except Exception as e:
+#     print(f"⚠️ GL API not loaded: {e}")
 
 try:
     from app.api.crm import router as crm_router
