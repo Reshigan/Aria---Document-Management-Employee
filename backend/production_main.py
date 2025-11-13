@@ -203,6 +203,27 @@ try:
 except Exception as e:
     print(f"⚠️ Bots API not loaded: {e}")
 
+try:
+    from modules.admin_module import router as admin_module_router
+    app.include_router(admin_module_router)
+    print("✅ Admin module loaded")
+except Exception as e:
+    print(f"⚠️ Admin module not loaded: {e}")
+
+try:
+    from api.routes.admin import router as admin_routes_router
+    app.include_router(admin_routes_router, prefix="/api")
+    print("✅ Admin routes loaded")
+except Exception as e:
+    print(f"⚠️ Admin routes not loaded: {e}")
+
+try:
+    from modules.aria_chat_module import router as aria_chat_router
+    app.include_router(aria_chat_router)
+    print("✅ ARIA Chat module loaded")
+except Exception as e:
+    print(f"⚠️ ARIA Chat module not loaded: {e}")
+
 # try:
 #     from api.gateway.routers.aria import router as aria_router
 #     app.include_router(aria_router, prefix="/api")

@@ -3,6 +3,7 @@ import {
   Activity, Bot, Users, Database, TrendingUp, AlertCircle,
   CheckCircle, Clock, Zap, Server, HardDrive, Cpu
 } from 'lucide-react';
+import api from '../../lib/api';
 
 interface DashboardMetrics {
   master_data: {
@@ -51,21 +52,12 @@ export default function AdminDashboard() {
 
   const fetchDashboardData = async () => {
     try {
-      const [metricsRes, perfRes] = await Promise.all([
-        fetch('/api/admin/dashboard/metrics', {
-          headers: { 'Authorization': `Bearer ${localStorage.getItem('access_token')}` }
-        }),
-        fetch('/api/admin/performance/metrics', {
-          headers: { 'Authorization': `Bearer ${localStorage.getItem('access_token')}` }
-        })
+      const [metricsData, perfData] = await Promise.all([
+        api.get('/admin/dashboard/metrics'),
+        api.get('/admin/performance/metrics')
       ]);
-
-      if (metricsRes.ok && perfRes.ok) {
-        const metricsData = await metricsRes.json();
-        const perfData = await perfRes.json();
-        setMetrics(metricsData);
-        setPerformance(perfData);
-      }
+      setMetrics(metricsData);
+      setPerformance(perfData);
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
     } finally {

@@ -11,6 +11,7 @@ import {
   CheckCircle, XCircle, Clock, MoreVertical
 } from 'lucide-react';
 import type { User } from '../../types/api';
+import api from '../../lib/api';
 
 interface InviteUserModal {
   isOpen: boolean;
@@ -39,13 +40,8 @@ export default function UserManagementPage() {
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch('/api/admin/users', {
-        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setUsers(data.users);
-      }
+      const data = await api.get('/admin/users');
+      setUsers(data.users || []);
     } catch (error) {
       console.error('Error fetching users:', error);
     } finally {
@@ -55,27 +51,15 @@ export default function UserManagementPage() {
 
   const handleInviteUser = async () => {
     try {
-      const response = await fetch('/api/admin/users/invite', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify({
-          email: inviteModal.email,
-          role: inviteModal.role,
-          first_name: inviteModal.firstName,
-          last_name: inviteModal.lastName
-        })
+      await api.post('/admin/users/invite', {
+        email: inviteModal.email,
+        role: inviteModal.role,
+        first_name: inviteModal.firstName,
+        last_name: inviteModal.lastName
       });
-
-      if (response.ok) {
-        alert('Invitation sent successfully!');
-        setInviteModal({ isOpen: false, email: '', role: 'employee', firstName: '', lastName: '' });
-        fetchUsers();
-      } else {
-        alert('Error sending invitation');
-      }
+      alert('Invitation sent successfully!');
+      setInviteModal({ isOpen: false, email: '', role: 'employee', firstName: '', lastName: '' });
+      fetchUsers();
     } catch (error) {
       console.error('Error inviting user:', error);
       alert('Error sending invitation');

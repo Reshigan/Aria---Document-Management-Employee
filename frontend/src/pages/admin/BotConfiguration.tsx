@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '../../components/ui/button';
 import { Bot, Settings, Bell, CheckCircle, XCircle, DollarSign, Mail, MessageSquare } from 'lucide-react';
+import api from '../../lib/api';
 
 interface BotConfig {
   id: string;
@@ -27,13 +28,8 @@ export default function BotConfigurationPage() {
 
   const fetchBotConfigs = async () => {
     try {
-      const response = await fetch('/api/admin/bots/config', {
-        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setBots(data.bots);
-      }
+      const data = await api.get('/admin/bots/config');
+      setBots(data.bots || []);
     } catch (error) {
       console.error('Error fetching bot configs:', error);
     } finally {
@@ -43,18 +39,8 @@ export default function BotConfigurationPage() {
 
   const handleToggleBot = async (botId: string, enabled: boolean) => {
     try {
-      const response = await fetch(`/api/admin/bots/${botId}/toggle`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify({ enabled })
-      });
-
-      if (response.ok) {
-        setBots(bots.map(bot => bot.id === botId ? { ...bot, enabled } : bot));
-      }
+      await api.post(`/admin/bots/${botId}/toggle`, { enabled });
+      setBots(bots.map(bot => bot.id === botId ? { ...bot, enabled } : bot));
     } catch (error) {
       console.error('Error toggling bot:', error);
     }
@@ -79,18 +65,8 @@ export default function BotConfigurationPage() {
   const handleSaveConfig = async () => {
     setSaving(true);
     try {
-      const response = await fetch('/api/admin/bots/config', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify({ bots })
-      });
-
-      if (response.ok) {
-        alert('Bot configuration saved successfully!');
-      }
+      await api.put('/admin/bots/config', { bots });
+      alert('Bot configuration saved successfully!');
     } catch (error) {
       console.error('Error saving config:', error);
       alert('Error saving configuration');
