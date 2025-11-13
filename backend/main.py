@@ -251,6 +251,14 @@ app.include_router(master_data_router)
 from modules.sap_integration import router as sap_integration_router
 app.include_router(sap_integration_router)
 
+# Include Conversation Orchestrator Module
+from modules.conversation_orchestrator import router as conversation_router
+app.include_router(conversation_router)
+
+# Include ARIA Chat Module
+from modules.aria_chat_module import router as aria_chat_router
+app.include_router(aria_chat_router)
+
 # Pydantic models
 class UserLogin(PydanticBaseModel):
     username: str
