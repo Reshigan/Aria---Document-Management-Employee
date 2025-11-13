@@ -6,9 +6,12 @@ from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from typing import Optional, List, Dict, Any
 from datetime import datetime, timedelta, date
+from uuid import UUID
+from decimal import Decimal
 import logging
 import os
 import sys
+import httpx
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from core.erp_database import (
     create_service_request as db_create_service_request,
@@ -223,32 +226,76 @@ class PartsReservationBot(FieldServiceBot):
     """
     
     @staticmethod
-    def execute(data: Dict[str, Any]) -> Dict[str, Any]:
+    async def execute(data: Dict[str, Any]) -> Dict[str, Any]:
         """
-        Reserve parts for work order
+        Reserve parts for work order and create POs for shortfalls
         """
         work_order_id = data.get("work_order_id")
+        company_id = data.get("company_id")
         required_parts = data.get("parts", [])
         
-        reserved_parts = []
-        shortfall_parts = []
-        
-        for part in required_parts:
+        # Reserve parts using inventory service
+        try:
+            from modules.inventory_service import reserve_parts
             
-            reserved_parts.append({
-                "product_id": part.get("product_id"),
-                "quantity": part.get("quantity"),
-                "status": "reserved"
-            })
+            reservation_result = await reserve_parts(
+                company_id=UUID(company_id),
+                reference_type="work_order",
+                reference_id=UUID(str(work_order_id)),
+                parts=required_parts
+            )
+            
+            reserved_parts = reservation_result.get("reserved_parts", [])
+            shortfall_parts = reservation_result.get("shortfall_parts", [])
+            
+            purchase_orders_created = []
+            if shortfall_parts:
+                service_api_key = os.getenv("SERVICE_API_KEY", "aria-internal-service-key-2025")
+                headers = {"X-Service-Key": service_api_key}
+                
+                async with httpx.AsyncClient() as client:
+                    for shortfall in shortfall_parts:
+                        po_data = {
+                            "supplier_id": "00000000-0000-0000-0000-000000000001",  # Default supplier
+                            "order_date": date.today().isoformat(),
+                            "delivery_date": (date.today() + timedelta(days=7)).isoformat(),
+                            "reference": f"WO-{work_order_id}-SHORTFALL",
+                            "lines": [{
+                                "line_number": 1,
+                                "product_id": shortfall["product_id"],
+                                "quantity": shortfall["shortfall"],
+                                "unit_price": 0,  # To be filled by procurement
+                                "tax_rate": 0.15
+                            }]
+                        }
+                        
+                        response = await client.post(
+                            "http://localhost:8000/api/erp/procure-to-pay/purchase-orders",
+                            json=po_data,
+                            headers=headers,
+                            timeout=10.0
+                        )
+                        
+                        if response.status_code == 200:
+                            po_result = response.json()
+                            purchase_orders_created.append(po_result.get("id"))
+            
+            return {
+                "status": "success",
+                "bot": "Parts Reservation Bot",
+                "work_order_id": work_order_id,
+                "reserved_parts": reserved_parts,
+                "shortfall_parts": shortfall_parts,
+                "purchase_orders_created": purchase_orders_created
+            }
         
-        return {
-            "status": "success",
-            "bot": "Parts Reservation Bot",
-            "work_order_id": work_order_id,
-            "reserved_parts": reserved_parts,
-            "shortfall_parts": shortfall_parts,
-            "purchase_orders_created": []
-        }
+        except Exception as e:
+            logger.error(f"Error in parts reservation: {e}")
+            return {
+                "status": "error",
+                "message": str(e),
+                "work_order_id": work_order_id
+            }
 
 
 class SLAMonitorBot(FieldServiceBot):
@@ -300,33 +347,119 @@ class CompletionBillingBot(FieldServiceBot):
     """
     Completion & Billing Bot
     After sign-off, compiles time/parts, generates invoice draft and posts to AR/GL
+    Creates sales order via Order-to-Cash module for full traceability
     """
     
     @staticmethod
-    def execute(data: Dict[str, Any]) -> Dict[str, Any]:
+    async def execute(data: Dict[str, Any]) -> Dict[str, Any]:
         """
-        Complete work order and generate invoice
+        Complete work order and generate invoice via Order-to-Cash
         """
         work_order = data.get("work_order", {})
+        company_id = data.get("company_id")
+        customer_id = data.get("customer_id")
         
         labor_hours = work_order.get("labor_hours", 0)
         hourly_rate = work_order.get("hourly_rate", 100)
         labor_cost = labor_hours * hourly_rate
         
-        parts_cost = sum([p.get("total_price", 0) for p in work_order.get("parts", [])])
+        parts = work_order.get("parts", [])
+        parts_cost = sum([p.get("total_price", 0) for p in parts])
         total_cost = labor_cost + parts_cost
         
+        try:
+            service_api_key = os.getenv("SERVICE_API_KEY", "aria-internal-service-key-2025")
+            headers = {"X-Service-Key": service_api_key}
+            
+            async with httpx.AsyncClient() as client:
+                lines = []
+                line_num = 1
+                
+                if labor_hours > 0:
+                    lines.append({
+                        "line_number": line_num,
+                        "product_id": "00000000-0000-0000-0000-000000000001",  # Service/Labor product
+                        "description": f"Field Service Labor - {labor_hours} hours @ ${hourly_rate}/hr",
+                        "quantity": labor_hours,
+                        "unit_price": hourly_rate,
+                        "tax_rate": 0.15
+                    })
+                    line_num += 1
+                
+                for part in parts:
+                    lines.append({
+                        "line_number": line_num,
+                        "product_id": part.get("product_id"),
+                        "description": part.get("description", "Field Service Part"),
+                        "quantity": part.get("quantity", 1),
+                        "unit_price": part.get("unit_price", 0),
+                        "tax_rate": 0.15
+                    })
+                    line_num += 1
+                
+                sales_order = {
+                    "customer_id": customer_id,
+                    "order_date": date.today().isoformat(),
+                    "delivery_date": date.today().isoformat(),
+                    "reference": f"WO-{work_order.get('id')}",
+                    "notes": f"Field Service Work Order {work_order.get('id')}",
+                    "lines": lines
+                }
+                
+                response = await client.post(
+                    "http://localhost:8000/api/erp/order-to-cash/sales-orders",
+                    json=sales_order,
+                    headers=headers,
+                    timeout=10.0
+                )
+                
+                if response.status_code == 200:
+                    so_data = response.json()
+                    sales_order_id = so_data.get("id")
+                    
+                    # Approve the sales order to post to GL
+                    approve_response = await client.post(
+                        f"http://localhost:8000/api/erp/order-to-cash/sales-orders/{sales_order_id}/approve",
+                        headers=headers,
+                        timeout=10.0
+                    )
+                    
+                    if approve_response.status_code == 200:
+                        approve_data = approve_response.json()
+                        return {
+                            "status": "success",
+                            "bot": "Completion & Billing Bot",
+                            "work_order_id": work_order.get("id"),
+                            "labor_cost": labor_cost,
+                            "parts_cost": parts_cost,
+                            "total_cost": total_cost,
+                            "sales_order_id": sales_order_id,
+                            "gl_posted": approve_data.get("gl_posted", False),
+                            "gl_entry_id": approve_data.get("gl_entry_id")
+                        }
+                    else:
+                        logger.error(f"Failed to approve sales order: {approve_response.text}")
+                        return {
+                            "status": "error",
+                            "message": "Failed to approve sales order",
+                            "sales_order_id": sales_order_id
+                        }
+                else:
+                    logger.error(f"Failed to create sales order: {response.text}")
+                    return {
+                        "status": "error",
+                        "message": "Failed to create sales order"
+                    }
         
-        return {
-            "status": "success",
-            "bot": "Completion & Billing Bot",
-            "work_order_id": work_order.get("id"),
-            "labor_cost": labor_cost,
-            "parts_cost": parts_cost,
-            "total_cost": total_cost,
-            "invoice_id": f"INV-{work_order.get('id')}",
-            "gl_posted": True
-        }
+        except Exception as e:
+            logger.error(f"Error in billing integration: {e}")
+            return {
+                "status": "error",
+                "message": str(e),
+                "labor_cost": labor_cost,
+                "parts_cost": parts_cost,
+                "total_cost": total_cost
+            }
 
 
 # ========================================
@@ -467,20 +600,35 @@ async def dispatch_work_order(work_order_id: int):
 
 
 @router.post("/work-orders/{work_order_id}/complete")
-async def complete_work_order(work_order_id: int):
+async def complete_work_order(
+    work_order_id: int,
+    company_id: str,
+    customer_id: str,
+    labor_hours: float = 2.0,
+    hourly_rate: float = 100.0,
+    parts: List[Dict] = []
+):
     """
-    Complete work order and generate invoice
+    Complete work order and generate invoice via Order-to-Cash
     
-    Runs Completion & Billing Bot to create invoice and post to GL
+    Runs Completion & Billing Bot to create sales order and post to GL
     """
     try:
-        work_order = {"id": work_order_id, "labor_hours": 2, "hourly_rate": 100, "parts": []}
+        work_order = {
+            "id": work_order_id,
+            "labor_hours": labor_hours,
+            "hourly_rate": hourly_rate,
+            "parts": parts
+        }
         
-        billing_result = CompletionBillingBot.execute({
-            "work_order": work_order
+        billing_result = await CompletionBillingBot.execute({
+            "work_order": work_order,
+            "company_id": company_id,
+            "customer_id": customer_id
         })
         
-        await update_work_order_status(str(work_order_id), 'completed', datetime.now())
+        if billing_result.get("status") == "success":
+            await update_work_order_status(str(work_order_id), 'completed', datetime.now())
         
         return billing_result
     

@@ -134,6 +134,69 @@ except Exception as e:
     print(f"⚠️ CRM API not loaded: {e}")
 
 try:
+    from modules.document_generation_module import router as document_generation_router
+    app.include_router(document_generation_router)
+    print("✅ Document Generation module loaded")
+except Exception as e:
+    print(f"⚠️ Document Generation module not loaded: {e}")
+
+try:
+    from modules.printing_module import router as printing_router
+    app.include_router(printing_router)
+    print("✅ Printing module loaded")
+except Exception as e:
+    print(f"⚠️ Printing module not loaded: {e}")
+
+try:
+    from modules.field_service_module import router as field_service_router
+    app.include_router(field_service_router)
+    print("✅ Field Service module loaded")
+except Exception as e:
+    print(f"⚠️ Field Service module not loaded: {e}")
+
+try:
+    from modules.gl_posting_module import router as gl_posting_router
+    app.include_router(gl_posting_router)
+    print("✅ GL Posting module loaded")
+except Exception as e:
+    print(f"⚠️ GL Posting module not loaded: {e}")
+
+try:
+    from modules.procure_to_pay_module import router as procure_to_pay_router
+    app.include_router(procure_to_pay_router)
+    print("✅ Procure-to-Pay module loaded")
+except Exception as e:
+    print(f"⚠️ Procure-to-Pay module not loaded: {e}")
+
+try:
+    from modules.manufacturing_module import router as manufacturing_router
+    app.include_router(manufacturing_router)
+    print("✅ Manufacturing module loaded")
+except Exception as e:
+    print(f"⚠️ Manufacturing module not loaded: {e}")
+
+try:
+    from modules.payroll_module import router as payroll_router
+    app.include_router(payroll_router)
+    print("✅ Payroll module loaded")
+except Exception as e:
+    print(f"⚠️ Payroll module not loaded: {e}")
+
+try:
+    from modules.reporting_module import router as reporting_module_router
+    app.include_router(reporting_module_router)
+    print("✅ Reporting module loaded")
+except Exception as e:
+    print(f"⚠️ Reporting module not loaded: {e}")
+
+try:
+    from modules.aria_controller_engine import router as aria_controller_router
+    app.include_router(aria_controller_router)
+    print("✅ ARIA Controller loaded")
+except Exception as e:
+    print(f"⚠️ ARIA Controller not loaded: {e}")
+
+try:
     from app.api.bots import router as bots_api_router
     app.include_router(bots_api_router, prefix="/api")
     print("✅ Bots API loaded")

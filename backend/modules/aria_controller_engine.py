@@ -317,6 +317,23 @@ class BotActivator:
 class ExecutionEngine:
     """Execute work through activated bots"""
     
+    async def _call_bot(self, bot_func, *args, **kwargs):
+        """
+        Helper to call bot functions that may be sync or async
+        Handles both coroutine functions and regular functions transparently
+        """
+        import asyncio
+        import inspect
+        
+        result = bot_func(*args, **kwargs)
+        
+        if inspect.iscoroutine(result):
+            return await result
+        elif inspect.isawaitable(result):
+            return await result
+        else:
+            return result
+    
     async def execute(
         self,
         intent: str,
@@ -350,6 +367,18 @@ class ExecutionEngine:
         
         elif intent == "create_service_request":
             result = await self._execute_create_service_request(information, context)
+            results.append(result)
+        
+        elif intent == "complete_work_order":
+            result = await self._execute_complete_work_order(information, context)
+            results.append(result)
+        
+        elif intent == "reserve_parts":
+            result = await self._execute_reserve_parts(information, context)
+            results.append(result)
+        
+        elif intent == "release_manufacturing_order":
+            result = await self._execute_release_manufacturing_order(information, context)
             results.append(result)
         
         elif intent == "create_quote":
@@ -538,6 +567,113 @@ class ExecutionEngine:
                 "next_step": "create_work_order"
             }
         }
+    
+    async def _execute_complete_work_order(
+        self,
+        information: Dict[str, Any],
+        context: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """Execute work order completion with billing"""
+        try:
+            from modules.field_service_module import CompletionBillingBot
+            
+            work_order_data = {
+                "id": information.get("work_order_id"),
+                "labor_hours": information.get("labor_hours", 2.0),
+                "hourly_rate": information.get("hourly_rate", 100.0),
+                "parts": information.get("parts", [])
+            }
+            
+            bot_result = await self._call_bot(
+                CompletionBillingBot.execute,
+                {
+                    "work_order": work_order_data,
+                    "company_id": context.get("company_id"),
+                    "customer_id": information.get("customer_id")
+                }
+            )
+            
+            return {
+                "bot": "Completion & Billing Bot",
+                "status": bot_result.get("status", "success"),
+                "message": f"Work order completed. Sales order created: {bot_result.get('sales_order_id')}",
+                "data": bot_result
+            }
+        
+        except Exception as e:
+            logger.error(f"Error completing work order: {e}")
+            return {
+                "bot": "Completion & Billing Bot",
+                "status": "error",
+                "message": str(e)
+            }
+    
+    async def _execute_reserve_parts(
+        self,
+        information: Dict[str, Any],
+        context: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """Execute parts reservation with PO creation for shortfalls"""
+        try:
+            from modules.field_service_module import PartsReservationBot
+            
+            bot_result = await self._call_bot(
+                PartsReservationBot.execute,
+                {
+                    "work_order_id": information.get("work_order_id"),
+                    "company_id": context.get("company_id"),
+                    "parts": information.get("parts", [])
+                }
+            )
+            
+            return {
+                "bot": "Parts Reservation Bot",
+                "status": bot_result.get("status", "success"),
+                "message": f"Reserved {len(bot_result.get('reserved_parts', []))} parts. Created {len(bot_result.get('purchase_orders_created', []))} POs for shortfalls.",
+                "data": bot_result
+            }
+        
+        except Exception as e:
+            logger.error(f"Error reserving parts: {e}")
+            return {
+                "bot": "Parts Reservation Bot",
+                "status": "error",
+                "message": str(e)
+            }
+    
+    async def _execute_release_manufacturing_order(
+        self,
+        information: Dict[str, Any],
+        context: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """Execute manufacturing order release with MRP"""
+        try:
+            from modules.mrp_service import run_mrp
+            from uuid import UUID
+            from decimal import Decimal
+            
+            mrp_result = await run_mrp(
+                company_id=UUID(context.get("company_id")),
+                work_order_id=UUID(information.get("work_order_id")),
+                product_id=UUID(information.get("product_id")),
+                quantity=Decimal(str(information.get("quantity", 1))),
+                auto_create_pos=information.get("auto_create_pos", True)
+            )
+            
+            return {
+                "bot": "MRP Bot",
+                "status": mrp_result.get("status", "success"),
+                "message": f"MRP completed. Found {len(mrp_result.get('shortfalls', []))} shortfalls. Created {len(mrp_result.get('purchase_orders', {}).get('purchase_orders_created', []))} POs.",
+                "data": mrp_result
+            }
+        
+        except Exception as e:
+            logger.error(f"Error running MRP: {e}")
+            return {
+                "bot": "MRP Bot",
+                "status": "error",
+                "message": str(e)
+            }
 
 # ========================================
 # ========================================

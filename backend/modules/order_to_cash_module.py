@@ -10,6 +10,11 @@ from datetime import datetime, date
 from pydantic import BaseModel, Field
 from uuid import UUID, uuid4
 from decimal import Decimal
+import httpx
+import logging
+import os
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/erp/order-to-cash", tags=["Order-to-Cash"])
 
@@ -346,6 +351,132 @@ def get_user_id(db: Session = Depends(get_db)) -> Optional[UUID]:
     result = db.execute("SELECT id FROM users LIMIT 1")
     row = result.fetchone()
     return row[0] if row else None
+
+async def post_to_gl(
+    company_id: UUID,
+    reference: str,
+    description: str,
+    lines: List[dict],
+    source: str = "ORDER_TO_CASH"
+) -> dict:
+    """
+    Post journal entry to GL with service authentication
+    
+    Args:
+        company_id: Company UUID
+        reference: Transaction reference (e.g., SO-001)
+        description: Transaction description
+        lines: List of journal lines with account_code, debit_amount, credit_amount
+        source: Source system identifier
+    
+    Returns:
+        dict with journal_entry_id and status
+    """
+    try:
+        service_api_key = os.getenv("SERVICE_API_KEY", "aria-internal-service-key-2025")
+        headers = {"X-Service-Key": service_api_key}
+        
+        async with httpx.AsyncClient() as client:
+            journal_entry = {
+                "company_id": str(company_id),
+                "reference": reference,
+                "entry_date": date.today().isoformat(),
+                "posting_date": date.today().isoformat(),
+                "description": description,
+                "source": source,
+                "lines": lines
+            }
+            
+            response = await client.post(
+                "http://localhost:8000/api/erp/gl/journal-entries",
+                json=journal_entry,
+                headers=headers,
+                timeout=10.0
+            )
+            
+            if response.status_code != 200:
+                logger.error(f"Failed to create journal entry: {response.text}")
+                return {"status": "error", "message": response.text}
+            
+            entry_data = response.json()
+            entry_id = entry_data["id"]
+            
+            post_response = await client.post(
+                f"http://localhost:8000/api/erp/gl/journal-entries/{entry_id}/post",
+                json={"posted_by": "system"},
+                headers=headers,
+                timeout=10.0
+            )
+            
+            if post_response.status_code != 200:
+                logger.error(f"Failed to post journal entry: {post_response.text}")
+                return {"status": "error", "message": post_response.text, "entry_id": entry_id}
+            
+            return {"status": "success", "entry_id": entry_id, "posted": True}
+    
+    except Exception as e:
+        logger.error(f"Error posting to GL: {e}")
+        return {"status": "error", "message": str(e)}
+
+# ============================================================================
+# ============================================================================
+
+class CustomerResponse(BaseModel):
+    id: UUID
+    name: str
+    email: Optional[str]
+    phone: Optional[str]
+    address: Optional[str]
+    city: Optional[str]
+    country: Optional[str]
+    is_active: bool
+
+    class Config:
+        from_attributes = True
+
+@router.get("/customers", response_model=List[CustomerResponse])
+async def list_customers(
+    skip: int = 0,
+    limit: int = 100,
+    search: Optional[str] = None,
+    is_active: bool = True,
+    company_id: UUID = Depends(get_company_id),
+    db: Session = Depends(get_db)
+):
+    """List all customers for order-to-cash operations"""
+    query = """
+        SELECT id, name, email, phone, is_active
+        FROM customers
+        WHERE company_id = :company_id
+    """
+    params = {"company_id": str(company_id)}
+    
+    if search:
+        query += " AND (name ILIKE :search OR email ILIKE :search)"
+        params["search"] = f"%{search}%"
+    
+    if is_active is not None:
+        query += " AND is_active = :is_active"
+        params["is_active"] = is_active
+    
+    query += " ORDER BY name LIMIT :limit OFFSET :skip"
+    params["limit"] = limit
+    params["skip"] = skip
+    
+    result = db.execute(text(query), params)
+    customers = []
+    for row in result:
+        customers.append({
+            "id": row[0],
+            "name": row[1],
+            "email": row[2],
+            "phone": row[3],
+            "address": None,
+            "city": None,
+            "country": None,
+            "is_active": row[4]
+        })
+    return customers
 
 # ============================================================================
 # ============================================================================
@@ -1409,8 +1540,23 @@ async def approve_sales_order(
     user_id: Optional[UUID] = Depends(get_user_id),
     db: Session = Depends(get_db)
 ):
-    """Approve a sales order"""
+    """Approve a sales order and post to GL"""
     try:
+        so_query = """
+            SELECT order_number, total_amount, subtotal, tax_amount
+            FROM sales_orders
+            WHERE id = :order_id AND company_id = :company_id AND status = 'draft'
+        """
+        so_result = db.execute(text(so_query), {
+            "order_id": str(order_id),
+            "company_id": str(company_id)
+        })
+        so_row = so_result.fetchone()
+        if not so_row:
+            raise HTTPException(status_code=404, detail="Sales order not found or already approved")
+        
+        order_number, total_amount, subtotal, tax_amount = so_row
+        
         query = """
             UPDATE sales_orders
             SET status = 'approved', approved_by = :user_id, approved_at = CURRENT_TIMESTAMP,
@@ -1428,7 +1574,45 @@ async def approve_sales_order(
             raise HTTPException(status_code=404, detail="Sales order not found or already approved")
         
         db.commit()
-        return {"message": "Sales order approved successfully", "order_id": str(order_id)}
+        
+        gl_lines = [
+            {
+                "line_number": 1,
+                "account_code": "1200",
+                "debit_amount": str(total_amount),
+                "credit_amount": "0.00",
+                "description": f"Sales Order {order_number} - Accounts Receivable"
+            },
+            {
+                "line_number": 2,
+                "account_code": "4000",
+                "debit_amount": "0.00",
+                "credit_amount": str(subtotal),
+                "description": f"Sales Order {order_number} - Revenue"
+            },
+            {
+                "line_number": 3,
+                "account_code": "2200",
+                "debit_amount": "0.00",
+                "credit_amount": str(tax_amount),
+                "description": f"Sales Order {order_number} - VAT Payable"
+            }
+        ]
+        
+        gl_result = await post_to_gl(
+            company_id=company_id,
+            reference=order_number,
+            description=f"Sales Order {order_number} Approved",
+            lines=gl_lines,
+            source="SALES_ORDER"
+        )
+        
+        return {
+            "message": "Sales order approved successfully",
+            "order_id": str(order_id),
+            "gl_posted": gl_result.get("status") == "success",
+            "gl_entry_id": gl_result.get("entry_id")
+        }
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=400, detail=f"Error approving sales order: {str(e)}")
@@ -1628,20 +1812,34 @@ async def ship_delivery(
     company_id: UUID = Depends(get_company_id),
     db: Session = Depends(get_db)
 ):
-    """Ship a delivery and post stock issue"""
+    """Ship a delivery, post stock issue, and record COGS to GL"""
     try:
-        lines_query = """
-            SELECT product_id, quantity, storage_location_id
-            FROM delivery_lines
-            WHERE delivery_id = :delivery_id
+        delivery_query = """
+            SELECT delivery_number FROM deliveries
+            WHERE id = :delivery_id AND company_id = :company_id
         """
-        lines_result = db.execute(lines_query, {"delivery_id": str(delivery_id)})
+        delivery_result = db.execute(text(delivery_query), {
+            "delivery_id": str(delivery_id),
+            "company_id": str(company_id)
+        })
+        delivery_row = delivery_result.fetchone()
+        if not delivery_row:
+            raise HTTPException(status_code=404, detail="Delivery not found")
+        delivery_number = delivery_row[0]
+        
+        lines_query = """
+            SELECT dl.product_id, dl.quantity, dl.storage_location_id, p.standard_cost
+            FROM delivery_lines dl
+            JOIN products p ON dl.product_id = p.id
+            WHERE dl.delivery_id = :delivery_id
+        """
+        lines_result = db.execute(text(lines_query), {"delivery_id": str(delivery_id)})
         
         warehouse_query = """
             SELECT warehouse_id FROM deliveries
             WHERE id = :delivery_id AND company_id = :company_id
         """
-        warehouse_result = db.execute(warehouse_query, {
+        warehouse_result = db.execute(text(warehouse_query), {
             "delivery_id": str(delivery_id),
             "company_id": str(company_id)
         })
@@ -1650,28 +1848,34 @@ async def ship_delivery(
             raise HTTPException(status_code=404, detail="Delivery not found")
         warehouse_id = warehouse_row[0]
         
+        total_cogs = Decimal("0.00")
+        
         for line_row in lines_result:
-            product_id, quantity, storage_location_id = line_row
+            product_id, quantity, storage_location_id, standard_cost = line_row
             movement_id = uuid4()
             
-            db.execute("""
+            line_cogs = Decimal(str(quantity)) * Decimal(str(standard_cost))
+            total_cogs += line_cogs
+            
+            db.execute(text("""
                 INSERT INTO stock_movements (id, company_id, product_id, warehouse_id, storage_location_id,
-                                            movement_type, quantity, reference_type, reference_id,
+                                            movement_type, quantity, unit_cost, reference_type, reference_id,
                                             transaction_date, created_at)
                 VALUES (:id, :company_id, :product_id, :warehouse_id, :storage_location_id,
-                        'issue', :quantity, 'delivery', :delivery_id,
+                        'issue', :quantity, :unit_cost, 'delivery', :delivery_id,
                         CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
-            """, {
+            """), {
                 "id": str(movement_id),
                 "company_id": str(company_id),
                 "product_id": str(product_id),
                 "warehouse_id": str(warehouse_id),
                 "storage_location_id": str(storage_location_id) if storage_location_id else None,
                 "quantity": float(quantity),
+                "unit_cost": float(standard_cost),
                 "delivery_id": str(delivery_id)
             })
             
-            db.execute("""
+            db.execute(text("""
                 UPDATE stock_on_hand
                 SET quantity_on_hand = quantity_on_hand - :quantity,
                     last_movement_date = CURRENT_TIMESTAMP,
@@ -1679,24 +1883,56 @@ async def ship_delivery(
                 WHERE product_id = :product_id
                   AND warehouse_id = :warehouse_id
                   AND (storage_location_id = :storage_location_id OR (storage_location_id IS NULL AND :storage_location_id IS NULL))
-            """, {
+            """), {
                 "quantity": float(quantity),
                 "product_id": str(product_id),
                 "warehouse_id": str(warehouse_id),
                 "storage_location_id": str(storage_location_id) if storage_location_id else None
             })
         
-        db.execute("""
+        db.execute(text("""
             UPDATE deliveries
             SET status = 'shipped', updated_at = CURRENT_TIMESTAMP
             WHERE id = :delivery_id AND company_id = :company_id
-        """, {
+        """), {
             "delivery_id": str(delivery_id),
             "company_id": str(company_id)
         })
         
         db.commit()
-        return {"message": "Delivery shipped successfully", "delivery_id": str(delivery_id)}
+        
+        gl_lines = [
+            {
+                "line_number": 1,
+                "account_code": "5000",
+                "debit_amount": str(total_cogs),
+                "credit_amount": "0.00",
+                "description": f"Delivery {delivery_number} - Cost of Goods Sold"
+            },
+            {
+                "line_number": 2,
+                "account_code": "1400",
+                "debit_amount": "0.00",
+                "credit_amount": str(total_cogs),
+                "description": f"Delivery {delivery_number} - Inventory Reduction"
+            }
+        ]
+        
+        gl_result = await post_to_gl(
+            company_id=company_id,
+            reference=delivery_number,
+            description=f"Delivery {delivery_number} Shipped - COGS",
+            lines=gl_lines,
+            source="DELIVERY"
+        )
+        
+        return {
+            "message": "Delivery shipped successfully",
+            "delivery_id": str(delivery_id),
+            "cogs_amount": float(total_cogs),
+            "gl_posted": gl_result.get("status") == "success",
+            "gl_entry_id": gl_result.get("entry_id")
+        }
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=400, detail=f"Error shipping delivery: {str(e)}")

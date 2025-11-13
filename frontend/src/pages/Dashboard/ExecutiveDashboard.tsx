@@ -6,10 +6,8 @@ import { Button } from '../../components/ui/Button';
 import {
   TrendingUp, DollarSign, FileText, Bot, CheckCircle, AlertCircle
 } from 'lucide-react';
-import axios from 'axios';
+import api from '../../services/api';
 import './ExecutiveDashboard.css';
-
-const API_URL = '/api';
 
 export const ExecutiveDashboard: React.FC = () => {
   const [bots, setBots] = useState<any[]>([]);
@@ -22,12 +20,12 @@ export const ExecutiveDashboard: React.FC = () => {
 
   const fetchDashboardData = async () => {
     try {
-      const botsResponse = await axios.get(`${API_URL}/bots`);
+      const botsResponse = await api.get('/bots');
       setBots(botsResponse.data.bots || []);
 
       const [apResponse, arResponse] = await Promise.all([
-        axios.get(`${API_URL}/ap/aging`),
-        axios.get(`${API_URL}/ar/aging`)
+        api.get('/ap/aging'),
+        api.get('/ar/aging')
       ]);
 
       setMetrics({

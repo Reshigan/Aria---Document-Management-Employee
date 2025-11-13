@@ -64,47 +64,70 @@ export default function Quotes() {
     loadCustomers();
   }, [searchTerm, statusFilter]);
 
-  const fetchQuotes = async () => {
+  const loadQuotes = async () => {
     try {
       setLoading(true);
       const params: any = {};
       if (searchTerm) params.search = searchTerm;
       if (statusFilter) params.status = statusFilter;
       
-      const response = await axios.get('/api/erp/order-to-cash/quotes', { params });
+      const response = await api.get('/erp/order-to-cash/quotes', { params });
       setQuotes(response.data);
-    } catch (error) {
-      console.error('Error fetching quotes:', error);
+      setError(null);
+    } catch (err: any) {
+      console.error('Error loading quotes:', err);
+      setError(err.response?.data?.detail || 'Failed to load quotes');
     } finally {
       setLoading(false);
     }
   };
 
+  const loadProducts = async () => {
+    try {
+      const response = await api.get('/erp/order-to-cash/products');
+      setProducts(response.data);
+    } catch (err) {
+      console.error('Error loading products:', err);
+    }
+  };
+
+  const loadCustomers = async () => {
+    try {
+      const response = await api.get('/erp/order-to-cash/customers');
+      setCustomers(response.data);
+    } catch (err) {
+      console.error('Error loading customers:', err);
+    }
+  };
+
   const approveQuote = async (quoteId: string) => {
     try {
-      await axios.post(`/api/erp/order-to-cash/quotes/${quoteId}/approve`);
-      fetchQuotes();
-    } catch (error) {
-      console.error('Error approving quote:', error);
+      await api.post(`/erp/order-to-cash/quotes/${quoteId}/approve`);
+      loadQuotes();
+    } catch (err: any) {
+      console.error('Error approving quote:', err);
+      setError(err.response?.data?.detail || 'Failed to approve quote');
     }
   };
 
   const sendQuote = async (quoteId: string) => {
     try {
-      await axios.post(`/api/erp/order-to-cash/quotes/${quoteId}/send`);
-      fetchQuotes();
-    } catch (error) {
-      console.error('Error sending quote:', error);
+      await api.post(`/erp/order-to-cash/quotes/${quoteId}/send`);
+      loadQuotes();
+    } catch (err: any) {
+      console.error('Error sending quote:', err);
+      setError(err.response?.data?.detail || 'Failed to send quote');
     }
   };
 
   const acceptQuote = async (quoteId: string) => {
     try {
-      const response = await axios.post(`/api/erp/order-to-cash/quotes/${quoteId}/accept`);
+      const response = await api.post(`/erp/order-to-cash/quotes/${quoteId}/accept`);
       alert(`Quote accepted! Sales Order ${response.data.sales_order_number} created.`);
-      fetchQuotes();
-    } catch (error) {
-      console.error('Error accepting quote:', error);
+      loadQuotes();
+    } catch (err: any) {
+      console.error('Error accepting quote:', err);
+      setError(err.response?.data?.detail || 'Failed to accept quote');
     }
   };
 
@@ -170,7 +193,7 @@ export default function Quotes() {
           <option value="expired">Expired</option>
         </select>
         <button
-          onClick={fetchQuotes}
+          onClick={loadQuotes}
           style={{
             padding: '0.5rem 1.5rem',
             background: '#2563eb',
