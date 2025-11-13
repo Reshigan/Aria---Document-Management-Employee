@@ -21,23 +21,49 @@ jobs:
           cache-dependency-path: frontend/package-lock.json
       
       - name: Print environment info
-        working-directory: ./frontend
         run: |
           echo "Node version: $(node -v)"
           echo "npm version: $(npm -v)"
           echo "Working directory: $(pwd)"
           ls -la
+          echo "Frontend directory:"
+          ls -la frontend || echo "Frontend directory not found!"
       
       - name: Install dependencies
         working-directory: ./frontend
-        run: npm ci --no-audit --no-fund
+        run: |
+          npm ci --no-audit --no-fund 2>&1 | tee npm-ci.log
+          echo $? > npm-ci.exitcode
       
       - name: Build frontend
         working-directory: ./frontend
-        run: npm run build
+        run: |
+          npm run build 2>&1 | tee npm-build.log
+          echo $? > npm-build.exitcode
+      
+      - name: Upload logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-logs
+          path: |
+            frontend/npm-ci.log
+            frontend/npm-ci.exitcode
+            frontend/npm-build.log
+            frontend/npm-build.exitcode
+          retention-days: 7
+      
+      - name: Check exit codes
+        working-directory: ./frontend
+        run: |
+          CI_EXIT=$(cat npm-ci.exitcode)
+          BUILD_EXIT=$(cat npm-build.exitcode)
+          echo "npm ci exit code: $CI_EXIT"
+          echo "npm build exit code: $BUILD_EXIT"
+          test "$CI_EXIT" = "0" && test "$BUILD_EXIT" = "0"
       
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: frontend-dist
           path: frontend/dist
@@ -55,18 +81,37 @@ jobs:
           python-version: '3.11'
       
       - name: Print environment info
-        working-directory: ./backend
         run: |
           echo "Python version: $(python --version)"
           echo "pip version: $(pip --version)"
           echo "Working directory: $(pwd)"
           ls -la
+          echo "Backend directory:"
+          ls -la backend || echo "Backend directory not found!"
       
       - name: Run backend checks
         working-directory: ./backend
         run: |
-          python -m py_compile production_main.py
-          echo "Backend syntax check passed"
+          python -m py_compile production_main.py 2>&1 | tee py-compile.log
+          echo $? > py-compile.exitcode
+          echo "Backend syntax check completed"
+      
+      - name: Upload logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-logs
+          path: |
+            backend/py-compile.log
+            backend/py-compile.exitcode
+          retention-days: 7
+      
+      - name: Check exit codes
+        working-directory: ./backend
+        run: |
+          COMPILE_EXIT=$(cat py-compile.exitcode)
+          echo "py_compile exit code: $COMPILE_EXIT"
+          test "$COMPILE_EXIT" = "0"
 
   notify-success:
     name: Notify Success
