@@ -377,18 +377,8 @@ async def get_audit_logs(limit: int = 100, offset: int = 0):
             await conn.close()
     except Exception as e:
         return {
-            "logs": [
-                {
-                    "id": "log_1",
-                    "timestamp": datetime.now().isoformat(),
-                    "user_email": "admin@vantax.co.za",
-                    "action": "bot.config.updated",
-                    "resource": "invoice_reconciliation_bot",
-                    "details": "Updated bot configuration",
-                    "ip_address": "196.207.123.45"
-                }
-            ],
-            "total": 1,
+            "logs": [],
+            "total": 0,
             "limit": limit,
             "offset": offset
         }
@@ -416,18 +406,8 @@ async def get_users(limit: int = 100, offset: int = 0):
             await conn.close()
     except Exception as e:
         return {
-            "users": [
-                {
-                    "id": 1,
-                    "email": "admin@vantax.co.za",
-                    "full_name": "Admin User",
-                    "role": "admin",
-                    "is_active": True,
-                    "created_at": datetime.now().isoformat(),
-                    "last_login": datetime.now().isoformat()
-                }
-            ],
-            "total": 1
+            "users": [],
+            "total": 0
         }
 
 @router.post("/users/invite")
@@ -481,15 +461,15 @@ async def get_performance_metrics():
             await conn.close()
     except Exception as e:
         return {
-            "bot_executions_today": 150,
-            "bot_executions_week": 1050,
-            "avg_response_time_ms": 250,
-            "p95_response_time_ms": 500,
-            "p99_response_time_ms": 1000,
-            "error_rate_percent": 0.5,
-            "uptime_percent": 99.9,
-            "active_users_today": 15,
-            "api_calls_today": 1250
+            "bot_executions_today": 0,
+            "bot_executions_week": 0,
+            "avg_response_time_ms": 0,
+            "p95_response_time_ms": 0,
+            "p99_response_time_ms": 0,
+            "error_rate_percent": 0,
+            "uptime_percent": 0,
+            "active_users_today": 0,
+            "api_calls_today": 0
         }
 
 @router.get("/erp-connections")
@@ -506,14 +486,7 @@ async def get_erp_connections():
             await conn.close()
     except Exception as e:
         return {
-            "connections": [
-                {"id": "xero", "name": "Xero", "type": "cloud", "enabled": False, "status": "disconnected", "config": {}},
-                {"id": "quickbooks", "name": "QuickBooks Online", "type": "cloud", "enabled": False, "status": "disconnected", "config": {}},
-                {"id": "sage", "name": "Sage Business Cloud", "type": "cloud", "enabled": False, "status": "disconnected", "config": {}},
-                {"id": "odoo", "name": "Odoo", "type": "cloud", "enabled": False, "status": "disconnected", "config": {}},
-                {"id": "netsuite", "name": "NetSuite", "type": "cloud", "enabled": False, "status": "disconnected", "config": {}},
-                {"id": "sap_ecc", "name": "SAP ECC", "type": "on-premise", "enabled": False, "status": "disconnected", "config": {}}
-            ]
+            "connections": []
         }
 
 @router.put("/erp-connections/{erp_id}")
@@ -543,11 +516,24 @@ async def update_erp_connection(erp_id: str, connection: Dict[str, Any]):
 @router.post("/erp-connections/{erp_id}/test")
 async def test_erp_connection(erp_id: str):
     """Test ERP connection"""
-    return {
-        "success": True,
-        "message": f"Connection to {erp_id} successful",
-        "latency_ms": 245
-    }
+    try:
+        conn = await get_db_connection()
+        try:
+            row = await conn.fetchrow("SELECT * FROM erp_connections WHERE id = $1", erp_id)
+            if not row:
+                raise HTTPException(status_code=404, detail=f"ERP connection {erp_id} not found")
+            
+            return {
+                "success": False,
+                "message": f"Connection testing not yet implemented for {erp_id}",
+                "latency_ms": 0
+            }
+        finally:
+            await conn.close()
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to test connection: {str(e)}")
 
 @router.post("/erp-connections/{erp_id}/sync")
 async def sync_erp_connection(erp_id: str):
