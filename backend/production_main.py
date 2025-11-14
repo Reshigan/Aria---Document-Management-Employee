@@ -1418,22 +1418,21 @@ class BBBEEComplianceBot(BotBase):
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
-        company_name = data.get("company_name", "Company Ltd")
+        company_id = data.get("company_id")
+        if not company_id or not bot_data_pg:
+            return {"status": "error", "bot": "BBBEE Compliance", "message": "Company ID required"}
         
-        return {
-            "status": "success",
-            "bot": "BBBEE Compliance",
-            "company": company_name,
-            "bbbee_level": random.randint(1, 8),
-            "ownership_score": round(random.uniform(0, 25), 2),
-            "management_score": round(random.uniform(0, 15), 2),
-            "skills_development_score": round(random.uniform(0, 20), 2),
-            "enterprise_development_score": round(random.uniform(0, 15), 2),
-            "socioeconomic_development_score": round(random.uniform(0, 10), 2),
-            "total_score": round(random.uniform(50, 100), 2),
-            "certificate_valid_until": (datetime.now() + timedelta(days=365)).strftime("%Y-%m-%d"),
-            "compliance_status": "compliant"
-        }
+        try:
+            employees = bot_data_pg.fetch_employees(company_id, limit=100)
+            
+            return {
+                "status": "success",
+                "bot": "BBBEE Compliance",
+                "total_employees": len(employees),
+                "message": "BBBEE compliance requires bbbee_scorecard table"
+            }
+        except Exception as e:
+            return {"status": "error", "bot": "BBBEE Compliance", "message": f"Error: {str(e)}"}
 
 class PAYEComplianceBot(BotBase):
     name = "PAYE Compliance"
@@ -1443,23 +1442,25 @@ class PAYEComplianceBot(BotBase):
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
-        period = data.get("period", datetime.now().strftime("%Y-%m"))
+        company_id = data.get("company_id")
+        if not company_id or not bot_data_pg:
+            return {"status": "error", "bot": "PAYE Compliance", "message": "Company ID required"}
         
-        gross_salaries = random.uniform(500000, 2000000)
-        paye = gross_salaries * 0.25
-        
-        return {
-            "status": "success",
-            "bot": "PAYE Compliance",
-            "period": period,
-            "total_gross_salaries": round(gross_salaries, 2),
-            "total_paye": round(paye, 2),
-            "employee_count": random.randint(20, 200),
-            "filing_reference": f"PAYE-{random.randint(100000, 999999)}",
-            "filing_status": "submitted",
-            "due_date": (datetime.now() + timedelta(days=7)).strftime("%Y-%m-%d"),
-            "compliance_status": "compliant"
-        }
+        try:
+            payroll_runs = bot_data_pg.fetch_payroll_runs(company_id, limit=12)
+            
+            total_gross = sum(float(pr.get('total_gross', 0)) for pr in payroll_runs)
+            
+            return {
+                "status": "success",
+                "bot": "PAYE Compliance",
+                "period": data.get("period", datetime.now().strftime("%Y-%m")),
+                "total_payroll_runs": len(payroll_runs),
+                "total_gross_salaries": round(total_gross, 2),
+                "message": "PAYE compliance based on payroll runs"
+            }
+        except Exception as e:
+            return {"status": "error", "bot": "PAYE Compliance", "message": f"Error: {str(e)}"}
 
 class UIFComplianceBot(BotBase):
     name = "UIF Compliance"
@@ -1469,24 +1470,27 @@ class UIFComplianceBot(BotBase):
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
-        period = data.get("period", datetime.now().strftime("%Y-%m"))
+        company_id = data.get("company_id")
+        if not company_id or not bot_data_pg:
+            return {"status": "error", "bot": "UIF Compliance", "message": "Company ID required"}
         
-        gross_salaries = random.uniform(500000, 2000000)
-        uif_contribution = gross_salaries * 0.02  # 2% (1% employer + 1% employee)
-        
-        return {
-            "status": "success",
-            "bot": "UIF Compliance",
-            "period": period,
-            "total_gross_salaries": round(gross_salaries, 2),
-            "total_uif_contribution": round(uif_contribution, 2),
-            "employer_contribution": round(uif_contribution / 2, 2),
-            "employee_contribution": round(uif_contribution / 2, 2),
-            "employee_count": random.randint(20, 200),
-            "filing_reference": f"UIF-{random.randint(100000, 999999)}",
-            "payment_status": "paid",
-            "compliance_status": "compliant"
-        }
+        try:
+            payroll_runs = bot_data_pg.fetch_payroll_runs(company_id, limit=12)
+            
+            total_gross = sum(float(pr.get('total_gross', 0)) for pr in payroll_runs)
+            uif_contribution = total_gross * 0.02
+            
+            return {
+                "status": "success",
+                "bot": "UIF Compliance",
+                "period": data.get("period", datetime.now().strftime("%Y-%m")),
+                "total_payroll_runs": len(payroll_runs),
+                "total_gross_salaries": round(total_gross, 2),
+                "total_uif_contribution": round(uif_contribution, 2),
+                "message": "UIF compliance based on payroll runs"
+            }
+        except Exception as e:
+            return {"status": "error", "bot": "UIF Compliance", "message": f"Error: {str(e)}"}
 
 class VATComplianceBot(BotBase):
     name = "VAT Compliance"
@@ -1496,24 +1500,25 @@ class VATComplianceBot(BotBase):
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
-        period = data.get("period", datetime.now().strftime("%Y-%m"))
+        company_id = data.get("company_id")
+        if not company_id or not bot_data_pg:
+            return {"status": "error", "bot": "VAT Compliance", "message": "Company ID required"}
         
-        output_vat = random.uniform(50000, 200000)
-        input_vat = output_vat * random.uniform(0.5, 0.9)
-        vat_payable = output_vat - input_vat
-        
-        return {
-            "status": "success",
-            "bot": "VAT Compliance",
-            "period": period,
-            "output_vat": round(output_vat, 2),
-            "input_vat": round(input_vat, 2),
-            "vat_payable": round(vat_payable, 2),
-            "filing_reference": f"VAT-{random.randint(100000, 999999)}",
-            "filing_status": "submitted",
-            "due_date": (datetime.now() + timedelta(days=25)).strftime("%Y-%m-%d"),
-            "compliance_status": "compliant"
-        }
+        try:
+            invoices = bot_data_pg.fetch_invoices(company_id, limit=100)
+            
+            output_vat = sum(float(inv.get('tax_amount', 0)) for inv in invoices)
+            
+            return {
+                "status": "success",
+                "bot": "VAT Compliance",
+                "period": data.get("period", datetime.now().strftime("%Y-%m")),
+                "total_invoices": len(invoices),
+                "output_vat": round(output_vat, 2),
+                "message": "VAT compliance based on invoice tax amounts"
+            }
+        except Exception as e:
+            return {"status": "error", "bot": "VAT Compliance", "message": f"Error: {str(e)}"}
 
 class AuditTrailBot(BotBase):
     name = "Audit Trail"
@@ -1523,28 +1528,21 @@ class AuditTrailBot(BotBase):
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
-        entity_type = data.get("entity_type", "transaction")
-        entity_id = data.get("entity_id", f"TXN-{random.randint(10000, 99999)}")
+        company_id = data.get("company_id")
+        if not company_id or not bot_data_pg:
+            return {"status": "error", "bot": "Audit Trail", "message": "Company ID required"}
         
-        audit_entries = []
-        for i in range(random.randint(3, 10)):
-            audit_entries.append({
-                "timestamp": (datetime.now() - timedelta(hours=random.randint(1, 100))).isoformat(),
-                "user": f"user{random.randint(1, 10)}@company.com",
-                "action": random.choice(["created", "updated", "viewed", "approved", "deleted"]),
-                "field_changed": random.choice(["status", "amount", "assignee", "notes"]) if i > 0 else None,
-                "ip_address": f"192.168.1.{random.randint(1, 255)}"
-            })
-        
-        return {
-            "status": "success",
-            "bot": "Audit Trail",
-            "entity_type": entity_type,
-            "entity_id": entity_id,
-            "audit_entries": audit_entries,
-            "total_changes": len(audit_entries),
-            "compliance_status": "fully_auditable"
-        }
+        try:
+            journal_entries = bot_data_pg.fetch_chart_of_accounts(company_id, limit=100)
+            
+            return {
+                "status": "success",
+                "bot": "Audit Trail",
+                "total_accounts": len(journal_entries),
+                "message": "Audit trail requires audit_log table"
+            }
+        except Exception as e:
+            return {"status": "error", "bot": "Audit Trail", "message": f"Error: {str(e)}"}
 
 # ==================== CRM/SALES BOTS (8) ====================
 
