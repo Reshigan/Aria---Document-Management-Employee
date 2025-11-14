@@ -740,3 +740,45 @@ async def get_ap_invoice(
     finally:
         cursor.close()
         conn.close()
+
+@ap_invoices_router.post("/{invoice_id}/cancel")
+async def cancel_ap_invoice(
+    invoice_id: str = Path(...),
+    cancel_data: Dict[str, Any] = Body(default={}),
+    current_user: Dict = Depends(get_current_user)
+):
+    """Cancel an AP invoice (only allowed for draft or approved status)"""
+    conn = get_connection()
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    
+    try:
+        company_id = current_user.get('company_id')
+        if not company_id:
+            raise HTTPException(status_code=400, detail="User must be associated with a company")
+        
+        cursor.execute("SELECT status, invoice_number FROM supplier_invoices WHERE id = %s AND company_id = %s", (invoice_id, company_id))
+        result = cursor.fetchone()
+        
+        if not result:
+            raise HTTPException(status_code=404, detail="Invoice not found")
+        
+        status, invoice_number = result['status'], result['invoice_number']
+        if status not in ['draft', 'approved']:
+            raise HTTPException(status_code=400, detail=f"Cannot cancel invoice with status: {status}")
+        
+        cursor.execute("UPDATE supplier_invoices SET status = 'cancelled', updated_at = NOW() WHERE id = %s AND company_id = %s", (invoice_id, company_id))
+        conn.commit()
+        
+        return {
+            "message": f"Invoice {invoice_number} cancelled successfully",
+            "invoice_id": invoice_id,
+            "reason": cancel_data.get('reason')
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        conn.rollback()
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+    finally:
+        cursor.close()
+        conn.close()
