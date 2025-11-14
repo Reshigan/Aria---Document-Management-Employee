@@ -348,7 +348,7 @@ def get_company_id(db: Session = Depends(get_db)) -> UUID:
     return row[0]
 
 def get_user_id(db: Session = Depends(get_db)) -> Optional[UUID]:
-    result = db.execute("SELECT id FROM users LIMIT 1")
+    result = db.execute(text("SELECT id FROM users LIMIT 1"))
     row = result.fetchone()
     return row[0] if row else None
 
@@ -1445,7 +1445,7 @@ async def create_sales_order(
         
         for line in order.lines:
             line_id = uuid4()
-            db.execute("""
+            db.execute(text("""
                 INSERT INTO sales_order_lines (id, sales_order_id, line_number, product_id,
                                               description, quantity, unit_price, discount_percent,
                                               tax_rate, quantity_delivered, quantity_invoiced,
@@ -1453,7 +1453,7 @@ async def create_sales_order(
                 VALUES (:id, :sales_order_id, :line_number, :product_id,
                         :description, :quantity, :unit_price, :discount_percent,
                         :tax_rate, 0, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
-            """, {
+            """), {
                 "id": str(line_id),
                 "sales_order_id": str(order_id),
                 "line_number": line.line_number,
@@ -1468,7 +1468,7 @@ async def create_sales_order(
         db.commit()
         
         customer_result = db.execute(
-            "SELECT name FROM customers WHERE id = :customer_id",
+            text("SELECT name FROM customers WHERE id = :customer_id"),
             {"customer_id": str(order.customer_id)}
         )
         customer_row = customer_result.fetchone()
@@ -1514,7 +1514,7 @@ async def get_sales_order(
         WHERE sales_order_id = :order_id
         ORDER BY line_number
     """
-    lines_result = db.execute(lines_query, {"order_id": str(order_id)})
+    lines_result = db.execute(text(lines_query), {"order_id": str(order_id)})
     lines = []
     for line_row in lines_result:
         lines.append(SalesOrderLineResponse(
@@ -1713,14 +1713,14 @@ async def create_delivery(
         
         for line in delivery.lines:
             line_id = uuid4()
-            db.execute("""
+            db.execute(text("""
                 INSERT INTO delivery_lines (id, delivery_id, sales_order_line_id, line_number,
                                            product_id, description, quantity, storage_location_id,
                                            created_at, updated_at)
                 VALUES (:id, :delivery_id, :sales_order_line_id, :line_number,
                         :product_id, :description, :quantity, :storage_location_id,
                         CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
-            """, {
+            """), {
                 "id": str(line_id),
                 "delivery_id": str(delivery_id),
                 "sales_order_line_id": str(line.sales_order_line_id) if line.sales_order_line_id else None,
@@ -1734,14 +1734,14 @@ async def create_delivery(
         db.commit()
         
         customer_result = db.execute(
-            "SELECT name FROM customers WHERE id = :customer_id",
+            text("SELECT name FROM customers WHERE id = :customer_id"),
             {"customer_id": str(delivery.customer_id)}
         )
         customer_row = customer_result.fetchone()
         customer_name = customer_row[0] if customer_row else None
         
         warehouse_result = db.execute(
-            "SELECT name FROM warehouses WHERE id = :warehouse_id",
+            text("SELECT name FROM warehouses WHERE id = :warehouse_id"),
             {"warehouse_id": str(delivery.warehouse_id)}
         )
         warehouse_row = warehouse_result.fetchone()
@@ -1788,7 +1788,7 @@ async def get_delivery(
         WHERE delivery_id = :delivery_id
         ORDER BY line_number
     """
-    lines_result = db.execute(lines_query, {"delivery_id": str(delivery_id)})
+    lines_result = db.execute(text(lines_query), {"delivery_id": str(delivery_id)})
     lines = []
     for line_row in lines_result:
         lines.append(DeliveryLineResponse(
