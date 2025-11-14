@@ -451,3 +451,87 @@ async def delete_production_run(
     finally:
         cursor.close()
         conn.close()
+
+@work_orders_router.post("/{order_id}/cancel")
+async def cancel_work_order(
+    order_id: str = Path(...),
+    cancel_data: Dict[str, Any] = Body(default={}),
+    current_user: Dict = Depends(get_current_user)
+):
+    """Cancel a work order (only allowed for draft status)"""
+    conn = get_connection()
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    
+    try:
+        company_id = current_user.get('company_id')
+        if not company_id:
+            raise HTTPException(status_code=400, detail="User must be associated with a company")
+        
+        cursor.execute("SELECT status, work_order_number FROM work_orders WHERE id = %s AND company_id = %s", (order_id, company_id))
+        result = cursor.fetchone()
+        
+        if not result:
+            raise HTTPException(status_code=404, detail="Work order not found")
+        
+        status, work_order_number = result['status'], result['work_order_number']
+        if status not in ['draft', 'planned']:
+            raise HTTPException(status_code=400, detail=f"Cannot cancel work order with status: {status}")
+        
+        cursor.execute("UPDATE work_orders SET status = 'cancelled', updated_at = NOW() WHERE id = %s AND company_id = %s", (order_id, company_id))
+        conn.commit()
+        
+        return {
+            "message": f"Work order {work_order_number} cancelled successfully",
+            "order_id": order_id,
+            "reason": cancel_data.get('reason')
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        conn.rollback()
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+    finally:
+        cursor.close()
+        conn.close()
+
+@production_runs_router.post("/{run_id}/cancel")
+async def cancel_production_run(
+    run_id: str = Path(...),
+    cancel_data: Dict[str, Any] = Body(default={}),
+    current_user: Dict = Depends(get_current_user)
+):
+    """Cancel a production run (only allowed for in_progress status)"""
+    conn = get_connection()
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    
+    try:
+        company_id = current_user.get('company_id')
+        if not company_id:
+            raise HTTPException(status_code=400, detail="User must be associated with a company")
+        
+        cursor.execute("SELECT status, run_number FROM production_runs WHERE id = %s AND company_id = %s", (run_id, company_id))
+        result = cursor.fetchone()
+        
+        if not result:
+            raise HTTPException(status_code=404, detail="Production run not found")
+        
+        status, run_number = result['status'], result['run_number']
+        if status not in ['in_progress']:
+            raise HTTPException(status_code=400, detail=f"Cannot cancel production run with status: {status}")
+        
+        cursor.execute("UPDATE production_runs SET status = 'cancelled', updated_at = NOW() WHERE id = %s AND company_id = %s", (run_id, company_id))
+        conn.commit()
+        
+        return {
+            "message": f"Production run {run_number} cancelled successfully",
+            "run_id": run_id,
+            "reason": cancel_data.get('reason')
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        conn.rollback()
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+    finally:
+        cursor.close()
+        conn.close()

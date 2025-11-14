@@ -489,3 +489,45 @@ async def delete_technician(
     finally:
         cursor.close()
         conn.close()
+
+@service_requests_router.post("/{request_id}/cancel")
+async def cancel_service_request(
+    request_id: str = Path(...),
+    cancel_data: Dict[str, Any] = Body(default={}),
+    current_user: Dict = Depends(get_current_user)
+):
+    """Cancel a service request (only allowed for open or scheduled status)"""
+    conn = get_connection()
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    
+    try:
+        company_id = current_user.get('company_id')
+        if not company_id:
+            raise HTTPException(status_code=400, detail="User must be associated with a company")
+        
+        cursor.execute("SELECT status, request_number FROM service_requests WHERE id = %s AND company_id = %s", (request_id, company_id))
+        result = cursor.fetchone()
+        
+        if not result:
+            raise HTTPException(status_code=404, detail="Service request not found")
+        
+        status, request_number = result['status'], result['request_number']
+        if status not in ['open', 'scheduled', 'in_progress']:
+            raise HTTPException(status_code=400, detail=f"Cannot cancel service request with status: {status}")
+        
+        cursor.execute("UPDATE service_requests SET status = 'cancelled', updated_at = NOW() WHERE id = %s AND company_id = %s", (request_id, company_id))
+        conn.commit()
+        
+        return {
+            "message": f"Service request {request_number} cancelled successfully",
+            "request_id": request_id,
+            "reason": cancel_data.get('reason')
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        conn.rollback()
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+    finally:
+        cursor.close()
+        conn.close()
