@@ -10,7 +10,7 @@ import psycopg2
 import psycopg2.extras
 import os
 
-from auth_integrated import get_current_user
+from core.auth import get_current_user
 
 DATABASE_URL = os.getenv("DATABASE_URL_PG") or os.getenv("DATABASE_URL")
 if not DATABASE_URL:

@@ -10,7 +10,7 @@ import psycopg2
 import psycopg2.extras
 import os
 
-from auth_integrated import get_current_user
+from core.auth import get_current_user
 
 router = APIRouter(prefix="/api/erp/gl", tags=["General Ledger"])
 
