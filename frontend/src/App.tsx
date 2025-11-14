@@ -31,6 +31,7 @@ import StockValuationReport from './pages/Reports/StockValuationReport';
 import VATSummaryReport from './pages/Reports/VATSummaryReport';
 import BankingDashboard from './pages/Banking/BankingDashboard';
 import ChatInterface from './components/Chat/ChatInterface';
+import AskAriaChat from './pages/AskAria/AskAriaChat';
 import SystemSettings from './pages/admin/SystemSettings';
 import CompanySettings from './pages/admin/CompanySettings';
 import BotConfiguration from './pages/admin/BotConfiguration';
@@ -119,8 +120,8 @@ function App() {
           
           {/* Aria Chat */}
           <Route path="/chat" element={<ChatInterface />} />
-          <Route path="/aria" element={<ChatInterface />} />
-          <Route path="/ask-aria" element={<ChatInterface />} />
+          <Route path="/aria" element={<AskAriaChat />} />
+          <Route path="/ask-aria" element={<AskAriaChat />} />
           
           {/* Admin */}
           <Route path="/admin/system" element={<SystemSettings />} />
