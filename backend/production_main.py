@@ -621,7 +621,6 @@ class PredictiveMaintenanceBot(BotBase):
             }
         except Exception as e:
             return {"status": "error", "bot": "Predictive Maintenance", "message": f"Error: {str(e)}"}
-        }
 
 class InventoryOptimizerBot(BotBase):
     name = "Inventory Optimizer"
