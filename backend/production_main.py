@@ -1878,28 +1878,22 @@ class RecruitmentBot(BotBase):
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
-        position = data.get("position", "Software Engineer")
+        company_id = data.get("company_id")
+        if not company_id or not bot_data_pg:
+            return {"status": "error", "bot": "Recruitment", "message": "Company ID required"}
         
-        candidates = []
-        for i in range(random.randint(5, 15)):
-            candidates.append({
-                "name": f"Candidate {i+1}",
-                "match_score": round(random.uniform(60, 95), 2),
-                "experience_years": random.randint(1, 15),
-                "status": random.choice(["screening", "interview_scheduled", "pending_review"]),
-                "source": random.choice(["LinkedIn", "Indeed", "Referral", "Company Website"])
-            })
-        
-        return {
-            "status": "success",
-            "bot": "Recruitment",
-            "position": position,
-            "requisition_id": f"REQ-{random.randint(10000, 99999)}",
-            "total_applicants": len(candidates),
-            "qualified_candidates": sum(1 for c in candidates if c["match_score"] > 75),
-            "candidates": candidates,
-            "avg_match_score": round(sum(c["match_score"] for c in candidates) / len(candidates), 2)
-        }
+        try:
+            employees = bot_data_pg.fetch_employees(company_id, limit=100)
+            
+            return {
+                "status": "success",
+                "bot": "Recruitment",
+                "position": data.get("position", "Software Engineer"),
+                "current_employees": len(employees),
+                "message": "Recruitment tracking requires candidates table"
+            }
+        except Exception as e:
+            return {"status": "error", "bot": "Recruitment", "message": f"Error: {str(e)}"}
 
 class EmployeeOnboardingBot(BotBase):
     name = "Employee Onboarding"
@@ -1909,29 +1903,23 @@ class EmployeeOnboardingBot(BotBase):
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
-        employee_name = data.get("employee_name", "New Employee")
+        company_id = data.get("company_id")
+        if not company_id or not bot_data_pg:
+            return {"status": "error", "bot": "Employee Onboarding", "message": "Company ID required"}
         
-        tasks = [
-            {"task": "Complete paperwork", "status": "completed"},
-            {"task": "IT setup", "status": "completed"},
-            {"task": "Office tour", "status": "completed"},
-            {"task": "Team introductions", "status": "in_progress"},
-            {"task": "Training modules", "status": "pending"},
-            {"task": "90-day review", "status": "pending"}
-        ]
-        
-        completed = sum(1 for t in tasks if t["status"] == "completed")
-        
-        return {
-            "status": "success",
-            "bot": "Employee Onboarding",
-            "employee_name": employee_name,
-            "employee_id": f"EMP-{random.randint(1000, 9999)}",
-            "start_date": (datetime.now() - timedelta(days=random.randint(1, 30))).strftime("%Y-%m-%d"),
-            "tasks": tasks,
-            "completion_rate": round((completed / len(tasks)) * 100, 2),
-            "assigned_buddy": f"buddy{random.randint(1, 10)}@company.com"
-        }
+        try:
+            employees = bot_data_pg.fetch_employees(company_id, status='active', limit=100)
+            recent_hires = [e for e in employees if e.get('hire_date')]
+            
+            return {
+                "status": "success",
+                "bot": "Employee Onboarding",
+                "total_employees": len(employees),
+                "recent_hires": len(recent_hires[:10]),
+                "message": "Employee onboarding tracking requires onboarding_tasks table"
+            }
+        except Exception as e:
+            return {"status": "error", "bot": "Employee Onboarding", "message": f"Error: {str(e)}"}
 
 class LeaveManagementBot(BotBase):
     name = "Leave Management"
@@ -1983,29 +1971,22 @@ class PerformanceReviewBot(BotBase):
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
-        employee = data.get("employee", "Employee Name")
+        company_id = data.get("company_id")
+        if not company_id or not bot_data_pg:
+            return {"status": "error", "bot": "Performance Review", "message": "Company ID required"}
         
-        categories = {
-            "Job Knowledge": round(random.uniform(3.5, 5.0), 1),
-            "Quality of Work": round(random.uniform(3.5, 5.0), 1),
-            "Productivity": round(random.uniform(3.5, 5.0), 1),
-            "Communication": round(random.uniform(3.5, 5.0), 1),
-            "Teamwork": round(random.uniform(3.5, 5.0), 1)
-        }
-        
-        overall_score = sum(categories.values()) / len(categories)
-        
-        return {
-            "status": "success",
-            "bot": "Performance Review",
-            "employee": employee,
-            "review_period": datetime.now().strftime("%Y-Q%s" % ((datetime.now().month-1)//3 + 1)),
-            "review_id": f"REV-{random.randint(10000, 99999)}",
-            "categories": categories,
-            "overall_score": round(overall_score, 2),
-            "rating": "exceeds_expectations" if overall_score > 4.5 else "meets_expectations" if overall_score > 3.5 else "needs_improvement",
-            "recommended_action": "salary_increase" if overall_score > 4.5 else "continue_monitoring"
-        }
+        try:
+            employees = bot_data_pg.fetch_employees(company_id, status='active', limit=100)
+            
+            return {
+                "status": "success",
+                "bot": "Performance Review",
+                "total_employees": len(employees),
+                "review_period": datetime.now().strftime("%Y-Q%s" % ((datetime.now().month-1)//3 + 1)),
+                "message": "Performance review tracking requires performance_reviews table"
+            }
+        except Exception as e:
+            return {"status": "error", "bot": "Performance Review", "message": f"Error: {str(e)}"}
 
 class TrainingManagementBot(BotBase):
     name = "Training Management"
@@ -2015,30 +1996,21 @@ class TrainingManagementBot(BotBase):
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
-        employee = data.get("employee", "Employee Name")
+        company_id = data.get("company_id")
+        if not company_id or not bot_data_pg:
+            return {"status": "error", "bot": "Training Management", "message": "Company ID required"}
         
-        courses = []
-        for i in range(random.randint(3, 8)):
-            courses.append({
-                "course_name": f"Training Course {i+1}",
-                "status": random.choice(["completed", "in_progress", "not_started"]),
-                "completion_date": (datetime.now() - timedelta(days=random.randint(1, 365))).strftime("%Y-%m-%d") if random.random() > 0.5 else None,
-                "score": random.randint(70, 100) if random.random() > 0.3 else None
-            })
-        
-        completed = sum(1 for c in courses if c["status"] == "completed")
-        
-        return {
-            "status": "success",
-            "bot": "Training Management",
-            "employee": employee,
-            "employee_id": data.get("employee_id", f"EMP-{random.randint(1000, 9999)}"),
-            "courses": courses,
-            "total_courses": len(courses),
-            "completed_courses": completed,
-            "completion_rate": round((completed / len(courses)) * 100, 2),
-            "certification_status": "current" if completed > len(courses) * 0.7 else "needs_update"
-        }
+        try:
+            employees = bot_data_pg.fetch_employees(company_id, status='active', limit=100)
+            
+            return {
+                "status": "success",
+                "bot": "Training Management",
+                "total_employees": len(employees),
+                "message": "Training management requires training_courses and training_enrollments tables"
+            }
+        except Exception as e:
+            return {"status": "error", "bot": "Training Management", "message": f"Error: {str(e)}"}
 
 class TimeAttendanceBot(BotBase):
     name = "Time & Attendance"
@@ -2048,32 +2020,22 @@ class TimeAttendanceBot(BotBase):
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
-        employee = data.get("employee", "Employee Name")
+        company_id = data.get("company_id")
+        if not company_id or not bot_data_pg:
+            return {"status": "error", "bot": "Time & Attendance", "message": "Company ID required"}
         
-        daily_records = []
-        for i in range(5):  # Week
-            hours = random.uniform(7.5, 9.5)
-            daily_records.append({
-                "date": (datetime.now() - timedelta(days=4-i)).strftime("%Y-%m-%d"),
-                "clock_in": "08:00",
-                "clock_out": f"{16 + int(hours - 8)}:00",
-                "hours_worked": round(hours, 2),
-                "status": "present"
-            })
-        
-        total_hours = sum(r["hours_worked"] for r in daily_records)
-        
-        return {
-            "status": "success",
-            "bot": "Time & Attendance",
-            "employee": employee,
-            "period": "current_week",
-            "daily_records": daily_records,
-            "total_hours": round(total_hours, 2),
-            "expected_hours": 40,
-            "overtime_hours": max(0, round(total_hours - 40, 2)),
-            "attendance_rate": 100.0
-        }
+        try:
+            employees = bot_data_pg.fetch_employees(company_id, status='active', limit=100)
+            
+            return {
+                "status": "success",
+                "bot": "Time & Attendance",
+                "total_employees": len(employees),
+                "period": "current_week",
+                "message": "Time tracking requires time_entries table"
+            }
+        except Exception as e:
+            return {"status": "error", "bot": "Time & Attendance", "message": f"Error: {str(e)}"}
 
 class BenefitsManagementBot(BotBase):
     name = "Benefits Management"
@@ -2083,28 +2045,21 @@ class BenefitsManagementBot(BotBase):
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
-        employee = data.get("employee", "Employee Name")
+        company_id = data.get("company_id")
+        if not company_id or not bot_data_pg:
+            return {"status": "error", "bot": "Benefits Management", "message": "Company ID required"}
         
-        benefits = [
-            {"benefit": "Medical Aid", "enrolled": True, "monthly_cost": round(random.uniform(1500, 3500), 2)},
-            {"benefit": "Retirement Fund", "enrolled": True, "monthly_cost": round(random.uniform(2000, 5000), 2)},
-            {"benefit": "Life Insurance", "enrolled": True, "monthly_cost": round(random.uniform(200, 500), 2)},
-            {"benefit": "Disability Cover", "enrolled": random.choice([True, False]), "monthly_cost": round(random.uniform(150, 400), 2)},
-            {"benefit": "Gym Membership", "enrolled": random.choice([True, False]), "monthly_cost": 500}
-        ]
-        
-        total_cost = sum(b["monthly_cost"] for b in benefits if b["enrolled"])
-        
-        return {
-            "status": "success",
-            "bot": "Benefits Management",
-            "employee": employee,
-            "benefits": benefits,
-            "total_monthly_cost": round(total_cost, 2),
-            "employer_contribution": round(total_cost * 0.6, 2),
-            "employee_contribution": round(total_cost * 0.4, 2),
-            "next_enrollment_period": (datetime.now() + timedelta(days=random.randint(30, 365))).strftime("%Y-%m-%d")
-        }
+        try:
+            employees = bot_data_pg.fetch_employees(company_id, status='active', limit=100)
+            
+            return {
+                "status": "success",
+                "bot": "Benefits Management",
+                "total_employees": len(employees),
+                "message": "Benefits management requires employee_benefits table"
+            }
+        except Exception as e:
+            return {"status": "error", "bot": "Benefits Management", "message": f"Error: {str(e)}"}
 
 class EmployeeExitBot(BotBase):
     name = "Employee Exit"
@@ -2114,27 +2069,21 @@ class EmployeeExitBot(BotBase):
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
-        employee = data.get("employee", "Employee Name")
+        company_id = data.get("company_id")
+        if not company_id or not bot_data_pg:
+            return {"status": "error", "bot": "Employee Exit", "message": "Company ID required"}
         
-        exit_tasks = [
-            {"task": "Exit interview", "status": "pending"},
-            {"task": "Return company assets", "status": "pending"},
-            {"task": "Final payroll", "status": "pending"},
-            {"task": "Deactivate accounts", "status": "pending"},
-            {"task": "Issue clearance certificate", "status": "pending"}
-        ]
-        
-        return {
-            "status": "success",
-            "bot": "Employee Exit",
-            "employee": employee,
-            "employee_id": data.get("employee_id", f"EMP-{random.randint(1000, 9999)}"),
-            "last_working_day": data.get("last_working_day", (datetime.now() + timedelta(days=30)).strftime("%Y-%m-%d")),
-            "reason": data.get("reason", "resignation"),
-            "exit_tasks": exit_tasks,
-            "notice_period_completed": random.choice([True, False]),
-            "final_payment_amount": round(random.uniform(15000, 50000), 2)
-        }
+        try:
+            employees = bot_data_pg.fetch_employees(company_id, status='inactive', limit=100)
+            
+            return {
+                "status": "success",
+                "bot": "Employee Exit",
+                "total_exited_employees": len(employees),
+                "message": "Employee exit tracking requires exit_interviews and offboarding_tasks tables"
+            }
+        except Exception as e:
+            return {"status": "error", "bot": "Employee Exit", "message": f"Error: {str(e)}"}
 
 # ==================== PROCUREMENT/SUPPLY CHAIN BOTS (7) ====================
 
