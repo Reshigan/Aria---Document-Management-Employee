@@ -117,6 +117,11 @@ const config: DocumentDetailConfig = {
               return;
             }
 
+            if (!doc.warehouse_id) {
+              alert('Sales order must have a warehouse assigned before creating delivery');
+              return;
+            }
+
             const deliveryPayload = {
               sales_order_id: doc.id,
               customer_id: doc.customer_id,
@@ -125,6 +130,8 @@ const config: DocumentDetailConfig = {
               notes: `Delivery for ${doc.order_number}`,
               lines: deliveryLines
             };
+
+            console.log('Creating delivery with payload:', deliveryPayload);
 
             const response = await api.post('/erp/order-to-cash/deliveries', deliveryPayload);
             alert(`Delivery ${response.data.delivery_number} created successfully!`);
