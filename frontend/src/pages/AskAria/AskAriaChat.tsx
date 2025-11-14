@@ -24,7 +24,7 @@ import {
   PictureAsPdf as PdfIcon,
   Description as DocIcon,
 } from '@mui/icons-material';
-import axios from 'axios';
+import api from '@/lib/api';
 
 interface Message {
   id: string;
@@ -63,7 +63,7 @@ const AskAriaChat: React.FC = () => {
   const startNewSession = async () => {
     try {
       setInitializing(true);
-      const response = await axios.post('/api/ask-aria/session', {
+      const response = await api.post('/ask-aria/session', {
         intent: null,
       });
 
@@ -107,7 +107,7 @@ const AskAriaChat: React.FC = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post('/api/ask-aria/message', {
+      const response = await api.post('/ask-aria/message', {
         conversation_id: conversationId,
         message: inputMessage,
       });
@@ -150,13 +150,13 @@ const AskAriaChat: React.FC = () => {
       const formData = new FormData();
       formData.append('file', file);
 
-      const uploadResponse = await axios.post('/api/ask-aria/upload', formData, {
+      const uploadResponse = await api.post('/ask-aria/upload', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 
       const documentId = uploadResponse.data.document_id;
 
-      const classifyResponse = await axios.post(`/api/ask-aria/classify/${documentId}`);
+      const classifyResponse = await api.post(`/ask-aria/classify/${documentId}`);
 
       const message = `I've uploaded and classified your document "${file.name}" as a ${classifyResponse.data.document_class} with ${(classifyResponse.data.confidence * 100).toFixed(0)}% confidence. How would you like to proceed?`;
 
