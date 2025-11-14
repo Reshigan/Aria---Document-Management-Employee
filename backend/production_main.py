@@ -439,6 +439,13 @@ try:
 except Exception as e:
     print(f"⚠️ Conversation Orchestrator module not loaded: {e}")
 
+try:
+    from app.api.ask_aria.router import router as ask_aria_router
+    app.include_router(ask_aria_router)
+    print("✅ Ask Aria Conversational AI loaded")
+except Exception as e:
+    print(f"⚠️ Ask Aria not loaded: {e}")
+
 # try:
 #     from api.gateway.routers.aria import router as aria_router
 #     app.include_router(aria_router, prefix="/api")
