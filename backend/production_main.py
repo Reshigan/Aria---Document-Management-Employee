@@ -15,6 +15,10 @@ import traceback
 import random
 import hashlib
 import json
+import os
+import psycopg2
+import psycopg2.extras
+import uuid
 
 # Import authentication system
 from auth_integrated import (
@@ -29,6 +33,20 @@ from database import (
     create_quality_inspection, get_quality_inspections,
     log_action
 )
+
+DATABASE_URL = os.getenv("DATABASE_URL_PG") or os.getenv("DATABASE_URL")
+
+def get_db_connection():
+    """Get PostgreSQL database connection for bot operations"""
+    if not DATABASE_URL:
+        raise RuntimeError("DATABASE_URL_PG or DATABASE_URL environment variable must be set")
+    return psycopg2.connect(DATABASE_URL)
+
+try:
+    from app.services import bot_data_pg
+except ImportError:
+    bot_data_pg = None
+    print("⚠️ Bot data access layer not available - bots will use mock data")
 
 # Initialize FastAPI
 app = FastAPI(
@@ -629,30 +647,47 @@ class InventoryOptimizerBot(BotBase):
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
-        items = data.get("items", [{"sku": "ITEM-001", "current_stock": 100, "daily_usage": 10}])
+        company_id = data.get("company_id")
+        if not company_id or not bot_data_pg:
+            return {
+                "status": "error",
+                "bot": "Inventory Optimizer",
+                "message": "Company ID required or bot data layer not available"
+            }
         
-        recommendations = []
-        for item in items:
-            current = item.get("current_stock", 100)
-            daily = item.get("daily_usage", 10)
-            reorder_point = daily * 7
-            optimal_qty = daily * 30
+        try:
+            stock_on_hand = bot_data_pg.fetch_stock_on_hand(company_id, limit=100)
+            low_stock_items = [item for item in stock_on_hand if float(item.get('quantity_on_hand', 0)) < 50]
             
-            recommendations.append({
-                "sku": item.get("sku", "ITEM-001"),
-                "current_stock": current,
-                "reorder_point": reorder_point,
-                "optimal_order_qty": optimal_qty,
-                "action": "order_now" if current < reorder_point else "monitor",
-                "days_of_stock": round(current / daily, 1) if daily > 0 else 999
-            })
-        
-        return {
-            "status": "success",
-            "bot": "Inventory Optimizer",
-            "recommendations": recommendations,
-            "items_needing_reorder": sum(1 for r in recommendations if r["action"] == "order_now")
-        }
+            recommendations = []
+            for item in low_stock_items[:10]:
+                current = float(item.get('quantity_on_hand', 0))
+                reorder_point = 50
+                optimal_qty = 200
+                
+                recommendations.append({
+                    "sku": item.get('sku'),
+                    "product_name": item.get('product_name'),
+                    "current_stock": current,
+                    "warehouse": item.get('warehouse_name'),
+                    "reorder_point": reorder_point,
+                    "optimal_order_qty": optimal_qty,
+                    "action": "order_now" if current < reorder_point else "monitor"
+                })
+            
+            return {
+                "status": "success",
+                "bot": "Inventory Optimizer",
+                "recommendations": recommendations,
+                "items_needing_reorder": sum(1 for r in recommendations if r["action"] == "order_now"),
+                "total_items": len(stock_on_hand)
+            }
+        except Exception as e:
+            return {
+                "status": "error",
+                "bot": "Inventory Optimizer",
+                "message": f"Error fetching inventory data: {str(e)}"
+            }
 
 # ==================== HEALTHCARE BOTS (5) ====================
 
@@ -933,20 +968,38 @@ class AccountsPayableBot(BotBase):
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
-        invoice_number = data.get("invoice_number", f"INV-{random.randint(10000, 99999)}")
-        amount = data.get("amount", random.uniform(1000, 50000))
-        supplier = data.get("supplier", "Supplier Co.")
+        company_id = data.get("company_id")
+        if not company_id or not bot_data_pg:
+            return {
+                "status": "error",
+                "bot": "Accounts Payable",
+                "message": "Company ID required or bot data layer not available"
+            }
         
-        return {
-            "status": "success",
-            "bot": "Accounts Payable",
-            "invoice_number": invoice_number,
-            "supplier": supplier,
-            "amount": round(amount, 2),
-            "payment_status": random.choice(["scheduled", "processing", "paid"]),
-            "payment_date": (datetime.now() + timedelta(days=random.randint(1, 30))).strftime("%Y-%m-%d"),
-            "approval_status": "approved"
-        }
+        try:
+            bills_due = bot_data_pg.fetch_ap_bills_due(company_id, days_ahead=30, limit=10)
+            total_due = sum(float(bill.get('total_amount', 0)) for bill in bills_due)
+            
+            return {
+                "status": "success",
+                "bot": "Accounts Payable",
+                "bills_due_count": len(bills_due),
+                "total_amount_due": round(total_due, 2),
+                "bills": [{
+                    "invoice_number": bill.get('invoice_number'),
+                    "supplier": bill.get('supplier_name'),
+                    "amount": float(bill.get('total_amount', 0)),
+                    "due_date": bill.get('due_date').isoformat() if bill.get('due_date') else None,
+                    "status": bill.get('status')
+                } for bill in bills_due[:5]],
+                "recommendation": "Schedule payments for bills due within 30 days"
+            }
+        except Exception as e:
+            return {
+                "status": "error",
+                "bot": "Accounts Payable",
+                "message": f"Error fetching AP data: {str(e)}"
+            }
 
 class AccountsReceivableBot(BotBase):
     name = "Accounts Receivable"
@@ -956,28 +1009,40 @@ class AccountsReceivableBot(BotBase):
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
-        customer = data.get("customer", "Customer Inc.")
+        company_id = data.get("company_id")
+        if not company_id or not bot_data_pg:
+            return {
+                "status": "error",
+                "bot": "Accounts Receivable",
+                "message": "Company ID required or bot data layer not available"
+            }
         
-        outstanding_invoices = []
-        for i in range(random.randint(1, 5)):
-            outstanding_invoices.append({
-                "invoice_number": f"INV-{random.randint(10000, 99999)}",
-                "amount": round(random.uniform(500, 10000), 2),
-                "due_date": (datetime.now() - timedelta(days=random.randint(1, 60))).strftime("%Y-%m-%d"),
-                "days_overdue": random.randint(0, 60)
-            })
-        
-        total_outstanding = sum(inv["amount"] for inv in outstanding_invoices)
-        
-        return {
-            "status": "success",
-            "bot": "Accounts Receivable",
-            "customer": customer,
-            "outstanding_invoices": outstanding_invoices,
-            "total_outstanding": round(total_outstanding, 2),
-            "collection_priority": "high" if total_outstanding > 20000 else "medium",
-            "recommended_action": "send_reminder" if total_outstanding < 10000 else "escalate"
-        }
+        try:
+            outstanding_invoices = bot_data_pg.fetch_outstanding_ar_invoices(company_id, limit=100)
+            total_outstanding = sum(float(inv.get('outstanding_balance', 0) or inv.get('total_amount', 0)) for inv in outstanding_invoices)
+            overdue_invoices = [inv for inv in outstanding_invoices if inv.get('days_overdue', 0) > 0]
+            
+            return {
+                "status": "success",
+                "bot": "Accounts Receivable",
+                "total_outstanding_invoices": len(outstanding_invoices),
+                "overdue_invoices": len(overdue_invoices),
+                "total_outstanding": round(total_outstanding, 2),
+                "collection_priority": "high" if total_outstanding > 20000 else "medium",
+                "recommended_action": "send_reminder" if len(overdue_invoices) < 5 else "escalate",
+                "top_overdue": [{
+                    "invoice_number": inv.get('invoice_number'),
+                    "customer": inv.get('customer_name'),
+                    "amount": float(inv.get('outstanding_balance', 0) or inv.get('total_amount', 0)),
+                    "days_overdue": inv.get('days_overdue', 0)
+                } for inv in overdue_invoices[:5]]
+            }
+        except Exception as e:
+            return {
+                "status": "error",
+                "bot": "Accounts Receivable",
+                "message": f"Error fetching AR data: {str(e)}"
+            }
 
 class BankReconciliationBot(BotBase):
     name = "Bank Reconciliation"
@@ -987,30 +1052,43 @@ class BankReconciliationBot(BotBase):
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
-        statement_date = data.get("statement_date", datetime.now().strftime("%Y-%m-%d"))
+        company_id = data.get("company_id")
+        if not company_id or not bot_data_pg:
+            return {
+                "status": "error",
+                "bot": "Bank Reconciliation",
+                "message": "Company ID required or bot data layer not available"
+            }
         
-        transactions = []
-        for i in range(random.randint(10, 30)):
-            transactions.append({
-                "date": (datetime.now() - timedelta(days=random.randint(1, 30))).strftime("%Y-%m-%d"),
-                "description": random.choice(["Payment received", "Supplier payment", "Bank fee", "Interest"]),
-                "amount": round(random.uniform(-5000, 5000), 2),
-                "matched": random.choice([True, False]),
-                "status": random.choice(["cleared", "pending"])
-            })
-        
-        matched_count = sum(1 for t in transactions if t["matched"])
-        
-        return {
-            "status": "success",
-            "bot": "Bank Reconciliation",
-            "statement_date": statement_date,
-            "total_transactions": len(transactions),
-            "matched_transactions": matched_count,
-            "unmatched_transactions": len(transactions) - matched_count,
-            "reconciliation_status": "complete" if matched_count == len(transactions) else "partial",
-            "discrepancies": len(transactions) - matched_count
-        }
+        try:
+            account_id = data.get("account_id")
+            days_back = data.get("days_back", 30)
+            transactions = bot_data_pg.fetch_bank_transactions(company_id, account_id=account_id, days_back=days_back, limit=100)
+            
+            matched_count = sum(1 for t in transactions if t.get('reconciled') == True)
+            unmatched_count = len(transactions) - matched_count
+            
+            return {
+                "status": "success",
+                "bot": "Bank Reconciliation",
+                "period_days": days_back,
+                "total_transactions": len(transactions),
+                "matched_transactions": matched_count,
+                "unmatched_transactions": unmatched_count,
+                "reconciliation_status": "complete" if unmatched_count == 0 else "partial",
+                "discrepancies": unmatched_count,
+                "unmatched_sample": [{
+                    "date": t.get('transaction_date').isoformat() if t.get('transaction_date') else None,
+                    "description": t.get('description'),
+                    "amount": float(t.get('amount', 0))
+                } for t in transactions if not t.get('reconciled')][:5]
+            }
+        except Exception as e:
+            return {
+                "status": "error",
+                "bot": "Bank Reconciliation",
+                "message": f"Error fetching bank transactions: {str(e)}"
+            }
 
 class InvoiceReconciliationBot(BotBase):
     name = "Invoice Reconciliation"
@@ -1076,28 +1154,44 @@ class PayrollSABot(BotBase):
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
-        employee_count = data.get("employee_count", random.randint(10, 100))
+        company_id = data.get("company_id")
+        if not company_id or not bot_data_pg:
+            return {
+                "status": "error",
+                "bot": "Payroll SA",
+                "message": "Company ID required or bot data layer not available"
+            }
         
-        total_gross = employee_count * random.uniform(15000, 35000)
-        paye = total_gross * 0.25
-        uif = total_gross * 0.01
-        sdl = total_gross * 0.01
-        total_deductions = paye + uif + sdl
-        net_pay = total_gross - total_deductions
-        
-        return {
-            "status": "success",
-            "bot": "Payroll SA",
-            "period": datetime.now().strftime("%Y-%m"),
-            "employee_count": employee_count,
-            "total_gross_pay": round(total_gross, 2),
-            "paye_deducted": round(paye, 2),
-            "uif_deducted": round(uif, 2),
-            "sdl_deducted": round(sdl, 2),
-            "total_deductions": round(total_deductions, 2),
-            "net_pay": round(net_pay, 2),
-            "filing_status": "ready_to_submit"
-        }
+        try:
+            payroll_runs = bot_data_pg.fetch_payroll_runs(company_id, limit=5)
+            employees = bot_data_pg.fetch_employees(company_id, status='active')
+            
+            if payroll_runs:
+                latest_run = payroll_runs[0]
+                return {
+                    "status": "success",
+                    "bot": "Payroll SA",
+                    "period": latest_run.get('pay_period_end').strftime("%Y-%m") if latest_run.get('pay_period_end') else None,
+                    "employee_count": len(employees),
+                    "total_gross_pay": float(latest_run.get('total_gross', 0)),
+                    "total_deductions": float(latest_run.get('total_deductions', 0)),
+                    "net_pay": float(latest_run.get('total_net', 0)),
+                    "status": latest_run.get('status'),
+                    "recent_runs": len(payroll_runs)
+                }
+            else:
+                return {
+                    "status": "success",
+                    "bot": "Payroll SA",
+                    "employee_count": len(employees),
+                    "message": "No payroll runs found - ready to create first run"
+                }
+        except Exception as e:
+            return {
+                "status": "error",
+                "bot": "Payroll SA",
+                "message": f"Error fetching payroll data: {str(e)}"
+            }
 
 class GeneralLedgerBot(BotBase):
     name = "General Ledger"
@@ -1107,21 +1201,43 @@ class GeneralLedgerBot(BotBase):
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
-        transaction_type = data.get("transaction_type", "journal_entry")
-        amount = data.get("amount", random.uniform(1000, 50000))
+        company_id = data.get("company_id")
+        if not company_id or not bot_data_pg:
+            return {
+                "status": "error",
+                "bot": "General Ledger",
+                "message": "Company ID required or bot data layer not available"
+            }
         
-        return {
-            "status": "success",
-            "bot": "General Ledger",
-            "entry_id": f"JE-{random.randint(10000, 99999)}",
-            "transaction_type": transaction_type,
-            "amount": round(amount, 2),
-            "debit_account": f"Account-{random.randint(1000, 9999)}",
-            "credit_account": f"Account-{random.randint(1000, 9999)}",
-            "posting_date": datetime.now().strftime("%Y-%m-%d"),
-            "status": "posted",
-            "balanced": True
-        }
+        try:
+            dry_run = data.get("dry_run", True)
+            entry_data = data.get("entry_data", {})
+            
+            if entry_data and not dry_run:
+                result = bot_data_pg.create_journal_entry(company_id, entry_data, dry_run=False)
+                return {
+                    "status": "success",
+                    "bot": "General Ledger",
+                    "action": "created",
+                    "entry_id": result.get('id'),
+                    "entry_number": result.get('entry_number')
+                }
+            else:
+                accounts = bot_data_pg.fetch_chart_of_accounts(company_id)
+                return {
+                    "status": "success",
+                    "bot": "General Ledger",
+                    "action": "dry_run" if dry_run else "validated",
+                    "total_accounts": len(accounts),
+                    "account_types": list(set(acc.get('account_type') for acc in accounts if acc.get('account_type'))),
+                    "message": "Ready to post journal entries" if not dry_run else "Dry run mode - no entries created"
+                }
+        except Exception as e:
+            return {
+                "status": "error",
+                "bot": "General Ledger",
+                "message": f"Error: {str(e)}"
+            }
 
 class FinancialReportingBot(BotBase):
     name = "Financial Reporting"
@@ -1465,19 +1581,41 @@ class LeadManagementBot(BotBase):
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
-        lead_id = data.get("lead_id", f"LEAD-{random.randint(10000, 99999)}")
+        company_id = data.get("company_id")
+        if not company_id or not bot_data_pg:
+            return {
+                "status": "error",
+                "bot": "Lead Management",
+                "message": "Company ID required or bot data layer not available"
+            }
         
-        return {
-            "status": "success",
-            "bot": "Lead Management",
-            "lead_id": lead_id,
-            "current_stage": random.choice(["new", "contacted", "qualified", "proposal", "negotiation"]),
-            "assigned_to": f"sales{random.randint(1, 10)}@company.com",
-            "last_contact": (datetime.now() - timedelta(days=random.randint(1, 30))).strftime("%Y-%m-%d"),
-            "next_followup": (datetime.now() + timedelta(days=random.randint(1, 14))).strftime("%Y-%m-%d"),
-            "activities_count": random.randint(5, 50),
-            "engagement_score": round(random.uniform(0, 100), 2)
-        }
+        try:
+            status_filter = data.get("status")
+            leads = bot_data_pg.fetch_leads(company_id, status=status_filter, limit=100)
+            
+            status_breakdown = {}
+            for lead in leads:
+                status = lead.get('status', 'unknown')
+                status_breakdown[status] = status_breakdown.get(status, 0) + 1
+            
+            return {
+                "status": "success",
+                "bot": "Lead Management",
+                "total_leads": len(leads),
+                "status_breakdown": status_breakdown,
+                "recent_leads": [{
+                    "lead_number": lead.get('lead_number'),
+                    "company_name": lead.get('company_name'),
+                    "status": lead.get('status'),
+                    "source": lead.get('source')
+                } for lead in leads[:5]]
+            }
+        except Exception as e:
+            return {
+                "status": "error",
+                "bot": "Lead Management",
+                "message": f"Error fetching leads: {str(e)}"
+            }
 
 class SalesPipelineBot(BotBase):
     name = "Sales Pipeline"
@@ -1487,26 +1625,47 @@ class SalesPipelineBot(BotBase):
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
-        stages = [
-            {"stage": "Prospecting", "count": random.randint(20, 50), "value": random.uniform(100000, 500000)},
-            {"stage": "Qualification", "count": random.randint(10, 30), "value": random.uniform(200000, 600000)},
-            {"stage": "Proposal", "count": random.randint(5, 20), "value": random.uniform(150000, 450000)},
-            {"stage": "Negotiation", "count": random.randint(3, 15), "value": random.uniform(100000, 400000)},
-            {"stage": "Closing", "count": random.randint(2, 10), "value": random.uniform(80000, 300000)}
-        ]
+        company_id = data.get("company_id")
+        if not company_id or not bot_data_pg:
+            return {
+                "status": "error",
+                "bot": "Sales Pipeline",
+                "message": "Company ID required or bot data layer not available"
+            }
         
-        total_value = sum(s["value"] for s in stages)
-        total_deals = sum(s["count"] for s in stages)
-        
-        return {
-            "status": "success",
-            "bot": "Sales Pipeline",
-            "pipeline_stages": [{"stage": s["stage"], "count": s["count"], "value": round(s["value"], 2)} for s in stages],
-            "total_pipeline_value": round(total_value, 2),
-            "total_deals": total_deals,
-            "weighted_forecast": round(total_value * 0.3, 2),  # 30% conversion assumed
-            "avg_deal_size": round(total_value / total_deals, 2)
-        }
+        try:
+            opportunities = bot_data_pg.fetch_opportunities(company_id, limit=100)
+            quotes = bot_data_pg.fetch_quotes(company_id, limit=100)
+            
+            stage_breakdown = {}
+            total_value = 0
+            for opp in opportunities:
+                stage = opp.get('stage', 'unknown')
+                value = float(opp.get('estimated_value', 0))
+                stage_breakdown[stage] = stage_breakdown.get(stage, {"count": 0, "value": 0})
+                stage_breakdown[stage]["count"] += 1
+                stage_breakdown[stage]["value"] += value
+                total_value += value
+            
+            return {
+                "status": "success",
+                "bot": "Sales Pipeline",
+                "total_opportunities": len(opportunities),
+                "total_quotes": len(quotes),
+                "pipeline_stages": [{
+                    "stage": stage,
+                    "count": data["count"],
+                    "value": round(data["value"], 2)
+                } for stage, data in stage_breakdown.items()],
+                "total_pipeline_value": round(total_value, 2),
+                "weighted_forecast": round(total_value * 0.3, 2)
+            }
+        except Exception as e:
+            return {
+                "status": "error",
+                "bot": "Sales Pipeline",
+                "message": f"Error fetching pipeline data: {str(e)}"
+            }
 
 class QuoteGenerationBot(BotBase):
     name = "Quote Generation"
@@ -1516,17 +1675,42 @@ class QuoteGenerationBot(BotBase):
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
-        customer = data.get("customer", "Customer Inc.")
-        items = data.get("items", [{"product": "Product A", "quantity": 10, "unit_price": 100}])
+        company_id = data.get("company_id")
+        if not company_id or not bot_data_pg:
+            return {
+                "status": "error",
+                "bot": "Quote Generation",
+                "message": "Company ID required or bot data layer not available"
+            }
         
-        line_items = []
-        subtotal = 0
-        
-        for item in items:
-            quantity = item.get("quantity", 1)
-            unit_price = item.get("unit_price", 100)
-            line_total = quantity * unit_price
-            subtotal += line_total
+        try:
+            quotes = bot_data_pg.fetch_quotes(company_id, status='draft', limit=10)
+            customers = bot_data_pg.fetch_customers(company_id, limit=10)
+            products = bot_data_pg.fetch_products(company_id, limit=20)
+            
+            total_quote_value = sum(float(q.get('total_amount', 0)) for q in quotes)
+            
+            return {
+                "status": "success",
+                "bot": "Quote Generation",
+                "draft_quotes": len(quotes),
+                "total_draft_value": round(total_quote_value, 2),
+                "available_customers": len(customers),
+                "available_products": len(products),
+                "recent_quotes": [{
+                    "quote_number": q.get('quote_number'),
+                    "customer": q.get('customer_name'),
+                    "amount": float(q.get('total_amount', 0)),
+                    "status": q.get('status')
+                } for q in quotes[:5]],
+                "message": "Ready to generate new quotes"
+            }
+        except Exception as e:
+            return {
+                "status": "error",
+                "bot": "Quote Generation",
+                "message": f"Error fetching quote data: {str(e)}"
+            }
             
             line_items.append({
                 "product": item.get("product", "Product"),
@@ -1749,23 +1933,39 @@ class LeaveManagementBot(BotBase):
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
-        employee = data.get("employee", "Employee Name")
+        company_id = data.get("company_id")
+        if not company_id or not bot_data_pg:
+            return {
+                "status": "error",
+                "bot": "Leave Management",
+                "message": "Company ID required or bot data layer not available"
+            }
         
-        annual_leave = random.randint(5, 21)
-        sick_leave = random.randint(0, 10)
-        
-        return {
-            "status": "success",
-            "bot": "Leave Management",
-            "employee": employee,
-            "employee_id": data.get("employee_id", f"EMP-{random.randint(1000, 9999)}"),
-            "annual_leave_balance": annual_leave,
-            "sick_leave_balance": sick_leave,
-            "family_responsibility_leave": random.randint(0, 3),
-            "pending_requests": random.randint(0, 3),
-            "leave_year_end": (datetime.now() + timedelta(days=random.randint(30, 365))).strftime("%Y-%m-%d"),
-            "use_it_or_lose_it": annual_leave > 15
-        }
+        try:
+            leave_requests = bot_data_pg.fetch_leave_requests(company_id, limit=100)
+            pending = [lr for lr in leave_requests if lr.get('status') == 'pending']
+            approved = [lr for lr in leave_requests if lr.get('status') == 'approved']
+            
+            return {
+                "status": "success",
+                "bot": "Leave Management",
+                "total_requests": len(leave_requests),
+                "pending_requests": len(pending),
+                "approved_requests": len(approved),
+                "recent_requests": [{
+                    "employee": lr.get('employee_name'),
+                    "leave_type": lr.get('leave_type'),
+                    "start_date": lr.get('start_date').isoformat() if lr.get('start_date') else None,
+                    "end_date": lr.get('end_date').isoformat() if lr.get('end_date') else None,
+                    "status": lr.get('status')
+                } for lr in leave_requests[:5]]
+            }
+        except Exception as e:
+            return {
+                "status": "error",
+                "bot": "Leave Management",
+                "message": f"Error fetching leave data: {str(e)}"
+            }
 
 class PerformanceReviewBot(BotBase):
     name = "Performance Review"
@@ -1938,38 +2138,43 @@ class PurchaseOrderBot(BotBase):
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
-        supplier = data.get("supplier", "Supplier Co.")
-        items = data.get("items", [{"item": "Item A", "quantity": 10, "price": 100}])
+        company_id = data.get("company_id")
+        if not company_id or not bot_data_pg:
+            return {
+                "status": "error",
+                "bot": "Purchase Order",
+                "message": "Company ID required or bot data layer not available"
+            }
         
-        line_items = []
-        total = 0
-        
-        for item in items:
-            quantity = item.get("quantity", 1)
-            price = item.get("price", 100)
-            line_total = quantity * price
-            total += line_total
+        try:
+            purchase_orders = bot_data_pg.fetch_open_purchase_orders(company_id, limit=50)
+            total_value = sum(float(po.get('total_amount', 0)) for po in purchase_orders)
             
-            line_items.append({
-                "item": item.get("item", "Item"),
-                "quantity": quantity,
-                "unit_price": price,
-                "line_total": line_total
-            })
-        
-        return {
-            "status": "success",
-            "bot": "Purchase Order",
-            "po_number": f"PO-{random.randint(10000, 99999)}",
-            "supplier": supplier,
-            "po_date": datetime.now().strftime("%Y-%m-%d"),
-            "delivery_date": (datetime.now() + timedelta(days=random.randint(7, 30))).strftime("%Y-%m-%d"),
-            "line_items": line_items,
-            "subtotal": round(total, 2),
-            "tax": round(total * 0.15, 2),
-            "total": round(total * 1.15, 2),
-            "approval_status": "approved"
-        }
+            status_breakdown = {}
+            for po in purchase_orders:
+                status = po.get('status', 'unknown')
+                status_breakdown[status] = status_breakdown.get(status, 0) + 1
+            
+            return {
+                "status": "success",
+                "bot": "Purchase Order",
+                "total_open_pos": len(purchase_orders),
+                "total_value": round(total_value, 2),
+                "status_breakdown": status_breakdown,
+                "recent_pos": [{
+                    "po_number": po.get('po_number'),
+                    "supplier": po.get('supplier_name'),
+                    "amount": float(po.get('total_amount', 0)),
+                    "status": po.get('status'),
+                    "order_date": po.get('order_date').isoformat() if po.get('order_date') else None
+                } for po in purchase_orders[:5]]
+            }
+        except Exception as e:
+            return {
+                "status": "error",
+                "bot": "Purchase Order",
+                "message": f"Error fetching purchase orders: {str(e)}"
+            }
 
 class SupplierManagementBot(BotBase):
     name = "Supplier Management"
@@ -1979,21 +2184,37 @@ class SupplierManagementBot(BotBase):
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
-        supplier = data.get("supplier", "Supplier Co.")
+        company_id = data.get("company_id")
+        if not company_id or not bot_data_pg:
+            return {
+                "status": "error",
+                "bot": "Supplier Management",
+                "message": "Company ID required or bot data layer not available"
+            }
         
-        return {
-            "status": "success",
-            "bot": "Supplier Management",
-            "supplier": supplier,
-            "supplier_id": f"SUP-{random.randint(1000, 9999)}",
-            "performance_score": round(random.uniform(70, 95), 2),
-            "on_time_delivery_rate": round(random.uniform(85, 99), 2),
-            "quality_rating": round(random.uniform(3.5, 5.0), 1),
-            "total_spend_ytd": round(random.uniform(50000, 500000), 2),
-            "payment_terms": random.choice(["Net 30", "Net 60", "Net 90"]),
-            "risk_level": random.choice(["low", "medium", "high"]),
-            "contract_expiry": (datetime.now() + timedelta(days=random.randint(30, 730))).strftime("%Y-%m-%d")
-        }
+        try:
+            suppliers = bot_data_pg.fetch_suppliers(company_id, limit=100)
+            active_suppliers = [s for s in suppliers if s.get('status') == 'active']
+            
+            return {
+                "status": "success",
+                "bot": "Supplier Management",
+                "total_suppliers": len(suppliers),
+                "active_suppliers": len(active_suppliers),
+                "top_suppliers": [{
+                    "supplier_name": s.get('supplier_name'),
+                    "supplier_code": s.get('supplier_code'),
+                    "contact_person": s.get('contact_person'),
+                    "email": s.get('email'),
+                    "status": s.get('status')
+                } for s in suppliers[:5]]
+            }
+        except Exception as e:
+            return {
+                "status": "error",
+                "bot": "Supplier Management",
+                "message": f"Error fetching suppliers: {str(e)}"
+            }
 
 class RFQManagementBot(BotBase):
     name = "RFQ Management"
@@ -2037,33 +2258,41 @@ class GoodsReceiptBot(BotBase):
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
-        po_number = data.get("po_number", f"PO-{random.randint(10000, 99999)}")
+        company_id = data.get("company_id")
+        if not company_id or not bot_data_pg:
+            return {
+                "status": "error",
+                "bot": "Goods Receipt",
+                "message": "Company ID required or bot data layer not available"
+            }
         
-        items_received = []
-        for i in range(random.randint(2, 6)):
-            ordered = random.randint(10, 100)
-            received = int(ordered * random.uniform(0.95, 1.0))
-            items_received.append({
-                "item": f"Item {i+1}",
-                "ordered_qty": ordered,
-                "received_qty": received,
-                "variance": received - ordered,
-                "condition": random.choice(["good", "good", "good", "damaged"])
-            })
-        
-        all_matched = all(item["variance"] == 0 and item["condition"] == "good" for item in items_received)
-        
-        return {
-            "status": "success",
-            "bot": "Goods Receipt",
-            "gr_number": f"GR-{random.randint(10000, 99999)}",
-            "po_number": po_number,
-            "receipt_date": datetime.now().strftime("%Y-%m-%d"),
-            "items": items_received,
-            "match_status": "perfect_match" if all_matched else "variance_detected",
-            "quality_check": "passed" if all(item["condition"] == "good" for item in items_received) else "failed",
-            "invoice_release": "approved" if all_matched else "hold_for_review"
-        }
+        try:
+            goods_receipts = bot_data_pg.fetch_goods_receipts(company_id, limit=50)
+            
+            status_breakdown = {}
+            for gr in goods_receipts:
+                status = gr.get('status', 'unknown')
+                status_breakdown[status] = status_breakdown.get(status, 0) + 1
+            
+            return {
+                "status": "success",
+                "bot": "Goods Receipt",
+                "total_receipts": len(goods_receipts),
+                "status_breakdown": status_breakdown,
+                "recent_receipts": [{
+                    "gr_number": gr.get('gr_number'),
+                    "po_number": gr.get('po_number'),
+                    "supplier": gr.get('supplier_name'),
+                    "receipt_date": gr.get('receipt_date').isoformat() if gr.get('receipt_date') else None,
+                    "status": gr.get('status')
+                } for gr in goods_receipts[:5]]
+            }
+        except Exception as e:
+            return {
+                "status": "error",
+                "bot": "Goods Receipt",
+                "message": f"Error fetching goods receipts: {str(e)}"
+            }
 
 class SupplierEvaluationBot(BotBase):
     name = "Supplier Evaluation"
