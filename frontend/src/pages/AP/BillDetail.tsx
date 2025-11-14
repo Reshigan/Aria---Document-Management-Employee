@@ -184,6 +184,27 @@ export default function BillDetail() {
     navigate(`/ap/payments/new?bill_id=${id}`);
   };
 
+  const handleCancel = async () => {
+    if (!id || isNew) return;
+
+    const reason = prompt('Enter cancellation reason (optional):');
+    if (reason === null) return;
+
+    try {
+      setLoading(true);
+      setError(null);
+      await api.post(`/erp/procure-to-pay/invoices/${id}/cancel`, {
+        reason: reason || 'User cancelled'
+      });
+      await loadBill(id);
+    } catch (err: any) {
+      console.error('Error cancelling bill:', err);
+      setError(err.response?.data?.detail || 'Failed to cancel bill');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const calculateTotals = () => {
     const subtotal = lineItems.reduce((sum, item) => {
       const lineTotal = item.quantity * item.unit_price * (1 - (item.discount_percent || 0) / 100);
@@ -214,6 +235,7 @@ export default function BillDetail() {
       onSave={bill?.status === 'draft' || isNew ? handleSave : undefined}
       onApprove={bill?.status === 'draft' && !isNew ? handleApprove : undefined}
       onPost={(bill?.status === 'approved' || bill?.status === 'draft') && !isNew ? handlePost : undefined}
+      onCancel={bill?.status === 'draft' && !isNew ? handleCancel : undefined}
       onPrint={!isNew ? () => window.print() : undefined}
       loading={loading}
     >

@@ -192,6 +192,27 @@ export default function InvoiceDetail() {
     navigate(`/ar/receipts/new?invoice_id=${id}`);
   };
 
+  const handleCancel = async () => {
+    if (!id || isNew) return;
+
+    const reason = prompt('Enter cancellation reason (optional):');
+    if (reason === null) return;
+
+    try {
+      setLoading(true);
+      setError(null);
+      await api.post(`/erp/order-to-cash/invoices/${id}/cancel`, {
+        reason: reason || 'User cancelled'
+      });
+      await loadInvoice(id);
+    } catch (err: any) {
+      console.error('Error cancelling invoice:', err);
+      setError(err.response?.data?.detail || 'Failed to cancel invoice');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const calculateTotals = () => {
     let subtotal = 0;
     let taxAmount = 0;
@@ -221,6 +242,7 @@ export default function InvoiceDetail() {
       onSave={invoice?.status === 'draft' || isNew ? handleSave : undefined}
       onApprove={invoice?.status === 'draft' && !isNew ? handleApprove : undefined}
       onPost={(invoice?.status === 'approved' || invoice?.status === 'draft') && !isNew ? handlePost : undefined}
+      onCancel={invoice?.status === 'draft' && !isNew ? handleCancel : undefined}
       onPrint={invoice?.status === 'posted' ? () => alert('Print functionality coming soon') : undefined}
       onEmail={invoice?.status === 'posted' ? () => alert('Email functionality coming soon') : undefined}
       loading={loading}
