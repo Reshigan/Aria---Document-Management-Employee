@@ -489,3 +489,96 @@ def fetch_products(company_id: str, limit: int = 100) -> List[Dict[str, Any]]:
     finally:
         cursor.close()
         conn.close()
+
+# ========================================
+# ========================================
+
+def fetch_sales_orders(company_id: str, status: Optional[str] = None, limit: int = 100) -> List[Dict[str, Any]]:
+    """Fetch sales orders for a company"""
+    conn = get_connection()
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    try:
+        if status:
+            cursor.execute("""
+                SELECT so.*, c.customer_name
+                FROM sales_orders so
+                LEFT JOIN customers c ON so.customer_id = c.id
+                WHERE so.company_id = %s AND so.status = %s
+                ORDER BY so.order_date DESC
+                LIMIT %s
+            """, (company_id, status, limit))
+        else:
+            cursor.execute("""
+                SELECT so.*, c.customer_name
+                FROM sales_orders so
+                LEFT JOIN customers c ON so.customer_id = c.id
+                WHERE so.company_id = %s
+                ORDER BY so.order_date DESC
+                LIMIT %s
+            """, (company_id, limit))
+        return cursor.fetchall()
+    finally:
+        cursor.close()
+        conn.close()
+
+def fetch_invoices(company_id: str, status: Optional[str] = None, limit: int = 100) -> List[Dict[str, Any]]:
+    """Fetch customer invoices for a company"""
+    conn = get_connection()
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    try:
+        if status:
+            cursor.execute("""
+                SELECT ci.*, c.customer_name
+                FROM customer_invoices ci
+                LEFT JOIN customers c ON ci.customer_id = c.id
+                WHERE ci.company_id = %s AND ci.status = %s
+                ORDER BY ci.invoice_date DESC
+                LIMIT %s
+            """, (company_id, status, limit))
+        else:
+            cursor.execute("""
+                SELECT ci.*, c.customer_name
+                FROM customer_invoices ci
+                LEFT JOIN customers c ON ci.customer_id = c.id
+                WHERE ci.company_id = %s
+                ORDER BY ci.invoice_date DESC
+                LIMIT %s
+            """, (company_id, limit))
+        return cursor.fetchall()
+    finally:
+        cursor.close()
+        conn.close()
+
+def fetch_bank_accounts(company_id: str, limit: int = 100) -> List[Dict[str, Any]]:
+    """Fetch bank accounts for a company"""
+    conn = get_connection()
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    try:
+        cursor.execute("""
+            SELECT *
+            FROM bank_accounts
+            WHERE company_id = %s
+            ORDER BY created_at DESC
+            LIMIT %s
+        """, (company_id, limit))
+        return cursor.fetchall()
+    finally:
+        cursor.close()
+        conn.close()
+
+def fetch_fixed_assets(company_id: str, limit: int = 100) -> List[Dict[str, Any]]:
+    """Fetch fixed assets for a company"""
+    conn = get_connection()
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    try:
+        cursor.execute("""
+            SELECT *
+            FROM fixed_assets
+            WHERE company_id = %s
+            ORDER BY acquisition_date DESC
+            LIMIT %s
+        """, (company_id, limit))
+        return cursor.fetchall()
+    finally:
+        cursor.close()
+        conn.close()

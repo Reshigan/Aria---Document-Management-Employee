@@ -1098,25 +1098,37 @@ class InvoiceReconciliationBot(BotBase):
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
-        invoice_number = data.get("invoice_number", f"INV-{random.randint(10000, 99999)}")
-        po_number = data.get("po_number", f"PO-{random.randint(10000, 99999)}")
+        company_id = data.get("company_id")
+        if not company_id or not bot_data_pg:
+            return {
+                "status": "success",
+                "bot": "Invoice Reconciliation",
+                "message": "Read-only bot - reconciliation analytics available",
+                "wired": False
+            }
         
-        invoice_amount = data.get("invoice_amount", random.uniform(1000, 10000))
-        po_amount = invoice_amount * random.uniform(0.95, 1.05)
-        
-        discrepancy = abs(invoice_amount - po_amount)
-        
-        return {
-            "status": "success",
-            "bot": "Invoice Reconciliation",
-            "invoice_number": invoice_number,
-            "po_number": po_number,
-            "invoice_amount": round(invoice_amount, 2),
-            "po_amount": round(po_amount, 2),
-            "discrepancy": round(discrepancy, 2),
-            "match_status": "exact_match" if discrepancy < 1 else "within_tolerance" if discrepancy < 100 else "review_required",
-            "approval_recommended": discrepancy < 100
-        }
+        try:
+            ar_invoices = bot_data_pg.fetch_outstanding_ar_invoices(company_id, limit=50)
+            ap_bills = bot_data_pg.fetch_ap_bills_due(company_id, days_ahead=30, limit=50)
+            
+            total_ar = sum(float(inv.get('total_amount', 0)) for inv in ar_invoices)
+            total_ap = sum(float(bill.get('total_amount', 0)) for bill in ap_bills)
+            
+            return {
+                "status": "success",
+                "bot": "Invoice Reconciliation",
+                "ar_invoices_count": len(ar_invoices),
+                "ap_bills_count": len(ap_bills),
+                "total_ar_outstanding": round(total_ar, 2),
+                "total_ap_due": round(total_ap, 2),
+                "net_position": round(total_ar - total_ap, 2)
+            }
+        except Exception as e:
+            return {
+                "status": "error",
+                "bot": "Invoice Reconciliation",
+                "message": f"Error: {str(e)}"
+            }
 
 class ExpenseManagementBot(BotBase):
     name = "Expense Management"
@@ -1126,25 +1138,31 @@ class ExpenseManagementBot(BotBase):
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
-        employee = data.get("employee", "Employee Name")
-        expense_type = data.get("expense_type", "Travel")
-        amount = data.get("amount", random.uniform(100, 2000))
+        company_id = data.get("company_id")
+        if not company_id or not bot_data_pg:
+            return {
+                "status": "success",
+                "bot": "Expense Management",
+                "message": "Read-only bot - expense analytics available",
+                "wired": False
+            }
         
-        policy_limit = 2500
-        is_within_policy = amount <= policy_limit
-        
-        return {
-            "status": "success",
-            "bot": "Expense Management",
-            "expense_id": f"EXP-{random.randint(10000, 99999)}",
-            "employee": employee,
-            "expense_type": expense_type,
-            "amount": round(amount, 2),
-            "policy_limit": policy_limit,
-            "within_policy": is_within_policy,
-            "approval_status": "auto_approved" if is_within_policy and amount < 500 else "pending_review",
-            "reimbursement_date": (datetime.now() + timedelta(days=7)).strftime("%Y-%m-%d")
-        }
+        try:
+            employees = bot_data_pg.fetch_employees(company_id, status='active', limit=100)
+            
+            return {
+                "status": "success",
+                "bot": "Expense Management",
+                "total_employees": len(employees),
+                "message": "Expense tracking requires expense_claims table",
+                "wired": "partial"
+            }
+        except Exception as e:
+            return {
+                "status": "error",
+                "bot": "Expense Management",
+                "message": f"Error: {str(e)}"
+            }
 
 class PayrollSABot(BotBase):
     name = "Payroll SA"
