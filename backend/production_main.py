@@ -526,32 +526,25 @@ class MRPBot(BotBase):
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
-        bom = data.get("bom", {})
-        quantity = data.get("quantity", 100)
-        lead_time = data.get("lead_time", 7)
+        company_id = data.get("company_id")
+        if not company_id or not bot_data_pg:
+            return {"status": "error", "bot": "MRP Bot", "message": "Company ID required"}
         
-        materials = []
-        for i, item in enumerate(bom.get("items", [{"name": "Component A", "quantity": 2}])):
-            required = item["quantity"] * quantity
-            in_stock = random.randint(0, required * 2)
-            materials.append({
-                "item": item["name"],
-                "required_qty": required,
-                "in_stock": in_stock,
-                "to_order": max(0, required - in_stock),
-                "order_date": (datetime.now() - timedelta(days=lead_time)).strftime("%Y-%m-%d"),
-                "expected_delivery": datetime.now().strftime("%Y-%m-%d")
-            })
-        
-        return {
-            "status": "success",
-            "bot": "MRP Bot",
-            "production_order": f"PO-{random.randint(1000, 9999)}",
-            "quantity": quantity,
-            "materials": materials,
-            "total_cost": sum([m["to_order"] * random.uniform(10, 100) for m in materials]),
-            "timeline": f"{lead_time} days"
-        }
+        try:
+            work_orders = bot_data_pg.fetch_work_orders(company_id, limit=50)
+            boms = bot_data_pg.fetch_boms(company_id, limit=50)
+            products = bot_data_pg.fetch_products(company_id, limit=100)
+            
+            return {
+                "status": "success",
+                "bot": "MRP Bot",
+                "total_work_orders": len(work_orders),
+                "total_boms": len(boms),
+                "total_products": len(products),
+                "message": "MRP analysis based on work orders and BOMs"
+            }
+        except Exception as e:
+            return {"status": "error", "bot": "MRP Bot", "message": f"Error: {str(e)}"}
 
 class ProductionSchedulerBot(BotBase):
     name = "Production Scheduler"
@@ -561,35 +554,23 @@ class ProductionSchedulerBot(BotBase):
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
-        orders = data.get("orders", [{"id": "ORD-001", "product": "Widget A", "quantity": 100}])
-        capacity = data.get("capacity_hours", 160)
+        company_id = data.get("company_id")
+        if not company_id or not bot_data_pg:
+            return {"status": "error", "bot": "Production Scheduler", "message": "Company ID required"}
         
-        schedule = []
-        current_capacity = 0
-        
-        for order in orders:
-            estimated_hours = order.get("quantity", 10) * 0.5
-            if current_capacity + estimated_hours <= capacity:
-                schedule.append({
-                    "order_id": order.get("id", f"ORD-{random.randint(1000, 9999)}"),
-                    "product": order.get("product", "Product"),
-                    "quantity": order.get("quantity", 10),
-                    "estimated_hours": estimated_hours,
-                    "start_time": (datetime.now() + timedelta(hours=current_capacity)).strftime("%Y-%m-%d %H:%M"),
-                    "end_time": (datetime.now() + timedelta(hours=current_capacity + estimated_hours)).strftime("%Y-%m-%d %H:%M"),
-                    "priority": order.get("priority", "medium")
-                })
-                current_capacity += estimated_hours
-        
-        return {
-            "status": "success",
-            "bot": "Production Scheduler",
-            "schedule": schedule,
-            "total_orders": len(schedule),
-            "capacity_used": current_capacity,
-            "capacity_available": capacity,
-            "utilization": round((current_capacity / capacity) * 100, 2)
-        }
+        try:
+            work_orders = bot_data_pg.fetch_work_orders(company_id, limit=50)
+            production_runs = bot_data_pg.fetch_production_runs(company_id, limit=50)
+            
+            return {
+                "status": "success",
+                "bot": "Production Scheduler",
+                "total_work_orders": len(work_orders),
+                "total_production_runs": len(production_runs),
+                "message": "Production scheduling based on work orders and production runs"
+            }
+        except Exception as e:
+            return {"status": "error", "bot": "Production Scheduler", "message": f"Error: {str(e)}"}
 
 class QualityPredictorBot(BotBase):
     name = "Quality Predictor"
@@ -599,22 +580,23 @@ class QualityPredictorBot(BotBase):
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
-        work_order = data.get("work_order", {})
-        risk_score = random.uniform(0, 100)
-        risk_level = "low" if risk_score < 30 else "medium" if risk_score < 70 else "high"
+        company_id = data.get("company_id")
+        if not company_id or not bot_data_pg:
+            return {"status": "error", "bot": "Quality Predictor", "message": "Company ID required"}
         
-        return {
-            "status": "success",
-            "bot": "Quality Predictor",
-            "work_order_id": work_order.get("id", "WO-1234"),
-            "risk_score": round(risk_score, 2),
-            "risk_level": risk_level,
-            "predicted_defects": [
-                {"type": "dimensional", "probability": round(random.uniform(0, 0.3), 2)},
-                {"type": "surface finish", "probability": round(random.uniform(0, 0.2), 2)}
-            ],
-            "recommendations": ["Increase inspection frequency"] if risk_level == "high" else ["Standard process"]
-        }
+        try:
+            work_orders = bot_data_pg.fetch_work_orders(company_id, limit=50)
+            products = bot_data_pg.fetch_products(company_id, limit=100)
+            
+            return {
+                "status": "success",
+                "bot": "Quality Predictor",
+                "total_work_orders": len(work_orders),
+                "total_products": len(products),
+                "message": "Quality prediction requires quality_inspections table"
+            }
+        except Exception as e:
+            return {"status": "error", "bot": "Quality Predictor", "message": f"Error: {str(e)}"}
 
 class PredictiveMaintenanceBot(BotBase):
     name = "Predictive Maintenance"
@@ -624,19 +606,21 @@ class PredictiveMaintenanceBot(BotBase):
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
-        asset_id = data.get("asset_id", "AST-1234")
-        health_score = random.uniform(60, 100)
-        days_to_failure = int(random.uniform(7, 90))
+        company_id = data.get("company_id")
+        if not company_id or not bot_data_pg:
+            return {"status": "error", "bot": "Predictive Maintenance", "message": "Company ID required"}
         
-        return {
-            "status": "success",
-            "bot": "Predictive Maintenance",
-            "asset_id": asset_id,
-            "health_score": round(health_score, 2),
-            "condition": "good" if health_score > 80 else "fair" if health_score > 60 else "poor",
-            "predicted_failure_date": (datetime.now() + timedelta(days=days_to_failure)).strftime("%Y-%m-%d"),
-            "days_to_failure": days_to_failure,
-            "recommended_action": "Schedule maintenance" if days_to_failure < 30 else "Monitor closely"
+        try:
+            fixed_assets = bot_data_pg.fetch_fixed_assets(company_id, limit=100)
+            
+            return {
+                "status": "success",
+                "bot": "Predictive Maintenance",
+                "total_assets": len(fixed_assets),
+                "message": "Predictive maintenance requires maintenance_schedules and sensor_data tables"
+            }
+        except Exception as e:
+            return {"status": "error", "bot": "Predictive Maintenance", "message": f"Error: {str(e)}"}
         }
 
 class InventoryOptimizerBot(BotBase):
