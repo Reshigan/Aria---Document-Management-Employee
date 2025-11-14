@@ -224,6 +224,27 @@ export default function ReceiptDetail() {
     }
   };
 
+  const handleCancel = async () => {
+    if (!id || isNew) return;
+
+    const reason = prompt('Enter cancellation reason (optional):');
+    if (reason === null) return;
+
+    try {
+      setLoading(true);
+      setError(null);
+      await api.post(`/api/ar/receipts/${id}/cancel`, {
+        reason: reason || 'User cancelled'
+      });
+      await loadReceipt(id);
+    } catch (err: any) {
+      console.error('Error cancelling receipt:', err);
+      setError(err.response?.data?.detail || 'Failed to cancel receipt');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const addAllocation = () => {
     setAllocations([...allocations, { invoice_id: '', amount: '0.00' }]);
   };
@@ -249,6 +270,7 @@ export default function ReceiptDetail() {
       backUrl="/ar/receipts"
       onSave={receipt?.status === 'draft' || isNew ? handleSave : undefined}
       onPost={receipt?.status === 'draft' && !isNew ? handlePost : undefined}
+      onCancel={receipt?.status === 'draft' && !isNew ? handleCancel : undefined}
       loading={loading}
     >
       {error && (

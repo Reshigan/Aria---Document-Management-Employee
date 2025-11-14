@@ -1011,3 +1011,107 @@ async def _post_receipt_to_gl(
     })
     
     return je_id
+
+@router.post("/receipts/{receipt_id}/cancel")
+async def cancel_receipt(
+    receipt_id: UUID,
+    company_id: UUID = Depends(get_company_id),
+    db: Session = Depends(get_db)
+):
+    """Cancel an AR receipt (only allowed for draft status)"""
+    try:
+        # Check if receipt exists and get its status
+        query = """
+            SELECT status, receipt_number
+            FROM receipts
+            WHERE id = :receipt_id AND company_id = :company_id
+        """
+        result = db.execute(text(query), {"receipt_id": str(receipt_id), "company_id": str(company_id)})
+        row = result.fetchone()
+        
+        if not row:
+            raise HTTPException(status_code=404, detail="Receipt not found")
+        
+        status, receipt_number = row[0], row[1]
+        if status not in ['draft']:
+            raise HTTPException(status_code=400, detail=f"Cannot cancel receipt with status: {status}")
+        
+        # Update receipt status to cancelled
+        db.execute(text("""
+            UPDATE receipts
+            SET status = 'cancelled', updated_at = CURRENT_TIMESTAMP
+            WHERE id = :receipt_id AND company_id = :company_id
+        """), {"receipt_id": str(receipt_id), "company_id": str(company_id)})
+        
+        db.commit()
+        
+        return {
+            "message": f"Receipt {receipt_number} cancelled successfully",
+            "receipt_id": str(receipt_id)
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+
+@router.post("/receipts/{receipt_id}/post")
+async def post_receipt(
+    receipt_id: UUID,
+    company_id: UUID = Depends(get_company_id),
+    user_id: Optional[UUID] = Depends(get_user_id),
+    db: Session = Depends(get_db)
+):
+    """Post an AR receipt to GL (only allowed for draft status)"""
+    try:
+        # Check if receipt exists and get its status
+        query = """
+            SELECT status, receipt_number, customer_id, bank_account_id, amount, payment_date
+            FROM receipts
+            WHERE id = :receipt_id AND company_id = :company_id
+        """
+        result = db.execute(text(query), {"receipt_id": str(receipt_id), "company_id": str(company_id)})
+        row = result.fetchone()
+        
+        if not row:
+            raise HTTPException(status_code=404, detail="Receipt not found")
+        
+        status = row[0]
+        if status != 'draft':
+            raise HTTPException(status_code=400, detail=f"Cannot post receipt with status: {status}")
+        
+        receipt_number, customer_id, bank_account_id, amount, payment_date = row[1], row[2], row[3], row[4], row[5]
+        
+        # Post to GL
+        je_id = await _post_receipt_to_gl(
+            db, company_id, user_id, receipt_id, receipt_number,
+            customer_id, bank_account_id, amount, payment_date
+        )
+        
+        # Update receipt status to posted
+        db.execute(text("""
+            UPDATE receipts
+            SET status = 'posted', journal_entry_id = :journal_entry_id,
+                posted_by = :posted_by, posted_at = CURRENT_TIMESTAMP,
+                updated_at = CURRENT_TIMESTAMP
+            WHERE id = :receipt_id
+        """), {
+            "journal_entry_id": str(je_id),
+            "posted_by": str(user_id) if user_id else None,
+            "receipt_id": str(receipt_id)
+        })
+        
+        db.commit()
+        
+        return {
+            "message": f"Receipt {receipt_number} posted successfully",
+            "receipt_id": str(receipt_id),
+            "journal_entry_id": str(je_id)
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
