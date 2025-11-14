@@ -1533,6 +1533,103 @@ async def get_sales_order(
         lines=lines
     )
 
+@router.patch("/sales-orders/{order_id}", response_model=SalesOrderResponse)
+async def update_sales_order(
+    order_id: UUID,
+    order_date: Optional[date] = None,
+    required_date: Optional[date] = None,
+    warehouse_id: Optional[UUID] = None,
+    notes: Optional[str] = None,
+    company_id: UUID = Depends(get_company_id),
+    db: Session = Depends(get_db)
+):
+    """Update a sales order (only allowed in draft status)"""
+    try:
+        check_query = """
+            SELECT status FROM sales_orders
+            WHERE id = :order_id AND company_id = :company_id
+        """
+        result = db.execute(text(check_query), {"order_id": str(order_id), "company_id": str(company_id)})
+        row = result.fetchone()
+        if not row:
+            raise HTTPException(status_code=404, detail="Sales order not found")
+        
+        if row[0] != 'draft':
+            raise HTTPException(status_code=400, detail="Can only update draft sales orders")
+        
+        update_parts = []
+        params = {"order_id": str(order_id), "company_id": str(company_id)}
+        
+        if order_date is not None:
+            update_parts.append("order_date = :order_date")
+            params["order_date"] = order_date
+        if required_date is not None:
+            update_parts.append("required_date = :required_date")
+            params["required_date"] = required_date
+        if warehouse_id is not None:
+            update_parts.append("warehouse_id = :warehouse_id")
+            params["warehouse_id"] = str(warehouse_id)
+        if notes is not None:
+            update_parts.append("notes = :notes")
+            params["notes"] = notes
+        
+        if update_parts:
+            update_query = f"""
+                UPDATE sales_orders
+                SET {', '.join(update_parts)}, updated_at = CURRENT_TIMESTAMP
+                WHERE id = :order_id AND company_id = :company_id
+            """
+            db.execute(text(update_query), params)
+            db.commit()
+        
+        return await get_sales_order(order_id, company_id, db)
+    except HTTPException:
+        raise
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=400, detail=f"Error updating sales order: {str(e)}")
+
+@router.post("/sales-orders/{order_id}/cancel")
+async def cancel_sales_order(
+    order_id: UUID,
+    reason: Optional[str] = None,
+    company_id: UUID = Depends(get_company_id),
+    db: Session = Depends(get_db)
+):
+    """Cancel a sales order (only allowed for draft or approved status)"""
+    try:
+        check_query = """
+            SELECT status, order_number FROM sales_orders
+            WHERE id = :order_id AND company_id = :company_id
+        """
+        result = db.execute(text(check_query), {"order_id": str(order_id), "company_id": str(company_id)})
+        row = result.fetchone()
+        if not row:
+            raise HTTPException(status_code=404, detail="Sales order not found")
+        
+        status, order_number = row[0], row[1]
+        if status not in ['draft', 'approved']:
+            raise HTTPException(status_code=400, detail=f"Cannot cancel sales order with status: {status}")
+        
+        update_query = """
+            UPDATE sales_orders
+            SET status = 'cancelled', updated_at = CURRENT_TIMESTAMP
+            WHERE id = :order_id AND company_id = :company_id
+        """
+        db.execute(text(update_query), {"order_id": str(order_id), "company_id": str(company_id)})
+        db.commit()
+        
+        return {
+            "message": f"Sales order {order_number} cancelled successfully",
+            "order_id": str(order_id),
+            "reason": reason
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=400, detail=f"Error cancelling sales order: {str(e)}")
+
 @router.post("/sales-orders/{order_id}/approve")
 async def approve_sales_order(
     order_id: UUID,

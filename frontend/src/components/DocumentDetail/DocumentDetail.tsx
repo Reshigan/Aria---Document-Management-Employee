@@ -63,6 +63,8 @@ export function DocumentDetail({ config }: DocumentDetailProps) {
   const [document, setDocument] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedDocument, setEditedDocument] = useState<any>(null);
 
   useEffect(() => {
     loadDocument();
@@ -93,6 +95,37 @@ export function DocumentDetail({ config }: DocumentDetailProps) {
     } catch (err: any) {
       console.error(`Error deleting ${config.title}:`, err);
       setError(err.response?.data?.detail || `Failed to delete ${config.title}`);
+    }
+  };
+
+  const handleEdit = () => {
+    setEditedDocument({ ...document });
+    setIsEditing(true);
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditing(false);
+    setEditedDocument(null);
+  };
+
+  const handleSaveEdit = async () => {
+    try {
+      const updateData: any = {};
+      
+      if (config.fields.date && editedDocument[config.fields.date] !== document[config.fields.date]) {
+        updateData[config.fields.date] = editedDocument[config.fields.date];
+      }
+      if (config.fields.notes && editedDocument[config.fields.notes] !== document[config.fields.notes]) {
+        updateData.notes = editedDocument[config.fields.notes];
+      }
+      
+      await api.patch(`${config.apiPath}/${id}`, updateData);
+      setIsEditing(false);
+      setEditedDocument(null);
+      await loadDocument();
+    } catch (err: any) {
+      console.error(`Error updating ${config.title}:`, err);
+      alert(err.response?.data?.detail || `Failed to update ${config.title}`);
     }
   };
 
@@ -242,9 +275,9 @@ export function DocumentDetail({ config }: DocumentDetailProps) {
               </button>
             );
           })}
-          {config.actions?.canEdit && (
+          {config.actions?.canEdit && !isEditing && document.status === 'draft' && (
             <button
-              onClick={() => navigate(`${config.listPath}?edit=${id}`)}
+              onClick={handleEdit}
               style={{
                 padding: '0.5rem 1rem',
                 background: '#3b82f6',
@@ -262,6 +295,48 @@ export function DocumentDetail({ config }: DocumentDetailProps) {
               <Edit size={16} />
               Edit
             </button>
+          )}
+          {isEditing && (
+            <>
+              <button
+                onClick={handleSaveEdit}
+                style={{
+                  padding: '0.5rem 1rem',
+                  background: '#10b981',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '0.375rem',
+                  fontSize: '0.875rem',
+                  fontWeight: '500',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem'
+                }}
+              >
+                <Check size={16} />
+                Save
+              </button>
+              <button
+                onClick={handleCancelEdit}
+                style={{
+                  padding: '0.5rem 1rem',
+                  background: '#6b7280',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '0.375rem',
+                  fontSize: '0.875rem',
+                  fontWeight: '500',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem'
+                }}
+              >
+                <ArrowLeft size={16} />
+                Cancel
+              </button>
+            </>
           )}
           {config.actions?.canDelete && (
             <button
@@ -320,10 +395,26 @@ export function DocumentDetail({ config }: DocumentDetailProps) {
             </div>
           )}
         </div>
-        {config.fields.notes && document[config.fields.notes] && (
+        {config.fields.notes && (document[config.fields.notes] || isEditing) && (
           <div style={{ marginTop: '1rem' }}>
             <div style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.25rem' }}>Notes</div>
-            <div style={{ color: '#374151' }}>{document[config.fields.notes]}</div>
+            {isEditing ? (
+              <textarea
+                value={editedDocument[config.fields.notes] || ''}
+                onChange={(e) => setEditedDocument({ ...editedDocument, [config.fields.notes]: e.target.value })}
+                style={{
+                  width: '100%',
+                  minHeight: '80px',
+                  padding: '0.5rem',
+                  border: '1px solid #d1d5db',
+                  borderRadius: '0.375rem',
+                  fontSize: '0.875rem',
+                  fontFamily: 'inherit'
+                }}
+              />
+            ) : (
+              <div style={{ color: '#374151' }}>{document[config.fields.notes]}</div>
+            )}
           </div>
         )}
       </div>

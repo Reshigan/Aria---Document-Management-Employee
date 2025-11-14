@@ -1,6 +1,6 @@
 import { DocumentDetail, DocumentDetailConfig } from '../../../components/DocumentDetail/DocumentDetail';
 import api from '../../../lib/api';
-import { Check, Truck, FileText } from 'lucide-react';
+import { Check, Truck, FileText, XCircle } from 'lucide-react';
 
 const config: DocumentDetailConfig = {
   title: 'Sales Order',
@@ -75,7 +75,7 @@ const config: DocumentDetailConfig = {
     ]
   },
   actions: {
-    canEdit: false,
+    canEdit: true,
     canDelete: false,
     customActions: [
       {
@@ -99,13 +99,58 @@ const config: DocumentDetailConfig = {
         condition: (doc) => doc.status === 'approved',
         onClick: async (doc, reload) => {
           try {
-            const response = await api.post('/erp/order-to-cash/deliveries', {
-              sales_order_id: doc.id
-            });
+            const deliveryLines = (doc.lines || [])
+              .filter((line: any) => {
+                const qtyOutstanding = parseFloat(line.quantity) - parseFloat(line.quantity_delivered || 0);
+                return qtyOutstanding > 0;
+              })
+              .map((line: any, idx: number) => ({
+                line_number: idx + 1,
+                sales_order_line_id: line.id,
+                product_id: line.product_id,
+                description: line.description,
+                quantity: parseFloat(line.quantity) - parseFloat(line.quantity_delivered || 0)
+              }));
+
+            if (deliveryLines.length === 0) {
+              alert('No outstanding quantities to deliver');
+              return;
+            }
+
+            const deliveryPayload = {
+              sales_order_id: doc.id,
+              customer_id: doc.customer_id,
+              warehouse_id: doc.warehouse_id,
+              delivery_date: new Date().toISOString().split('T')[0],
+              notes: `Delivery for ${doc.order_number}`,
+              lines: deliveryLines
+            };
+
+            const response = await api.post('/erp/order-to-cash/deliveries', deliveryPayload);
             alert(`Delivery ${response.data.delivery_number} created successfully!`);
             reload();
           } catch (err: any) {
             alert(err.response?.data?.detail || 'Failed to create delivery');
+          }
+        }
+      },
+      {
+        label: 'Cancel',
+        icon: XCircle,
+        color: '#ef4444',
+        condition: (doc) => doc.status === 'draft' || doc.status === 'approved',
+        onClick: async (doc, reload) => {
+          const reason = prompt('Enter cancellation reason (optional):');
+          if (reason === null) return;
+          
+          try {
+            await api.post(`/erp/order-to-cash/sales-orders/${doc.id}/cancel`, {
+              reason: reason || 'User cancelled'
+            });
+            alert(`Sales order ${doc.order_number} cancelled successfully`);
+            reload();
+          } catch (err: any) {
+            alert(err.response?.data?.detail || 'Failed to cancel sales order');
           }
         }
       }
