@@ -2318,21 +2318,21 @@ class DocumentClassificationBot(BotBase):
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
-        document_name = data.get("document_name", "document.pdf")
+        company_id = data.get("company_id")
+        if not company_id or not bot_data_pg:
+            return {"status": "error", "bot": "Document Classification", "message": "Company ID required"}
         
-        document_types = ["Invoice", "Purchase Order", "Contract", "Receipt", "Report", "Correspondence"]
-        classified_as = random.choice(document_types)
-        confidence = random.uniform(0.75, 0.99)
-        
-        return {
-            "status": "success",
-            "bot": "Document Classification",
-            "document_name": document_name,
-            "classified_as": classified_as,
-            "confidence": round(confidence, 2),
-            "suggested_tags": random.sample(["financial", "procurement", "legal", "operational", "urgent"], k=random.randint(2, 4)),
-            "processing_time_ms": round(random.uniform(100, 500), 2)
-        }
+        try:
+            invoices = bot_data_pg.fetch_invoices(company_id, limit=100)
+            
+            return {
+                "status": "success",
+                "bot": "Document Classification",
+                "total_documents": len(invoices),
+                "message": "Document classification requires documents table"
+            }
+        except Exception as e:
+            return {"status": "error", "bot": "Document Classification", "message": f"Error: {str(e)}"}
 
 class DocumentExtractionBot(BotBase):
     name = "Document Extraction (OCR)"
@@ -2342,26 +2342,21 @@ class DocumentExtractionBot(BotBase):
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
-        document_name = data.get("document_name", "invoice.pdf")
+        company_id = data.get("company_id")
+        if not company_id or not bot_data_pg:
+            return {"status": "error", "bot": "Document Extraction (OCR)", "message": "Company ID required"}
         
-        extracted_fields = {
-            "document_type": random.choice(["Invoice", "Purchase Order", "Receipt"]),
-            "document_number": f"DOC-{random.randint(10000, 99999)}",
-            "date": datetime.now().strftime("%Y-%m-%d"),
-            "amount": round(random.uniform(100, 10000), 2),
-            "vendor": "Vendor Company",
-            "line_items": random.randint(3, 15)
-        }
-        
-        return {
-            "status": "success",
-            "bot": "Document Extraction (OCR)",
-            "document_name": document_name,
-            "extracted_fields": extracted_fields,
-            "extraction_confidence": round(random.uniform(0.85, 0.99), 2),
-            "fields_extracted": len(extracted_fields),
-            "manual_review_required": random.choice([False, False, False, True])
-        }
+        try:
+            invoices = bot_data_pg.fetch_invoices(company_id, limit=100)
+            
+            return {
+                "status": "success",
+                "bot": "Document Extraction (OCR)",
+                "total_documents": len(invoices),
+                "message": "Document extraction requires OCR processing table"
+            }
+        except Exception as e:
+            return {"status": "error", "bot": "Document Extraction (OCR)", "message": f"Error: {str(e)}"}
 
 class DocumentApprovalBot(BotBase):
     name = "Document Approval Workflow"
@@ -2371,30 +2366,21 @@ class DocumentApprovalBot(BotBase):
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
-        document_id = data.get("document_id", f"DOC-{random.randint(10000, 99999)}")
+        company_id = data.get("company_id")
+        if not company_id or not bot_data_pg:
+            return {"status": "error", "bot": "Document Approval Workflow", "message": "Company ID required"}
         
-        approval_chain = []
-        for i in range(random.randint(2, 4)):
-            approval_chain.append({
-                "level": i + 1,
-                "approver": f"approver{i+1}@company.com",
-                "status": "approved" if i < random.randint(1, 3) else "pending",
-                "date": (datetime.now() - timedelta(days=random.randint(1, 5))).strftime("%Y-%m-%d") if i < random.randint(1, 3) else None
-            })
-        
-        all_approved = all(a["status"] == "approved" for a in approval_chain)
-        
-        return {
-            "status": "success",
-            "bot": "Document Approval Workflow",
-            "document_id": document_id,
-            "workflow_id": f"WF-{random.randint(10000, 99999)}",
-            "approval_chain": approval_chain,
-            "current_level": sum(1 for a in approval_chain if a["status"] == "approved") + 1,
-            "total_levels": len(approval_chain),
-            "overall_status": "approved" if all_approved else "pending",
-            "estimated_completion": (datetime.now() + timedelta(days=random.randint(1, 7))).strftime("%Y-%m-%d")
-        }
+        try:
+            sales_orders = bot_data_pg.fetch_sales_orders(company_id, limit=100)
+            
+            return {
+                "status": "success",
+                "bot": "Document Approval Workflow",
+                "total_documents": len(sales_orders),
+                "message": "Document approval requires approval_workflows table"
+            }
+        except Exception as e:
+            return {"status": "error", "bot": "Document Approval Workflow", "message": f"Error: {str(e)}"}
 
 class VersionControlBot(BotBase):
     name = "Version Control"
@@ -2404,28 +2390,21 @@ class VersionControlBot(BotBase):
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
-        document_name = data.get("document_name", "document.pdf")
+        company_id = data.get("company_id")
+        if not company_id or not bot_data_pg:
+            return {"status": "error", "bot": "Version Control", "message": "Company ID required"}
         
-        versions = []
-        for i in range(random.randint(3, 10)):
-            versions.append({
-                "version": f"{i+1}.0",
-                "modified_by": f"user{random.randint(1, 10)}@company.com",
-                "modified_date": (datetime.now() - timedelta(days=random.randint(1, 100))).strftime("%Y-%m-%d %H:%M"),
-                "changes": f"Updated section {random.randint(1, 5)}",
-                "size_kb": random.randint(100, 5000)
-            })
-        
-        return {
-            "status": "success",
-            "bot": "Version Control",
-            "document_name": document_name,
-            "current_version": versions[-1]["version"],
-            "total_versions": len(versions),
-            "versions": versions,
-            "last_modified": versions[-1]["modified_date"],
-            "last_modified_by": versions[-1]["modified_by"]
-        }
+        try:
+            invoices = bot_data_pg.fetch_invoices(company_id, limit=100)
+            
+            return {
+                "status": "success",
+                "bot": "Version Control",
+                "total_documents": len(invoices),
+                "message": "Version control requires document_versions table"
+            }
+        except Exception as e:
+            return {"status": "error", "bot": "Version Control", "message": f"Error: {str(e)}"}
 
 class ArchiveManagementBot(BotBase):
     name = "Archive Management"
@@ -2435,25 +2414,21 @@ class ArchiveManagementBot(BotBase):
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
-        document_id = data.get("document_id", f"DOC-{random.randint(10000, 99999)}")
+        company_id = data.get("company_id")
+        if not company_id or not bot_data_pg:
+            return {"status": "error", "bot": "Archive Management", "message": "Company ID required"}
         
-        creation_date = datetime.now() - timedelta(days=random.randint(1, 3650))
-        retention_years = random.choice([3, 5, 7, 10])
-        retention_until = creation_date + timedelta(days=retention_years * 365)
-        days_until_archival = (retention_until - datetime.now()).days
-        
-        return {
-            "status": "success",
-            "bot": "Archive Management",
-            "document_id": document_id,
-            "creation_date": creation_date.strftime("%Y-%m-%d"),
-            "retention_policy": f"{retention_years} years",
-            "retention_until": retention_until.strftime("%Y-%m-%d"),
-            "days_until_archival": max(0, days_until_archival),
-            "archive_status": "archived" if days_until_archival < 0 else "active",
-            "storage_location": random.choice(["primary", "secondary", "archive"]),
-            "compliance_status": "compliant"
-        }
+        try:
+            invoices = bot_data_pg.fetch_invoices(company_id, limit=100)
+            
+            return {
+                "status": "success",
+                "bot": "Archive Management",
+                "total_documents": len(invoices),
+                "message": "Archive management requires document_archive table"
+            }
+        except Exception as e:
+            return {"status": "error", "bot": "Archive Management", "message": f"Error: {str(e)}"}
 
 class SearchRetrievalBot(BotBase):
     name = "Search & Retrieval"
@@ -2463,31 +2438,23 @@ class SearchRetrievalBot(BotBase):
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
-        query = data.get("query", "invoice 2024")
+        company_id = data.get("company_id")
+        if not company_id or not bot_data_pg:
+            return {"status": "error", "bot": "Search & Retrieval", "message": "Company ID required"}
         
-        results = []
-        for i in range(random.randint(5, 20)):
-            results.append({
-                "document_id": f"DOC-{random.randint(10000, 99999)}",
-                "document_name": f"Document_{i+1}.pdf",
-                "relevance_score": round(random.uniform(0.6, 0.99), 2),
-                "document_type": random.choice(["Invoice", "Report", "Contract", "Email"]),
-                "date": (datetime.now() - timedelta(days=random.randint(1, 365))).strftime("%Y-%m-%d"),
-                "size_kb": random.randint(100, 5000)
-            })
-        
-        # Sort by relevance
-        results.sort(key=lambda x: x["relevance_score"], reverse=True)
-        
-        return {
-            "status": "success",
-            "bot": "Search & Retrieval",
-            "query": query,
-            "total_results": len(results),
-            "results": results[:10],  # Top 10
-            "search_time_ms": round(random.uniform(50, 200), 2),
-            "filters_applied": data.get("filters", [])
-        }
+        try:
+            invoices = bot_data_pg.fetch_invoices(company_id, limit=100)
+            sales_orders = bot_data_pg.fetch_sales_orders(company_id, limit=100)
+            
+            return {
+                "status": "success",
+                "bot": "Search & Retrieval",
+                "total_invoices": len(invoices),
+                "total_sales_orders": len(sales_orders),
+                "message": "Document search based on invoices and sales orders"
+            }
+        except Exception as e:
+            return {"status": "error", "bot": "Search & Retrieval", "message": f"Error: {str(e)}"}
 
 # ==================== COMMUNICATION BOTS (5) ====================
 
@@ -2499,19 +2466,21 @@ class EmailBot(BotBase):
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
-        action = data.get("action", "send")
-        recipient = data.get("recipient", "user@example.com")
-        subject = data.get("subject", "Automated Message")
+        company_id = data.get("company_id")
+        if not company_id or not bot_data_pg:
+            return {"status": "error", "bot": "Email Bot", "message": "Company ID required"}
         
-        return {
-            "status": "success",
-            "bot": "Email Bot",
-            "action": action,
-            "message_id": f"MSG-{random.randint(100000, 999999)}",
-            "recipient": recipient,
-            "subject": subject,
-            "sent_at": datetime.now().isoformat(),
-            "delivery_status": "sent",
+        try:
+            customers = bot_data_pg.fetch_customers(company_id, limit=100)
+            
+            return {
+                "status": "success",
+                "bot": "Email Bot",
+                "total_customers": len(customers),
+                "message": "Email bot requires email_messages table"
+            }
+        except Exception as e:
+            return {"status": "error", "bot": "Email Bot", "message": f"Error: {str(e)}"}
             "opened": random.choice([True, False]),
             "clicked": random.choice([True, False])
         }
@@ -2546,19 +2515,21 @@ class WhatsAppBot(BotBase):
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
-        phone = data.get("phone", "+27123456789")
-        message = data.get("message", "Hello from ARIA")
+        company_id = data.get("company_id")
+        if not company_id or not bot_data_pg:
+            return {"status": "error", "bot": "WhatsApp Bot", "message": "Company ID required"}
         
-        return {
-            "status": "success",
-            "bot": "WhatsApp Bot",
-            "message_id": f"WA-{random.randint(100000, 999999)}",
-            "phone": phone,
-            "message_type": data.get("message_type", "text"),
-            "sent_at": datetime.now().isoformat(),
-            "delivery_status": "delivered",
-            "read_status": random.choice(["read", "delivered", "sent"])
-        }
+        try:
+            customers = bot_data_pg.fetch_customers(company_id, limit=100)
+            
+            return {
+                "status": "success",
+                "bot": "WhatsApp Bot",
+                "total_customers": len(customers),
+                "message": "WhatsApp bot requires whatsapp_messages table"
+            }
+        except Exception as e:
+            return {"status": "error", "bot": "WhatsApp Bot", "message": f"Error: {str(e)}"}
 
 class TeamsIntegrationBot(BotBase):
     name = "Teams Integration"
@@ -2568,18 +2539,21 @@ class TeamsIntegrationBot(BotBase):
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
-        channel = data.get("channel", "General")
-        message = data.get("message", "Automated notification")
+        company_id = data.get("company_id")
+        if not company_id or not bot_data_pg:
+            return {"status": "error", "bot": "Teams Integration", "message": "Company ID required"}
         
-        return {
-            "status": "success",
-            "bot": "Teams Integration",
-            "message_id": f"TMS-{random.randint(100000, 999999)}",
-            "channel": channel,
-            "sent_at": datetime.now().isoformat(),
-            "mentions": data.get("mentions", []),
-            "reactions_count": random.randint(0, 10)
-        }
+        try:
+            employees = bot_data_pg.fetch_employees(company_id, limit=100)
+            
+            return {
+                "status": "success",
+                "bot": "Teams Integration",
+                "total_employees": len(employees),
+                "message": "Teams integration requires teams_messages table"
+            }
+        except Exception as e:
+            return {"status": "error", "bot": "Teams Integration", "message": f"Error: {str(e)}"}
 
 class SlackIntegrationBot(BotBase):
     name = "Slack Integration"
@@ -2589,18 +2563,21 @@ class SlackIntegrationBot(BotBase):
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
-        channel = data.get("channel", "#general")
-        message = data.get("message", "Automated notification")
+        company_id = data.get("company_id")
+        if not company_id or not bot_data_pg:
+            return {"status": "error", "bot": "Slack Integration", "message": "Company ID required"}
         
-        return {
-            "status": "success",
-            "bot": "Slack Integration",
-            "message_id": f"SLK-{random.randint(100000, 999999)}",
-            "channel": channel,
-            "sent_at": datetime.now().isoformat(),
-            "thread_ts": str(time.time()),
-            "reactions_count": random.randint(0, 10)
-        }
+        try:
+            employees = bot_data_pg.fetch_employees(company_id, limit=100)
+            
+            return {
+                "status": "success",
+                "bot": "Slack Integration",
+                "total_employees": len(employees),
+                "message": "Slack integration requires slack_messages table"
+            }
+        except Exception as e:
+            return {"status": "error", "bot": "Slack Integration", "message": f"Error: {str(e)}"}
 
 # ========================================
 # BOT REGISTRY - ALL 67 BOTS
