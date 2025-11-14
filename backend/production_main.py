@@ -1568,27 +1568,28 @@ class LeadQualificationBot(BotBase):
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
-        lead_name = data.get("lead_name", "Lead Company")
+        company_id = data.get("company_id")
+        if not company_id or not bot_data_pg:
+            return {"status": "error", "bot": "Lead Qualification", "message": "Company ID required"}
         
-        # Score based on various factors
-        score = 0
-        score += random.randint(0, 30)  # Company size
-        score += random.randint(0, 25)  # Budget
-        score += random.randint(0, 25)  # Authority
-        score += random.randint(0, 20)  # Need
-        
-        qualification = "hot" if score > 70 else "warm" if score > 40 else "cold"
-        
-        return {
-            "status": "success",
-            "bot": "Lead Qualification",
-            "lead_name": lead_name,
-            "lead_score": score,
-            "qualification": qualification,
-            "recommended_action": "immediate_contact" if qualification == "hot" else "nurture_campaign",
-            "estimated_deal_size": round(random.uniform(10000, 500000), 2),
-            "win_probability": round(score / 100, 2)
-        }
+        try:
+            leads = bot_data_pg.fetch_leads(company_id, status='new', limit=50)
+            qualified = [l for l in leads if l.get('status') in ['qualified', 'hot']]
+            
+            return {
+                "status": "success",
+                "bot": "Lead Qualification",
+                "total_new_leads": len(leads),
+                "qualified_leads": len(qualified),
+                "qualification_rate": round(len(qualified) / len(leads) * 100, 2) if leads else 0,
+                "top_leads": [{
+                    "lead_number": l.get('lead_number'),
+                    "company_name": l.get('company_name'),
+                    "status": l.get('status')
+                } for l in leads[:5]]
+            }
+        except Exception as e:
+            return {"status": "error", "bot": "Lead Qualification", "message": f"Error: {str(e)}"}
 
 class LeadManagementBot(BotBase):
     name = "Lead Management"
@@ -1762,28 +1763,25 @@ class EmailCampaignBot(BotBase):
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
-        campaign_name = data.get("campaign_name", "Monthly Newsletter")
-        recipient_count = data.get("recipient_count", random.randint(500, 5000))
+        company_id = data.get("company_id")
+        if not company_id or not bot_data_pg:
+            return {"status": "error", "bot": "Email Campaign", "message": "Company ID required"}
         
-        sent = recipient_count
-        delivered = int(sent * random.uniform(0.95, 0.99))
-        opened = int(delivered * random.uniform(0.15, 0.35))
-        clicked = int(opened * random.uniform(0.1, 0.3))
-        
-        return {
-            "status": "success",
-            "bot": "Email Campaign",
-            "campaign_name": campaign_name,
-            "campaign_id": f"CAMP-{random.randint(10000, 99999)}",
-            "sent": sent,
-            "delivered": delivered,
-            "opened": opened,
-            "clicked": clicked,
-            "bounced": sent - delivered,
-            "open_rate": round((opened / delivered) * 100, 2),
-            "click_rate": round((clicked / delivered) * 100, 2),
-            "delivery_rate": round((delivered / sent) * 100, 2)
-        }
+        try:
+            customers = bot_data_pg.fetch_customers(company_id, limit=100)
+            leads = bot_data_pg.fetch_leads(company_id, limit=100)
+            
+            return {
+                "status": "success",
+                "bot": "Email Campaign",
+                "campaign_name": data.get("campaign_name", "Monthly Newsletter"),
+                "potential_recipients": len(customers) + len(leads),
+                "customers": len(customers),
+                "leads": len(leads),
+                "message": "Email campaign tracking requires campaign tables"
+            }
+        except Exception as e:
+            return {"status": "error", "bot": "Email Campaign", "message": f"Error: {str(e)}"}
 
 class SalesForecastingBot(BotBase):
     name = "Sales Forecasting"
@@ -1793,29 +1791,28 @@ class SalesForecastingBot(BotBase):
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
-        historical_sales = data.get("historical_sales", [100000, 110000, 105000, 120000])
+        company_id = data.get("company_id")
+        if not company_id or not bot_data_pg:
+            return {"status": "error", "bot": "Sales Forecasting", "message": "Company ID required"}
         
-        avg_growth = 1.05  # 5% growth
-        forecast = []
-        last_value = historical_sales[-1] if historical_sales else 100000
-        
-        for i in range(6):
-            forecasted = last_value * (avg_growth ** (i + 1)) * random.uniform(0.95, 1.05)
-            forecast.append({
-                "month": (datetime.now() + timedelta(days=30*i)).strftime("%Y-%m"),
-                "forecasted_sales": round(forecasted, 2),
-                "confidence_interval_low": round(forecasted * 0.85, 2),
-                "confidence_interval_high": round(forecasted * 1.15, 2)
-            })
-        
-        return {
-            "status": "success",
-            "bot": "Sales Forecasting",
-            "forecast_period": "6 months",
-            "forecast": forecast,
-            "total_forecasted": round(sum(f["forecasted_sales"] for f in forecast), 2),
-            "growth_trend": "increasing"
-        }
+        try:
+            sales_orders = bot_data_pg.fetch_sales_orders(company_id, limit=100)
+            quotes = bot_data_pg.fetch_quotes(company_id, limit=100)
+            
+            total_sales = sum(float(so.get('total_amount', 0)) for so in sales_orders)
+            total_quotes = sum(float(q.get('total_amount', 0)) for q in quotes)
+            
+            return {
+                "status": "success",
+                "bot": "Sales Forecasting",
+                "historical_sales": round(total_sales, 2),
+                "pipeline_value": round(total_quotes, 2),
+                "forecast_period": "30 days",
+                "projected_sales": round(total_sales * 1.05, 2),
+                "growth_trend": "stable"
+            }
+        except Exception as e:
+            return {"status": "error", "bot": "Sales Forecasting", "message": f"Error: {str(e)}"}
 
 class ContractManagementBot(BotBase):
     name = "Contract Management"
@@ -1825,25 +1822,21 @@ class ContractManagementBot(BotBase):
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
-        contract_id = data.get("contract_id", f"CNT-{random.randint(10000, 99999)}")
+        company_id = data.get("company_id")
+        if not company_id or not bot_data_pg:
+            return {"status": "error", "bot": "Contract Management", "message": "Company ID required"}
         
-        start_date = datetime.now() - timedelta(days=random.randint(0, 365))
-        end_date = start_date + timedelta(days=random.randint(365, 1095))
-        days_remaining = (end_date - datetime.now()).days
-        
-        return {
-            "status": "success",
-            "bot": "Contract Management",
-            "contract_id": contract_id,
-            "customer": data.get("customer", "Customer Inc."),
-            "contract_value": round(random.uniform(10000, 500000), 2),
-            "start_date": start_date.strftime("%Y-%m-%d"),
-            "end_date": end_date.strftime("%Y-%m-%d"),
-            "days_remaining": days_remaining,
-            "renewal_status": "due_soon" if days_remaining < 90 else "active",
-            "auto_renewal": random.choice([True, False]),
-            "compliance_status": "compliant"
-        }
+        try:
+            customers = bot_data_pg.fetch_customers(company_id, limit=100)
+            
+            return {
+                "status": "success",
+                "bot": "Contract Management",
+                "total_customers": len(customers),
+                "message": "Contract management requires contracts table"
+            }
+        except Exception as e:
+            return {"status": "error", "bot": "Contract Management", "message": f"Error: {str(e)}"}
 
 class CustomerOnboardingBot(BotBase):
     name = "Customer Onboarding"
@@ -1853,26 +1846,24 @@ class CustomerOnboardingBot(BotBase):
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
-        customer = data.get("customer", "New Customer")
+        company_id = data.get("company_id")
+        if not company_id or not bot_data_pg:
+            return {"status": "error", "bot": "Customer Onboarding", "message": "Company ID required"}
         
-        onboarding_steps = [
-            {"step": "Account setup", "status": "completed", "date": (datetime.now() - timedelta(days=5)).strftime("%Y-%m-%d")},
-            {"step": "Initial training", "status": "completed", "date": (datetime.now() - timedelta(days=3)).strftime("%Y-%m-%d")},
-            {"step": "Data migration", "status": "in_progress", "date": None},
-            {"step": "Go-live preparation", "status": "pending", "date": None},
-            {"step": "Launch", "status": "pending", "date": None}
-        ]
-        
-        completed = sum(1 for step in onboarding_steps if step["status"] == "completed")
-        progress = (completed / len(onboarding_steps)) * 100
-        
-        return {
-            "status": "success",
-            "bot": "Customer Onboarding",
-            "customer": customer,
-            "onboarding_id": f"ONB-{random.randint(10000, 99999)}",
-            "steps": onboarding_steps,
-            "progress": round(progress, 2),
+        try:
+            customers = bot_data_pg.fetch_customers(company_id, limit=100)
+            recent_customers = [c for c in customers if c.get('created_at')]
+            
+            return {
+                "status": "success",
+                "bot": "Customer Onboarding",
+                "total_customers": len(customers),
+                "recent_customers": len(recent_customers[:10]),
+                "message": "Customer onboarding tracking requires onboarding_tasks table",
+                "new_customers": [{
+                    "customer_name": c.get('customer_name'),
+                    "created_at": c.get('created_at').isoformat() if c.get('created_at') else None
+                } for c in recent_customers[:5]]
             "estimated_completion": (datetime.now() + timedelta(days=random.randint(7, 30))).strftime("%Y-%m-%d"),
             "assigned_success_manager": f"manager{random.randint(1, 5)}@company.com"
         }
