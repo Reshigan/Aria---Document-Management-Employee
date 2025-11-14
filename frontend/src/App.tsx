@@ -37,6 +37,11 @@ import CompanySettings from './pages/admin/CompanySettings';
 import BotConfiguration from './pages/admin/BotConfiguration';
 import UserManagement from './pages/admin/UserManagement';
 import AccountsReceivable from './pages/ERP/AccountsReceivable';
+import QuoteDetail from './pages/ERP/Detail/QuoteDetail';
+import SalesOrderDetail from './pages/ERP/Detail/SalesOrderDetail';
+import DeliveryDetail from './pages/ERP/Detail/DeliveryDetail';
+import PurchaseOrderDetail from './pages/ERP/Detail/PurchaseOrderDetail';
+import GoodsReceiptDetail from './pages/ERP/Detail/GoodsReceiptDetail';
 import './styles/design-system.css';
 
 function App() {
@@ -51,8 +56,11 @@ function App() {
           
           {/* Order-to-Cash */}
           <Route path="/quotes" element={<Quotes />} />
+          <Route path="/quotes/:id" element={<QuoteDetail />} />
           <Route path="/sales-orders" element={<SalesOrders />} />
+          <Route path="/sales-orders/:id" element={<SalesOrderDetail />} />
           <Route path="/deliveries" element={<Deliveries />} />
+          <Route path="/deliveries/:id" element={<DeliveryDetail />} />
           <Route path="/wms-stock" element={<WMSStock />} />
           
           {/* General Ledger */}
@@ -90,7 +98,9 @@ function App() {
           {/* Procurement */}
           <Route path="/procurement" element={<PurchaseOrders />} />
           <Route path="/procurement/purchase-orders" element={<PurchaseOrders />} />
+          <Route path="/procurement/purchase-orders/:id" element={<PurchaseOrderDetail />} />
           <Route path="/procurement/goods-receipts" element={<GoodsReceipts />} />
+          <Route path="/procurement/goods-receipts/:id" element={<GoodsReceiptDetail />} />
           <Route path="/procurement/suppliers" element={<ProcurementDashboard />} />
           <Route path="/procurement/rfq" element={<ProcurementDashboard />} />
           <Route path="/procurement/products" element={<ProductCatalog />} />

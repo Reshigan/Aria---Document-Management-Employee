@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import api from '../../lib/api';
 import { Plus, Search, Eye, Check, Package } from 'lucide-react';
 
@@ -189,7 +190,11 @@ export default function GoodsReceipts() {
             <tbody>
               {filteredReceipts.map((receipt) => (
                 <tr key={receipt.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
-                  <td style={{ padding: '1rem', fontSize: '0.875rem', fontWeight: '500' }}>{receipt.receipt_number}</td>
+                  <td style={{ padding: '1rem', fontSize: '0.875rem', fontWeight: '500' }}>
+                    <Link to={`/procurement/goods-receipts/${receipt.id}`} style={{ color: '#2563eb', textDecoration: 'none' }}>
+                      {receipt.receipt_number}
+                    </Link>
+                  </td>
                   <td style={{ padding: '1rem', fontSize: '0.875rem' }}>{receipt.supplier_name}</td>
                   <td style={{ padding: '1rem', fontSize: '0.875rem' }}>{new Date(receipt.receipt_date).toLocaleDateString()}</td>
                   <td style={{ padding: '1rem' }}>

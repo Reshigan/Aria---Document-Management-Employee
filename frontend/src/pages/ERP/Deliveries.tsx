@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import api from '../../lib/api';
 import { ConfirmDialog } from '../../components/ConfirmDialog';
 import { Search, Truck, Package, CheckCircle, FileText, X } from 'lucide-react';
@@ -396,7 +397,11 @@ export default function Deliveries() {
               <tbody>
                 {deliveries.map((delivery) => (
                   <tr key={delivery.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
-                    <td style={{ padding: '1rem', fontSize: '0.875rem', fontWeight: '500' }}>{delivery.delivery_number}</td>
+                    <td style={{ padding: '1rem', fontSize: '0.875rem', fontWeight: '500' }}>
+                      <Link to={`/deliveries/${delivery.id}`} style={{ color: '#2563eb', textDecoration: 'none' }}>
+                        {delivery.delivery_number}
+                      </Link>
+                    </td>
                     <td style={{ padding: '1rem', fontSize: '0.875rem', color: '#6b7280' }}>{delivery.sales_order_number || '-'}</td>
                     <td style={{ padding: '1rem', fontSize: '0.875rem' }}>{delivery.customer_name || '-'}</td>
                     <td style={{ padding: '1rem', fontSize: '0.875rem' }}>{delivery.warehouse_name || '-'}</td>

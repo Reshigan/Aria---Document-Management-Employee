@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import api from '../../lib/api';
 import { Plus, Search, Eye, Check, Truck, FileText } from 'lucide-react';
 
@@ -243,7 +244,11 @@ export default function PurchaseOrders() {
             <tbody>
               {filteredOrders.map((order) => (
                 <tr key={order.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
-                  <td style={{ padding: '1rem', fontSize: '0.875rem', fontWeight: '500' }}>{order.po_number}</td>
+                  <td style={{ padding: '1rem', fontSize: '0.875rem', fontWeight: '500' }}>
+                    <Link to={`/procurement/purchase-orders/${order.id}`} style={{ color: '#2563eb', textDecoration: 'none' }}>
+                      {order.po_number}
+                    </Link>
+                  </td>
                   <td style={{ padding: '1rem', fontSize: '0.875rem' }}>{order.supplier_name}</td>
                   <td style={{ padding: '1rem', fontSize: '0.875rem' }}>{new Date(order.po_date).toLocaleDateString()}</td>
                   <td style={{ padding: '1rem', fontSize: '0.875rem' }}>

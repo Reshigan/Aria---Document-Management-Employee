@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import api from '../../lib/api';
 import { LineItemsTable, LineItem } from '../../components/LineItemsTable';
 import { ConfirmDialog } from '../../components/ConfirmDialog';
@@ -245,7 +246,11 @@ export default function Quotes() {
             <tbody>
               {quotes.map((quote) => (
                 <tr key={quote.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
-                  <td style={{ padding: '1rem', fontSize: '0.875rem', fontWeight: '500' }}>{quote.quote_number}</td>
+                  <td style={{ padding: '1rem', fontSize: '0.875rem', fontWeight: '500' }}>
+                    <Link to={`/quotes/${quote.id}`} style={{ color: '#2563eb', textDecoration: 'none' }}>
+                      {quote.quote_number}
+                    </Link>
+                  </td>
                   <td style={{ padding: '1rem', fontSize: '0.875rem' }}>{quote.customer_name || '-'}</td>
                   <td style={{ padding: '1rem', fontSize: '0.875rem', color: '#6b7280' }}>{quote.customer_email || '-'}</td>
                   <td style={{ padding: '1rem', fontSize: '0.875rem' }}>{new Date(quote.quote_date).toLocaleDateString()}</td>

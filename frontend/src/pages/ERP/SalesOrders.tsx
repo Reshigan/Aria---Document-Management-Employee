@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import api from '../../lib/api';
 import { LineItemsTable, LineItem } from '../../components/LineItemsTable';
 import { ConfirmDialog } from '../../components/ConfirmDialog';
@@ -540,7 +541,11 @@ export default function SalesOrders() {
             <tbody>
               {orders.map((order) => (
                 <tr key={order.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
-                  <td style={{ padding: '1rem', fontSize: '0.875rem', fontWeight: '500' }}>{order.order_number}</td>
+                  <td style={{ padding: '1rem', fontSize: '0.875rem', fontWeight: '500' }}>
+                    <Link to={`/sales-orders/${order.id}`} style={{ color: '#2563eb', textDecoration: 'none' }}>
+                      {order.order_number}
+                    </Link>
+                  </td>
                   <td style={{ padding: '1rem', fontSize: '0.875rem' }}>{order.customer_name || '-'}</td>
                   <td style={{ padding: '1rem', fontSize: '0.875rem' }}>{new Date(order.order_date).toLocaleDateString()}</td>
                   <td style={{ padding: '1rem', fontSize: '0.875rem' }}>{order.required_date ? new Date(order.required_date).toLocaleDateString() : '-'}</td>
