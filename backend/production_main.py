@@ -682,26 +682,21 @@ class PatientSchedulingBot(BotBase):
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
-        patient_name = data.get("patient_name", "Patient")
-        appointment_type = data.get("appointment_type", "General Checkup")
+        company_id = data.get("company_id")
+        if not company_id or not bot_data_pg:
+            return {"status": "error", "bot": "Patient Scheduling", "message": "Company ID required"}
         
-        available_slots = []
-        for i in range(5):
-            available_slots.append({
-                "date": (datetime.now() + timedelta(days=i+1)).strftime("%Y-%m-%d"),
-                "time": f"{9 + i}:00",
-                "doctor": f"Dr. Smith {i+1}",
-                "available": True
-            })
-        
-        return {
-            "status": "success",
-            "bot": "Patient Scheduling",
-            "patient": patient_name,
-            "appointment_type": appointment_type,
-            "available_slots": available_slots,
-            "confirmation_id": f"APT-{random.randint(10000, 99999)}"
-        }
+        try:
+            employees = bot_data_pg.fetch_employees(company_id, limit=100)
+            
+            return {
+                "status": "success",
+                "bot": "Patient Scheduling",
+                "total_employees": len(employees),
+                "message": "Patient scheduling requires patients and appointments tables"
+            }
+        except Exception as e:
+            return {"status": "error", "bot": "Patient Scheduling", "message": f"Error: {str(e)}"}
 
 class MedicalRecordsBot(BotBase):
     name = "Medical Records"
@@ -711,17 +706,21 @@ class MedicalRecordsBot(BotBase):
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
-        patient_id = data.get("patient_id", "PAT-001")
+        company_id = data.get("company_id")
+        if not company_id or not bot_data_pg:
+            return {"status": "error", "bot": "Medical Records", "message": "Company ID required"}
         
-        return {
-            "status": "success",
-            "bot": "Medical Records",
-            "patient_id": patient_id,
-            "records_found": random.randint(5, 20),
-            "last_visit": (datetime.now() - timedelta(days=random.randint(1, 90))).strftime("%Y-%m-%d"),
-            "active_prescriptions": random.randint(0, 5),
-            "allergies": ["Penicillin"] if random.random() > 0.5 else []
-        }
+        try:
+            employees = bot_data_pg.fetch_employees(company_id, limit=100)
+            
+            return {
+                "status": "success",
+                "bot": "Medical Records",
+                "total_employees": len(employees),
+                "message": "Medical records requires patients and medical_records tables"
+            }
+        except Exception as e:
+            return {"status": "error", "bot": "Medical Records", "message": f"Error: {str(e)}"}
 
 class InsuranceClaimsBot(BotBase):
     name = "Insurance Claims"
@@ -731,18 +730,21 @@ class InsuranceClaimsBot(BotBase):
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
-        claim_id = data.get("claim_id", f"CLM-{random.randint(10000, 99999)}")
-        amount = data.get("amount", random.uniform(500, 5000))
+        company_id = data.get("company_id")
+        if not company_id or not bot_data_pg:
+            return {"status": "error", "bot": "Insurance Claims", "message": "Company ID required"}
         
-        return {
-            "status": "success",
-            "bot": "Insurance Claims",
-            "claim_id": claim_id,
-            "amount": round(amount, 2),
-            "claim_status": random.choice(["approved", "pending", "review_required"]),
-            "processing_time": f"{random.randint(1, 5)} days",
-            "coverage_percentage": random.choice([80, 90, 100])
-        }
+        try:
+            invoices = bot_data_pg.fetch_invoices(company_id, limit=100)
+            
+            return {
+                "status": "success",
+                "bot": "Insurance Claims",
+                "total_invoices": len(invoices),
+                "message": "Insurance claims requires insurance_claims table"
+            }
+        except Exception as e:
+            return {"status": "error", "bot": "Insurance Claims", "message": f"Error: {str(e)}"}
 
 class LabResultsBot(BotBase):
     name = "Lab Results"
@@ -752,19 +754,21 @@ class LabResultsBot(BotBase):
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
-        patient_id = data.get("patient_id", "PAT-001")
-        test_type = data.get("test_type", "Blood Work")
+        company_id = data.get("company_id")
+        if not company_id or not bot_data_pg:
+            return {"status": "error", "bot": "Lab Results", "message": "Company ID required"}
         
-        return {
-            "status": "success",
-            "bot": "Lab Results",
-            "patient_id": patient_id,
-            "test_type": test_type,
-            "result_id": f"LAB-{random.randint(10000, 99999)}",
-            "status": "completed",
-            "results_ready": True,
-            "abnormal_flags": random.randint(0, 2)
-        }
+        try:
+            products = bot_data_pg.fetch_products(company_id, limit=100)
+            
+            return {
+                "status": "success",
+                "bot": "Lab Results",
+                "total_products": len(products),
+                "message": "Lab results requires lab_tests and lab_results tables"
+            }
+        except Exception as e:
+            return {"status": "error", "bot": "Lab Results", "message": f"Error: {str(e)}"}
 
 class PrescriptionManagementBot(BotBase):
     name = "Prescription Management"
@@ -774,25 +778,21 @@ class PrescriptionManagementBot(BotBase):
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
-        patient_id = data.get("patient_id", "PAT-001")
+        company_id = data.get("company_id")
+        if not company_id or not bot_data_pg:
+            return {"status": "error", "bot": "Prescription Management", "message": "Company ID required"}
         
-        prescriptions = []
-        for i in range(random.randint(1, 4)):
-            prescriptions.append({
-                "medication": f"Medication {i+1}",
-                "dosage": f"{random.randint(50, 500)}mg",
-                "frequency": random.choice(["Daily", "Twice daily", "As needed"]),
-                "refills_remaining": random.randint(0, 5),
-                "expiry_date": (datetime.now() + timedelta(days=random.randint(30, 365))).strftime("%Y-%m-%d")
-            })
-        
-        return {
-            "status": "success",
-            "bot": "Prescription Management",
-            "patient_id": patient_id,
-            "active_prescriptions": prescriptions,
-            "refills_needed": sum(1 for p in prescriptions if p["refills_remaining"] < 2)
-        }
+        try:
+            products = bot_data_pg.fetch_products(company_id, limit=100)
+            
+            return {
+                "status": "success",
+                "bot": "Prescription Management",
+                "total_products": len(products),
+                "message": "Prescription management requires prescriptions table"
+            }
+        except Exception as e:
+            return {"status": "error", "bot": "Prescription Management", "message": f"Error: {str(e)}"}
 
 # ==================== RETAIL BOTS (6) ====================
 
@@ -804,25 +804,23 @@ class DemandForecastingBot(BotBase):
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
-        product = data.get("product", "Product A")
-        historical_data = data.get("historical_data", [100, 110, 105, 120, 115])
+        company_id = data.get("company_id")
+        if not company_id or not bot_data_pg:
+            return {"status": "error", "bot": "Demand Forecasting", "message": "Company ID required"}
         
-        avg = sum(historical_data) / len(historical_data) if historical_data else 100
-        forecast = []
-        for i in range(7):
-            forecast.append({
-                "date": (datetime.now() + timedelta(days=i+1)).strftime("%Y-%m-%d"),
-                "predicted_sales": int(avg * random.uniform(0.9, 1.1)),
-                "confidence": round(random.uniform(0.75, 0.95), 2)
-            })
-        
-        return {
-            "status": "success",
-            "bot": "Demand Forecasting",
-            "product": product,
-            "forecast": forecast,
-            "trend": "increasing" if forecast[-1]["predicted_sales"] > avg else "stable"
-        }
+        try:
+            sales_orders = bot_data_pg.fetch_sales_orders(company_id, limit=100)
+            products = bot_data_pg.fetch_products(company_id, limit=100)
+            
+            return {
+                "status": "success",
+                "bot": "Demand Forecasting",
+                "total_sales_orders": len(sales_orders),
+                "total_products": len(products),
+                "message": "Demand forecasting based on sales order history"
+            }
+        except Exception as e:
+            return {"status": "error", "bot": "Demand Forecasting", "message": f"Error: {str(e)}"}
 
 class PriceOptimizationBot(BotBase):
     name = "Price Optimization"
@@ -832,21 +830,23 @@ class PriceOptimizationBot(BotBase):
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
-        product = data.get("product", "Product A")
-        current_price = data.get("current_price", 100)
+        company_id = data.get("company_id")
+        if not company_id or not bot_data_pg:
+            return {"status": "error", "bot": "Price Optimization", "message": "Company ID required"}
         
-        optimal_price = current_price * random.uniform(0.95, 1.1)
-        expected_revenue = optimal_price * random.randint(80, 120)
-        
-        return {
-            "status": "success",
-            "bot": "Price Optimization",
-            "product": product,
-            "current_price": current_price,
-            "recommended_price": round(optimal_price, 2),
-            "expected_revenue_increase": round((optimal_price - current_price) / current_price * 100, 2),
-            "confidence": round(random.uniform(0.8, 0.95), 2)
-        }
+        try:
+            products = bot_data_pg.fetch_products(company_id, limit=100)
+            sales_orders = bot_data_pg.fetch_sales_orders(company_id, limit=100)
+            
+            return {
+                "status": "success",
+                "bot": "Price Optimization",
+                "total_products": len(products),
+                "total_sales_orders": len(sales_orders),
+                "message": "Price optimization based on product and sales data"
+            }
+        except Exception as e:
+            return {"status": "error", "bot": "Price Optimization", "message": f"Error: {str(e)}"}
 
 class CustomerSegmentationBot(BotBase):
     name = "Customer Segmentation"
@@ -856,21 +856,23 @@ class CustomerSegmentationBot(BotBase):
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
-        customers = data.get("customer_count", 1000)
+        company_id = data.get("company_id")
+        if not company_id or not bot_data_pg:
+            return {"status": "error", "bot": "Customer Segmentation", "message": "Company ID required"}
         
-        segments = [
-            {"name": "High Value", "count": int(customers * 0.2), "avg_spend": 1500, "retention": 0.85},
-            {"name": "Regular", "count": int(customers * 0.5), "avg_spend": 500, "retention": 0.7},
-            {"name": "Occasional", "count": int(customers * 0.3), "avg_spend": 150, "retention": 0.4}
-        ]
-        
-        return {
-            "status": "success",
-            "bot": "Customer Segmentation",
-            "total_customers": customers,
-            "segments": segments,
-            "recommendation": "Focus retention on High Value segment"
-        }
+        try:
+            customers = bot_data_pg.fetch_customers(company_id, limit=100)
+            sales_orders = bot_data_pg.fetch_sales_orders(company_id, limit=100)
+            
+            return {
+                "status": "success",
+                "bot": "Customer Segmentation",
+                "total_customers": len(customers),
+                "total_sales_orders": len(sales_orders),
+                "message": "Customer segmentation based on sales history"
+            }
+        except Exception as e:
+            return {"status": "error", "bot": "Customer Segmentation", "message": f"Error: {str(e)}"}
 
 class StorePerformanceBot(BotBase):
     name = "Store Performance"
@@ -880,19 +882,21 @@ class StorePerformanceBot(BotBase):
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
-        store_id = data.get("store_id", "STORE-001")
+        company_id = data.get("company_id")
+        if not company_id or not bot_data_pg:
+            return {"status": "error", "bot": "Store Performance", "message": "Company ID required"}
         
-        return {
-            "status": "success",
-            "bot": "Store Performance",
-            "store_id": store_id,
-            "daily_revenue": round(random.uniform(5000, 15000), 2),
-            "foot_traffic": random.randint(100, 500),
-            "conversion_rate": round(random.uniform(0.15, 0.35), 2),
-            "avg_basket_size": round(random.uniform(50, 150), 2),
-            "staff_efficiency": round(random.uniform(0.7, 0.95), 2),
-            "performance_grade": random.choice(["A", "B+", "B", "C"])
-        }
+        try:
+            sales_orders = bot_data_pg.fetch_sales_orders(company_id, limit=100)
+            
+            return {
+                "status": "success",
+                "bot": "Store Performance",
+                "total_sales_orders": len(sales_orders),
+                "message": "Store performance requires stores table"
+            }
+        except Exception as e:
+            return {"status": "error", "bot": "Store Performance", "message": f"Error: {str(e)}"}
 
 class LoyaltyProgramBot(BotBase):
     name = "Loyalty Program"
@@ -902,18 +906,21 @@ class LoyaltyProgramBot(BotBase):
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
-        customer_id = data.get("customer_id", "CUST-001")
+        company_id = data.get("company_id")
+        if not company_id or not bot_data_pg:
+            return {"status": "error", "bot": "Loyalty Program", "message": "Company ID required"}
         
-        return {
-            "status": "success",
-            "bot": "Loyalty Program",
-            "customer_id": customer_id,
-            "points_balance": random.randint(100, 5000),
-            "tier": random.choice(["Bronze", "Silver", "Gold", "Platinum"]),
-            "rewards_available": random.randint(2, 10),
-            "points_expiring": random.randint(0, 500),
-            "next_reward_at": random.randint(500, 1000)
-        }
+        try:
+            customers = bot_data_pg.fetch_customers(company_id, limit=100)
+            
+            return {
+                "status": "success",
+                "bot": "Loyalty Program",
+                "total_customers": len(customers),
+                "message": "Loyalty program requires loyalty_points table"
+            }
+        except Exception as e:
+            return {"status": "error", "bot": "Loyalty Program", "message": f"Error: {str(e)}"}
 
 class CustomerSupportBot(BotBase):
     name = "Customer Support"
@@ -923,23 +930,21 @@ class CustomerSupportBot(BotBase):
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
-        issue = data.get("issue", "General inquiry")
-        customer_id = data.get("customer_id", "CUST-001")
+        company_id = data.get("company_id")
+        if not company_id or not bot_data_pg:
+            return {"status": "error", "bot": "Customer Support", "message": "Company ID required"}
         
-        return {
-            "status": "success",
-            "bot": "Customer Support",
-            "ticket_id": f"TKT-{random.randint(10000, 99999)}",
-            "customer_id": customer_id,
-            "issue": issue,
-            "priority": random.choice(["low", "medium", "high"]),
-            "estimated_resolution": f"{random.randint(1, 48)} hours",
-            "suggested_solutions": [
-                "Check order status online",
-                "Contact support team",
-                "Visit nearest store"
-            ]
-        }
+        try:
+            customers = bot_data_pg.fetch_customers(company_id, limit=100)
+            
+            return {
+                "status": "success",
+                "bot": "Customer Support",
+                "total_customers": len(customers),
+                "message": "Customer support requires support_tickets table"
+            }
+        except Exception as e:
+            return {"status": "error", "bot": "Customer Support", "message": f"Error: {str(e)}"}
 
 # ==================== FINANCIAL/ACCOUNTING BOTS (12) ====================
 
