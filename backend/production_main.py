@@ -119,12 +119,28 @@ try:
 except Exception as e:
     print(f"⚠️ Financial API not loaded: {e}")
 
-# try:
-#     from app.api.gl import router as gl_router
-#     app.include_router(gl_router)
-#     print("✅ GL API loaded")
-# except Exception as e:
-#     print(f"⚠️ GL API not loaded: {e}")
+try:
+    from app.api.gl_pg import router as gl_router
+    app.include_router(gl_router)
+    print("✅ GL API loaded (PostgreSQL)")
+except Exception as e:
+    print(f"⚠️ GL API not loaded: {e}")
+
+try:
+    from app.api.erp_complete_pg import (
+        ar_router, banking_router, payroll_router,
+        sales_orders_router, quotes_router, ap_invoices_router, deliveries_router
+    )
+    app.include_router(ar_router)
+    app.include_router(banking_router)
+    app.include_router(payroll_router)
+    app.include_router(sales_orders_router)
+    app.include_router(quotes_router)
+    app.include_router(ap_invoices_router)
+    app.include_router(deliveries_router)
+    print("✅ Complete ERP API loaded (PostgreSQL): AR, Banking, Payroll, Line Items")
+except Exception as e:
+    print(f"⚠️ Complete ERP API not loaded: {e}")
 
 try:
     from app.api.crm import router as crm_router

@@ -5,12 +5,12 @@ Complete JWT authentication with database integration
 
 from fastapi import Depends, HTTPException, status, Request
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from passlib.context import CryptContext
+import bcrypt
 from datetime import datetime, timedelta
 from typing import Optional, Dict
 import jwt
 import os
-from database import (
+from database_auth_pg import (
     create_user, get_user_by_email, get_user_by_id, update_last_login,
     create_session, get_session_by_token, invalidate_session,
     create_organization, log_action
@@ -22,19 +22,19 @@ ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 REFRESH_TOKEN_EXPIRE_DAYS = 7
 
-# Password hashing
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
 # HTTP Bearer token security
 security = HTTPBearer()
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    """Verify password against hash"""
-    return pwd_context.verify(plain_password, hashed_password)
+    """Verify password against hash using bcrypt directly"""
+    try:
+        return bcrypt.checkpw(plain_password.encode('utf-8'), hashed_password.encode('utf-8'))
+    except Exception:
+        return False
 
 def get_password_hash(password: str) -> str:
     """Hash password with bcrypt"""
-    return pwd_context.hash(password)
+    return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
     """Create JWT access token"""
@@ -119,14 +119,7 @@ async def get_current_user(
             detail="Could not validate credentials"
         )
     
-    # Convert sub to integer (PyJWT requires sub to be string)
-    try:
-        user_id = int(user_id_str)
-    except (ValueError, TypeError):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid user ID in token"
-        )
+    user_id = user_id_str
     
     # Check if session is still active
     session = get_session_by_token(token)
@@ -330,14 +323,7 @@ def refresh_access_token(refresh_token: str) -> Dict:
             detail="Could not validate credentials"
         )
     
-    # Convert sub to integer (PyJWT requires sub to be string)
-    try:
-        user_id = int(user_id_str)
-    except (ValueError, TypeError):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid user ID in token"
-        )
+    user_id = user_id_str
     
     # Get user
     user = get_user_by_id(user_id)
