@@ -162,6 +162,47 @@ except Exception as e:
     print(f"⚠️ Complete Line Items API not loaded: {e}")
 
 try:
+    from app.api.order_to_cash_pg import (
+        quotes_router as otc_quotes_router,
+        sales_orders_router as otc_sales_orders_router,
+        deliveries_router as otc_deliveries_router,
+        invoices_router as otc_invoices_router
+    )
+    app.include_router(otc_quotes_router)
+    app.include_router(otc_sales_orders_router)
+    app.include_router(otc_deliveries_router)
+    app.include_router(otc_invoices_router)
+    print("✅ Order-to-Cash API loaded (PostgreSQL): Quotes, Sales Orders, Deliveries, Invoices with full CRUD")
+except Exception as e:
+    print(f"⚠️ Order-to-Cash API not loaded: {e}")
+
+try:
+    from app.api.master_data_pg import (
+        customers_router,
+        suppliers_router,
+        products_router
+    )
+    app.include_router(customers_router)
+    app.include_router(suppliers_router)
+    app.include_router(products_router)
+    print("✅ Master Data API loaded (PostgreSQL): Customers, Suppliers, Products with full CRUD")
+except Exception as e:
+    print(f"⚠️ Master Data API not loaded: {e}")
+
+try:
+    from app.api.procure_to_pay_pg import (
+        purchase_orders_router as p2p_purchase_orders_router,
+        goods_receipts_router as p2p_goods_receipts_router,
+        ap_invoices_router as p2p_ap_invoices_router
+    )
+    app.include_router(p2p_purchase_orders_router)
+    app.include_router(p2p_goods_receipts_router)
+    app.include_router(p2p_ap_invoices_router)
+    print("✅ Procure-to-Pay API loaded (PostgreSQL): Purchase Orders, Goods Receipts, AP Invoices with full CRUD")
+except Exception as e:
+    print(f"⚠️ Procure-to-Pay API not loaded: {e}")
+
+try:
     from app.api.crm import router as crm_router
     app.include_router(crm_router)
     print("✅ CRM API loaded")
