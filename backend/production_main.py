@@ -1265,25 +1265,27 @@ class FinancialReportingBot(BotBase):
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
-        report_type = data.get("report_type", "balance_sheet")
-        period = data.get("period", datetime.now().strftime("%Y-%m"))
+        company_id = data.get("company_id")
+        if not company_id or not bot_data_pg:
+            return {"status": "error", "bot": "Financial Reporting", "message": "Company ID required"}
         
-        revenue = random.uniform(100000, 500000)
-        expenses = revenue * random.uniform(0.6, 0.8)
-        profit = revenue - expenses
-        
-        return {
-            "status": "success",
-            "bot": "Financial Reporting",
-            "report_type": report_type,
-            "period": period,
-            "report_id": f"RPT-{random.randint(10000, 99999)}",
-            "revenue": round(revenue, 2),
-            "expenses": round(expenses, 2),
-            "net_profit": round(profit, 2),
-            "profit_margin": round((profit / revenue) * 100, 2),
-            "generated_at": datetime.now().isoformat()
-        }
+        try:
+            accounts = bot_data_pg.fetch_chart_of_accounts(company_id)
+            revenue_accounts = [a for a in accounts if a.get('account_type') == 'revenue']
+            expense_accounts = [a for a in accounts if a.get('account_type') == 'expense']
+            
+            return {
+                "status": "success",
+                "bot": "Financial Reporting",
+                "total_accounts": len(accounts),
+                "revenue_accounts": len(revenue_accounts),
+                "expense_accounts": len(expense_accounts),
+                "report_type": data.get("report_type", "balance_sheet"),
+                "period": data.get("period", datetime.now().strftime("%Y-%m")),
+                "generated_at": datetime.now().isoformat()
+            }
+        except Exception as e:
+            return {"status": "error", "bot": "Financial Reporting", "message": f"Error: {str(e)}"}
 
 class TaxFilingBot(BotBase):
     name = "Tax Filing (SARS)"
@@ -1293,25 +1295,27 @@ class TaxFilingBot(BotBase):
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
-        tax_period = data.get("period", datetime.now().strftime("%Y-%m"))
-        tax_type = data.get("tax_type", "VAT")
+        company_id = data.get("company_id")
+        if not company_id or not bot_data_pg:
+            return {"status": "error", "bot": "Tax Filing (SARS)", "message": "Company ID required"}
         
-        taxable_amount = random.uniform(50000, 500000)
-        tax_rate = 0.15 if tax_type == "VAT" else 0.28
-        tax_due = taxable_amount * tax_rate
-        
-        return {
-            "status": "success",
-            "bot": "Tax Filing (SARS)",
-            "tax_type": tax_type,
-            "period": tax_period,
-            "submission_id": f"SARS-{random.randint(100000, 999999)}",
-            "taxable_amount": round(taxable_amount, 2),
-            "tax_rate": tax_rate,
-            "tax_due": round(tax_due, 2),
-            "filing_status": "submitted",
-            "due_date": (datetime.now() + timedelta(days=30)).strftime("%Y-%m-%d")
-        }
+        try:
+            invoices = bot_data_pg.fetch_invoices(company_id, limit=100)
+            total_sales = sum(float(inv.get('total_amount', 0)) for inv in invoices)
+            vat_output = total_sales * 0.15
+            
+            return {
+                "status": "success",
+                "bot": "Tax Filing (SARS)",
+                "tax_type": data.get("tax_type", "VAT"),
+                "period": data.get("period", datetime.now().strftime("%Y-%m")),
+                "total_sales": round(total_sales, 2),
+                "vat_output": round(vat_output, 2),
+                "filing_status": "ready",
+                "due_date": (datetime.now() + timedelta(days=30)).strftime("%Y-%m-%d")
+            }
+        except Exception as e:
+            return {"status": "error", "bot": "Tax Filing (SARS)", "message": f"Error: {str(e)}"}
 
 class AssetManagementBot(BotBase):
     name = "Asset Management"
@@ -1321,27 +1325,27 @@ class AssetManagementBot(BotBase):
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
-        asset_id = data.get("asset_id", f"ASSET-{random.randint(1000, 9999)}")
+        company_id = data.get("company_id")
+        if not company_id or not bot_data_pg:
+            return {"status": "error", "bot": "Asset Management", "message": "Company ID required"}
         
-        purchase_value = random.uniform(10000, 500000)
-        age_years = random.uniform(0, 10)
-        useful_life = 10
-        annual_depreciation = purchase_value / useful_life
-        accumulated_depreciation = annual_depreciation * age_years
-        book_value = purchase_value - accumulated_depreciation
-        
-        return {
-            "status": "success",
-            "bot": "Asset Management",
-            "asset_id": asset_id,
-            "asset_name": data.get("asset_name", "Equipment"),
-            "purchase_value": round(purchase_value, 2),
-            "purchase_date": (datetime.now() - timedelta(days=int(age_years * 365))).strftime("%Y-%m-%d"),
-            "accumulated_depreciation": round(accumulated_depreciation, 2),
-            "book_value": round(book_value, 2),
-            "annual_depreciation": round(annual_depreciation, 2),
-            "useful_life_remaining": round(useful_life - age_years, 1)
-        }
+        try:
+            assets = bot_data_pg.fetch_fixed_assets(company_id, limit=100)
+            total_value = sum(float(a.get('acquisition_cost', 0)) for a in assets)
+            
+            return {
+                "status": "success",
+                "bot": "Asset Management",
+                "total_assets": len(assets),
+                "total_acquisition_cost": round(total_value, 2),
+                "recent_assets": [{
+                    "asset_name": a.get('asset_name'),
+                    "acquisition_cost": float(a.get('acquisition_cost', 0)),
+                    "acquisition_date": a.get('acquisition_date').isoformat() if a.get('acquisition_date') else None
+                } for a in assets[:5]]
+            }
+        except Exception as e:
+            return {"status": "error", "bot": "Asset Management", "message": f"Error: {str(e)}"}
 
 class CashFlowForecastingBot(BotBase):
     name = "Cash Flow Forecasting"
@@ -1351,33 +1355,30 @@ class CashFlowForecastingBot(BotBase):
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
-        current_balance = data.get("current_balance", random.uniform(50000, 500000))
+        company_id = data.get("company_id")
+        if not company_id or not bot_data_pg:
+            return {"status": "error", "bot": "Cash Flow Forecasting", "message": "Company ID required"}
         
-        forecast = []
-        balance = current_balance
-        for i in range(12):
-            inflows = random.uniform(50000, 150000)
-            outflows = random.uniform(40000, 140000)
-            net_change = inflows - outflows
-            balance += net_change
+        try:
+            bank_accounts = bot_data_pg.fetch_bank_accounts(company_id, limit=10)
+            ar_invoices = bot_data_pg.fetch_outstanding_ar_invoices(company_id, limit=100)
+            ap_bills = bot_data_pg.fetch_ap_bills_due(company_id, days_ahead=30, limit=100)
             
-            forecast.append({
-                "month": (datetime.now() + timedelta(days=30*i)).strftime("%Y-%m"),
-                "inflows": round(inflows, 2),
-                "outflows": round(outflows, 2),
-                "net_change": round(net_change, 2),
-                "projected_balance": round(balance, 2)
-            })
-        
-        return {
-            "status": "success",
-            "bot": "Cash Flow Forecasting",
-            "current_balance": round(current_balance, 2),
-            "forecast_period": "12 months",
-            "forecast": forecast,
-            "lowest_balance": round(min(f["projected_balance"] for f in forecast), 2),
-            "cash_runway_months": len([f for f in forecast if f["projected_balance"] > 0])
-        }
+            current_balance = sum(float(ba.get('current_balance', 0)) for ba in bank_accounts)
+            expected_inflows = sum(float(inv.get('total_amount', 0)) for inv in ar_invoices)
+            expected_outflows = sum(float(bill.get('total_amount', 0)) for bill in ap_bills)
+            
+            return {
+                "status": "success",
+                "bot": "Cash Flow Forecasting",
+                "current_balance": round(current_balance, 2),
+                "expected_inflows": round(expected_inflows, 2),
+                "expected_outflows": round(expected_outflows, 2),
+                "projected_balance": round(current_balance + expected_inflows - expected_outflows, 2),
+                "forecast_period": "30 days"
+            }
+        except Exception as e:
+            return {"status": "error", "bot": "Cash Flow Forecasting", "message": f"Error: {str(e)}"}
 
 class BudgetPlanningBot(BotBase):
     name = "Budget Planning"
@@ -1387,26 +1388,24 @@ class BudgetPlanningBot(BotBase):
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
-        department = data.get("department", "Operations")
-        period = data.get("period", datetime.now().strftime("%Y"))
+        company_id = data.get("company_id")
+        if not company_id or not bot_data_pg:
+            return {"status": "error", "bot": "Budget Planning", "message": "Company ID required"}
         
-        categories = ["Salaries", "Operations", "Marketing", "IT", "Travel"]
-        budget_items = []
-        total_budget = 0
-        total_spent = 0
-        
-        for category in categories:
-            budgeted = random.uniform(10000, 100000)
-            spent = budgeted * random.uniform(0.3, 1.1)
-            budget_items.append({
-                "category": category,
-                "budgeted": round(budgeted, 2),
-                "spent": round(spent, 2),
-                "variance": round(spent - budgeted, 2),
-                "variance_pct": round(((spent - budgeted) / budgeted) * 100, 2)
-            })
-            total_budget += budgeted
-            total_spent += spent
+        try:
+            accounts = bot_data_pg.fetch_chart_of_accounts(company_id)
+            expense_accounts = [a for a in accounts if a.get('account_type') == 'expense']
+            
+            return {
+                "status": "success",
+                "bot": "Budget Planning",
+                "department": data.get("department", "Operations"),
+                "period": data.get("period", datetime.now().strftime("%Y")),
+                "expense_accounts": len(expense_accounts),
+                "message": "Budget planning requires budget tables"
+            }
+        except Exception as e:
+            return {"status": "error", "bot": "Budget Planning", "message": f"Error: {str(e)}"}
         
         return {
             "status": "success",
