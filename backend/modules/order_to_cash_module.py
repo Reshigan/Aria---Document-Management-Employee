@@ -1188,6 +1188,47 @@ async def delete_quote(
         db.rollback()
         raise HTTPException(status_code=400, detail=f"Error deleting quote: {str(e)}")
 
+@router.post("/quotes/{quote_id}/cancel")
+async def cancel_quote(
+    quote_id: UUID,
+    reason: Optional[str] = None,
+    company_id: UUID = Depends(get_company_id),
+    db: Session = Depends(get_db)
+):
+    """Cancel a quote (only allowed for draft or approved status)"""
+    try:
+        check_query = """
+            SELECT status, quote_number FROM quotes
+            WHERE id = :quote_id AND company_id = :company_id
+        """
+        result = db.execute(text(check_query), {"quote_id": str(quote_id), "company_id": str(company_id)})
+        row = result.fetchone()
+        if not row:
+            raise HTTPException(status_code=404, detail="Quote not found")
+        
+        status, quote_number = row[0], row[1]
+        if status not in ['draft', 'approved']:
+            raise HTTPException(status_code=400, detail=f"Cannot cancel quote with status: {status}")
+        
+        update_query = """
+            UPDATE quotes
+            SET status = 'cancelled', updated_at = CURRENT_TIMESTAMP
+            WHERE id = :quote_id AND company_id = :company_id
+        """
+        db.execute(text(update_query), {"quote_id": str(quote_id), "company_id": str(company_id)})
+        db.commit()
+        
+        return {
+            "message": f"Quote {quote_number} cancelled successfully",
+            "quote_id": str(quote_id),
+            "reason": reason
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=400, detail=f"Error cancelling quote: {str(e)}")
+
 @router.post("/quotes/{quote_id}/approve")
 async def approve_quote(
     quote_id: UUID,
@@ -1902,6 +1943,47 @@ async def get_delivery(
         signed_document_url=row[13], signed_at=row[14], created_by=row[15],
         created_at=row[16], lines=lines
     )
+
+@router.post("/deliveries/{delivery_id}/cancel")
+async def cancel_delivery(
+    delivery_id: UUID,
+    reason: Optional[str] = None,
+    company_id: UUID = Depends(get_company_id),
+    db: Session = Depends(get_db)
+):
+    """Cancel a delivery (only allowed for draft or pending status)"""
+    try:
+        check_query = """
+            SELECT status, delivery_number FROM deliveries
+            WHERE id = :delivery_id AND company_id = :company_id
+        """
+        result = db.execute(text(check_query), {"delivery_id": str(delivery_id), "company_id": str(company_id)})
+        row = result.fetchone()
+        if not row:
+            raise HTTPException(status_code=404, detail="Delivery not found")
+        
+        status, delivery_number = row[0], row[1]
+        if status not in ['draft', 'pending']:
+            raise HTTPException(status_code=400, detail=f"Cannot cancel delivery with status: {status}")
+        
+        update_query = """
+            UPDATE deliveries
+            SET status = 'cancelled', updated_at = CURRENT_TIMESTAMP
+            WHERE id = :delivery_id AND company_id = :company_id
+        """
+        db.execute(text(update_query), {"delivery_id": str(delivery_id), "company_id": str(company_id)})
+        db.commit()
+        
+        return {
+            "message": f"Delivery {delivery_number} cancelled successfully",
+            "delivery_id": str(delivery_id),
+            "reason": reason
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=400, detail=f"Error cancelling delivery: {str(e)}")
 
 @router.post("/deliveries/{delivery_id}/ship")
 async def ship_delivery(

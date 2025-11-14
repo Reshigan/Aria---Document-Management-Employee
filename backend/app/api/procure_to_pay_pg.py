@@ -229,6 +229,102 @@ async def create_purchase_order(
         cursor.close()
         conn.close()
 
+@purchase_orders_router.post("/{po_id}/cancel")
+async def cancel_purchase_order(
+    po_id: str = Path(...),
+    cancel_data: Dict[str, Any] = Body(default={}),
+    current_user: Dict = Depends(get_current_user)
+):
+    """Cancel a purchase order (only allowed for draft or approved status)"""
+    conn = get_connection()
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    
+    try:
+        company_id = current_user.get('company_id')
+        if not company_id:
+            raise HTTPException(status_code=400, detail="User must be associated with a company")
+        
+        cursor.execute("SELECT status, po_number FROM purchase_orders WHERE id = %s AND company_id = %s", (po_id, company_id))
+        result = cursor.fetchone()
+        
+        if not result:
+            raise HTTPException(status_code=404, detail="Purchase order not found")
+        
+        status, po_number = result['status'], result['po_number']
+        if status not in ['draft', 'approved']:
+            raise HTTPException(status_code=400, detail=f"Cannot cancel purchase order with status: {status}")
+        
+        cursor.execute("UPDATE purchase_orders SET status = 'cancelled', updated_at = NOW() WHERE id = %s AND company_id = %s", (po_id, company_id))
+        conn.commit()
+        
+        return {
+            "message": f"Purchase order {po_number} cancelled successfully",
+            "po_id": po_id,
+            "reason": cancel_data.get('reason')
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        conn.rollback()
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+    finally:
+        cursor.close()
+        conn.close()
+
+@purchase_orders_router.patch("/{po_id}")
+async def update_purchase_order(
+    po_id: str = Path(...),
+    update_data: Dict[str, Any] = Body(...),
+    current_user: Dict = Depends(get_current_user)
+):
+    """Update a purchase order (only allowed in draft status)"""
+    conn = get_connection()
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    
+    try:
+        company_id = current_user.get('company_id')
+        if not company_id:
+            raise HTTPException(status_code=400, detail="User must be associated with a company")
+        
+        cursor.execute("SELECT status FROM purchase_orders WHERE id = %s AND company_id = %s", (po_id, company_id))
+        result = cursor.fetchone()
+        
+        if not result:
+            raise HTTPException(status_code=404, detail="Purchase order not found")
+        
+        if result['status'] != 'draft':
+            raise HTTPException(status_code=400, detail="Can only update draft purchase orders")
+        
+        update_fields = []
+        params = []
+        
+        if 'order_date' in update_data:
+            update_fields.append("order_date = %s")
+            params.append(update_data['order_date'])
+        if 'expected_delivery_date' in update_data:
+            update_fields.append("expected_delivery_date = %s")
+            params.append(update_data['expected_delivery_date'])
+        if 'notes' in update_data:
+            update_fields.append("notes = %s")
+            params.append(update_data['notes'])
+        
+        if update_fields:
+            update_fields.append("updated_at = NOW()")
+            params.extend([po_id, company_id])
+            query = f"UPDATE purchase_orders SET {', '.join(update_fields)} WHERE id = %s AND company_id = %s"
+            cursor.execute(query, params)
+            conn.commit()
+        
+        return {"message": "Purchase order updated successfully"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        conn.rollback()
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+    finally:
+        cursor.close()
+        conn.close()
+
 @purchase_orders_router.post("/{po_id}/approve")
 async def approve_purchase_order(
     po_id: str = Path(...),
@@ -410,6 +506,48 @@ async def get_goods_receipt(
     except HTTPException:
         raise
     except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+    finally:
+        cursor.close()
+        conn.close()
+
+@goods_receipts_router.post("/{receipt_id}/cancel")
+async def cancel_goods_receipt(
+    receipt_id: str = Path(...),
+    cancel_data: Dict[str, Any] = Body(default={}),
+    current_user: Dict = Depends(get_current_user)
+):
+    """Cancel a goods receipt (only allowed for draft or pending status)"""
+    conn = get_connection()
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    
+    try:
+        company_id = current_user.get('company_id')
+        if not company_id:
+            raise HTTPException(status_code=400, detail="User must be associated with a company")
+        
+        cursor.execute("SELECT status, receipt_number FROM goods_receipts WHERE id = %s AND company_id = %s", (receipt_id, company_id))
+        result = cursor.fetchone()
+        
+        if not result:
+            raise HTTPException(status_code=404, detail="Goods receipt not found")
+        
+        status, receipt_number = result['status'], result['receipt_number']
+        if status not in ['draft', 'pending']:
+            raise HTTPException(status_code=400, detail=f"Cannot cancel goods receipt with status: {status}")
+        
+        cursor.execute("UPDATE goods_receipts SET status = 'cancelled', updated_at = NOW() WHERE id = %s AND company_id = %s", (receipt_id, company_id))
+        conn.commit()
+        
+        return {
+            "message": f"Goods receipt {receipt_number} cancelled successfully",
+            "receipt_id": receipt_id,
+            "reason": cancel_data.get('reason')
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        conn.rollback()
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
     finally:
         cursor.close()

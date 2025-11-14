@@ -1,6 +1,6 @@
 import { DocumentDetail, DocumentDetailConfig } from '../../../components/DocumentDetail/DocumentDetail';
 import api from '../../../lib/api';
-import { Check, FileText, X } from 'lucide-react';
+import { Check, FileText, XCircle } from 'lucide-react';
 
 const config: DocumentDetailConfig = {
   title: 'Quote',
@@ -74,7 +74,7 @@ const config: DocumentDetailConfig = {
     ]
   },
   actions: {
-    canEdit: false,
+    canEdit: true,
     canDelete: false,
     customActions: [
       {
@@ -103,6 +103,26 @@ const config: DocumentDetailConfig = {
             window.location.href = `/sales-orders/${response.data.id}`;
           } catch (err: any) {
             alert(err.response?.data?.detail || 'Failed to convert quote');
+          }
+        }
+      },
+      {
+        label: 'Cancel',
+        icon: XCircle,
+        color: '#ef4444',
+        condition: (doc) => doc.status === 'draft' || doc.status === 'approved',
+        onClick: async (doc, reload) => {
+          const reason = prompt('Enter cancellation reason (optional):');
+          if (reason === null) return;
+          
+          try {
+            await api.post(`/erp/order-to-cash/quotes/${doc.id}/cancel`, {
+              reason: reason || 'User cancelled'
+            });
+            alert(`Quote ${doc.quote_number} cancelled successfully`);
+            reload();
+          } catch (err: any) {
+            alert(err.response?.data?.detail || 'Failed to cancel quote');
           }
         }
       }

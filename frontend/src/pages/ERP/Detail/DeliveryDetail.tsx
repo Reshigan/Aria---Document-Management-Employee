@@ -1,6 +1,6 @@
 import { DocumentDetail, DocumentDetailConfig } from '../../../components/DocumentDetail/DocumentDetail';
 import api from '../../../lib/api';
-import { Truck } from 'lucide-react';
+import { Truck, XCircle } from 'lucide-react';
 
 const config: DocumentDetailConfig = {
   title: 'Delivery',
@@ -34,7 +34,7 @@ const config: DocumentDetailConfig = {
     ]
   },
   actions: {
-    canEdit: false,
+    canEdit: true,
     canDelete: false,
     customActions: [
       {
@@ -48,6 +48,26 @@ const config: DocumentDetailConfig = {
             reload();
           } catch (err: any) {
             alert(err.response?.data?.detail || 'Failed to ship delivery');
+          }
+        }
+      },
+      {
+        label: 'Cancel',
+        icon: XCircle,
+        color: '#ef4444',
+        condition: (doc) => doc.status === 'draft' || doc.status === 'pending',
+        onClick: async (doc, reload) => {
+          const reason = prompt('Enter cancellation reason (optional):');
+          if (reason === null) return;
+          
+          try {
+            await api.post(`/erp/order-to-cash/deliveries/${doc.id}/cancel`, {
+              reason: reason || 'User cancelled'
+            });
+            alert(`Delivery ${doc.delivery_number} cancelled successfully`);
+            reload();
+          } catch (err: any) {
+            alert(err.response?.data?.detail || 'Failed to cancel delivery');
           }
         }
       }

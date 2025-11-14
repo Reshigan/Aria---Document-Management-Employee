@@ -1,6 +1,6 @@
 import { DocumentDetail, DocumentDetailConfig } from '../../../components/DocumentDetail/DocumentDetail';
 import api from '../../../lib/api';
-import { Check, Package } from 'lucide-react';
+import { Check, Package, XCircle } from 'lucide-react';
 
 const config: DocumentDetailConfig = {
   title: 'Purchase Order',
@@ -74,7 +74,7 @@ const config: DocumentDetailConfig = {
     ]
   },
   actions: {
-    canEdit: false,
+    canEdit: true,
     canDelete: false,
     customActions: [
       {
@@ -105,6 +105,26 @@ const config: DocumentDetailConfig = {
             reload();
           } catch (err: any) {
             alert(err.response?.data?.detail || 'Failed to create goods receipt');
+          }
+        }
+      },
+      {
+        label: 'Cancel',
+        icon: XCircle,
+        color: '#ef4444',
+        condition: (doc) => doc.status === 'draft' || doc.status === 'approved',
+        onClick: async (doc, reload) => {
+          const reason = prompt('Enter cancellation reason (optional):');
+          if (reason === null) return;
+          
+          try {
+            await api.post(`/erp/procure-to-pay/purchase-orders/${doc.id}/cancel`, {
+              reason: reason || 'User cancelled'
+            });
+            alert(`Purchase order ${doc.po_number} cancelled successfully`);
+            reload();
+          } catch (err: any) {
+            alert(err.response?.data?.detail || 'Failed to cancel purchase order');
           }
         }
       }
