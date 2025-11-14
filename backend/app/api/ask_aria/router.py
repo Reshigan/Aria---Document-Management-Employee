@@ -15,13 +15,19 @@ from ...services.ask_aria.sap_mapping import SAPMappingService
 from ...services.ask_aria.template_service import TemplateService
 from ...services.ask_aria.ollama_client import ollama_client
 
+try:
+    from auth_integrated import get_current_user
+    USE_REAL_AUTH = True
+except ImportError:
+    USE_REAL_AUTH = False
+
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/ask-aria", tags=["Ask Aria"])
 
 DB_CONNECTION_STRING = os.getenv(
-    "DATABASE_URL",
-    "postgresql://aria_user:AriaSecure2025!@localhost/aria_erp"
+    "DATABASE_URL_PG",
+    os.getenv("DATABASE_URL", "postgresql://aria_user:AriaSecure2025!@localhost/aria_erp")
 )
 
 orchestrator = AskAriaOrchestrator(DB_CONNECTION_STRING)
@@ -73,12 +79,15 @@ class SAPMappingResponse(BaseModel):
     sap_data: Dict[str, Any]
 
 
-def get_current_user():
-    """Mock authentication - replace with real auth"""
+def get_current_user_fallback():
+    """Fallback authentication when real auth not available"""
     return {
         "user_id": "8e88001e-9d74-4b5a-a45b-66d126bee6d5",
         "company_id": "b0598135-52fd-4f67-ac56-8f0237e6355e"
     }
+
+if not USE_REAL_AUTH:
+    get_current_user = get_current_user_fallback
 
 
 @router.get("/health")
