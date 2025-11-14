@@ -385,3 +385,103 @@ async def delete_account(
     finally:
         cursor.close()
         conn.close()
+
+@journal_entries_router.put("/{entry_id}")
+async def update_journal_entry(
+    entry_id: str = Path(...),
+    entry_data: Dict[str, Any] = Body(...),
+    current_user: Dict = Depends(get_current_user)
+):
+    """Update a journal entry (only allowed for draft status)"""
+    conn = get_connection()
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    
+    try:
+        company_id = current_user.get('company_id')
+        if not company_id:
+            raise HTTPException(status_code=400, detail="User must be associated with a company")
+        
+        cursor.execute("SELECT status FROM journal_entries WHERE id = %s AND company_id = %s", (entry_id, company_id))
+        result = cursor.fetchone()
+        
+        if not result:
+            raise HTTPException(status_code=404, detail="Journal entry not found")
+        
+        if result['status'] != 'draft':
+            raise HTTPException(status_code=400, detail=f"Cannot update journal entry with status: {result['status']}")
+        
+        lines = entry_data.get('lines', [])
+        if lines:
+            total_debit = sum(float(line.get('debit_amount', 0)) for line in lines)
+            total_credit = sum(float(line.get('credit_amount', 0)) for line in lines)
+            if abs(total_debit - total_credit) > 0.01:
+                raise HTTPException(status_code=400, detail=f"Debits must equal credits")
+            
+            cursor.execute("DELETE FROM journal_entry_lines WHERE journal_entry_id = %s", (entry_id,))
+            
+            for idx, line in enumerate(lines, 1):
+                cursor.execute("""
+                    INSERT INTO journal_entry_lines (id, journal_entry_id, line_number, account_id, description, debit_amount, credit_amount, created_at, updated_at)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, NOW(), NOW())
+                """, (str(uuid.uuid4()), entry_id, idx, line.get('account_id'), line.get('description'),
+                      line.get('debit_amount', 0), line.get('credit_amount', 0)))
+        
+        cursor.execute("""
+            UPDATE journal_entries
+            SET entry_date = %s, description = %s, reference = %s, updated_at = NOW()
+            WHERE id = %s AND company_id = %s
+        """, (entry_data.get('entry_date'), entry_data.get('description'), 
+              entry_data.get('reference'), entry_id, company_id))
+        
+        conn.commit()
+        return {"message": "Journal entry updated successfully"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        conn.rollback()
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+    finally:
+        cursor.close()
+        conn.close()
+
+@journal_entries_router.post("/{entry_id}/cancel")
+async def cancel_journal_entry(
+    entry_id: str = Path(...),
+    cancel_data: Dict[str, Any] = Body(default={}),
+    current_user: Dict = Depends(get_current_user)
+):
+    """Cancel a journal entry (only allowed for draft status)"""
+    conn = get_connection()
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    
+    try:
+        company_id = current_user.get('company_id')
+        if not company_id:
+            raise HTTPException(status_code=400, detail="User must be associated with a company")
+        
+        cursor.execute("SELECT status, entry_number FROM journal_entries WHERE id = %s AND company_id = %s", (entry_id, company_id))
+        result = cursor.fetchone()
+        
+        if not result:
+            raise HTTPException(status_code=404, detail="Journal entry not found")
+        
+        status, entry_number = result['status'], result['entry_number']
+        if status not in ['draft']:
+            raise HTTPException(status_code=400, detail=f"Cannot cancel journal entry with status: {status}")
+        
+        cursor.execute("UPDATE journal_entries SET status = 'cancelled', updated_at = NOW() WHERE id = %s AND company_id = %s", (entry_id, company_id))
+        conn.commit()
+        
+        return {
+            "message": f"Journal entry {entry_number} cancelled successfully",
+            "entry_id": entry_id,
+            "reason": cancel_data.get('reason')
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        conn.rollback()
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+    finally:
+        cursor.close()
+        conn.close()
