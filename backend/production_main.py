@@ -2181,31 +2181,21 @@ class RFQManagementBot(BotBase):
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
-        item_description = data.get("item", "Product/Service")
+        company_id = data.get("company_id")
+        if not company_id or not bot_data_pg:
+            return {"status": "error", "bot": "RFQ Management", "message": "Company ID required"}
         
-        quotes = []
-        for i in range(random.randint(3, 6)):
-            quotes.append({
-                "supplier": f"Supplier {i+1}",
-                "quote_amount": round(random.uniform(10000, 50000), 2),
-                "lead_time_days": random.randint(7, 60),
-                "quality_score": round(random.uniform(3.0, 5.0), 1),
-                "payment_terms": random.choice(["Net 30", "Net 60", "Net 90"])
-            })
-        
-        best_quote = min(quotes, key=lambda x: x["quote_amount"])
-        
-        return {
-            "status": "success",
-            "bot": "RFQ Management",
-            "rfq_number": f"RFQ-{random.randint(10000, 99999)}",
-            "item_description": item_description,
-            "quotes_received": len(quotes),
-            "quotes": quotes,
-            "recommended_supplier": best_quote["supplier"],
-            "recommended_amount": best_quote["quote_amount"],
-            "estimated_savings": round(max(q["quote_amount"] for q in quotes) - best_quote["quote_amount"], 2)
-        }
+        try:
+            suppliers = bot_data_pg.fetch_suppliers(company_id, limit=100)
+            
+            return {
+                "status": "success",
+                "bot": "RFQ Management",
+                "total_suppliers": len(suppliers),
+                "message": "RFQ management requires rfq and rfq_responses tables"
+            }
+        except Exception as e:
+            return {"status": "error", "bot": "RFQ Management", "message": f"Error: {str(e)}"}
 
 class GoodsReceiptBot(BotBase):
     name = "Goods Receipt"
@@ -2259,28 +2249,24 @@ class SupplierEvaluationBot(BotBase):
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
-        supplier = data.get("supplier", "Supplier Co.")
+        company_id = data.get("company_id")
+        if not company_id or not bot_data_pg:
+            return {"status": "error", "bot": "Supplier Evaluation", "message": "Company ID required"}
         
-        criteria = {
-            "Quality": round(random.uniform(70, 95), 2),
-            "Delivery Performance": round(random.uniform(75, 98), 2),
-            "Pricing": round(random.uniform(65, 90), 2),
-            "Responsiveness": round(random.uniform(70, 95), 2),
-            "Financial Stability": round(random.uniform(75, 95), 2)
-        }
-        
-        overall_score = sum(criteria.values()) / len(criteria)
-        
-        return {
-            "status": "success",
-            "bot": "Supplier Evaluation",
-            "supplier": supplier,
-            "evaluation_period": datetime.now().strftime("%Y-Q%s" % ((datetime.now().month-1)//3 + 1)),
-            "criteria_scores": criteria,
-            "overall_score": round(overall_score, 2),
-            "rating": "preferred" if overall_score > 85 else "approved" if overall_score > 70 else "conditional",
-            "recommendation": "increase_business" if overall_score > 85 else "maintain" if overall_score > 70 else "reduce_business"
-        }
+        try:
+            suppliers = bot_data_pg.fetch_suppliers(company_id, limit=100)
+            purchase_orders = bot_data_pg.fetch_open_purchase_orders(company_id, limit=100)
+            
+            return {
+                "status": "success",
+                "bot": "Supplier Evaluation",
+                "total_suppliers": len(suppliers),
+                "total_purchase_orders": len(purchase_orders),
+                "evaluation_period": datetime.now().strftime("%Y-Q%s" % ((datetime.now().month-1)//3 + 1)),
+                "message": "Supplier evaluation requires supplier_evaluations table"
+            }
+        except Exception as e:
+            return {"status": "error", "bot": "Supplier Evaluation", "message": f"Error: {str(e)}"}
 
 class ProcurementContractBot(BotBase):
     name = "Procurement Contract"
@@ -2290,25 +2276,21 @@ class ProcurementContractBot(BotBase):
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
-        supplier = data.get("supplier", "Supplier Co.")
+        company_id = data.get("company_id")
+        if not company_id or not bot_data_pg:
+            return {"status": "error", "bot": "Procurement Contract", "message": "Company ID required"}
         
-        start_date = datetime.now() - timedelta(days=random.randint(0, 365))
-        end_date = start_date + timedelta(days=random.randint(365, 1095))
-        days_remaining = (end_date - datetime.now()).days
-        
-        return {
-            "status": "success",
-            "bot": "Procurement Contract",
-            "contract_id": f"PC-{random.randint(10000, 99999)}",
-            "supplier": supplier,
-            "contract_value": round(random.uniform(100000, 1000000), 2),
-            "start_date": start_date.strftime("%Y-%m-%d"),
-            "end_date": end_date.strftime("%Y-%m-%d"),
-            "days_remaining": max(0, days_remaining),
-            "spend_to_date": round(random.uniform(50000, 500000), 2),
-            "renewal_status": "due_soon" if 0 < days_remaining < 90 else "expired" if days_remaining < 0 else "active",
-            "compliance_status": "compliant"
-        }
+        try:
+            suppliers = bot_data_pg.fetch_suppliers(company_id, limit=100)
+            
+            return {
+                "status": "success",
+                "bot": "Procurement Contract",
+                "total_suppliers": len(suppliers),
+                "message": "Procurement contract management requires procurement_contracts table"
+            }
+        except Exception as e:
+            return {"status": "error", "bot": "Procurement Contract", "message": f"Error: {str(e)}"}
 
 class SpendAnalyticsBot(BotBase):
     name = "Spend Analytics"
@@ -2318,35 +2300,24 @@ class SpendAnalyticsBot(BotBase):
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
-        period = data.get("period", datetime.now().strftime("%Y-%m"))
+        company_id = data.get("company_id")
+        if not company_id or not bot_data_pg:
+            return {"status": "error", "bot": "Spend Analytics", "message": "Company ID required"}
         
-        categories = ["Raw Materials", "Services", "Equipment", "IT", "Office Supplies"]
-        spend_by_category = []
-        total_spend = 0
-        
-        for category in categories:
-            amount = random.uniform(50000, 500000)
-            total_spend += amount
-            spend_by_category.append({
-                "category": category,
-                "amount": round(amount, 2),
-                "supplier_count": random.randint(3, 15),
-                "transaction_count": random.randint(10, 100)
-            })
-        
-        # Add percentages
-        for item in spend_by_category:
-            item["percentage"] = round((item["amount"] / total_spend) * 100, 2)
-        
-        return {
-            "status": "success",
-            "bot": "Spend Analytics",
-            "period": period,
-            "total_spend": round(total_spend, 2),
-            "spend_by_category": spend_by_category,
-            "top_category": max(spend_by_category, key=lambda x: x["amount"])["category"],
-            "savings_opportunity": round(total_spend * random.uniform(0.05, 0.15), 2),
-            "supplier_concentration_risk": random.choice(["low", "medium", "high"])
+        try:
+            purchase_orders = bot_data_pg.fetch_open_purchase_orders(company_id, limit=100)
+            suppliers = bot_data_pg.fetch_suppliers(company_id, limit=100)
+            
+            total_spend = sum(float(po.get('total_amount', 0)) for po in purchase_orders)
+            
+            return {
+                "status": "success",
+                "bot": "Spend Analytics",
+                "period": data.get("period", datetime.now().strftime("%Y-%m")),
+                "total_spend": round(total_spend, 2),
+                "total_suppliers": len(suppliers),
+                "total_purchase_orders": len(purchase_orders),
+                "message": "Detailed spend analytics requires spend_categories table"
         }
 
 # ==================== DOCUMENT MANAGEMENT BOTS (6) ====================
