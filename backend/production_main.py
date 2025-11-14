@@ -2318,7 +2318,9 @@ class SpendAnalyticsBot(BotBase):
                 "total_suppliers": len(suppliers),
                 "total_purchase_orders": len(purchase_orders),
                 "message": "Detailed spend analytics requires spend_categories table"
-        }
+            }
+        except Exception as e:
+            return {"status": "error", "bot": "Spend Analytics", "message": f"Error: {str(e)}"}
 
 # ==================== DOCUMENT MANAGEMENT BOTS (6) ====================
 
