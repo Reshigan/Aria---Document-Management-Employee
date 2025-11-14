@@ -2481,9 +2481,6 @@ class EmailBot(BotBase):
             }
         except Exception as e:
             return {"status": "error", "bot": "Email Bot", "message": f"Error: {str(e)}"}
-            "opened": random.choice([True, False]),
-            "clicked": random.choice([True, False])
-        }
 
 class SMSBot(BotBase):
     name = "SMS Bot"
@@ -2493,19 +2490,21 @@ class SMSBot(BotBase):
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
-        phone = data.get("phone", "+27123456789")
-        message = data.get("message", "Automated notification")
+        company_id = data.get("company_id")
+        if not company_id or not bot_data_pg:
+            return {"status": "error", "bot": "SMS Bot", "message": "Company ID required"}
         
-        return {
-            "status": "success",
-            "bot": "SMS Bot",
-            "message_id": f"SMS-{random.randint(100000, 999999)}",
-            "phone": phone,
-            "message_length": len(message),
-            "sent_at": datetime.now().isoformat(),
-            "delivery_status": "delivered",
-            "cost": round(random.uniform(0.5, 2.0), 2)
-        }
+        try:
+            customers = bot_data_pg.fetch_customers(company_id, limit=100)
+            
+            return {
+                "status": "success",
+                "bot": "SMS Bot",
+                "total_customers": len(customers),
+                "message": "SMS bot requires sms_messages table"
+            }
+        except Exception as e:
+            return {"status": "error", "bot": "SMS Bot", "message": f"Error: {str(e)}"}
 
 class WhatsAppBot(BotBase):
     name = "WhatsApp Bot"
