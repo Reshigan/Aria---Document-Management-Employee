@@ -143,6 +143,25 @@ except Exception as e:
     print(f"⚠️ Complete ERP API not loaded: {e}")
 
 try:
+    from app.api.line_items_complete_pg import (
+        quotes_line_items_router, ar_invoice_line_items_router, ap_invoice_line_items_router,
+        delivery_line_items_router, purchase_order_router, goods_receipt_router,
+        journal_entry_router, budget_router, price_list_router
+    )
+    app.include_router(quotes_line_items_router)
+    app.include_router(ar_invoice_line_items_router)
+    app.include_router(ap_invoice_line_items_router)
+    app.include_router(delivery_line_items_router)
+    app.include_router(purchase_order_router)
+    app.include_router(goods_receipt_router)
+    app.include_router(journal_entry_router)
+    app.include_router(budget_router)
+    app.include_router(price_list_router)
+    print("✅ Complete Line Items API loaded (PostgreSQL): All 9 document types with full CRUD")
+except Exception as e:
+    print(f"⚠️ Complete Line Items API not loaded: {e}")
+
+try:
     from app.api.crm import router as crm_router
     app.include_router(crm_router)
     print("✅ CRM API loaded")
