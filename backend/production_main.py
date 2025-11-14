@@ -1864,9 +1864,9 @@ class CustomerOnboardingBot(BotBase):
                     "customer_name": c.get('customer_name'),
                     "created_at": c.get('created_at').isoformat() if c.get('created_at') else None
                 } for c in recent_customers[:5]]
-            "estimated_completion": (datetime.now() + timedelta(days=random.randint(7, 30))).strftime("%Y-%m-%d"),
-            "assigned_success_manager": f"manager{random.randint(1, 5)}@company.com"
-        }
+            }
+        except Exception as e:
+            return {"status": "error", "bot": "Customer Onboarding", "message": f"Error: {str(e)}"}
 
 # ==================== HR/PEOPLE BOTS (8) ====================
 
