@@ -24,7 +24,7 @@ except ImportError:
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter(prefix="/ask-aria", tags=["Ask Aria"])
+router = APIRouter(prefix="/api/ask-aria", tags=["Ask Aria"])
 
 DB_CONNECTION_STRING = os.getenv(
     "DATABASE_URL_PG",
