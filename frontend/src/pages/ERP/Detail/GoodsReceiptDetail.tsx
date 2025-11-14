@@ -1,6 +1,6 @@
 import { DocumentDetail, DocumentDetailConfig } from '../../../components/DocumentDetail/DocumentDetail';
 import api from '../../../lib/api';
-import { Package } from 'lucide-react';
+import { Package, XCircle } from 'lucide-react';
 
 const config: DocumentDetailConfig = {
   title: 'Goods Receipt',
@@ -34,7 +34,7 @@ const config: DocumentDetailConfig = {
     ]
   },
   actions: {
-    canEdit: false,
+    canEdit: true,
     canDelete: false,
     customActions: [
       {
@@ -48,6 +48,26 @@ const config: DocumentDetailConfig = {
             reload();
           } catch (err: any) {
             alert(err.response?.data?.detail || 'Failed to post goods receipt');
+          }
+        }
+      },
+      {
+        label: 'Cancel',
+        icon: XCircle,
+        color: '#ef4444',
+        condition: (doc) => doc.status === 'draft' || doc.status === 'pending',
+        onClick: async (doc, reload) => {
+          const reason = prompt('Enter cancellation reason (optional):');
+          if (reason === null) return;
+          
+          try {
+            await api.post(`/erp/procure-to-pay/goods-receipts/${doc.id}/cancel`, {
+              reason: reason || 'User cancelled'
+            });
+            alert(`Goods receipt ${doc.receipt_number} cancelled successfully`);
+            reload();
+          } catch (err: any) {
+            alert(err.response?.data?.detail || 'Failed to cancel goods receipt');
           }
         }
       }
