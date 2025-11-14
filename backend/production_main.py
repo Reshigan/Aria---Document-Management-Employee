@@ -203,6 +203,120 @@ except Exception as e:
     print(f"⚠️ Procure-to-Pay API not loaded: {e}")
 
 try:
+    from app.api.general_ledger_pg import (
+        journal_entries_router,
+        chart_of_accounts_router
+    )
+    app.include_router(journal_entries_router)
+    app.include_router(chart_of_accounts_router)
+    print("✅ General Ledger API loaded (PostgreSQL): Journal Entries, Chart of Accounts with full CRUD")
+except Exception as e:
+    print(f"⚠️ General Ledger API not loaded: {e}")
+
+try:
+    from app.api.banking_pg import (
+        bank_accounts_router,
+        bank_transactions_router
+    )
+    app.include_router(bank_accounts_router)
+    app.include_router(bank_transactions_router)
+    print("✅ Banking API loaded (PostgreSQL): Bank Accounts, Transactions with full CRUD")
+except Exception as e:
+    print(f"⚠️ Banking API not loaded: {e}")
+
+try:
+    from app.api.hr_payroll_pg import (
+        employees_router,
+        payroll_runs_router,
+        leave_requests_router
+    )
+    app.include_router(employees_router)
+    app.include_router(payroll_runs_router)
+    app.include_router(leave_requests_router)
+    print("✅ HR & Payroll API loaded (PostgreSQL): Employees, Payroll Runs, Leave Requests with full CRUD")
+except Exception as e:
+    print(f"⚠️ HR & Payroll API not loaded: {e}")
+
+try:
+    from app.api.manufacturing_pg import (
+        work_orders_router,
+        production_runs_router
+    )
+    app.include_router(work_orders_router)
+    app.include_router(production_runs_router)
+    print("✅ Manufacturing API loaded (PostgreSQL): Work Orders, Production Runs with full CRUD")
+except Exception as e:
+    print(f"⚠️ Manufacturing API not loaded: {e}")
+
+try:
+    from app.api.inventory_pg import (
+        warehouses_router,
+        stock_movements_router,
+        stock_on_hand_router
+    )
+    app.include_router(warehouses_router)
+    app.include_router(stock_movements_router)
+    app.include_router(stock_on_hand_router)
+    print("✅ Inventory/WMS API loaded (PostgreSQL): Warehouses, Stock Movements, Stock On Hand with full CRUD")
+except Exception as e:
+    print(f"⚠️ Inventory/WMS API not loaded: {e}")
+
+try:
+    from app.api.crm_pg import (
+        leads_router,
+        opportunities_router
+    )
+    app.include_router(leads_router)
+    app.include_router(opportunities_router)
+    print("✅ CRM API loaded (PostgreSQL): Leads, Opportunities with full CRUD")
+except Exception as e:
+    print(f"⚠️ CRM API not loaded: {e}")
+
+try:
+    from app.api.field_service_pg import (
+        service_requests_router,
+        technicians_router
+    )
+    app.include_router(service_requests_router)
+    app.include_router(technicians_router)
+    print("✅ Field Service API loaded (PostgreSQL): Service Requests, Technicians with full CRUD")
+except Exception as e:
+    print(f"⚠️ Field Service API not loaded: {e}")
+
+try:
+    from app.api.fixed_assets_pg import (
+        fixed_assets_router,
+        depreciation_runs_router
+    )
+    app.include_router(fixed_assets_router)
+    app.include_router(depreciation_runs_router)
+    print("✅ Fixed Assets API loaded (PostgreSQL): Assets, Depreciation Runs with full CRUD")
+except Exception as e:
+    print(f"⚠️ Fixed Assets API not loaded: {e}")
+
+try:
+    from app.api.budgets_pricelists_pg import (
+        budgets_router,
+        price_lists_router
+    )
+    app.include_router(budgets_router)
+    app.include_router(price_lists_router)
+    print("✅ Budgets & Price Lists API loaded (PostgreSQL): Budgets, Price Lists with full CRUD")
+except Exception as e:
+    print(f"⚠️ Budgets & Price Lists API not loaded: {e}")
+
+try:
+    from app.api.payments_pg import (
+        customer_payments_router,
+        payment_allocations_router
+    )
+    app.include_router(customer_payments_router)
+    app.include_router(payment_allocations_router)
+    print("✅ Payments API loaded (PostgreSQL): Customer Payments, Payment Allocations with full CRUD")
+except Exception as e:
+    print(f"⚠️ Payments API not loaded: {e}")
+
+try:
     from app.api.crm import router as crm_router
     app.include_router(crm_router)
     print("✅ CRM API loaded")
