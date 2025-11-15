@@ -73,7 +73,7 @@ class Permission:
 def get_user_permissions(user_id: str, company_id: str, db: Session) -> List[str]:
     """Get all permissions for a user in a company"""
     query = text("""
-        SELECT DISTINCT p.permission_name
+        SELECT DISTINCT CONCAT(LOWER(p.module), ':', p.action) as permission
         FROM user_company_roles ucr
         JOIN role_permissions rp ON ucr.role_id = rp.role_id
         JOIN permissions p ON rp.permission_id = p.id
