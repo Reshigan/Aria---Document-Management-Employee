@@ -42,6 +42,9 @@ import SalesOrderDetail from './pages/ERP/Detail/SalesOrderDetail';
 import DeliveryDetail from './pages/ERP/Detail/DeliveryDetail';
 import PurchaseOrderDetail from './pages/ERP/Detail/PurchaseOrderDetail';
 import GoodsReceiptDetail from './pages/ERP/Detail/GoodsReceiptDetail';
+import DataImport from './pages/Admin/DataImport';
+import RoleDashboard from './pages/Admin/RoleDashboard';
+import RBACManagement from './pages/Admin/RBACManagement';
 import './styles/design-system.css';
 
 function App() {
@@ -138,6 +141,9 @@ function App() {
           <Route path="/admin/company" element={<CompanySettings />} />
           <Route path="/admin/bots" element={<BotConfiguration />} />
           <Route path="/admin/users" element={<UserManagement />} />
+          <Route path="/admin/data-import" element={<DataImport />} />
+          <Route path="/admin/dashboard" element={<RoleDashboard />} />
+          <Route path="/admin/rbac" element={<RBACManagement />} />
         </Routes>
       </MainLayout>
     </BrowserRouter>
