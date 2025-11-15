@@ -13,6 +13,7 @@ from datetime import datetime, timedelta
 import uuid
 
 from core.auth import get_current_user
+from core.rbac import require_permission, Permission
 
 DATABASE_URL = os.getenv("DATABASE_URL_PG") or os.getenv("DATABASE_URL")
 if not DATABASE_URL:
@@ -866,7 +867,7 @@ async def get_invoice(
 async def cancel_invoice(
     invoice_id: str = Path(...),
     cancel_data: Dict[str, Any] = Body(default={}),
-    current_user: Dict = Depends(get_current_user)
+    current_user: Dict = Depends(require_permission(Permission.AR_DELETE))
 ):
     """Cancel an AR invoice (only allowed for draft or approved status)"""
     conn = get_connection()

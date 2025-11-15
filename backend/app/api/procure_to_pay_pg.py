@@ -13,6 +13,7 @@ from datetime import datetime
 import uuid
 
 from core.auth import get_current_user
+from core.rbac import require_permission, Permission
 
 DATABASE_URL = os.getenv("DATABASE_URL_PG") or os.getenv("DATABASE_URL")
 if not DATABASE_URL:
@@ -233,7 +234,7 @@ async def create_purchase_order(
 async def cancel_purchase_order(
     po_id: str = Path(...),
     cancel_data: Dict[str, Any] = Body(default={}),
-    current_user: Dict = Depends(get_current_user)
+    current_user: Dict = Depends(require_permission(Permission.PURCHASE_DELETE))
 ):
     """Cancel a purchase order (only allowed for draft or approved status)"""
     conn = get_connection()
@@ -745,7 +746,7 @@ async def get_ap_invoice(
 async def cancel_ap_invoice(
     invoice_id: str = Path(...),
     cancel_data: Dict[str, Any] = Body(default={}),
-    current_user: Dict = Depends(get_current_user)
+    current_user: Dict = Depends(require_permission(Permission.AP_DELETE))
 ):
     """Cancel an AP invoice (only allowed for draft or approved status)"""
     conn = get_connection()
