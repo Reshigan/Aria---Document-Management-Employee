@@ -1,6 +1,11 @@
 import { DocumentDetail, DocumentDetailConfig } from '../../../components/DocumentDetail/DocumentDetail';
 import api from '../../../lib/api';
 import { Check, Truck, FileText, XCircle } from 'lucide-react';
+import { CommentSection } from '../../../components/Comments/CommentSection';
+import { AttachmentUpload } from '../../../components/DocumentAttachments/AttachmentUpload';
+import { ApprovalPanel } from '../../../components/ApprovalWorkflow/ApprovalPanel';
+import { useParams } from 'react-router-dom';
+import { useState } from 'react';
 
 const config: DocumentDetailConfig = {
   title: 'Sales Order',
@@ -166,5 +171,67 @@ const config: DocumentDetailConfig = {
 };
 
 export default function SalesOrderDetail() {
-  return <DocumentDetail config={config} />;
+  const { id } = useParams<{ id: string }>();
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  const handleStatusChange = () => {
+    setRefreshKey(prev => prev + 1);
+  };
+
+  return (
+    <div>
+      <DocumentDetail config={config} key={refreshKey} />
+      
+      {id && (
+        <div style={{ padding: '2rem', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
+          {/* Left Column: Comments and Activity */}
+          <div style={{
+            background: 'white',
+            borderRadius: '0.5rem',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+            padding: '1.5rem'
+          }}>
+            <h2 style={{ fontSize: '1.25rem', fontWeight: '600', marginBottom: '1rem' }}>
+              Comments & Activity
+            </h2>
+            <CommentSection documentType="sales_orders" documentId={id} />
+          </div>
+
+          {/* Right Column: Attachments and Approval */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+            {/* Attachments */}
+            <div style={{
+              background: 'white',
+              borderRadius: '0.5rem',
+              boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+              padding: '1.5rem'
+            }}>
+              <h2 style={{ fontSize: '1.25rem', fontWeight: '600', marginBottom: '1rem' }}>
+                Attachments
+              </h2>
+              <AttachmentUpload documentType="sales_orders" documentId={id} />
+            </div>
+
+            {/* Approval Workflow */}
+            <div style={{
+              background: 'white',
+              borderRadius: '0.5rem',
+              boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+              padding: '1.5rem'
+            }}>
+              <h2 style={{ fontSize: '1.25rem', fontWeight: '600', marginBottom: '1rem' }}>
+                Approval Workflow
+              </h2>
+              <ApprovalPanel 
+                documentType="sales_orders" 
+                documentId={id} 
+                currentStatus="draft"
+                onStatusChange={handleStatusChange}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }

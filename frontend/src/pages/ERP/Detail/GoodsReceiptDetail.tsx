@@ -76,5 +76,40 @@ const config: DocumentDetailConfig = {
 };
 
 export default function GoodsReceiptDetail() {
-  return <DocumentDetail config={config} />;
+  const { id } = useParams<{ id: string }>();
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  return (
+    <div>
+      <DocumentDetail config={config} key={refreshKey} />
+      
+      {id && (
+        <div style={{ padding: '2rem', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
+          <div style={{
+            background: 'white',
+            borderRadius: '0.5rem',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+            padding: '1.5rem'
+          }}>
+            <h2 style={{ fontSize: '1.25rem', fontWeight: '600', marginBottom: '1rem' }}>
+              Comments & Activity
+            </h2>
+            <CommentSection documentType="goods_receipts" documentId={id} />
+          </div>
+
+          <div style={{
+            background: 'white',
+            borderRadius: '0.5rem',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+            padding: '1.5rem'
+          }}>
+            <h2 style={{ fontSize: '1.25rem', fontWeight: '600', marginBottom: '1rem' }}>
+              Attachments
+            </h2>
+            <AttachmentUpload documentType="goods_receipts" documentId={id} />
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }
