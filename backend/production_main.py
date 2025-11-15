@@ -441,12 +441,17 @@ except Exception as e:
 
 try:
     from app.api.ask_aria.router import router as ask_aria_router
-from app.api.data_import_pg import router as data_import_router
     app.include_router(ask_aria_router)
-    app.include_router(data_import_router)
     print("✅ Ask Aria Conversational AI loaded")
 except Exception as e:
     print(f"⚠️ Ask Aria not loaded: {e}")
+
+try:
+    from app.api.data_import_pg import router as data_import_router
+    app.include_router(data_import_router)
+    print("✅ Data Import API loaded")
+except Exception as e:
+    print(f"⚠️ Data Import API not loaded: {e}")
 
 # try:
 #     from api.gateway.routers.aria import router as aria_router
@@ -3438,3 +3443,13 @@ async def startup_event():
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000, workers=4)
+
+@app.get("/api/health")
+async def api_health():
+    """Health check endpoint at /api/health"""
+    return {
+        "status": "healthy",
+        "version": "3.0.0",
+        "bots": len(ALL_BOTS),
+        "erp_modules": len(ERP_MODULES)
+    }

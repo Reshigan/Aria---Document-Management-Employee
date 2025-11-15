@@ -485,3 +485,77 @@ async def cancel_journal_entry(
     finally:
         cursor.close()
         conn.close()
+
+@journal_entries_router.post("/{entry_id}/reverse")
+async def reverse_journal_entry(
+    entry_id: str = Path(...),
+    reverse_data: Dict[str, Any] = Body(default={}),
+    current_user: Dict = Depends(get_current_user)
+):
+    """Reverse a posted journal entry by creating a reversing entry"""
+    conn = get_connection()
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    
+    try:
+        company_id = current_user.get('company_id')
+        user_email = current_user.get('email')
+        if not company_id:
+            raise HTTPException(status_code=400, detail="User must be associated with a company")
+        
+        cursor.execute("""
+            SELECT * FROM journal_entries
+            WHERE id = %s AND company_id = %s
+        """, (entry_id, company_id))
+        
+        original_entry = cursor.fetchone()
+        if not original_entry:
+            raise HTTPException(status_code=404, detail="Journal entry not found")
+        
+        if original_entry['status'] != 'posted':
+            raise HTTPException(status_code=400, detail=f"Can only reverse posted journal entries")
+        
+        cursor.execute("""
+            SELECT * FROM journal_entry_lines
+            WHERE journal_entry_id = %s
+            ORDER BY line_number
+        """, (entry_id,))
+        
+        original_lines = cursor.fetchall()
+        
+        cursor.execute("SELECT COALESCE(MAX(CAST(SUBSTRING(entry_number FROM 'JE-([0-9]+)') AS INTEGER)), 0) + 1 as next_num FROM journal_entries WHERE company_id = %s", (company_id,))
+        next_num = cursor.fetchone()['next_num']
+        entry_number = f"JE-{next_num:05d}"
+        
+        reversing_entry_id = str(uuid.uuid4())
+        cursor.execute("""
+            INSERT INTO journal_entries (id, company_id, entry_number, entry_date, description, status, reference, created_by, posted_by, posted_at, created_at, updated_at)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, NOW(), NOW(), NOW())
+            RETURNING id, entry_number
+        """, (reversing_entry_id, company_id, entry_number, reverse_data.get('entry_date', datetime.now().date()),
+              f"REVERSAL: {original_entry['description']}", 'posted', f"REV-{original_entry['entry_number']}", 
+              user_email, user_email))
+        
+        result = cursor.fetchone()
+        
+        for idx, line in enumerate(original_lines, 1):
+            cursor.execute("""
+                INSERT INTO journal_entry_lines (id, journal_entry_id, line_number, account_code, description, debit_amount, credit_amount, created_at, updated_at)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, NOW(), NOW())
+            """, (str(uuid.uuid4()), reversing_entry_id, idx, line['account_code'], 
+                  f"REVERSAL: {line.get('description', '')}", line['credit_amount'], line['debit_amount']))
+        
+        conn.commit()
+        return {
+            'message': f"Journal entry reversed successfully",
+            'original_entry_id': entry_id,
+            'reversing_entry_id': str(result['id']),
+            'reversing_entry_number': result['entry_number']
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        conn.rollback()
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+    finally:
+        cursor.close()
+        conn.close()

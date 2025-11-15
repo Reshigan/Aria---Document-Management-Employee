@@ -65,20 +65,20 @@ class CashFlowResponse(BaseModel):
     closing_cash: Decimal
 
 
-def get_account_balance(db: Session, tenant_id: int, account_code: str, from_date: date, to_date: date) -> Decimal:
+def get_account_balance(db: Session, company_id: str, account_code: str, from_date: date, to_date: date) -> Decimal:
     """Get account balance for a period"""
     query = text("""
         SELECT COALESCE(SUM(debit_amount - credit_amount), 0) as balance
         FROM journal_entry_lines jel
         JOIN journal_entries je ON jel.journal_entry_id = je.id
-        WHERE je.tenant_id = :tenant_id
+        WHERE je.company_id = :company_id
         AND jel.account_code = :account_code
         AND je.entry_date BETWEEN :from_date AND :to_date
-        AND je.status = 'POSTED'
+        AND LOWER(je.status) = 'posted'
     """)
     
     result = db.execute(query, {
-        "tenant_id": tenant_id,
+        "company_id": str(company_id),
         "account_code": account_code,
         "from_date": from_date,
         "to_date": to_date
@@ -86,19 +86,19 @@ def get_account_balance(db: Session, tenant_id: int, account_code: str, from_dat
     
     return Decimal(str(result[0])) if result else Decimal("0")
 
-def get_accounts_by_type(db: Session, tenant_id: int, account_type: str) -> List[Dict[str, Any]]:
+def get_accounts_by_type(db: Session, company_id: str, account_type: str) -> List[Dict[str, Any]]:
     """Get all accounts of a specific type"""
     query = text("""
         SELECT account_code, account_name, account_type, parent_account_code
         FROM chart_of_accounts
-        WHERE tenant_id = :tenant_id
+        WHERE company_id = :company_id
         AND account_type = :account_type
         AND is_active = true
         ORDER BY account_code
     """)
     
     result = db.execute(query, {
-        "tenant_id": tenant_id,
+        "company_id": str(company_id),
         "account_type": account_type
     }).fetchall()
     
@@ -120,24 +120,28 @@ def get_trial_balance(
     current_user: User = Depends(get_current_user)
 ):
     """Get trial balance report"""
+    company_id = getattr(current_user, 'company_id', None)
+    if not company_id:
+        raise HTTPException(status_code=400, detail="User must be associated with a company")
+    
     query = text("""
-        SELECT coa.account_code, coa.account_name, coa.account_type,
+        SELECT coa.code as account_code, coa.name as account_name, coa.account_type,
                COALESCE(SUM(jel.debit_amount), 0) as total_debits,
                COALESCE(SUM(jel.credit_amount), 0) as total_credits
         FROM chart_of_accounts coa
-        LEFT JOIN journal_entry_lines jel ON coa.account_code = jel.account_code
+        LEFT JOIN journal_entry_lines jel ON coa.code = jel.account_code
         LEFT JOIN journal_entries je ON jel.journal_entry_id = je.id
-        WHERE coa.tenant_id = :tenant_id
+        WHERE coa.company_id = :company_id
         AND coa.is_active = true
         AND (je.entry_date IS NULL OR je.entry_date <= :as_of_date)
-        AND (je.status IS NULL OR je.status = 'POSTED')
-        GROUP BY coa.account_code, coa.account_name, coa.account_type
+        AND (je.status IS NULL OR LOWER(je.status) = 'posted')
+        GROUP BY coa.code, coa.name, coa.account_type
         HAVING COALESCE(SUM(jel.debit_amount), 0) != 0 OR COALESCE(SUM(jel.credit_amount), 0) != 0
-        ORDER BY coa.account_code
+        ORDER BY coa.code
     """)
     
     result = db.execute(query, {
-        "tenant_id": current_user.tenant_id,
+        "company_id": str(company_id),
         "as_of_date": as_of_date
     }).fetchall()
     
@@ -173,31 +177,42 @@ def get_trial_balance(
 
 @router.get("/profit-and-loss")
 def get_profit_and_loss(
-    from_date: date = Query(...),
-    to_date: date = Query(...),
+    from_date: date = Query(None),
+    to_date: date = Query(None),
+    start_date: date = Query(None),
+    end_date: date = Query(None),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
     """Get profit and loss statement"""
+    company_id = getattr(current_user, 'company_id', None)
+    if not company_id:
+        raise HTTPException(status_code=400, detail="User must be associated with a company")
+    
+    start = from_date or start_date
+    end = to_date or end_date
+    if not start or not end:
+        raise HTTPException(status_code=400, detail="Date range required")
+    
     revenue_query = text("""
-        SELECT coa.account_code, coa.account_name,
+        SELECT coa.code as account_code, coa.name as account_name,
                COALESCE(SUM(jel.credit_amount - jel.debit_amount), 0) as amount
         FROM chart_of_accounts coa
-        LEFT JOIN journal_entry_lines jel ON coa.account_code = jel.account_code
+        LEFT JOIN journal_entry_lines jel ON coa.code = jel.account_code
         LEFT JOIN journal_entries je ON jel.journal_entry_id = je.id
-        WHERE coa.tenant_id = :tenant_id
-        AND coa.account_code LIKE '4%'
+        WHERE coa.company_id = :company_id
+        AND coa.code LIKE '4%'
         AND je.entry_date BETWEEN :from_date AND :to_date
-        AND je.status = 'POSTED'
-        GROUP BY coa.account_code, coa.account_name
+        AND LOWER(je.status) = 'posted'
+        GROUP BY coa.code, coa.name
         HAVING COALESCE(SUM(jel.credit_amount - jel.debit_amount), 0) != 0
-        ORDER BY coa.account_code
+        ORDER BY coa.code
     """)
     
     revenue_result = db.execute(revenue_query, {
-        "tenant_id": current_user.tenant_id,
-        "from_date": from_date,
-        "to_date": to_date
+        "company_id": str(company_id),
+        "from_date": start,
+        "to_date": end
     }).fetchall()
     
     revenue_items = []
@@ -212,22 +227,22 @@ def get_profit_and_loss(
         total_revenue += amount
     
     cogs_query = text("""
-        SELECT coa.account_code, coa.account_name,
+        SELECT coa.code, coa.name,
                COALESCE(SUM(jel.debit_amount - jel.credit_amount), 0) as amount
         FROM chart_of_accounts coa
-        LEFT JOIN journal_entry_lines jel ON coa.account_code = jel.account_code
+        LEFT JOIN journal_entry_lines jel ON coa.code = jel.account_code
         LEFT JOIN journal_entries je ON jel.journal_entry_id = je.id
-        WHERE coa.tenant_id = :tenant_id
-        AND coa.account_code LIKE '5%'
+        WHERE coa.company_id = :company_id
+        AND coa.code LIKE '5%'
         AND je.entry_date BETWEEN :from_date AND :to_date
-        AND je.status = 'POSTED'
-        GROUP BY coa.account_code, coa.account_name
+        AND LOWER(je.status) = 'posted'
+        GROUP BY coa.code, coa.name
         HAVING COALESCE(SUM(jel.debit_amount - jel.credit_amount), 0) != 0
-        ORDER BY coa.account_code
+        ORDER BY coa.code
     """)
     
     cogs_result = db.execute(cogs_query, {
-        "tenant_id": current_user.tenant_id,
+        "company_id": getattr(current_user, 'company_id', None),
         "from_date": from_date,
         "to_date": to_date
     }).fetchall()
@@ -246,22 +261,22 @@ def get_profit_and_loss(
     gross_profit = total_revenue - total_cogs
     
     opex_query = text("""
-        SELECT coa.account_code, coa.account_name,
+        SELECT coa.code, coa.name,
                COALESCE(SUM(jel.debit_amount - jel.credit_amount), 0) as amount
         FROM chart_of_accounts coa
-        LEFT JOIN journal_entry_lines jel ON coa.account_code = jel.account_code
+        LEFT JOIN journal_entry_lines jel ON coa.code = jel.account_code
         LEFT JOIN journal_entries je ON jel.journal_entry_id = je.id
-        WHERE coa.tenant_id = :tenant_id
-        AND coa.account_code LIKE '6%'
+        WHERE coa.company_id = :company_id
+        AND coa.code LIKE '6%'
         AND je.entry_date BETWEEN :from_date AND :to_date
-        AND je.status = 'POSTED'
-        GROUP BY coa.account_code, coa.account_name
+        AND LOWER(je.status) = 'posted'
+        GROUP BY coa.code, coa.name
         HAVING COALESCE(SUM(jel.debit_amount - jel.credit_amount), 0) != 0
-        ORDER BY coa.account_code
+        ORDER BY coa.code
     """)
     
     opex_result = db.execute(opex_query, {
-        "tenant_id": current_user.tenant_id,
+        "company_id": getattr(current_user, 'company_id', None),
         "from_date": from_date,
         "to_date": to_date
     }).fetchall()
@@ -280,22 +295,22 @@ def get_profit_and_loss(
     operating_profit = gross_profit - total_opex
     
     other_income_query = text("""
-        SELECT coa.account_code, coa.account_name,
+        SELECT coa.code, coa.name,
                COALESCE(SUM(jel.credit_amount - jel.debit_amount), 0) as amount
         FROM chart_of_accounts coa
-        LEFT JOIN journal_entry_lines jel ON coa.account_code = jel.account_code
+        LEFT JOIN journal_entry_lines jel ON coa.code = jel.account_code
         LEFT JOIN journal_entries je ON jel.journal_entry_id = je.id
-        WHERE coa.tenant_id = :tenant_id
-        AND coa.account_code LIKE '7%'
+        WHERE coa.company_id = :company_id
+        AND coa.code LIKE '7%'
         AND je.entry_date BETWEEN :from_date AND :to_date
-        AND je.status = 'POSTED'
-        GROUP BY coa.account_code, coa.account_name
+        AND LOWER(je.status) = 'posted'
+        GROUP BY coa.code, coa.name
         HAVING COALESCE(SUM(jel.credit_amount - jel.debit_amount), 0) != 0
-        ORDER BY coa.account_code
+        ORDER BY coa.code
     """)
     
     other_income_result = db.execute(other_income_query, {
-        "tenant_id": current_user.tenant_id,
+        "company_id": getattr(current_user, 'company_id', None),
         "from_date": from_date,
         "to_date": to_date
     }).fetchall()
@@ -312,22 +327,22 @@ def get_profit_and_loss(
         total_other_income += amount
     
     other_expenses_query = text("""
-        SELECT coa.account_code, coa.account_name,
+        SELECT coa.code, coa.name,
                COALESCE(SUM(jel.debit_amount - jel.credit_amount), 0) as amount
         FROM chart_of_accounts coa
-        LEFT JOIN journal_entry_lines jel ON coa.account_code = jel.account_code
+        LEFT JOIN journal_entry_lines jel ON coa.code = jel.account_code
         LEFT JOIN journal_entries je ON jel.journal_entry_id = je.id
-        WHERE coa.tenant_id = :tenant_id
-        AND coa.account_code LIKE '8%'
+        WHERE coa.company_id = :company_id
+        AND coa.code LIKE '8%'
         AND je.entry_date BETWEEN :from_date AND :to_date
-        AND je.status = 'POSTED'
-        GROUP BY coa.account_code, coa.account_name
+        AND LOWER(je.status) = 'posted'
+        GROUP BY coa.code, coa.name
         HAVING COALESCE(SUM(jel.debit_amount - jel.credit_amount), 0) != 0
-        ORDER BY coa.account_code
+        ORDER BY coa.code
     """)
     
     other_expenses_result = db.execute(other_expenses_query, {
-        "tenant_id": current_user.tenant_id,
+        "company_id": getattr(current_user, 'company_id', None),
         "from_date": from_date,
         "to_date": to_date
     }).fetchall()
@@ -389,22 +404,22 @@ def get_balance_sheet(
 ):
     """Get balance sheet"""
     assets_query = text("""
-        SELECT coa.account_code, coa.account_name,
+        SELECT coa.code, coa.name,
                COALESCE(SUM(jel.debit_amount - jel.credit_amount), 0) as amount
         FROM chart_of_accounts coa
-        LEFT JOIN journal_entry_lines jel ON coa.account_code = jel.account_code
+        LEFT JOIN journal_entry_lines jel ON coa.code = jel.account_code
         LEFT JOIN journal_entries je ON jel.journal_entry_id = je.id
-        WHERE coa.tenant_id = :tenant_id
-        AND coa.account_code LIKE '1%'
+        WHERE coa.company_id = :company_id
+        AND coa.code LIKE '1%'
         AND (je.entry_date IS NULL OR je.entry_date <= :as_of_date)
-        AND (je.status IS NULL OR je.status = 'POSTED')
-        GROUP BY coa.account_code, coa.account_name
+        AND (je.status IS NULL OR LOWER(je.status) = 'posted')
+        GROUP BY coa.code, coa.name
         HAVING COALESCE(SUM(jel.debit_amount - jel.credit_amount), 0) != 0
-        ORDER BY coa.account_code
+        ORDER BY coa.code
     """)
     
     assets_result = db.execute(assets_query, {
-        "tenant_id": current_user.tenant_id,
+        "company_id": getattr(current_user, 'company_id', None),
         "as_of_date": as_of_date
     }).fetchall()
     
@@ -420,22 +435,22 @@ def get_balance_sheet(
         total_assets += amount
     
     liabilities_query = text("""
-        SELECT coa.account_code, coa.account_name,
+        SELECT coa.code, coa.name,
                COALESCE(SUM(jel.credit_amount - jel.debit_amount), 0) as amount
         FROM chart_of_accounts coa
-        LEFT JOIN journal_entry_lines jel ON coa.account_code = jel.account_code
+        LEFT JOIN journal_entry_lines jel ON coa.code = jel.account_code
         LEFT JOIN journal_entries je ON jel.journal_entry_id = je.id
-        WHERE coa.tenant_id = :tenant_id
-        AND coa.account_code LIKE '2%'
+        WHERE coa.company_id = :company_id
+        AND coa.code LIKE '2%'
         AND (je.entry_date IS NULL OR je.entry_date <= :as_of_date)
-        AND (je.status IS NULL OR je.status = 'POSTED')
-        GROUP BY coa.account_code, coa.account_name
+        AND (je.status IS NULL OR LOWER(je.status) = 'posted')
+        GROUP BY coa.code, coa.name
         HAVING COALESCE(SUM(jel.credit_amount - jel.debit_amount), 0) != 0
-        ORDER BY coa.account_code
+        ORDER BY coa.code
     """)
     
     liabilities_result = db.execute(liabilities_query, {
-        "tenant_id": current_user.tenant_id,
+        "company_id": getattr(current_user, 'company_id', None),
         "as_of_date": as_of_date
     }).fetchall()
     
@@ -451,22 +466,22 @@ def get_balance_sheet(
         total_liabilities += amount
     
     equity_query = text("""
-        SELECT coa.account_code, coa.account_name,
+        SELECT coa.code, coa.name,
                COALESCE(SUM(jel.credit_amount - jel.debit_amount), 0) as amount
         FROM chart_of_accounts coa
-        LEFT JOIN journal_entry_lines jel ON coa.account_code = jel.account_code
+        LEFT JOIN journal_entry_lines jel ON coa.code = jel.account_code
         LEFT JOIN journal_entries je ON jel.journal_entry_id = je.id
-        WHERE coa.tenant_id = :tenant_id
-        AND coa.account_code LIKE '3%'
+        WHERE coa.company_id = :company_id
+        AND coa.code LIKE '3%'
         AND (je.entry_date IS NULL OR je.entry_date <= :as_of_date)
-        AND (je.status IS NULL OR je.status = 'POSTED')
-        GROUP BY coa.account_code, coa.account_name
+        AND (je.status IS NULL OR LOWER(je.status) = 'posted')
+        GROUP BY coa.code, coa.name
         HAVING COALESCE(SUM(jel.credit_amount - jel.debit_amount), 0) != 0
-        ORDER BY coa.account_code
+        ORDER BY coa.code
     """)
     
     equity_result = db.execute(equity_query, {
-        "tenant_id": current_user.tenant_id,
+        "company_id": getattr(current_user, 'company_id', None),
         "as_of_date": as_of_date
     }).fetchall()
     
@@ -512,13 +527,13 @@ def get_cash_flow(
     """Get cash flow statement"""
     cash_accounts_query = text("""
         SELECT account_code FROM chart_of_accounts
-        WHERE tenant_id = :tenant_id
+        WHERE company_id = :company_id
         AND (account_code LIKE '1000%' OR account_code LIKE '1100%')
         AND is_active = true
     """)
     
     cash_accounts = db.execute(cash_accounts_query, {
-        "tenant_id": current_user.tenant_id
+        "company_id": getattr(current_user, 'company_id', None)
     }).fetchall()
     
     opening_cash = Decimal("0")
@@ -531,14 +546,14 @@ def get_cash_flow(
             SELECT COALESCE(SUM(debit_amount - credit_amount), 0)
             FROM journal_entry_lines jel
             JOIN journal_entries je ON jel.journal_entry_id = je.id
-            WHERE je.tenant_id = :tenant_id
+            WHERE je.company_id = :company_id
             AND jel.account_code = :account_code
             AND je.entry_date < :from_date
-            AND je.status = 'POSTED'
+            AND LOWER(je.status) = 'posted'
         """)
         
         opening_result = db.execute(opening_query, {
-            "tenant_id": current_user.tenant_id,
+            "company_id": getattr(current_user, 'company_id', None),
             "account_code": account_code,
             "from_date": from_date
         }).fetchone()
@@ -549,14 +564,14 @@ def get_cash_flow(
             SELECT COALESCE(SUM(debit_amount - credit_amount), 0)
             FROM journal_entry_lines jel
             JOIN journal_entries je ON jel.journal_entry_id = je.id
-            WHERE je.tenant_id = :tenant_id
+            WHERE je.company_id = :company_id
             AND jel.account_code = :account_code
             AND je.entry_date <= :to_date
-            AND je.status = 'POSTED'
+            AND LOWER(je.status) = 'posted'
         """)
         
         closing_result = db.execute(closing_query, {
-            "tenant_id": current_user.tenant_id,
+            "company_id": getattr(current_user, 'company_id', None),
             "account_code": account_code,
             "to_date": to_date
         }).fetchone()
