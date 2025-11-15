@@ -89,7 +89,7 @@ def get_account_balance(db: Session, company_id: str, account_code: str, from_da
 def get_accounts_by_type(db: Session, company_id: str, account_type: str) -> List[Dict[str, Any]]:
     """Get all accounts of a specific type"""
     query = text("""
-        SELECT account_code, account_name, account_type, parent_account_code
+        SELECT code as account_code, name as account_name, account_type, parent_code as parent_account_code
         FROM chart_of_accounts
         WHERE company_id = :company_id
         AND account_type = :account_type
