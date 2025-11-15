@@ -217,7 +217,7 @@ async def create_journal_entry(
 @journal_entries_router.post("/{entry_id}/post")
 async def post_journal_entry(
     entry_id: str = Path(...),
-    current_user: Dict = Depends(get_current_user)
+    current_user: Dict = Depends(require_permission(Permission.GL_POST))
 ):
     """Post a journal entry"""
     conn = get_connection()
@@ -252,7 +252,7 @@ async def post_journal_entry(
 @journal_entries_router.delete("/{entry_id}")
 async def delete_journal_entry(
     entry_id: str = Path(...),
-    current_user: Dict = Depends(get_current_user)
+    current_user: Dict = Depends(require_permission(Permission.GL_DELETE))
 ):
     """Delete a journal entry"""
     conn = get_connection()
@@ -490,7 +490,7 @@ async def cancel_journal_entry(
 async def reverse_journal_entry(
     entry_id: str = Path(...),
     reverse_data: Dict[str, Any] = Body(default={}),
-    current_user: Dict = Depends(get_current_user)
+    current_user: Dict = Depends(require_permission(Permission.GL_POST))
 ):
     """Reverse a posted journal entry by creating a reversing entry"""
     conn = get_connection()
