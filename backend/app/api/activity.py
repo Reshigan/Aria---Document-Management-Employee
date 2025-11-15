@@ -17,8 +17,13 @@ async def get_activity(
 ):
     """Get activity feed for a document"""
     try:
-        service = CommentsActivityService(db)
-        activity = service.get_activity_feed(document_type, document_id)
+        company_id = current_user.get("company_id", "default")
+        activity = CommentsActivityService.get_activity_feed(
+            db=db,
+            document_type=document_type,
+            document_id=document_id,
+            company_id=company_id
+        )
         return {"activity": activity}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

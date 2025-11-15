@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 
-from backend.core.approval_workflow import ApprovalWorkflowService
+from backend.core.approval_workflow import ApprovalWorkflow
 from backend.app.database import get_db
 from backend.app.auth import get_current_user
 
@@ -34,13 +34,19 @@ async def submit_for_approval(
 ):
     """Submit a document for approval"""
     try:
-        service = ApprovalWorkflowService(db)
-        result = service.submit_for_approval(
+        company_id = current_user.get("company_id", "default")
+        user_email = current_user.get("email", "unknown")
+        
+        result = ApprovalWorkflow.submit_for_approval(
+            db=db,
             document_type=request.document_type,
             document_id=request.document_id,
-            submitted_by=current_user.get("email", "unknown")
+            company_id=company_id,
+            user_email=user_email
         )
         return result
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -53,14 +59,20 @@ async def approve_document(
 ):
     """Approve a document"""
     try:
-        service = ApprovalWorkflowService(db)
-        result = service.approve(
+        company_id = current_user.get("company_id", "default")
+        approver_email = current_user.get("email", "unknown")
+        
+        result = ApprovalWorkflow.approve_document(
+            db=db,
             document_type=request.document_type,
             document_id=request.document_id,
-            approved_by=current_user.get("email", "unknown"),
+            company_id=company_id,
+            approver_email=approver_email,
             comments=request.comments
         )
         return result
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -73,13 +85,19 @@ async def reject_document(
 ):
     """Reject a document"""
     try:
-        service = ApprovalWorkflowService(db)
-        result = service.reject(
+        company_id = current_user.get("company_id", "default")
+        rejector_email = current_user.get("email", "unknown")
+        
+        result = ApprovalWorkflow.reject_document(
+            db=db,
             document_type=request.document_type,
             document_id=request.document_id,
-            rejected_by=current_user.get("email", "unknown"),
+            company_id=company_id,
+            rejector_email=rejector_email,
             reason=request.reason
         )
         return result
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

@@ -453,6 +453,17 @@ try:
 except Exception as e:
     print(f"⚠️ Data Import API not loaded: {e}")
 
+try:
+    from app.api import attachments, comments, activity, approval, batch
+    app.include_router(attachments.router, prefix="/api/attachments", tags=["attachments"])
+    app.include_router(comments.router, prefix="/api/comments", tags=["comments"])
+    app.include_router(activity.router, prefix="/api/activity", tags=["activity"])
+    app.include_router(approval.router, prefix="/api/approval", tags=["approval"])
+    app.include_router(batch.router, prefix="/api/batch", tags=["batch"])
+    print("✅ TIER 4 Enhancement APIs loaded (Attachments, Comments, Approval, Batch)")
+except Exception as e:
+    print(f"⚠️ TIER 4 Enhancement APIs not loaded: {e}")
+
 # try:
 #     from api.gateway.routers.aria import router as aria_router
 #     app.include_router(aria_router, prefix="/api")

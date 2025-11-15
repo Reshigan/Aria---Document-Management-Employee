@@ -24,8 +24,13 @@ async def list_comments(
 ):
     """List all comments for a document"""
     try:
-        service = CommentsActivityService(db)
-        comments = service.get_comments(document_type, document_id)
+        company_id = current_user.get("company_id", "default")
+        comments = CommentsActivityService.get_comments(
+            db=db,
+            document_type=document_type,
+            document_id=document_id,
+            company_id=company_id
+        )
         return {"comments": comments}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -39,11 +44,15 @@ async def add_comment(
 ):
     """Add a comment to a document"""
     try:
-        service = CommentsActivityService(db)
-        new_comment = service.add_comment(
+        company_id = current_user.get("company_id", "default")
+        user_email = current_user.get("email", "unknown")
+        
+        new_comment = CommentsActivityService.add_comment(
+            db=db,
             document_type=comment.document_type,
             document_id=comment.document_id,
-            user_email=current_user.get("email", "unknown"),
+            company_id=company_id,
+            user_email=user_email,
             comment_text=comment.comment_text
         )
         return new_comment
@@ -59,10 +68,17 @@ async def delete_comment(
 ):
     """Delete a comment"""
     try:
-        service = CommentsActivityService(db)
-        service.delete_comment(comment_id)
-        return {"message": "Comment deleted successfully"}
-    except ValueError as e:
-        raise HTTPException(status_code=404, detail=str(e))
+        company_id = current_user.get("company_id", "default")
+        user_email = current_user.get("email", "unknown")
+        
+        result = CommentsActivityService.delete_comment(
+            db=db,
+            comment_id=comment_id,
+            company_id=company_id,
+            user_email=user_email
+        )
+        return result
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

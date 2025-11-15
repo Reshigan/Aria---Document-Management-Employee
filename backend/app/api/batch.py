@@ -5,7 +5,7 @@ from pydantic import BaseModel
 from typing import List
 import io
 
-from backend.core.batch_operations import BatchOperationsService
+from backend.core.batch_operations import BatchOperations
 from backend.app.database import get_db
 from backend.app.auth import get_current_user
 
@@ -31,11 +31,15 @@ async def batch_approve(
 ):
     """Bulk approve documents"""
     try:
-        service = BatchOperationsService(db)
-        result = service.bulk_approve(
+        company_id = current_user.get("company_id", "default")
+        approver_email = current_user.get("email", "unknown")
+        
+        result = BatchOperations.bulk_approve(
+            db=db,
             document_type=request.document_type,
             document_ids=request.document_ids,
-            approved_by=current_user.get("email", "unknown")
+            company_id=company_id,
+            approver_email=approver_email
         )
         return result
     except Exception as e:
@@ -50,11 +54,15 @@ async def batch_post(
 ):
     """Bulk post documents"""
     try:
-        service = BatchOperationsService(db)
-        result = service.bulk_post(
+        company_id = current_user.get("company_id", "default")
+        user_email = current_user.get("email", "unknown")
+        
+        result = BatchOperations.bulk_post(
+            db=db,
             document_type=request.document_type,
             document_ids=request.document_ids,
-            posted_by=current_user.get("email", "unknown")
+            company_id=company_id,
+            user_email=user_email
         )
         return result
     except Exception as e:
@@ -69,10 +77,13 @@ async def batch_delete(
 ):
     """Bulk delete documents"""
     try:
-        service = BatchOperationsService(db)
-        result = service.bulk_delete(
+        company_id = current_user.get("company_id", "default")
+        
+        result = BatchOperations.bulk_delete(
+            db=db,
             document_type=request.document_type,
-            document_ids=request.document_ids
+            document_ids=request.document_ids,
+            company_id=company_id
         )
         return result
     except Exception as e:
@@ -87,10 +98,13 @@ async def batch_export(
 ):
     """Bulk export documents to CSV"""
     try:
-        service = BatchOperationsService(db)
-        csv_content = service.bulk_export(
+        company_id = current_user.get("company_id", "default")
+        
+        csv_content = BatchOperations.bulk_export(
+            db=db,
             document_type=request.document_type,
             document_ids=request.document_ids,
+            company_id=company_id,
             export_format=request.export_format
         )
         
