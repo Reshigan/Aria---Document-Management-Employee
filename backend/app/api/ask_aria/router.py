@@ -16,11 +16,14 @@ from ...services.ask_aria.template_service import TemplateService
 from ...services.ask_aria.ollama_client import ollama_client
 
 try:
-    from auth_integrated import get_current_user as _get_current_user
+    from auth_integrated import get_current_user as _get_current_user_real
+    from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
     USE_REAL_AUTH = True
 except ImportError:
     USE_REAL_AUTH = False
-    _get_current_user = None
+    _get_current_user_real = None
+    HTTPBearer = None
+    HTTPAuthorizationCredentials = None
 
 logger = logging.getLogger(__name__)
 
@@ -80,18 +83,23 @@ class SAPMappingResponse(BaseModel):
     sap_data: Dict[str, Any]
 
 
-async def get_current_user_fallback():
-    """Fallback authentication when real auth not available"""
+async def get_current_user_optional(
+    credentials: Optional[HTTPAuthorizationCredentials] = Depends(HTTPBearer(auto_error=False)) if HTTPBearer else None
+) -> Dict:
+    """Get current user with optional authentication - falls back to demo user if not authenticated"""
+    if USE_REAL_AUTH and credentials and _get_current_user_real:
+        try:
+            return await _get_current_user_real(credentials)
+        except Exception as e:
+            logger.warning(f"Auth failed, using fallback: {e}")
+    
+    logger.info("Using fallback authentication for Ask Aria")
     return {
         "user_id": "8e88001e-9d74-4b5a-a45b-66d126bee6d5",
         "company_id": "b0598135-52fd-4f67-ac56-8f0237e6355e"
     }
 
-if USE_REAL_AUTH and _get_current_user:
-    get_current_user = _get_current_user
-else:
-    get_current_user = get_current_user_fallback
-    logger.warning("Using fallback authentication for Ask Aria - not suitable for production")
+get_current_user = get_current_user_optional
 
 
 @router.get("/health")
