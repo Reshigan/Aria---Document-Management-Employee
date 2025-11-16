@@ -1,6 +1,5 @@
 import React from 'react';
-import Sidebar from './Sidebar';
-import TopBar from './TopBar';
+import MegaMenu from './MegaMenu';
 import './MainLayout.css';
 
 interface MainLayoutProps {
@@ -9,14 +8,11 @@ interface MainLayoutProps {
 
 export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   return (
-    <div className="main-layout">
-      <Sidebar />
-      <div className="main-content">
-        <TopBar />
-        <main className="main-content-area">
-          {children}
-        </main>
-      </div>
+    <div className="main-layout-mega">
+      <MegaMenu />
+      <main className="main-content-mega">
+        {children}
+      </main>
     </div>
   );
 };

@@ -18,8 +18,24 @@
   overflow-y: auto;
 }
 
+/* Mega Menu Layout */
+.main-layout-mega {
+  min-height: 100vh;
+  background-color: #f9fafb;
+}
+
+.main-content-mega {
+  padding: 2rem;
+  max-width: 1920px;
+  margin: 0 auto;
+}
+
 @media (max-width: 768px) {
   .main-content {
     margin-left: 0;
+  }
+  
+  .main-content-mega {
+    padding: 1rem;
   }
 }
