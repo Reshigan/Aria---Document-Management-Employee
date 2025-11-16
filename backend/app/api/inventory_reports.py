@@ -100,13 +100,14 @@ def get_inventory_valuation(
         item_costs AS (
             SELECT 
                 i.id as item_id,
-                cl.warehouse_id,
+                w.id as warehouse_id,
                 AVG(cl.unit_cost) as avg_unit_cost
             FROM cost_layers cl
-            JOIN items i ON cl.product_id = i.id
+            JOIN items i ON cl.product_id::text = i.item_code
+            JOIN warehouses w ON cl.warehouse_id::text = w.code
             WHERE cl.company_id = :company_id
                 AND cl.quantity_remaining > 0
-            GROUP BY i.id, cl.warehouse_id
+            GROUP BY i.id, w.id
         )
         SELECT 
             ib.item_id,
