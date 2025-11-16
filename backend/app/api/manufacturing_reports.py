@@ -35,8 +35,8 @@ class WIPVarianceItem(BaseModel):
     work_order_number: str
     item_code: str
     item_name: str
-    quantity_ordered: Decimal
-    quantity_completed: Decimal
+    quantity_to_produce: Decimal
+    quantity_produced: Decimal
     standard_cost: Decimal
     actual_cost: Decimal
     cost_variance: Decimal
@@ -97,8 +97,8 @@ def get_wip_variance(
             work_order_number,
             item_code,
             item_name,
-            quantity_ordered,
-            quantity_completed,
+            quantity_to_produce,
+            quantity_produced,
             standard_cost,
             actual_cost,
             actual_cost - standard_cost as cost_variance,
