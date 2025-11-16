@@ -418,6 +418,20 @@ try:
 except Exception as e:
     print(f"⚠️ Admin module not loaded: {e}")
 
+try:
+    from app.api.admin_config import router as admin_config_router
+    app.include_router(admin_config_router)
+    print("✅ Admin Configuration API loaded (System Admin)")
+except Exception as e:
+    print(f"⚠️ Admin Configuration API not loaded: {e}")
+
+try:
+    from app.api.gl_admin_config import router as gl_admin_config_router
+    app.include_router(gl_admin_config_router)
+    print("✅ GL/Financial Admin Configuration API loaded")
+except Exception as e:
+    print(f"⚠️ GL/Financial Admin Configuration API not loaded: {e}")
+
 # try:
 #     from api.routes.admin import router as admin_routes_router
 #     app.include_router(admin_routes_router, prefix="/api")
