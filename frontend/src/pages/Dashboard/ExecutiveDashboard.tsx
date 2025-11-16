@@ -62,7 +62,7 @@ export const ExecutiveDashboard: React.FC = () => {
       <div className="dashboard-header">
         <div>
           <h1 style={{fontSize: '1.875rem', fontWeight: 700, marginBottom: '0.5rem'}}>Executive Dashboard</h1>
-          <p style={{color: 'var(--gray-600)'}}>Real-time financial overview powered by 15 AI automation bots</p>
+          <p style={{color: 'var(--gray-600)'}}>Real-time financial overview powered by 15 AI automation agents</p>
         </div>
       </div>
 
@@ -101,12 +101,12 @@ export const ExecutiveDashboard: React.FC = () => {
 
       <Card style={{marginBottom: '1.5rem'}}>
         <CardHeader>
-          <CardTitle>🤖 Automation Bots - All {metrics?.active_bots || 15} Active</CardTitle>
+          <CardTitle>🤖 Automation Agents - All {metrics?.active_bots || 15} Active</CardTitle>
         </CardHeader>
         <CardBody>
           <div style={{display: 'flex', gap: '2rem', marginBottom: '1.5rem', padding: '1rem', backgroundColor: 'var(--gray-50)', borderRadius: '0.5rem'}}>
             <div>
-              <div style={{fontSize: '0.875rem', color: 'var(--gray-600)'}}>Total Bots</div>
+              <div style={{fontSize: '0.875rem', color: 'var(--gray-600)'}}>Total Agents</div>
               <div style={{fontSize: '1.5rem', fontWeight: 700}}>{metrics?.bot_count || 15}</div>
             </div>
             <div>
@@ -149,7 +149,7 @@ export const ExecutiveDashboard: React.FC = () => {
             </div>
             <div style={{fontSize: '0.875rem', color: 'var(--gray-600)', display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
               <Bot size={14} />
-              <span>Invoice Reconciliation Bot: 45 invoices processed today</span>
+              <span>Invoice Reconciliation Agent: 45 invoices processed today</span>
             </div>
           </CardBody>
         </Card>
@@ -162,7 +162,7 @@ export const ExecutiveDashboard: React.FC = () => {
             </div>
             <div style={{fontSize: '0.875rem', color: 'var(--gray-600)', display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
               <Bot size={14} />
-              <span>Payment Prediction Bot: 23 payments expected this week</span>
+              <span>Payment Prediction Agent: 23 payments expected this week</span>
             </div>
           </CardBody>
         </Card>

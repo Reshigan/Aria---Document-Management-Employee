@@ -65,16 +65,16 @@ export default function Bots() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">AI Bots</h1>
+          <h1 className="text-3xl font-bold text-gray-900">AI Agents</h1>
           <p className="text-gray-600 mt-1">
-            {bots.length} AI-powered automation bots available
+            {bots.length} AI-powered automation agents available
           </p>
         </div>
         <div className="bg-blue-100 rounded-lg px-4 py-2">
           <div className="flex items-center">
             <CheckCircle className="h-5 w-5 text-blue-600 mr-2" />
             <span className="text-sm font-medium text-blue-900">
-              All bots operational
+              All agents operational
             </span>
           </div>
         </div>
@@ -89,7 +89,7 @@ export default function Bots() {
               : 'border-gray-200 hover:border-gray-300'
           }`}
         >
-          <div className="text-sm font-medium text-gray-600">All Bots</div>
+          <div className="text-sm font-medium text-gray-600">All Agents</div>
           <div className="text-2xl font-bold text-gray-900">{bots.length}</div>
         </button>
         {Object.entries(categories)
@@ -172,7 +172,7 @@ export default function Bots() {
 
         {filteredBots.length === 0 && (
           <div className="text-center py-12 text-gray-500">
-            No bots found in this category
+            No agents found in this category
           </div>
         )}
       </div>
@@ -291,7 +291,7 @@ function BotDetailsModal({
                   className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center"
                 >
                   <Play className="h-4 w-4 mr-2" />
-                  Execute Bot
+                  Execute Agent
                 </button>
               </div>
             </div>
