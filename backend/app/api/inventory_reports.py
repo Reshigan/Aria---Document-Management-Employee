@@ -17,9 +17,14 @@ from datetime import datetime, date, timedelta
 from decimal import Decimal
 
 try:
-    from app.database import get_db
+    from auth import get_db
 except ImportError:
-    from database import get_db
+    try:
+        from auth_integrated import get_db
+    except ImportError:
+        import sys
+        sys.path.insert(0, '/var/www/aria/backend')
+        from auth import get_db
 
 router = APIRouter(prefix="/api/reports/inventory", tags=["Inventory Reports"])
 
