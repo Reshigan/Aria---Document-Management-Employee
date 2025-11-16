@@ -31,6 +31,8 @@ import StockValuationReport from './pages/Reports/StockValuationReport';
 import VATSummaryReport from './pages/Reports/VATSummaryReport';
 import ReportsDashboard from './pages/Reports/ReportsDashboard';
 import FinancialReports from './pages/Reports/FinancialReports';
+import SalesKPIsReport from './pages/Reports/SalesKPIsReport';
+import PurchaseKPIsReport from './pages/Reports/PurchaseKPIsReport';
 import PayrollActivityReport from './pages/reports/PayrollActivityReport';
 import ExpenseManagementReport from './pages/reports/ExpenseManagementReport';
 import BbbeeComplianceReport from './pages/reports/BbbeeComplianceReport';
@@ -142,8 +144,8 @@ function App() {
           <Route path="/reports/financial/trial-balance" element={<FinancialReports />} />
           <Route path="/reports/financial/balance-sheet" element={<FinancialReports />} />
           <Route path="/reports/financial/income-statement" element={<FinancialReports />} />
-          <Route path="/reports/sales-purchase/sales-kpis" element={<FinancialReports />} />
-          <Route path="/reports/sales-purchase/purchase-kpis" element={<FinancialReports />} />
+          <Route path="/reports/sales-purchase/sales-kpis" element={<SalesKPIsReport />} />
+          <Route path="/reports/sales-purchase/purchase-kpis" element={<PurchaseKPIsReport />} />
           <Route path="/reports/payroll/activity" element={<PayrollActivityReport />} />
           <Route path="/reports/expense/management" element={<ExpenseManagementReport />} />
           <Route path="/reports/compliance/bbbee" element={<BbbeeComplianceReport />} />
