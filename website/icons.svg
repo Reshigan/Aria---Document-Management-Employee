@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <!-- Natural Language Icon: Chat bubble with dots -->
+  <symbol id="natural-language" viewBox="0 0 24 24" fill="none">
+    <path d="M21 11.5C21 16.75 16.97 21 12 21C10.73 21 9.52 20.75 8.42 20.3L3 21L4.7 15.58C3.65 14.25 3 12.66 3 11C3 6.03 7.03 2 12 2C16.97 2 21 6.25 21 11.5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="8" cy="11" r="1" fill="currentColor"/>
+    <circle cx="12" cy="11" r="1" fill="currentColor"/>
+    <circle cx="16" cy="11" r="1" fill="currentColor"/>
+  </symbol>
+  
+  <!-- Country Specific Compliance Icon: Globe with checkmark -->
+  <symbol id="country-compliance" viewBox="0 0 24 24" fill="none">
+    <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2" fill="none"/>
+    <path d="M3 12H21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    <path d="M12 3C14.5 5.5 16 8.5 16 12C16 15.5 14.5 18.5 12 21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    <path d="M12 3C9.5 5.5 8 8.5 8 12C8 15.5 9.5 18.5 12 21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    <circle cx="18" cy="6" r="3" fill="#FFB800"/>
+    <path d="M16.5 6L17.5 7L19.5 5" stroke="#1a2332" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </symbol>
+  
+  <!-- Agents Icon: Robot face -->
+  <symbol id="agents" viewBox="0 0 24 24" fill="none">
+    <rect x="5" y="7" width="14" height="13" rx="2" stroke="currentColor" stroke-width="2" fill="none"/>
+    <path d="M12 4V7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    <circle cx="9" cy="12" r="1" fill="currentColor"/>
+    <circle cx="15" cy="12" r="1" fill="currentColor"/>
+    <path d="M9 16H15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    <circle cx="12" cy="2" r="1" fill="currentColor"/>
+  </symbol>
+  
+  <!-- Speed Icon: Lightning bolt -->
+  <symbol id="speed" viewBox="0 0 24 24" fill="none">
+    <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  </symbol>
+</svg>

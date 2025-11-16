@@ -616,3 +616,22 @@ body {
         gap: 1.5rem;
     }
 }
+
+/* Feature Icons */
+.feature-icon {
+    width: 48px;
+    height: 48px;
+    display: inline-block;
+}
+
+.hero .feature-icon {
+    color: #ffffff;
+}
+
+.features-section .feature-icon {
+    color: var(--navy);
+}
+
+.features-section .feature-card.featured .feature-icon {
+    color: var(--gold);
+}
