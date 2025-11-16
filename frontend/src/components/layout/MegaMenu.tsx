@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
-  LayoutDashboard, BookOpen, FileDown, FileUp, Building2, Wallet, Users, Package,
-  Bot, FileText, Settings, MessageSquare, FileSpreadsheet, ShoppingCart, Truck,
-  ShoppingBag, Factory, Shield, Wrench, ClipboardList, Scale, Briefcase, 
+  BookOpen, FileDown, FileUp, Building2, Wallet, Users, Package,
+  MessageSquare, FileSpreadsheet, ShoppingCart, Truck,
+  ShoppingBag, Factory, Wrench, ClipboardList, Scale, Briefcase, 
   FolderOpen, TrendingUp, ChevronDown, LogOut
 } from 'lucide-react';
+import { DashboardIcon, FinancialIcon, ReportsIcon, BotsIcon, AriaIcon, AdminIcon } from '../../assets/icons';
 import { useAuthStore } from '../../store/authStore';
 import './MegaMenu.css';
 
@@ -221,7 +222,7 @@ export const MegaMenu: React.FC = () => {
             to="/dashboard" 
             className={`mega-menu-item ${isActive('/dashboard') ? 'active' : ''}`}
           >
-            <LayoutDashboard size={18} />
+            <DashboardIcon size={18} />
             <span>Dashboard</span>
           </Link>
 
@@ -229,7 +230,7 @@ export const MegaMenu: React.FC = () => {
             to="/aria" 
             className={`mega-menu-item mega-menu-item-special ${isActive('/aria') ? 'active' : ''}`}
           >
-            <MessageSquare size={18} />
+            <AriaIcon size={18} />
             <span>Ask ARIA</span>
           </Link>
 
@@ -279,7 +280,7 @@ export const MegaMenu: React.FC = () => {
             to="/reports" 
             className={`mega-menu-item ${isActive('/reports') ? 'active' : ''}`}
           >
-            <FileText size={18} />
+            <ReportsIcon size={18} />
             <span>Reports</span>
           </Link>
 
@@ -287,7 +288,7 @@ export const MegaMenu: React.FC = () => {
             to="/bots" 
             className={`mega-menu-item ${isActive('/bots') ? 'active' : ''}`}
           >
-            <Bot size={18} />
+            <BotsIcon size={18} />
             <span>Bots</span>
           </Link>
 
@@ -295,7 +296,7 @@ export const MegaMenu: React.FC = () => {
             to="/admin/system" 
             className={`mega-menu-item ${isActive('/admin') ? 'active' : ''}`}
           >
-            <Shield size={18} />
+            <AdminIcon size={18} />
             <span>Admin</span>
           </Link>
         </nav>
