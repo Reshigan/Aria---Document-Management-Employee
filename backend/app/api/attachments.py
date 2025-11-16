@@ -7,7 +7,7 @@ import sys
 import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 
-from core.document_attachments import AttachmentService
+from core.document_attachments import DocumentAttachmentService
 from app.database import get_db
 try:
     from app.auth import get_current_user
@@ -26,8 +26,13 @@ async def list_attachments(
 ):
     """List all attachments for a document"""
     try:
-        service = AttachmentService(db)
-        attachments = service.list_attachments(document_type, document_id)
+        company_id = current_user.get("company_id", "default")
+        attachments = DocumentAttachmentService.get_attachments(
+            db=db,
+            document_type=document_type,
+            document_id=document_id,
+            company_id=company_id
+        )
         return {"attachments": attachments}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -43,16 +48,16 @@ async def upload_attachment(
 ):
     """Upload a file attachment for a document"""
     try:
-        service = AttachmentService(db)
+        company_id = current_user.get("company_id", "default")
+        user_email = current_user.get("email", "unknown")
         
-        file_content = await file.read()
-        
-        attachment = service.upload_attachment(
+        attachment = DocumentAttachmentService.upload_attachment(
+            db=db,
+            file=file,
             document_type=document_type,
             document_id=document_id,
-            file_name=file.filename or "unnamed",
-            file_content=file_content,
-            uploaded_by=current_user.get("email", "unknown")
+            company_id=company_id,
+            user_email=user_email
         )
         
         return {
@@ -60,7 +65,7 @@ async def upload_attachment(
             "file_name": attachment["file_name"],
             "file_size": attachment["file_size"],
             "classification": attachment["classification"],
-            "uploaded_at": attachment["uploaded_at"]
+            "has_ocr": attachment.get("has_ocr", False)
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -74,18 +79,40 @@ async def download_attachment(
 ):
     """Download an attachment file"""
     try:
-        service = AttachmentService(db)
-        file_data = service.download_attachment(attachment_id)
+        company_id = current_user.get("company_id", "default")
+        
+        from sqlalchemy import text
+        query = text("""
+            SELECT file_path, file_name, mime_type
+            FROM document_attachments
+            WHERE id = :attachment_id AND company_id = :company_id
+        """)
+        
+        result = db.execute(query, {
+            "attachment_id": attachment_id,
+            "company_id": company_id
+        }).fetchone()
+        
+        if not result:
+            raise HTTPException(status_code=404, detail="Attachment not found")
+        
+        file_path, file_name, mime_type = result
+        
+        if not os.path.exists(file_path):
+            raise HTTPException(status_code=404, detail="File not found on disk")
+        
+        with open(file_path, "rb") as f:
+            file_content = f.read()
         
         return StreamingResponse(
-            io.BytesIO(file_data["file_content"]),
-            media_type="application/octet-stream",
+            io.BytesIO(file_content),
+            media_type=mime_type or "application/octet-stream",
             headers={
-                "Content-Disposition": f'attachment; filename="{file_data["file_name"]}"'
+                "Content-Disposition": f'attachment; filename="{file_name}"'
             }
         )
-    except ValueError as e:
-        raise HTTPException(status_code=404, detail=str(e))
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -98,10 +125,14 @@ async def delete_attachment(
 ):
     """Delete an attachment"""
     try:
-        service = AttachmentService(db)
-        service.delete_attachment(attachment_id)
-        return {"message": "Attachment deleted successfully"}
-    except ValueError as e:
-        raise HTTPException(status_code=404, detail=str(e))
+        company_id = current_user.get("company_id", "default")
+        result = DocumentAttachmentService.delete_attachment(
+            db=db,
+            attachment_id=attachment_id,
+            company_id=company_id
+        )
+        return result
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
