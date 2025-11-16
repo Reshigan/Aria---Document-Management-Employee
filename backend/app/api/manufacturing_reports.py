@@ -66,10 +66,10 @@ def get_wip_variance(
                 wo.work_order_number,
                 i.item_code,
                 i.item_name,
-                wo.quantity_ordered,
-                wo.quantity_completed,
+                wo.quantity_to_produce,
+                wo.quantity_produced,
                 wo.status,
-                COALESCE(sc.standard_cost, 0) * wo.quantity_ordered as standard_cost,
+                COALESCE(sc.standard_cost, 0) * wo.quantity_to_produce as standard_cost,
                 COALESCE(SUM(mc.quantity_consumed * mc.unit_cost), 0) + 
                 COALESCE(SUM(tb.hours_worked * tb.hourly_rate), 0) as actual_cost
             FROM work_orders wo
@@ -90,7 +90,7 @@ def get_wip_variance(
     
     query += """
             GROUP BY wo.id, wo.work_order_number, i.item_code, i.item_name, 
-                     wo.quantity_ordered, wo.quantity_completed, wo.status, sc.standard_cost
+                     wo.quantity_to_produce, wo.quantity_produced, wo.status, sc.standard_cost
         )
         SELECT 
             work_order_id,
@@ -194,15 +194,15 @@ def get_production_efficiency(
                 i.item_code,
                 i.item_name,
                 wc.name as work_center_name,
-                wo.quantity_ordered,
-                wo.quantity_completed,
+                wo.quantity_to_produce,
+                wo.quantity_produced,
                 wo.start_date,
                 wo.completion_date,
                 COALESCE(SUM(tb.hours_worked), 0) as actual_hours,
                 wo.estimated_hours as standard_hours,
                 CASE 
                     WHEN COALESCE(SUM(tb.hours_worked), 0) > 0 
-                    THEN (wo.quantity_completed / COALESCE(SUM(tb.hours_worked), 1))
+                    THEN (wo.quantity_produced / COALESCE(SUM(tb.hours_worked), 1))
                     ELSE 0
                 END as units_per_hour,
                 CASE 
@@ -231,7 +231,7 @@ def get_production_efficiency(
     
     query += """
             GROUP BY wo.id, wo.work_order_number, i.item_code, i.item_name, 
-                     wc.name, wo.quantity_ordered, wo.quantity_completed,
+                     wc.name, wo.quantity_to_produce, wo.quantity_produced,
                      wo.start_date, wo.completion_date, wo.estimated_hours, wo.status
         )
         SELECT *

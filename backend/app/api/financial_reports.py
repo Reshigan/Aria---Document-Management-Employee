@@ -118,8 +118,8 @@ def get_trial_balance_drilldown(
             jel.description as line_description,
             CASE WHEN jel.debit_amount > 0 THEN 'DEBIT' ELSE 'CREDIT' END as debit_credit,
             CASE WHEN jel.debit_amount > 0 THEN jel.debit_amount ELSE jel.credit_amount END as amount,
-            je.source_document_type,
-            je.source_document_id
+            je.source_document_name as source_document_type,
+            je.source_document_reference as source_document_id
         FROM journal_entry_lines jel
         JOIN journal_entries je ON jel.journal_entry_id = je.id
         WHERE je.company_id = :company_id
@@ -373,8 +373,8 @@ def get_gl_ledger_analysis(
             jel.description as line_description,
             CASE WHEN jel.debit_amount > 0 THEN 'DEBIT' ELSE 'CREDIT' END as debit_credit,
             CASE WHEN jel.debit_amount > 0 THEN jel.debit_amount ELSE jel.credit_amount END as amount,
-            je.source_document_type,
-            je.source_document_id,
+            je.source_document_name as source_document_type,
+            je.source_document_reference as source_document_id,
             je.created_by,
             SUM(jel.debit_amount - jel.credit_amount) 
                 OVER (PARTITION BY jel.account_code ORDER BY je.posting_date, je.reference) as running_balance
