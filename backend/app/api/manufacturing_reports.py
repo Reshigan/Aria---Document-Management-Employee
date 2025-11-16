@@ -231,7 +231,7 @@ def get_production_efficiency(
     
     query += """
             GROUP BY wo.id, wo.work_order_number, i.item_code, i.item_name, 
-                     wc.name, wo.quantity_to_produce, wo.quantity_produced,
+                     wh.name, wo.quantity_to_produce, wo.quantity_produced,
                      wo.start_date, wo.completion_date, wo.estimated_hours, wo.status
         )
         SELECT *
@@ -358,7 +358,7 @@ def get_time_booking_summary(
             JOIN work_centers wc ON wo.warehouse_id = wc.id AND wh.company_id = :company_id
             WHERE tb.company_id = :company_id
                 AND tb.booking_date BETWEEN :period_start AND :period_end
-            GROUP BY wc.id, wc.name
+            GROUP BY wc.id, wh.name
             ORDER BY total_hours DESC
         """
     
