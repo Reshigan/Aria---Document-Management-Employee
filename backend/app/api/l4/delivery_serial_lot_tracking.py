@@ -4,7 +4,10 @@ from sqlalchemy import text
 from typing import List, Optional
 from pydantic import BaseModel
 
-from app.database import get_db
+try:
+    from app.database import get_db
+except ImportError:
+    from database import get_db
 try:
     from app.auth import get_current_user
 except ImportError:
