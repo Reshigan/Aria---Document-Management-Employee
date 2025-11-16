@@ -1,10 +1,16 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
+import sys
+import os
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 
-from backend.core.approval_workflow import ApprovalWorkflow
-from backend.app.database import get_db
-from backend.app.auth import get_current_user
+from core.approval_workflow import ApprovalWorkflow
+from app.database import get_db
+try:
+    from app.auth import get_current_user
+except ImportError:
+    from auth_integrated import get_current_user
 
 router = APIRouter()
 
