@@ -11,7 +11,7 @@ except ImportError:
     try:
         from auth_integrated import get_db, get_current_user
     except ImportError:
-        from app.database import SessionLocal
+        from core.database_pg import SessionLocal
         def get_db():
             db = SessionLocal()
             try:
