@@ -39,3 +39,41 @@
     padding: 1rem;
   }
 }
+
+/* App Footer */
+.app-footer {
+  background: #1a1a2e;
+  padding: 20px;
+  border-top: 1px solid #2d2d44;
+  margin-top: auto;
+}
+
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.app-footer .vantax-link {
+  display: inline-block;
+  transition: opacity 0.3s ease;
+}
+
+.app-footer .vantax-link:hover {
+  opacity: 0.8;
+}
+
+.app-footer .vantax-logo {
+  height: 35px;
+  width: auto;
+}
+
+.footer-text {
+  color: #999;
+  font-size: 0.9rem;
+  margin: 0;
+}

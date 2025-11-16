@@ -532,3 +532,42 @@ body {
         display: none;
     }
 }
+
+/* VantaX Branding */
+.footer-branding {
+    text-align: center;
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid #333;
+}
+
+.vantax-link {
+    display: inline-block;
+    margin-bottom: 1rem;
+}
+
+.vantax-logo {
+    height: 40px;
+    width: auto;
+    transition: opacity 0.3s ease;
+}
+
+.vantax-logo:hover {
+    opacity: 0.8;
+}
+
+.product-attribution {
+    color: #999;
+    font-size: 0.95rem;
+    margin-top: 0.5rem;
+}
+
+.product-attribution a {
+    color: #FFD700;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.product-attribution a:hover {
+    text-decoration: underline;
+}
