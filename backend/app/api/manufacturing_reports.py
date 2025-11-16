@@ -77,7 +77,7 @@ def get_wip_variance(
             LEFT JOIN items i_std ON wo.product_id = i_std.id AND i_std.company_id = :company_id
             LEFT JOIN standard_costs sc ON i_std.item_code = sc.item_id AND sc.company_id = :company_id AND sc.is_active = TRUE
             LEFT JOIN work_order_material_usage mc ON wo.id = mc.work_order_id AND mc.company_id = :company_id
-            LEFT JOIN time_bookings tb ON wo.id = tb.manufacturing_order_id AND tb.company_id = :company_id
+            LEFT JOIN time_bookings tb ON wo.work_order_number::text = tb.manufacturing_order_id::text AND tb.company_id = :company_id
             WHERE wo.company_id = :company_id
                 AND wo.start_date <= :as_of_date
     """
@@ -214,7 +214,7 @@ def get_production_efficiency(
             FROM work_orders wo
             JOIN items i ON wo.product_id = i.id AND i.company_id = :company_id
             LEFT JOIN warehouses wh ON wo.warehouse_id = wh.id AND wh.company_id = :company_id
-            LEFT JOIN time_bookings tb ON wo.id = tb.manufacturing_order_id AND tb.company_id = :company_id
+            LEFT JOIN time_bookings tb ON wo.work_order_number::text = tb.manufacturing_order_id::text AND tb.company_id = :company_id
             WHERE wo.company_id = :company_id
                 AND wo.start_date BETWEEN :period_start AND :period_end
     """
