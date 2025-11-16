@@ -2,7 +2,7 @@
   position: sticky;
   top: 0;
   z-index: 1000;
-  background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+  background: var(--brand-gradient);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
@@ -74,14 +74,15 @@
 }
 
 .mega-menu-item-special {
-  background: linear-gradient(135deg, #ec4899 0%, #f472b6 100%);
-  color: white !important;
+  background: var(--brand-gold);
+  color: var(--brand-navy) !important;
+  font-weight: 600;
 }
 
 .mega-menu-item-special:hover {
-  background: linear-gradient(135deg, #db2777 0%, #ec4899 100%);
+  background: #ffcc33;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(236, 72, 153, 0.3);
+  box-shadow: 0 4px 12px rgba(255, 184, 0, 0.3);
 }
 
 .mega-menu-dropdown {
@@ -162,13 +163,13 @@
 
 .mega-menu-link:hover {
   background: #f3f4f6;
-  color: #1e40af;
+  color: var(--brand-navy);
   transform: translateX(4px);
 }
 
 .mega-menu-link.active {
-  background: #dbeafe;
-  color: #1e40af;
+  background: #fff9e6;
+  color: var(--brand-navy);
   font-weight: 600;
 }
 
