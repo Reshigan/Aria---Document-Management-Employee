@@ -73,7 +73,8 @@ def get_ar_aging(
                 :as_of_date - i.due_date as days_overdue
             FROM invoices i
             LEFT JOIN customers c ON i.customer_id = c.id AND c.company_id = :company_id
-            LEFT JOIN payments p ON i.id = p.invoice_id AND p.company_id = :company_id AND p.status = 'COMPLETED'
+            LEFT JOIN payment_allocations pa ON i.id = pa.customer_invoice_id
+            LEFT JOIN payments p ON pa.payment_id = p.id AND p.company_id = :company_id AND p.status = 'COMPLETED'
             WHERE i.company_id = :company_id
                 AND i.status IN ('POSTED', 'PARTIALLY_PAID')
                 AND i.invoice_date <= :as_of_date
@@ -129,7 +130,8 @@ def get_ar_aging_drilldown(
             :as_of_date - i.due_date as days_overdue,
             i.status
         FROM invoices i
-        LEFT JOIN payments p ON i.id = p.invoice_id AND p.company_id = :company_id AND p.status = 'COMPLETED'
+        LEFT JOIN payment_allocations pa ON i.id = pa.customer_invoice_id
+            LEFT JOIN payments p ON pa.payment_id = p.id AND p.company_id = :company_id AND p.status = 'COMPLETED'
         WHERE i.company_id = :company_id
             AND i.customer_id = :customer_id
             AND i.status IN ('POSTED', 'PARTIALLY_PAID')
@@ -407,7 +409,8 @@ def get_credit_control_drilldown(
             i.status,
             i.payment_terms
         FROM invoices i
-        LEFT JOIN payments p ON i.id = p.invoice_id AND p.company_id = :company_id AND p.status = 'COMPLETED'
+        LEFT JOIN payment_allocations pa ON i.id = pa.customer_invoice_id
+            LEFT JOIN payments p ON pa.payment_id = p.id AND p.company_id = :company_id AND p.status = 'COMPLETED'
         WHERE i.company_id = :company_id
             AND i.customer_id = :customer_id
             AND i.status IN ('POSTED', 'PARTIALLY_PAID')

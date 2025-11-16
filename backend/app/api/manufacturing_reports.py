@@ -74,7 +74,8 @@ def get_wip_variance(
                 COALESCE(SUM(tb.hours_worked * tb.hourly_rate), 0) as actual_cost
             FROM work_orders wo
             JOIN items i ON wo.product_id = i.id AND i.company_id = :company_id
-            LEFT JOIN standard_costs sc ON wo.product_id = sc.item_id AND sc.company_id = :company_id AND sc.is_active = TRUE
+            LEFT JOIN items i_std ON wo.product_id = i_std.id AND i_std.company_id = :company_id
+            LEFT JOIN standard_costs sc ON i_std.item_code = sc.item_id AND sc.company_id = :company_id AND sc.is_active = TRUE
             LEFT JOIN material_consumption mc ON wo.id = mc.work_order_id AND mc.company_id = :company_id
             LEFT JOIN time_booking_entries tb ON wo.id = tb.work_order_id AND tb.company_id = :company_id
             WHERE wo.company_id = :company_id
