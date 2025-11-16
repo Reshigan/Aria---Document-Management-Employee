@@ -398,7 +398,7 @@ def get_gl_ledger_analysis(
         query += " AND jel.account_code = :account_code"
         params["account_code"] = account_code
     
-    query += " ORDER BY je.posting_date DESC, je.reference_number as journal_number DESC OFFSET :skip LIMIT :limit"
+    query += " ORDER BY je.posting_date DESC, je.reference_number DESC OFFSET :skip LIMIT :limit"
     
     result = db.execute(text(query), params)
     return [dict(row._mapping) for row in result]
