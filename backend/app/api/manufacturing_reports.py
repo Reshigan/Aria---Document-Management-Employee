@@ -73,8 +73,8 @@ def get_wip_variance(
                 COALESCE(SUM(mc.quantity_consumed * mc.unit_cost), 0) + 
                 COALESCE(SUM(tb.hours_worked * tb.hourly_rate), 0) as actual_cost
             FROM work_orders wo
-            JOIN items i ON wo.item_id = i.id AND i.company_id = :company_id
-            LEFT JOIN standard_costs sc ON wo.item_id = sc.item_id AND sc.company_id = :company_id AND sc.is_active = TRUE
+            JOIN items i ON wo.product_id = i.id AND i.company_id = :company_id
+            LEFT JOIN standard_costs sc ON wo.product_id = sc.item_id AND sc.company_id = :company_id AND sc.is_active = TRUE
             LEFT JOIN material_consumption mc ON wo.id = mc.work_order_id AND mc.company_id = :company_id
             LEFT JOIN time_booking_entries tb ON wo.id = tb.work_order_id AND tb.company_id = :company_id
             WHERE wo.company_id = :company_id
@@ -211,7 +211,7 @@ def get_production_efficiency(
                 END as efficiency_percent,
                 wo.status
             FROM work_orders wo
-            JOIN items i ON wo.item_id = i.id AND i.company_id = :company_id
+            JOIN items i ON wo.product_id = i.id AND i.company_id = :company_id
             LEFT JOIN work_centers wc ON wo.work_center_id = wc.id AND wc.company_id = :company_id
             LEFT JOIN time_booking_entries tb ON wo.id = tb.work_order_id AND tb.company_id = :company_id
             WHERE wo.company_id = :company_id
@@ -273,7 +273,7 @@ def get_time_booking_analysis(
         FROM time_booking_entries tb
         LEFT JOIN users u ON tb.employee_id = u.id
         LEFT JOIN work_orders wo ON tb.work_order_id = wo.id AND wo.company_id = :company_id
-        LEFT JOIN items i ON wo.item_id = i.id AND i.company_id = :company_id
+        LEFT JOIN items i ON wo.product_id = i.id AND i.company_id = :company_id
         LEFT JOIN work_centers wc ON wo.work_center_id = wc.id AND wc.company_id = :company_id
         WHERE tb.company_id = :company_id
             AND tb.booking_date BETWEEN :period_start AND :period_end
@@ -338,7 +338,7 @@ def get_time_booking_summary(
                 SUM(tb.hours_worked * tb.hourly_rate) as total_labor_cost
             FROM time_booking_entries tb
             JOIN work_orders wo ON tb.work_order_id = wo.id AND wo.company_id = :company_id
-            JOIN items i ON wo.item_id = i.id AND i.company_id = :company_id
+            JOIN items i ON wo.product_id = i.id AND i.company_id = :company_id
             WHERE tb.company_id = :company_id
                 AND tb.booking_date BETWEEN :period_start AND :period_end
             GROUP BY wo.id, wo.work_order_number, i.item_code, i.item_name
@@ -403,7 +403,7 @@ def get_material_consumption(
         FROM material_consumption mc
         JOIN items i ON mc.item_id = i.id AND i.company_id = :company_id
         JOIN work_orders wo ON mc.work_order_id = wo.id AND wo.company_id = :company_id
-        JOIN items i_wo ON wo.item_id = i_wo.id AND i_wo.company_id = :company_id
+        JOIN items i_wo ON wo.product_id = i_wo.id AND i_wo.company_id = :company_id
         LEFT JOIN warehouses w ON mc.warehouse_id = w.id AND w.company_id = :company_id
         WHERE mc.company_id = :company_id
             AND mc.consumption_date BETWEEN :period_start AND :period_end
@@ -468,7 +468,7 @@ def get_material_consumption_summary(
                 SUM(mc.quantity_consumed * mc.unit_cost) as total_material_cost
             FROM material_consumption mc
             JOIN work_orders wo ON mc.work_order_id = wo.id AND wo.company_id = :company_id
-            JOIN items i ON wo.item_id = i.id AND i.company_id = :company_id
+            JOIN items i ON wo.product_id = i.id AND i.company_id = :company_id
             WHERE mc.company_id = :company_id
                 AND mc.consumption_date BETWEEN :period_start AND :period_end
             GROUP BY wo.id, wo.work_order_number, i.item_code, i.item_name

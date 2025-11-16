@@ -57,20 +57,20 @@ def get_trial_balance(
     query = """
         WITH account_balances AS (
             SELECT 
-                coa.account_code,
+                coa.code,
                 coa.account_name,
                 coa.account_type,
                 COALESCE(SUM(CASE WHEN jel.debit_credit = 'DEBIT' THEN jel.amount ELSE 0 END), 0) as total_debits,
                 COALESCE(SUM(CASE WHEN jel.debit_credit = 'CREDIT' THEN jel.amount ELSE 0 END), 0) as total_credits
             FROM chart_of_accounts coa
-            LEFT JOIN journal_entry_lines jel ON coa.account_code = jel.account_code 
+            LEFT JOIN journal_entry_lines jel ON coa.code = jel.account_id 
                 AND jel.company_id = :company_id
             LEFT JOIN journal_entries je ON jel.journal_entry_id = je.id 
                 AND je.posting_date <= :as_of_date
                 AND je.status = 'POSTED'
             WHERE coa.company_id = :company_id
                 AND coa.is_active = TRUE
-            GROUP BY coa.account_code, coa.account_name, coa.account_type
+            GROUP BY coa.code, coa.account_name, coa.account_type
         )
         SELECT 
             account_code,
@@ -123,7 +123,7 @@ def get_trial_balance_drilldown(
         FROM journal_entry_lines jel
         JOIN journal_entries je ON jel.journal_entry_id = je.id
         WHERE jel.company_id = :company_id
-            AND jel.account_code = :account_code
+            AND jel.account_id = :account_code
             AND je.posting_date <= :as_of_date
             AND je.status = 'POSTED'
         ORDER BY je.posting_date DESC, je.journal_number DESC
@@ -168,14 +168,14 @@ def get_balance_sheet(
     query = """
         WITH account_balances AS (
             SELECT 
-                coa.account_code,
+                coa.code,
                 coa.account_name,
                 coa.account_type,
                 coa.account_category,
                 COALESCE(SUM(CASE WHEN jel.debit_credit = 'DEBIT' THEN jel.amount ELSE 0 END), 0) -
                 COALESCE(SUM(CASE WHEN jel.debit_credit = 'CREDIT' THEN jel.amount ELSE 0 END), 0) as balance
             FROM chart_of_accounts coa
-            LEFT JOIN journal_entry_lines jel ON coa.account_code = jel.account_code 
+            LEFT JOIN journal_entry_lines jel ON coa.code = jel.account_id 
                 AND jel.company_id = :company_id
             LEFT JOIN journal_entries je ON jel.journal_entry_id = je.id 
                 AND je.posting_date <= :as_of_date
@@ -183,7 +183,7 @@ def get_balance_sheet(
             WHERE coa.company_id = :company_id
                 AND coa.is_active = TRUE
                 AND coa.account_type IN ('ASSET', 'LIABILITY', 'EQUITY')
-            GROUP BY coa.account_code, coa.account_name, coa.account_type, coa.account_category
+            GROUP BY coa.code, coa.account_name, coa.account_type, coa.account_category
         )
         SELECT 
             account_code,
@@ -263,14 +263,14 @@ def get_income_statement(
     query = """
         WITH account_balances AS (
             SELECT 
-                coa.account_code,
+                coa.code,
                 coa.account_name,
                 coa.account_type,
                 coa.account_category,
                 COALESCE(SUM(CASE WHEN jel.debit_credit = 'CREDIT' THEN jel.amount ELSE 0 END), 0) -
                 COALESCE(SUM(CASE WHEN jel.debit_credit = 'DEBIT' THEN jel.amount ELSE 0 END), 0) as balance
             FROM chart_of_accounts coa
-            LEFT JOIN journal_entry_lines jel ON coa.account_code = jel.account_code 
+            LEFT JOIN journal_entry_lines jel ON coa.code = jel.account_id 
                 AND jel.company_id = :company_id
             LEFT JOIN journal_entries je ON jel.journal_entry_id = je.id 
                 AND je.posting_date BETWEEN :period_start AND :period_end
@@ -278,7 +278,7 @@ def get_income_statement(
             WHERE coa.company_id = :company_id
                 AND coa.is_active = TRUE
                 AND coa.account_type IN ('REVENUE', 'EXPENSE', 'COST_OF_SALES')
-            GROUP BY coa.account_code, coa.account_name, coa.account_type, coa.account_category
+            GROUP BY coa.code, coa.account_name, coa.account_type, coa.account_category
         )
         SELECT 
             account_code,
@@ -370,7 +370,7 @@ def get_gl_ledger_analysis(
             je.posting_date,
             je.journal_number,
             je.description as journal_description,
-            jel.account_code,
+            jel.account_id,
             coa.account_name,
             jel.description as line_description,
             jel.debit_credit,
@@ -379,10 +379,10 @@ def get_gl_ledger_analysis(
             je.source_document_id,
             je.created_by,
             SUM(CASE WHEN jel.debit_credit = 'DEBIT' THEN jel.amount ELSE -jel.amount END) 
-                OVER (PARTITION BY jel.account_code ORDER BY je.posting_date, je.journal_number) as running_balance
+                OVER (PARTITION BY jel.account_id ORDER BY je.posting_date, je.journal_number) as running_balance
         FROM journal_entry_lines jel
         JOIN journal_entries je ON jel.journal_entry_id = je.id
-        JOIN chart_of_accounts coa ON jel.account_code = coa.account_code AND coa.company_id = :company_id
+        JOIN chart_of_accounts coa ON jel.account_id = coa.code AND coa.company_id = :company_id
         WHERE jel.company_id = :company_id
             AND je.posting_date BETWEEN :period_start AND :period_end
             AND je.status = 'POSTED'
@@ -397,7 +397,7 @@ def get_gl_ledger_analysis(
     }
     
     if account_code:
-        query += " AND jel.account_code = :account_code"
+        query += " AND jel.account_id = :account_code"
         params["account_code"] = account_code
     
     query += " ORDER BY je.posting_date DESC, je.journal_number DESC OFFSET :skip LIMIT :limit"
@@ -432,7 +432,7 @@ def get_financial_ratios(
                 COALESCE(SUM(CASE WHEN jel.debit_credit = 'DEBIT' THEN jel.amount ELSE 0 END), 0) -
                 COALESCE(SUM(CASE WHEN jel.debit_credit = 'CREDIT' THEN jel.amount ELSE 0 END), 0) as balance
             FROM chart_of_accounts coa
-            LEFT JOIN journal_entry_lines jel ON coa.account_code = jel.account_code 
+            LEFT JOIN journal_entry_lines jel ON coa.code = jel.account_id 
                 AND jel.company_id = :company_id
             LEFT JOIN journal_entries je ON jel.journal_entry_id = je.id 
                 AND je.posting_date <= :as_of_date
@@ -462,7 +462,7 @@ def get_financial_ratios(
             COALESCE(SUM(CASE WHEN coa.account_type = 'COST_OF_SALES' THEN jel.amount ELSE 0 END), 0) as cogs
         FROM journal_entry_lines jel
         JOIN journal_entries je ON jel.journal_entry_id = je.id
-        JOIN chart_of_accounts coa ON jel.account_code = coa.account_code AND coa.company_id = :company_id
+        JOIN chart_of_accounts coa ON jel.account_id = coa.code AND coa.company_id = :company_id
         WHERE jel.company_id = :company_id
             AND je.posting_date BETWEEN DATE_TRUNC('year', :as_of_date::date) AND :as_of_date
             AND je.status = 'POSTED'
