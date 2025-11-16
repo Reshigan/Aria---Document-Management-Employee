@@ -439,6 +439,41 @@ try:
 except Exception as e:
     print(f"⚠️ Inventory Admin Configuration API not loaded: {e}")
 
+try:
+    from app.api.ar_ap_banking_admin_config import router as ar_ap_banking_admin_config_router
+    app.include_router(ar_ap_banking_admin_config_router)
+    print("✅ AR/AP/Banking Admin Configuration API loaded")
+except Exception as e:
+    print(f"⚠️ AR/AP/Banking Admin Configuration API not loaded: {e}")
+
+try:
+    from app.api.manufacturing_admin_config import router as manufacturing_admin_config_router
+    app.include_router(manufacturing_admin_config_router)
+    print("✅ Manufacturing Admin Configuration API loaded")
+except Exception as e:
+    print(f"⚠️ Manufacturing Admin Configuration API not loaded: {e}")
+
+try:
+    from app.api.quality_admin_config import router as quality_admin_config_router
+    app.include_router(quality_admin_config_router)
+    print("✅ Quality Admin Configuration API loaded")
+except Exception as e:
+    print(f"⚠️ Quality Admin Configuration API not loaded: {e}")
+
+try:
+    from app.api.payroll_hr_admin_config import router as payroll_hr_admin_config_router
+    app.include_router(payroll_hr_admin_config_router)
+    print("✅ Payroll/HR Admin Configuration API loaded")
+except Exception as e:
+    print(f"⚠️ Payroll/HR Admin Configuration API not loaded: {e}")
+
+try:
+    from app.api.workflow_admin_config import router as workflow_admin_config_router
+    app.include_router(workflow_admin_config_router)
+    print("✅ Workflow Admin Configuration API loaded")
+except Exception as e:
+    print(f"⚠️ Workflow Admin Configuration API not loaded: {e}")
+
 # try:
 #     from api.routes.admin import router as admin_routes_router
 #     app.include_router(admin_routes_router, prefix="/api")
