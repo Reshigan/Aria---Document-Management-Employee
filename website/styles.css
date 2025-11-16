@@ -571,3 +571,48 @@ body {
 .product-attribution a:hover {
     text-decoration: underline;
 }
+
+/* Offices Section */
+.offices-section {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.offices-section h3 {
+    color: white;
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.offices-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.office {
+    text-align: center;
+    color: white;
+}
+
+.office strong {
+    display: block;
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+}
+
+.office p {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.9rem;
+}
+
+@media (max-width: 768px) {
+    .offices-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+}
