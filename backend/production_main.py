@@ -474,6 +474,48 @@ try:
 except Exception as e:
     print(f"⚠️ Workflow Admin Configuration API not loaded: {e}")
 
+try:
+    from app.api.financial_reports import router as financial_reports_router
+    app.include_router(financial_reports_router)
+    print("✅ Financial Reports API loaded")
+except Exception as e:
+    print(f"⚠️ Financial Reports API not loaded: {e}")
+
+try:
+    from app.api.ar_ap_reports import router as ar_ap_reports_router
+    app.include_router(ar_ap_reports_router)
+    print("✅ AR/AP Reports API loaded")
+except Exception as e:
+    print(f"⚠️ AR/AP Reports API not loaded: {e}")
+
+try:
+    from app.api.inventory_reports import router as inventory_reports_router
+    app.include_router(inventory_reports_router)
+    print("✅ Inventory Reports API loaded")
+except Exception as e:
+    print(f"⚠️ Inventory Reports API not loaded: {e}")
+
+try:
+    from app.api.manufacturing_reports import router as manufacturing_reports_router
+    app.include_router(manufacturing_reports_router)
+    print("✅ Manufacturing Reports API loaded")
+except Exception as e:
+    print(f"⚠️ Manufacturing Reports API not loaded: {e}")
+
+try:
+    from app.api.sales_purchase_reports import router as sales_purchase_reports_router
+    app.include_router(sales_purchase_reports_router)
+    print("✅ Sales/Purchase Reports API loaded")
+except Exception as e:
+    print(f"⚠️ Sales/Purchase Reports API not loaded: {e}")
+
+try:
+    from app.api.quality_reports import router as quality_reports_router
+    app.include_router(quality_reports_router)
+    print("✅ Quality Reports API loaded")
+except Exception as e:
+    print(f"⚠️ Quality Reports API not loaded: {e}")
+
 # try:
 #     from api.routes.admin import router as admin_routes_router
 #     app.include_router(admin_routes_router, prefix="/api")
