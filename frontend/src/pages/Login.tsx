@@ -27,13 +27,13 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4" style={{ background: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)' }}>
+    <div className="min-h-screen flex items-center justify-center p-4" style={{ background: 'linear-gradient(135deg, #1a2332 0%, #0f1419 100%)' }}>
       <div className="max-w-md w-full bg-white rounded-2xl shadow-2xl p-8">
         <div className="text-center mb-8">
           <div className="mb-4">
-            <h1 style={{ fontSize: '2.5rem', fontWeight: '700', color: '#1e40af', margin: 0 }}>ARIA</h1>
+            <h1 style={{ fontSize: '2.5rem', fontWeight: '700', color: '#1a2332', margin: 0 }}>ARIA</h1>
             <p style={{ fontSize: '0.875rem', color: '#6b7280', marginTop: '0.25rem' }}>
-              by <span style={{ fontWeight: '600', color: '#1e40af' }}>Vanta<span style={{ color: '#f59e0b' }}>X</span></span>
+              by <span style={{ fontWeight: '600', color: '#1a2332' }}>Vanta<span style={{ color: '#FFB800' }}>X</span></span>
             </p>
           </div>
           <p className="text-gray-600 mt-2">AI-Native ERP Platform</p>
