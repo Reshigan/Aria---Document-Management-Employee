@@ -3,10 +3,16 @@ from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 from typing import Optional
 import io
+import sys
+import os
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 
-from backend.core.document_attachments import AttachmentService
-from backend.app.database import get_db
-from backend.app.auth import get_current_user
+from core.document_attachments import AttachmentService
+from app.database import get_db
+try:
+    from app.auth import get_current_user
+except ImportError:
+    from auth_integrated import get_current_user
 
 router = APIRouter()
 
