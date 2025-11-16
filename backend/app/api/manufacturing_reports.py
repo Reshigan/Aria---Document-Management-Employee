@@ -77,7 +77,7 @@ def get_wip_variance(
             LEFT JOIN items i_std ON wo.product_id = i_std.id AND i_std.company_id = :company_id
             LEFT JOIN standard_costs sc ON i_std.item_code = sc.item_id AND sc.company_id = :company_id AND sc.is_active = TRUE
             LEFT JOIN work_order_material_usage mc ON wo.id = mc.work_order_id AND mc.company_id = :company_id
-            LEFT JOIN time_bookings tb ON wo.id = tb.work_order_id AND tb.company_id = :company_id
+            LEFT JOIN time_bookings tb ON wo.id = tb.manufacturing_order_id AND tb.company_id = :company_id
             WHERE wo.company_id = :company_id
                 AND wo.start_date <= :as_of_date
     """
@@ -151,7 +151,7 @@ def get_wip_variance_drilldown(
     labor_query = """
         SELECT 
             tb.id as time_entry_id,
-            tb.booking_date,
+            tb.work_date,
             u.email as employee_name,
             tb.hours_worked,
             tb.hourly_rate,
@@ -160,8 +160,8 @@ def get_wip_variance_drilldown(
         FROM time_bookings tb
         LEFT JOIN users u ON tb.employee_id = u.id
         WHERE tb.company_id = :company_id
-            AND tb.work_order_id = :work_order_id
-        ORDER BY tb.booking_date DESC
+            AND tb.manufacturing_order_id = :work_order_id
+        ORDER BY tb.work_date DESC
     """
     
     params = {"company_id": company_id, "work_order_id": work_order_id}
@@ -214,7 +214,7 @@ def get_production_efficiency(
             FROM work_orders wo
             JOIN items i ON wo.product_id = i.id AND i.company_id = :company_id
             LEFT JOIN warehouses wh ON wo.warehouse_id = wh.id AND wh.company_id = :company_id
-            LEFT JOIN time_bookings tb ON wo.id = tb.work_order_id AND tb.company_id = :company_id
+            LEFT JOIN time_bookings tb ON wo.id = tb.manufacturing_order_id AND tb.company_id = :company_id
             WHERE wo.company_id = :company_id
                 AND wo.start_date BETWEEN :period_start AND :period_end
     """
@@ -260,7 +260,7 @@ def get_time_booking_analysis(
     query = """
         SELECT 
             tb.id as time_entry_id,
-            tb.booking_date,
+            tb.work_date,
             u.email as employee_name,
             wo.work_order_number,
             i.item_code,
@@ -273,11 +273,11 @@ def get_time_booking_analysis(
             tb.notes
         FROM time_bookings tb
         LEFT JOIN users u ON tb.employee_id = u.id
-        LEFT JOIN work_orders wo ON tb.work_order_id = wo.id AND wo.company_id = :company_id
+        LEFT JOIN work_orders wo ON tb.manufacturing_order_id = wo.id AND wo.company_id = :company_id
         LEFT JOIN items i ON wo.product_id = i.id AND i.company_id = :company_id
         LEFT JOIN warehouses wh ON wo.warehouse_id = wh.id AND wh.company_id = :company_id
         WHERE tb.company_id = :company_id
-            AND tb.booking_date BETWEEN :period_start AND :period_end
+            AND tb.work_date BETWEEN :period_start AND :period_end
     """
     
     params = {
@@ -293,10 +293,10 @@ def get_time_booking_analysis(
         params["employee_id"] = employee_id
     
     if work_order_id:
-        query += " AND tb.work_order_id = :work_order_id"
+        query += " AND tb.manufacturing_order_id = :work_order_id"
         params["work_order_id"] = work_order_id
     
-    query += " ORDER BY tb.booking_date DESC, tb.id DESC OFFSET :skip LIMIT :limit"
+    query += " ORDER BY tb.work_date DESC, tb.id DESC OFFSET :skip LIMIT :limit"
     
     result = db.execute(text(query), params)
     return [dict(row._mapping) for row in result]
@@ -323,7 +323,7 @@ def get_time_booking_summary(
             FROM time_bookings tb
             LEFT JOIN users u ON tb.employee_id = u.id
             WHERE tb.company_id = :company_id
-                AND tb.booking_date BETWEEN :period_start AND :period_end
+                AND tb.work_date BETWEEN :period_start AND :period_end
             GROUP BY u.id, u.email
             ORDER BY total_hours DESC
         """
@@ -338,10 +338,10 @@ def get_time_booking_summary(
                 SUM(tb.hours_worked) as total_hours,
                 SUM(tb.hours_worked * tb.hourly_rate) as total_labor_cost
             FROM time_bookings tb
-            JOIN work_orders wo ON tb.work_order_id = wo.id AND wo.company_id = :company_id
+            JOIN work_orders wo ON tb.manufacturing_order_id = wo.id AND wo.company_id = :company_id
             JOIN items i ON wo.product_id = i.id AND i.company_id = :company_id
             WHERE tb.company_id = :company_id
-                AND tb.booking_date BETWEEN :period_start AND :period_end
+                AND tb.work_date BETWEEN :period_start AND :period_end
             GROUP BY wo.id, wo.work_order_number, i.item_code, i.item_name
             ORDER BY total_hours DESC
         """
@@ -354,10 +354,10 @@ def get_time_booking_summary(
                 SUM(tb.hours_worked) as total_hours,
                 SUM(tb.hours_worked * tb.hourly_rate) as total_labor_cost
             FROM time_bookings tb
-            JOIN work_orders wo ON tb.work_order_id = wo.id AND wo.company_id = :company_id
+            JOIN work_orders wo ON tb.manufacturing_order_id = wo.id AND wo.company_id = :company_id
             JOIN work_centers wc ON wo.warehouse_id = wc.id AND wh.company_id = :company_id
             WHERE tb.company_id = :company_id
-                AND tb.booking_date BETWEEN :period_start AND :period_end
+                AND tb.work_date BETWEEN :period_start AND :period_end
             GROUP BY wc.id, wh.name
             ORDER BY total_hours DESC
         """
