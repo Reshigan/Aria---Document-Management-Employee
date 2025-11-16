@@ -147,7 +147,7 @@ def get_sales_kpis(
             SUM(sol.quantity * sol.unit_price) as total_revenue
         FROM sales_order_lines sol
         JOIN sales_orders so ON sol.sales_order_id = so.id AND so.company_id = :company_id
-        JOIN items i ON sol.item_id = i.id AND i.company_id = :company_id
+        JOIN items i ON sol.product_id = i.id AND i.company_id = :company_id
         WHERE sol.company_id = :company_id
             AND so.order_date BETWEEN :period_start AND :period_end
         GROUP BY i.id, i.item_code, i.item_name
@@ -285,7 +285,7 @@ def get_purchase_kpis(
             SUM(pol.quantity * pol.unit_price) as total_spend
         FROM purchase_order_lines pol
         JOIN purchase_orders po ON pol.purchase_order_id = po.id AND po.company_id = :company_id
-        JOIN items i ON pol.item_id = i.id AND i.company_id = :company_id
+        JOIN items i ON pol.product_id = i.id AND i.company_id = :company_id
         WHERE pol.company_id = :company_id
             AND po.order_date BETWEEN :period_start AND :period_end
         GROUP BY i.id, i.item_code, i.item_name
@@ -438,7 +438,7 @@ def get_profitability_analysis(
                     SUM(sol.quantity * COALESCE(cl.unit_cost, 0)) as cost_of_goods
                 FROM sales_order_lines sol
                 JOIN sales_orders so ON sol.sales_order_id = so.id AND so.company_id = :company_id
-                LEFT JOIN cost_layers cl ON sol.item_id = cl.item_id AND cl.company_id = :company_id
+                LEFT JOIN cost_layers cl ON sol.product_id = cl.product_id AND cl.company_id = :company_id
                 WHERE sol.company_id = :company_id
                     AND so.order_date BETWEEN :period_start AND :period_end
                 GROUP BY so.customer_id
@@ -468,21 +468,21 @@ def get_profitability_analysis(
                     SUM(sol.quantity * sol.unit_price) as revenue
                 FROM sales_order_lines sol
                 JOIN sales_orders so ON sol.sales_order_id = so.id AND so.company_id = :company_id
-                JOIN items i ON sol.item_id = i.id AND i.company_id = :company_id
+                JOIN items i ON sol.product_id = i.id AND i.company_id = :company_id
                 WHERE sol.company_id = :company_id
                     AND so.order_date BETWEEN :period_start AND :period_end
                 GROUP BY i.id, i.item_code, i.item_name
             ),
             item_costs AS (
                 SELECT 
-                    sol.item_id,
+                    sol.product_id,
                     SUM(sol.quantity * COALESCE(cl.unit_cost, 0)) as cost_of_goods
                 FROM sales_order_lines sol
                 JOIN sales_orders so ON sol.sales_order_id = so.id AND so.company_id = :company_id
-                LEFT JOIN cost_layers cl ON sol.item_id = cl.item_id AND cl.company_id = :company_id
+                LEFT JOIN cost_layers cl ON sol.product_id = cl.product_id AND cl.company_id = :company_id
                 WHERE sol.company_id = :company_id
                     AND so.order_date BETWEEN :period_start AND :period_end
-                GROUP BY sol.item_id
+                GROUP BY sol.product_id
             )
             SELECT 
                 ir.item_id,
@@ -519,7 +519,7 @@ def get_profitability_analysis(
                     sol.sales_order_id,
                     SUM(sol.quantity * COALESCE(cl.unit_cost, 0)) as cost_of_goods
                 FROM sales_order_lines sol
-                LEFT JOIN cost_layers cl ON sol.item_id = cl.item_id AND cl.company_id = :company_id
+                LEFT JOIN cost_layers cl ON sol.product_id = cl.product_id AND cl.company_id = :company_id
                 WHERE sol.company_id = :company_id
                 GROUP BY sol.sales_order_id
             )

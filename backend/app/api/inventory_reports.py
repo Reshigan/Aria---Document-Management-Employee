@@ -155,7 +155,7 @@ def get_valuation_drilldown(
             cl.source_document_id
         FROM cost_layers cl
         WHERE cl.company_id = :company_id
-            AND cl.item_id = :item_id
+            AND cl.product_id = :item_id
             AND cl.warehouse_id = :warehouse_id
             AND cl.receipt_date <= :as_of_date
             AND cl.remaining_quantity > 0
@@ -264,7 +264,7 @@ def get_cost_layers(
             cl.source_document_type,
             cl.source_document_id
         FROM cost_layers cl
-        JOIN items i ON cl.item_id = i.id AND i.company_id = :company_id
+        JOIN items i ON cl.product_id = i.id AND i.company_id = :company_id
         JOIN warehouses w ON cl.warehouse_id = w.id AND w.company_id = :company_id
         WHERE cl.company_id = :company_id
             AND cl.receipt_date <= :as_of_date
@@ -279,7 +279,7 @@ def get_cost_layers(
     }
     
     if item_id:
-        query += " AND cl.item_id = :item_id"
+        query += " AND cl.product_id = :item_id"
         params["item_id"] = item_id
     
     if warehouse_id:
@@ -449,7 +449,7 @@ def get_stock_aging(
     query = """
         WITH cost_layer_aging AS (
             SELECT 
-                cl.item_id,
+                cl.product_id,
                 cl.warehouse_id,
                 cl.remaining_quantity,
                 cl.unit_cost,
