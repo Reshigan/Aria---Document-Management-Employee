@@ -432,6 +432,13 @@ try:
 except Exception as e:
     print(f"⚠️ GL/Financial Admin Configuration API not loaded: {e}")
 
+try:
+    from app.api.inventory_admin_config import router as inventory_admin_config_router
+    app.include_router(inventory_admin_config_router)
+    print("✅ Inventory Admin Configuration API loaded")
+except Exception as e:
+    print(f"⚠️ Inventory Admin Configuration API not loaded: {e}")
+
 # try:
 #     from api.routes.admin import router as admin_routes_router
 #     app.include_router(admin_routes_router, prefix="/api")
