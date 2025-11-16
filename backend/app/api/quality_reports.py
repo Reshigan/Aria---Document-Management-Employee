@@ -65,25 +65,25 @@ def get_yield_analysis(
         WITH work_order_yield AS (
             SELECT 
                 wo.id as work_order_id,
-                wo.work_order_number,
+                wo.wo_number as work_order_number,
                 i.item_code,
                 i.item_name,
-                wo.quantity_ordered,
-                wo.quantity_completed,
+                wo.quantity_to_produce as quantity_ordered,
+                wo.quantity_produced as quantity_completed,
                 COALESCE(wo.quantity_scrapped, 0) as quantity_scrapped,
                 CASE 
-                    WHEN wo.quantity_ordered > 0 
-                    THEN (wo.quantity_completed::DECIMAL / wo.quantity_ordered * 100)
+                    WHEN wo.quantity_to_produce > 0 
+                    THEN (wo.quantity_produced::DECIMAL / wo.quantity_to_produce * 100)
                     ELSE 0
                 END as yield_percent,
                 CASE 
-                    WHEN wo.quantity_ordered > 0 
-                    THEN ((wo.quantity_completed - COALESCE(wo.quantity_reworked, 0))::DECIMAL / wo.quantity_ordered * 100)
+                    WHEN wo.quantity_to_produce > 0 
+                    THEN ((wo.quantity_produced - COALESCE(wo.quantity_reworked, 0))::DECIMAL / wo.quantity_to_produce * 100)
                     ELSE 0
                 END as first_pass_yield,
                 wo.status
             FROM work_orders wo
-            JOIN items i ON wo.item_id = i.id AND i.company_id = :company_id
+            JOIN items i ON wo.product_id = i.id AND i.company_id = :company_id
             WHERE wo.company_id = :company_id
                 AND wo.start_date BETWEEN :period_start AND :period_end
     """
@@ -95,7 +95,7 @@ def get_yield_analysis(
     }
     
     if item_id:
-        query += " AND wo.item_id = :item_id"
+        query += " AND wo.product_id = :item_id"
         params["item_id"] = item_id
     
     if work_center_id:
@@ -206,7 +206,7 @@ def get_defects_analysis(
             FROM quality_defects qd
             JOIN quality_inspections qi ON qd.inspection_id = qi.id AND qi.company_id = :company_id
             JOIN work_orders wo ON qi.work_order_id = wo.id AND wo.company_id = :company_id
-            JOIN items i ON wo.item_id = i.id AND i.company_id = :company_id
+            JOIN items i ON wo.product_id = i.id AND i.company_id = :company_id
             WHERE qd.company_id = :company_id
                 AND qi.inspection_date BETWEEN :period_start AND :period_end
             GROUP BY i.id, i.item_code, i.item_name
@@ -290,7 +290,7 @@ def get_defects_drilldown(
         FROM quality_defects qd
         JOIN quality_inspections qi ON qd.inspection_id = qi.id AND qi.company_id = :company_id
         JOIN work_orders wo ON qi.work_order_id = wo.id AND wo.company_id = :company_id
-        JOIN items i ON wo.item_id = i.id AND i.company_id = :company_id
+        JOIN items i ON wo.product_id = i.id AND i.company_id = :company_id
         LEFT JOIN work_centers wc ON wo.work_center_id = wc.id AND wc.company_id = :company_id
         WHERE qd.company_id = :company_id
             AND qi.inspection_date BETWEEN :period_start AND :period_end
@@ -309,7 +309,7 @@ def get_defects_drilldown(
         params["defect_type"] = defect_type
     
     if item_id:
-        query += " AND wo.item_id = :item_id"
+        query += " AND wo.product_id = :item_id"
         params["item_id"] = item_id
     
     if work_center_id:
@@ -375,7 +375,7 @@ def get_nonconformance_report(
                 ELSE CURRENT_DATE - ncr.ncr_date
             END as days_open
         FROM nonconformance_reports ncr
-        JOIN items i ON ncr.item_id = i.id AND i.company_id = :company_id
+        JOIN items i ON ncr.product_id = i.id AND i.company_id = :company_id
         WHERE ncr.company_id = :company_id
             AND ncr.ncr_date BETWEEN :period_start AND :period_end
     """
@@ -441,10 +441,10 @@ def get_nonconformance_drilldown(
             ncr.preventive_action,
             ncr.reported_by,
             ncr.assigned_to,
-            wo.work_order_number,
+            wo.wo_number as work_order_number,
             s.name as supplier_name
         FROM nonconformance_reports ncr
-        JOIN items i ON ncr.item_id = i.id AND i.company_id = :company_id
+        JOIN items i ON ncr.product_id = i.id AND i.company_id = :company_id
         LEFT JOIN work_orders wo ON ncr.work_order_id = wo.id AND wo.company_id = :company_id
         LEFT JOIN suppliers s ON ncr.supplier_id = s.id AND s.company_id = :company_id
         WHERE ncr.company_id = :company_id

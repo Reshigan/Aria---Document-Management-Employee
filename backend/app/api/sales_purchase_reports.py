@@ -37,9 +37,12 @@ class SalesKPIs(BaseModel):
     total_delivered: Decimal
     average_order_value: Decimal
     conversion_rate: Decimal
-    top_customer_id: Optional[str]
-    top_customer_name: Optional[str]
+    top_customer_id: Optional[str] = None
+    top_customer_name: Optional[str] = None
     top_customer_revenue: Decimal
+    
+    class Config:
+        from_attributes = True
 
 class SalesKPIsReport(BaseModel):
     company_id: str
@@ -107,7 +110,11 @@ def get_sales_kpis(
         "period_end": period_end
     }).fetchone()
     
-    kpis = SalesKPIs(**dict(result._mapping))
+    result_dict = dict(result._mapping)
+    if result_dict.get('top_customer_id'):
+        result_dict['top_customer_id'] = str(result_dict['top_customer_id'])
+    
+    kpis = SalesKPIs(**result_dict)
     
     by_customer_query = """
         SELECT 
@@ -172,9 +179,12 @@ class PurchaseKPIs(BaseModel):
     total_received: Decimal
     average_order_value: Decimal
     on_time_delivery_rate: Decimal
-    top_supplier_id: Optional[str]
-    top_supplier_name: Optional[str]
+    top_supplier_id: Optional[str] = None
+    top_supplier_name: Optional[str] = None
     top_supplier_spend: Decimal
+    
+    class Config:
+        from_attributes = True
 
 class PurchaseKPIsReport(BaseModel):
     company_id: str
@@ -238,7 +248,11 @@ def get_purchase_kpis(
         "period_end": period_end
     }).fetchone()
     
-    kpis = PurchaseKPIs(**dict(result._mapping))
+    result_dict = dict(result._mapping)
+    if result_dict.get('top_supplier_id'):
+        result_dict['top_supplier_id'] = str(result_dict['top_supplier_id'])
+    
+    kpis = PurchaseKPIs(**result_dict)
     
     by_supplier_query = """
         SELECT 
