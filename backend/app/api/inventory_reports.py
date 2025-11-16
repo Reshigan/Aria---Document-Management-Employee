@@ -99,13 +99,13 @@ def get_inventory_valuation(
         ),
         item_costs AS (
             SELECT 
-                item_id,
+                product_id,
                 warehouse_id,
                 AVG(unit_cost) as avg_unit_cost
             FROM cost_layers
             WHERE company_id = :company_id
                 AND remaining_quantity > 0
-            GROUP BY item_id, warehouse_id
+            GROUP BY product_id, warehouse_id
         )
         SELECT 
             ib.item_id,
@@ -118,7 +118,7 @@ def get_inventory_valuation(
             ib.quantity_on_hand * COALESCE(ic.avg_unit_cost, 0) as total_value,
             ib.valuation_method
         FROM inventory_balances ib
-        LEFT JOIN item_costs ic ON ib.item_id = ic.item_id AND ib.warehouse_id = ic.warehouse_id
+        LEFT JOIN item_costs ic ON ib.item_id = ic.product_id AND ib.warehouse_id = ic.warehouse_id
         ORDER BY ib.item_code, ib.warehouse_name
     """
     

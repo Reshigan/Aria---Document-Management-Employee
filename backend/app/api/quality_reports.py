@@ -182,7 +182,7 @@ def get_defects_analysis(
                 COUNT(DISTINCT qd.id) as defect_count,
                 SUM(qd.quantity) as total_quantity,
                 COUNT(DISTINCT qi.work_order_id) as affected_work_orders
-            FROM quality_defects qd
+            FROM quality_inspection_defects qd
             JOIN quality_inspections qi ON qd.inspection_id = qi.id AND qi.company_id = :company_id
             WHERE qd.company_id = :company_id
                 AND qi.inspection_date BETWEEN :period_start AND :period_end
@@ -203,7 +203,7 @@ def get_defects_analysis(
                     THEN (SUM(qd.quantity)::DECIMAL / SUM(qi.quantity_inspected) * 100)
                     ELSE 0
                 END as defect_rate
-            FROM quality_defects qd
+            FROM quality_inspection_defects qd
             JOIN quality_inspections qi ON qd.inspection_id = qi.id AND qi.company_id = :company_id
             JOIN work_orders wo ON qi.work_order_id = wo.id AND wo.company_id = :company_id
             JOIN items i ON wo.product_id = i.id AND i.company_id = :company_id
@@ -225,7 +225,7 @@ def get_defects_analysis(
                     THEN (SUM(qd.quantity)::DECIMAL / SUM(qi.quantity_inspected) * 100)
                     ELSE 0
                 END as defect_rate
-            FROM quality_defects qd
+            FROM quality_inspection_defects qd
             JOIN quality_inspections qi ON qd.inspection_id = qi.id AND qi.company_id = :company_id
             JOIN work_orders wo ON qi.work_order_id = wo.id AND wo.company_id = :company_id
             JOIN work_centers wc ON wo.work_center_id = wc.id AND wc.company_id = :company_id
@@ -242,7 +242,7 @@ def get_defects_analysis(
                 COUNT(DISTINCT qi.id) as inspection_count,
                 SUM(qd.quantity) as total_defect_quantity,
                 SUM(qi.quantity_inspected) as total_inspected
-            FROM quality_defects qd
+            FROM quality_inspection_defects qd
             JOIN quality_inspections qi ON qd.inspection_id = qi.id AND qi.company_id = :company_id
             WHERE qd.company_id = :company_id
                 AND qi.inspection_date BETWEEN :period_start AND :period_end
@@ -287,7 +287,7 @@ def get_defects_drilldown(
             qd.severity,
             qi.inspector_name,
             qd.corrective_action
-        FROM quality_defects qd
+        FROM quality_inspection_defects qd
         JOIN quality_inspections qi ON qd.inspection_id = qi.id AND qi.company_id = :company_id
         JOIN work_orders wo ON qi.work_order_id = wo.id AND wo.company_id = :company_id
         JOIN items i ON wo.product_id = i.id AND i.company_id = :company_id
@@ -460,7 +460,7 @@ def get_nonconformance_drilldown(
             qd.defect_description,
             qd.quantity,
             qd.severity
-        FROM quality_defects qd
+        FROM quality_inspection_defects qd
         JOIN quality_inspections qi ON qd.inspection_id = qi.id AND qi.company_id = :company_id
         WHERE qd.company_id = :company_id
             AND qd.ncr_id = :ncr_id

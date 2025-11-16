@@ -112,7 +112,7 @@ def get_trial_balance_drilldown(
     query = """
         SELECT 
             je.id as journal_entry_id,
-            je.journal_number,
+            je.reference_number as journal_number,
             je.posting_date,
             je.description as journal_description,
             jel.description as line_description,
@@ -126,7 +126,7 @@ def get_trial_balance_drilldown(
             AND jel.account_code = :account_code
             AND je.posting_date <= :as_of_date
             AND je.status = 'POSTED'
-        ORDER BY je.posting_date DESC, je.journal_number DESC
+        ORDER BY je.posting_date DESC, je.reference_number as journal_number DESC
         OFFSET :skip LIMIT :limit
     """
     
@@ -366,7 +366,7 @@ def get_gl_ledger_analysis(
     query = """
         SELECT 
             je.posting_date,
-            je.journal_number,
+            je.reference_number as journal_number,
             je.description as journal_description,
             jel.account_code,
             coa.name,
@@ -377,7 +377,7 @@ def get_gl_ledger_analysis(
             je.source_document_id,
             je.created_by,
             SUM(jel.debit_amount - jel.credit_amount) 
-                OVER (PARTITION BY jel.account_code ORDER BY je.posting_date, je.journal_number) as running_balance
+                OVER (PARTITION BY jel.account_code ORDER BY je.posting_date, je.reference_number as journal_number) as running_balance
         FROM journal_entry_lines jel
         JOIN journal_entries je ON jel.journal_entry_id = je.id
         JOIN chart_of_accounts coa ON jel.account_code = coa.code AND coa.company_id = :company_id
@@ -398,7 +398,7 @@ def get_gl_ledger_analysis(
         query += " AND jel.account_code = :account_code"
         params["account_code"] = account_code
     
-    query += " ORDER BY je.posting_date DESC, je.journal_number DESC OFFSET :skip LIMIT :limit"
+    query += " ORDER BY je.posting_date DESC, je.reference_number as journal_number DESC OFFSET :skip LIMIT :limit"
     
     result = db.execute(text(query), params)
     return [dict(row._mapping) for row in result]

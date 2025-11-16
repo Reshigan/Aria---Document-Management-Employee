@@ -76,7 +76,7 @@ def get_wip_variance(
             JOIN items i ON wo.product_id = i.id AND i.company_id = :company_id
             LEFT JOIN items i_std ON wo.product_id = i_std.id AND i_std.company_id = :company_id
             LEFT JOIN standard_costs sc ON i_std.item_code = sc.item_id AND sc.company_id = :company_id AND sc.is_active = TRUE
-            LEFT JOIN material_consumption mc ON wo.id = mc.work_order_id AND mc.company_id = :company_id
+            LEFT JOIN work_order_material_usage mc ON wo.id = mc.work_order_id AND mc.company_id = :company_id
             LEFT JOIN time_booking_entries tb ON wo.id = tb.work_order_id AND tb.company_id = :company_id
             WHERE wo.company_id = :company_id
                 AND wo.start_date <= :as_of_date
@@ -141,7 +141,7 @@ def get_wip_variance_drilldown(
             mc.unit_cost,
             mc.quantity_consumed * mc.unit_cost as total_cost,
             'MATERIAL' as cost_type
-        FROM material_consumption mc
+        FROM work_order_material_usage mc
         JOIN items i ON mc.item_id = i.id AND i.company_id = :company_id
         WHERE mc.company_id = :company_id
             AND mc.work_order_id = :work_order_id
@@ -401,7 +401,7 @@ def get_material_consumption(
             mc.lot_number,
             mc.serial_number,
             mc.notes
-        FROM material_consumption mc
+        FROM work_order_material_usage mc
         JOIN items i ON mc.item_id = i.id AND i.company_id = :company_id
         JOIN work_orders wo ON mc.work_order_id = wo.id AND wo.company_id = :company_id
         JOIN items i_wo ON wo.product_id = i_wo.id AND i_wo.company_id = :company_id
@@ -451,7 +451,7 @@ def get_material_consumption_summary(
                 SUM(mc.quantity_consumed) as total_quantity,
                 AVG(mc.unit_cost) as avg_unit_cost,
                 SUM(mc.quantity_consumed * mc.unit_cost) as total_cost
-            FROM material_consumption mc
+            FROM work_order_material_usage mc
             JOIN items i ON mc.item_id = i.id AND i.company_id = :company_id
             WHERE mc.company_id = :company_id
                 AND mc.consumption_date BETWEEN :period_start AND :period_end
@@ -467,7 +467,7 @@ def get_material_consumption_summary(
                 i.item_name,
                 COUNT(DISTINCT mc.id) as total_consumptions,
                 SUM(mc.quantity_consumed * mc.unit_cost) as total_material_cost
-            FROM material_consumption mc
+            FROM work_order_material_usage mc
             JOIN work_orders wo ON mc.work_order_id = wo.id AND wo.company_id = :company_id
             JOIN items i ON wo.product_id = i.id AND i.company_id = :company_id
             WHERE mc.company_id = :company_id
