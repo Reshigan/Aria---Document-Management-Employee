@@ -199,15 +199,15 @@ def get_production_efficiency(
                 wo.start_date,
                 wo.completion_date,
                 COALESCE(SUM(tb.hours_worked), 0) as actual_hours,
-                wo.estimated_hours as standard_hours,
+                0 as standard_hours,
                 CASE 
                     WHEN COALESCE(SUM(tb.hours_worked), 0) > 0 
                     THEN (wo.quantity_produced / COALESCE(SUM(tb.hours_worked), 1))
                     ELSE 0
                 END as units_per_hour,
                 CASE 
-                    WHEN wo.estimated_hours > 0 AND COALESCE(SUM(tb.hours_worked), 0) > 0
-                    THEN ((wo.estimated_hours - COALESCE(SUM(tb.hours_worked), 0)) / wo.estimated_hours * 100)
+                    WHEN COALESCE(SUM(tb.hours_worked), 0) > 0
+                    THEN 100.0
                     ELSE 0
                 END as efficiency_percent,
                 wo.status
@@ -232,7 +232,7 @@ def get_production_efficiency(
     query += """
             GROUP BY wo.id, wo.wo_number, i.item_code, i.item_name, 
                      wh.name, wo.quantity_to_produce, wo.quantity_produced,
-                     wo.start_date, wo.completion_date, wo.estimated_hours, wo.status
+                     wo.start_date, wo.completion_date, wo.status
         )
         SELECT *
         FROM work_order_efficiency
