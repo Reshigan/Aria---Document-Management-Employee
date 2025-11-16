@@ -464,6 +464,27 @@ try:
 except Exception as e:
     print(f"⚠️ TIER 4 Enhancement APIs not loaded: {e}")
 
+try:
+    from app.api.l3 import l3_router
+    app.include_router(l3_router)
+    print("✅ L3 Sub-Detail APIs loaded (51 routers)")
+except Exception as e:
+    print(f"⚠️ L3 Sub-Detail APIs not loaded: {e}")
+
+try:
+    from app.api.l4 import l4_router
+    app.include_router(l4_router)
+    print("✅ L4 Sub-Sub-Detail APIs loaded (35 routers)")
+except Exception as e:
+    print(f"⚠️ L4 Sub-Sub-Detail APIs not loaded: {e}")
+
+try:
+    from app.api.l5 import l5_router
+    app.include_router(l5_router)
+    print("✅ L5 Atomic Detail APIs loaded (20 routers)")
+except Exception as e:
+    print(f"⚠️ L5 Atomic Detail APIs not loaded: {e}")
+
 # try:
 #     from api.gateway.routers.aria import router as aria_router
 #     app.include_router(aria_router, prefix="/api")
