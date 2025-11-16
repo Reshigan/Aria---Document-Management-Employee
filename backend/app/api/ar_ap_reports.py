@@ -195,7 +195,8 @@ def get_ap_aging(
                 :as_of_date - po.expected_delivery_date as days_overdue
             FROM purchase_orders po
             LEFT JOIN suppliers s ON po.supplier_id = s.id AND s.company_id = :company_id
-            LEFT JOIN payments p ON po.id = p.purchase_order_id AND p.company_id = :company_id AND p.status = 'COMPLETED'
+            LEFT JOIN payment_allocations pa ON po.id = pa.supplier_invoice_id
+            LEFT JOIN payments p ON pa.payment_id = p.id AND p.company_id = :company_id AND p.status = 'COMPLETED'
             WHERE po.company_id = :company_id
                 AND po.status IN ('APPROVED', 'PARTIALLY_RECEIVED')
                 AND po.order_date <= :as_of_date

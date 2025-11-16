@@ -104,7 +104,7 @@ def get_inventory_valuation(
                 AVG(unit_cost) as avg_unit_cost
             FROM cost_layers cl
             WHERE cl.company_id = :company_id
-                AND cl.remaining_quantity > 0
+                AND cl.quantity > 0
             GROUP BY product_id, warehouse_id
         )
         SELECT 
@@ -148,9 +148,9 @@ def get_valuation_drilldown(
             cl.receipt_date,
             cl.receipt_reference,
             cl.original_quantity,
-            cl.remaining_quantity,
+            cl.quantity,
             cl.unit_cost,
-            cl.remaining_quantity * cl.unit_cost as layer_value,
+            cl.quantity * cl.unit_cost as layer_value,
             cl.source_document_type,
             cl.source_document_id
         FROM cost_layers cl
@@ -158,7 +158,7 @@ def get_valuation_drilldown(
             AND cl.product_id = :item_id
             AND cl.warehouse_id = :warehouse_id
             AND cl.receipt_date <= :as_of_date
-            AND cl.remaining_quantity > 0
+            AND cl.quantity > 0
         ORDER BY cl.receipt_date, cl.id
     """
     
@@ -257,10 +257,10 @@ def get_cost_layers(
             cl.receipt_date,
             cl.receipt_reference,
             cl.original_quantity,
-            cl.remaining_quantity,
+            cl.quantity,
             cl.unit_cost,
             cl.original_quantity * cl.unit_cost as original_value,
-            cl.remaining_quantity * cl.unit_cost as remaining_value,
+            cl.quantity * cl.unit_cost as remaining_value,
             cl.source_document_type,
             cl.source_document_id
         FROM cost_layers cl
@@ -268,7 +268,7 @@ def get_cost_layers(
         JOIN warehouses w ON cl.warehouse_id = w.id AND w.company_id = :company_id
         WHERE cl.company_id = :company_id
             AND cl.receipt_date <= :as_of_date
-            AND cl.remaining_quantity > 0
+            AND cl.quantity > 0
     """
     
     params = {
@@ -451,13 +451,13 @@ def get_stock_aging(
             SELECT 
                 cl.product_id,
                 cl.warehouse_id,
-                cl.remaining_quantity,
+                cl.quantity,
                 cl.unit_cost,
                 :as_of_date - cl.receipt_date as age_days
             FROM cost_layers cl
             WHERE cl.company_id = :company_id
                 AND cl.receipt_date <= :as_of_date
-                AND cl.remaining_quantity > 0
+                AND cl.quantity > 0
         )
         SELECT 
             i.id as item_id,
