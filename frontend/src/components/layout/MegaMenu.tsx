@@ -6,7 +6,7 @@ import {
   ShoppingBag, Factory, Wrench, ClipboardList, Scale, Briefcase, 
   FolderOpen, TrendingUp, ChevronDown, LogOut
 } from 'lucide-react';
-import { DashboardIcon, FinancialIcon, ReportsIcon, BotsIcon, AriaIcon, AdminIcon } from '../../assets/icons';
+import { DashboardIcon, FinancialIcon, ReportsIcon, AgentsIcon, AriaIcon, AdminIcon } from '../../assets/icons';
 import { useAuthStore } from '../../store/authStore';
 import './MegaMenu.css';
 
@@ -285,11 +285,11 @@ export const MegaMenu: React.FC = () => {
           </Link>
 
           <Link 
-            to="/bots" 
-            className={`mega-menu-item ${isActive('/bots') ? 'active' : ''}`}
+            to="/agents" 
+            className={`mega-menu-item ${isActive('/agents') ? 'active' : ''}`}
           >
-            <BotsIcon size={18} />
-            <span>Bots</span>
+            <AgentsIcon size={18} />
+            <span>Agents</span>
           </Link>
 
           <Link 
