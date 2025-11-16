@@ -210,16 +210,16 @@ export const MegaMenu: React.FC = () => {
     <div className="mega-menu-container">
       <div className="mega-menu-header">
         <div className="mega-menu-logo">
-          <Link to="/">
-            <h1 className="mega-menu-brand">ARIA ERP</h1>
-            <span className="mega-menu-tagline">AI-Native Business Platform</span>
+          <Link to="/dashboard">
+            <h1 className="mega-menu-brand">ARIA</h1>
+            <span className="mega-menu-tagline">by VantaX</span>
           </Link>
         </div>
 
         <nav className="mega-menu-nav">
           <Link 
-            to="/" 
-            className={`mega-menu-item ${isActive('/') && location.pathname === '/' ? 'active' : ''}`}
+            to="/dashboard" 
+            className={`mega-menu-item ${isActive('/dashboard') ? 'active' : ''}`}
           >
             <LayoutDashboard size={18} />
             <span>Dashboard</span>

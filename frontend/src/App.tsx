@@ -30,6 +30,11 @@ import WorkOrders from './pages/Manufacturing/WorkOrders';
 import AgedReceivablesReport from './pages/Reports/AgedReceivablesReport';
 import StockValuationReport from './pages/Reports/StockValuationReport';
 import VATSummaryReport from './pages/Reports/VATSummaryReport';
+import ReportsDashboard from './pages/Reports/ReportsDashboard';
+import FinancialReports from './pages/Reports/FinancialReports';
+import PayrollActivityReport from './pages/reports/PayrollActivityReport';
+import ExpenseManagementReport from './pages/reports/ExpenseManagementReport';
+import BbbeeComplianceReport from './pages/reports/BbbeeComplianceReport';
 import BankingDashboard from './pages/Banking/BankingDashboard';
 import ChatInterface from './components/Chat/ChatInterface';
 import AskAriaChat from './pages/AskAria/AskAriaChat';
@@ -125,10 +130,22 @@ function App() {
           <Route path="/agents" element={<Bots />} />
           
           {/* Reports */}
-          <Route path="/reports" element={<AgedReceivablesReport />} />
+          <Route path="/reports" element={<ReportsDashboard />} />
           <Route path="/reports/ar-aging" element={<AgedReceivablesReport />} />
+          <Route path="/reports/ar-ap/ar-aging" element={<AgedReceivablesReport />} />
+          <Route path="/reports/ar-ap/ap-aging" element={<AgedReceivablesReport />} />
+          <Route path="/reports/ar-ap/cash-flow" element={<FinancialReports />} />
           <Route path="/reports/stock-valuation" element={<StockValuationReport />} />
+          <Route path="/reports/inventory/valuation" element={<StockValuationReport />} />
           <Route path="/reports/vat-summary" element={<VATSummaryReport />} />
+          <Route path="/reports/financial/trial-balance" element={<FinancialReports />} />
+          <Route path="/reports/financial/balance-sheet" element={<FinancialReports />} />
+          <Route path="/reports/financial/income-statement" element={<FinancialReports />} />
+          <Route path="/reports/sales-purchase/sales-kpis" element={<FinancialReports />} />
+          <Route path="/reports/sales-purchase/purchase-kpis" element={<FinancialReports />} />
+          <Route path="/reports/payroll/activity" element={<PayrollActivityReport />} />
+          <Route path="/reports/expense/management" element={<ExpenseManagementReport />} />
+          <Route path="/reports/compliance/bbbee" element={<BbbeeComplianceReport />} />
           
           {/* Settings */}
           <Route path="/settings" element={<Settings />} />
