@@ -187,7 +187,7 @@ def get_ap_aging(
                 s.name as supplier_name,
                 po.id as purchase_order_id,
                 po.po_number,
-                po.order_date,
+                po.po_date,
                 po.expected_delivery_date as due_date,
                 po.total_amount,
                 COALESCE(SUM(p.amount), 0) as paid_amount,
@@ -199,8 +199,8 @@ def get_ap_aging(
             LEFT JOIN payments p ON pa.payment_id = p.id AND p.company_id = :company_id AND p.status = 'COMPLETED'
             WHERE po.company_id = :company_id
                 AND po.status IN ('APPROVED', 'PARTIALLY_RECEIVED')
-                AND po.order_date <= :as_of_date
-            GROUP BY po.id, po.supplier_id, s.name, po.po_number, po.order_date, po.expected_delivery_date, po.total_amount
+                AND po.po_date <= :as_of_date
+            GROUP BY po.id, po.supplier_id, s.name, po.po_number, po.po_date, po.expected_delivery_date, po.total_amount
             HAVING po.total_amount - COALESCE(SUM(p.amount), 0) > 0
         )
         SELECT 
