@@ -418,6 +418,104 @@ try:
 except Exception as e:
     print(f"⚠️ Admin module not loaded: {e}")
 
+try:
+    from app.api.admin_config import router as admin_config_router
+    app.include_router(admin_config_router)
+    print("✅ Admin Configuration API loaded (System Admin)")
+except Exception as e:
+    print(f"⚠️ Admin Configuration API not loaded: {e}")
+
+try:
+    from app.api.gl_admin_config import router as gl_admin_config_router
+    app.include_router(gl_admin_config_router)
+    print("✅ GL/Financial Admin Configuration API loaded")
+except Exception as e:
+    print(f"⚠️ GL/Financial Admin Configuration API not loaded: {e}")
+
+try:
+    from app.api.inventory_admin_config import router as inventory_admin_config_router
+    app.include_router(inventory_admin_config_router)
+    print("✅ Inventory Admin Configuration API loaded")
+except Exception as e:
+    print(f"⚠️ Inventory Admin Configuration API not loaded: {e}")
+
+try:
+    from app.api.ar_ap_banking_admin_config import router as ar_ap_banking_admin_config_router
+    app.include_router(ar_ap_banking_admin_config_router)
+    print("✅ AR/AP/Banking Admin Configuration API loaded")
+except Exception as e:
+    print(f"⚠️ AR/AP/Banking Admin Configuration API not loaded: {e}")
+
+try:
+    from app.api.manufacturing_admin_config import router as manufacturing_admin_config_router
+    app.include_router(manufacturing_admin_config_router)
+    print("✅ Manufacturing Admin Configuration API loaded")
+except Exception as e:
+    print(f"⚠️ Manufacturing Admin Configuration API not loaded: {e}")
+
+try:
+    from app.api.quality_admin_config import router as quality_admin_config_router
+    app.include_router(quality_admin_config_router)
+    print("✅ Quality Admin Configuration API loaded")
+except Exception as e:
+    print(f"⚠️ Quality Admin Configuration API not loaded: {e}")
+
+try:
+    from app.api.payroll_hr_admin_config import router as payroll_hr_admin_config_router
+    app.include_router(payroll_hr_admin_config_router)
+    print("✅ Payroll/HR Admin Configuration API loaded")
+except Exception as e:
+    print(f"⚠️ Payroll/HR Admin Configuration API not loaded: {e}")
+
+try:
+    from app.api.workflow_admin_config import router as workflow_admin_config_router
+    app.include_router(workflow_admin_config_router)
+    print("✅ Workflow Admin Configuration API loaded")
+except Exception as e:
+    print(f"⚠️ Workflow Admin Configuration API not loaded: {e}")
+
+try:
+    from app.api.financial_reports import router as financial_reports_router
+    app.include_router(financial_reports_router)
+    print("✅ Financial Reports API loaded")
+except Exception as e:
+    print(f"⚠️ Financial Reports API not loaded: {e}")
+
+try:
+    from app.api.ar_ap_reports import router as ar_ap_reports_router
+    app.include_router(ar_ap_reports_router)
+    print("✅ AR/AP Reports API loaded")
+except Exception as e:
+    print(f"⚠️ AR/AP Reports API not loaded: {e}")
+
+try:
+    from app.api.inventory_reports import router as inventory_reports_router
+    app.include_router(inventory_reports_router)
+    print("✅ Inventory Reports API loaded")
+except Exception as e:
+    print(f"⚠️ Inventory Reports API not loaded: {e}")
+
+try:
+    from app.api.manufacturing_reports import router as manufacturing_reports_router
+    app.include_router(manufacturing_reports_router)
+    print("✅ Manufacturing Reports API loaded")
+except Exception as e:
+    print(f"⚠️ Manufacturing Reports API not loaded: {e}")
+
+try:
+    from app.api.sales_purchase_reports import router as sales_purchase_reports_router
+    app.include_router(sales_purchase_reports_router)
+    print("✅ Sales/Purchase Reports API loaded")
+except Exception as e:
+    print(f"⚠️ Sales/Purchase Reports API not loaded: {e}")
+
+try:
+    from app.api.quality_reports import router as quality_reports_router
+    app.include_router(quality_reports_router)
+    print("✅ Quality Reports API loaded")
+except Exception as e:
+    print(f"⚠️ Quality Reports API not loaded: {e}")
+
 # try:
 #     from api.routes.admin import router as admin_routes_router
 #     app.include_router(admin_routes_router, prefix="/api")
@@ -463,6 +561,27 @@ try:
     print("✅ TIER 4 Enhancement APIs loaded (Attachments, Comments, Approval, Batch)")
 except Exception as e:
     print(f"⚠️ TIER 4 Enhancement APIs not loaded: {e}")
+
+try:
+    from app.api.l3 import l3_router
+    app.include_router(l3_router)
+    print("✅ L3 Sub-Detail APIs loaded (51 routers)")
+except Exception as e:
+    print(f"⚠️ L3 Sub-Detail APIs not loaded: {e}")
+
+try:
+    from app.api.l4 import l4_router
+    app.include_router(l4_router)
+    print("✅ L4 Sub-Sub-Detail APIs loaded (35 routers)")
+except Exception as e:
+    print(f"⚠️ L4 Sub-Sub-Detail APIs not loaded: {e}")
+
+try:
+    from app.api.l5 import l5_router
+    app.include_router(l5_router)
+    print("✅ L5 Atomic Detail APIs loaded (20 routers)")
+except Exception as e:
+    print(f"⚠️ L5 Atomic Detail APIs not loaded: {e}")
 
 # try:
 #     from api.gateway.routers.aria import router as aria_router
