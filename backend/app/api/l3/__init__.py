@@ -19,12 +19,6 @@ except Exception as e:
     print(f"⚠️ L3 payment_allocations not loaded: {e}")
 
 try:
-    from .invoice_tax_discount import router as invoice_tax_discount_router
-    l3_router.include_router(invoice_tax_discount_router)
-except Exception as e:
-    print(f"⚠️ L3 invoice_tax_discount not loaded: {e}")
-
-try:
     from .po_line_receipts import router as po_line_receipts_router
     l3_router.include_router(po_line_receipts_router)
 except Exception as e:
@@ -217,18 +211,6 @@ except Exception as e:
     print(f"⚠️ L3 payment_proposals not loaded: {e}")
 
 try:
-    from .payment_allocation_detail import router as payment_allocation_detail_router
-    l3_router.include_router(payment_allocation_detail_router)
-except Exception as e:
-    print(f"⚠️ L3 payment_allocation_detail not loaded: {e}")
-
-try:
-    from .bin_lot_serial_tracking import router as bin_lot_serial_tracking_router
-    l3_router.include_router(bin_lot_serial_tracking_router)
-except Exception as e:
-    print(f"⚠️ L3 bin_lot_serial_tracking not loaded: {e}")
-
-try:
     from .adjustment_journals import router as adjustment_journals_router
     l3_router.include_router(adjustment_journals_router)
 except Exception as e:
@@ -247,12 +229,6 @@ except Exception as e:
     print(f"⚠️ L3 nonconformance_details not loaded: {e}")
 
 try:
-    from .bank_statement_matching_detail import router as bank_statement_matching_detail_router
-    l3_router.include_router(bank_statement_matching_detail_router)
-except Exception as e:
-    print(f"⚠️ L3 bank_statement_matching_detail not loaded: {e}")
-
-try:
     from .reconciliation_sessions import router as reconciliation_sessions_router
     l3_router.include_router(reconciliation_sessions_router)
 except Exception as e:
@@ -269,12 +245,6 @@ try:
     l3_router.include_router(quote_generation_router)
 except Exception as e:
     print(f"⚠️ L3 quote_generation not loaded: {e}")
-
-try:
-    from .task_notes_attachments import router as task_notes_attachments_router
-    l3_router.include_router(task_notes_attachments_router)
-except Exception as e:
-    print(f"⚠️ L3 task_notes_attachments not loaded: {e}")
 
 try:
     from .notifications_center import router as notifications_center_router

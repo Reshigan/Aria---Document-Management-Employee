@@ -5,11 +5,20 @@ from pydantic import BaseModel
 from typing import Optional
 from datetime import datetime
 
-from app.database import get_db
 try:
-    from app.auth import get_current_user
+    from app.auth import get_db, get_current_user
 except ImportError:
-    from auth_integrated import get_current_user
+    try:
+        from auth_integrated import get_db, get_current_user
+    except ImportError:
+        from core.database_pg import SessionLocal
+        def get_db():
+            db = SessionLocal()
+            try:
+                yield db
+            finally:
+                db.close()
+        from auth_integrated import get_current_user
 
 router = APIRouter()
 
