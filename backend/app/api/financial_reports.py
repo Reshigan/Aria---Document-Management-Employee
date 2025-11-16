@@ -377,7 +377,7 @@ def get_gl_ledger_analysis(
             je.source_document_id,
             je.created_by,
             SUM(jel.debit_amount - jel.credit_amount) 
-                OVER (PARTITION BY jel.account_code ORDER BY je.posting_date, je.reference_number as journal_number) as running_balance
+                OVER (PARTITION BY jel.account_code ORDER BY je.posting_date, je.reference_number) as running_balance
         FROM journal_entry_lines jel
         JOIN journal_entries je ON jel.journal_entry_id = je.id
         JOIN chart_of_accounts coa ON jel.account_code = coa.code AND coa.company_id = :company_id
@@ -461,7 +461,7 @@ def get_financial_ratios(
         JOIN journal_entries je ON jel.journal_entry_id = je.id
         JOIN chart_of_accounts coa ON jel.account_code = coa.code AND coa.company_id = :company_id
         WHERE je.company_id = :company_id
-            AND je.posting_date BETWEEN DATE_TRUNC('year', :as_of_date::date) AND :as_of_date
+            AND je.posting_date BETWEEN DATE_TRUNC('year', CAST(:as_of_date AS date)) AND :as_of_date
             AND je.status = 'POSTED'
             AND coa.account_type IN ('REVENUE', 'EXPENSE', 'COST_OF_SALES')
     """

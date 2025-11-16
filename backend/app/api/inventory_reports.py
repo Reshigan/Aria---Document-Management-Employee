@@ -102,9 +102,9 @@ def get_inventory_valuation(
                 product_id,
                 warehouse_id,
                 AVG(unit_cost) as avg_unit_cost
-            FROM cost_layers
-            WHERE company_id = :company_id
-                AND remaining_quantity > 0
+            FROM cost_layers cl
+            WHERE cl.company_id = :company_id
+                AND cl.remaining_quantity > 0
             GROUP BY product_id, warehouse_id
         )
         SELECT 
