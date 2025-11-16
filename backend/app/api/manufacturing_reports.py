@@ -63,7 +63,7 @@ def get_wip_variance(
         WITH work_order_costs AS (
             SELECT 
                 wo.id as work_order_id,
-                wo.work_order_number,
+                wo.wo_number,
                 i.item_code,
                 i.item_name,
                 wo.quantity_to_produce,
@@ -77,7 +77,7 @@ def get_wip_variance(
             LEFT JOIN items i_std ON wo.product_id = i_std.id AND i_std.company_id = :company_id
             LEFT JOIN standard_costs sc ON i_std.item_code = sc.item_id AND sc.company_id = :company_id AND sc.is_active = TRUE
             LEFT JOIN work_order_material_usage mc ON wo.id = mc.work_order_id AND mc.company_id = :company_id
-            LEFT JOIN time_bookings tb ON wo.work_order_number::text = tb.manufacturing_order_id::text AND tb.company_id = :company_id
+            LEFT JOIN time_bookings tb ON wo.wo_number::text = tb.manufacturing_order_id::text AND tb.company_id = :company_id
             WHERE wo.company_id = :company_id
                 AND wo.start_date <= :as_of_date
     """
@@ -89,7 +89,7 @@ def get_wip_variance(
         params["status"] = status
     
     query += """
-            GROUP BY wo.id, wo.work_order_number, i.item_code, i.item_name, 
+            GROUP BY wo.id, wo.wo_number, i.item_code, i.item_name, 
                      wo.quantity_to_produce, wo.quantity_produced, wo.status, sc.standard_cost
         )
         SELECT 
@@ -190,7 +190,7 @@ def get_production_efficiency(
         WITH work_order_efficiency AS (
             SELECT 
                 wo.id as work_order_id,
-                wo.work_order_number,
+                wo.wo_number,
                 i.item_code,
                 i.item_name,
                 wh.name as warehouse_name,
@@ -214,7 +214,7 @@ def get_production_efficiency(
             FROM work_orders wo
             JOIN items i ON wo.product_id = i.id AND i.company_id = :company_id
             LEFT JOIN warehouses wh ON wo.warehouse_id = wh.id AND wh.company_id = :company_id
-            LEFT JOIN time_bookings tb ON wo.work_order_number::text = tb.manufacturing_order_id::text AND tb.company_id = :company_id
+            LEFT JOIN time_bookings tb ON wo.wo_number::text = tb.manufacturing_order_id::text AND tb.company_id = :company_id
             WHERE wo.company_id = :company_id
                 AND wo.start_date BETWEEN :period_start AND :period_end
     """
@@ -230,7 +230,7 @@ def get_production_efficiency(
         params["work_center_id"] = work_center_id
     
     query += """
-            GROUP BY wo.id, wo.work_order_number, i.item_code, i.item_name, 
+            GROUP BY wo.id, wo.wo_number, i.item_code, i.item_name, 
                      wh.name, wo.quantity_to_produce, wo.quantity_produced,
                      wo.start_date, wo.completion_date, wo.estimated_hours, wo.status
         )
@@ -262,7 +262,7 @@ def get_time_booking_analysis(
             tb.id as time_entry_id,
             tb.work_date,
             u.email as employee_name,
-            wo.work_order_number,
+            wo.wo_number,
             i.item_code,
             i.item_name,
             wh.name as warehouse_name,
@@ -331,7 +331,7 @@ def get_time_booking_summary(
         query = """
             SELECT 
                 wo.id as work_order_id,
-                wo.work_order_number,
+                wo.wo_number,
                 i.item_code,
                 i.item_name,
                 COUNT(DISTINCT tb.id) as total_entries,
@@ -342,7 +342,7 @@ def get_time_booking_summary(
             JOIN items i ON wo.product_id = i.id AND i.company_id = :company_id
             WHERE tb.company_id = :company_id
                 AND tb.work_date BETWEEN :period_start AND :period_end
-            GROUP BY wo.id, wo.work_order_number, i.item_code, i.item_name
+            GROUP BY wo.id, wo.wo_number, i.item_code, i.item_name
             ORDER BY total_hours DESC
         """
     else:  # work_center
@@ -389,7 +389,7 @@ def get_material_consumption(
         SELECT 
             mc.id as consumption_id,
             mc.consumption_date,
-            wo.work_order_number,
+            wo.wo_number,
             i_wo.item_code as finished_item_code,
             i_wo.item_name as finished_item_name,
             i.item_code as consumed_item_code,
@@ -462,7 +462,7 @@ def get_material_consumption_summary(
         query = """
             SELECT 
                 wo.id as work_order_id,
-                wo.work_order_number,
+                wo.wo_number,
                 i.item_code,
                 i.item_name,
                 COUNT(DISTINCT mc.id) as total_consumptions,
@@ -472,7 +472,7 @@ def get_material_consumption_summary(
             JOIN items i ON wo.product_id = i.id AND i.company_id = :company_id
             WHERE mc.company_id = :company_id
                 AND mc.consumption_date BETWEEN :period_start AND :period_end
-            GROUP BY wo.id, wo.work_order_number, i.item_code, i.item_name
+            GROUP BY wo.id, wo.wo_number, i.item_code, i.item_name
             ORDER BY total_material_cost DESC
         """
     
