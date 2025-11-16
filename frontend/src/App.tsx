@@ -45,6 +45,7 @@ import GoodsReceiptDetail from './pages/ERP/Detail/GoodsReceiptDetail';
 import DataImport from './pages/Admin/DataImport';
 import RoleDashboard from './pages/Admin/RoleDashboard';
 import RBACManagement from './pages/Admin/RBACManagement';
+import { FieldServiceDashboard, WorkOrdersList, WorkOrderDetail, TechniciansList, Scheduling } from './pages/FieldService';
 import './styles/design-system.css';
 
 function App() {
@@ -115,9 +116,11 @@ function App() {
           <Route path="/manufacturing/dashboard" element={<ManufacturingDashboard />} />
           
           {/* Field Service */}
-          <Route path="/field-service" element={<FieldService />} />
-          <Route path="/field-service/requests" element={<FieldService />} />
-          <Route path="/field-service/work-orders" element={<FieldService />} />
+          <Route path="/field-service" element={<FieldServiceDashboard />} />
+          <Route path="/field-service/orders" element={<WorkOrdersList />} />
+          <Route path="/field-service/orders/:id" element={<WorkOrderDetail />} />
+          <Route path="/field-service/technicians" element={<TechniciansList />} />
+          <Route path="/field-service/scheduling" element={<Scheduling />} />
           
           {/* Bots */}
           <Route path="/bots" element={<BotRegistry />} />

@@ -30,6 +30,14 @@
   margin: 0 auto;
 }
 
+/* Tablet Responsive (768px - 1023px) */
+@media (max-width: 1023px) {
+  .main-content-mega {
+    padding: 1.5rem;
+  }
+}
+
+/* Mobile Responsive (< 768px) */
 @media (max-width: 768px) {
   .main-content {
     margin-left: 0;
