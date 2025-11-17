@@ -16,7 +16,7 @@ class OllamaClient:
     def __init__(self, base_url: str = "http://localhost:11434", model: str = "qwen2.5:3b-instruct"):
         self.base_url = base_url
         self.model = model
-        self.timeout = 60  # 1 minute timeout
+        self.timeout = 180  # 3 minute timeout for LLM inference
     
     def chat(
         self,
