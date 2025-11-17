@@ -67,13 +67,13 @@ export default function ERPDashboard() {
       setHealth(healthRes.data);
 
       // Fetch AP Aging
-      const apRes = await axios.get(`${API_BASE}/api/ap/aging/1`, {
+      const apRes = await axios.get(`${API_BASE}/api/reports/ar-ap/ap-aging?company_id=1&as_of_date=${new Date().toISOString().split('T')[0]}`, {
         headers: { Authorization: 'Bearer test-token' }
       });
       setApAging(apRes.data);
 
       // Fetch AR Aging
-      const arRes = await axios.get(`${API_BASE}/api/ar/aging/1`, {
+      const arRes = await axios.get(`${API_BASE}/api/reports/ar-ap/ar-aging?company_id=1&as_of_date=${new Date().toISOString().split('T')[0]}`, {
         headers: { Authorization: 'Bearer test-token' }
       });
       setArAging(arRes.data);
