@@ -46,8 +46,8 @@ async def list_payslip_gl_postings(
                 je.entry_date,
                 jel.id as line_id,
                 jel.account_id,
-                coa.account_code,
-                coa.account_name,
+                coa.code as account_code,
+                coa.name as account_name,
                 jel.debit_amount,
                 jel.credit_amount,
                 jel.description
@@ -103,8 +103,8 @@ async def get_payslip_gl_posting(
                 je.entry_date,
                 je.source_document_id as payslip_id,
                 jel.account_id,
-                coa.account_code,
-                coa.account_name,
+                coa.code as account_code,
+                coa.name as account_name,
                 jel.debit_amount,
                 jel.credit_amount,
                 jel.description,
@@ -113,7 +113,7 @@ async def get_payslip_gl_posting(
             FROM journal_entry_lines jel
             JOIN journal_entries je ON jel.journal_entry_id = je.id
             LEFT JOIN chart_of_accounts coa ON jel.account_id = coa.id
-            WHERE jel.id = :line_id 
+            WHERE jel.id = :line_id
                 AND je.source_document_type = 'PAYSLIP'
                 AND je.company_id = :company_id
         """)
