@@ -510,6 +510,13 @@ except Exception as e:
     print(f"⚠️ AR/AP Reports API not loaded: {e}")
 
 try:
+    from app.api.workflows.router import router as workflows_router
+    app.include_router(workflows_router)
+    print("✅ Workflow Orchestration API loaded")
+except Exception as e:
+    print(f"⚠️ Workflow Orchestration API not loaded: {e}")
+
+try:
     from app.api.inventory_reports import router as inventory_reports_router
     app.include_router(inventory_reports_router)
     print("✅ Inventory Reports API loaded")
