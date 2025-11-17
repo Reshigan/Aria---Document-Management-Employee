@@ -23,7 +23,7 @@ class DocumentClassificationBot:
         action = context.get('action', '').lower()
         
         try:
-                        if action == 'classify_document':
+            if action == 'classify_document':
                 return self._classify_document(context)
             elif action == 'suggest_category':
                 return self._suggest_category(context)
