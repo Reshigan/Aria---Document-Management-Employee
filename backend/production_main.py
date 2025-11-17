@@ -419,6 +419,13 @@ except Exception as e:
     print(f"⚠️ Bots API not loaded: {e}")
 
 try:
+    from app.api.agents import router as agents_api_router
+    app.include_router(agents_api_router, prefix="/api")
+    print("✅ Agents API loaded")
+except Exception as e:
+    print(f"⚠️ Agents API not loaded: {e}")
+
+try:
     from modules.admin_module import router as admin_module_router
     app.include_router(admin_module_router)
     print("✅ Admin module loaded")

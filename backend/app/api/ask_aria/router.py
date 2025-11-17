@@ -14,6 +14,8 @@ from ...services.ask_aria.ocr_service import OCRService
 from ...services.ask_aria.sap_mapping import SAPMappingService
 from ...services.ask_aria.template_service import TemplateService
 from ...services.ask_aria.ollama_client import ollama_client
+from ...services.document_classification.classifier import document_classifier
+from ...services.document_classification.template_registry import template_registry
 
 try:
     from auth_integrated import get_current_user as _get_current_user_real
@@ -81,6 +83,26 @@ class SAPMappingResponse(BaseModel):
     sap_doc_name: str
     sap_module: str
     sap_data: Dict[str, Any]
+
+
+class SAPClassificationRequest(BaseModel):
+    document_text: str
+    filename: Optional[str] = None
+
+
+class SAPClassificationResponse(BaseModel):
+    doc_type: str
+    template_id: Optional[str]
+    module: Optional[str]
+    confidence: float
+    method: str
+    extracted_fields: Dict[str, Any]
+    reasoning: Optional[str] = None
+
+
+class ReclassifyRequest(BaseModel):
+    document_text: str
+    suggested_type: str
 
 
 async def get_current_user_optional(
@@ -370,4 +392,126 @@ async def export_po_pdf(
         
     except Exception as e:
         logger.error(f"Failed to export PO PDF: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/sap/classify", response_model=SAPClassificationResponse)
+async def classify_sap_document(
+    request: SAPClassificationRequest,
+    current_user: dict = Depends(get_current_user)
+):
+    """
+    Classify an SAP document using hybrid approach (rules + LLM fallback)
+    
+    This endpoint uses:
+    1. Stage 1: Rules-based classification with regex patterns
+    2. Stage 2: LLM fallback using qwen2.5 function calling if rules confidence < 0.7
+    """
+    try:
+        result = document_classifier.classify_document(
+            document_text=request.document_text,
+            filename=request.filename
+        )
+        
+        return SAPClassificationResponse(
+            doc_type=result["doc_type"],
+            template_id=result["template_id"],
+            module=result["module"],
+            confidence=result["confidence"],
+            method=result["method"],
+            extracted_fields=result["extracted_fields"],
+            reasoning=result.get("reasoning")
+        )
+        
+    except Exception as e:
+        logger.error(f"Failed to classify SAP document: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/sap/templates")
+async def list_sap_templates(
+    module: Optional[str] = None,
+    current_user: dict = Depends(get_current_user)
+):
+    """List all available SAP document templates"""
+    try:
+        if module:
+            templates = template_registry.get_templates_by_module(module)
+        else:
+            templates = template_registry.get_all_templates()
+        
+        return {
+            "templates": templates,
+            "count": len(templates)
+        }
+        
+    except Exception as e:
+        logger.error(f"Failed to list SAP templates: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/sap/templates/{template_id}")
+async def get_sap_template(
+    template_id: str,
+    current_user: dict = Depends(get_current_user)
+):
+    """Get details of a specific SAP template"""
+    try:
+        template = template_registry.get_template(template_id)
+        
+        if not template:
+            raise HTTPException(status_code=404, detail="Template not found")
+        
+        return template
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to get SAP template: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/sap/reclassify", response_model=SAPClassificationResponse)
+async def reclassify_sap_document(
+    request: ReclassifyRequest,
+    current_user: dict = Depends(get_current_user)
+):
+    """Reclassify a document with a user-suggested type"""
+    try:
+        result = document_classifier.reclassify_document(
+            document_text=request.document_text,
+            suggested_type=request.suggested_type
+        )
+        
+        return SAPClassificationResponse(
+            doc_type=result["doc_type"],
+            template_id=result["template_id"],
+            module=result["module"],
+            confidence=result["confidence"],
+            method=result["method"],
+            extracted_fields=result["extracted_fields"]
+        )
+        
+    except Exception as e:
+        logger.error(f"Failed to reclassify SAP document: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/sap/suggest-templates/{doc_type}")
+async def suggest_templates_for_type(
+    doc_type: str,
+    current_user: dict = Depends(get_current_user)
+):
+    """Suggest templates for a given document type"""
+    try:
+        templates = document_classifier.suggest_templates(doc_type)
+        
+        return {
+            "doc_type": doc_type,
+            "templates": templates,
+            "count": len(templates)
+        }
+        
+    except Exception as e:
+        logger.error(f"Failed to suggest templates: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
