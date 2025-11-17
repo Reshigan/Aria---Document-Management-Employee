@@ -1,26 +1,26 @@
 /**
- * Bot Showcase - Clean, Professional Design
+ * Agent Showcase - Clean, Professional Design
  */
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
-  Bot, DollarSign, TrendingUp, Package, Shield, Users, MessageSquare,
+  Agent, DollarSign, TrendingUp, Package, Shield, Users, MessageSquare,
   ArrowRight, CheckCircle, Sparkles, FileText, BarChart
 } from 'lucide-react';
 
-interface Bot {
+interface Agent {
   id: string;
   name: string;
   category: string;
   description: string;
   features: string[];
   icon: any;
-  isFunctional: boolean;  // NEW: Track which bots are actually functional
+  isFunctional: boolean;  // NEW: Track which agents are actually functional
   roi?: number;  // NEW: Expected ROI percentage
 }
 
-const BOTS_DATA: Bot[] = [
+const BOTS_DATA: Agent[] = [
   // Financial - 4 FUNCTIONAL ✅
   {
     id: 'invoice-rec',
@@ -33,7 +33,7 @@ const BOTS_DATA: Bot[] = [
     roi: 150
   },
   {
-    id: 'ap-bot',
+    id: 'ap-agent',
     name: 'Accounts Payable',
     category: 'Financial',
     description: 'Automate supplier invoice processing from capture to payment with OCR and approval routing.',
@@ -43,7 +43,7 @@ const BOTS_DATA: Bot[] = [
     roi: 175
   },
   {
-    id: 'ar-bot',
+    id: 'ar-agent',
     name: 'AR Collections',
     category: 'Financial',
     description: 'Automate accounts receivable and reduce DSO by 15-20 days with smart collection workflows.',
@@ -63,7 +63,7 @@ const BOTS_DATA: Bot[] = [
     roi: 300
   },
   {
-    id: 'gl-bot',
+    id: 'gl-agent',
     name: 'General Ledger',
     category: 'Financial',
     description: 'Automate journal entries, account reconciliations, and GL maintenance tasks.',
@@ -75,10 +75,10 @@ const BOTS_DATA: Bot[] = [
   
   // Compliance - 1 FUNCTIONAL ✅
   {
-    id: 'bbbee-bot',
+    id: 'bbbee-agent',
     name: 'BBBEE Compliance',
     category: 'Compliance',
-    description: 'Track and report on BBBEE compliance requirements. The only bot of its kind globally.',
+    description: 'Track and report on BBBEE compliance requirements. The only agent of its kind globally.',
     features: ['Scorecard tracking', 'Supplier verification', 'Automated reporting', 'Audit preparation'],
     icon: Shield,
     isFunctional: true,  // ✅ FUNCTIONAL (GLOBAL FIRST!)
@@ -221,7 +221,7 @@ const BotShowcase: React.FC = () => {
   
   const filteredBots = selectedCategory === 'All' 
     ? BOTS_DATA 
-    : BOTS_DATA.filter(bot => bot.category === selectedCategory);
+    : BOTS_DATA.filter(agent => agent.category === selectedCategory);
   
   return (
     <div className="min-h-screen bg-white">
@@ -230,13 +230,13 @@ const BotShowcase: React.FC = () => {
         <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
           <Link to="/" className="flex items-center space-x-3">
             <div className="w-9 h-9 rounded-lg bg-black flex items-center justify-center">
-              <Bot className="w-5 h-5 text-white" />
+              <Agent className="w-5 h-5 text-white" />
             </div>
             <span className="text-2xl font-semibold text-gray-900 tracking-tight">Aria</span>
           </Link>
           
           <div className="flex items-center space-x-8">
-            <Link to="/bots" className="text-sm font-medium text-gray-900">
+            <Link to="/agents" className="text-sm font-medium text-gray-900">
               Platform
             </Link>
             <Link to="/login" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition">
@@ -262,7 +262,7 @@ const BotShowcase: React.FC = () => {
           >
             <div className="inline-flex items-center space-x-2 px-4 py-2 rounded-full bg-green-100 text-green-700 text-sm font-medium mb-8">
               <CheckCircle className="w-4 h-4" />
-              <span>8 Production Bots Live • 9 Coming Soon</span>
+              <span>8 Production Agents Live • 9 Coming Soon</span>
             </div>
             
             <h1 className="text-6xl md:text-7xl font-bold text-gray-900 mb-8 leading-none tracking-tight">
@@ -272,13 +272,13 @@ const BotShowcase: React.FC = () => {
             </h1>
             
             <p className="text-xl md:text-2xl text-gray-600 mb-12 max-w-3xl mx-auto font-light">
-              Production-ready AI bots for financial ops, compliance, sales, and HR. From invoice reconciliation to BBBEE compliance, deploy in 24 hours.
+              Production-ready AI agents for financial ops, compliance, sales, and HR. From invoice reconciliation to BBBEE compliance, deploy in 24 hours.
             </p>
             
             <div className="grid grid-cols-3 gap-8 max-w-3xl mx-auto mb-16">
               <div>
                 <div className="text-4xl font-bold text-green-600 mb-2">8</div>
-                <div className="text-sm text-gray-600">Functional Bots</div>
+                <div className="text-sm text-gray-600">Functional Agents</div>
               </div>
               <div>
                 <div className="text-4xl font-bold text-gray-900 mb-2">4.4K+</div>
@@ -314,21 +314,21 @@ const BotShowcase: React.FC = () => {
         </div>
       </section>
 
-      {/* Bots Grid */}
+      {/* Agents Grid */}
       <section className="pb-24 px-6 bg-white">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredBots.map((bot, index) => (
+            {filteredBots.map((agent, index) => (
               <motion.div
-                key={bot.id}
+                key={agent.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.05 }}
-                className={`group p-8 bg-white rounded-2xl border ${bot.isFunctional ? 'border-green-200 hover:border-green-500' : 'border-gray-200 hover:border-gray-400'} transition-all hover:shadow-lg relative`}
+                className={`group p-8 bg-white rounded-2xl border ${agent.isFunctional ? 'border-green-200 hover:border-green-500' : 'border-gray-200 hover:border-gray-400'} transition-all hover:shadow-lg relative`}
               >
                 {/* Status Badge */}
                 <div className="absolute top-4 right-4">
-                  {bot.isFunctional ? (
+                  {agent.isFunctional ? (
                     <span className="px-3 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded-full flex items-center space-x-1">
                       <CheckCircle className="w-3 h-3" />
                       <span>LIVE</span>
@@ -340,31 +340,31 @@ const BotShowcase: React.FC = () => {
                   )}
                 </div>
                 
-                <div className={`w-12 h-12 ${bot.isFunctional ? 'bg-green-100 group-hover:bg-green-600' : 'bg-gray-100 group-hover:bg-gray-400'} rounded-lg flex items-center justify-center mb-6 transition-colors`}>
-                  <bot.icon className={`w-6 h-6 ${bot.isFunctional ? 'text-green-600 group-hover:text-white' : 'text-gray-600 group-hover:text-white'} transition-colors`} />
+                <div className={`w-12 h-12 ${agent.isFunctional ? 'bg-green-100 group-hover:bg-green-600' : 'bg-gray-100 group-hover:bg-gray-400'} rounded-lg flex items-center justify-center mb-6 transition-colors`}>
+                  <agent.icon className={`w-6 h-6 ${agent.isFunctional ? 'text-green-600 group-hover:text-white' : 'text-gray-600 group-hover:text-white'} transition-colors`} />
                 </div>
                 
                 <div className="mb-3 flex items-center justify-between">
                   <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">
-                    {bot.category}
+                    {agent.category}
                   </span>
-                  {bot.roi && (
+                  {agent.roi && (
                     <span className="text-xs font-semibold text-blue-600">
-                      {bot.roi}% ROI
+                      {agent.roi}% ROI
                     </span>
                   )}
                 </div>
                 
-                <h3 className={`text-xl font-semibold mb-3 ${bot.isFunctional ? 'text-gray-900 group-hover:text-green-600' : 'text-gray-700'}`}>
-                  {bot.name}
+                <h3 className={`text-xl font-semibold mb-3 ${agent.isFunctional ? 'text-gray-900 group-hover:text-green-600' : 'text-gray-700'}`}>
+                  {agent.name}
                 </h3>
                 
                 <p className="text-gray-600 mb-6 leading-relaxed">
-                  {bot.description}
+                  {agent.description}
                 </p>
                 
                 <div className="space-y-2 mb-6">
-                  {bot.features.slice(0, 3).map((feature, i) => (
+                  {agent.features.slice(0, 3).map((feature, i) => (
                     <div key={i} className="flex items-center space-x-2 text-sm text-gray-600">
                       <CheckCircle className="w-4 h-4 text-green-600 flex-shrink-0" />
                       <span>{feature}</span>

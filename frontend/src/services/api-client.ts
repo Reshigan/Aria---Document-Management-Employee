@@ -160,11 +160,11 @@ class APIClient {
     getAnalysis: (id: number) => this.get(`/document-processing/documents/${id}/analysis`)
   };
 
-  // Bot API
-  bots = {
-    testBot: (botId: string, data: any) => this.post(`/bots/${botId}/test`, data),
-    getBotStatus: (botId: string) => this.get(`/bots/${botId}/status`),
-    getBotAccuracy: (botId: string) => this.get(`/bots/${botId}/accuracy`)
+  // Agent API
+  agents = {
+    testBot: (botId: string, data: any) => this.post(`/agents/${botId}/test`, data),
+    getBotStatus: (botId: string) => this.get(`/agents/${botId}/status`),
+    getBotAccuracy: (botId: string) => this.get(`/agents/${botId}/accuracy`)
   };
 }
 

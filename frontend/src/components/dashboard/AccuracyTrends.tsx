@@ -24,7 +24,7 @@ const AccuracyTrends: React.FC<{ period: string }> = ({ period }) => {
           <XAxis dataKey="date" stroke="#ffffff80" />
           <YAxis stroke="#ffffff80" domain={[80, 100]} />
           <Tooltip contentStyle={{ backgroundColor: '#1f2937', border: '1px solid #374151', borderRadius: '0.5rem', color: '#fff' }} />
-          <Line type="monotone" dataKey="sap_accuracy" stroke="#3b82f6" strokeWidth={2} name="SAP Bot %" />
+          <Line type="monotone" dataKey="sap_accuracy" stroke="#3b82f6" strokeWidth={2} name="SAP Agent %" />
           <Line type="monotone" dataKey="helpdesk_accuracy" stroke="#10b981" strokeWidth={2} name="Helpdesk %" />
           <Line type="monotone" dataKey="sales_accuracy" stroke="#f59e0b" strokeWidth={2} name="Sales %" />
         </LineChart>

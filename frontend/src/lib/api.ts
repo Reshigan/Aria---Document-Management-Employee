@@ -129,9 +129,9 @@ export const aria = {
   getHealthScore: () => api.get('/aria/growth/health'),
 };
 
-export const bots = {
-  listTemplates: () => api.get('/bots'),
-  getTemplate: (id: string) => api.get(`/bots/${id}`),
+export const agents = {
+  listTemplates: () => api.get('/agents'),
+  getTemplate: (id: string) => api.get(`/agents/${id}`),
   chat: (data: any) => api.post('/aria/chat', data),
 };
 

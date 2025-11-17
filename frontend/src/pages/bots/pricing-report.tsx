@@ -1,5 +1,5 @@
 /**
- * Pricing Bot - Report Page
+ * Pricing Agent - Report Page
  * Generated: 2025-10-26 14:16:23
  */
 
@@ -42,12 +42,12 @@ export default function PricingReport() {
   const loadData = async () => {
     try {
       // Load statistics
-      const statsResponse = await fetch('/api/bots/pricing/statistics');
+      const statsResponse = await fetch('/api/agents/pricing/statistics');
       const statsData = await statsResponse.json();
       setStats(statsData);
       
       // Load activities
-      const activitiesResponse = await fetch('/api/bots/pricing/activities');
+      const activitiesResponse = await fetch('/api/agents/pricing/activities');
       const activitiesData = await activitiesResponse.json();
       setActivities(activitiesData);
     } catch (error) {
@@ -66,7 +66,7 @@ export default function PricingReport() {
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h4" gutterBottom>
-        Pricing Bot - Report
+        Pricing Agent - Report
       </Typography>
 
       <Grid container spacing={3} sx={{ mb: 3 }}>

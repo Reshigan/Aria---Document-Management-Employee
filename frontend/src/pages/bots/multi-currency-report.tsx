@@ -1,5 +1,5 @@
 /**
- * Multi-Currency Bot - Report Page
+ * Multi-Currency Agent - Report Page
  * Generated: 2025-10-26 14:16:23
  */
 
@@ -42,12 +42,12 @@ export default function MultiCurrencyReport() {
   const loadData = async () => {
     try {
       // Load statistics
-      const statsResponse = await fetch('/api/bots/multi_currency/statistics');
+      const statsResponse = await fetch('/api/agents/multi_currency/statistics');
       const statsData = await statsResponse.json();
       setStats(statsData);
       
       // Load activities
-      const activitiesResponse = await fetch('/api/bots/multi_currency/activities');
+      const activitiesResponse = await fetch('/api/agents/multi_currency/activities');
       const activitiesData = await activitiesResponse.json();
       setActivities(activitiesData);
     } catch (error) {
@@ -66,7 +66,7 @@ export default function MultiCurrencyReport() {
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h4" gutterBottom>
-        Multi-Currency Bot - Report
+        Multi-Currency Agent - Report
       </Typography>
 
       <Grid container spacing={3} sx={{ mb: 3 }}>

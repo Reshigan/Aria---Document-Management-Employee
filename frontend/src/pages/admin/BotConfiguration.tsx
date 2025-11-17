@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '../../components/ui/button';
-import { Bot, Settings, Bell, CheckCircle, XCircle, DollarSign, Mail, MessageSquare } from 'lucide-react';
+import { Agent, Settings, Bell, CheckCircle, XCircle, DollarSign, Mail, MessageSquare } from 'lucide-react';
 import api from '../../lib/api';
 
 interface BotConfig {
@@ -18,7 +18,7 @@ interface BotConfig {
 }
 
 export default function BotConfigurationPage() {
-  const [bots, setBots] = useState<BotConfig[]>([]);
+  const [agents, setBots] = useState<BotConfig[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -28,10 +28,10 @@ export default function BotConfigurationPage() {
 
   const fetchBotConfigs = async () => {
     try {
-      const data = await api.get('/admin/bots/config');
-      setBots(data.bots || []);
+      const data = await api.get('/admin/agents/config');
+      setBots(data.agents || []);
     } catch (error) {
-      console.error('Error fetching bot configs:', error);
+      console.error('Error fetching agent configs:', error);
     } finally {
       setLoading(false);
     }
@@ -39,34 +39,34 @@ export default function BotConfigurationPage() {
 
   const handleToggleBot = async (botId: string, enabled: boolean) => {
     try {
-      await api.post(`/admin/bots/${botId}/toggle`, { enabled });
-      setBots(bots.map(bot => bot.id === botId ? { ...bot, enabled } : bot));
+      await api.post(`/admin/agents/${botId}/toggle`, { enabled });
+      setBots(agents.map(agent => agent.id === botId ? { ...agent, enabled } : agent));
     } catch (error) {
-      console.error('Error toggling bot:', error);
+      console.error('Error toggling agent:', error);
     }
   };
 
   const handleUpdateLimit = async (botId: string, limit: number) => {
-    setBots(bots.map(bot => bot.id === botId ? { ...bot, auto_approval_limit: limit } : bot));
+    setBots(agents.map(agent => agent.id === botId ? { ...agent, auto_approval_limit: limit } : agent));
   };
 
   const handleUpdateNotifications = async (botId: string, channel: string, value: boolean) => {
-    setBots(bots.map(bot => {
-      if (bot.id === botId) {
+    setBots(agents.map(agent => {
+      if (agent.id === botId) {
         return {
-          ...bot,
-          notifications: { ...bot.notifications, [channel]: value }
+          ...agent,
+          notifications: { ...agent.notifications, [channel]: value }
         };
       }
-      return bot;
+      return agent;
     }));
   };
 
   const handleSaveConfig = async () => {
     setSaving(true);
     try {
-      await api.put('/admin/bots/config', { bots });
-      alert('Bot configuration saved successfully!');
+      await api.put('/admin/agents/config', { agents });
+      alert('Agent configuration saved successfully!');
     } catch (error) {
       console.error('Error saving config:', error);
       alert('Error saving configuration');
@@ -87,20 +87,20 @@ export default function BotConfigurationPage() {
     <div className="container mx-auto p-6 max-w-6xl">
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
-          <Bot className="h-8 w-8" />
-          Bot Configuration
+          <Agent className="h-8 w-8" />
+          Agent Configuration
         </h1>
-        <p className="text-gray-600 mt-2">Configure AI bots and automation settings</p>
+        <p className="text-gray-600 mt-2">Configure AI agents and automation settings</p>
       </div>
 
       <div className="space-y-6">
-        {bots.map((bot) => (
-          <div key={bot.id} className="bg-white rounded-lg shadow p-6">
+        {agents.map((agent) => (
+          <div key={agent.id} className="bg-white rounded-lg shadow p-6">
             <div className="flex items-start justify-between mb-4">
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-2">
-                  <h3 className="text-xl font-bold text-gray-900">{bot.name}</h3>
-                  {bot.enabled ? (
+                  <h3 className="text-xl font-bold text-gray-900">{agent.name}</h3>
+                  {agent.enabled ? (
                     <span className="flex items-center gap-1 text-green-600 text-sm">
                       <CheckCircle className="h-4 w-4" />
                       Enabled
@@ -112,22 +112,22 @@ export default function BotConfigurationPage() {
                     </span>
                   )}
                 </div>
-                <p className="text-gray-600">{bot.description}</p>
+                <p className="text-gray-600">{agent.description}</p>
               </div>
               <label className="relative inline-flex items-center cursor-pointer">
                 <input
                   type="checkbox"
-                  checked={bot.enabled}
-                  onChange={(e) => handleToggleBot(bot.id, e.target.checked)}
+                  checked={agent.enabled}
+                  onChange={(e) => handleToggleBot(agent.id, e.target.checked)}
                   className="sr-only peer"
                 />
                 <div className="w-14 h-7 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-blue-600"></div>
               </label>
             </div>
 
-            {bot.enabled && (
+            {agent.enabled && (
               <div className="border-t pt-4 space-y-4">
-                {bot.auto_approval_limit !== undefined && (
+                {agent.auto_approval_limit !== undefined && (
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
                       <DollarSign className="h-4 w-4" />
@@ -135,8 +135,8 @@ export default function BotConfigurationPage() {
                     </label>
                     <input
                       type="number"
-                      value={bot.auto_approval_limit}
-                      onChange={(e) => handleUpdateLimit(bot.id, parseFloat(e.target.value))}
+                      value={agent.auto_approval_limit}
+                      onChange={(e) => handleUpdateLimit(agent.id, parseFloat(e.target.value))}
                       className="w-full px-4 py-2 border border-gray-300 rounded-md"
                       placeholder="10000"
                     />
@@ -155,8 +155,8 @@ export default function BotConfigurationPage() {
                     <label className="flex items-center gap-3">
                       <input
                         type="checkbox"
-                        checked={bot.notifications.email}
-                        onChange={(e) => handleUpdateNotifications(bot.id, 'email', e.target.checked)}
+                        checked={agent.notifications.email}
+                        onChange={(e) => handleUpdateNotifications(agent.id, 'email', e.target.checked)}
                         className="w-4 h-4 text-blue-600 rounded"
                       />
                       <Mail className="h-4 w-4 text-gray-600" />
@@ -165,8 +165,8 @@ export default function BotConfigurationPage() {
                     <label className="flex items-center gap-3">
                       <input
                         type="checkbox"
-                        checked={bot.notifications.whatsapp}
-                        onChange={(e) => handleUpdateNotifications(bot.id, 'whatsapp', e.target.checked)}
+                        checked={agent.notifications.whatsapp}
+                        onChange={(e) => handleUpdateNotifications(agent.id, 'whatsapp', e.target.checked)}
                         className="w-4 h-4 text-blue-600 rounded"
                       />
                       <MessageSquare className="h-4 w-4 text-gray-600" />
@@ -175,8 +175,8 @@ export default function BotConfigurationPage() {
                     <label className="flex items-center gap-3">
                       <input
                         type="checkbox"
-                        checked={bot.notifications.in_app}
-                        onChange={(e) => handleUpdateNotifications(bot.id, 'in_app', e.target.checked)}
+                        checked={agent.notifications.in_app}
+                        onChange={(e) => handleUpdateNotifications(agent.id, 'in_app', e.target.checked)}
                         className="w-4 h-4 text-blue-600 rounded"
                       />
                       <Bell className="h-4 w-4 text-gray-600" />
@@ -185,7 +185,7 @@ export default function BotConfigurationPage() {
                   </div>
                 </div>
 
-                {bot.id === 'invoice_bot' && (
+                {agent.id === 'invoice_bot' && (
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Matching Confidence Threshold (%)
@@ -203,7 +203,7 @@ export default function BotConfigurationPage() {
                   </div>
                 )}
 
-                {bot.id === 'bbbee_bot' && (
+                {agent.id === 'bbbee_bot' && (
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Certificate Expiry Reminder (days before)

@@ -41,7 +41,7 @@ const RealtimeStatus: React.FC = () => {
         <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
           <div className="flex items-center space-x-3">
             <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-            <span className="text-white text-sm">SAP Bot</span>
+            <span className="text-white text-sm">SAP Agent</span>
           </div>
           <span className="text-green-400 text-xs">Active</span>
         </div>
@@ -49,7 +49,7 @@ const RealtimeStatus: React.FC = () => {
         <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
           <div className="flex items-center space-x-3">
             <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-            <span className="text-white text-sm">Helpdesk Bot</span>
+            <span className="text-white text-sm">Helpdesk Agent</span>
           </div>
           <span className="text-green-400 text-xs">Active</span>
         </div>
@@ -57,7 +57,7 @@ const RealtimeStatus: React.FC = () => {
         <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
           <div className="flex items-center space-x-3">
             <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-            <span className="text-white text-sm">Sales Bot</span>
+            <span className="text-white text-sm">Sales Agent</span>
           </div>
           <span className="text-green-400 text-xs">Active</span>
         </div>

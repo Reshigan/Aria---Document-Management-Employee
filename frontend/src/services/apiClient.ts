@@ -1,6 +1,6 @@
 /**
  * ARIA v2.0 - Authenticated API Client
- * Complete API client with JWT authentication and bot/ERP integration
+ * Complete API client with JWT authentication and agent/ERP integration
  */
 
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
@@ -9,7 +9,7 @@ import { authService } from './authService';
 const API_URL = import.meta.env.VITE_API_URL || 'https://aria.vantax.co.za/api';
 
 // Types
-export interface Bot {
+export interface Agent {
   id: string;
   name: string;
   description: string;
@@ -149,30 +149,30 @@ class APIClient {
   }
 
   // ============================================
-  // BOT ENDPOINTS
+  // AGENT ENDPOINTS
   // ============================================
 
   /**
-   * Get all available bots
+   * Get all available agents
    */
-  async getBots(): Promise<Bot[]> {
-    const response = await this.api.get<{ bots: Bot[]; total: number }>('/bots');
-    return response.data.bots;
+  async getBots(): Promise<Agent[]> {
+    const response = await this.api.get<{ agents: Agent[]; total: number }>('/agents');
+    return response.data.agents;
   }
 
   /**
-   * Execute a bot
+   * Execute a agent
    */
   async executeBot(request: BotExecutionRequest): Promise<BotExecutionResult> {
-    const response = await this.api.post<BotExecutionResult>('/bots/execute', request);
+    const response = await this.api.post<BotExecutionResult>('/agents/execute', request);
     return response.data;
   }
 
   /**
-   * Get bot execution history
+   * Get agent execution history
    */
   async getBotHistory(limit: number = 50): Promise<{ executions: BotExecution[]; statistics: BotStatistics }> {
-    const response = await this.api.get<{ executions: BotExecution[]; statistics: BotStatistics }>(`/bots/history?limit=${limit}`);
+    const response = await this.api.get<{ executions: BotExecution[]; statistics: BotStatistics }>(`/agents/history?limit=${limit}`);
     return response.data;
   }
 

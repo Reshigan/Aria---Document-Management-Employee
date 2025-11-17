@@ -1,5 +1,5 @@
 /**
- * Sales Forecasting Bot - Report Page
+ * Sales Forecasting Agent - Report Page
  * Generated: 2025-10-26 14:16:23
  */
 
@@ -42,12 +42,12 @@ export default function SalesForecastingReport() {
   const loadData = async () => {
     try {
       // Load statistics
-      const statsResponse = await fetch('/api/bots/sales_forecasting/statistics');
+      const statsResponse = await fetch('/api/agents/sales_forecasting/statistics');
       const statsData = await statsResponse.json();
       setStats(statsData);
       
       // Load activities
-      const activitiesResponse = await fetch('/api/bots/sales_forecasting/activities');
+      const activitiesResponse = await fetch('/api/agents/sales_forecasting/activities');
       const activitiesData = await activitiesResponse.json();
       setActivities(activitiesData);
     } catch (error) {
@@ -66,7 +66,7 @@ export default function SalesForecastingReport() {
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h4" gutterBottom>
-        Sales Forecasting Bot - Report
+        Sales Forecasting Agent - Report
       </Typography>
 
       <Grid container spacing={3} sx={{ mb: 3 }}>

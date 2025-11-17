@@ -1,5 +1,5 @@
 /**
- * RFQ Response Bot - Report Page
+ * RFQ Response Agent - Report Page
  * Generated: 2025-10-26 14:16:23
  */
 
@@ -42,12 +42,12 @@ export default function RfqResponseReport() {
   const loadData = async () => {
     try {
       // Load statistics
-      const statsResponse = await fetch('/api/bots/rfq_response/statistics');
+      const statsResponse = await fetch('/api/agents/rfq_response/statistics');
       const statsData = await statsResponse.json();
       setStats(statsData);
       
       // Load activities
-      const activitiesResponse = await fetch('/api/bots/rfq_response/activities');
+      const activitiesResponse = await fetch('/api/agents/rfq_response/activities');
       const activitiesData = await activitiesResponse.json();
       setActivities(activitiesData);
     } catch (error) {
@@ -66,7 +66,7 @@ export default function RfqResponseReport() {
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h4" gutterBottom>
-        RFQ Response Bot - Report
+        RFQ Response Agent - Report
       </Typography>
 
       <Grid container spacing={3} sx={{ mb: 3 }}>

@@ -12,7 +12,7 @@ export default function InvoiceReconciliationReportPage() {
 
   const fetchData = async () => {
     try {
-      const response = await fetch('/api/reports/bots/invoice-reconciliation', {
+      const response = await fetch('/api/reports/agents/invoice-reconciliation', {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
       if (response.ok) {

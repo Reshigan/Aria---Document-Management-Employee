@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Bot, TrendingUp, Clock, CheckCircle, BarChart3 } from 'lucide-react';
+import { Agent, TrendingUp, Clock, CheckCircle, BarChart3 } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 export default function BotDashboardPage() {
@@ -16,7 +16,7 @@ export default function BotDashboardPage() {
 
   const fetchStats = async () => {
     try {
-      const response = await fetch('/api/reports/bots/dashboard', {
+      const response = await fetch('/api/reports/agents/dashboard', {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
       if (response.ok) {
@@ -41,8 +41,8 @@ export default function BotDashboardPage() {
   return (
     <div className="container mx-auto p-6">
       <h1 className="text-3xl font-bold text-gray-900 mb-6 flex items-center gap-3">
-        <Bot className="h-8 w-8" />
-        Bot Activity Dashboard
+        <Agent className="h-8 w-8" />
+        Agent Activity Dashboard
       </h1>
 
       <div className="grid grid-cols-4 gap-6 mb-8">
@@ -75,7 +75,7 @@ export default function BotDashboardPage() {
 
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex items-center justify-between mb-2">
-            <div className="text-sm font-medium text-gray-600">Active Bots</div>
+            <div className="text-sm font-medium text-gray-600">Active Agents</div>
             <TrendingUp className="h-5 w-5 text-orange-600" />
           </div>
           <div className="text-3xl font-bold text-gray-900">{stats.active_bots}/4</div>
@@ -98,21 +98,21 @@ export default function BotDashboardPage() {
 
       <div className="grid grid-cols-2 gap-6">
         <div className="bg-white rounded-lg shadow p-6">
-          <h3 className="text-lg font-bold text-gray-900 mb-4">Bot Performance</h3>
+          <h3 className="text-lg font-bold text-gray-900 mb-4">Agent Performance</h3>
           <div className="space-y-4">
             {[
               { name: 'Invoice Reconciliation', success: 95, actions: 234 },
               { name: 'BBBEE Compliance', success: 98, actions: 156 },
               { name: 'Payroll Automation', success: 100, actions: 89 },
               { name: 'Expense Management', success: 92, actions: 178 }
-            ].map((bot) => (
-              <div key={bot.name}>
+            ].map((agent) => (
+              <div key={agent.name}>
                 <div className="flex justify-between text-sm mb-1">
-                  <span className="font-medium">{bot.name}</span>
-                  <span className="text-gray-600">{bot.success}% success</span>
+                  <span className="font-medium">{agent.name}</span>
+                  <span className="text-gray-600">{agent.success}% success</span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div className="bg-blue-600 h-2 rounded-full" style={{ width: `${bot.success}%` }}></div>
+                  <div className="bg-blue-600 h-2 rounded-full" style={{ width: `${agent.success}%` }}></div>
                 </div>
               </div>
             ))}
@@ -123,15 +123,15 @@ export default function BotDashboardPage() {
           <h3 className="text-lg font-bold text-gray-900 mb-4">Recent Actions</h3>
           <div className="space-y-3">
             {[
-              { bot: 'Invoice Bot', action: 'Matched invoice #INV-1234', time: '2 min ago' },
-              { bot: 'BBBEE Bot', action: 'Verified supplier certificate', time: '15 min ago' },
-              { bot: 'Payroll Bot', action: 'Processed payroll for 45 employees', time: '1 hour ago' },
-              { bot: 'Expense Bot', action: 'Auto-coded 12 expense claims', time: '2 hours ago' }
+              { agent: 'Invoice Agent', action: 'Matched invoice #INV-1234', time: '2 min ago' },
+              { agent: 'BBBEE Agent', action: 'Verified supplier certificate', time: '15 min ago' },
+              { agent: 'Payroll Agent', action: 'Processed payroll for 45 employees', time: '1 hour ago' },
+              { agent: 'Expense Agent', action: 'Auto-coded 12 expense claims', time: '2 hours ago' }
             ].map((item, idx) => (
               <div key={idx} className="flex items-start gap-3 p-3 bg-gray-50 rounded">
-                <Bot className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                <Agent className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
                 <div className="flex-1">
-                  <div className="text-sm font-medium text-gray-900">{item.bot}</div>
+                  <div className="text-sm font-medium text-gray-900">{item.agent}</div>
                   <div className="text-sm text-gray-600">{item.action}</div>
                   <div className="text-xs text-gray-500 mt-1">{item.time}</div>
                 </div>

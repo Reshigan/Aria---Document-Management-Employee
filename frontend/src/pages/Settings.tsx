@@ -388,10 +388,10 @@ const Settings: React.FC = () => {
             </Grid>
             <Grid item xs={12}>
               <Divider sx={{ my: 2 }} />
-              <Typography variant="h6" sx={{ mb: 2 }}>Bot & System Alerts</Typography>
+              <Typography variant="h6" sx={{ mb: 2 }}>Agent & System Alerts</Typography>
               <FormControlLabel
                 control={<Switch checked={notifications.botAlerts} onChange={(e) => setNotifications({ ...notifications, botAlerts: e.target.checked })} />}
-                label="Bot Activity Alerts"
+                label="Agent Activity Alerts"
               />
               <FormControlLabel
                 control={<Switch checked={notifications.systemUpdates} onChange={(e) => setNotifications({ ...notifications, systemUpdates: e.target.checked })} />}

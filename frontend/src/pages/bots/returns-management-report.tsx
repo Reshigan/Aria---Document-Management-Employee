@@ -1,5 +1,5 @@
 /**
- * Returns Management Bot - Report Page
+ * Returns Management Agent - Report Page
  * Generated: 2025-10-26 14:16:23
  */
 
@@ -42,12 +42,12 @@ export default function ReturnsManagementReport() {
   const loadData = async () => {
     try {
       // Load statistics
-      const statsResponse = await fetch('/api/bots/returns_management/statistics');
+      const statsResponse = await fetch('/api/agents/returns_management/statistics');
       const statsData = await statsResponse.json();
       setStats(statsData);
       
       // Load activities
-      const activitiesResponse = await fetch('/api/bots/returns_management/activities');
+      const activitiesResponse = await fetch('/api/agents/returns_management/activities');
       const activitiesData = await activitiesResponse.json();
       setActivities(activitiesData);
     } catch (error) {
@@ -66,7 +66,7 @@ export default function ReturnsManagementReport() {
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h4" gutterBottom>
-        Returns Management Bot - Report
+        Returns Management Agent - Report
       </Typography>
 
       <Grid container spacing={3} sx={{ mb: 3 }}>

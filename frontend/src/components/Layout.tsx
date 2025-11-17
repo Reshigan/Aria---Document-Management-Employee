@@ -1,7 +1,7 @@
 import { Link, useLocation } from 'react-router-dom'
 import { 
   LayoutDashboard, Users, Building2, FileText, 
-  CreditCard, Folder, LogOut, Bot 
+  CreditCard, Folder, LogOut, Agent 
 } from 'lucide-react'
 import { useAuthStore } from '../store/authStore'
 
@@ -12,7 +12,7 @@ const navigation = [
   { name: 'Invoices', href: '/invoices', icon: FileText },
   { name: 'Payments', href: '/payments', icon: CreditCard },
   { name: 'Accounts', href: '/accounts', icon: Folder },
-  { name: 'AI Bots', href: '/bots', icon: Bot },
+  { name: 'AI Agents', href: '/agents', icon: Agent },
 ]
 
 export default function Layout({ children }: { children: React.ReactNode }) {

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
   LayoutDashboard, BookOpen, FileDown, FileUp, Building2, Wallet, Users, Package,
-  Bot, FileText, Settings, MessageSquare, FileSpreadsheet, ShoppingCart, Truck,
+  Agent, FileText, Settings, MessageSquare, FileSpreadsheet, ShoppingCart, Truck,
   ShoppingBag, Factory, Shield, Wrench, ClipboardList, Scale, Briefcase, 
   FolderOpen, TrendingUp, ChevronDown, LogOut
 } from 'lucide-react';
@@ -284,11 +284,11 @@ export const MegaMenu: React.FC = () => {
           </Link>
 
           <Link 
-            to="/bots" 
-            className={`mega-menu-item ${isActive('/bots') ? 'active' : ''}`}
+            to="/agents" 
+            className={`mega-menu-item ${isActive('/agents') ? 'active' : ''}`}
           >
-            <Bot size={18} />
-            <span>Bots</span>
+            <Agent size={18} />
+            <span>Agents</span>
           </Link>
 
           <Link 

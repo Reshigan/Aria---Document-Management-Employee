@@ -210,11 +210,11 @@ export default function ERPDashboard() {
               </div>
             </div>
 
-            {/* Automation Bots */}
+            {/* Automation Agents */}
             <div className="bg-white rounded-lg shadow">
               <div className="px-6 py-4 border-b">
-                <h2 className="text-lg font-semibold text-gray-900">Automation Bots</h2>
-                <p className="text-sm text-gray-500">15 intelligent bots working 24/7</p>
+                <h2 className="text-lg font-semibold text-gray-900">Automation Agents</h2>
+                <p className="text-sm text-gray-500">15 intelligent agents working 24/7</p>
               </div>
               <div className="p-6">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -224,10 +224,10 @@ export default function ERPDashboard() {
                     'OCR Invoice', 'Bank Payment Prediction', 'Inventory Replenishment',
                     'Customer Churn', 'Revenue Forecasting', 'Cashflow Prediction',
                     'Anomaly Detection', 'Document Classification', 'Multi-currency'
-                  ].map((bot, idx) => (
+                  ].map((agent, idx) => (
                     <div key={idx} className="flex items-center p-3 bg-gray-50 rounded-lg">
                       <div className="w-2 h-2 bg-green-500 rounded-full mr-3 animate-pulse" />
-                      <span className="text-sm text-gray-700">{bot}</span>
+                      <span className="text-sm text-gray-700">{agent}</span>
                     </div>
                   ))}
                 </div>

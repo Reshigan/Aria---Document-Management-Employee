@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { botsAPI } from '../services/api';
-import { Bot, CheckCircle, Loader, AlertCircle, Play, FileText, DollarSign, Users, TrendingUp, Shield, Package } from 'lucide-react';
+import { Agent, CheckCircle, Loader, AlertCircle, Play, FileText, DollarSign, Users, TrendingUp, Shield, Package } from 'lucide-react';
 
 interface BotData {
   name: string;
@@ -12,7 +12,7 @@ interface BotData {
 interface BotListResponse {
   success: boolean;
   count: number;
-  bots: BotData[];
+  agents: BotData[];
 }
 
 const iconMap: Record<string, any> = {
@@ -27,7 +27,7 @@ const iconMap: Record<string, any> = {
 };
 
 export default function BotsLive() {
-  const [bots, setBots] = useState<BotData[]>([]);
+  const [agents, setBots] = useState<BotData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [executingBot, setExecutingBot] = useState<string | null>(null);
@@ -43,9 +43,9 @@ export default function BotsLive() {
       setError(null);
       const response = await botsAPI.list();
       const data = response.data as BotListResponse;
-      setBots(data.bots || []);
+      setBots(data.agents || []);
     } catch (err: any) {
-      setError(err.message || 'Failed to load bots');
+      setError(err.message || 'Failed to load agents');
     } finally {
       setLoading(false);
     }
@@ -56,7 +56,7 @@ export default function BotsLive() {
       setExecutingBot(botName);
       setExecutionResult(null);
       
-      // Sample test data for each bot
+      // Sample test data for each agent
       const testData: Record<string, any> = {
         invoice_reconciliation: {
           invoice_number: 'INV-2025-001',
@@ -115,7 +115,7 @@ export default function BotsLive() {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <Loader className="w-12 h-12 text-blue-600 animate-spin mx-auto mb-4" />
-          <p className="text-gray-600">Loading bots from API...</p>
+          <p className="text-gray-600">Loading agents from API...</p>
         </div>
       </div>
     );
@@ -149,10 +149,10 @@ export default function BotsLive() {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-4xl font-bold text-gray-900 mb-2">
-                Live Bot Status
+                Live Agent Status
               </h1>
               <p className="text-gray-600">
-                Real-time data from backend API - {bots.length} bots operational
+                Real-time data from backend API - {agents.length} agents operational
               </p>
             </div>
             <div className="flex items-center gap-2 text-green-600">
@@ -162,13 +162,13 @@ export default function BotsLive() {
           </div>
         </div>
 
-        {/* Bot Grid */}
+        {/* Agent Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {bots.map((bot) => {
-            const Icon = iconMap[bot.name] || Bot;
+          {agents.map((agent) => {
+            const Icon = iconMap[agent.name] || Agent;
             return (
               <div
-                key={bot.name}
+                key={agent.name}
                 className="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow"
               >
                 <div className="flex items-start justify-between mb-4">
@@ -182,20 +182,20 @@ export default function BotsLive() {
                 </div>
 
                 <h3 className="text-xl font-bold text-gray-900 mb-2">
-                  {bot.type.replace(/Bot$/, '').replace(/([A-Z])/g, ' $1').trim()}
+                  {agent.type.replace(/Agent$/, '').replace(/([A-Z])/g, ' $1').trim()}
                 </h3>
                 
                 <p className="text-gray-600 text-sm mb-4">
-                  {bot.description}
+                  {agent.description}
                 </p>
 
-                {bot.capabilities.length > 0 && (
+                {agent.capabilities.length > 0 && (
                   <div className="mb-4">
                     <p className="text-xs font-semibold text-gray-700 mb-2">
                       Capabilities:
                     </p>
                     <div className="flex flex-wrap gap-2">
-                      {bot.capabilities.slice(0, 3).map((cap, idx) => (
+                      {agent.capabilities.slice(0, 3).map((cap, idx) => (
                         <span
                           key={idx}
                           className="inline-block bg-blue-50 text-blue-700 text-xs px-2 py-1 rounded"
@@ -203,9 +203,9 @@ export default function BotsLive() {
                           {cap.replace(/_/g, ' ')}
                         </span>
                       ))}
-                      {bot.capabilities.length > 3 && (
+                      {agent.capabilities.length > 3 && (
                         <span className="inline-block bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded">
-                          +{bot.capabilities.length - 3} more
+                          +{agent.capabilities.length - 3} more
                         </span>
                       )}
                     </div>
@@ -213,15 +213,15 @@ export default function BotsLive() {
                 )}
 
                 <button
-                  onClick={() => executeBot(bot.name)}
-                  disabled={executingBot === bot.name}
+                  onClick={() => executeBot(agent.name)}
+                  disabled={executingBot === agent.name}
                   className={`w-full flex items-center justify-center gap-2 py-2 px-4 rounded-lg font-medium transition-colors ${
-                    executingBot === bot.name
+                    executingBot === agent.name
                       ? 'bg-gray-300 cursor-not-allowed'
                       : 'bg-blue-600 hover:bg-blue-700 text-white'
                   }`}
                 >
-                  {executingBot === bot.name ? (
+                  {executingBot === agent.name ? (
                     <>
                       <Loader className="w-4 h-4 animate-spin" />
                       Executing...
@@ -255,7 +255,7 @@ export default function BotsLive() {
           <h3 className="font-semibold text-blue-900 mb-2">API Information</h3>
           <div className="text-sm text-blue-800 space-y-1">
             <p><strong>Endpoint:</strong> {window.location.origin}/api</p>
-            <p><strong>Bots Loaded:</strong> {bots.length}</p>
+            <p><strong>Agents Loaded:</strong> {agents.length}</p>
             <p><strong>Status:</strong> All systems operational</p>
           </div>
         </div>

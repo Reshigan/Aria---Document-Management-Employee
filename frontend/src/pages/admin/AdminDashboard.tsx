@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  Activity, Bot, Users, Database, TrendingUp, AlertCircle,
+  Activity, Agent, Users, Database, TrendingUp, AlertCircle,
   CheckCircle, Clock, Zap, Server, HardDrive, Cpu
 } from 'lucide-react';
 import api from '../../lib/api';
@@ -188,18 +188,18 @@ export default function AdminDashboard() {
       {/* Automation Overview */}
       <div className="mb-6">
         <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-          <Bot className="h-5 w-5" />
+          <Agent className="h-5 w-5" />
           Automation
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="bg-white rounded-lg shadow p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Total Bots</p>
+                <p className="text-sm text-gray-600">Total Agents</p>
                 <p className="text-3xl font-bold text-gray-900">{metrics?.automation.total_bots || 67}</p>
               </div>
               <div className="bg-indigo-100 rounded-full p-3">
-                <Bot className="h-6 w-6 text-indigo-600" />
+                <Agent className="h-6 w-6 text-indigo-600" />
               </div>
             </div>
           </div>
@@ -207,7 +207,7 @@ export default function AdminDashboard() {
           <div className="bg-white rounded-lg shadow p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Enabled Bots</p>
+                <p className="text-sm text-gray-600">Enabled Agents</p>
                 <p className="text-3xl font-bold text-gray-900">{metrics?.automation.enabled_bots || 67}</p>
               </div>
               <div className="bg-green-100 rounded-full p-3">
@@ -292,11 +292,11 @@ export default function AdminDashboard() {
         <h2 className="text-xl font-bold text-gray-900 mb-4">Quick Actions</h2>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <a
-            href="/admin/bots"
+            href="/admin/agents"
             className="flex items-center gap-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
           >
-            <Bot className="h-5 w-5 text-blue-600" />
-            <span className="font-medium text-gray-900">Configure Bots</span>
+            <Agent className="h-5 w-5 text-blue-600" />
+            <span className="font-medium text-gray-900">Configure Agents</span>
           </a>
 
           <a

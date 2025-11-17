@@ -13,7 +13,7 @@ import Employees from './pages/ERP/Employees';
 import FieldService from './pages/ERP/FieldService';
 import ERPDashboard from './pages/ERPDashboard';
 import BotRegistry from './pages/BotRegistry';
-import Bots from './pages/Bots';
+import Agents from './pages/Agents';
 import Settings from './pages/Settings';
 import Customers from './pages/Customers';
 import Suppliers from './pages/Suppliers';
@@ -125,9 +125,9 @@ function App() {
           <Route path="/field-service/requests" element={<FieldService />} />
           <Route path="/field-service/work-orders" element={<FieldService />} />
           
-          {/* Bots */}
-          <Route path="/bots" element={<BotRegistry />} />
-          <Route path="/agents" element={<Bots />} />
+          {/* Agents */}
+          <Route path="/agents" element={<BotRegistry />} />
+          <Route path="/agents" element={<Agents />} />
           
           {/* Reports */}
           <Route path="/reports" element={<ReportsDashboard />} />
@@ -158,7 +158,7 @@ function App() {
           {/* Admin */}
           <Route path="/admin/system" element={<SystemSettings />} />
           <Route path="/admin/company" element={<CompanySettings />} />
-          <Route path="/admin/bots" element={<BotConfiguration />} />
+          <Route path="/admin/agents" element={<BotConfiguration />} />
           <Route path="/admin/users" element={<UserManagement />} />
           <Route path="/admin/data-import" element={<DataImport />} />
           <Route path="/admin/dashboard" element={<RoleDashboard />} />

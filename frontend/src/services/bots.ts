@@ -1,19 +1,19 @@
 /**
- * Bots & ARIA Controller API Service
- * Centralized API calls for bot execution and ARIA orchestration
+ * Agents & ARIA Controller API Service
+ * Centralized API calls for agent execution and ARIA orchestration
  */
 import api from '../lib/api';
-import type { Bot, BotExecution, ARIAProcessLog } from '../types/erp';
+import type { Agent, BotExecution, ARIAProcessLog } from '../types/erp';
 
 
 export const botsService = {
   listAvailable: async () => {
-    const response = await api.get<Bot[]>('/bots/available');
+    const response = await api.get<Agent[]>('/agents/available');
     return response.data;
   },
 
   execute: async (botId: string, context: any) => {
-    const response = await api.post<BotExecution>('/bots/execute', {
+    const response = await api.post<BotExecution>('/agents/execute', {
       bot_id: botId,
       context
     });
@@ -21,12 +21,12 @@ export const botsService = {
   },
 
   listExecutions: async (params?: { bot_id?: string; document_id?: string; limit?: number }) => {
-    const response = await api.get<BotExecution[]>('/bots/executions', { params });
+    const response = await api.get<BotExecution[]>('/agents/executions', { params });
     return response.data;
   },
 
   getExecution: async (id: string) => {
-    const response = await api.get<BotExecution>(`/bots/executions/${id}`);
+    const response = await api.get<BotExecution>(`/agents/executions/${id}`);
     return response.data;
   }
 };
@@ -55,7 +55,7 @@ export const ariaControllerService = {
 };
 
 
-export async function getBotsForDocumentType(documentType: string): Promise<Bot[]> {
+export async function getBotsForDocumentType(documentType: string): Promise<Agent[]> {
   const allBots = await botsService.listAvailable();
   
   const categoryMap: Record<string, string[]> = {
@@ -68,5 +68,5 @@ export async function getBotsForDocumentType(documentType: string): Promise<Bot[
   };
 
   const categories = categoryMap[documentType] || [];
-  return allBots.filter(bot => categories.includes(bot.category));
+  return allBots.filter(agent => categories.includes(agent.category));
 }

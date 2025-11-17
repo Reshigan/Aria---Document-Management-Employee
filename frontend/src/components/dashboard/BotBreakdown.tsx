@@ -11,7 +11,7 @@ const BotBreakdown: React.FC<{ data?: any }> = ({ data }) => {
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-6">
-      <h3 className="text-2xl font-bold text-white mb-6">Bot Activity Breakdown</h3>
+      <h3 className="text-2xl font-bold text-white mb-6">Agent Activity Breakdown</h3>
       <ResponsiveContainer width="100%" height={300}>
         <PieChart>
           <Pie data={chartData} cx="50%" cy="50%" innerRadius={60} outerRadius={100} paddingAngle={5} dataKey="value">
@@ -24,10 +24,10 @@ const BotBreakdown: React.FC<{ data?: any }> = ({ data }) => {
         </PieChart>
       </ResponsiveContainer>
       <div className="grid grid-cols-3 gap-4 mt-6">
-        {chartData.map((bot, idx) => (
+        {chartData.map((agent, idx) => (
           <div key={idx} className="text-center">
-            <p className="text-2xl font-bold" style={{ color: bot.color }}>{bot.value}</p>
-            <p className="text-gray-400 text-xs">{bot.name}</p>
+            <p className="text-2xl font-bold" style={{ color: agent.color }}>{agent.value}</p>
+            <p className="text-gray-400 text-xs">{agent.name}</p>
           </div>
         ))}
       </div>

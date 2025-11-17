@@ -1,5 +1,5 @@
 /**
- * eSignature Bot - Report Page
+ * eSignature Agent - Report Page
  * Generated: 2025-10-26 14:16:23
  */
 
@@ -42,12 +42,12 @@ export default function EsignatureReport() {
   const loadData = async () => {
     try {
       // Load statistics
-      const statsResponse = await fetch('/api/bots/esignature/statistics');
+      const statsResponse = await fetch('/api/agents/esignature/statistics');
       const statsData = await statsResponse.json();
       setStats(statsData);
       
       // Load activities
-      const activitiesResponse = await fetch('/api/bots/esignature/activities');
+      const activitiesResponse = await fetch('/api/agents/esignature/activities');
       const activitiesData = await activitiesResponse.json();
       setActivities(activitiesData);
     } catch (error) {
@@ -66,7 +66,7 @@ export default function EsignatureReport() {
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h4" gutterBottom>
-        eSignature Bot - Report
+        eSignature Agent - Report
       </Typography>
 
       <Grid container spacing={3} sx={{ mb: 3 }}>

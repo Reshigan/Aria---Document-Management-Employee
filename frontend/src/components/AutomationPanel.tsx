@@ -1,11 +1,11 @@
 /**
  * Automation Panel Component
- * Shows available bots for current document with execution logs
+ * Shows available agents for current document with execution logs
  */
 import React, { useState, useEffect } from 'react';
-import { Bot, Play, Clock, CheckCircle, XCircle, ChevronRight, Loader } from 'lucide-react';
-import { botsService, ariaControllerService, getBotsForDocumentType } from '../services/bots';
-import type { Bot as BotType, BotExecution } from '../types/erp';
+import { Agent, Play, Clock, CheckCircle, XCircle, ChevronRight, Loader } from 'lucide-react';
+import { botsService, ariaControllerService, getBotsForDocumentType } from '../services/agents';
+import type { Agent as BotType, BotExecution } from '../types/erp';
 
 interface AutomationPanelProps {
   documentType: string;
@@ -33,11 +33,11 @@ export function AutomationPanel({
 
   const loadAvailableBots = async () => {
     try {
-      const bots = await getBotsForDocumentType(documentType);
-      setAvailableBots(bots);
+      const agents = await getBotsForDocumentType(documentType);
+      setAvailableBots(agents);
     } catch (err: any) {
-      console.error('Error loading bots:', err);
-      setError(err.response?.data?.detail || 'Failed to load available bots');
+      console.error('Error loading agents:', err);
+      setError(err.response?.data?.detail || 'Failed to load available agents');
     } finally {
       setLoading(false);
     }
@@ -71,8 +71,8 @@ export function AutomationPanel({
       await loadExecutions();
       onExecutionComplete?.(result);
     } catch (err: any) {
-      console.error('Error executing bot:', err);
-      setError(err.response?.data?.detail || 'Failed to execute bot');
+      console.error('Error executing agent:', err);
+      setError(err.response?.data?.detail || 'Failed to execute agent');
     } finally {
       setExecuting(null);
     }
@@ -124,14 +124,14 @@ export function AutomationPanel({
           alignItems: 'center',
           gap: '0.5rem'
         }}>
-          <Bot size={18} style={{ color: '#2563eb' }} />
+          <Agent size={18} style={{ color: '#2563eb' }} />
           <h3 style={{ fontSize: '1rem', fontWeight: '600', margin: 0 }}>
             Automation
           </h3>
         </div>
       </div>
 
-      {/* Available Bots */}
+      {/* Available Agents */}
       <div style={{ padding: '1rem' }}>
         <div style={{
           fontSize: '0.75rem',
@@ -140,7 +140,7 @@ export function AutomationPanel({
           textTransform: 'uppercase',
           marginBottom: '0.75rem'
         }}>
-          Available Bots
+          Available Agents
         </div>
 
         {availableBots.length === 0 ? (
@@ -150,18 +150,18 @@ export function AutomationPanel({
             color: '#6b7280',
             fontSize: '0.875rem'
           }}>
-            No bots available for this document type
+            No agents available for this document type
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-            {availableBots.map(bot => (
+            {availableBots.map(agent => (
               <div
-                key={bot.id}
+                key={agent.id}
                 style={{
                   padding: '0.75rem',
                   border: '1px solid #e5e7eb',
                   borderRadius: '0.375rem',
-                  background: bot.is_active ? 'white' : '#f9fafb'
+                  background: agent.is_active ? 'white' : '#f9fafb'
                 }}
               >
                 <div style={{
@@ -176,34 +176,34 @@ export function AutomationPanel({
                       fontWeight: '500',
                       marginBottom: '0.25rem'
                     }}>
-                      {bot.name}
+                      {agent.name}
                     </div>
                     <div style={{
                       fontSize: '0.75rem',
                       color: '#6b7280'
                     }}>
-                      {bot.description}
+                      {agent.description}
                     </div>
                   </div>
                   <button
-                    onClick={() => executeBot(bot.id)}
-                    disabled={!bot.is_active || executing === bot.id}
+                    onClick={() => executeBot(agent.id)}
+                    disabled={!agent.is_active || executing === agent.id}
                     style={{
                       display: 'flex',
                       alignItems: 'center',
                       gap: '0.25rem',
                       padding: '0.375rem 0.75rem',
-                      background: bot.is_active ? '#2563eb' : '#d1d5db',
+                      background: agent.is_active ? '#2563eb' : '#d1d5db',
                       color: 'white',
                       border: 'none',
                       borderRadius: '0.25rem',
                       fontSize: '0.75rem',
                       fontWeight: '500',
-                      cursor: bot.is_active ? 'pointer' : 'not-allowed',
-                      opacity: executing === bot.id ? 0.7 : 1
+                      cursor: agent.is_active ? 'pointer' : 'not-allowed',
+                      opacity: executing === agent.id ? 0.7 : 1
                     }}
                   >
-                    {executing === bot.id ? (
+                    {executing === agent.id ? (
                       <>
                         <Loader size={12} className="animate-spin" />
                         Running...
@@ -324,10 +324,10 @@ export function AutomationPanelCompact({
 
   const loadBotCount = async () => {
     try {
-      const bots = await getBotsForDocumentType(documentType);
-      setBotCount(bots.filter(b => b.is_active).length);
+      const agents = await getBotsForDocumentType(documentType);
+      setBotCount(agents.filter(b => b.is_active).length);
     } catch (err) {
-      console.error('Error loading bot count:', err);
+      console.error('Error loading agent count:', err);
     }
   };
 
@@ -351,7 +351,7 @@ export function AutomationPanelCompact({
         alignItems: 'center',
         gap: '0.5rem'
       }}>
-        <Bot size={16} style={{ color: '#2563eb' }} />
+        <Agent size={16} style={{ color: '#2563eb' }} />
         <span style={{ fontSize: '0.875rem', fontWeight: '500' }}>
           Automation ({botCount})
         </span>

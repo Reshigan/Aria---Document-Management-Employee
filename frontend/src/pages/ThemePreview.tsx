@@ -157,7 +157,7 @@ const ThemePreview: React.FC = () => {
           {/* Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
             <div className="bg-white rounded-lg shadow-md p-6 border-l-4" style={{ borderColor: 'var(--color-accent)' }}>
-              <h3 className="text-sm font-semibold text-gray-600 mb-2">Total Bots</h3>
+              <h3 className="text-sm font-semibold text-gray-600 mb-2">Total Agents</h3>
               <p className="text-3xl font-bold" style={{ color: 'var(--color-primary)' }}>67</p>
               <p className="text-sm" style={{ color: 'var(--color-accent)' }}>+12% this month</p>
             </div>

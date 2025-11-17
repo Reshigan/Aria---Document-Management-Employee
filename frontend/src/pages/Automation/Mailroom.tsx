@@ -59,7 +59,7 @@ export default function Mailroom() {
         to: 'aria@vantax.co.za',
         received_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
         processed: true,
-        bot_triggered: 'AP Invoice Processing Bot',
+        bot_triggered: 'AP Invoice Processing Agent',
         status: 'completed'
       },
       {
@@ -69,7 +69,7 @@ export default function Mailroom() {
         to: 'aria@vantax.co.za',
         received_at: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
         processed: true,
-        bot_triggered: 'Quote Generation Bot',
+        bot_triggered: 'Quote Generation Agent',
         status: 'completed'
       },
       {
@@ -79,7 +79,7 @@ export default function Mailroom() {
         to: 'aria@vantax.co.za',
         received_at: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
         processed: true,
-        bot_triggered: 'Delivery Processing Bot',
+        bot_triggered: 'Delivery Processing Agent',
         status: 'completed'
       }
     ];
@@ -221,7 +221,7 @@ export default function Mailroom() {
                     fontSize: '0.875rem',
                     color: '#1e40af'
                   }}>
-                    <strong>Bot Triggered:</strong> {message.bot_triggered}
+                    <strong>Agent Triggered:</strong> {message.bot_triggered}
                   </div>
                 )}
               </div>
@@ -244,7 +244,7 @@ export default function Mailroom() {
         <ul style={{ margin: 0, paddingLeft: '1.5rem', color: '#1e40af', fontSize: '0.875rem', lineHeight: '1.75' }}>
           <li>Aria polls aria@vantax.co.za every 5 minutes for new emails</li>
           <li>Natural language processing identifies the intent (invoice, quote, delivery, etc.)</li>
-          <li>The appropriate bot is triggered automatically to process the request</li>
+          <li>The appropriate agent is triggered automatically to process the request</li>
           <li>Aria sends a confirmation email with the results</li>
           <li>All activity is logged and can be audited here</li>
         </ul>

@@ -1,5 +1,5 @@
 /**
- * Sales Commission Bot - Report Page
+ * Sales Commission Agent - Report Page
  * Generated: 2025-10-26 14:16:23
  */
 
@@ -42,12 +42,12 @@ export default function SalesCommissionReport() {
   const loadData = async () => {
     try {
       // Load statistics
-      const statsResponse = await fetch('/api/bots/sales_commission/statistics');
+      const statsResponse = await fetch('/api/agents/sales_commission/statistics');
       const statsData = await statsResponse.json();
       setStats(statsData);
       
       // Load activities
-      const activitiesResponse = await fetch('/api/bots/sales_commission/activities');
+      const activitiesResponse = await fetch('/api/agents/sales_commission/activities');
       const activitiesData = await activitiesResponse.json();
       setActivities(activitiesData);
     } catch (error) {
@@ -66,7 +66,7 @@ export default function SalesCommissionReport() {
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h4" gutterBottom>
-        Sales Commission Bot - Report
+        Sales Commission Agent - Report
       </Typography>
 
       <Grid container spacing={3} sx={{ mb: 3 }}>

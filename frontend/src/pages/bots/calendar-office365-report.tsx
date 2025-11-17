@@ -1,5 +1,5 @@
 /**
- * Calendar Bot (Office 365) - Report Page
+ * Calendar Agent (Office 365) - Report Page
  * Generated: 2025-10-26 14:16:23
  */
 
@@ -42,12 +42,12 @@ export default function CalendarOffice365Report() {
   const loadData = async () => {
     try {
       // Load statistics
-      const statsResponse = await fetch('/api/bots/calendar_office365/statistics');
+      const statsResponse = await fetch('/api/agents/calendar_office365/statistics');
       const statsData = await statsResponse.json();
       setStats(statsData);
       
       // Load activities
-      const activitiesResponse = await fetch('/api/bots/calendar_office365/activities');
+      const activitiesResponse = await fetch('/api/agents/calendar_office365/activities');
       const activitiesData = await activitiesResponse.json();
       setActivities(activitiesData);
     } catch (error) {
@@ -66,7 +66,7 @@ export default function CalendarOffice365Report() {
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h4" gutterBottom>
-        Calendar Bot (Office 365) - Report
+        Calendar Agent (Office 365) - Report
       </Typography>
 
       <Grid container spacing={3} sx={{ mb: 3 }}>

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import api from '@/lib/api'
-import { Bot, Play, Activity, CheckCircle } from 'lucide-react'
+import { Agent, Play, Activity, CheckCircle } from 'lucide-react'
 
 interface BotInfo {
   id: string
@@ -14,8 +14,8 @@ interface BotCategories {
   [key: string]: number
 }
 
-export default function Bots() {
-  const [bots, setBots] = useState<BotInfo[]>([])
+export default function Agents() {
+  const [agents, setBots] = useState<BotInfo[]>([])
   const [categories, setCategories] = useState<BotCategories>({})
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
   const [loading, setLoading] = useState(true)
@@ -34,15 +34,15 @@ export default function Bots() {
       setBots(botsRes.data)
       setCategories(categoriesRes.data)
     } catch (error) {
-      console.error('Failed to load bots:', error)
+      console.error('Failed to load agents:', error)
     } finally {
       setLoading(false)
     }
   }
 
   const filteredBots = selectedCategory === 'all' 
-    ? bots 
-    : bots.filter(bot => bot.category === selectedCategory)
+    ? agents 
+    : agents.filter(agent => agent.category === selectedCategory)
 
   const handleExecuteBot = async (botId: string) => {
     try {
@@ -67,7 +67,7 @@ export default function Bots() {
         <div>
           <h1 className="text-3xl font-bold text-gray-900">AI Agents</h1>
           <p className="text-gray-600 mt-1">
-            {bots.length} AI-powered automation agents available
+            {agents.length} AI-powered automation agents available
           </p>
         </div>
         <div className="bg-blue-100 rounded-lg px-4 py-2">
@@ -90,7 +90,7 @@ export default function Bots() {
           }`}
         >
           <div className="text-sm font-medium text-gray-600">All Agents</div>
-          <div className="text-2xl font-bold text-gray-900">{bots.length}</div>
+          <div className="text-2xl font-bold text-gray-900">{agents.length}</div>
         </button>
         {Object.entries(categories)
           .slice(0, 3)
@@ -121,7 +121,7 @@ export default function Bots() {
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >
-              All ({bots.length})
+              All ({agents.length})
             </button>
             {Object.entries(categories).map(([category, count]) => (
               <button
@@ -140,26 +140,26 @@ export default function Bots() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-6">
-          {filteredBots.map((bot) => (
+          {filteredBots.map((agent) => (
             <div
-              key={bot.id}
+              key={agent.id}
               className="border rounded-lg p-4 hover:shadow-lg transition-shadow cursor-pointer"
-              onClick={() => setSelectedBot(bot)}
+              onClick={() => setSelectedBot(agent)}
             >
               <div className="flex items-start justify-between mb-3">
                 <div className="bg-blue-100 rounded-lg p-2">
-                  <Bot className="h-6 w-6 text-blue-600" />
+                  <Agent className="h-6 w-6 text-blue-600" />
                 </div>
                 <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">
-                  {bot.status}
+                  {agent.status}
                 </span>
               </div>
-              <h3 className="font-semibold text-gray-900 mb-1">{bot.name}</h3>
-              <p className="text-xs text-gray-600 mb-3">{bot.category}</p>
+              <h3 className="font-semibold text-gray-900 mb-1">{agent.name}</h3>
+              <p className="text-xs text-gray-600 mb-3">{agent.category}</p>
               <button
                 onClick={(e) => {
                   e.stopPropagation()
-                  handleExecuteBot(bot.id)
+                  handleExecuteBot(agent.id)
                 }}
                 className="w-full bg-blue-600 text-white py-2 rounded-lg text-sm hover:bg-blue-700 flex items-center justify-center"
               >
@@ -179,7 +179,7 @@ export default function Bots() {
 
       {selectedBot && (
         <BotDetailsModal
-          bot={selectedBot}
+          agent={selectedBot}
           onClose={() => setSelectedBot(null)}
           onExecute={handleExecuteBot}
         />
@@ -189,11 +189,11 @@ export default function Bots() {
 }
 
 function BotDetailsModal({
-  bot,
+  agent,
   onClose,
   onExecute,
 }: {
-  bot: BotInfo
+  agent: BotInfo
   onClose: () => void
   onExecute: (botId: string) => void
 }) {
@@ -202,11 +202,11 @@ function BotDetailsModal({
 
   useEffect(() => {
     loadDetails()
-  }, [bot.id])
+  }, [agent.id])
 
   const loadDetails = async () => {
     try {
-      const response = await api.get(`/agents/${bot.id}`)
+      const response = await api.get(`/agents/${agent.id}`)
       setDetails(response.data)
     } catch (error) {
       console.error('Failed to load agent details:', error)
@@ -222,11 +222,11 @@ function BotDetailsModal({
           <div className="flex items-start justify-between mb-4">
             <div className="flex items-center">
               <div className="bg-blue-100 rounded-lg p-3 mr-4">
-                <Bot className="h-8 w-8 text-blue-600" />
+                <Agent className="h-8 w-8 text-blue-600" />
               </div>
               <div>
-                <h2 className="text-2xl font-bold text-gray-900">{bot.name}</h2>
-                <p className="text-sm text-gray-600">{bot.category}</p>
+                <h2 className="text-2xl font-bold text-gray-900">{agent.name}</h2>
+                <p className="text-sm text-gray-600">{agent.category}</p>
               </div>
             </div>
             <button
@@ -246,7 +246,7 @@ function BotDetailsModal({
               <div>
                 <h3 className="font-semibold text-gray-900 mb-2">Description</h3>
                 <p className="text-gray-600 text-sm">
-                  {details?.description || 'This bot automates business processes efficiently.'}
+                  {details?.description || 'This agent automates business processes efficiently.'}
                 </p>
               </div>
 
@@ -272,7 +272,7 @@ function BotDetailsModal({
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium text-gray-700">Module</span>
-                  <span className="text-xs text-gray-600 font-mono">{bot.module}</span>
+                  <span className="text-xs text-gray-600 font-mono">{agent.module}</span>
                 </div>
               </div>
 
@@ -285,7 +285,7 @@ function BotDetailsModal({
                 </button>
                 <button
                   onClick={() => {
-                    onExecute(bot.id)
+                    onExecute(agent.id)
                     onClose()
                   }}
                   className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center"
