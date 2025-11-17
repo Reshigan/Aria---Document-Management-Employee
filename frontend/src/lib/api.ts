@@ -10,7 +10,7 @@ const api = axios.create({
   },
 });
 
-// Request interceptor - add auth token and company_id
+// Request interceptor - add auth token, company_id, and rewrite legacy API paths
 api.interceptors.request.use((config) => {
   // Check both 'token' and 'access_token' for backwards compatibility
   const token = localStorage.getItem('access_token') || localStorage.getItem('token');
@@ -28,6 +28,22 @@ api.interceptors.request.use((config) => {
         company_id: companyId,
       };
     }
+  }
+  
+  if (config.url) {
+    config.url = config.url.replace(/^\/api\//, '/');
+    
+    config.url = config.url.replace(/\/erp\/procure-to-pay\/suppliers/, '/procurement/suppliers');
+    config.url = config.url.replace(/\/erp\/procure-to-pay\/purchase-orders/, '/procurement/purchase-orders');
+    
+    config.url = config.url.replace(/\/erp\/order-to-cash\/products/, '/inventory/products');
+    config.url = config.url.replace(/\/erp\/order-to-cash\/stock-on-hand/, '/inventory/stock-on-hand');
+    config.url = config.url.replace(/\/erp\/order-to-cash\/warehouses/, '/inventory/warehouses');
+    config.url = config.url.replace(/\/erp\/order-to-cash\/customers/, '/crm/customers');
+    config.url = config.url.replace(/\/erp\/order-to-cash\/quotes/, '/crm/quotes');
+    config.url = config.url.replace(/\/erp\/order-to-cash\/sales-orders/, '/crm/sales-orders');
+    config.url = config.url.replace(/\/erp\/order-to-cash\/invoices/, '/ar/invoices');
+    config.url = config.url.replace(/\/erp\/order-to-cash\/deliveries/, '/deliveries');
   }
   
   return config;
