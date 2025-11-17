@@ -79,7 +79,7 @@ class OCRService:
     
     def extract_text_tesseract(self, file_path: str) -> str:
         """
-        Extract text from document using Tesseract OCR
+        Extract text from document using Tesseract OCR or direct text extraction
         
         Args:
             file_path: Path to the document file
@@ -87,30 +87,87 @@ class OCRService:
         Returns:
             Extracted text
         """
+        file_extension = Path(file_path).suffix.lower()
+        
+        if file_extension == '.txt':
+            try:
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    return f.read()
+            except Exception as e:
+                logger.error(f"Failed to read text file: {str(e)}")
+                return ""
+        
+        elif file_extension in ['.xlsx', '.xls']:
+            return self._extract_text_from_excel(file_path)
+        
+        elif file_extension == '.pdf':
+            return self._extract_text_from_pdf(file_path)
+        
+        else:
+            return self._extract_text_from_image(file_path)
+    
+    def _extract_text_from_excel(self, file_path: str) -> str:
+        """Extract text from Excel files"""
+        try:
+            import openpyxl
+            
+            workbook = openpyxl.load_workbook(file_path, data_only=True)
+            text_parts = []
+            
+            for sheet_name in workbook.sheetnames:
+                sheet = workbook[sheet_name]
+                text_parts.append(f"Sheet: {sheet_name}\n")
+                
+                for row in sheet.iter_rows(values_only=True):
+                    row_text = " | ".join(str(cell) if cell is not None else "" for cell in row)
+                    if row_text.strip():
+                        text_parts.append(row_text)
+            
+            return "\n".join(text_parts)
+            
+        except ImportError:
+            logger.warning("openpyxl not available - install openpyxl for Excel support")
+            return ""
+        except Exception as e:
+            logger.error(f"Excel extraction failed: {str(e)}")
+            return ""
+    
+    def _extract_text_from_pdf(self, file_path: str) -> str:
+        """Extract text from PDF files"""
         try:
             import pytesseract
             from PIL import Image
             import pdf2image
             
-            file_extension = Path(file_path).suffix.lower()
-            
-            if file_extension == '.pdf':
-                images = pdf2image.convert_from_path(file_path)
-                text_parts = []
-                for image in images:
-                    text = pytesseract.image_to_string(image)
-                    text_parts.append(text)
-                return "\n\n".join(text_parts)
-            else:
-                image = Image.open(file_path)
+            images = pdf2image.convert_from_path(file_path)
+            text_parts = []
+            for image in images:
                 text = pytesseract.image_to_string(image)
-                return text
+                text_parts.append(text)
+            return "\n\n".join(text_parts)
                 
         except ImportError:
             logger.warning("Tesseract OCR not available - install pytesseract, pillow, pdf2image")
             return ""
         except Exception as e:
-            logger.error(f"OCR extraction failed: {str(e)}")
+            logger.error(f"PDF OCR extraction failed: {str(e)}")
+            return ""
+    
+    def _extract_text_from_image(self, file_path: str) -> str:
+        """Extract text from image files"""
+        try:
+            import pytesseract
+            from PIL import Image
+            
+            image = Image.open(file_path)
+            text = pytesseract.image_to_string(image)
+            return text
+                
+        except ImportError:
+            logger.warning("Tesseract OCR not available - install pytesseract, pillow")
+            return ""
+        except Exception as e:
+            logger.error(f"Image OCR extraction failed: {str(e)}")
             return ""
     
     def classify_document(self, document_id: str) -> Dict[str, Any]:
