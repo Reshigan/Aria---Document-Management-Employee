@@ -33,17 +33,13 @@ api.interceptors.request.use((config) => {
   if (config.url) {
     config.url = config.url.replace(/^\/api\//, '/');
     
-    config.url = config.url.replace(/\/erp\/procure-to-pay\/suppliers/, '/procurement/suppliers');
-    config.url = config.url.replace(/\/erp\/procure-to-pay\/purchase-orders/, '/procurement/purchase-orders');
+    config.url = config.url.replace(/\/erp\/procure-to-pay\/suppliers/, '/erp/master-data/suppliers');
     
-    config.url = config.url.replace(/\/erp\/order-to-cash\/products/, '/inventory/products');
+    config.url = config.url.replace(/\/erp\/order-to-cash\/customers/, '/erp/master-data/customers');
+    
+    
     config.url = config.url.replace(/\/erp\/order-to-cash\/stock-on-hand/, '/inventory/stock-on-hand');
     config.url = config.url.replace(/\/erp\/order-to-cash\/warehouses/, '/inventory/warehouses');
-    config.url = config.url.replace(/\/erp\/order-to-cash\/customers/, '/crm/customers');
-    config.url = config.url.replace(/\/erp\/order-to-cash\/quotes/, '/crm/quotes');
-    config.url = config.url.replace(/\/erp\/order-to-cash\/sales-orders/, '/crm/sales-orders');
-    config.url = config.url.replace(/\/erp\/order-to-cash\/invoices/, '/ar/invoices');
-    config.url = config.url.replace(/\/erp\/order-to-cash\/deliveries/, '/deliveries');
   }
   
   return config;
