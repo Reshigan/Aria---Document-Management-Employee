@@ -301,6 +301,134 @@ class ERPTools:
         except Exception as e:
             logger.error(f"Failed to create PO draft: {str(e)}")
             raise
+    
+    def start_quote_to_cash_workflow(
+        self,
+        company_id: str,
+        user_id: str,
+        customer_id: str,
+        customer_name: str,
+        customer_email: str,
+        products: List[Dict[str, Any]],
+        notes: Optional[str] = None,
+        conversation_id: Optional[str] = None
+    ) -> Dict[str, Any]:
+        """Start a Quote-to-Cash workflow"""
+        try:
+            with self.get_connection() as conn:
+                with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+                    from app.services.workflows.workflow_orchestrator import WorkflowOrchestrator
+                    from sqlalchemy.orm import Session
+                    from app.core.database import SessionLocal
+                    
+                    db = SessionLocal()
+                    try:
+                        orchestrator = WorkflowOrchestrator(db)
+                        
+                        initial_context = {
+                            'customer_id': customer_id,
+                            'customer_name': customer_name,
+                            'customer_email': customer_email,
+                            'products': products,
+                            'notes': notes
+                        }
+                        
+                        import asyncio
+                        result = asyncio.run(orchestrator.start_workflow(
+                            workflow_name='quote_to_cash',
+                            company_id=uuid.UUID(company_id),
+                            user_id=uuid.UUID(user_id),
+                            initial_context=initial_context,
+                            conversation_id=uuid.UUID(conversation_id) if conversation_id else None
+                        ))
+                        
+                        logger.info(f"Started Quote-to-Cash workflow: {result['instance_id']}")
+                        return result
+                    finally:
+                        db.close()
+        except Exception as e:
+            logger.error(f"Failed to start workflow: {str(e)}")
+            raise
+    
+    def get_workflow_status(self, workflow_instance_id: str) -> Dict[str, Any]:
+        """Get status of a workflow instance"""
+        try:
+            with self.get_connection() as conn:
+                from app.services.workflows.workflow_orchestrator import WorkflowOrchestrator
+                from app.core.database import SessionLocal
+                
+                db = SessionLocal()
+                try:
+                    orchestrator = WorkflowOrchestrator(db)
+                    result = orchestrator.get_workflow_status(uuid.UUID(workflow_instance_id))
+                    return result
+                finally:
+                    db.close()
+        except Exception as e:
+            logger.error(f"Failed to get workflow status: {str(e)}")
+            raise
+    
+    def approve_workflow_step(
+        self,
+        workflow_instance_id: str,
+        user_id: str,
+        notes: Optional[str] = None
+    ) -> Dict[str, Any]:
+        """Approve a pending workflow step"""
+        try:
+            with self.get_connection() as conn:
+                from app.services.workflows.workflow_orchestrator import WorkflowOrchestrator
+                from app.core.database import SessionLocal
+                
+                db = SessionLocal()
+                try:
+                    orchestrator = WorkflowOrchestrator(db)
+                    
+                    import asyncio
+                    result = asyncio.run(orchestrator.approve_step(
+                        instance_id=uuid.UUID(workflow_instance_id),
+                        user_id=uuid.UUID(user_id),
+                        notes=notes
+                    ))
+                    
+                    logger.info(f"Approved workflow step: {workflow_instance_id}")
+                    return result
+                finally:
+                    db.close()
+        except Exception as e:
+            logger.error(f"Failed to approve workflow step: {str(e)}")
+            raise
+    
+    def reject_workflow_step(
+        self,
+        workflow_instance_id: str,
+        user_id: str,
+        notes: Optional[str] = None
+    ) -> Dict[str, Any]:
+        """Reject a pending workflow step"""
+        try:
+            with self.get_connection() as conn:
+                from app.services.workflows.workflow_orchestrator import WorkflowOrchestrator
+                from app.core.database import SessionLocal
+                
+                db = SessionLocal()
+                try:
+                    orchestrator = WorkflowOrchestrator(db)
+                    
+                    import asyncio
+                    result = asyncio.run(orchestrator.reject_step(
+                        instance_id=uuid.UUID(workflow_instance_id),
+                        user_id=uuid.UUID(user_id),
+                        notes=notes
+                    ))
+                    
+                    logger.info(f"Rejected workflow step: {workflow_instance_id}")
+                    return result
+                finally:
+                    db.close()
+        except Exception as e:
+            logger.error(f"Failed to reject workflow step: {str(e)}")
+            raise
 
 
 TOOL_DEFINITIONS = [
@@ -478,6 +606,110 @@ TOOL_DEFINITIONS = [
                     }
                 },
                 "required": ["supplier_id"]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "start_quote_to_cash_workflow",
+            "description": "Start a complete Quote-to-Cash workflow with approval gates at each phase. This will guide the user through creating a quote, waiting for PO, creating sales order, delivery, and invoice.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "customer_id": {
+                        "type": "string",
+                        "description": "UUID of the customer"
+                    },
+                    "customer_name": {
+                        "type": "string",
+                        "description": "Name of the customer"
+                    },
+                    "customer_email": {
+                        "type": "string",
+                        "description": "Email address of the customer"
+                    },
+                    "products": {
+                        "type": "array",
+                        "description": "List of products with quantity and price",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "product_id": {"type": "string"},
+                                "quantity": {"type": "number"},
+                                "unit_price": {"type": "number"}
+                            }
+                        }
+                    },
+                    "notes": {
+                        "type": "string",
+                        "description": "Optional notes for the quote"
+                    },
+                    "conversation_id": {
+                        "type": "string",
+                        "description": "Optional conversation ID to link workflow to this conversation"
+                    }
+                },
+                "required": ["customer_id", "customer_name", "customer_email", "products"]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "get_workflow_status",
+            "description": "Get the current status of a workflow instance including pending approvals and recent steps.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "workflow_instance_id": {
+                        "type": "string",
+                        "description": "UUID of the workflow instance"
+                    }
+                },
+                "required": ["workflow_instance_id"]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "approve_workflow_step",
+            "description": "Approve a pending workflow step to allow the workflow to proceed to the next phase.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "workflow_instance_id": {
+                        "type": "string",
+                        "description": "UUID of the workflow instance"
+                    },
+                    "notes": {
+                        "type": "string",
+                        "description": "Optional notes about the approval decision"
+                    }
+                },
+                "required": ["workflow_instance_id"]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "reject_workflow_step",
+            "description": "Reject a pending workflow step which will cancel the workflow.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "workflow_instance_id": {
+                        "type": "string",
+                        "description": "UUID of the workflow instance"
+                    },
+                    "notes": {
+                        "type": "string",
+                        "description": "Optional notes about why the step was rejected"
+                    }
+                },
+                "required": ["workflow_instance_id"]
             }
         }
     }

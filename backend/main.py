@@ -259,6 +259,10 @@ app.include_router(conversation_router)
 from modules.aria_chat_module import router as aria_chat_router
 app.include_router(aria_chat_router)
 
+# Include Workflow Orchestrator Module
+from app.api.workflows import router as workflows_router
+app.include_router(workflows_router)
+
 # Pydantic models
 class UserLogin(PydanticBaseModel):
     username: str
