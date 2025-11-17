@@ -32,7 +32,7 @@ router = APIRouter()
 @router.get("/employee/{employee_id}/leave-accrual-details")
 async def list_employee_leave_accrual_details(
     employee_id: int,
-    leave_type_id: Optional[int] = Query(None, description="Filter by leave type"),
+    leave_type: Optional[str] = Query(None, description="Filter by leave type"),
     from_date: Optional[date] = Query(None, description="Filter from date"),
     to_date: Optional[date] = Query(None, description="Filter to date"),
     db: Session = Depends(get_db),
@@ -46,19 +46,18 @@ async def list_employee_leave_accrual_details(
             SELECT 
                 la.id,
                 la.employee_id,
-                e.first_name || ' ' || e.last_name as employee_name,
-                la.leave_type_id,
-                lt.leave_type_name,
+                u.email as employee_name,
+                la.leave_type,
+                la.leave_type as leave_type_name,
                 la.accrual_date,
-                la.hours_accrued,
-                la.balance,
+                la.accrued_hours,
+                la.balance_hours,
                 la.created_at
             FROM leave_accruals la
-            JOIN employees e ON la.employee_id = e.id
-            JOIN leave_types lt ON la.leave_type_id = lt.id
+            LEFT JOIN users u ON CAST(la.employee_id AS TEXT) = CAST(u.id AS TEXT)
             WHERE la.employee_id = :employee_id
-                AND e.company_id = :company_id
-                AND (:leave_type_id IS NULL OR la.leave_type_id = :leave_type_id)
+                AND la.company_id = :company_id
+                AND (:leave_type IS NULL OR la.leave_type = :leave_type)
                 AND (:from_date IS NULL OR la.accrual_date >= :from_date)
                 AND (:to_date IS NULL OR la.accrual_date <= :to_date)
             ORDER BY la.accrual_date DESC
@@ -67,7 +66,7 @@ async def list_employee_leave_accrual_details(
         result = db.execute(query, {
             "employee_id": employee_id,
             "company_id": company_id,
-            "leave_type_id": leave_type_id,
+            "leave_type": leave_type,
             "from_date": from_date,
             "to_date": to_date
         })
@@ -105,18 +104,17 @@ async def get_leave_accrual_detail(
             SELECT 
                 la.id,
                 la.employee_id,
-                e.first_name || ' ' || e.last_name as employee_name,
-                e.employee_number,
-                la.leave_type_id,
-                lt.leave_type_name,
+                u.email as employee_name,
+                u.email as employee_number,
+                la.leave_type,
+                la.leave_type as leave_type_name,
                 la.accrual_date,
-                la.hours_accrued,
-                la.balance,
+                la.accrued_hours,
+                la.balance_hours,
                 la.created_at
             FROM leave_accruals la
-            JOIN employees e ON la.employee_id = e.id
-            JOIN leave_types lt ON la.leave_type_id = lt.id
-            WHERE la.id = :detail_id AND e.company_id = :company_id
+            LEFT JOIN users u ON CAST(la.employee_id AS TEXT) = CAST(u.id AS TEXT)
+            WHERE la.id = :detail_id AND la.company_id = :company_id
         """)
         
         result = db.execute(query, {
@@ -129,28 +127,27 @@ async def get_leave_accrual_detail(
         
         balance_query = text("""
             SELECT 
-                lb.leave_type_id,
-                lb.balance,
-                lb.used,
-                lb.available
-            FROM leave_balances lb
-            WHERE lb.employee_id = :employee_id
-                AND lb.leave_type_id = :leave_type_id
-                AND lb.company_id = :company_id
+                SUM(la.balance_hours) as balance,
+                SUM(la.used_hours) as used,
+                SUM(la.balance_hours - la.used_hours) as available
+            FROM leave_accruals la
+            WHERE la.employee_id = :employee_id
+                AND la.leave_type = :leave_type
+                AND la.company_id = :company_id
         """)
         
         balance_result = db.execute(balance_query, {
             "employee_id": result[1],
-            "leave_type_id": result[4],
+            "leave_type": result[4],
             "company_id": company_id
         }).fetchone()
         
         leave_balance = None
         if balance_result:
             leave_balance = {
-                "balance": float(balance_result[1]) if balance_result[1] else 0,
-                "used": float(balance_result[2]) if balance_result[2] else 0,
-                "available": float(balance_result[3]) if balance_result[3] else 0
+                "balance": float(balance_result[0]) if balance_result[0] else 0,
+                "used": float(balance_result[1]) if balance_result[1] else 0,
+                "available": float(balance_result[2]) if balance_result[2] else 0
             }
         
         return {
@@ -177,7 +174,7 @@ async def get_leave_accrual_detail(
 @router.post("/employee/{employee_id}/create-accrual-detail")
 async def create_leave_accrual_detail(
     employee_id: int,
-    leave_type_id: int,
+    leave_type: str,
     accrual_date: date,
     hours_accrued: float,
     db: Session = Depends(get_db),
@@ -188,30 +185,29 @@ async def create_leave_accrual_detail(
         company_id = current_user.get("company_id", "default")
         
         employee_query = text("""
-            SELECT id FROM employees
-            WHERE id = :employee_id AND company_id = :company_id
+            SELECT id FROM users
+            WHERE id = CAST(:employee_id AS UUID)
         """)
         
         employee_result = db.execute(employee_query, {
-            "employee_id": employee_id,
-            "company_id": company_id
+            "employee_id": employee_id
         }).fetchone()
         
         if not employee_result:
             raise HTTPException(status_code=404, detail="Employee not found")
         
         balance_query = text("""
-            SELECT COALESCE(balance, 0)
+            SELECT COALESCE(balance_hours, 0)
             FROM leave_accruals
             WHERE employee_id = :employee_id
-                AND leave_type_id = :leave_type_id
+                AND leave_type = :leave_type
             ORDER BY accrual_date DESC
             LIMIT 1
         """)
         
         balance_result = db.execute(balance_query, {
             "employee_id": employee_id,
-            "leave_type_id": leave_type_id
+            "leave_type": leave_type
         }).fetchone()
         
         current_balance = float(balance_result[0]) if balance_result else 0
@@ -219,17 +215,17 @@ async def create_leave_accrual_detail(
         
         insert_query = text("""
             INSERT INTO leave_accruals (
-                employee_id, leave_type_id, accrual_date,
-                hours_accrued, balance, company_id, created_at
+                employee_id, leave_type, accrual_date,
+                accrued_hours, balance_hours, company_id, created_at
             ) VALUES (
-                :employee_id, :leave_type_id, :accrual_date,
+                :employee_id, :leave_type, :accrual_date,
                 :hours_accrued, :balance, :company_id, NOW()
             ) RETURNING id
         """)
         
         result = db.execute(insert_query, {
             "employee_id": employee_id,
-            "leave_type_id": leave_type_id,
+            "leave_type": leave_type,
             "accrual_date": accrual_date,
             "hours_accrued": hours_accrued,
             "balance": new_balance,

@@ -205,8 +205,8 @@ async def generate_payslip_gl_postings(
                 journal_entry_id, account_id, debit_amount, credit_amount,
                 description, company_id, created_at
             ) VALUES 
-            (:je_id, (SELECT id FROM chart_of_accounts WHERE account_code = '6100' AND company_id = :company_id LIMIT 1), :amount, 0, 'Salary Expense', :company_id, NOW()),
-            (:je_id, (SELECT id FROM chart_of_accounts WHERE account_code = '2100' AND company_id = :company_id LIMIT 1), 0, :amount, 'Salaries Payable', :company_id, NOW())
+            (:je_id, (SELECT id FROM chart_of_accounts WHERE code = '6100' AND company_id = :company_id LIMIT 1), :amount, 0, 'Salary Expense', :company_id, NOW()),
+            (:je_id, (SELECT id FROM chart_of_accounts WHERE code = '2100' AND company_id = :company_id LIMIT 1), 0, :amount, 'Salaries Payable', :company_id, NOW())
         """)
         
         db.execute(lines_query, {

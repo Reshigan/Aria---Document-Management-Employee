@@ -44,18 +44,18 @@ async def list_reconciliation_variances(
             SELECT 
                 rsi.id,
                 rsi.reconciliation_session_id,
-                rsi.transaction_type,
-                rsi.transaction_id,
+                rsi.item_type as transaction_type,
+                rsi.reference as transaction_id,
                 rsi.transaction_date,
                 rsi.description,
-                rsi.amount,
-                rsi.status,
+                COALESCE(rsi.debit_amount, 0) - COALESCE(rsi.credit_amount, 0) as amount,
+                CASE WHEN rsi.reconciled THEN 'resolved' ELSE 'open' END as status,
                 rsi.created_at
             FROM reconciliation_session_items rsi
             JOIN reconciliation_sessions rs ON rsi.reconciliation_session_id = rs.id
             WHERE rsi.reconciliation_session_id = :reconciliation_id
                 AND rs.company_id = :company_id
-                AND (:status IS NULL OR rsi.status = :status)
+                AND (:status IS NULL OR (CASE WHEN rsi.reconciled THEN 'resolved' ELSE 'open' END) = :status)
             ORDER BY rsi.created_at DESC
         """)
         
@@ -100,12 +100,12 @@ async def get_reconciliation_variance(
                 rsi.reconciliation_session_id,
                 rs.session_name,
                 rs.start_date,
-                rsi.transaction_type,
-                rsi.transaction_id,
+                rsi.item_type as transaction_type,
+                rsi.reference as transaction_id,
                 rsi.transaction_date,
                 rsi.description,
-                rsi.amount,
-                rsi.status,
+                COALESCE(rsi.debit_amount, 0) - COALESCE(rsi.credit_amount, 0) as amount,
+                CASE WHEN rsi.reconciled THEN 'resolved' ELSE 'open' END as status,
                 rsi.created_at
             FROM reconciliation_session_items rsi
             JOIN reconciliation_sessions rs ON rsi.reconciliation_session_id = rs.id
@@ -170,7 +170,7 @@ async def resolve_variance(
         update_query = text("""
             UPDATE reconciliation_session_items
             SET 
-                status = 'resolved',
+                reconciled = true,
                 updated_at = NOW()
             WHERE id = :variance_id
         """)
