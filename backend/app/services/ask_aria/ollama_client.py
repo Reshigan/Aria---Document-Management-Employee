@@ -13,10 +13,10 @@ logger = logging.getLogger(__name__)
 class OllamaClient:
     """Client for interacting with Ollama local LLM"""
     
-    def __init__(self, base_url: str = "http://localhost:11434", model: str = "tinyllama"):
+    def __init__(self, base_url: str = "http://localhost:11434", model: str = "qwen2.5:3b-instruct"):
         self.base_url = base_url
         self.model = model
-        self.timeout = 60  # 1 minute timeout (should be much faster with tinyllama)
+        self.timeout = 60  # 1 minute timeout
     
     def chat(
         self,
