@@ -13,6 +13,7 @@ import Employees from './pages/ERP/Employees';
 import FieldService from './pages/ERP/FieldService';
 import ERPDashboard from './pages/ERPDashboard';
 import BotRegistry from './pages/BotRegistry';
+import Bots from './pages/Bots';
 import Settings from './pages/Settings';
 import Customers from './pages/Customers';
 import Suppliers from './pages/Suppliers';
@@ -121,7 +122,7 @@ function App() {
           
           {/* Bots */}
           <Route path="/bots" element={<BotRegistry />} />
-          <Route path="/agents" element={<BotRegistry />} />
+          <Route path="/agents" element={<Bots />} />
           
           {/* Reports */}
           <Route path="/reports" element={<AgedReceivablesReport />} />
