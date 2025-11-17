@@ -14,7 +14,11 @@ from uuid import UUID, uuid4
 from sqlalchemy.orm import Session
 from sqlalchemy import and_, or_
 
-from app.services.bots.bot_erp_integration import BotERPIntegration
+try:
+    from app.services.bots.bot_erp_integration import BotERPIntegration
+except ImportError:
+    from app.services.workflows.bot_adapter import BotERPIntegration
+
 from app.bots.bot_manager import BotManager
 
 
@@ -640,7 +644,9 @@ class WorkflowOrchestrator:
             'sales_order': 'create_sales_order',
             'invoice_processing': 'create_invoice',
             'document_generation': 'generate_document_pdf',
-            'email_integration': 'send_email'
+            'email_integration': 'send_email',
+            'warehouse_management': 'warehouse_management',
+            'shipping': 'shipping'
         }
         
         method_name = bot_method_map.get(bot_name)

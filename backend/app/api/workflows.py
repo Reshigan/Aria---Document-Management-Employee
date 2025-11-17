@@ -10,9 +10,31 @@ from typing import Dict, List, Optional, Any
 from uuid import UUID
 from pydantic import BaseModel
 
-from app.core.database import get_db
-from app.core.auth import get_current_user
+try:
+    from app.core.database import get_db
+except ImportError:
+    from app.database import get_db
+
+try:
+    from app.core.auth import get_current_user
+except ImportError:
+    from app.api.user_management import get_current_user
+
 from app.services.workflows.workflow_orchestrator import WorkflowOrchestrator
+
+
+def _extract_user_id(user) -> str:
+    """Extract user_id from user object (handles dict or object)."""
+    if isinstance(user, dict):
+        return str(user.get('user_id') or user.get('id'))
+    return str(getattr(user, 'user_id', None) or getattr(user, 'id', None))
+
+
+def _extract_company_id(user) -> str:
+    """Extract company_id from user object (handles dict or object)."""
+    if isinstance(user, dict):
+        return str(user.get('company_id'))
+    return str(getattr(user, 'company_id', None))
 
 
 router = APIRouter(prefix="/api/workflows", tags=["workflows"])
@@ -77,8 +99,8 @@ async def start_workflow(
         
         result = await orchestrator.start_workflow(
             workflow_name=request.workflow_name,
-            company_id=UUID(current_user['company_id']),
-            user_id=UUID(current_user['user_id']),
+            company_id=UUID(_extract_company_id(current_user)),
+            user_id=UUID(_extract_user_id(current_user)),
             initial_context=request.initial_context,
             conversation_id=UUID(request.conversation_id) if request.conversation_id else None
         )
@@ -145,7 +167,7 @@ async def approve_workflow_step(
         
         result = await orchestrator.approve_step(
             instance_id=UUID(instance_id),
-            user_id=UUID(current_user['user_id']),
+            user_id=UUID(_extract_user_id(current_user)),
             notes=request.notes
         )
         
@@ -180,7 +202,7 @@ async def reject_workflow_step(
         
         result = await orchestrator.reject_step(
             instance_id=UUID(instance_id),
-            user_id=UUID(current_user['user_id']),
+            user_id=UUID(_extract_user_id(current_user)),
             notes=request.notes
         )
         
@@ -253,7 +275,7 @@ async def list_workflows(
     ```
     """
     try:
-        company_id = current_user['company_id']
+        company_id = _extract_company_id(current_user)
         
         query = """
             SELECT id, workflow_definition_id, current_state, status,
