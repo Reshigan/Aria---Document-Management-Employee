@@ -13,7 +13,7 @@ from pydantic import BaseModel
 try:
     from app.core.database import get_db
 except ImportError:
-    from app.database import get_db
+    from core.database import get_db
 
 def get_current_user():
     """Stub for get_current_user - will be overridden by production."""

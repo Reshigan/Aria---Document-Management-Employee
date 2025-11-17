@@ -9,7 +9,7 @@ from typing import List, Optional, Dict, Any
 from pydantic import BaseModel, Field
 from datetime import datetime
 
-from app.database import get_db
+from core.database import get_db
 from app.models.workflow.workflow_models import (
     WorkflowInstance, WorkflowStep, WorkflowApproval, WorkflowEvent,
     WorkflowStatus, ApprovalStatus

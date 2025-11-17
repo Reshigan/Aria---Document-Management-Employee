@@ -11,6 +11,7 @@ from decimal import Decimal
 
 from core.database import get_db
 from core.auth import get_current_user
+from models.transactions import Supplier
 from models.inventory import (
     Supplier, Product, PurchaseOrder, PurchaseOrderLine,
     StockMovement, Warehouse, InventoryAdjustment

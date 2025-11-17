@@ -8,7 +8,7 @@ import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 
 from core.document_attachments import DocumentAttachmentService
-from app.database import get_db
+from core.database import get_db
 try:
     from app.auth import get_current_user
 except ImportError:
