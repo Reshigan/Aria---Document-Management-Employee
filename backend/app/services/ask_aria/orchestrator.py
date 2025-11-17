@@ -75,7 +75,7 @@ Always confirm with the user before finalizing any document."""
                 
                 response = ollama_client.chat(
                     messages=messages,
-                    tools=TOOL_DEFINITIONS,
+                    tools=None,
                     temperature=0.7
                 )
                 
