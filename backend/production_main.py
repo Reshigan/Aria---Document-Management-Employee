@@ -349,6 +349,13 @@ except Exception as e:
     print(f"⚠️ Customers API not loaded: {e}")
 
 try:
+    from app.api.procurement import router as procurement_router
+    app.include_router(procurement_router)
+    print("✅ Procurement API loaded (Suppliers, Products, Purchase Orders)")
+except Exception as e:
+    print(f"⚠️ Procurement API not loaded: {e}")
+
+try:
     from modules.document_generation_module import router as document_generation_router
     app.include_router(document_generation_router)
     print("✅ Document Generation module loaded")
