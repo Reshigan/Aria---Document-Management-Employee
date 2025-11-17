@@ -342,6 +342,13 @@ except Exception as e:
     print(f"⚠️ CRM API not loaded: {e}")
 
 try:
+    from app.api.customers import router as customers_router
+    app.include_router(customers_router, prefix="/api")
+    print("✅ Customers API loaded")
+except Exception as e:
+    print(f"⚠️ Customers API not loaded: {e}")
+
+try:
     from modules.document_generation_module import router as document_generation_router
     app.include_router(document_generation_router)
     print("✅ Document Generation module loaded")
