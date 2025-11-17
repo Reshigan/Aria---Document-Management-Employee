@@ -121,6 +121,7 @@ function App() {
           
           {/* Bots */}
           <Route path="/bots" element={<BotRegistry />} />
+          <Route path="/agents" element={<BotRegistry />} />
           
           {/* Reports */}
           <Route path="/reports" element={<AgedReceivablesReport />} />
