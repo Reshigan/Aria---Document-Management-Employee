@@ -4,7 +4,7 @@ import { StatCard } from '../../components/ui/StatCard';
 import { Badge } from '../../components/ui/Badge';
 import { Button } from '../../components/ui/Button';
 import {
-  TrendingUp, DollarSign, FileText, Agent, CheckCircle, AlertCircle
+  TrendingUp, DollarSign, FileText, Bot, CheckCircle, AlertCircle
 } from 'lucide-react';
 import api from '../../services/api';
 import './ExecutiveDashboard.css';
@@ -127,7 +127,7 @@ export const ExecutiveDashboard: React.FC = () => {
             {agents.map((agent, index) => (
               <div key={index} style={{border: '1px solid var(--gray-200)', borderRadius: '0.5rem', padding: '1rem'}}>
                 <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '0.75rem'}}>
-                  <Agent size={20} color="var(--primary-600)" />
+                  <Bot size={20} color="var(--primary-600)" />
                   <Badge variant={agent.status === 'active' ? 'success' : 'default'} size="sm">
                     {agent.status}
                   </Badge>
@@ -148,7 +148,7 @@ export const ExecutiveDashboard: React.FC = () => {
               {formatCurrency(metrics?.ap_outstanding || 0)}
             </div>
             <div style={{fontSize: '0.875rem', color: 'var(--gray-600)', display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
-              <Agent size={14} />
+              <Bot size={14} />
               <span>Invoice Reconciliation Agent: 45 invoices processed today</span>
             </div>
           </CardBody>
@@ -161,7 +161,7 @@ export const ExecutiveDashboard: React.FC = () => {
               {formatCurrency(metrics?.ar_outstanding || 0)}
             </div>
             <div style={{fontSize: '0.875rem', color: 'var(--gray-600)', display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
-              <Agent size={14} />
+              <Bot size={14} />
               <span>Payment Prediction Agent: 23 payments expected this week</span>
             </div>
           </CardBody>
