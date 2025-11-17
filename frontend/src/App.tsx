@@ -14,6 +14,7 @@ import FieldService from './pages/ERP/FieldService';
 import ERPDashboard from './pages/ERPDashboard';
 import BotRegistry from './pages/BotRegistry';
 import Agents from './pages/Agents';
+import AgentSettings from './pages/AgentSettings';
 import Settings from './pages/Settings';
 import Customers from './pages/Customers';
 import Suppliers from './pages/Suppliers';
@@ -126,8 +127,8 @@ function App() {
           <Route path="/field-service/work-orders" element={<FieldService />} />
           
           {/* Agents */}
-          <Route path="/agents" element={<BotRegistry />} />
           <Route path="/agents" element={<Agents />} />
+          <Route path="/agents/:agentId" element={<AgentSettings />} />
           
           {/* Reports */}
           <Route path="/reports" element={<ReportsDashboard />} />
