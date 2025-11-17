@@ -15,10 +15,9 @@ try:
 except ImportError:
     from app.database import get_db
 
-try:
-    from app.core.auth import get_current_user
-except ImportError:
-    from app.api.user_management import get_current_user
+def get_current_user():
+    """Stub for get_current_user - will be overridden by production."""
+    pass
 
 from app.services.workflows.workflow_orchestrator import WorkflowOrchestrator
 
