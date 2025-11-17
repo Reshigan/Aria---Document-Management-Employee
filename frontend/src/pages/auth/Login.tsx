@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Agent, Mail, Lock, ArrowRight } from 'lucide-react';
+import { Bot, Mail, Lock, ArrowRight } from 'lucide-react';
 import { auth } from '../../lib/api';
 import { useAuthStore } from '../../store/authStore';
 

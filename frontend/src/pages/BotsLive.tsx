@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { botsAPI } from '../services/api';
-import { Agent, CheckCircle, Loader, AlertCircle, Play, FileText, DollarSign, Users, TrendingUp, Shield, Package } from 'lucide-react';
+import { Bot, CheckCircle, Loader, AlertCircle, Play, FileText, DollarSign, Users, TrendingUp, Shield, Package } from 'lucide-react';
 
 interface BotData {
   name: string;

@@ -2,7 +2,7 @@
  * Modern Analytics Dashboard - World-class UI
  */
 import React, { useState, useEffect } from 'react';
-import { BarChart3, TrendingUp, FileText, Agent, Clock, CheckCircle, Users } from 'lucide-react';
+import { BarChart3, TrendingUp, FileText, Bot, Clock, CheckCircle, Users } from 'lucide-react';
 
 export const ModernDashboard: React.FC = () => {
   const [stats, setStats] = useState({ totalDocuments: 1247, processedToday: 89, activeConversations: 23, successRate: 98.5 });

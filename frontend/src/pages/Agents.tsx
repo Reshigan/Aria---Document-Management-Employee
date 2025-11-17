@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import api from '@/lib/api'
-import { Agent, Play, Activity, CheckCircle, Settings } from 'lucide-react'
+import { Bot, Play, Activity, CheckCircle, Settings } from 'lucide-react'
 
 interface BotInfo {
   id: string

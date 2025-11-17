@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Agent, TrendingUp, Clock, CheckCircle, BarChart3 } from 'lucide-react';
+import { Bot, TrendingUp, Clock, CheckCircle, BarChart3 } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 export default function BotDashboardPage() {

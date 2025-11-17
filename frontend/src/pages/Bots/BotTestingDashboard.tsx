@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Agent, CheckCircle, XCircle, Clock, PlayCircle, FileText, TrendingUp, DollarSign, Users, Package, FileCheck, Briefcase, Calendar } from 'lucide-react';
+import { Bot, CheckCircle, XCircle, Clock, PlayCircle, FileText, TrendingUp, DollarSign, Users, Package, FileCheck, Briefcase, Calendar } from 'lucide-react';
 import { formatPercentage } from '../../utils/formatters';
 
 interface BotTestResult {

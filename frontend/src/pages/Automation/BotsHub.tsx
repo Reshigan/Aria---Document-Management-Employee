@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import api from '../../lib/api';
-import { Agent, Play, Clock, CheckCircle, XCircle, Search, Filter } from 'lucide-react';
+import { Bot, Play, Clock, CheckCircle, XCircle, Search, Filter } from 'lucide-react';
 
 interface BotInfo {
   id: string;

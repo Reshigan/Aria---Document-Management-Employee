@@ -3,7 +3,7 @@
  * Shows available agents for current document with execution logs
  */
 import React, { useState, useEffect } from 'react';
-import { Agent, Play, Clock, CheckCircle, XCircle, ChevronRight, Loader } from 'lucide-react';
+import { Bot, Play, Clock, CheckCircle, XCircle, ChevronRight, Loader } from 'lucide-react';
 import { botsService, ariaControllerService, getBotsForDocumentType } from '../services/agents';
 import type { Agent as BotType, BotExecution } from '../types/erp';
 

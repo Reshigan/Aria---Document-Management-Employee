@@ -3,7 +3,7 @@
  */
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Agent, ArrowRight, CheckCircle, Sparkles, Zap, Brain } from 'lucide-react';
+import { Bot, ArrowRight, CheckCircle, Sparkles, Zap, Brain } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export const Landing: React.FC = () => {
