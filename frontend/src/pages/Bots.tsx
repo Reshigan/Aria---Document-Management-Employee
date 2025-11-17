@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import api from '@/lib/api'
-import { Agent, Play, Activity, CheckCircle } from 'lucide-react'
+import { Agent, Play, Activity, CheckCircle, Settings } from 'lucide-react'
 
 interface BotInfo {
   id: string
@@ -15,6 +16,7 @@ interface BotCategories {
 }
 
 export default function Agents() {
+  const navigate = useNavigate()
   const [agents, setBots] = useState<BotInfo[]>([])
   const [categories, setCategories] = useState<BotCategories>({})
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
@@ -156,16 +158,27 @@ export default function Agents() {
               </div>
               <h3 className="font-semibold text-gray-900 mb-1">{agent.name}</h3>
               <p className="text-xs text-gray-600 mb-3">{agent.category}</p>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation()
-                  handleExecuteBot(agent.id)
-                }}
-                className="w-full bg-blue-600 text-white py-2 rounded-lg text-sm hover:bg-blue-700 flex items-center justify-center"
-              >
-                <Play className="h-4 w-4 mr-2" />
-                Execute Agent
-              </button>
+              <div className="flex space-x-2">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    handleExecuteBot(agent.id)
+                  }}
+                  className="flex-1 bg-blue-600 text-white py-2 rounded-lg text-sm hover:bg-blue-700 flex items-center justify-center"
+                >
+                  <Play className="h-4 w-4 mr-2" />
+                  Execute
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    navigate(`/agents/${agent.id}`)
+                  }}
+                  className="px-3 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 flex items-center justify-center"
+                >
+                  <Settings className="h-4 w-4" />
+                </button>
+              </div>
             </div>
           ))}
         </div>
