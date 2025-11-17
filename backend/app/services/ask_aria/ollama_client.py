@@ -13,16 +13,16 @@ logger = logging.getLogger(__name__)
 class OllamaClient:
     """Client for interacting with Ollama local LLM"""
     
-    def __init__(self, base_url: str = "http://localhost:11434", model: str = "llama3.2"):
+    def __init__(self, base_url: str = "http://localhost:11434", model: str = "tinyllama"):
         self.base_url = base_url
         self.model = model
-        self.timeout = 120  # 2 minutes for LLM responses
+        self.timeout = 60  # 1 minute timeout (should be much faster with tinyllama)
     
     def chat(
         self,
         messages: List[Dict[str, str]],
         tools: Optional[List[Dict[str, Any]]] = None,
-        temperature: float = 0.7,
+        temperature: float = 0.2,
         stream: bool = False
     ) -> Dict[str, Any]:
         """
@@ -42,7 +42,16 @@ class OllamaClient:
                 "model": self.model,
                 "messages": messages,
                 "temperature": temperature,
-                "stream": stream
+                "stream": stream,
+                "keep_alive": "1h",
+                "options": {
+                    "num_predict": 128,
+                    "num_ctx": 768,
+                    "temperature": 0.2,
+                    "top_k": 40,
+                    "top_p": 0.9,
+                    "repeat_penalty": 1.1
+                }
             }
             
             if tools:
@@ -64,7 +73,7 @@ class OllamaClient:
             logger.error(f"Ollama request failed: {str(e)}")
             raise Exception(f"Failed to communicate with Ollama: {str(e)}")
     
-    def generate(self, prompt: str, temperature: float = 0.7) -> str:
+    def generate(self, prompt: str, temperature: float = 0.2) -> str:
         """
         Simple text generation (non-chat mode)
         
@@ -80,7 +89,16 @@ class OllamaClient:
                 "model": self.model,
                 "prompt": prompt,
                 "temperature": temperature,
-                "stream": False
+                "stream": False,
+                "keep_alive": "1h",
+                "options": {
+                    "num_predict": 128,
+                    "num_ctx": 768,
+                    "temperature": 0.2,
+                    "top_k": 40,
+                    "top_p": 0.9,
+                    "repeat_penalty": 1.1
+                }
             }
             
             response = requests.post(
