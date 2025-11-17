@@ -150,7 +150,7 @@ export default function Agents() {
             >
               <div className="flex items-start justify-between mb-3">
                 <div className="bg-blue-100 rounded-lg p-2">
-                  <Agent className="h-6 w-6 text-blue-600" />
+                  <Bot className="h-6 w-6 text-blue-600" />
                 </div>
                 <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">
                   {agent.status}
@@ -235,7 +235,7 @@ function BotDetailsModal({
           <div className="flex items-start justify-between mb-4">
             <div className="flex items-center">
               <div className="bg-blue-100 rounded-lg p-3 mr-4">
-                <Agent className="h-8 w-8 text-blue-600" />
+                <Bot className="h-8 w-8 text-blue-600" />
               </div>
               <div>
                 <h2 className="text-2xl font-bold text-gray-900">{agent.name}</h2>
