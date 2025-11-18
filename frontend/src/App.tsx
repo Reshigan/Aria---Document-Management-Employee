@@ -39,6 +39,7 @@ import BbbeeComplianceReport from './pages/reports/BbbeeComplianceReport';
 import BankingDashboard from './pages/Banking/BankingDashboard';
 import ChatInterface from './components/Chat/ChatInterface';
 import AskAriaChat from './pages/AskAria/AskAriaChat';
+import DocumentClassification from './pages/AskAria/DocumentClassification';
 import SystemSettings from './pages/admin/SystemSettings';
 import CompanySettings from './pages/admin/CompanySettings';
 import BotConfiguration from './pages/admin/BotConfiguration';
@@ -155,6 +156,8 @@ function App() {
           <Route path="/chat" element={<ChatInterface />} />
           <Route path="/aria" element={<AskAriaChat />} />
           <Route path="/ask-aria" element={<AskAriaChat />} />
+          <Route path="/ask-aria/classify" element={<DocumentClassification />} />
+          <Route path="/document-classification" element={<DocumentClassification />} />
           
           {/* Admin */}
           <Route path="/admin/system" element={<SystemSettings />} />
