@@ -1,0 +1,243 @@
+[
+  {
+    "id": "sap_fb60_ap_invoice_non_po",
+    "name": "AP Invoice (Non-PO) - FB60",
+    "module": "FI-AP",
+    "doc_type": "AP_INVOICE_NON_PO",
+    "sap_tcode": "FB60",
+    "sap_bapi": "BAPI_ACC_DOCUMENT_POST",
+    "canonical_fields": ["vendor_code", "invoice_number", "invoice_date", "posting_date", "company_code", "currency", "tax_code", "net_amount", "tax_amount", "total_amount", "payment_terms", "reference"],
+    "patterns": {
+      "header_keywords": ["INVOICE", "TAX INVOICE", "BILL", "FAKTURA"],
+      "field_patterns": {
+        "invoice_number": ["Invoice No[.:]?\\s*([A-Z0-9-]+)", "Invoice #\\s*([A-Z0-9-]+)", "Inv\\s*No[.:]?\\s*([A-Z0-9-]+)"],
+        "vendor_code": ["Vendor[.:]?\\s*([A-Z0-9]+)", "Supplier Code[.:]?\\s*([A-Z0-9]+)"],
+        "company_code": ["Company Code[.:]?\\s*([A-Z0-9]+)", "Co\\s*Code[.:]?\\s*([A-Z0-9]+)"],
+        "tax_amount": ["VAT[.:]?\\s*([0-9,.]+)", "Tax[.:]?\\s*([0-9,.]+)", "GST[.:]?\\s*([0-9,.]+)"],
+        "total_amount": ["Total[.:]?\\s*([0-9,.]+)", "Amount Due[.:]?\\s*([0-9,.]+)"]
+      }
+    },
+    "excel_template": {
+      "format": "xlsx",
+      "sheets": [
+        {
+          "name": "Header",
+          "columns": ["Company Code", "Vendor Code", "Invoice Number", "Invoice Date", "Posting Date", "Currency", "Total Amount", "Tax Code", "Tax Amount", "Payment Terms", "Reference"]
+        },
+        {
+          "name": "Line Items",
+          "columns": ["Line No", "GL Account", "Cost Center", "Amount", "Tax Code", "Description"]
+        }
+      ]
+    }
+  },
+  {
+    "id": "sap_miro_ap_invoice_po",
+    "name": "AP Invoice (PO-based) - MIRO",
+    "module": "MM-AP",
+    "doc_type": "AP_INVOICE_PO",
+    "sap_tcode": "MIRO",
+    "sap_bapi": "BAPI_INCOMINGINVOICE_CREATE",
+    "canonical_fields": ["vendor_code", "invoice_number", "invoice_date", "posting_date", "po_number", "company_code", "currency", "total_amount", "tax_code", "tax_amount"],
+    "patterns": {
+      "header_keywords": ["INVOICE", "TAX INVOICE", "BILL"],
+      "field_patterns": {
+        "invoice_number": ["Invoice No[.:]?\\s*([A-Z0-9-]+)", "Invoice #\\s*([A-Z0-9-]+)"],
+        "po_number": ["PO\\s*No[.:]?\\s*([A-Z0-9-]+)", "Purchase Order[.:]?\\s*([A-Z0-9-]+)", "Order No[.:]?\\s*([A-Z0-9-]+)"],
+        "vendor_code": ["Vendor[.:]?\\s*([A-Z0-9]+)", "Supplier Code[.:]?\\s*([A-Z0-9]+)"]
+      }
+    },
+    "excel_template": {
+      "format": "xlsx",
+      "sheets": [
+        {
+          "name": "Header",
+          "columns": ["Company Code", "Vendor Code", "PO Number", "Invoice Number", "Invoice Date", "Posting Date", "Currency", "Total Amount", "Tax Code", "Tax Amount"]
+        },
+        {
+          "name": "Line Items",
+          "columns": ["Line No", "PO Item", "Material", "Quantity", "Unit Price", "Amount", "Tax Code"]
+        }
+      ]
+    }
+  },
+  {
+    "id": "sap_fb50_journal_entry",
+    "name": "Journal Entry - FB50",
+    "module": "FI-GL",
+    "doc_type": "JOURNAL_ENTRY",
+    "sap_tcode": "FB50",
+    "sap_bapi": "BAPI_ACC_DOCUMENT_POST",
+    "canonical_fields": ["document_date", "posting_date", "company_code", "currency", "reference", "document_header_text"],
+    "patterns": {
+      "header_keywords": ["JOURNAL ENTRY", "JOURNAL VOUCHER", "JV", "GENERAL JOURNAL"],
+      "field_patterns": {
+        "document_date": ["Document Date[.:]?\\s*([0-9/-]+)", "Date[.:]?\\s*([0-9/-]+)"],
+        "reference": ["Reference[.:]?\\s*([A-Z0-9-]+)", "Ref[.:]?\\s*([A-Z0-9-]+)"]
+      }
+    },
+    "excel_template": {
+      "format": "xlsx",
+      "sheets": [
+        {
+          "name": "Header",
+          "columns": ["Company Code", "Document Date", "Posting Date", "Currency", "Reference", "Document Header Text"]
+        },
+        {
+          "name": "Line Items",
+          "columns": ["Line No", "GL Account", "Debit/Credit", "Amount", "Cost Center", "Profit Center", "Text"]
+        }
+      ]
+    }
+  },
+  {
+    "id": "sap_me21n_purchase_order",
+    "name": "Purchase Order - ME21N",
+    "module": "MM",
+    "doc_type": "PURCHASE_ORDER",
+    "sap_tcode": "ME21N",
+    "sap_bapi": "BAPI_PO_CREATE1",
+    "canonical_fields": ["vendor_code", "po_date", "company_code", "purchasing_org", "purchasing_group", "plant", "delivery_date", "currency"],
+    "patterns": {
+      "header_keywords": ["PURCHASE ORDER", "PO", "BESTELLUNG"],
+      "field_patterns": {
+        "po_number": ["PO\\s*No[.:]?\\s*([A-Z0-9-]+)", "Purchase Order[.:]?\\s*([A-Z0-9-]+)", "Order No[.:]?\\s*([A-Z0-9-]+)"],
+        "vendor_code": ["Vendor[.:]?\\s*([A-Z0-9]+)", "Supplier Code[.:]?\\s*([A-Z0-9]+)"],
+        "plant": ["Plant[.:]?\\s*([A-Z0-9]+)", "Werk[.:]?\\s*([A-Z0-9]+)"]
+      }
+    },
+    "excel_template": {
+      "format": "xlsx",
+      "sheets": [
+        {
+          "name": "Header",
+          "columns": ["Vendor Code", "PO Date", "Company Code", "Purchasing Org", "Purchasing Group", "Plant", "Delivery Date", "Currency"]
+        },
+        {
+          "name": "Line Items",
+          "columns": ["Line No", "Material", "Description", "Quantity", "Unit", "Unit Price", "Plant", "Storage Location", "Delivery Date"]
+        }
+      ]
+    }
+  },
+  {
+    "id": "sap_migo_goods_receipt",
+    "name": "Goods Receipt - MIGO",
+    "module": "MM",
+    "doc_type": "GOODS_RECEIPT",
+    "sap_tcode": "MIGO",
+    "sap_bapi": "BAPI_GOODSMVT_CREATE",
+    "canonical_fields": ["po_number", "gr_date", "posting_date", "vendor_code", "plant", "movement_type"],
+    "patterns": {
+      "header_keywords": ["GOODS RECEIPT", "GR", "MIGO", "WARENEINGANG", "GR/IR"],
+      "field_patterns": {
+        "gr_number": ["GR\\s*No[.:]?\\s*([A-Z0-9-]+)", "Material Document[.:]?\\s*([A-Z0-9-]+)"],
+        "po_number": ["PO\\s*Ref[.:]?\\s*([A-Z0-9-]+)", "Purchase Order[.:]?\\s*([A-Z0-9-]+)"],
+        "plant": ["Plant[.:]?\\s*([A-Z0-9]+)", "Werk[.:]?\\s*([A-Z0-9]+)"]
+      }
+    },
+    "excel_template": {
+      "format": "xlsx",
+      "sheets": [
+        {
+          "name": "Header",
+          "columns": ["PO Number", "GR Date", "Posting Date", "Vendor Code", "Plant", "Movement Type"]
+        },
+        {
+          "name": "Line Items",
+          "columns": ["Line No", "Material", "Quantity", "Unit", "Storage Location", "Batch", "PO Item"]
+        }
+      ]
+    }
+  },
+  {
+    "id": "sap_vf01_ar_invoice",
+    "name": "AR Invoice - VF01",
+    "module": "SD-AR",
+    "doc_type": "AR_INVOICE",
+    "sap_tcode": "VF01",
+    "sap_bapi": "BAPI_BILLINGDOC_CREATE1",
+    "canonical_fields": ["customer_code", "invoice_date", "billing_date", "sales_order_ref", "company_code", "currency", "total_amount", "tax_amount"],
+    "patterns": {
+      "header_keywords": ["INVOICE", "TAX INVOICE", "SALES INVOICE"],
+      "field_patterns": {
+        "invoice_number": ["Invoice No[.:]?\\s*([A-Z0-9-]+)", "Invoice #\\s*([A-Z0-9-]+)"],
+        "customer_code": ["Customer[.:]?\\s*([A-Z0-9]+)", "Sold-to[.:]?\\s*([A-Z0-9]+)"],
+        "sales_order_ref": ["SO\\s*Ref[.:]?\\s*([A-Z0-9-]+)", "Sales Order[.:]?\\s*([A-Z0-9-]+)"]
+      }
+    },
+    "excel_template": {
+      "format": "xlsx",
+      "sheets": [
+        {
+          "name": "Header",
+          "columns": ["Customer Code", "Invoice Date", "Billing Date", "Sales Order Ref", "Company Code", "Currency", "Total Amount", "Tax Amount"]
+        },
+        {
+          "name": "Line Items",
+          "columns": ["Line No", "Material", "Description", "Quantity", "Unit Price", "Amount", "Tax Code"]
+        }
+      ]
+    }
+  },
+  {
+    "id": "sap_va01_sales_order",
+    "name": "Sales Order - VA01",
+    "module": "SD",
+    "doc_type": "SALES_ORDER",
+    "sap_tcode": "VA01",
+    "sap_bapi": "BAPI_SALESORDER_CREATEFROMDAT2",
+    "canonical_fields": ["customer_code", "so_date", "sold_to_party", "ship_to_party", "sales_org", "distribution_channel", "division", "currency"],
+    "patterns": {
+      "header_keywords": ["SALES ORDER", "SO", "ORDER CONFIRMATION", "AUFTRAGSBESTÄTIGUNG"],
+      "field_patterns": {
+        "so_number": ["SO\\s*No[.:]?\\s*([A-Z0-9-]+)", "Sales Order[.:]?\\s*([A-Z0-9-]+)", "Order[.:]?\\s*([A-Z0-9-]+)"],
+        "customer_code": ["Customer[.:]?\\s*([A-Z0-9]+)", "Sold-to[.:]?\\s*([A-Z0-9]+)"],
+        "ship_to_party": ["Ship-to[.:]?\\s*([A-Z0-9]+)", "Delivery Address[.:]?\\s*([A-Z0-9]+)"]
+      }
+    },
+    "excel_template": {
+      "format": "xlsx",
+      "sheets": [
+        {
+          "name": "Header",
+          "columns": ["Customer Code", "SO Date", "Sold-to Party", "Ship-to Party", "Sales Org", "Distribution Channel", "Division", "Currency"]
+        },
+        {
+          "name": "Line Items",
+          "columns": ["Line No", "Material", "Description", "Quantity", "Unit", "Unit Price", "Plant", "Delivery Date"]
+        }
+      ]
+    }
+  },
+  {
+    "id": "sap_fb70_ar_credit_memo",
+    "name": "AR Credit Memo - FB70",
+    "module": "FI-AR",
+    "doc_type": "AR_CREDIT_MEMO",
+    "sap_tcode": "FB70",
+    "sap_bapi": "BAPI_ACC_DOCUMENT_POST",
+    "canonical_fields": ["customer_code", "credit_memo_number", "credit_date", "posting_date", "reference_invoice", "company_code", "currency", "credit_amount"],
+    "patterns": {
+      "header_keywords": ["CREDIT NOTE", "CREDIT MEMO", "GUTSCHRIFT"],
+      "field_patterns": {
+        "credit_memo_number": ["Credit Note\\s*No[.:]?\\s*([A-Z0-9-]+)", "CN[.:]?\\s*([A-Z0-9-]+)"],
+        "reference_invoice": ["Invoice\\s*Ref[.:]?\\s*([A-Z0-9-]+)", "Original Invoice[.:]?\\s*([A-Z0-9-]+)"],
+        "customer_code": ["Customer[.:]?\\s*([A-Z0-9]+)", "Account[.:]?\\s*([A-Z0-9]+)"]
+      }
+    },
+    "excel_template": {
+      "format": "xlsx",
+      "sheets": [
+        {
+          "name": "Header",
+          "columns": ["Customer Code", "Credit Memo Number", "Credit Date", "Posting Date", "Reference Invoice", "Company Code", "Currency", "Credit Amount"]
+        },
+        {
+          "name": "Line Items",
+          "columns": ["Line No", "GL Account", "Amount", "Tax Code", "Description"]
+        }
+      ]
+    }
+  }
+]
