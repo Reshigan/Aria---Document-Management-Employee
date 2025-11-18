@@ -38,12 +38,20 @@ DB_CONNECTION_STRING = os.getenv(
     os.getenv("DATABASE_URL", "postgresql://aria_user:AriaSecure2025!@localhost/aria_erp")
 )
 
+UPLOAD_PATH = os.getenv("UPLOAD_PATH", "/home/ubuntu/aria_uploads")
+TEMPLATE_PATH = os.getenv("TEMPLATE_PATH", "/home/ubuntu/aria_templates")
+EXPORT_PATH = os.getenv("EXPORT_PATH", "/home/ubuntu/aria_exports")
+
+os.makedirs(UPLOAD_PATH, exist_ok=True)
+os.makedirs(TEMPLATE_PATH, exist_ok=True)
+os.makedirs(EXPORT_PATH, exist_ok=True)
+
 orchestrator = AskAriaOrchestrator(DB_CONNECTION_STRING)
 conversation_manager = ConversationManager(DB_CONNECTION_STRING)
-ocr_service = OCRService(DB_CONNECTION_STRING)
+ocr_service = OCRService(DB_CONNECTION_STRING, storage_path=UPLOAD_PATH)
 sap_mapping_service = SAPMappingService(DB_CONNECTION_STRING)
-template_service = TemplateService(DB_CONNECTION_STRING)
-document_posting_service = DocumentPostingService(DB_CONNECTION_STRING)
+template_service = TemplateService(DB_CONNECTION_STRING, template_path=TEMPLATE_PATH)
+document_posting_service = DocumentPostingService(DB_CONNECTION_STRING, export_path=EXPORT_PATH)
 
 
 class StartSessionRequest(BaseModel):

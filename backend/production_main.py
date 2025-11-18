@@ -20,6 +20,9 @@ import psycopg2
 import psycopg2.extras
 import uuid
 
+from dotenv import load_dotenv
+load_dotenv()
+
 # Import authentication system
 from auth_integrated import (
     get_current_user, get_current_active_admin,
@@ -3600,7 +3603,7 @@ async def startup_event():
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000, workers=4)
+    uvicorn.run(app, host="0.0.0.0", port=8000)
 
 @app.get("/api/health")
 async def api_health():
