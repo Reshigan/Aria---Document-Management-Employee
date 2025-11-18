@@ -16,7 +16,7 @@ class TemplateRegistry:
     
     def __init__(self, templates_path: Optional[str] = None):
         if templates_path is None:
-            templates_path = Path(__file__).parent.parent / "templates" / "sap_templates.json"
+            templates_path = Path(__file__).parent.parent / "templates" / "sap_templates_enhanced.json"
         
         self.templates_path = templates_path
         self.templates: List[Dict] = []
@@ -35,9 +35,9 @@ class TemplateRegistry:
                 self.templates_by_id[template['id']] = template
                 self.templates_by_type[template['doc_type']] = template
             
-            logger.info(f"Loaded {len(self.templates)} SAP document templates")
+            logger.info(f"Loaded {len(self.templates)} SAP document templates from {self.templates_path}")
         except Exception as e:
-            logger.error(f"Failed to load templates: {e}")
+            logger.error(f"Failed to load templates from {self.templates_path}: {e}")
             self.templates = []
     
     def get_template(self, template_id: str) -> Optional[Dict]:
