@@ -23,17 +23,20 @@ export const ExecutiveDashboard: React.FC = () => {
       const botsResponse = await api.get('/agents');
       setBots(botsResponse.data.agents || []);
 
+      const today = new Date().toISOString().split('T')[0];
+      const companyId = 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+      
       const [apResponse, arResponse] = await Promise.all([
-        api.get('/ap/aging'),
-        api.get('/ar/aging')
+        api.get(`/reports/ar-ap/ap-aging?company_id=${companyId}&as_of_date=${today}`),
+        api.get(`/reports/ar-ap/ar-aging?company_id=${companyId}&as_of_date=${today}`)
       ]);
 
       setMetrics({
         total_revenue: 2500000,
         net_profit: 650000,
         cash_position: 850000,
-        ar_outstanding: arResponse.data.summary?.total_outstanding || 0,
-        ap_outstanding: apResponse.data.summary?.total_outstanding || 0,
+        ar_outstanding: arResponse.data.grand_total || 0,
+        ap_outstanding: apResponse.data.grand_total || 0,
         bot_count: botsResponse.data.agents?.length || 15,
         active_bots: botsResponse.data.agents?.filter((b: any) => b.status === 'active').length || 15
       });
