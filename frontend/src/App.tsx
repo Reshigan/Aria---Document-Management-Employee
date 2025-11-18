@@ -77,6 +77,8 @@ function App() {
           {/* General Ledger */}
           <Route path="/gl" element={<GeneralLedger />} />
           <Route path="/general-ledger" element={<GeneralLedger />} />
+          <Route path="/gl/journal-entries" element={<GeneralLedger />} />
+          <Route path="/gl/chart-of-accounts" element={<GeneralLedger />} />
           
           {/* Accounts Payable */}
           <Route path="/ap" element={<InvoiceList />} />
@@ -105,6 +107,7 @@ function App() {
           <Route path="/inventory" element={<WMSStock />} />
           <Route path="/inventory/products" element={<ProductCatalog />} />
           <Route path="/inventory/stock" element={<WMSStock />} />
+          <Route path="/inventory/items" element={<ProductCatalog />} />
           
           {/* Procurement */}
           <Route path="/procurement" element={<PurchaseOrders />} />
