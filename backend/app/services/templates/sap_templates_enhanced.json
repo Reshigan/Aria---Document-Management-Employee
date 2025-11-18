@@ -239,5 +239,384 @@
         }
       ]
     }
+  },
+  {
+    "id": "sap_f110_payment_run",
+    "name": "Payment Run - F110",
+    "module": "FI-AP",
+    "doc_type": "PAYMENT_RUN",
+    "sap_tcode": "F110",
+    "sap_bapi": "BAPI_PAYMENT_CREATE",
+    "canonical_fields": ["run_date", "payment_method", "company_code", "paying_company_code", "payment_currency"],
+    "patterns": {
+      "header_keywords": ["PAYMENT RUN", "PAYMENT PROPOSAL", "ZAHLUNGSLAUF"],
+      "field_patterns": {
+        "run_date": ["Run Date[.:]?\\s*([0-9/-]+)", "Payment Date[.:]?\\s*([0-9/-]+)"],
+        "payment_method": ["Payment Method[.:]?\\s*([A-Z0-9]+)", "Method[.:]?\\s*([A-Z0-9]+)"]
+      }
+    },
+    "excel_template": {
+      "format": "xlsx",
+      "sheets": [
+        {
+          "name": "Header",
+          "columns": ["Run Date", "Payment Method", "Company Code", "Paying Company Code", "Payment Currency"]
+        },
+        {
+          "name": "Line Items",
+          "columns": ["Line No", "Vendor Code", "Invoice Number", "Amount", "Currency", "Payment Terms"]
+        }
+      ]
+    }
+  },
+  {
+    "id": "sap_f-28_incoming_payment",
+    "name": "Incoming Payment - F-28",
+    "module": "FI-AR",
+    "doc_type": "INCOMING_PAYMENT",
+    "sap_tcode": "F-28",
+    "sap_bapi": "BAPI_ACC_DOCUMENT_POST",
+    "canonical_fields": ["customer_code", "payment_date", "posting_date", "amount", "currency", "payment_method", "reference", "bank_account"],
+    "patterns": {
+      "header_keywords": ["PAYMENT", "REMITTANCE", "REMITTANCE ADVICE", "PAYMENT ADVICE"],
+      "field_patterns": {
+        "payment_date": ["Payment Date[.:]?\\s*([0-9/-]+)", "Date[.:]?\\s*([0-9/-]+)"],
+        "reference": ["Reference[.:]?\\s*([A-Z0-9-]+)", "Payment Ref[.:]?\\s*([A-Z0-9-]+)", "Transaction ID[.:]?\\s*([A-Z0-9-]+)"],
+        "customer_code": ["Customer[.:]?\\s*([A-Z0-9]+)", "Account[.:]?\\s*([A-Z0-9]+)"]
+      }
+    },
+    "excel_template": {
+      "format": "xlsx",
+      "sheets": [
+        {
+          "name": "Header",
+          "columns": ["Customer Code", "Payment Date", "Posting Date", "Amount", "Currency", "Payment Method", "Reference", "Bank Account"]
+        },
+        {
+          "name": "Line Items",
+          "columns": ["Line No", "Invoice Number", "Amount Paid", "Discount", "Withholding Tax"]
+        }
+      ]
+    }
+  },
+  {
+    "id": "sap_f-53_outgoing_payment",
+    "name": "Outgoing Payment - F-53",
+    "module": "FI-AP",
+    "doc_type": "OUTGOING_PAYMENT",
+    "sap_tcode": "F-53",
+    "sap_bapi": "BAPI_ACC_DOCUMENT_POST",
+    "canonical_fields": ["vendor_code", "payment_date", "posting_date", "amount", "currency", "payment_method", "reference", "bank_account"],
+    "patterns": {
+      "header_keywords": ["PAYMENT", "REMITTANCE", "PAYMENT ADVICE"],
+      "field_patterns": {
+        "payment_date": ["Payment Date[.:]?\\s*([0-9/-]+)", "Date[.:]?\\s*([0-9/-]+)"],
+        "reference": ["Reference[.:]?\\s*([A-Z0-9-]+)", "Payment Ref[.:]?\\s*([A-Z0-9-]+)"],
+        "vendor_code": ["Vendor[.:]?\\s*([A-Z0-9]+)", "Supplier[.:]?\\s*([A-Z0-9]+)"]
+      }
+    },
+    "excel_template": {
+      "format": "xlsx",
+      "sheets": [
+        {
+          "name": "Header",
+          "columns": ["Vendor Code", "Payment Date", "Posting Date", "Amount", "Currency", "Payment Method", "Reference", "Bank Account"]
+        },
+        {
+          "name": "Line Items",
+          "columns": ["Line No", "Invoice Number", "Amount Paid", "Discount", "Withholding Tax"]
+        }
+      ]
+    }
+  },
+  {
+    "id": "sap_vl01n_delivery",
+    "name": "Outbound Delivery - VL01N",
+    "module": "SD-LE",
+    "doc_type": "OUTBOUND_DELIVERY",
+    "sap_tcode": "VL01N",
+    "sap_bapi": "BAPI_OUTB_DELIVERY_CREATE_SLS",
+    "canonical_fields": ["sales_order_ref", "delivery_date", "ship_to_party", "shipping_point", "delivery_type"],
+    "patterns": {
+      "header_keywords": ["DELIVERY NOTE", "DELIVERY", "DESPATCH NOTE", "LIEFERSCHEIN"],
+      "field_patterns": {
+        "delivery_number": ["Delivery\\s*No[.:]?\\s*([A-Z0-9-]+)", "DN[.:]?\\s*([A-Z0-9-]+)"],
+        "sales_order_ref": ["SO\\s*Ref[.:]?\\s*([A-Z0-9-]+)", "Sales Order[.:]?\\s*([A-Z0-9-]+)"],
+        "ship_to_party": ["Ship-to[.:]?\\s*([A-Z0-9]+)", "Delivery Address[.:]?\\s*([A-Z0-9]+)"]
+      }
+    },
+    "excel_template": {
+      "format": "xlsx",
+      "sheets": [
+        {
+          "name": "Header",
+          "columns": ["Sales Order Ref", "Delivery Date", "Ship-to Party", "Shipping Point", "Delivery Type"]
+        },
+        {
+          "name": "Line Items",
+          "columns": ["Line No", "Material", "Quantity", "Unit", "Batch", "Serial Number"]
+        }
+      ]
+    }
+  },
+  {
+    "id": "sap_vl02n_pod",
+    "name": "Proof of Delivery - VL02N",
+    "module": "SD-LE",
+    "doc_type": "PROOF_OF_DELIVERY",
+    "sap_tcode": "VL02N",
+    "sap_bapi": "BAPI_OUTB_DELIVERY_CONFIRM_DEC",
+    "canonical_fields": ["delivery_number", "pod_date", "received_by", "signature", "delivery_status"],
+    "patterns": {
+      "header_keywords": ["PROOF OF DELIVERY", "POD", "DELIVERY CONFIRMATION", "EMPFANGSBESTÄTIGUNG"],
+      "field_patterns": {
+        "delivery_number": ["Delivery\\s*No[.:]?\\s*([A-Z0-9-]+)", "DN[.:]?\\s*([A-Z0-9-]+)"],
+        "pod_date": ["POD Date[.:]?\\s*([0-9/-]+)", "Received Date[.:]?\\s*([0-9/-]+)"],
+        "received_by": ["Received By[.:]?\\s*([A-Za-z\\s]+)", "Recipient[.:]?\\s*([A-Za-z\\s]+)"]
+      }
+    },
+    "excel_template": {
+      "format": "xlsx",
+      "sheets": [
+        {
+          "name": "Header",
+          "columns": ["Delivery Number", "POD Date", "Received By", "Signature", "Delivery Status", "Comments"]
+        },
+        {
+          "name": "Line Items",
+          "columns": ["Line No", "Material", "Quantity Delivered", "Quantity Received", "Condition", "Remarks"]
+        }
+      ]
+    }
+  },
+  {
+    "id": "sap_mb1a_goods_issue",
+    "name": "Goods Issue - MB1A",
+    "module": "MM",
+    "doc_type": "GOODS_ISSUE",
+    "sap_tcode": "MB1A",
+    "sap_bapi": "BAPI_GOODSMVT_CREATE",
+    "canonical_fields": ["movement_type", "posting_date", "plant", "storage_location", "cost_center"],
+    "patterns": {
+      "header_keywords": ["GOODS ISSUE", "GI", "MATERIAL ISSUE", "WARENAUSGANG"],
+      "field_patterns": {
+        "movement_type": ["Movement Type[.:]?\\s*([0-9]+)", "Mvt Type[.:]?\\s*([0-9]+)"],
+        "plant": ["Plant[.:]?\\s*([A-Z0-9]+)", "Werk[.:]?\\s*([A-Z0-9]+)"]
+      }
+    },
+    "excel_template": {
+      "format": "xlsx",
+      "sheets": [
+        {
+          "name": "Header",
+          "columns": ["Movement Type", "Posting Date", "Plant", "Storage Location", "Cost Center"]
+        },
+        {
+          "name": "Line Items",
+          "columns": ["Line No", "Material", "Quantity", "Unit", "Batch", "Reason Code"]
+        }
+      ]
+    }
+  },
+  {
+    "id": "sap_mb1b_transfer_posting",
+    "name": "Transfer Posting - MB1B",
+    "module": "MM",
+    "doc_type": "TRANSFER_POSTING",
+    "sap_tcode": "MB1B",
+    "sap_bapi": "BAPI_GOODSMVT_CREATE",
+    "canonical_fields": ["movement_type", "posting_date", "plant", "storage_location_from", "storage_location_to"],
+    "patterns": {
+      "header_keywords": ["TRANSFER", "STOCK TRANSFER", "MATERIAL TRANSFER"],
+      "field_patterns": {
+        "movement_type": ["Movement Type[.:]?\\s*([0-9]+)", "Mvt Type[.:]?\\s*([0-9]+)"],
+        "plant": ["Plant[.:]?\\s*([A-Z0-9]+)", "Werk[.:]?\\s*([A-Z0-9]+)"]
+      }
+    },
+    "excel_template": {
+      "format": "xlsx",
+      "sheets": [
+        {
+          "name": "Header",
+          "columns": ["Movement Type", "Posting Date", "Plant", "Storage Location From", "Storage Location To"]
+        },
+        {
+          "name": "Line Items",
+          "columns": ["Line No", "Material", "Quantity", "Unit", "Batch", "Reason"]
+        }
+      ]
+    }
+  },
+  {
+    "id": "sap_mi01_physical_inventory",
+    "name": "Physical Inventory - MI01",
+    "module": "MM",
+    "doc_type": "PHYSICAL_INVENTORY",
+    "sap_tcode": "MI01",
+    "sap_bapi": "BAPI_MATPHYSINV_CREATE",
+    "canonical_fields": ["inventory_date", "plant", "storage_location", "fiscal_year"],
+    "patterns": {
+      "header_keywords": ["PHYSICAL INVENTORY", "STOCK COUNT", "CYCLE COUNT", "INVENTUR"],
+      "field_patterns": {
+        "inventory_date": ["Inventory Date[.:]?\\s*([0-9/-]+)", "Count Date[.:]?\\s*([0-9/-]+)"],
+        "plant": ["Plant[.:]?\\s*([A-Z0-9]+)", "Werk[.:]?\\s*([A-Z0-9]+)"]
+      }
+    },
+    "excel_template": {
+      "format": "xlsx",
+      "sheets": [
+        {
+          "name": "Header",
+          "columns": ["Inventory Date", "Plant", "Storage Location", "Fiscal Year"]
+        },
+        {
+          "name": "Line Items",
+          "columns": ["Line No", "Material", "Batch", "Book Quantity", "Counted Quantity", "Difference", "Reason"]
+        }
+      ]
+    }
+  },
+  {
+    "id": "sap_me22n_po_change",
+    "name": "Purchase Order Change - ME22N",
+    "module": "MM",
+    "doc_type": "PO_CHANGE",
+    "sap_tcode": "ME22N",
+    "sap_bapi": "BAPI_PO_CHANGE",
+    "canonical_fields": ["po_number", "change_date", "vendor_code", "company_code"],
+    "patterns": {
+      "header_keywords": ["PURCHASE ORDER CHANGE", "PO AMENDMENT", "PO REVISION"],
+      "field_patterns": {
+        "po_number": ["PO\\s*No[.:]?\\s*([A-Z0-9-]+)", "Purchase Order[.:]?\\s*([A-Z0-9-]+)"],
+        "vendor_code": ["Vendor[.:]?\\s*([A-Z0-9]+)", "Supplier[.:]?\\s*([A-Z0-9]+)"]
+      }
+    },
+    "excel_template": {
+      "format": "xlsx",
+      "sheets": [
+        {
+          "name": "Header",
+          "columns": ["PO Number", "Change Date", "Vendor Code", "Company Code", "Change Reason"]
+        },
+        {
+          "name": "Line Items",
+          "columns": ["Line No", "PO Item", "Material", "New Quantity", "New Price", "New Delivery Date"]
+        }
+      ]
+    }
+  },
+  {
+    "id": "sap_va02_so_change",
+    "name": "Sales Order Change - VA02",
+    "module": "SD",
+    "doc_type": "SO_CHANGE",
+    "sap_tcode": "VA02",
+    "sap_bapi": "BAPI_SALESORDER_CHANGE",
+    "canonical_fields": ["so_number", "change_date", "customer_code", "sales_org"],
+    "patterns": {
+      "header_keywords": ["SALES ORDER CHANGE", "SO AMENDMENT", "ORDER REVISION"],
+      "field_patterns": {
+        "so_number": ["SO\\s*No[.:]?\\s*([A-Z0-9-]+)", "Sales Order[.:]?\\s*([A-Z0-9-]+)"],
+        "customer_code": ["Customer[.:]?\\s*([A-Z0-9]+)", "Sold-to[.:]?\\s*([A-Z0-9]+)"]
+      }
+    },
+    "excel_template": {
+      "format": "xlsx",
+      "sheets": [
+        {
+          "name": "Header",
+          "columns": ["SO Number", "Change Date", "Customer Code", "Sales Org", "Change Reason"]
+        },
+        {
+          "name": "Line Items",
+          "columns": ["Line No", "SO Item", "Material", "New Quantity", "New Price", "New Delivery Date"]
+        }
+      ]
+    }
+  },
+  {
+    "id": "sap_vf11_ar_credit_memo_cancel",
+    "name": "Cancel Billing Document - VF11",
+    "module": "SD",
+    "doc_type": "BILLING_CANCEL",
+    "sap_tcode": "VF11",
+    "sap_bapi": "BAPI_BILLINGDOC_CANCEL",
+    "canonical_fields": ["billing_document", "cancellation_date", "reason_code"],
+    "patterns": {
+      "header_keywords": ["CANCEL", "CANCELLATION", "REVERSAL"],
+      "field_patterns": {
+        "billing_document": ["Billing Doc[.:]?\\s*([A-Z0-9-]+)", "Invoice[.:]?\\s*([A-Z0-9-]+)"],
+        "reason_code": ["Reason[.:]?\\s*([A-Z0-9]+)", "Cancellation Reason[.:]?\\s*([A-Z0-9]+)"]
+      }
+    },
+    "excel_template": {
+      "format": "xlsx",
+      "sheets": [
+        {
+          "name": "Header",
+          "columns": ["Billing Document", "Cancellation Date", "Reason Code", "Comments"]
+        }
+      ]
+    }
+  },
+  {
+    "id": "sap_ff67_bank_statement",
+    "name": "Bank Statement - FF67",
+    "module": "FI-BL",
+    "doc_type": "BANK_STATEMENT",
+    "sap_tcode": "FF67",
+    "sap_bapi": "BAPI_BANK_STATEMENT_POST",
+    "canonical_fields": ["bank_account", "statement_date", "opening_balance", "closing_balance", "currency"],
+    "patterns": {
+      "header_keywords": ["BANK STATEMENT", "ACCOUNT STATEMENT", "KONTOAUSZUG"],
+      "field_patterns": {
+        "statement_date": ["Statement Date[.:]?\\s*([0-9/-]+)", "Date[.:]?\\s*([0-9/-]+)"],
+        "bank_account": ["Account[.:]?\\s*([A-Z0-9-]+)", "Bank Account[.:]?\\s*([A-Z0-9-]+)"],
+        "opening_balance": ["Opening Balance[.:]?\\s*([0-9,.]+)", "Balance B/F[.:]?\\s*([0-9,.]+)"],
+        "closing_balance": ["Closing Balance[.:]?\\s*([0-9,.]+)", "Balance C/F[.:]?\\s*([0-9,.]+)"]
+      }
+    },
+    "excel_template": {
+      "format": "xlsx",
+      "sheets": [
+        {
+          "name": "Header",
+          "columns": ["Bank Account", "Statement Date", "Opening Balance", "Closing Balance", "Currency"]
+        },
+        {
+          "name": "Line Items",
+          "columns": ["Line No", "Transaction Date", "Value Date", "Description", "Debit", "Credit", "Reference"]
+        }
+      ]
+    }
+  },
+  {
+    "id": "sap_fb03_display_document",
+    "name": "Display Document - FB03",
+    "module": "FI",
+    "doc_type": "DOCUMENT_DISPLAY",
+    "sap_tcode": "FB03",
+    "sap_bapi": "BAPI_ACC_DOCUMENT_DISPLAY",
+    "canonical_fields": ["document_number", "company_code", "fiscal_year"],
+    "patterns": {
+      "header_keywords": ["DOCUMENT", "ACCOUNTING DOCUMENT", "BELEG"],
+      "field_patterns": {
+        "document_number": ["Document No[.:]?\\s*([A-Z0-9-]+)", "Doc[.:]?\\s*([A-Z0-9-]+)"],
+        "company_code": ["Company Code[.:]?\\s*([A-Z0-9]+)", "Co Code[.:]?\\s*([A-Z0-9]+)"]
+      }
+    },
+    "excel_template": {
+      "format": "xlsx",
+      "sheets": [
+        {
+          "name": "Header",
+          "columns": ["Document Number", "Company Code", "Fiscal Year", "Document Date", "Posting Date"]
+        },
+        {
+          "name": "Line Items",
+          "columns": ["Line No", "GL Account", "Debit", "Credit", "Cost Center", "Text"]
+        }
+      ]
+    }
   }
 ]
