@@ -13,10 +13,10 @@ logger = logging.getLogger(__name__)
 class OllamaClient:
     """Client for interacting with Ollama local LLM"""
     
-    def __init__(self, base_url: str = "http://localhost:11434", model: str = "qwen2.5:3b-instruct"):
+    def __init__(self, base_url: str = "http://localhost:11434", model: str = "qwen2.5:1.5b-instruct"):
         self.base_url = base_url
         self.model = model
-        self.timeout = 30  # 30 second timeout for LLM inference
+        self.timeout = 60  # 60 second timeout for LLM inference
         self._warmup()
     
     def chat(
