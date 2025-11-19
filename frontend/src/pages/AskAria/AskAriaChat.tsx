@@ -232,43 +232,6 @@ const AskAriaChat: React.FC = () => {
           gap: 2,
         }}
       >
-        {messages.length === 1 && !loading && (
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mb: 2 }}>
-            <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center' }}>
-              Quick Actions:
-            </Typography>
-            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 2 }}>
-              <Button
-                variant="outlined"
-                onClick={() => setInputMessage('Create a new sales quote')}
-                sx={{ justifyContent: 'flex-start', textTransform: 'none' }}
-              >
-                📝 Create a new sales quote
-              </Button>
-              <Button
-                variant="outlined"
-                onClick={() => setInputMessage('Show me recent invoices')}
-                sx={{ justifyContent: 'flex-start', textTransform: 'none' }}
-              >
-                📄 Show me recent invoices
-              </Button>
-              <Button
-                variant="outlined"
-                onClick={() => setInputMessage('Create a purchase order')}
-                sx={{ justifyContent: 'flex-start', textTransform: 'none' }}
-              >
-                🛒 Create a purchase order
-              </Button>
-              <Button
-                variant="outlined"
-                onClick={() => setInputMessage('Show customer list')}
-                sx={{ justifyContent: 'flex-start', textTransform: 'none' }}
-              >
-                👥 Show customer list
-              </Button>
-            </Box>
-          </Box>
-        )}
         {messages.map((message) => (
           <Box
             key={message.id}
@@ -321,6 +284,43 @@ const AskAriaChat: React.FC = () => {
             <Paper elevation={1} sx={{ p: 2 }}>
               <CircularProgress size={20} />
             </Paper>
+          </Box>
+        )}
+        {!loading && messages.every(m => m.role !== 'user') && (
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 2 }}>
+            <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center' }}>
+              Quick Actions:
+            </Typography>
+            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 2 }}>
+              <Button
+                variant="outlined"
+                onClick={() => setInputMessage('Create a new sales quote')}
+                sx={{ justifyContent: 'flex-start', textTransform: 'none' }}
+              >
+                📝 Create a new sales quote
+              </Button>
+              <Button
+                variant="outlined"
+                onClick={() => setInputMessage('Show me recent invoices')}
+                sx={{ justifyContent: 'flex-start', textTransform: 'none' }}
+              >
+                📄 Show me recent invoices
+              </Button>
+              <Button
+                variant="outlined"
+                onClick={() => setInputMessage('Create a purchase order')}
+                sx={{ justifyContent: 'flex-start', textTransform: 'none' }}
+              >
+                🛒 Create a purchase order
+              </Button>
+              <Button
+                variant="outlined"
+                onClick={() => setInputMessage('Show customer list')}
+                sx={{ justifyContent: 'flex-start', textTransform: 'none' }}
+              >
+                👥 Show customer list
+              </Button>
+            </Box>
           </Box>
         )}
         <div ref={messagesEndRef} />
