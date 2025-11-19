@@ -10,7 +10,7 @@ import api from '../../services/api';
 import './ExecutiveDashboard.css';
 
 export const ExecutiveDashboard: React.FC = () => {
-  const [bots, setBots] = useState<any[]>([]);
+  const [agents, setBots] = useState<any[]>([]);
   const [metrics, setMetrics] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -20,22 +20,25 @@ export const ExecutiveDashboard: React.FC = () => {
 
   const fetchDashboardData = async () => {
     try {
-      const botsResponse = await api.get('/bots');
-      setBots(botsResponse.data.bots || []);
+      const botsResponse = await api.get('/agents');
+      setBots(botsResponse.data.agents || []);
 
+      const today = new Date().toISOString().split('T')[0];
+      const companyId = 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+      
       const [apResponse, arResponse] = await Promise.all([
-        api.get('/ap/aging'),
-        api.get('/ar/aging')
+        api.get(`/reports/ar-ap/ap-aging?company_id=${companyId}&as_of_date=${today}`),
+        api.get(`/reports/ar-ap/ar-aging?company_id=${companyId}&as_of_date=${today}`)
       ]);
 
       setMetrics({
         total_revenue: 2500000,
         net_profit: 650000,
         cash_position: 850000,
-        ar_outstanding: arResponse.data.summary?.total_outstanding || 0,
-        ap_outstanding: apResponse.data.summary?.total_outstanding || 0,
-        bot_count: botsResponse.data.bots?.length || 15,
-        active_bots: botsResponse.data.bots?.filter((b: any) => b.status === 'active').length || 15
+        ar_outstanding: arResponse.data.grand_total || 0,
+        ap_outstanding: apResponse.data.grand_total || 0,
+        bot_count: botsResponse.data.agents?.length || 15,
+        active_bots: botsResponse.data.agents?.filter((b: any) => b.status === 'active').length || 15
       });
 
       setLoading(false);
@@ -62,7 +65,7 @@ export const ExecutiveDashboard: React.FC = () => {
       <div className="dashboard-header">
         <div>
           <h1 style={{fontSize: '1.875rem', fontWeight: 700, marginBottom: '0.5rem'}}>Executive Dashboard</h1>
-          <p style={{color: 'var(--gray-600)'}}>Real-time financial overview powered by 15 AI automation bots</p>
+          <p style={{color: 'var(--gray-600)'}}>Real-time financial overview powered by 15 AI automation agents</p>
         </div>
       </div>
 
@@ -101,12 +104,12 @@ export const ExecutiveDashboard: React.FC = () => {
 
       <Card style={{marginBottom: '1.5rem'}}>
         <CardHeader>
-          <CardTitle>🤖 Automation Bots - All {metrics?.active_bots || 15} Active</CardTitle>
+          <CardTitle>🤖 Automation Agents - All {metrics?.active_bots || 15} Active</CardTitle>
         </CardHeader>
         <CardBody>
           <div style={{display: 'flex', gap: '2rem', marginBottom: '1.5rem', padding: '1rem', backgroundColor: 'var(--gray-50)', borderRadius: '0.5rem'}}>
             <div>
-              <div style={{fontSize: '0.875rem', color: 'var(--gray-600)'}}>Total Bots</div>
+              <div style={{fontSize: '0.875rem', color: 'var(--gray-600)'}}>Total Agents</div>
               <div style={{fontSize: '1.5rem', fontWeight: 700}}>{metrics?.bot_count || 15}</div>
             </div>
             <div>
@@ -124,16 +127,16 @@ export const ExecutiveDashboard: React.FC = () => {
           </div>
 
           <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1rem'}}>
-            {bots.map((bot, index) => (
+            {agents.map((agent, index) => (
               <div key={index} style={{border: '1px solid var(--gray-200)', borderRadius: '0.5rem', padding: '1rem'}}>
                 <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '0.75rem'}}>
                   <Bot size={20} color="var(--primary-600)" />
-                  <Badge variant={bot.status === 'active' ? 'success' : 'default'} size="sm">
-                    {bot.status}
+                  <Badge variant={agent.status === 'active' ? 'success' : 'default'} size="sm">
+                    {agent.status}
                   </Badge>
                 </div>
-                <h4 style={{fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.875rem'}}>{bot.name}</h4>
-                <p style={{fontSize: '0.75rem', color: 'var(--gray-600)'}}>{bot.description}</p>
+                <h4 style={{fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.875rem'}}>{agent.name}</h4>
+                <p style={{fontSize: '0.75rem', color: 'var(--gray-600)'}}>{agent.description}</p>
               </div>
             ))}
           </div>
@@ -149,7 +152,7 @@ export const ExecutiveDashboard: React.FC = () => {
             </div>
             <div style={{fontSize: '0.875rem', color: 'var(--gray-600)', display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
               <Bot size={14} />
-              <span>Invoice Reconciliation Bot: 45 invoices processed today</span>
+              <span>Invoice Reconciliation Agent: 45 invoices processed today</span>
             </div>
           </CardBody>
         </Card>
@@ -162,7 +165,7 @@ export const ExecutiveDashboard: React.FC = () => {
             </div>
             <div style={{fontSize: '0.875rem', color: 'var(--gray-600)', display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
               <Bot size={14} />
-              <span>Payment Prediction Bot: 23 payments expected this week</span>
+              <span>Payment Prediction Agent: 23 payments expected this week</span>
             </div>
           </CardBody>
         </Card>

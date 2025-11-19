@@ -1,5 +1,5 @@
 /**
- * World-Class Chat Interface for Aria AI Bot
+ * World-Class Chat Interface for Aria AI Agent
  * Features: Streaming responses, markdown rendering, code highlighting, file attachments
  */
 import React, { useState, useRef, useEffect } from 'react';
@@ -182,7 +182,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
 const WelcomeScreen: React.FC<{ onSuggestionClick: (text: string) => void }> = ({ onSuggestionClick }) => (
   <div className="flex flex-col items-center justify-center h-full text-center px-4">
     <div className="w-20 h-20 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center mb-6 shadow-2xl">
-      <Bot className="w-10 h-10 text-white" />
+      <Agent className="w-10 h-10 text-white" />
     </div>
     <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Welcome to Aria AI</h3>
     <p className="text-slate-600 dark:text-slate-300 max-w-md mb-6">
@@ -200,7 +200,7 @@ const MessageBubble: React.FC<{ message: Message; isStreaming?: boolean }> = ({ 
       <div className={`flex-none w-10 h-10 rounded-full flex items-center justify-center shadow-md ${
         isUser ? 'bg-gradient-to-br from-blue-500 to-cyan-500' : 'bg-gradient-to-br from-purple-500 to-pink-500'
       }`}>
-        {isUser ? <User className="w-5 h-5 text-white" /> : <Bot className="w-5 h-5 text-white" />}
+        {isUser ? <User className="w-5 h-5 text-white" /> : <Agent className="w-5 h-5 text-white" />}
       </div>
       <div className="flex-1 max-w-3xl">
         <div className={`rounded-2xl px-5 py-3 shadow-md ${

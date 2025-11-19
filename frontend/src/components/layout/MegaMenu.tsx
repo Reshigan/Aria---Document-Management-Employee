@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
   LayoutDashboard, BookOpen, FileDown, FileUp, Building2, Wallet, Users, Package,
@@ -8,6 +8,8 @@ import {
 } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import './MegaMenu.css';
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 
 interface MenuItem {
   label: string;
@@ -22,7 +24,22 @@ interface MegaMenuCategory {
   items: MenuItem[];
 }
 
-const megaMenuData: Record<string, MegaMenuCategory[]> = {
+const iconMap: Record<string, React.ReactNode> = {
+  'BookOpen': <BookOpen size={18} />,
+  'FileDown': <FileDown size={18} />,
+  'FileUp': <FileUp size={18} />,
+  'Building2': <Building2 size={18} />,
+  'Users': <Users size={18} />,
+  'Package': <Package size={18} />,
+  'ShoppingBag': <ShoppingBag size={18} />,
+  'Factory': <Factory size={18} />,
+  'Wallet': <Wallet size={18} />,
+  'Wrench': <Wrench size={18} />,
+  'Briefcase': <Briefcase size={18} />,
+  'Scale': <Scale size={18} />,
+};
+
+const fallbackMenuData: Record<string, MegaMenuCategory[]> = {
   'Financial': [
     {
       title: 'Core Accounting',
@@ -190,8 +207,39 @@ const megaMenuData: Record<string, MegaMenuCategory[]> = {
 
 export const MegaMenu: React.FC = () => {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
+  const [menuData, setMenuData] = useState<Record<string, MegaMenuCategory[]>>(fallbackMenuData);
+  const [isLoading, setIsLoading] = useState(true);
   const location = useLocation();
   const { user, logout } = useAuthStore();
+
+  useEffect(() => {
+    const fetchMenuStructure = async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/menu/structure`);
+        if (response.ok) {
+          const data = await response.json();
+          
+          const transformedData: Record<string, MegaMenuCategory[]> = {};
+          Object.entries(data).forEach(([menuName, categories]: [string, any]) => {
+            transformedData[menuName] = categories.map((category: any) => ({
+              ...category,
+              icon: iconMap[category.icon] || <Package size={18} />
+            }));
+          });
+          
+          setMenuData(transformedData);
+        } else {
+          console.warn('Failed to fetch menu structure, using fallback');
+        }
+      } catch (error) {
+        console.warn('Error fetching menu structure, using fallback:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchMenuStructure();
+  }, []);
 
   const handleMouseEnter = (menu: string) => {
     setActiveDropdown(menu);
@@ -210,16 +258,16 @@ export const MegaMenu: React.FC = () => {
     <div className="mega-menu-container">
       <div className="mega-menu-header">
         <div className="mega-menu-logo">
-          <Link to="/">
-            <h1 className="mega-menu-brand">ARIA ERP</h1>
-            <span className="mega-menu-tagline">AI-Native Business Platform</span>
+          <Link to="/dashboard">
+            <h1 className="mega-menu-brand">ARIA</h1>
+            <span className="mega-menu-tagline">by VantaX</span>
           </Link>
         </div>
 
         <nav className="mega-menu-nav">
           <Link 
-            to="/" 
-            className={`mega-menu-item ${isActive('/') && location.pathname === '/' ? 'active' : ''}`}
+            to="/dashboard" 
+            className={`mega-menu-item ${isActive('/dashboard') ? 'active' : ''}`}
           >
             <LayoutDashboard size={18} />
             <span>Dashboard</span>
@@ -233,7 +281,7 @@ export const MegaMenu: React.FC = () => {
             <span>Ask ARIA</span>
           </Link>
 
-          {Object.entries(megaMenuData).map(([menuName, categories]) => (
+          {Object.entries(menuData).map(([menuName, categories]) => (
             <div
               key={menuName}
               className="mega-menu-dropdown"
@@ -284,11 +332,11 @@ export const MegaMenu: React.FC = () => {
           </Link>
 
           <Link 
-            to="/bots" 
-            className={`mega-menu-item ${isActive('/bots') ? 'active' : ''}`}
+            to="/agents" 
+            className={`mega-menu-item ${isActive('/agents') ? 'active' : ''}`}
           >
             <Bot size={18} />
-            <span>Bots</span>
+            <span>Agents</span>
           </Link>
 
           <Link 

@@ -1,5 +1,5 @@
 /**
- * eSignature Bot - Configuration Page
+ * eSignature Agent - Configuration Page
  * Generated: 2025-10-26 14:16:23
  */
 
@@ -40,7 +40,7 @@ export default function EsignatureConfig() {
 
   const loadConfiguration = async () => {
     try {
-      const response = await fetch('/api/bots/esignature/config');
+      const response = await fetch('/api/agents/esignature/config');
       const data = await response.json();
       setConfig(data);
     } catch (error) {
@@ -53,7 +53,7 @@ export default function EsignatureConfig() {
     setMessage(null);
     
     try {
-      const response = await fetch('/api/bots/esignature/config', {
+      const response = await fetch('/api/agents/esignature/config', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(config)
@@ -73,14 +73,14 @@ export default function EsignatureConfig() {
 
   const handleExecute = async () => {
     try {
-      const response = await fetch('/api/bots/esignature/execute', {
+      const response = await fetch('/api/agents/esignature/execute', {
         method: 'POST'
       });
       
       if (response.ok) {
-        setMessage({ type: 'success', text: 'Bot execution started!' });
+        setMessage({ type: 'success', text: 'Agent execution started!' });
       } else {
-        throw new Error('Failed to start bot execution');
+        throw new Error('Failed to start agent execution');
       }
     } catch (error) {
       setMessage({ type: 'error', text: error.message });
@@ -90,7 +90,7 @@ export default function EsignatureConfig() {
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h4" gutterBottom>
-        eSignature Bot
+        eSignature Agent
       </Typography>
       
       <Typography variant="body1" color="text.secondary" paragraph>
@@ -118,7 +118,7 @@ export default function EsignatureConfig() {
       <Card sx={{ mb: 3 }}>
         <CardContent>
           <Typography variant="h6" gutterBottom>
-            Bot Configuration
+            Agent Configuration
           </Typography>
           
           <Grid container spacing={3}>
@@ -130,7 +130,7 @@ export default function EsignatureConfig() {
                     onChange={(e) => setConfig({...config, enabled: e.target.checked})}
                   />
                 }
-                label="Enable Bot"
+                label="Enable Agent"
               />
             </Grid>
 

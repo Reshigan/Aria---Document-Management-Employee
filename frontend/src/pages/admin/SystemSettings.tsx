@@ -313,7 +313,7 @@ export default function SystemSettingsPage() {
               </label>
               <label className="flex items-center gap-3">
                 <input type="checkbox" checked={notificationSettings.bot_alerts} onChange={(e) => setNotificationSettings({...notificationSettings, bot_alerts: e.target.checked})} className="w-4 h-4" />
-                <span>Bot Alerts</span>
+                <span>Agent Alerts</span>
               </label>
               <label className="flex items-center gap-3">
                 <input type="checkbox" checked={notificationSettings.error_alerts} onChange={(e) => setNotificationSettings({...notificationSettings, error_alerts: e.target.checked})} className="w-4 h-4" />

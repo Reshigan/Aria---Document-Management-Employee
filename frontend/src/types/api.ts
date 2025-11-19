@@ -362,7 +362,7 @@ export interface DashboardSummary {
 }
 
 // ============================================================================
-// BOT ACTION TYPES
+// AGENT ACTION TYPES
 // ============================================================================
 
 export interface BotAction {

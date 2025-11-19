@@ -15,7 +15,7 @@ interface Plan {
   icon: any;
   color: string;
   features: string[];
-  bots: number;
+  agents: number;
   storage: string;
   support: string;
   sla: string;
@@ -32,13 +32,13 @@ const PLANS: Plan[] = [
     maxUsers: 25,
     icon: Zap,
     color: 'from-blue-500 to-cyan-500',
-    bots: 5,
+    agents: 5,
     storage: '10GB',
     support: 'Email support',
     sla: 'Best effort',
     features: [
       'Basic ERP (Accounting, Invoicing, Expenses)',
-      '5 Essential Bots (Invoice, AP, Bank Rec, Expense, Report Distribution)',
+      '5 Essential Agents (Invoice, AP, Bank Rec, Expense, Report Distribution)',
       '10GB cloud storage',
       'Email support (24-48h response)',
       'Mobile app access',
@@ -56,14 +56,14 @@ const PLANS: Plan[] = [
     maxUsers: 50,
     icon: Building,
     color: 'from-purple-500 to-pink-500',
-    bots: 15,
+    agents: 15,
     storage: '100GB',
     support: 'Chat + Email',
     sla: '99.5% uptime',
     popular: true,
     features: [
       'Full ERP (Accounting, CRM, Inventory, Projects)',
-      '15 Powerful Bots (All Financial + CRM + Basic Operations)',
+      '15 Powerful Agents (All Financial + CRM + Basic Operations)',
       '100GB cloud storage',
       'Priority chat + email support',
       'Custom dashboards',
@@ -84,16 +84,16 @@ const PLANS: Plan[] = [
     maxUsers: 100,
     icon: Package,
     color: 'from-green-500 to-emerald-500',
-    bots: 22,
+    agents: 22,
     storage: '500GB',
     support: 'Phone + Chat + Email',
     sla: '99.9% uptime',
     features: [
       'Full ERP + Advanced Features',
-      '22 Advanced Bots (Exclude Manufacturing, Warehouse, Asset, Contractor, Payroll)',
+      '22 Advanced Agents (Exclude Manufacturing, Warehouse, Asset, Contractor, Payroll)',
       '500GB cloud storage',
       'Priority phone + chat + email support',
-      'Custom bot configuration',
+      'Custom agent configuration',
       'Advanced workflow builder',
       'API access (1000 calls/min)',
       'SSO integration',
@@ -112,17 +112,17 @@ const PLANS: Plan[] = [
     maxUsers: 200,
     icon: Crown,
     color: 'from-orange-500 to-red-500',
-    bots: 27,
+    agents: 27,
     storage: 'Unlimited',
     support: 'Dedicated Account Manager',
     sla: '99.99% uptime + SLA guarantee',
     features: [
       'Full ERP + All Advanced Features',
-      'All 27 AI Bots (Complete automation suite)',
+      'All 27 AI Agents (Complete automation suite)',
       'Unlimited cloud storage',
       'Dedicated account manager',
       '24/7 priority support',
-      'Custom bot development (1 bot/year included)',
+      'Custom agent development (1 agent/year included)',
       'White-labeling',
       'On-premise deployment option',
       'Advanced security (SOC 2, ISO 27001)',
@@ -236,7 +236,7 @@ export const Pricing: React.FC = () => {
                 <div className="bg-gradient-to-br from-indigo-50 to-purple-50 p-6 rounded-xl">
                   <div className="text-sm text-indigo-600 font-medium mb-2">Your Plan</div>
                   <div className="text-3xl font-bold text-indigo-900">{selectedPlan.name}</div>
-                  <div className="text-sm text-gray-600 mt-2">{selectedPlan.bots} AI Bots Included</div>
+                  <div className="text-sm text-gray-600 mt-2">{selectedPlan.agents} AI Agents Included</div>
                 </div>
 
                 <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-6 rounded-xl">
@@ -332,7 +332,7 @@ export const Pricing: React.FC = () => {
                     </div>
                     <div className="flex items-center gap-2 text-sm">
                       <Zap size={16} className="text-gray-400" />
-                      <span className="text-gray-600">{plan.bots} AI Bots</span>
+                      <span className="text-gray-600">{plan.agents} AI Agents</span>
                     </div>
                     <div className="flex items-center gap-2 text-sm">
                       <Package size={16} className="text-gray-400" />
@@ -377,11 +377,11 @@ export const Pricing: React.FC = () => {
           })}
         </div>
 
-        {/* Bot Packages */}
+        {/* Agent Packages */}
         <div className="bg-white rounded-2xl shadow-xl p-8 mb-12">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">Individual Bot Packages</h2>
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">Individual Agent Packages</h2>
           <p className="text-gray-600 mb-8">
-            Already have an ERP? Add AI automation with individual bots or bundles
+            Already have an ERP? Add AI automation with individual agents or bundles
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -389,11 +389,11 @@ export const Pricing: React.FC = () => {
               <h3 className="text-xl font-bold text-blue-900 mb-2">Finance Pack</h3>
               <div className="text-3xl font-bold text-blue-600 mb-3">R10,000<span className="text-lg">/mo</span></div>
               <ul className="space-y-1 text-sm text-gray-700">
-                <li>• Invoice Reconciliation Bot</li>
-                <li>• Accounts Payable Bot</li>
-                <li>• Bank Reconciliation Bot</li>
-                <li>• General Ledger Bot</li>
-                <li>• Expense Approval Bot</li>
+                <li>• Invoice Reconciliation Agent</li>
+                <li>• Accounts Payable Agent</li>
+                <li>• Bank Reconciliation Agent</li>
+                <li>• General Ledger Agent</li>
+                <li>• Expense Approval Agent</li>
               </ul>
               <button className="w-full mt-4 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition">
                 Add to Cart
@@ -404,9 +404,9 @@ export const Pricing: React.FC = () => {
               <h3 className="text-xl font-bold text-green-900 mb-2">Sales Pack</h3>
               <div className="text-3xl font-bold text-green-600 mb-3">R7,500<span className="text-lg">/mo</span></div>
               <ul className="space-y-1 text-sm text-gray-700">
-                <li>• Lead Qualification Bot</li>
-                <li>• Quote Generation Bot</li>
-                <li>• Sales Order Bot</li>
+                <li>• Lead Qualification Agent</li>
+                <li>• Quote Generation Agent</li>
+                <li>• Sales Order Agent</li>
               </ul>
               <button className="w-full mt-4 bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition">
                 Add to Cart
@@ -417,9 +417,9 @@ export const Pricing: React.FC = () => {
               <h3 className="text-xl font-bold text-purple-900 mb-2">Operations Pack</h3>
               <div className="text-3xl font-bold text-purple-600 mb-3">R8,500<span className="text-lg">/mo</span></div>
               <ul className="space-y-1 text-sm text-gray-700">
-                <li>• Inventory Reorder Bot</li>
-                <li>• Purchasing Bot</li>
-                <li>• Warehouse Management Bot</li>
+                <li>• Inventory Reorder Agent</li>
+                <li>• Purchasing Agent</li>
+                <li>• Warehouse Management Agent</li>
               </ul>
               <button className="w-full mt-4 bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 transition">
                 Add to Cart
@@ -430,11 +430,11 @@ export const Pricing: React.FC = () => {
               <h3 className="text-xl font-bold text-orange-900 mb-2">HR Pack</h3>
               <div className="text-3xl font-bold text-orange-600 mb-3">R12,000<span className="text-lg">/mo</span></div>
               <ul className="space-y-1 text-sm text-gray-700">
-                <li>• Payroll Bot</li>
-                <li>• Leave Management Bot</li>
-                <li>• Recruitment Bot</li>
-                <li>• Performance Review Bot</li>
-                <li>• Time & Attendance Bot</li>
+                <li>• Payroll Agent</li>
+                <li>• Leave Management Agent</li>
+                <li>• Recruitment Agent</li>
+                <li>• Performance Review Agent</li>
+                <li>• Time & Attendance Agent</li>
               </ul>
               <button className="w-full mt-4 bg-orange-600 text-white py-2 rounded-lg hover:bg-orange-700 transition">
                 Add to Cart

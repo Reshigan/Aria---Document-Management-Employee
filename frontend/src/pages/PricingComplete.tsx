@@ -9,7 +9,7 @@ const PricingComplete: React.FC = () => {
       period: '/month',
       description: 'Perfect for trying out ARIA',
       features: [
-        { text: '5 bots active', included: true },
+        { text: '5 agents active', included: true },
         { text: '3 users', included: true },
         { text: '1 organization', included: true },
         { text: 'Community support', included: true },
@@ -26,7 +26,7 @@ const PricingComplete: React.FC = () => {
       period: '/month',
       description: 'For small businesses',
       features: [
-        { text: '20 bots active', included: true },
+        { text: '20 agents active', included: true },
         { text: '10 users', included: true },
         { text: '1 organization', included: true },
         { text: 'Email support (24h)', included: true },
@@ -43,7 +43,7 @@ const PricingComplete: React.FC = () => {
       period: '/month',
       description: 'For growing companies',
       features: [
-        { text: '44 bots active', included: true },
+        { text: '44 agents active', included: true },
         { text: '50 users', included: true },
         { text: '3 organizations', included: true },
         { text: 'Priority support (8h)', included: true },
@@ -60,7 +60,7 @@ const PricingComplete: React.FC = () => {
       period: '/month',
       description: 'For large organizations',
       features: [
-        { text: 'All 59 bots active', included: true },
+        { text: 'All 59 agents active', included: true },
         { text: 'Unlimited users', included: true },
         { text: 'Unlimited organizations', included: true },
         { text: '24/7 support (1h response)', included: true },

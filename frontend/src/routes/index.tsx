@@ -26,8 +26,8 @@ import AgedReceivablesReport from '../pages/Reports/AgedReceivablesReport';
 import VATSummaryReport from '../pages/Reports/VATSummaryReport';
 import StockValuationReport from '../pages/Reports/StockValuationReport';
 
-// Bots
-import BotTestingDashboard from '../pages/Bots/BotTestingDashboard';
+// Agents
+import BotTestingDashboard from '../pages/Agents/BotTestingDashboard';
 
 const AppRoutes: React.FC = () => {
   return (
@@ -66,8 +66,8 @@ const AppRoutes: React.FC = () => {
           <Route path="stock-valuation" element={<StockValuationReport />} />
         </Route>
 
-        {/* Bots Module */}
-        <Route path="bots">
+        {/* Agents Module */}
+        <Route path="agents">
           <Route path="testing" element={<BotTestingDashboard />} />
         </Route>
 

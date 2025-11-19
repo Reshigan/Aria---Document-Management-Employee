@@ -22,7 +22,7 @@ export const WorkflowBuilder: React.FC = () => {
     { type: 'trigger', label: 'Trigger', icon: '⚡', color: 'blue' },
     { type: 'action', label: 'Action', icon: '⚙️', color: 'purple' },
     { type: 'condition', label: 'Condition', icon: '🔀', color: 'orange' },
-    { type: 'bot', label: 'Run Bot', icon: '🤖', color: 'green' }
+    { type: 'agent', label: 'Run Agent', icon: '🤖', color: 'green' }
   ];
 
   const addNode = (type: string) => {
@@ -112,7 +112,7 @@ export const WorkflowBuilder: React.FC = () => {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 flex items-center justify-center text-white text-xl">
-                          {node.type === 'trigger' ? '⚡' : node.type === 'bot' ? '🤖' : '⚙️'}
+                          {node.type === 'trigger' ? '⚡' : node.type === 'agent' ? '🤖' : '⚙️'}
                         </div>
                         <div>
                           <div className="font-semibold">{node.label}</div>

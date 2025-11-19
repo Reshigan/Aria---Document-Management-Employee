@@ -1,5 +1,5 @@
 /**
- * Customer Retention Bot - Configuration Page
+ * Customer Retention Agent - Configuration Page
  * Generated: 2025-10-26 14:16:23
  */
 
@@ -40,7 +40,7 @@ export default function CustomerRetentionConfig() {
 
   const loadConfiguration = async () => {
     try {
-      const response = await fetch('/api/bots/customer_retention/config');
+      const response = await fetch('/api/agents/customer_retention/config');
       const data = await response.json();
       setConfig(data);
     } catch (error) {
@@ -53,7 +53,7 @@ export default function CustomerRetentionConfig() {
     setMessage(null);
     
     try {
-      const response = await fetch('/api/bots/customer_retention/config', {
+      const response = await fetch('/api/agents/customer_retention/config', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(config)
@@ -73,14 +73,14 @@ export default function CustomerRetentionConfig() {
 
   const handleExecute = async () => {
     try {
-      const response = await fetch('/api/bots/customer_retention/execute', {
+      const response = await fetch('/api/agents/customer_retention/execute', {
         method: 'POST'
       });
       
       if (response.ok) {
-        setMessage({ type: 'success', text: 'Bot execution started!' });
+        setMessage({ type: 'success', text: 'Agent execution started!' });
       } else {
-        throw new Error('Failed to start bot execution');
+        throw new Error('Failed to start agent execution');
       }
     } catch (error) {
       setMessage({ type: 'error', text: error.message });
@@ -90,7 +90,7 @@ export default function CustomerRetentionConfig() {
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h4" gutterBottom>
-        Customer Retention Bot
+        Customer Retention Agent
       </Typography>
       
       <Typography variant="body1" color="text.secondary" paragraph>
@@ -118,7 +118,7 @@ export default function CustomerRetentionConfig() {
       <Card sx={{ mb: 3 }}>
         <CardContent>
           <Typography variant="h6" gutterBottom>
-            Bot Configuration
+            Agent Configuration
           </Typography>
           
           <Grid container spacing={3}>
@@ -130,7 +130,7 @@ export default function CustomerRetentionConfig() {
                     onChange={(e) => setConfig({...config, enabled: e.target.checked})}
                   />
                 }
-                label="Enable Bot"
+                label="Enable Agent"
               />
             </Grid>
 

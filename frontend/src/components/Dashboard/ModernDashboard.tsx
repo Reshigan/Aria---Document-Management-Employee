@@ -14,7 +14,7 @@ export const ModernDashboard: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <StatCard title="Total Documents" value={stats.totalDocuments} icon={<FileText />} color="blue" />
           <StatCard title="Processed Today" value={stats.processedToday} icon={<CheckCircle />} color="green" />
-          <StatCard title="Active Chats" value={stats.activeConversations} icon={<Bot />} color="purple" />
+          <StatCard title="Active Chats" value={stats.activeConversations} icon={<Agent />} color="purple" />
         </div>
       </div>
     </div>

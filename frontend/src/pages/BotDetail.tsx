@@ -1,11 +1,11 @@
 /**
- * Bot Detail Page - Reusable template for all bot detail pages
+ * Agent Detail Page - Reusable template for all agent detail pages
  */
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
-  Bot, ArrowLeft, CheckCircle, TrendingUp, DollarSign, Clock, Users,
+  Agent, ArrowLeft, CheckCircle, TrendingUp, DollarSign, Clock, Users,
   Zap, Shield, Download, Play, Star, ArrowRight, Package
 } from 'lucide-react';
 
@@ -55,16 +55,16 @@ const BotDetail: React.FC = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Fetch bot data from API
+    // Fetch agent data from API
     const fetchBotData = async () => {
       try {
-        const response = await fetch(`/api/bots/marketplace/${botId}`);
+        const response = await fetch(`/api/agents/marketplace/${botId}`);
         if (response.ok) {
           const data = await response.json();
           setBotData(data);
         }
       } catch (error) {
-        console.error('Error fetching bot data:', error);
+        console.error('Error fetching agent data:', error);
       } finally {
         setLoading(false);
       }
@@ -77,8 +77,8 @@ const BotDetail: React.FC = () => {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
-          <Bot className="w-12 h-12 text-gray-400 animate-pulse mx-auto mb-4" />
-          <p className="text-gray-600">Loading bot details...</p>
+          <Agent className="w-12 h-12 text-gray-400 animate-pulse mx-auto mb-4" />
+          <p className="text-gray-600">Loading agent details...</p>
         </div>
       </div>
     );
@@ -88,9 +88,9 @@ const BotDetail: React.FC = () => {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
-          <p className="text-gray-600 mb-4">Bot not found</p>
-          <Link to="/bots" className="text-blue-600 hover:underline">
-            ← Back to Bot Showcase
+          <p className="text-gray-600 mb-4">Agent not found</p>
+          <Link to="/agents" className="text-blue-600 hover:underline">
+            ← Back to Agent Showcase
           </Link>
         </div>
       </div>
@@ -104,14 +104,14 @@ const BotDetail: React.FC = () => {
         <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
           <Link to="/" className="flex items-center space-x-3">
             <div className="w-9 h-9 rounded-lg bg-black flex items-center justify-center">
-              <Bot className="w-5 h-5 text-white" />
+              <Agent className="w-5 h-5 text-white" />
             </div>
             <span className="text-2xl font-semibold text-gray-900 tracking-tight">Aria</span>
           </Link>
           
           <div className="flex items-center space-x-8">
-            <Link to="/bots" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition">
-              ← All Bots
+            <Link to="/agents" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition">
+              ← All Agents
             </Link>
             <Link to="/login" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition">
               Sign In
@@ -185,7 +185,7 @@ const BotDetail: React.FC = () => {
                     onClick={() => navigate('/signup')}
                     className="px-8 py-4 bg-black hover:bg-gray-800 text-white rounded-lg font-semibold text-lg transition flex items-center space-x-2"
                   >
-                    <span>Deploy Bot Now</span>
+                    <span>Deploy Agent Now</span>
                     <ArrowRight className="w-5 h-5" />
                   </button>
                   <button 

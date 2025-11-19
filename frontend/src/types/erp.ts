@@ -603,7 +603,7 @@ export interface ServiceWorkOrder {
 }
 
 
-export interface Bot {
+export interface Agent {
   id: string;
   name: string;
   description: string;

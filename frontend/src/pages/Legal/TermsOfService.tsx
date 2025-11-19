@@ -15,7 +15,7 @@ const TermsOfService: React.FC = () => {
           <p>Permission is granted to temporarily access ARIA Platform for personal or commercial use according to your subscription tier.</p>
           
           <h2 className="text-2xl font-bold mt-6 mb-4">3. Service Description</h2>
-          <p>ARIA Platform provides AI-powered automation bots and ERP modules for business process automation.</p>
+          <p>ARIA Platform provides AI-powered automation agents and ERP modules for business process automation.</p>
           
           <h2 className="text-2xl font-bold mt-6 mb-4">4. Subscription and Payment</h2>
           <p>Subscription fees are billed monthly or annually based on your chosen plan. All fees are non-refundable except as required by law.</p>

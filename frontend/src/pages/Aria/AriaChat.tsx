@@ -45,7 +45,7 @@ export default function AriaChat() {
     {
       id: '1',
       role: 'assistant',
-      content: "Hi! I'm Aria, your AI business assistant. I can help you with:\n\n• Creating sales orders, invoices, and quotes\n• Processing deliveries and stock movements\n• Managing customers, suppliers, and products\n• Running financial reports and analytics\n• Automating workflows with 67 specialized bots\n• Answering questions about your business data\n• Analyzing documents you upload (PDF, images, text)\n\nWhat would you like to do today?",
+      content: "Hi! I'm Aria, your AI business assistant. I can help you with:\n\n• Creating sales orders, invoices, and quotes\n• Processing deliveries and stock movements\n• Managing customers, suppliers, and products\n• Running financial reports and analytics\n• Automating workflows with 67 specialized agents\n• Answering questions about your business data\n• Analyzing documents you upload (PDF, images, text)\n\nWhat would you like to do today?",
       timestamp: new Date()
     }
   ]);
@@ -145,7 +145,7 @@ export default function AriaChat() {
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: "I understand you want to " + userInput.toLowerCase() + ". Let me help you with that.\n\nI'm processing your request using natural language understanding to trigger the appropriate workflows and bots.\n\nWould you like me to proceed?",
+        content: "I understand you want to " + userInput.toLowerCase() + ". Let me help you with that.\n\nI'm processing your request using natural language understanding to trigger the appropriate workflows and agents.\n\nWould you like me to proceed?",
         timestamp: new Date()
       };
       setMessages(prev => [...prev, assistantMessage]);
@@ -321,7 +321,7 @@ export default function AriaChat() {
                 flexShrink: 0
               }}>
                 {message.role === 'assistant' ? (
-                  <Bot size={20} style={{ color: 'white' }} />
+                  <Agent size={20} style={{ color: 'white' }} />
                 ) : (
                   <User size={20} style={{ color: '#6b7280' }} />
                 )}
@@ -559,14 +559,14 @@ export default function AriaChat() {
                   </div>
                 )}
 
-                {/* Bots Activated */}
+                {/* Agents Activated */}
                 {message.botsActivated && message.botsActivated.length > 0 && (
                   <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid #e5e7eb' }}>
                     <div style={{ fontWeight: '600', marginBottom: '0.75rem', color: '#059669' }}>
-                      🤖 Bots Activated:
+                      🤖 Agents Activated:
                     </div>
                     <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                      {message.botsActivated.map((bot, idx) => (
+                      {message.botsActivated.map((agent, idx) => (
                         <span key={idx} style={{
                           padding: '0.25rem 0.75rem',
                           background: '#d1fae5',
@@ -575,7 +575,7 @@ export default function AriaChat() {
                           fontSize: '0.75rem',
                           fontWeight: '600'
                         }}>
-                          {bot}
+                          {agent}
                         </span>
                       ))}
                     </div>
@@ -709,7 +709,7 @@ export default function AriaChat() {
                 alignItems: 'center',
                 justifyContent: 'center'
               }}>
-                <Bot size={20} style={{ color: 'white' }} />
+                <Agent size={20} style={{ color: 'white' }} />
               </div>
               <div style={{
                 padding: '1rem 1.25rem',

@@ -14,13 +14,13 @@ export const Landing: React.FC = () => {
         <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <div className="w-9 h-9 rounded-lg bg-black flex items-center justify-center">
-              <Bot className="w-5 h-5 text-white" />
+              <Agent className="w-5 h-5 text-white" />
             </div>
             <span className="text-2xl font-semibold text-gray-900 tracking-tight">Aria</span>
           </div>
           
           <div className="flex items-center space-x-8">
-            <Link to="/bots" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition">
+            <Link to="/agents" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition">
               Platform
             </Link>
             <Link to="/login" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition">
@@ -57,7 +57,7 @@ export const Landing: React.FC = () => {
             </h1>
             
             <p className="text-xl md:text-2xl text-gray-600 mb-12 max-w-3xl mx-auto font-light">
-              67 AI-powered automation bots and 11 complete ERP modules ready to transform your business operations.
+              67 AI-powered automation agents and 11 complete ERP modules ready to transform your business operations.
               From invoices to compliance, manufacturing to retail, SAP integration to master data management, we handle it all.
             </p>
             
@@ -71,7 +71,7 @@ export const Landing: React.FC = () => {
               </Link>
               
               <Link
-                to="/bots"
+                to="/agents"
                 className="px-8 py-4 bg-white hover:bg-gray-50 text-gray-900 border border-gray-300 rounded-lg font-medium text-lg transition-all"
               >
                 Explore platform
@@ -114,7 +114,7 @@ export const Landing: React.FC = () => {
             {[
               {
                 icon: Brain,
-                title: '67 Specialized Bots + 11 ERP Modules',
+                title: '67 Specialized Agents + 11 ERP Modules',
                 description: 'Pre-built automation for finance, HR, sales, operations, compliance, manufacturing, procurement, retail, master data, order-to-cash, and SAP integration. Deploy in hours, not months.'
               },
               {
@@ -160,7 +160,7 @@ export const Landing: React.FC = () => {
             </div>
             <div>
               <div className="text-5xl md:text-6xl font-bold text-white mb-3">20+hrs</div>
-              <div className="text-gray-400 text-lg">Saved per month per bot</div>
+              <div className="text-gray-400 text-lg">Saved per month per agent</div>
             </div>
           </div>
         </div>
@@ -194,7 +194,7 @@ export const Landing: React.FC = () => {
             <div>
               <div className="flex items-center space-x-3 mb-4">
                 <div className="w-9 h-9 rounded-lg bg-black flex items-center justify-center">
-                  <Bot className="w-5 h-5 text-white" />
+                  <Agent className="w-5 h-5 text-white" />
                 </div>
                 <span className="text-2xl font-semibold text-gray-900">Aria</span>
               </div>
@@ -206,7 +206,7 @@ export const Landing: React.FC = () => {
             <div>
               <h4 className="font-semibold text-gray-900 mb-4">Product</h4>
               <ul className="space-y-3 text-sm text-gray-600">
-                <li><Link to="/bots" className="hover:text-gray-900">Platform</Link></li>
+                <li><Link to="/agents" className="hover:text-gray-900">Platform</Link></li>
                 <li><a href="#" className="hover:text-gray-900">Features</a></li>
                 <li><a href="#" className="hover:text-gray-900">Integrations</a></li>
               </ul>

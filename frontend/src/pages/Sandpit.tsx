@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { 
-  Bot, 
+  Agent, 
   TestTube, 
   Activity, 
   Database, 
@@ -86,7 +86,7 @@ export default function Sandpit() {
             </h1>
             
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Complete testing environment with 8 operational bots and 5 ERP modules.
+              Complete testing environment with 8 operational agents and 5 ERP modules.
               Everything is live and ready to test!
             </p>
           </div>
@@ -95,7 +95,7 @@ export default function Sandpit() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="bg-blue-50 rounded-lg p-4 text-center">
               <div className="text-3xl font-bold text-blue-600">8</div>
-              <div className="text-sm text-gray-600">Bots Active</div>
+              <div className="text-sm text-gray-600">Agents Active</div>
             </div>
             <div className="bg-green-50 rounded-lg p-4 text-center">
               <div className="text-3xl font-bold text-green-600">5</div>
@@ -141,38 +141,38 @@ export default function Sandpit() {
               to="http://localhost:8000/health"
               icon={Activity}
               title="Health Check"
-              description="View system health status and loaded bots."
+              description="View system health status and loaded agents."
               status="operational"
               external
             />
           </div>
         </section>
 
-        {/* Bot Testing Section */}
+        {/* Agent Testing Section */}
         <section className="mb-12">
           <h2 className="text-3xl font-bold text-gray-900 mb-6">
-            🤖 Bot Testing
+            🤖 Agent Testing
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <QuickLink
-              to="/bots-live"
-              icon={Bot}
-              title="Live Bot Status"
-              description="View all 8 bots with real-time data from the API. Execute test runs."
+              to="/agents-live"
+              icon={Agent}
+              title="Live Agent Status"
+              description="View all 8 agents with real-time data from the API. Execute test runs."
               status="operational"
             />
             <QuickLink
-              to="/bots"
+              to="/agents"
               icon={Play}
-              title="Bot Showcase"
-              description="Marketing view of all available bots with features and capabilities."
+              title="Agent Showcase"
+              description="Marketing view of all available agents with features and capabilities."
               status="operational"
             />
             <QuickLink
-              to="http://localhost:8000/api/bots"
+              to="http://localhost:8000/api/agents"
               icon={Database}
-              title="Bot API Endpoint"
-              description="Direct JSON API endpoint for bot listing."
+              title="Agent API Endpoint"
+              description="Direct JSON API endpoint for agent listing."
               status="operational"
               external
             />
@@ -268,7 +268,7 @@ export default function Sandpit() {
               <ul className="space-y-2 text-sm">
                 <li>• Use <strong>API Connection Test</strong> for automated testing</li>
                 <li>• Open <strong>Interactive API Docs</strong> to try endpoints</li>
-                <li>• Check <strong>Live Bot Status</strong> for real-time data</li>
+                <li>• Check <strong>Live Agent Status</strong> for real-time data</li>
                 <li>• Review JSON responses from ERP endpoints</li>
               </ul>
             </div>
@@ -276,8 +276,8 @@ export default function Sandpit() {
             <div>
               <h3 className="font-semibold mb-2">For Business Users:</h3>
               <ul className="space-y-2 text-sm">
-                <li>• Explore <strong>Bot Showcase</strong> to see capabilities</li>
-                <li>• Test <strong>Live Bot Status</strong> with sample data</li>
+                <li>• Explore <strong>Agent Showcase</strong> to see capabilities</li>
+                <li>• Test <strong>Live Agent Status</strong> with sample data</li>
                 <li>• Review UI pages for user experience</li>
                 <li>• Provide feedback on features and functionality</li>
               </ul>
@@ -303,9 +303,9 @@ export default function Sandpit() {
               curl http://localhost:8000/health
             </div>
             <div className="bg-gray-800 p-3 rounded">
-              <span className="text-gray-400"># List all bots</span>
+              <span className="text-gray-400"># List all agents</span>
               <br />
-              curl http://localhost:8000/api/bots
+              curl http://localhost:8000/api/agents
             </div>
             <div className="bg-gray-800 p-3 rounded">
               <span className="text-gray-400"># Run automated tests</span>

@@ -8,6 +8,41 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <!-- SVG Icons Sprite -->
+    <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+        <!-- Natural Language Icon: Chat bubble with dots -->
+        <symbol id="natural-language" viewBox="0 0 24 24" fill="none">
+            <path d="M21 11.5C21 16.75 16.97 21 12 21C10.73 21 9.52 20.75 8.42 20.3L3 21L4.7 15.58C3.65 14.25 3 12.66 3 11C3 6.03 7.03 2 12 2C16.97 2 21 6.25 21 11.5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="8" cy="11" r="1" fill="currentColor"/>
+            <circle cx="12" cy="11" r="1" fill="currentColor"/>
+            <circle cx="16" cy="11" r="1" fill="currentColor"/>
+        </symbol>
+        
+        <!-- Country Specific Compliance Icon: Globe with checkmark -->
+        <symbol id="country-compliance" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2" fill="none"/>
+            <path d="M3 12H21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <path d="M12 3C14.5 5.5 16 8.5 16 12C16 15.5 14.5 18.5 12 21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <path d="M12 3C9.5 5.5 8 8.5 8 12C8 15.5 9.5 18.5 12 21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="18" cy="6" r="3" fill="#FFB800"/>
+            <path d="M16.5 6L17.5 7L19.5 5" stroke="#1a2332" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </symbol>
+        
+        <!-- Agents Icon: Robot face -->
+        <symbol id="agents" viewBox="0 0 24 24" fill="none">
+            <rect x="5" y="7" width="14" height="13" rx="2" stroke="currentColor" stroke-width="2" fill="none"/>
+            <path d="M12 4V7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="9" cy="12" r="1" fill="currentColor"/>
+            <circle cx="15" cy="12" r="1" fill="currentColor"/>
+            <path d="M9 16H15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="12" cy="2" r="1" fill="currentColor"/>
+        </symbol>
+        
+        <!-- Speed Icon: Lightning bolt -->
+        <symbol id="speed" viewBox="0 0 24 24" fill="none">
+            <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        </symbol>
+    </svg>
     <!-- Navigation -->
     <nav class="navbar">
         <div class="nav-container">
@@ -18,10 +53,11 @@
             <ul class="nav-menu">
                 <li><a href="#home">Home</a></li>
                 <li><a href="#features">Features</a></li>
-                <li><a href="#bots">Bots</a></li>
-                <li><a href="#sa-compliance">SA Compliance</a></li>
+                <li><a href="#agents">Agents</a></li>
+                <li><a href="#country-compliance">Country Specific Compliance</a></li>
+                <li><a href="#contact">Contact</a></li>
             </ul>
-            <a href="https://aria.vantax.co.za" class="cta-button">Sign In</a>
+            <a href="/dashboard" class="cta-button">Sign In</a>
         </div>
     </nav>
 
@@ -41,7 +77,7 @@
                 <div class="hero-stats">
                     <div class="stat">
                         <div class="stat-number">67</div>
-                        <div class="stat-label">BOTS</div>
+                        <div class="stat-label">AGENTS</div>
                     </div>
                     <div class="stat">
                         <div class="stat-number">5x</div>
@@ -52,12 +88,12 @@
                         <div class="stat-label">ADOPTION</div>
                     </div>
                     <div class="stat">
-                        <div class="stat-number">🇿🇦</div>
-                        <div class="stat-label">BUILT FOR SA</div>
+                        <div class="stat-number">🌍</div>
+                        <div class="stat-label">COUNTRY SPECIFIC</div>
                     </div>
                 </div>
                 <div class="hero-cta">
-                    <a href="https://aria.vantax.co.za" class="btn-primary">Sign In</a>
+                    <a href="/dashboard" class="btn-primary">Sign In</a>
                     <a href="#contact" class="btn-secondary">Request Demo</a>
                 </div>
             </div>
@@ -105,22 +141,30 @@
             </div>
             <div class="features-grid">
                 <div class="feature-card featured">
-                    <div class="feature-icon">🗣️</div>
+                    <svg class="feature-icon" role="img" aria-label="Natural Language">
+                        <use href="#natural-language"/>
+                    </svg>
                     <h3>Natural Language</h3>
-                    <p>Email aria@vantax.com or WhatsApp. No UI needed!</p>
+                    <p>Email info@vantax.co.za or WhatsApp. No UI needed!</p>
                 </div>
                 <div class="feature-card featured">
-                    <div class="feature-icon">🇿🇦</div>
-                    <h3>SA Compliance</h3>
-                    <p>ONLY ERP with automated BBBEE + SARS payroll</p>
+                    <svg class="feature-icon" role="img" aria-label="Country Specific Compliance">
+                        <use href="#country-compliance"/>
+                    </svg>
+                    <h3>Country Specific Compliance</h3>
+                    <p>Automated compliance for your jurisdiction</p>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon">🤖</div>
-                    <h3>67 Bots</h3>
+                    <svg class="feature-icon" role="img" aria-label="67 Agents">
+                        <use href="#agents"/>
+                    </svg>
+                    <h3>67 Agents</h3>
                     <p>Complete automation across all business functions</p>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon">⚡</div>
+                    <svg class="feature-icon" role="img" aria-label="10x Faster">
+                        <use href="#speed"/>
+                    </svg>
                     <h3>10x Faster</h3>
                     <p>1-3 months deployment</p>
                 </div>
@@ -128,54 +172,71 @@
         </div>
     </section>
 
-    <!-- SA Compliance Section -->
-    <section id="sa-compliance" class="sa-section">
+    <!-- Country Specific Compliance Section -->
+    <section id="country-compliance" class="sa-section">
         <div class="container">
             <div class="section-header">
-                <div class="section-badge">🇿🇦 BUILT FOR SOUTH AFRICA</div>
-                <h2>The ONLY ERP with Automated BBBEE</h2>
+                <div class="section-badge">
+                    <svg class="feature-icon" role="img" aria-label="Country Specific Compliance" style="width: 24px; height: 24px; vertical-align: middle; margin-right: 8px;">
+                        <use href="#country-compliance"/>
+                    </svg>
+                    COUNTRY SPECIFIC COMPLIANCE
+                </div>
+                <h2>Country-Specific Compliance Automation</h2>
             </div>
             <div class="sa-grid">
                 <div class="sa-card">
-                    <h3>📊 BBBEE Compliance Bot</h3>
+                    <h3>📊 Tax Compliance Agent</h3>
                     <ul class="sa-features">
-                        <li>✅ Automatic scorecard (109 points)</li>
-                        <li>✅ Level 1-8 determination</li>
-                        <li>✅ Supplier verification</li>
+                        <li>✅ Automatic tax calculations</li>
+                        <li>✅ Jurisdiction-specific rules</li>
+                        <li>✅ Regulatory reporting</li>
                         <li>✅ Annual law updates</li>
                     </ul>
                 </div>
                 <div class="sa-card">
-                    <h3>💼 SARS Payroll Bot</h3>
+                    <h3>💼 Payroll Compliance Agent</h3>
                     <ul class="sa-features">
-                        <li>✅ PAYE, UIF, SDL, ETI</li>
-                        <li>✅ IRP5 generation</li>
-                        <li>✅ EMP201 filing</li>
-                        <li>✅ Annual tax updates</li>
+                        <li>✅ Local payroll regulations</li>
+                        <li>✅ Tax withholding</li>
+                        <li>✅ Statutory filings</li>
+                        <li>✅ Multi-country support</li>
                     </ul>
                 </div>
             </div>
         </div>
     </section>
 
+
     <!-- CTA Section -->
     <section id="contact" class="cta-section">
         <div class="container">
             <h2>Ready to Replace Your ERP?</h2>
             <p>Join the AI-native revolution</p>
-            <form class="contact-form">
-                <input type="text" placeholder="Full Name" required>
-                <input type="email" placeholder="Email" required>
-                <input type="text" placeholder="Company" required>
-                <select required>
-                    <option value="">Select Plan</option>
-                    <option>Starter</option>
-                    <option>Growth</option>
-                    <option>Professional</option>
-                </select>
+            <form class="contact-form" action="mailto:info@vantax.co.za" method="post" enctype="text/plain">
+                <input type="text" name="name" placeholder="Full Name" required>
+                <input type="email" name="email" placeholder="Email" required>
+                <input type="text" name="company" placeholder="Company" required>
+                <input type="text" name="location" placeholder="Location (City, Country)" required>
                 <button type="submit" class="btn-primary">Request Demo</button>
             </form>
-            <p class="beta-note">🎉 First 10 customers get 50% off for 3 months!</p>
+            <div class="offices-section">
+                <h3>VantaX Offices</h3>
+                <div class="offices-grid">
+                    <div class="office">
+                        <strong>🇿🇦 Johannesburg</strong>
+                        <p>South Africa</p>
+                    </div>
+                    <div class="office">
+                        <strong>🇦🇺 Sydney</strong>
+                        <p>Australia</p>
+                    </div>
+                    <div class="office">
+                        <strong>🇺🇸 Delaware</strong>
+                        <p>United States</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -184,12 +245,12 @@
         <div class="footer-container">
             <div>
                 <h4>Aria by Vanta X</h4>
-                <p>Built in South Africa for the world 🇿🇦</p>
+                <p>Global ERP for modern businesses 🌍</p>
             </div>
             <div>
                 <h4>CONTACT</h4>
-                <p>📧 aria@vantax.com</p>
-                <p>📞 +27 11 555 1234</p>
+                <p>📧 info@vantax.co.za</p>
+                <p>🌍 Global Offices: JHB | SYD | DEL</p>
             </div>
         </div>
         <div class="footer-branding">

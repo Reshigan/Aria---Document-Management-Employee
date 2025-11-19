@@ -12,11 +12,11 @@ interface TestResult {
 export default function ApiTest() {
   const [tests, setTests] = useState<TestResult[]>([
     { name: 'Health Check', status: 'pending' },
-    { name: 'List All Bots', status: 'pending' },
+    { name: 'List All Agents', status: 'pending' },
     { name: 'Financial Module', status: 'pending' },
     { name: 'HR Module', status: 'pending' },
     { name: 'CRM Module', status: 'pending' },
-    { name: 'Execute Invoice Bot', status: 'pending' },
+    { name: 'Execute Invoice Agent', status: 'pending' },
   ]);
   const [isRunning, setIsRunning] = useState(false);
 
@@ -34,7 +34,7 @@ export default function ApiTest() {
       const response = await healthAPI.check();
       updateTest(0, {
         status: 'success',
-        message: `${response.data.bots_count} bots loaded`,
+        message: `${response.data.bots_count} agents loaded`,
         data: response.data
       });
     } catch (error: any) {
@@ -44,12 +44,12 @@ export default function ApiTest() {
       });
     }
 
-    // Test 2: List Bots
+    // Test 2: List Agents
     try {
       const response = await botsAPI.list();
       updateTest(1, {
         status: 'success',
-        message: `Found ${response.data.count} bots`,
+        message: `Found ${response.data.count} agents`,
         data: response.data
       });
     } catch (error: any) {
@@ -104,7 +104,7 @@ export default function ApiTest() {
       });
     }
 
-    // Test 6: Execute Bot
+    // Test 6: Execute Agent
     try {
       const response = await botsAPI.execute('invoice_reconciliation', {
         invoice_number: 'TEST-001',
@@ -113,7 +113,7 @@ export default function ApiTest() {
       });
       updateTest(5, {
         status: 'success',
-        message: response.data.success ? 'Bot executed successfully' : 'Execution failed',
+        message: response.data.success ? 'Agent executed successfully' : 'Execution failed',
         data: response.data
       });
     } catch (error: any) {

@@ -13,6 +13,8 @@ import Employees from './pages/ERP/Employees';
 import FieldService from './pages/ERP/FieldService';
 import ERPDashboard from './pages/ERPDashboard';
 import BotRegistry from './pages/BotRegistry';
+import Agents from './pages/Agents';
+import AgentSettings from './pages/AgentSettings';
 import Settings from './pages/Settings';
 import Customers from './pages/Customers';
 import Suppliers from './pages/Suppliers';
@@ -29,9 +31,15 @@ import WorkOrders from './pages/Manufacturing/WorkOrders';
 import AgedReceivablesReport from './pages/Reports/AgedReceivablesReport';
 import StockValuationReport from './pages/Reports/StockValuationReport';
 import VATSummaryReport from './pages/Reports/VATSummaryReport';
+import ReportsDashboard from './pages/Reports/ReportsDashboard';
+import FinancialReports from './pages/Reports/FinancialReports';
+import PayrollActivityReport from './pages/reports/PayrollActivityReport';
+import ExpenseManagementReport from './pages/reports/ExpenseManagementReport';
+import BbbeeComplianceReport from './pages/reports/BbbeeComplianceReport';
 import BankingDashboard from './pages/Banking/BankingDashboard';
 import ChatInterface from './components/Chat/ChatInterface';
 import AskAriaChat from './pages/AskAria/AskAriaChat';
+import DocumentClassification from './pages/AskAria/DocumentClassification';
 import SystemSettings from './pages/admin/SystemSettings';
 import CompanySettings from './pages/admin/CompanySettings';
 import BotConfiguration from './pages/admin/BotConfiguration';
@@ -69,6 +77,8 @@ function App() {
           {/* General Ledger */}
           <Route path="/gl" element={<GeneralLedger />} />
           <Route path="/general-ledger" element={<GeneralLedger />} />
+          <Route path="/gl/journal-entries" element={<GeneralLedger />} />
+          <Route path="/gl/chart-of-accounts" element={<GeneralLedger />} />
           
           {/* Accounts Payable */}
           <Route path="/ap" element={<InvoiceList />} />
@@ -97,6 +107,7 @@ function App() {
           <Route path="/inventory" element={<WMSStock />} />
           <Route path="/inventory/products" element={<ProductCatalog />} />
           <Route path="/inventory/stock" element={<WMSStock />} />
+          <Route path="/inventory/items" element={<ProductCatalog />} />
           
           {/* Procurement */}
           <Route path="/procurement" element={<PurchaseOrders />} />
@@ -119,14 +130,27 @@ function App() {
           <Route path="/field-service/requests" element={<FieldService />} />
           <Route path="/field-service/work-orders" element={<FieldService />} />
           
-          {/* Bots */}
-          <Route path="/bots" element={<BotRegistry />} />
+          {/* Agents */}
+          <Route path="/agents" element={<Agents />} />
+          <Route path="/agents/:agentId" element={<AgentSettings />} />
           
           {/* Reports */}
-          <Route path="/reports" element={<AgedReceivablesReport />} />
+          <Route path="/reports" element={<ReportsDashboard />} />
           <Route path="/reports/ar-aging" element={<AgedReceivablesReport />} />
+          <Route path="/reports/ar-ap/ar-aging" element={<AgedReceivablesReport />} />
+          <Route path="/reports/ar-ap/ap-aging" element={<AgedReceivablesReport />} />
+          <Route path="/reports/ar-ap/cash-flow" element={<FinancialReports />} />
           <Route path="/reports/stock-valuation" element={<StockValuationReport />} />
+          <Route path="/reports/inventory/valuation" element={<StockValuationReport />} />
           <Route path="/reports/vat-summary" element={<VATSummaryReport />} />
+          <Route path="/reports/financial/trial-balance" element={<FinancialReports />} />
+          <Route path="/reports/financial/balance-sheet" element={<FinancialReports />} />
+          <Route path="/reports/financial/income-statement" element={<FinancialReports />} />
+          <Route path="/reports/sales-purchase/sales-kpis" element={<FinancialReports />} />
+          <Route path="/reports/sales-purchase/purchase-kpis" element={<FinancialReports />} />
+          <Route path="/reports/payroll/activity" element={<PayrollActivityReport />} />
+          <Route path="/reports/expense/management" element={<ExpenseManagementReport />} />
+          <Route path="/reports/compliance/bbbee" element={<BbbeeComplianceReport />} />
           
           {/* Settings */}
           <Route path="/settings" element={<Settings />} />
@@ -135,11 +159,13 @@ function App() {
           <Route path="/chat" element={<ChatInterface />} />
           <Route path="/aria" element={<AskAriaChat />} />
           <Route path="/ask-aria" element={<AskAriaChat />} />
+          <Route path="/ask-aria/classify" element={<DocumentClassification />} />
+          <Route path="/document-classification" element={<DocumentClassification />} />
           
           {/* Admin */}
           <Route path="/admin/system" element={<SystemSettings />} />
           <Route path="/admin/company" element={<CompanySettings />} />
-          <Route path="/admin/bots" element={<BotConfiguration />} />
+          <Route path="/admin/agents" element={<BotConfiguration />} />
           <Route path="/admin/users" element={<UserManagement />} />
           <Route path="/admin/data-import" element={<DataImport />} />
           <Route path="/admin/dashboard" element={<RoleDashboard />} />

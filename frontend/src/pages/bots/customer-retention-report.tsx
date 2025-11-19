@@ -1,5 +1,5 @@
 /**
- * Customer Retention Bot - Report Page
+ * Customer Retention Agent - Report Page
  * Generated: 2025-10-26 14:16:23
  */
 
@@ -42,12 +42,12 @@ export default function CustomerRetentionReport() {
   const loadData = async () => {
     try {
       // Load statistics
-      const statsResponse = await fetch('/api/bots/customer_retention/statistics');
+      const statsResponse = await fetch('/api/agents/customer_retention/statistics');
       const statsData = await statsResponse.json();
       setStats(statsData);
       
       // Load activities
-      const activitiesResponse = await fetch('/api/bots/customer_retention/activities');
+      const activitiesResponse = await fetch('/api/agents/customer_retention/activities');
       const activitiesData = await activitiesResponse.json();
       setActivities(activitiesData);
     } catch (error) {
@@ -66,7 +66,7 @@ export default function CustomerRetentionReport() {
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h4" gutterBottom>
-        Customer Retention Bot - Report
+        Customer Retention Agent - Report
       </Typography>
 
       <Grid container spacing={3} sx={{ mb: 3 }}>

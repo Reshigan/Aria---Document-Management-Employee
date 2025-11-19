@@ -1,5 +1,5 @@
 /**
- * Quality Control Bot - Report Page
+ * Quality Control Agent - Report Page
  * Generated: 2025-10-26 14:16:23
  */
 
@@ -42,12 +42,12 @@ export default function QualityControlReport() {
   const loadData = async () => {
     try {
       // Load statistics
-      const statsResponse = await fetch('/api/bots/quality_control/statistics');
+      const statsResponse = await fetch('/api/agents/quality_control/statistics');
       const statsData = await statsResponse.json();
       setStats(statsData);
       
       // Load activities
-      const activitiesResponse = await fetch('/api/bots/quality_control/activities');
+      const activitiesResponse = await fetch('/api/agents/quality_control/activities');
       const activitiesData = await activitiesResponse.json();
       setActivities(activitiesData);
     } catch (error) {
@@ -66,7 +66,7 @@ export default function QualityControlReport() {
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h4" gutterBottom>
-        Quality Control Bot - Report
+        Quality Control Agent - Report
       </Typography>
 
       <Grid container spacing={3} sx={{ mb: 3 }}>

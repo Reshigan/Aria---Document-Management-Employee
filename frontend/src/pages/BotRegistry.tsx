@@ -35,7 +35,7 @@ import {
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 
-interface Bot {
+interface Agent {
   id: string;
   name: string;
   category: string;
@@ -53,11 +53,11 @@ interface Bot {
   reportPath?: string;
 }
 
-const botRegistry: Bot[] = [
-  // Financial Management (11 bots)
+const botRegistry: Agent[] = [
+  // Financial Management (11 agents)
   {
     id: 'accounts_payable',
-    name: 'Accounts Payable Bot',
+    name: 'Accounts Payable Agent',
     category: 'Financial',
     status: 'active',
     description: 'Automates AP processing, invoice validation, and approval workflows',
@@ -65,12 +65,12 @@ const botRegistry: Bot[] = [
     metrics: { processed: 1250, successRate: 98.5, avgTime: '2.3s' },
     hasConfig: true,
     hasReport: true,
-    configPath: '/bots/accounts-payable/config',
-    reportPath: '/bots/accounts-payable/report',
+    configPath: '/agents/accounts-payable/config',
+    reportPath: '/agents/accounts-payable/report',
   },
   {
     id: 'ar_collections',
-    name: 'AR Collections Bot',
+    name: 'AR Collections Agent',
     category: 'Financial',
     status: 'active',
     description: 'Manages receivables, collections, and payment reminders',
@@ -78,12 +78,12 @@ const botRegistry: Bot[] = [
     metrics: { processed: 890, successRate: 97.2, avgTime: '1.8s' },
     hasConfig: true,
     hasReport: true,
-    configPath: '/bots/ar-collections/config',
-    reportPath: '/bots/ar-collections/report',
+    configPath: '/agents/ar-collections/config',
+    reportPath: '/agents/ar-collections/report',
   },
   {
     id: 'bank_reconciliation',
-    name: 'Bank Reconciliation Bot',
+    name: 'Bank Reconciliation Agent',
     category: 'Financial',
     status: 'active',
     description: 'Automatic bank statement reconciliation and matching',
@@ -91,12 +91,12 @@ const botRegistry: Bot[] = [
     metrics: { processed: 560, successRate: 99.1, avgTime: '3.1s' },
     hasConfig: true,
     hasReport: true,
-    configPath: '/bots/bank-reconciliation/config',
-    reportPath: '/bots/bank-reconciliation/report',
+    configPath: '/agents/bank-reconciliation/config',
+    reportPath: '/agents/bank-reconciliation/report',
   },
   {
     id: 'expense_management',
-    name: 'Expense Management Bot',
+    name: 'Expense Management Agent',
     category: 'Financial',
     status: 'active',
     description: 'Employee expense processing, approval, and reimbursement',
@@ -104,12 +104,12 @@ const botRegistry: Bot[] = [
     metrics: { processed: 2100, successRate: 96.8, avgTime: '1.5s' },
     hasConfig: true,
     hasReport: true,
-    configPath: '/bots/expense-management/config',
-    reportPath: '/bots/expense-management/report',
+    configPath: '/agents/expense-management/config',
+    reportPath: '/agents/expense-management/report',
   },
   {
     id: 'financial_close',
-    name: 'Financial Close Bot',
+    name: 'Financial Close Agent',
     category: 'Financial',
     status: 'active',
     description: 'Period-end close automation and reconciliation',
@@ -117,12 +117,12 @@ const botRegistry: Bot[] = [
     metrics: { processed: 120, successRate: 99.5, avgTime: '45s' },
     hasConfig: true,
     hasReport: true,
-    configPath: '/bots/financial-close/config',
-    reportPath: '/bots/financial-close/report',
+    configPath: '/agents/financial-close/config',
+    reportPath: '/agents/financial-close/report',
   },
   {
     id: 'financial_reporting',
-    name: 'Financial Reporting Bot',
+    name: 'Financial Reporting Agent',
     category: 'Financial',
     status: 'active',
     description: 'Automated financial report generation and distribution',
@@ -130,12 +130,12 @@ const botRegistry: Bot[] = [
     metrics: { processed: 450, successRate: 98.9, avgTime: '5.2s' },
     hasConfig: true,
     hasReport: true,
-    configPath: '/bots/financial-reporting/config',
-    reportPath: '/bots/financial-reporting/report',
+    configPath: '/agents/financial-reporting/config',
+    reportPath: '/agents/financial-reporting/report',
   },
   {
     id: 'general_ledger',
-    name: 'General Ledger Bot',
+    name: 'General Ledger Agent',
     category: 'Financial',
     status: 'active',
     description: 'GL posting, journal entries, and account management',
@@ -143,12 +143,12 @@ const botRegistry: Bot[] = [
     metrics: { processed: 3200, successRate: 99.2, avgTime: '0.9s' },
     hasConfig: true,
     hasReport: true,
-    configPath: '/bots/general-ledger/config',
-    reportPath: '/bots/general-ledger/report',
+    configPath: '/agents/general-ledger/config',
+    reportPath: '/agents/general-ledger/report',
   },
   {
     id: 'invoice_reconciliation',
-    name: 'Invoice Reconciliation Bot',
+    name: 'Invoice Reconciliation Agent',
     category: 'Financial',
     status: 'active',
     description: 'Invoice matching, reconciliation, and discrepancy resolution',
@@ -156,12 +156,12 @@ const botRegistry: Bot[] = [
     metrics: { processed: 1800, successRate: 97.5, avgTime: '2.7s' },
     hasConfig: true,
     hasReport: true,
-    configPath: '/bots/invoice-reconciliation/config',
-    reportPath: '/bots/invoice-reconciliation/report',
+    configPath: '/agents/invoice-reconciliation/config',
+    reportPath: '/agents/invoice-reconciliation/report',
   },
   {
     id: 'payment_processing',
-    name: 'Payment Processing Bot',
+    name: 'Payment Processing Agent',
     category: 'Financial',
     status: 'active',
     description: 'Automated payment processing and batch runs',
@@ -169,12 +169,12 @@ const botRegistry: Bot[] = [
     metrics: { processed: 2500, successRate: 99.7, avgTime: '1.2s' },
     hasConfig: true,
     hasReport: true,
-    configPath: '/bots/payment-processing/config',
-    reportPath: '/bots/payment-processing/report',
+    configPath: '/agents/payment-processing/config',
+    reportPath: '/agents/payment-processing/report',
   },
   {
     id: 'tax_compliance',
-    name: 'Tax Compliance Bot',
+    name: 'Tax Compliance Agent',
     category: 'Financial',
     status: 'active',
     description: 'SA tax compliance (VAT, PAYE, UIF)',
@@ -182,12 +182,12 @@ const botRegistry: Bot[] = [
     metrics: { processed: 680, successRate: 99.8, avgTime: '3.5s' },
     hasConfig: true,
     hasReport: true,
-    configPath: '/bots/tax-compliance/config',
-    reportPath: '/bots/tax-compliance/report',
+    configPath: '/agents/tax-compliance/config',
+    reportPath: '/agents/tax-compliance/report',
   },
   {
     id: 'bbbee_compliance',
-    name: 'BEE Compliance Bot',
+    name: 'BEE Compliance Agent',
     category: 'Financial',
     status: 'active',
     description: 'B-BBEE scorecard tracking and reporting',
@@ -195,14 +195,14 @@ const botRegistry: Bot[] = [
     metrics: { processed: 95, successRate: 98.9, avgTime: '8.2s' },
     hasConfig: true,
     hasReport: true,
-    configPath: '/bots/bbbee-compliance/config',
-    reportPath: '/bots/bbbee-compliance/report',
+    configPath: '/agents/bbbee-compliance/config',
+    reportPath: '/agents/bbbee-compliance/report',
   },
 
-  // Procurement & Supply Chain (10 bots)
+  // Procurement & Supply Chain (10 agents)
   {
     id: 'purchase_order',
-    name: 'Purchase Order Bot',
+    name: 'Purchase Order Agent',
     category: 'Procurement',
     status: 'active',
     description: 'PO creation, approval, and tracking',
@@ -210,12 +210,12 @@ const botRegistry: Bot[] = [
     metrics: { processed: 1450, successRate: 98.3, avgTime: '2.1s' },
     hasConfig: true,
     hasReport: true,
-    configPath: '/bots/purchase-order/config',
-    reportPath: '/bots/purchase-order/report',
+    configPath: '/agents/purchase-order/config',
+    reportPath: '/agents/purchase-order/report',
   },
   {
     id: 'supplier_management',
-    name: 'Supplier Management Bot',
+    name: 'Supplier Management Agent',
     category: 'Procurement',
     status: 'active',
     description: 'Vendor master data and relationship management',
@@ -223,12 +223,12 @@ const botRegistry: Bot[] = [
     metrics: { processed: 320, successRate: 99.1, avgTime: '1.7s' },
     hasConfig: true,
     hasReport: true,
-    configPath: '/bots/supplier-management/config',
-    reportPath: '/bots/supplier-management/report',
+    configPath: '/agents/supplier-management/config',
+    reportPath: '/agents/supplier-management/report',
   },
   {
     id: 'supplier_performance',
-    name: 'Supplier Performance Bot',
+    name: 'Supplier Performance Agent',
     category: 'Procurement',
     status: 'active',
     description: 'Supplier KPI tracking and scorecards',
@@ -236,12 +236,12 @@ const botRegistry: Bot[] = [
     metrics: { processed: 180, successRate: 97.8, avgTime: '4.3s' },
     hasConfig: true,
     hasReport: true,
-    configPath: '/bots/supplier-performance/config',
-    reportPath: '/bots/supplier-performance/report',
+    configPath: '/agents/supplier-performance/config',
+    reportPath: '/agents/supplier-performance/report',
   },
   {
     id: 'supplier_risk',
-    name: 'Supplier Risk Bot',
+    name: 'Supplier Risk Agent',
     category: 'Procurement',
     status: 'active',
     description: 'Supply chain risk assessment and monitoring',
@@ -249,12 +249,12 @@ const botRegistry: Bot[] = [
     metrics: { processed: 145, successRate: 96.5, avgTime: '6.1s' },
     hasConfig: true,
     hasReport: true,
-    configPath: '/bots/supplier-risk/config',
-    reportPath: '/bots/supplier-risk/report',
+    configPath: '/agents/supplier-risk/config',
+    reportPath: '/agents/supplier-risk/report',
   },
   {
     id: 'rfq_management',
-    name: 'RFQ Management Bot',
+    name: 'RFQ Management Agent',
     category: 'Procurement',
     status: 'active',
     description: 'RFQ/RFP creation, distribution, and evaluation',
@@ -262,12 +262,12 @@ const botRegistry: Bot[] = [
     metrics: { processed: 280, successRate: 98.7, avgTime: '3.2s' },
     hasConfig: true,
     hasReport: true,
-    configPath: '/bots/rfq-management/config',
-    reportPath: '/bots/rfq-management/report',
+    configPath: '/agents/rfq-management/config',
+    reportPath: '/agents/rfq-management/report',
   },
   {
     id: 'procurement_analytics',
-    name: 'Procurement Analytics Bot',
+    name: 'Procurement Analytics Agent',
     category: 'Procurement',
     status: 'active',
     description: 'Procurement insights and analytics',
@@ -275,12 +275,12 @@ const botRegistry: Bot[] = [
     metrics: { processed: 520, successRate: 99.2, avgTime: '2.8s' },
     hasConfig: true,
     hasReport: true,
-    configPath: '/bots/procurement-analytics/config',
-    reportPath: '/bots/procurement-analytics/report',
+    configPath: '/agents/procurement-analytics/config',
+    reportPath: '/agents/procurement-analytics/report',
   },
   {
     id: 'spend_analysis',
-    name: 'Spend Analysis Bot',
+    name: 'Spend Analysis Agent',
     category: 'Procurement',
     status: 'active',
     description: 'Spend visibility and category analysis',
@@ -288,12 +288,12 @@ const botRegistry: Bot[] = [
     metrics: { processed: 890, successRate: 98.1, avgTime: '3.7s' },
     hasConfig: true,
     hasReport: true,
-    configPath: '/bots/spend-analysis/config',
-    reportPath: '/bots/spend-analysis/report',
+    configPath: '/agents/spend-analysis/config',
+    reportPath: '/agents/spend-analysis/report',
   },
   {
     id: 'source_to_pay',
-    name: 'Source-to-Pay Bot',
+    name: 'Source-to-Pay Agent',
     category: 'Procurement',
     status: 'active',
     description: 'End-to-end S2P process automation',
@@ -301,12 +301,12 @@ const botRegistry: Bot[] = [
     metrics: { processed: 1200, successRate: 97.9, avgTime: '4.5s' },
     hasConfig: true,
     hasReport: true,
-    configPath: '/bots/source-to-pay/config',
-    reportPath: '/bots/source-to-pay/report',
+    configPath: '/agents/source-to-pay/config',
+    reportPath: '/agents/source-to-pay/report',
   },
   {
     id: 'goods_receipt',
-    name: 'Goods Receipt Bot',
+    name: 'Goods Receipt Agent',
     category: 'Procurement',
     status: 'active',
     description: 'Goods receipt processing and matching',
@@ -314,12 +314,12 @@ const botRegistry: Bot[] = [
     metrics: { processed: 1650, successRate: 99.4, avgTime: '1.8s' },
     hasConfig: true,
     hasReport: true,
-    configPath: '/bots/goods-receipt/config',
-    reportPath: '/bots/goods-receipt/report',
+    configPath: '/agents/goods-receipt/config',
+    reportPath: '/agents/goods-receipt/report',
   },
   {
     id: 'inventory_optimization',
-    name: 'Inventory Optimization Bot',
+    name: 'Inventory Optimization Agent',
     category: 'Procurement',
     status: 'active',
     description: 'Inventory level optimization and reorder points',
@@ -327,14 +327,14 @@ const botRegistry: Bot[] = [
     metrics: { processed: 780, successRate: 98.6, avgTime: '2.9s' },
     hasConfig: true,
     hasReport: true,
-    configPath: '/bots/inventory-optimization/config',
-    reportPath: '/bots/inventory-optimization/report',
+    configPath: '/agents/inventory-optimization/config',
+    reportPath: '/agents/inventory-optimization/report',
   },
 
-  // Manufacturing & Operations (11 bots)
+  // Manufacturing & Operations (11 agents)
   {
     id: 'production_scheduling',
-    name: 'Production Scheduling Bot',
+    name: 'Production Scheduling Agent',
     category: 'Manufacturing',
     status: 'active',
     description: 'Production planning and schedule optimization',
@@ -342,12 +342,12 @@ const botRegistry: Bot[] = [
     metrics: { processed: 450, successRate: 97.8, avgTime: '5.2s' },
     hasConfig: true,
     hasReport: true,
-    configPath: '/bots/production-scheduling/config',
-    reportPath: '/bots/production-scheduling/report',
+    configPath: '/agents/production-scheduling/config',
+    reportPath: '/agents/production-scheduling/report',
   },
   {
     id: 'production_reporting',
-    name: 'Production Reporting Bot',
+    name: 'Production Reporting Agent',
     category: 'Manufacturing',
     status: 'active',
     description: 'Shop floor reporting and production metrics',
@@ -355,12 +355,12 @@ const botRegistry: Bot[] = [
     metrics: { processed: 1200, successRate: 99.1, avgTime: '1.9s' },
     hasConfig: true,
     hasReport: true,
-    configPath: '/bots/production-reporting/config',
-    reportPath: '/bots/production-reporting/report',
+    configPath: '/agents/production-reporting/config',
+    reportPath: '/agents/production-reporting/report',
   },
   {
     id: 'work_order',
-    name: 'Work Order Bot',
+    name: 'Work Order Agent',
     category: 'Manufacturing',
     status: 'active',
     description: 'Work order creation, tracking, and completion',
@@ -368,12 +368,12 @@ const botRegistry: Bot[] = [
     metrics: { processed: 980, successRate: 98.5, avgTime: '2.4s' },
     hasConfig: true,
     hasReport: true,
-    configPath: '/bots/work-order/config',
-    reportPath: '/bots/work-order/report',
+    configPath: '/agents/work-order/config',
+    reportPath: '/agents/work-order/report',
   },
   {
     id: 'quality_control',
-    name: 'Quality Control Bot',
+    name: 'Quality Control Agent',
     category: 'Manufacturing',
     status: 'active',
     description: 'QC inspection automation and defect tracking',
@@ -381,12 +381,12 @@ const botRegistry: Bot[] = [
     metrics: { processed: 2100, successRate: 99.7, avgTime: '1.3s' },
     hasConfig: true,
     hasReport: true,
-    configPath: '/bots/quality-control/config',
-    reportPath: '/bots/quality-control/report',
+    configPath: '/agents/quality-control/config',
+    reportPath: '/agents/quality-control/report',
   },
   {
     id: 'downtime_tracking',
-    name: 'Downtime Tracking Bot',
+    name: 'Downtime Tracking Agent',
     category: 'Manufacturing',
     status: 'active',
     description: 'Equipment downtime tracking and analysis',
@@ -394,12 +394,12 @@ const botRegistry: Bot[] = [
     metrics: { processed: 540, successRate: 98.9, avgTime: '2.1s' },
     hasConfig: true,
     hasReport: true,
-    configPath: '/bots/downtime-tracking/config',
-    reportPath: '/bots/downtime-tracking/report',
+    configPath: '/agents/downtime-tracking/config',
+    reportPath: '/agents/downtime-tracking/report',
   },
   {
     id: 'machine_monitoring',
-    name: 'Machine Monitoring Bot',
+    name: 'Machine Monitoring Agent',
     category: 'Manufacturing',
     status: 'active',
     description: 'Real-time machine monitoring and alerts',
@@ -407,12 +407,12 @@ const botRegistry: Bot[] = [
     metrics: { processed: 8500, successRate: 99.5, avgTime: '0.3s' },
     hasConfig: true,
     hasReport: true,
-    configPath: '/bots/machine-monitoring/config',
-    reportPath: '/bots/machine-monitoring/report',
+    configPath: '/agents/machine-monitoring/config',
+    reportPath: '/agents/machine-monitoring/report',
   },
   {
     id: 'oee_calculation',
-    name: 'OEE Calculation Bot',
+    name: 'OEE Calculation Agent',
     category: 'Manufacturing',
     status: 'active',
     description: 'Overall Equipment Effectiveness calculation',
@@ -420,12 +420,12 @@ const botRegistry: Bot[] = [
     metrics: { processed: 720, successRate: 99.2, avgTime: '2.7s' },
     hasConfig: true,
     hasReport: true,
-    configPath: '/bots/oee-calculation/config',
-    reportPath: '/bots/oee-calculation/report',
+    configPath: '/agents/oee-calculation/config',
+    reportPath: '/agents/oee-calculation/report',
   },
   {
     id: 'mes_integration',
-    name: 'MES Integration Bot',
+    name: 'MES Integration Agent',
     category: 'Manufacturing',
     status: 'active',
     description: 'Manufacturing Execution System integration',
@@ -433,12 +433,12 @@ const botRegistry: Bot[] = [
     metrics: { processed: 3200, successRate: 98.7, avgTime: '1.8s' },
     hasConfig: true,
     hasReport: true,
-    configPath: '/bots/mes-integration/config',
-    reportPath: '/bots/mes-integration/report',
+    configPath: '/agents/mes-integration/config',
+    reportPath: '/agents/mes-integration/report',
   },
   {
     id: 'tool_management',
-    name: 'Tool Management Bot',
+    name: 'Tool Management Agent',
     category: 'Manufacturing',
     status: 'active',
     description: 'Tool lifecycle and inventory management',
@@ -446,12 +446,12 @@ const botRegistry: Bot[] = [
     metrics: { processed: 450, successRate: 97.6, avgTime: '2.3s' },
     hasConfig: true,
     hasReport: true,
-    configPath: '/bots/tool-management/config',
-    reportPath: '/bots/tool-management/report',
+    configPath: '/agents/tool-management/config',
+    reportPath: '/agents/tool-management/report',
   },
   {
     id: 'scrap_management',
-    name: 'Scrap Management Bot',
+    name: 'Scrap Management Agent',
     category: 'Manufacturing',
     status: 'active',
     description: 'Scrap tracking, analysis, and reduction',
@@ -459,12 +459,12 @@ const botRegistry: Bot[] = [
     metrics: { processed: 890, successRate: 98.4, avgTime: '2.0s' },
     hasConfig: true,
     hasReport: true,
-    configPath: '/bots/scrap-management/config',
-    reportPath: '/bots/scrap-management/report',
+    configPath: '/agents/scrap-management/config',
+    reportPath: '/agents/scrap-management/report',
   },
   {
     id: 'operator_instructions',
-    name: 'Operator Instructions Bot',
+    name: 'Operator Instructions Agent',
     category: 'Manufacturing',
     status: 'active',
     description: 'Work instruction delivery to operators',
@@ -472,14 +472,14 @@ const botRegistry: Bot[] = [
     metrics: { processed: 1500, successRate: 99.3, avgTime: '0.8s' },
     hasConfig: true,
     hasReport: true,
-    configPath: '/bots/operator-instructions/config',
-    reportPath: '/bots/operator-instructions/report',
+    configPath: '/agents/operator-instructions/config',
+    reportPath: '/agents/operator-instructions/report',
   },
 
-  // Sales & CRM (6 bots)
+  // Sales & CRM (6 agents)
   {
     id: 'sales_order',
-    name: 'Sales Order Bot',
+    name: 'Sales Order Agent',
     category: 'Sales',
     status: 'active',
     description: 'Sales order processing and fulfillment',
@@ -487,12 +487,12 @@ const botRegistry: Bot[] = [
     metrics: { processed: 2800, successRate: 99.1, avgTime: '1.7s' },
     hasConfig: true,
     hasReport: true,
-    configPath: '/bots/sales-order/config',
-    reportPath: '/bots/sales-order/report',
+    configPath: '/agents/sales-order/config',
+    reportPath: '/agents/sales-order/report',
   },
   {
     id: 'quote_generation',
-    name: 'Quote Generation Bot',
+    name: 'Quote Generation Agent',
     category: 'Sales',
     status: 'active',
     description: 'Automated quote and proposal generation',
@@ -500,12 +500,12 @@ const botRegistry: Bot[] = [
     metrics: { processed: 1200, successRate: 98.5, avgTime: '3.1s' },
     hasConfig: true,
     hasReport: true,
-    configPath: '/bots/quote-generation/config',
-    reportPath: '/bots/quote-generation/report',
+    configPath: '/agents/quote-generation/config',
+    reportPath: '/agents/quote-generation/report',
   },
   {
     id: 'lead_management',
-    name: 'Lead Management Bot',
+    name: 'Lead Management Agent',
     category: 'Sales',
     status: 'active',
     description: 'Lead tracking, nurturing, and conversion',
@@ -513,12 +513,12 @@ const botRegistry: Bot[] = [
     metrics: { processed: 3500, successRate: 97.8, avgTime: '1.2s' },
     hasConfig: true,
     hasReport: true,
-    configPath: '/bots/lead-management/config',
-    reportPath: '/bots/lead-management/report',
+    configPath: '/agents/lead-management/config',
+    reportPath: '/agents/lead-management/report',
   },
   {
     id: 'lead_qualification',
-    name: 'Lead Qualification Bot',
+    name: 'Lead Qualification Agent',
     category: 'Sales',
     status: 'active',
     description: 'Lead scoring and qualification automation',
@@ -526,12 +526,12 @@ const botRegistry: Bot[] = [
     metrics: { processed: 2900, successRate: 96.9, avgTime: '2.3s' },
     hasConfig: true,
     hasReport: true,
-    configPath: '/bots/lead-qualification/config',
-    reportPath: '/bots/lead-qualification/report',
+    configPath: '/agents/lead-qualification/config',
+    reportPath: '/agents/lead-qualification/report',
   },
   {
     id: 'opportunity_management',
-    name: 'Opportunity Management Bot',
+    name: 'Opportunity Management Agent',
     category: 'Sales',
     status: 'active',
     description: 'Opportunity pipeline and deal management',
@@ -539,12 +539,12 @@ const botRegistry: Bot[] = [
     metrics: { processed: 1800, successRate: 98.2, avgTime: '2.1s' },
     hasConfig: true,
     hasReport: true,
-    configPath: '/bots/opportunity-management/config',
-    reportPath: '/bots/opportunity-management/report',
+    configPath: '/agents/opportunity-management/config',
+    reportPath: '/agents/opportunity-management/report',
   },
   {
     id: 'sales_analytics',
-    name: 'Sales Analytics Bot',
+    name: 'Sales Analytics Agent',
     category: 'Sales',
     status: 'active',
     description: 'Sales performance analytics and forecasting',
@@ -552,14 +552,14 @@ const botRegistry: Bot[] = [
     metrics: { processed: 950, successRate: 99.4, avgTime: '3.5s' },
     hasConfig: true,
     hasReport: true,
-    configPath: '/bots/sales-analytics/config',
-    reportPath: '/bots/sales-analytics/report',
+    configPath: '/agents/sales-analytics/config',
+    reportPath: '/agents/sales-analytics/report',
   },
 
-  // HR & Payroll (8 bots)
+  // HR & Payroll (8 agents)
   {
     id: 'time_attendance',
-    name: 'Time & Attendance Bot',
+    name: 'Time & Attendance Agent',
     category: 'HR',
     status: 'active',
     description: 'Time tracking and attendance management',
@@ -567,12 +567,12 @@ const botRegistry: Bot[] = [
     metrics: { processed: 4200, successRate: 99.6, avgTime: '0.7s' },
     hasConfig: true,
     hasReport: true,
-    configPath: '/bots/time-attendance/config',
-    reportPath: '/bots/time-attendance/report',
+    configPath: '/agents/time-attendance/config',
+    reportPath: '/agents/time-attendance/report',
   },
   {
     id: 'payroll_sa',
-    name: 'Payroll (SA) Bot',
+    name: 'Payroll (SA) Agent',
     category: 'HR',
     status: 'active',
     description: 'South African payroll processing',
@@ -580,12 +580,12 @@ const botRegistry: Bot[] = [
     metrics: { processed: 850, successRate: 99.9, avgTime: '4.2s' },
     hasConfig: true,
     hasReport: true,
-    configPath: '/bots/payroll-sa/config',
-    reportPath: '/bots/payroll-sa/report',
+    configPath: '/agents/payroll-sa/config',
+    reportPath: '/agents/payroll-sa/report',
   },
   {
     id: 'benefits_administration',
-    name: 'Benefits Administration Bot',
+    name: 'Benefits Administration Agent',
     category: 'HR',
     status: 'active',
     description: 'Employee benefits management',
@@ -593,12 +593,12 @@ const botRegistry: Bot[] = [
     metrics: { processed: 320, successRate: 98.7, avgTime: '2.8s' },
     hasConfig: true,
     hasReport: true,
-    configPath: '/bots/benefits-administration/config',
-    reportPath: '/bots/benefits-administration/report',
+    configPath: '/agents/benefits-administration/config',
+    reportPath: '/agents/benefits-administration/report',
   },
   {
     id: 'recruitment',
-    name: 'Recruitment Bot',
+    name: 'Recruitment Agent',
     category: 'HR',
     status: 'active',
     description: 'Recruitment workflow automation',
@@ -606,12 +606,12 @@ const botRegistry: Bot[] = [
     metrics: { processed: 450, successRate: 97.5, avgTime: '3.5s' },
     hasConfig: true,
     hasReport: true,
-    configPath: '/bots/recruitment/config',
-    reportPath: '/bots/recruitment/report',
+    configPath: '/agents/recruitment/config',
+    reportPath: '/agents/recruitment/report',
   },
   {
     id: 'onboarding',
-    name: 'Onboarding Bot',
+    name: 'Onboarding Agent',
     category: 'HR',
     status: 'active',
     description: 'Employee onboarding automation',
@@ -619,12 +619,12 @@ const botRegistry: Bot[] = [
     metrics: { processed: 280, successRate: 98.9, avgTime: '5.1s' },
     hasConfig: true,
     hasReport: true,
-    configPath: '/bots/onboarding/config',
-    reportPath: '/bots/onboarding/report',
+    configPath: '/agents/onboarding/config',
+    reportPath: '/agents/onboarding/report',
   },
   {
     id: 'performance_management',
-    name: 'Performance Management Bot',
+    name: 'Performance Management Agent',
     category: 'HR',
     status: 'active',
     description: 'Performance review and goal management',
@@ -632,12 +632,12 @@ const botRegistry: Bot[] = [
     metrics: { processed: 560, successRate: 97.8, avgTime: '4.3s' },
     hasConfig: true,
     hasReport: true,
-    configPath: '/bots/performance-management/config',
-    reportPath: '/bots/performance-management/report',
+    configPath: '/agents/performance-management/config',
+    reportPath: '/agents/performance-management/report',
   },
   {
     id: 'learning_development',
-    name: 'Learning & Development Bot',
+    name: 'Learning & Development Agent',
     category: 'HR',
     status: 'active',
     description: 'Training and L&D tracking',
@@ -645,12 +645,12 @@ const botRegistry: Bot[] = [
     metrics: { processed: 720, successRate: 98.4, avgTime: '2.5s' },
     hasConfig: true,
     hasReport: true,
-    configPath: '/bots/learning-development/config',
-    reportPath: '/bots/learning-development/report',
+    configPath: '/agents/learning-development/config',
+    reportPath: '/agents/learning-development/report',
   },
   {
     id: 'employee_self_service',
-    name: 'Employee Self-Service Bot',
+    name: 'Employee Self-Service Agent',
     category: 'HR',
     status: 'active',
     description: 'ESS portal automation',
@@ -658,14 +658,14 @@ const botRegistry: Bot[] = [
     metrics: { processed: 2100, successRate: 99.2, avgTime: '1.4s' },
     hasConfig: true,
     hasReport: true,
-    configPath: '/bots/employee-self-service/config',
-    reportPath: '/bots/employee-self-service/report',
+    configPath: '/agents/employee-self-service/config',
+    reportPath: '/agents/employee-self-service/report',
   },
 
-  // Document Management (7 bots)
+  // Document Management (7 agents)
   {
     id: 'document_classification',
-    name: 'Document Classification Bot',
+    name: 'Document Classification Agent',
     category: 'Documents',
     status: 'active',
     description: 'Automatic document classification and tagging',
@@ -673,12 +673,12 @@ const botRegistry: Bot[] = [
     metrics: { processed: 5600, successRate: 98.7, avgTime: '1.2s' },
     hasConfig: true,
     hasReport: true,
-    configPath: '/bots/document-classification/config',
-    reportPath: '/bots/document-classification/report',
+    configPath: '/agents/document-classification/config',
+    reportPath: '/agents/document-classification/report',
   },
   {
     id: 'document_scanner',
-    name: 'Document Scanner Bot',
+    name: 'Document Scanner Agent',
     category: 'Documents',
     status: 'active',
     description: 'OCR and document scanning',
@@ -686,12 +686,12 @@ const botRegistry: Bot[] = [
     metrics: { processed: 3200, successRate: 97.9, avgTime: '2.8s' },
     hasConfig: true,
     hasReport: true,
-    configPath: '/bots/document-scanner/config',
-    reportPath: '/bots/document-scanner/report',
+    configPath: '/agents/document-scanner/config',
+    reportPath: '/agents/document-scanner/report',
   },
   {
     id: 'data_extraction',
-    name: 'Data Extraction Bot',
+    name: 'Data Extraction Agent',
     category: 'Documents',
     status: 'active',
     description: 'Extract structured data from documents',
@@ -699,12 +699,12 @@ const botRegistry: Bot[] = [
     metrics: { processed: 4800, successRate: 98.2, avgTime: '2.1s' },
     hasConfig: true,
     hasReport: true,
-    configPath: '/bots/data-extraction/config',
-    reportPath: '/bots/data-extraction/report',
+    configPath: '/agents/data-extraction/config',
+    reportPath: '/agents/data-extraction/report',
   },
   {
     id: 'data_validation',
-    name: 'Data Validation Bot',
+    name: 'Data Validation Agent',
     category: 'Documents',
     status: 'active',
     description: 'Data quality and validation checks',
@@ -712,12 +712,12 @@ const botRegistry: Bot[] = [
     metrics: { processed: 6200, successRate: 99.1, avgTime: '0.8s' },
     hasConfig: true,
     hasReport: true,
-    configPath: '/bots/data-validation/config',
-    reportPath: '/bots/data-validation/report',
+    configPath: '/agents/data-validation/config',
+    reportPath: '/agents/data-validation/report',
   },
   {
     id: 'archive_management',
-    name: 'Archive Management Bot',
+    name: 'Archive Management Agent',
     category: 'Documents',
     status: 'active',
     description: 'Document archival and retention',
@@ -725,12 +725,12 @@ const botRegistry: Bot[] = [
     metrics: { processed: 1200, successRate: 99.8, avgTime: '3.5s' },
     hasConfig: true,
     hasReport: true,
-    configPath: '/bots/archive-management/config',
-    reportPath: '/bots/archive-management/report',
+    configPath: '/agents/archive-management/config',
+    reportPath: '/agents/archive-management/report',
   },
   {
     id: 'email_processing',
-    name: 'Email Processing Bot',
+    name: 'Email Processing Agent',
     category: 'Documents',
     status: 'active',
     description: 'Email parsing, classification, and routing',
@@ -738,12 +738,12 @@ const botRegistry: Bot[] = [
     metrics: { processed: 8900, successRate: 97.8, avgTime: '1.5s' },
     hasConfig: true,
     hasReport: true,
-    configPath: '/bots/email-processing/config',
-    reportPath: '/bots/email-processing/report',
+    configPath: '/agents/email-processing/config',
+    reportPath: '/agents/email-processing/report',
   },
   {
     id: 'category_management',
-    name: 'Category Management Bot',
+    name: 'Category Management Agent',
     category: 'Documents',
     status: 'active',
     description: 'Category and taxonomy management',
@@ -751,14 +751,14 @@ const botRegistry: Bot[] = [
     metrics: { processed: 450, successRate: 98.5, avgTime: '2.0s' },
     hasConfig: true,
     hasReport: true,
-    configPath: '/bots/category-management/config',
-    reportPath: '/bots/category-management/report',
+    configPath: '/agents/category-management/config',
+    reportPath: '/agents/category-management/report',
   },
 
-  // Governance & Compliance (5 bots)
+  // Governance & Compliance (5 agents)
   {
     id: 'contract_management',
-    name: 'Contract Management Bot',
+    name: 'Contract Management Agent',
     category: 'Governance',
     status: 'active',
     description: 'Contract lifecycle management',
@@ -766,12 +766,12 @@ const botRegistry: Bot[] = [
     metrics: { processed: 320, successRate: 99.1, avgTime: '4.5s' },
     hasConfig: true,
     hasReport: true,
-    configPath: '/bots/contract-management/config',
-    reportPath: '/bots/contract-management/report',
+    configPath: '/agents/contract-management/config',
+    reportPath: '/agents/contract-management/report',
   },
   {
     id: 'policy_management',
-    name: 'Policy Management Bot',
+    name: 'Policy Management Agent',
     category: 'Governance',
     status: 'active',
     description: 'Policy version control and distribution',
@@ -779,12 +779,12 @@ const botRegistry: Bot[] = [
     metrics: { processed: 180, successRate: 98.9, avgTime: '3.2s' },
     hasConfig: true,
     hasReport: true,
-    configPath: '/bots/policy-management/config',
-    reportPath: '/bots/policy-management/report',
+    configPath: '/agents/policy-management/config',
+    reportPath: '/agents/policy-management/report',
   },
   {
     id: 'audit_management',
-    name: 'Audit Management Bot',
+    name: 'Audit Management Agent',
     category: 'Governance',
     status: 'active',
     description: 'Audit trail and compliance tracking',
@@ -792,12 +792,12 @@ const botRegistry: Bot[] = [
     metrics: { processed: 2100, successRate: 99.7, avgTime: '1.8s' },
     hasConfig: true,
     hasReport: true,
-    configPath: '/bots/audit-management/config',
-    reportPath: '/bots/audit-management/report',
+    configPath: '/agents/audit-management/config',
+    reportPath: '/agents/audit-management/report',
   },
   {
     id: 'risk_management',
-    name: 'Risk Management Bot',
+    name: 'Risk Management Agent',
     category: 'Governance',
     status: 'active',
     description: 'Risk assessment and mitigation tracking',
@@ -805,12 +805,12 @@ const botRegistry: Bot[] = [
     metrics: { processed: 280, successRate: 98.3, avgTime: '5.1s' },
     hasConfig: true,
     hasReport: true,
-    configPath: '/bots/risk-management/config',
-    reportPath: '/bots/risk-management/report',
+    configPath: '/agents/risk-management/config',
+    reportPath: '/agents/risk-management/report',
   },
   {
     id: 'workflow_automation',
-    name: 'Workflow Automation Bot',
+    name: 'Workflow Automation Agent',
     category: 'Governance',
     status: 'active',
     description: 'Business workflow automation engine',
@@ -818,8 +818,8 @@ const botRegistry: Bot[] = [
     metrics: { processed: 3500, successRate: 98.6, avgTime: '2.3s' },
     hasConfig: true,
     hasReport: true,
-    configPath: '/bots/workflow-automation/config',
-    reportPath: '/bots/workflow-automation/report',
+    configPath: '/agents/workflow-automation/config',
+    reportPath: '/agents/workflow-automation/report',
   },
 ];
 
@@ -829,14 +829,14 @@ const BotRegistry: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
 
-  const categories = ['All', ...Array.from(new Set(botRegistry.map(bot => bot.category)))];
+  const categories = ['All', ...Array.from(new Set(botRegistry.map(agent => agent.category)))];
 
   const filteredBots = useMemo(() => {
-    return botRegistry.filter(bot => {
-      const matchesCategory = selectedCategory === 'All' || bot.category === selectedCategory;
-      const matchesSearch = bot.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        bot.description.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesStatus = statusFilter === 'all' || bot.status === statusFilter;
+    return botRegistry.filter(agent => {
+      const matchesCategory = selectedCategory === 'All' || agent.category === selectedCategory;
+      const matchesSearch = agent.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        agent.description.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesStatus = statusFilter === 'all' || agent.status === statusFilter;
       return matchesCategory && matchesSearch && matchesStatus;
     });
   }, [selectedCategory, searchQuery, statusFilter]);
@@ -866,10 +866,10 @@ const BotRegistry: React.FC = () => {
       {/* Header */}
       <Box sx={{ mb: 4 }}>
         <Typography variant="h4" sx={{ mb: 1, fontWeight: 600 }}>
-          AI Bot Registry
+          AI Agent Registry
         </Typography>
         <Typography variant="body1" color="text.secondary">
-          Manage and monitor all 65 AI bots across your organization
+          Manage and monitor all 65 AI agents across your organization
         </Typography>
       </Box>
 
@@ -878,7 +878,7 @@ const BotRegistry: React.FC = () => {
         <Grid item xs={12} sm={6} md={3}>
           <Card>
             <CardContent>
-              <Typography color="text.secondary" variant="body2">Total Bots</Typography>
+              <Typography color="text.secondary" variant="body2">Total Agents</Typography>
               <Typography variant="h4">{botRegistry.length}</Typography>
               <Chip label="+5 this month" size="small" color="success" sx={{ mt: 1 }} />
             </CardContent>
@@ -887,7 +887,7 @@ const BotRegistry: React.FC = () => {
         <Grid item xs={12} sm={6} md={3}>
           <Card>
             <CardContent>
-              <Typography color="text.secondary" variant="body2">Active Bots</Typography>
+              <Typography color="text.secondary" variant="body2">Active Agents</Typography>
               <Typography variant="h4">{botRegistry.filter(b => b.status === 'active').length}</Typography>
               <LinearProgress variant="determinate" value={98.5} sx={{ mt: 1 }} />
             </CardContent>
@@ -920,7 +920,7 @@ const BotRegistry: React.FC = () => {
             <Grid item xs={12} md={4}>
               <TextField
                 fullWidth
-                placeholder="Search bots..."
+                placeholder="Search agents..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 InputProps={{
@@ -970,89 +970,89 @@ const BotRegistry: React.FC = () => {
         </CardContent>
       </Card>
 
-      {/* Bot Cards */}
+      {/* Agent Cards */}
       <Grid container spacing={3}>
-        {filteredBots.map((bot) => (
-          <Grid item xs={12} md={6} lg={4} key={bot.id}>
+        {filteredBots.map((agent) => (
+          <Grid item xs={12} md={6} lg={4} key={agent.id}>
             <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
               <CardContent sx={{ flexGrow: 1 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                   <Avatar sx={{ width: 48, height: 48, mr: 2, fontSize: '24px' }}>
-                    {bot.icon}
+                    {agent.icon}
                   </Avatar>
                   <Box sx={{ flexGrow: 1 }}>
                     <Typography variant="h6" sx={{ fontSize: '1rem', fontWeight: 600 }}>
-                      {bot.name}
+                      {agent.name}
                     </Typography>
                     <Chip
-                      label={bot.status}
+                      label={agent.status}
                       size="small"
-                      color={getStatusColor(bot.status) as any}
-                      icon={getStatusIcon(bot.status)}
+                      color={getStatusColor(agent.status) as any}
+                      icon={getStatusIcon(agent.status)}
                       sx={{ mt: 0.5 }}
                     />
                   </Box>
                 </Box>
 
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                  {bot.description}
+                  {agent.description}
                 </Typography>
 
                 <Box sx={{ mb: 2 }}>
                   <Grid container spacing={1}>
                     <Grid item xs={4}>
                       <Typography variant="caption" color="text.secondary">Processed</Typography>
-                      <Typography variant="body2" fontWeight={600}>{bot.metrics.processed}</Typography>
+                      <Typography variant="body2" fontWeight={600}>{agent.metrics.processed}</Typography>
                     </Grid>
                     <Grid item xs={4}>
                       <Typography variant="caption" color="text.secondary">Success</Typography>
-                      <Typography variant="body2" fontWeight={600}>{bot.metrics.successRate}%</Typography>
+                      <Typography variant="body2" fontWeight={600}>{agent.metrics.successRate}%</Typography>
                     </Grid>
                     <Grid item xs={4}>
                       <Typography variant="caption" color="text.secondary">Avg Time</Typography>
-                      <Typography variant="body2" fontWeight={600}>{bot.metrics.avgTime}</Typography>
+                      <Typography variant="body2" fontWeight={600}>{agent.metrics.avgTime}</Typography>
                     </Grid>
                   </Grid>
                 </Box>
 
                 <Box sx={{ display: 'flex', gap: 1 }}>
-                  {bot.hasConfig && (
-                    <Tooltip title="Configure Bot">
+                  {agent.hasConfig && (
+                    <Tooltip title="Configure Agent">
                       <IconButton
                         size="small"
                         color="primary"
-                        onClick={() => navigate(bot.configPath!)}
+                        onClick={() => navigate(agent.configPath!)}
                       >
                         <Settings />
                       </IconButton>
                     </Tooltip>
                   )}
-                  {bot.hasReport && (
+                  {agent.hasReport && (
                     <Tooltip title="View Report">
                       <IconButton
                         size="small"
                         color="primary"
-                        onClick={() => navigate(bot.reportPath!)}
+                        onClick={() => navigate(agent.reportPath!)}
                       >
                         <BarChart />
                       </IconButton>
                     </Tooltip>
                   )}
-                  <Tooltip title="Bot Details">
+                  <Tooltip title="Agent Details">
                     <IconButton
                       size="small"
                       color="primary"
-                      onClick={() => navigate(`/bots/${bot.id}`)}
+                      onClick={() => navigate(`/agents/${agent.id}`)}
                     >
                       <Info />
                     </IconButton>
                   </Tooltip>
-                  <Tooltip title={bot.status === 'active' ? 'Pause Bot' : 'Start Bot'}>
+                  <Tooltip title={agent.status === 'active' ? 'Pause Agent' : 'Start Agent'}>
                     <IconButton
                       size="small"
-                      color={bot.status === 'active' ? 'error' : 'success'}
+                      color={agent.status === 'active' ? 'error' : 'success'}
                     >
-                      {bot.status === 'active' ? <Pause /> : <PlayArrow />}
+                      {agent.status === 'active' ? <Pause /> : <PlayArrow />}
                     </IconButton>
                   </Tooltip>
                 </Box>
@@ -1065,7 +1065,7 @@ const BotRegistry: React.FC = () => {
       {filteredBots.length === 0 && (
         <Box sx={{ textAlign: 'center', py: 8 }}>
           <Typography variant="h6" color="text.secondary">
-            No bots found matching your criteria
+            No agents found matching your criteria
           </Typography>
           <Button
             variant="outlined"

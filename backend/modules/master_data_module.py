@@ -119,7 +119,7 @@ class SupplierResponse(BaseModel):
     company_id: UUID
     code: str
     name: str
-    supplier_type: str
+    supplier_type: Optional[str] = None  # Make optional to handle NULL values
     email: Optional[str]
     phone: Optional[str]
     vat_number: Optional[str]
@@ -264,7 +264,8 @@ async def list_suppliers(
     for row in result:
         suppliers.append(SupplierResponse(
             id=row[0], company_id=row[1], code=row[2], name=row[3],
-            supplier_type=row[4], email=row[5], phone=row[6], vat_number=row[7],
+            supplier_type=row[4] or "manufacturer",  # Default to manufacturer if NULL
+            email=row[5], phone=row[6], vat_number=row[7],
             bbbee_level=row[8], bbbee_certificate_number=row[9], bbbee_expiry_date=row[10],
             is_active=row[11], created_at=row[12]
         ))

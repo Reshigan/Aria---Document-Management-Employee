@@ -27,7 +27,7 @@ const BOT_CATEGORIES = [
 ];
 
 export default function BotsHub() {
-  const [bots, setBots] = useState<BotInfo[]>([]);
+  const [agents, setBots] = useState<BotInfo[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('All');
@@ -40,12 +40,12 @@ export default function BotsHub() {
   const loadBots = async () => {
     try {
       setLoading(true);
-      const response = await api.get('/api/bots/marketplace/');
-      setBots(response.data.bots || []);
+      const response = await api.get('/api/agents/marketplace/');
+      setBots(response.data.agents || []);
       setError(null);
     } catch (err: any) {
-      console.error('Error loading bots:', err);
-      setError('Failed to load bots');
+      console.error('Error loading agents:', err);
+      setError('Failed to load agents');
       setBots(generateMockBots());
     } finally {
       setLoading(false);
@@ -86,35 +86,35 @@ export default function BotsHub() {
   };
 
   const handleRunBot = async (botId: string) => {
-    const query = prompt('Enter your request for the bot:');
+    const query = prompt('Enter your request for the agent:');
     if (!query) return;
     
     try {
-      const response = await api.post(`/api/bots/marketplace/${botId}/execute`, {
+      const response = await api.post(`/api/agents/marketplace/${botId}/execute`, {
         query,
         context: {}
       });
-      alert(`Bot executed successfully!\n\nResponse: ${response.data.response}\n\nConfidence: ${(response.data.confidence * 100).toFixed(0)}%`);
+      alert(`Agent executed successfully!\n\nResponse: ${response.data.response}\n\nConfidence: ${(response.data.confidence * 100).toFixed(0)}%`);
       loadBots();
     } catch (err: any) {
-      console.error('Error running bot:', err);
-      const message = err.response?.data?.detail || 'Failed to run bot';
+      console.error('Error running agent:', err);
+      const message = err.response?.data?.detail || 'Failed to run agent';
       alert(message);
     }
   };
 
-  const filteredBots = bots.filter(bot => {
-    const matchesSearch = bot.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         bot.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = categoryFilter === 'All' || bot.category === categoryFilter;
+  const filteredBots = agents.filter(agent => {
+    const matchesSearch = agent.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         agent.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = categoryFilter === 'All' || agent.category === categoryFilter;
     return matchesSearch && matchesCategory;
   });
 
-  const botsByCategory = filteredBots.reduce((acc, bot) => {
-    if (!acc[bot.category]) {
-      acc[bot.category] = [];
+  const botsByCategory = filteredBots.reduce((acc, agent) => {
+    if (!acc[agent.category]) {
+      acc[agent.category] = [];
     }
-    acc[bot.category].push(bot);
+    acc[agent.category].push(agent);
     return acc;
   }, {} as Record<string, BotInfo[]>);
 
@@ -122,10 +122,10 @@ export default function BotsHub() {
     <div style={{ padding: '2rem' }}>
       <div style={{ marginBottom: '2rem' }}>
         <h1 style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          <Bot size={32} style={{ color: '#2563eb' }} />
-          Automation Bots
+          <Agent size={32} style={{ color: '#2563eb' }} />
+          Automation Agents
         </h1>
-        <p style={{ color: '#6b7280' }}>67 AI-powered automation bots to streamline your business processes</p>
+        <p style={{ color: '#6b7280' }}>67 AI-powered automation agents to streamline your business processes</p>
       </div>
 
       {/* Search and Filters */}
@@ -142,7 +142,7 @@ export default function BotsHub() {
           <Search size={20} style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: '#9ca3af' }} />
           <input
             type="text"
-            placeholder="Search bots by name or description..."
+            placeholder="Search agents by name or description..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             style={{
@@ -179,13 +179,13 @@ export default function BotsHub() {
         marginBottom: '2rem'
       }}>
         <div style={{ padding: '1.5rem', background: 'white', borderRadius: '0.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-          <div style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.5rem' }}>Total Bots</div>
-          <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#2563eb' }}>{bots.length}</div>
+          <div style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.5rem' }}>Total Agents</div>
+          <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#2563eb' }}>{agents.length}</div>
         </div>
         <div style={{ padding: '1.5rem', background: 'white', borderRadius: '0.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-          <div style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.5rem' }}>Active Bots</div>
+          <div style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.5rem' }}>Active Agents</div>
           <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#10b981' }}>
-            {bots.filter(b => b.status === 'active').length}
+            {agents.filter(b => b.status === 'active').length}
           </div>
         </div>
         <div style={{ padding: '1.5rem', background: 'white', borderRadius: '0.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
@@ -197,14 +197,14 @@ export default function BotsHub() {
         <div style={{ padding: '1.5rem', background: 'white', borderRadius: '0.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
           <div style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.5rem' }}>Avg Success Rate</div>
           <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#f59e0b' }}>
-            {Math.round(bots.reduce((sum, b) => sum + (b.success_rate || 0), 0) / bots.length)}%
+            {Math.round(agents.reduce((sum, b) => sum + (b.success_rate || 0), 0) / agents.length)}%
           </div>
         </div>
       </div>
 
-      {/* Bots by Category */}
+      {/* Agents by Category */}
       {loading ? (
-        <div style={{ textAlign: 'center', padding: '3rem' }}>Loading bots...</div>
+        <div style={{ textAlign: 'center', padding: '3rem' }}>Loading agents...</div>
       ) : Object.keys(botsByCategory).length === 0 ? (
         <div style={{ 
           textAlign: 'center', 
@@ -213,7 +213,7 @@ export default function BotsHub() {
           borderRadius: '0.5rem',
           boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
         }}>
-          <p style={{ color: '#6b7280' }}>No bots found matching your filters</p>
+          <p style={{ color: '#6b7280' }}>No agents found matching your filters</p>
         </div>
       ) : (
         Object.entries(botsByCategory).map(([category, categoryBots]) => (
@@ -244,9 +244,9 @@ export default function BotsHub() {
               gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', 
               gap: '1rem'
             }}>
-              {categoryBots.map(bot => (
+              {categoryBots.map(agent => (
                 <div 
-                  key={bot.id}
+                  key={agent.id}
                   style={{ 
                     padding: '1.5rem',
                     background: 'white',
@@ -267,35 +267,35 @@ export default function BotsHub() {
                 >
                   <div style={{ display: 'flex', alignItems: 'start', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                      <Bot size={20} style={{ color: '#2563eb' }} />
-                      <h3 style={{ fontSize: '1rem', fontWeight: '600', margin: 0 }}>{bot.name}</h3>
+                      <Agent size={20} style={{ color: '#2563eb' }} />
+                      <h3 style={{ fontSize: '1rem', fontWeight: '600', margin: 0 }}>{agent.name}</h3>
                     </div>
                     <span style={{
                       padding: '0.25rem 0.5rem',
                       borderRadius: '0.25rem',
                       fontSize: '0.75rem',
                       fontWeight: '500',
-                      background: bot.status === 'active' ? '#d1fae5' : '#fee2e2',
-                      color: bot.status === 'active' ? '#065f46' : '#991b1b'
+                      background: agent.status === 'active' ? '#d1fae5' : '#fee2e2',
+                      color: agent.status === 'active' ? '#065f46' : '#991b1b'
                     }}>
-                      {bot.status}
+                      {agent.status}
                     </span>
                   </div>
                   <p style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '1rem', lineHeight: '1.5' }}>
-                    {bot.description}
+                    {agent.description}
                   </p>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.75rem', color: '#6b7280' }}>
                       <Clock size={14} />
-                      {bot.last_run ? new Date(bot.last_run).toLocaleDateString() : 'Never run'}
+                      {agent.last_run ? new Date(agent.last_run).toLocaleDateString() : 'Never run'}
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.75rem', color: '#6b7280' }}>
                       <CheckCircle size={14} style={{ color: '#10b981' }} />
-                      {bot.success_rate?.toFixed(0)}% success
+                      {agent.success_rate?.toFixed(0)}% success
                     </div>
                   </div>
                   <button
-                    onClick={() => handleRunBot(bot.id)}
+                    onClick={() => handleRunBot(agent.id)}
                     style={{
                       width: '100%',
                       padding: '0.5rem 1rem',
@@ -313,7 +313,7 @@ export default function BotsHub() {
                     }}
                   >
                     <Play size={16} />
-                    Run Bot
+                    Run Agent
                   </button>
                 </div>
               ))}

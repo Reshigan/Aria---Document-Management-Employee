@@ -16,7 +16,8 @@ class OllamaClient:
     def __init__(self, base_url: str = "http://localhost:11434", model: str = "qwen2.5:3b-instruct"):
         self.base_url = base_url
         self.model = model
-        self.timeout = 60  # 1 minute timeout
+        self.timeout = 30  # 30 second timeout for LLM inference
+        self._warmup()
     
     def chat(
         self,
@@ -151,6 +152,15 @@ class OllamaClient:
             return response.status_code == 200
         except:
             return False
+    
+    def _warmup(self):
+        """Warmup the model on initialization to reduce first-call latency"""
+        try:
+            logger.info(f"Warming up Ollama model {self.model}...")
+            self.generate("Hello", temperature=0.1)
+            logger.info("Ollama model warmed up successfully")
+        except Exception as e:
+            logger.warning(f"Failed to warmup Ollama model: {str(e)}")
 
 
 ollama_client = OllamaClient()

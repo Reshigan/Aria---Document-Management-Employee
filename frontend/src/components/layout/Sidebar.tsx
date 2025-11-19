@@ -9,7 +9,7 @@ import {
   Wallet,
   Users,
   Package,
-  Bot,
+  Agent,
   FileText,
   Settings,
   ChevronLeft,
@@ -53,7 +53,7 @@ const navigation: NavItem[] = [
   { label: 'Manufacturing', icon: <Factory size={20} />, path: '/manufacturing', color: '#ef4444' },
   { label: 'Field Service', icon: <Wrench size={20} />, path: '/field-service', color: '#14b8a6' },
   
-  { label: 'Automation Bots', icon: <Bot size={20} />, path: '/bots', color: '#ec4899' },
+  { label: 'Automation Agents', icon: <Agent size={20} />, path: '/agents', color: '#ec4899' },
   { label: 'Reports', icon: <FileText size={20} />, path: '/reports' },
   { label: 'Admin', icon: <Shield size={20} />, path: '/admin/system', color: '#dc2626' },
   { label: 'Settings', icon: <Settings size={20} />, path: '/settings' },

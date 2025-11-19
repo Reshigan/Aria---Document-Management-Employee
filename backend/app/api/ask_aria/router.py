@@ -14,6 +14,8 @@ from ...services.ask_aria.ocr_service import OCRService
 from ...services.ask_aria.sap_mapping import SAPMappingService
 from ...services.ask_aria.template_service import TemplateService
 from ...services.ask_aria.ollama_client import ollama_client
+from ...services.ask_aria.sap_export_service import sap_export_service
+from ...services.ask_aria.document_posting_service import DocumentPostingService
 from ...services.document_classification.classifier import document_classifier
 from ...services.document_classification.template_registry import template_registry
 
@@ -36,11 +38,20 @@ DB_CONNECTION_STRING = os.getenv(
     os.getenv("DATABASE_URL", "postgresql://aria_user:AriaSecure2025!@localhost/aria_erp")
 )
 
+UPLOAD_PATH = os.getenv("UPLOAD_PATH", "/home/ubuntu/aria_uploads")
+TEMPLATE_PATH = os.getenv("TEMPLATE_PATH", "/home/ubuntu/aria_templates")
+EXPORT_PATH = os.getenv("EXPORT_PATH", "/home/ubuntu/aria_exports")
+
+os.makedirs(UPLOAD_PATH, exist_ok=True)
+os.makedirs(TEMPLATE_PATH, exist_ok=True)
+os.makedirs(EXPORT_PATH, exist_ok=True)
+
 orchestrator = AskAriaOrchestrator(DB_CONNECTION_STRING)
 conversation_manager = ConversationManager(DB_CONNECTION_STRING)
-ocr_service = OCRService(DB_CONNECTION_STRING)
+ocr_service = OCRService(DB_CONNECTION_STRING, storage_path=UPLOAD_PATH)
 sap_mapping_service = SAPMappingService(DB_CONNECTION_STRING)
-template_service = TemplateService(DB_CONNECTION_STRING)
+template_service = TemplateService(DB_CONNECTION_STRING, template_path=TEMPLATE_PATH)
+document_posting_service = DocumentPostingService(DB_CONNECTION_STRING, export_path=EXPORT_PATH)
 
 
 class StartSessionRequest(BaseModel):
@@ -514,4 +525,140 @@ async def suggest_templates_for_type(
         
     except Exception as e:
         logger.error(f"Failed to suggest templates: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/documents/{document_id}/validate")
+async def validate_document(
+    document_id: str,
+    doc_type: str,
+    header_data: Dict[str, Any],
+    line_items: List[Dict[str, Any]],
+    current_user: dict = Depends(get_current_user)
+):
+    """Validate document before posting/export"""
+    try:
+        validation = document_posting_service.validate_document(
+            document_id=document_id,
+            doc_type=doc_type,
+            header_data=header_data,
+            line_items=line_items
+        )
+        
+        return validation
+        
+    except Exception as e:
+        logger.error(f"Failed to validate document: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/documents/{document_id}/post-to-aria")
+async def post_document_to_aria(
+    document_id: str,
+    doc_type: str,
+    header_data: Dict[str, Any],
+    line_items: List[Dict[str, Any]],
+    current_user: dict = Depends(get_current_user)
+):
+    """Post document to ARIA ERP"""
+    try:
+        result = document_posting_service.post_to_aria(
+            document_id=document_id,
+            company_id=current_user["company_id"],
+            user_id=current_user["user_id"],
+            doc_type=doc_type,
+            header_data=header_data,
+            line_items=line_items
+        )
+        
+        return result
+        
+    except Exception as e:
+        logger.error(f"Failed to post to ARIA: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/documents/{document_id}/export-to-sap")
+async def export_document_to_sap(
+    document_id: str,
+    doc_type: str,
+    header_data: Dict[str, Any],
+    line_items: List[Dict[str, Any]],
+    export_format: str = "xlsx",
+    current_user: dict = Depends(get_current_user)
+):
+    """Export document to SAP template (Excel/CSV)"""
+    try:
+        result = document_posting_service.export_to_sap(
+            document_id=document_id,
+            company_id=current_user["company_id"],
+            user_id=current_user["user_id"],
+            doc_type=doc_type,
+            header_data=header_data,
+            line_items=line_items,
+            export_format=export_format
+        )
+        
+        return result
+        
+    except Exception as e:
+        logger.error(f"Failed to export to SAP: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/documents/{document_id}/download-export/{posting_id}")
+async def download_sap_export(
+    document_id: str,
+    posting_id: str,
+    current_user: dict = Depends(get_current_user)
+):
+    """Download SAP export file"""
+    try:
+        posting = document_posting_service.get_posting_status(posting_id)
+        
+        if not posting:
+            raise HTTPException(status_code=404, detail="Posting not found")
+        
+        if posting['company_id'] != current_user['company_id']:
+            raise HTTPException(status_code=403, detail="Access denied")
+        
+        file_path = posting['sap_export_file_path']
+        
+        if not os.path.exists(file_path):
+            raise HTTPException(status_code=404, detail="Export file not found")
+        
+        from fastapi.responses import FileResponse
+        
+        return FileResponse(
+            path=file_path,
+            filename=os.path.basename(file_path),
+            media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to download export: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/sap/export-templates")
+async def list_sap_export_templates(
+    module: Optional[str] = None,
+    current_user: dict = Depends(get_current_user)
+):
+    """List all available SAP export templates"""
+    try:
+        if module:
+            templates = sap_export_service.get_templates_by_module(module)
+        else:
+            templates = sap_export_service.get_all_templates()
+        
+        return {
+            "templates": templates,
+            "count": len(templates)
+        }
+        
+    except Exception as e:
+        logger.error(f"Failed to list SAP export templates: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))

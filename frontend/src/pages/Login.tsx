@@ -27,14 +27,16 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center p-4">
-      <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8">
+    <div className="min-h-screen flex items-center justify-center p-4" style={{ background: 'linear-gradient(135deg, #1a2332 0%, #0f1419 100%)' }}>
+      <div className="max-w-md w-full bg-white rounded-2xl shadow-2xl p-8">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-600 rounded-full mb-4">
-            <LogIn className="h-8 w-8 text-white" />
+          <div className="mb-4">
+            <h1 style={{ fontSize: '2.5rem', fontWeight: '700', color: '#1a2332', margin: 0 }}>ARIA</h1>
+            <p style={{ fontSize: '0.875rem', color: '#6b7280', marginTop: '0.25rem' }}>
+              by <span style={{ fontWeight: '600', color: '#1a2332' }}>Vanta<span style={{ color: '#FFB800' }}>X</span></span>
+            </p>
           </div>
-          <h1 className="text-3xl font-bold text-gray-900">Welcome to ARIA</h1>
-          <p className="text-gray-600 mt-2">AI-Native ERP for SMEs</p>
+          <p className="text-gray-600 mt-2">AI-Native ERP Platform</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
