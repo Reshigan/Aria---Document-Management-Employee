@@ -46,10 +46,10 @@ class OllamaClient:
                 "stream": stream,
                 "keep_alive": "1h",
                 "options": {
-                    "num_predict": 128,
-                    "num_ctx": 768,
-                    "temperature": 0.2,
-                    "top_k": 40,
+                    "num_predict": 64,
+                    "num_ctx": 512,
+                    "temperature": 0.1,
+                    "top_k": 20,
                     "top_p": 0.9,
                     "repeat_penalty": 1.1
                 }

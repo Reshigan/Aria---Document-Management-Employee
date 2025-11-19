@@ -70,24 +70,33 @@ async def process_document(
                 detail=f"File type not allowed. Allowed types: {', '.join(ALLOWED_EXTENSIONS)}"
             )
         
-        contents = await file.read()
-        if len(contents) > MAX_FILE_SIZE:
-            raise HTTPException(
-                status_code=400,
-                detail=f"File too large. Maximum size: {MAX_FILE_SIZE / 1024 / 1024}MB"
-            )
-        
-        file_hash = hashlib.sha256(contents).hexdigest()
-        
         company_dir = UPLOAD_DIR / str(company_id)
         company_dir.mkdir(parents=True, exist_ok=True)
         
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        safe_filename = f"{timestamp}_{file_hash[:8]}{file_ext}"
+        temp_filename = f"{timestamp}_temp{file_ext}"
+        temp_path = company_dir / temp_filename
+        
+        file_hash = hashlib.sha256()
+        file_size = 0
+        
+        with open(temp_path, "wb") as f:
+            while chunk := await file.read(8192):
+                file_size += len(chunk)
+                if file_size > MAX_FILE_SIZE:
+                    temp_path.unlink()
+                    raise HTTPException(
+                        status_code=400,
+                        detail=f"File too large. Maximum size: {MAX_FILE_SIZE / 1024 / 1024}MB"
+                    )
+                file_hash.update(chunk)
+                f.write(chunk)
+        
+        file_hash_hex = file_hash.hexdigest()
+        safe_filename = f"{timestamp}_{file_hash_hex[:8]}{file_ext}"
         file_path = company_dir / safe_filename
         
-        with open(file_path, "wb") as f:
-            f.write(contents)
+        temp_path.rename(file_path)
         
         classification_bot = DocumentClassificationBot()
         doc_classification = classification_bot.classify_document(str(file_path))
@@ -355,14 +364,14 @@ async def export_to_excel(
     """
     try:
         from openpyxl import Workbook
-        from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
+        from openpyxl.styles import Font, PatternFill, Alignment, Border, Side, NamedStyle
         from openpyxl.utils import get_column_letter
         
         header_data = json.loads(header) if isinstance(header, str) else header
         line_items = json.loads(lines) if isinstance(lines, str) else lines
         sap_data = json.loads(sap_posting) if sap_posting and isinstance(sap_posting, str) else {}
         
-        wb = Workbook()
+        wb = Workbook(write_only=False)
         
         ws_header = wb.active
         ws_header.title = "Document Header"
@@ -375,6 +384,14 @@ async def export_to_excel(
             top=Side(style='thin'),
             bottom=Side(style='thin')
         )
+        
+        if 'header_style' not in wb.named_styles:
+            header_style = NamedStyle(name="header_style")
+            header_style.font = header_font
+            header_style.fill = header_fill
+            header_style.alignment = Alignment(horizontal='center', vertical='center')
+            header_style.border = border
+            wb.add_named_style(header_style)
         
         ws_header['A1'] = 'ARIA ERP - Document Export for SAP'
         ws_header['A1'].font = Font(bold=True, size=14, color="4472C4")
@@ -463,10 +480,7 @@ async def export_to_excel(
             for col_num, header_text in enumerate(headers, 1):
                 cell = ws_lines.cell(row=1, column=col_num)
                 cell.value = header_text
-                cell.font = header_font
-                cell.fill = header_fill
-                cell.alignment = Alignment(horizontal='center', vertical='center')
-                cell.border = border
+                cell.style = 'header_style'
             
             for row_num, line in enumerate(line_items, 2):
                 ws_lines.cell(row=row_num, column=1, value=row_num - 1).border = border
