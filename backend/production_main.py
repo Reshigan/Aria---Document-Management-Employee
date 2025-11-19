@@ -3103,6 +3103,175 @@ async def execute_bot(request: BotExecutionRequest, user: dict = Depends(get_cur
         raise HTTPException(status_code=500, detail=f"Bot execution failed: {str(e)}")
 
 # ERP endpoints
+@app.get("/api/menu/structure")
+async def get_menu_structure():
+    """Get menu structure for navigation (public endpoint)"""
+    return {
+        "Financial": [
+            {
+                "title": "Core Accounting",
+                "icon": "BookOpen",
+                "color": "#8b5cf6",
+                "items": [
+                    {"label": "General Ledger", "path": "/gl"},
+                    {"label": "Chart of Accounts", "path": "/gl/chart-of-accounts"},
+                    {"label": "Journal Entries", "path": "/gl/journal-entries"},
+                    {"label": "Trial Balance", "path": "/reports/financial/trial-balance"},
+                    {"label": "Balance Sheet", "path": "/reports/financial/balance-sheet"},
+                    {"label": "Income Statement", "path": "/reports/financial/income-statement"}
+                ]
+            },
+            {
+                "title": "Payables",
+                "icon": "FileDown",
+                "color": "#ef4444",
+                "items": [
+                    {"label": "Accounts Payable", "path": "/ap"},
+                    {"label": "Vendor Bills", "path": "/ap/bills"},
+                    {"label": "Purchase Orders", "path": "/procurement/purchase-orders"},
+                    {"label": "Payments", "path": "/ap/payments"},
+                    {"label": "AP Aging", "path": "/reports/ar-ap/ap-aging"}
+                ]
+            },
+            {
+                "title": "Receivables",
+                "icon": "FileUp",
+                "color": "#10b981",
+                "items": [
+                    {"label": "Accounts Receivable", "path": "/ar"},
+                    {"label": "Customer Invoices", "path": "/ar/invoices"},
+                    {"label": "Sales Orders", "path": "/sales-orders"},
+                    {"label": "Receipts", "path": "/ar/receipts"},
+                    {"label": "AR Aging", "path": "/reports/ar-ap/ar-aging"}
+                ]
+            },
+            {
+                "title": "Banking & Cash",
+                "icon": "Building2",
+                "color": "#06b6d4",
+                "items": [
+                    {"label": "Banking", "path": "/banking"},
+                    {"label": "Bank Accounts", "path": "/banking/accounts"},
+                    {"label": "Reconciliation", "path": "/banking/reconciliation"},
+                    {"label": "Cash Flow", "path": "/reports/ar-ap/cash-flow"}
+                ]
+            }
+        ],
+        "Operations": [
+            {
+                "title": "Sales & CRM",
+                "icon": "Users",
+                "color": "#6366f1",
+                "items": [
+                    {"label": "CRM Dashboard", "path": "/crm"},
+                    {"label": "Customers", "path": "/crm/customers"},
+                    {"label": "Quotes", "path": "/quotes"},
+                    {"label": "Sales Orders", "path": "/sales-orders"},
+                    {"label": "Deliveries", "path": "/deliveries"},
+                    {"label": "Sales KPIs", "path": "/reports/sales-purchase/sales-kpis"}
+                ]
+            },
+            {
+                "title": "Inventory",
+                "icon": "Package",
+                "color": "#8b5cf6",
+                "items": [
+                    {"label": "Inventory Dashboard", "path": "/inventory"},
+                    {"label": "Items", "path": "/inventory/items"},
+                    {"label": "Warehouses", "path": "/inventory/warehouses"},
+                    {"label": "Stock Movements", "path": "/inventory/stock-movements"},
+                    {"label": "Valuation", "path": "/reports/inventory/valuation"}
+                ]
+            },
+            {
+                "title": "Procurement",
+                "icon": "ShoppingBag",
+                "color": "#f59e0b",
+                "items": [
+                    {"label": "Procurement", "path": "/procurement"},
+                    {"label": "Suppliers", "path": "/procurement/suppliers"},
+                    {"label": "Purchase Orders", "path": "/procurement/purchase-orders"},
+                    {"label": "Goods Receipts", "path": "/procurement/goods-receipts"},
+                    {"label": "Purchase KPIs", "path": "/reports/sales-purchase/purchase-kpis"}
+                ]
+            },
+            {
+                "title": "Manufacturing",
+                "icon": "Factory",
+                "color": "#ef4444",
+                "items": [
+                    {"label": "Manufacturing", "path": "/manufacturing"},
+                    {"label": "Work Orders", "path": "/manufacturing/work-orders"},
+                    {"label": "BOMs", "path": "/manufacturing/boms"},
+                    {"label": "Production", "path": "/manufacturing/production"},
+                    {"label": "Quality", "path": "/quality"}
+                ]
+            }
+        ],
+        "People": [
+            {
+                "title": "Human Resources",
+                "icon": "Users",
+                "color": "#f59e0b",
+                "items": [
+                    {"label": "HR Dashboard", "path": "/hr"},
+                    {"label": "Employees", "path": "/hr/employees"},
+                    {"label": "Departments", "path": "/hr/departments"},
+                    {"label": "Attendance", "path": "/hr/attendance"},
+                    {"label": "Leave Management", "path": "/hr/leave"}
+                ]
+            },
+            {
+                "title": "Payroll",
+                "icon": "Wallet",
+                "color": "#10b981",
+                "items": [
+                    {"label": "Payroll Dashboard", "path": "/payroll"},
+                    {"label": "Payroll Runs", "path": "/payroll/runs"},
+                    {"label": "Payslips", "path": "/payroll/payslips"},
+                    {"label": "Tax Filings", "path": "/payroll/tax"}
+                ]
+            }
+        ],
+        "Services": [
+            {
+                "title": "Field Service",
+                "icon": "Wrench",
+                "color": "#14b8a6",
+                "items": [
+                    {"label": "Field Service", "path": "/field-service"},
+                    {"label": "Service Orders", "path": "/field-service/orders"},
+                    {"label": "Technicians", "path": "/field-service/technicians"},
+                    {"label": "Scheduling", "path": "/field-service/scheduling"}
+                ]
+            },
+            {
+                "title": "Projects",
+                "icon": "Briefcase",
+                "color": "#6366f1",
+                "items": [
+                    {"label": "Projects", "path": "/projects"},
+                    {"label": "Tasks", "path": "/projects/tasks"},
+                    {"label": "Timesheets", "path": "/projects/timesheets"},
+                    {"label": "Project Reports", "path": "/projects/reports"}
+                ]
+            }
+        ],
+        "Compliance": [
+            {
+                "title": "Tax & Legal",
+                "icon": "Scale",
+                "color": "#dc2626",
+                "items": [
+                    {"label": "Tax Management", "path": "/tax"},
+                    {"label": "Legal", "path": "/legal"},
+                    {"label": "Fixed Assets", "path": "/fixed-assets"},
+                    {"label": "Compliance", "path": "/admin/compliance"}
+                ]
+            }
+        ]
+    }
+
 @app.get("/api/erp/modules")
 async def get_erp_modules(user: dict = Depends(get_current_user)):
     """Get all ERP modules"""

@@ -1,7 +1,7 @@
 .mega-menu-container {
   position: sticky;
   top: 0;
-  z-index: 1000;
+  z-index: 9999;
   background: #0f1419;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
@@ -87,6 +87,7 @@
 
 .mega-menu-dropdown {
   position: relative;
+  z-index: 10000;
 }
 
 .mega-menu-panel {
@@ -101,6 +102,8 @@
   min-width: 800px;
   max-width: 1000px;
   animation: slideDown 0.2s ease;
+  z-index: 10001;
+  pointer-events: auto;
 }
 
 @keyframes slideDown {
