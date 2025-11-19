@@ -179,17 +179,39 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
   );
 };
 
-const WelcomeScreen: React.FC<{ onSuggestionClick: (text: string) => void }> = ({ onSuggestionClick }) => (
-  <div className="flex flex-col items-center justify-center h-full text-center px-4">
-    <div className="w-20 h-20 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center mb-6 shadow-2xl">
-      <Agent className="w-10 h-10 text-white" />
+const WelcomeScreen: React.FC<{ onSuggestionClick: (text: string) => void }> = ({ onSuggestionClick }) => {
+  const quickActions = [
+    { icon: FileText, text: "Create a new sales quote", color: "from-blue-500 to-cyan-500" },
+    { icon: FileText, text: "Show me recent invoices", color: "from-green-500 to-emerald-500" },
+    { icon: FileText, text: "Create a purchase order", color: "from-purple-500 to-pink-500" },
+    { icon: FileText, text: "Show customer list", color: "from-orange-500 to-red-500" },
+  ];
+
+  return (
+    <div className="flex flex-col items-center justify-center h-full text-center px-4">
+      <div className="w-20 h-20 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center mb-6 shadow-2xl">
+        <Bot className="w-10 h-10 text-white" />
+      </div>
+      <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Welcome to Aria AI</h3>
+      <p className="text-slate-600 dark:text-slate-300 max-w-md mb-6">
+        Your intelligent document assistant. Ask me anything about documents or let me help with processing tasks.
+      </p>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-w-2xl w-full mt-4">
+        {quickActions.map((action, index) => (
+          <button
+            key={index}
+            onClick={() => onSuggestionClick(action.text)}
+            className={`flex items-center gap-3 px-4 py-3 rounded-xl bg-gradient-to-r ${action.color} text-white hover:shadow-lg transition-all duration-200 hover:scale-105`}
+          >
+            <action.icon className="w-5 h-5" />
+            <span className="text-sm font-medium">{action.text}</span>
+          </button>
+        ))}
+      </div>
     </div>
-    <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Welcome to Aria AI</h3>
-    <p className="text-slate-600 dark:text-slate-300 max-w-md mb-6">
-      Your intelligent document assistant. Ask me anything about documents or let me help with processing tasks.
-    </p>
-  </div>
-);
+  );
+};
 
 const MessageBubble: React.FC<{ message: Message; isStreaming?: boolean }> = ({ message, isStreaming = false }) => {
   const [copied, setCopied] = useState(false);
