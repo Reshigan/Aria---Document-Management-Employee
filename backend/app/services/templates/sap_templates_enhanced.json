@@ -618,5 +618,478 @@
         }
       ]
     }
+  },
+  {
+    "id": "sap_f28_ar_remittance",
+    "name": "AR Remittance Advice - F-28",
+    "module": "FI-AR",
+    "doc_type": "AR_REMITTANCE_ADVICE",
+    "sap_tcode": "F-28",
+    "sap_bapi": null,
+    "canonical_fields": ["advice_number", "advice_date", "payment_reference", "payer_name", "bank_account", "company_code", "currency", "total_amount", "value_date", "payment_method"],
+    "patterns": {
+      "header_keywords": ["REMITTANCE ADVICE", "PAYMENT ADVICE", "ADVICE OF PAYMENT", "REMITTANCE NOTIFICATION", "PAYMENT REMITTANCE"],
+      "field_patterns": {
+        "advice_number": ["Remittance\\s*(Advice\\s*)?(No\\.|Number)[:\\s]*([A-Za-z0-9-]+)", "Advice\\s*No[.:]?\\s*([A-Z0-9-]+)"],
+        "advice_date": ["(Advice|Payment)\\s*Date[:\\s]*([0-9]{2,4}[/-][0-9]{1,2}[/-][0-9]{2,4})", "Date[:\\s]*([0-9]{2,4}[/-][0-9]{1,2}[/-][0-9]{2,4})"],
+        "payment_reference": ["(Payment\\s*)?Reference[:\\s]*([A-Za-z0-9-]+)", "Ref[.:]?\\s*([A-Z0-9-]+)"],
+        "payer_name": ["(Payer|From|Customer)[:\\s]*([A-Za-z0-9&.,\\-\\s]{3,})", "Paid\\s*By[:\\s]*([A-Za-z0-9&.,\\-\\s]{3,})"],
+        "bank_account": ["(Bank\\s*Account|Account\\s*No\\.|IBAN)[:\\s]*([A-Z0-9\\s-]+)"],
+        "total_amount": ["(Total\\s*(Amount|Paid)|Amount\\s*Paid)[:\\s]*([\\d,.]+)", "Total[:\\s]*([\\d,.]+)"],
+        "currency": ["Currency[:\\s]*([A-Z]{3})"],
+        "value_date": ["(Value\\s*Date|Settlement\\s*Date)[:\\s]*([0-9]{2,4}[/-][0-9]{1,2}[/-][0-9]{2,4})"]
+      }
+    },
+    "excel_template": {
+      "format": "xlsx",
+      "sheets": [
+        {"name": "Header", "columns": ["Advice Number", "Advice Date", "Payment Reference", "Payer", "Bank Account", "Currency", "Total Amount", "Payment Method", "Value Date", "Company Code"]},
+        {"name": "Line Items", "columns": ["Line No", "Invoice Number", "Reference", "Gross Amount", "Discount", "Net Amount", "Currency", "Due Date"]}
+      ]
+    }
+  },
+  {
+    "id": "sap_f110_ap_remittance",
+    "name": "AP Remittance Advice - F110",
+    "module": "FI-AP",
+    "doc_type": "AP_REMITTANCE_ADVICE",
+    "sap_tcode": "F110",
+    "sap_bapi": null,
+    "canonical_fields": ["advice_number", "advice_date", "payment_reference", "payee_name", "bank_account", "company_code", "currency", "total_amount", "value_date", "payment_method"],
+    "patterns": {
+      "header_keywords": ["REMITTANCE ADVICE", "PAYMENT ADVICE", "REMITTANCE", "VENDOR PAYMENT ADVICE"],
+      "field_patterns": {
+        "advice_number": ["Remittance\\s*(Advice\\s*)?(No\\.|Number)[:\\s]*([A-Za-z0-9-]+)", "Advice\\s*No[.:]?\\s*([A-Z0-9-]+)"],
+        "advice_date": ["(Advice|Payment)\\s*Date[:\\s]*([0-9]{2,4}[/-][0-9]{1,2}[/-][0-9]{2,4})"],
+        "payment_reference": ["(Payment\\s*)?Reference[:\\s]*([A-Za-z0-9-]+)"],
+        "payee_name": ["(Payee|Vendor|Supplier)[:\\s]*([A-Za-z0-9&.,\\-\\s]{3,})", "Pay\\s*To[:\\s]*([A-Za-z0-9&.,\\-\\s]{3,})"],
+        "bank_account": ["(Bank\\s*Account|Account\\s*No\\.|IBAN)[:\\s]*([A-Z0-9\\s-]+)"],
+        "total_amount": ["(Total\\s*(Amount|Paid)|Amount\\s*Paid)[:\\s]*([\\d,.]+)"],
+        "currency": ["Currency[:\\s]*([A-Z]{3})"],
+        "value_date": ["(Value\\s*Date|Settlement\\s*Date)[:\\s]*([0-9]{2,4}[/-][0-9]{1,2}[/-][0-9]{2,4})"]
+      }
+    },
+    "excel_template": {
+      "format": "xlsx",
+      "sheets": [
+        {"name": "Header", "columns": ["Advice Number", "Advice Date", "Payment Reference", "Payee", "Bank Account", "Currency", "Total Amount", "Payment Method", "Value Date"]},
+        {"name": "Line Items", "columns": ["Line No", "Invoice Number", "PO Number", "Reference", "Gross Amount", "Discount", "Net Amount", "Currency", "Due Date"]}
+      ]
+    }
+  },
+  {
+    "id": "sap_fb65_ap_debit_note",
+    "name": "AP Debit Note - FB65",
+    "module": "FI-AP",
+    "doc_type": "AP_DEBIT_NOTE",
+    "sap_tcode": "FB65",
+    "sap_bapi": "BAPI_ACC_DOCUMENT_POST",
+    "canonical_fields": ["vendor_code", "debit_note_number", "debit_note_date", "posting_date", "company_code", "currency", "total_amount", "reference", "reason"],
+    "patterns": {
+      "header_keywords": ["DEBIT NOTE", "DEBIT MEMO", "DEBIT ADVICE", "CHARGE NOTE"],
+      "field_patterns": {
+        "debit_note_number": ["Debit\\s*Note\\s*No[.:]?\\s*([A-Z0-9-]+)", "DN[.:]?\\s*([A-Z0-9-]+)", "Debit\\s*Memo[.:]?\\s*([A-Z0-9-]+)"],
+        "vendor_code": ["Vendor[.:]?\\s*([A-Z0-9]+)", "Supplier[.:]?\\s*([A-Z0-9]+)"],
+        "company_code": ["Company Code[.:]?\\s*([A-Z0-9]+)"],
+        "total_amount": ["Total[.:]?\\s*([0-9,.]+)", "Amount[.:]?\\s*([0-9,.]+)"],
+        "reason": ["Reason[.:]?\\s*([A-Za-z0-9\\s,.-]+)", "Description[.:]?\\s*([A-Za-z0-9\\s,.-]+)"]
+      }
+    },
+    "excel_template": {
+      "format": "xlsx",
+      "sheets": [
+        {"name": "Header", "columns": ["Company Code", "Vendor Code", "Debit Note Number", "Debit Note Date", "Posting Date", "Currency", "Total Amount", "Reference", "Reason"]},
+        {"name": "Line Items", "columns": ["Line No", "GL Account", "Cost Center", "Amount", "Tax Code", "Description"]}
+      ]
+    }
+  },
+  {
+    "id": "sap_fb65_ap_credit_memo",
+    "name": "AP Credit Memo - FB65",
+    "module": "FI-AP",
+    "doc_type": "AP_CREDIT_MEMO",
+    "sap_tcode": "FB65",
+    "sap_bapi": "BAPI_ACC_DOCUMENT_POST",
+    "canonical_fields": ["vendor_code", "credit_memo_number", "credit_memo_date", "posting_date", "company_code", "currency", "total_amount", "reference", "reason"],
+    "patterns": {
+      "header_keywords": ["CREDIT NOTE", "CREDIT MEMO", "CREDIT ADVICE", "VENDOR CREDIT"],
+      "field_patterns": {
+        "credit_memo_number": ["Credit\\s*(Note|Memo)\\s*No[.:]?\\s*([A-Z0-9-]+)", "CN[.:]?\\s*([A-Z0-9-]+)"],
+        "vendor_code": ["Vendor[.:]?\\s*([A-Z0-9]+)", "Supplier[.:]?\\s*([A-Z0-9]+)"],
+        "company_code": ["Company Code[.:]?\\s*([A-Z0-9]+)"],
+        "total_amount": ["Total[.:]?\\s*([0-9,.]+)", "Amount[.:]?\\s*([0-9,.]+)"],
+        "reason": ["Reason[.:]?\\s*([A-Za-z0-9\\s,.-]+)"]
+      }
+    },
+    "excel_template": {
+      "format": "xlsx",
+      "sheets": [
+        {"name": "Header", "columns": ["Company Code", "Vendor Code", "Credit Memo Number", "Credit Memo Date", "Posting Date", "Currency", "Total Amount", "Reference", "Reason"]},
+        {"name": "Line Items", "columns": ["Line No", "GL Account", "Cost Center", "Amount", "Tax Code", "Description"]}
+      ]
+    }
+  },
+  {
+    "id": "sap_fbl5n_customer_statement",
+    "name": "Customer Statement - FBL5N",
+    "module": "FI-AR",
+    "doc_type": "CUSTOMER_STATEMENT",
+    "sap_tcode": "FBL5N",
+    "sap_bapi": null,
+    "canonical_fields": ["customer_code", "statement_date", "company_code", "currency", "opening_balance", "closing_balance", "total_debits", "total_credits"],
+    "patterns": {
+      "header_keywords": ["CUSTOMER STATEMENT", "ACCOUNT STATEMENT", "STATEMENT OF ACCOUNT", "CUSTOMER ACCOUNT"],
+      "field_patterns": {
+        "customer_code": ["Customer[.:]?\\s*([A-Z0-9]+)", "Account[.:]?\\s*([A-Z0-9]+)"],
+        "statement_date": ["Statement\\s*Date[.:]?\\s*([0-9]{2,4}[/-][0-9]{1,2}[/-][0-9]{2,4})", "As\\s*at[.:]?\\s*([0-9]{2,4}[/-][0-9]{1,2}[/-][0-9]{2,4})"],
+        "opening_balance": ["Opening\\s*Balance[.:]?\\s*([0-9,.]+)", "Balance\\s*B/F[.:]?\\s*([0-9,.]+)"],
+        "closing_balance": ["Closing\\s*Balance[.:]?\\s*([0-9,.]+)", "Balance\\s*C/F[.:]?\\s*([0-9,.]+)", "Amount\\s*Due[.:]?\\s*([0-9,.]+)"],
+        "total_debits": ["Total\\s*Debits[.:]?\\s*([0-9,.]+)"],
+        "total_credits": ["Total\\s*Credits[.:]?\\s*([0-9,.]+)"]
+      }
+    },
+    "excel_template": {
+      "format": "xlsx",
+      "sheets": [
+        {"name": "Header", "columns": ["Customer Code", "Statement Date", "Company Code", "Currency", "Opening Balance", "Closing Balance", "Total Debits", "Total Credits"]},
+        {"name": "Transactions", "columns": ["Date", "Document Number", "Reference", "Description", "Debit", "Credit", "Balance"]}
+      ]
+    }
+  },
+  {
+    "id": "sap_fbl1n_vendor_statement",
+    "name": "Vendor Statement - FBL1N",
+    "module": "FI-AP",
+    "doc_type": "VENDOR_STATEMENT",
+    "sap_tcode": "FBL1N",
+    "sap_bapi": null,
+    "canonical_fields": ["vendor_code", "statement_date", "company_code", "currency", "opening_balance", "closing_balance", "total_debits", "total_credits"],
+    "patterns": {
+      "header_keywords": ["VENDOR STATEMENT", "SUPPLIER STATEMENT", "ACCOUNT STATEMENT", "STATEMENT OF ACCOUNT"],
+      "field_patterns": {
+        "vendor_code": ["Vendor[.:]?\\s*([A-Z0-9]+)", "Supplier[.:]?\\s*([A-Z0-9]+)", "Account[.:]?\\s*([A-Z0-9]+)"],
+        "statement_date": ["Statement\\s*Date[.:]?\\s*([0-9]{2,4}[/-][0-9]{1,2}[/-][0-9]{2,4})", "As\\s*at[.:]?\\s*([0-9]{2,4}[/-][0-9]{1,2}[/-][0-9]{2,4})"],
+        "opening_balance": ["Opening\\s*Balance[.:]?\\s*([0-9,.]+)", "Balance\\s*B/F[.:]?\\s*([0-9,.]+)"],
+        "closing_balance": ["Closing\\s*Balance[.:]?\\s*([0-9,.]+)", "Balance\\s*C/F[.:]?\\s*([0-9,.]+)", "Amount\\s*Due[.:]?\\s*([0-9,.]+)"],
+        "total_debits": ["Total\\s*Debits[.:]?\\s*([0-9,.]+)"],
+        "total_credits": ["Total\\s*Credits[.:]?\\s*([0-9,.]+)"]
+      }
+    },
+    "excel_template": {
+      "format": "xlsx",
+      "sheets": [
+        {"name": "Header", "columns": ["Vendor Code", "Statement Date", "Company Code", "Currency", "Opening Balance", "Closing Balance", "Total Debits", "Total Credits"]},
+        {"name": "Transactions", "columns": ["Date", "Document Number", "Reference", "Description", "Debit", "Credit", "Balance"]}
+      ]
+    }
+  },
+  {
+    "id": "sap_me51n_purchase_requisition",
+    "name": "Purchase Requisition - ME51N",
+    "module": "MM",
+    "doc_type": "PURCHASE_REQUISITION",
+    "sap_tcode": "ME51N",
+    "sap_bapi": "BAPI_PR_CREATE",
+    "canonical_fields": ["pr_number", "pr_date", "requester", "plant", "company_code", "delivery_date"],
+    "patterns": {
+      "header_keywords": ["PURCHASE REQUISITION", "PR", "REQUISITION", "PURCHASE REQUEST"],
+      "field_patterns": {
+        "pr_number": ["PR\\s*No[.:]?\\s*([A-Z0-9-]+)", "Requisition\\s*No[.:]?\\s*([A-Z0-9-]+)", "PR[.:]?\\s*([A-Z0-9-]+)"],
+        "requester": ["Requester[.:]?\\s*([A-Za-z0-9\\s]+)", "Requested\\s*By[.:]?\\s*([A-Za-z0-9\\s]+)"],
+        "plant": ["Plant[.:]?\\s*([A-Z0-9]+)", "Werk[.:]?\\s*([A-Z0-9]+)"],
+        "delivery_date": ["Delivery\\s*Date[.:]?\\s*([0-9]{2,4}[/-][0-9]{1,2}[/-][0-9]{2,4})", "Required\\s*Date[.:]?\\s*([0-9]{2,4}[/-][0-9]{1,2}[/-][0-9]{2,4})"]
+      }
+    },
+    "excel_template": {
+      "format": "xlsx",
+      "sheets": [
+        {"name": "Header", "columns": ["PR Number", "PR Date", "Requester", "Plant", "Company Code", "Delivery Date"]},
+        {"name": "Line Items", "columns": ["Line No", "Material", "Description", "Quantity", "Unit", "Delivery Date", "Cost Center", "GL Account"]}
+      ]
+    }
+  },
+  {
+    "id": "sap_me41_rfq",
+    "name": "Request for Quotation - ME41",
+    "module": "MM",
+    "doc_type": "RFQ",
+    "sap_tcode": "ME41",
+    "sap_bapi": "BAPI_QUOTATION_CREATE",
+    "canonical_fields": ["rfq_number", "rfq_date", "company_code", "purchasing_org", "quotation_deadline"],
+    "patterns": {
+      "header_keywords": ["REQUEST FOR QUOTATION", "RFQ", "REQUEST FOR QUOTE", "QUOTATION REQUEST"],
+      "field_patterns": {
+        "rfq_number": ["RFQ\\s*No[.:]?\\s*([A-Z0-9-]+)", "RFQ[.:]?\\s*([A-Z0-9-]+)", "Quotation\\s*Request[.:]?\\s*([A-Z0-9-]+)"],
+        "rfq_date": ["RFQ\\s*Date[.:]?\\s*([0-9]{2,4}[/-][0-9]{1,2}[/-][0-9]{2,4})", "Date[.:]?\\s*([0-9]{2,4}[/-][0-9]{1,2}[/-][0-9]{2,4})"],
+        "quotation_deadline": ["Deadline[.:]?\\s*([0-9]{2,4}[/-][0-9]{1,2}[/-][0-9]{2,4})", "Quote\\s*By[.:]?\\s*([0-9]{2,4}[/-][0-9]{1,2}[/-][0-9]{2,4})"]
+      }
+    },
+    "excel_template": {
+      "format": "xlsx",
+      "sheets": [
+        {"name": "Header", "columns": ["RFQ Number", "RFQ Date", "Company Code", "Purchasing Org", "Quotation Deadline"]},
+        {"name": "Line Items", "columns": ["Line No", "Material", "Description", "Quantity", "Unit", "Delivery Date"]}
+      ]
+    }
+  },
+  {
+    "id": "sap_me47_vendor_quotation",
+    "name": "Vendor Quotation - ME47",
+    "module": "MM",
+    "doc_type": "VENDOR_QUOTATION",
+    "sap_tcode": "ME47",
+    "sap_bapi": "BAPI_QUOTATION_CREATE",
+    "canonical_fields": ["quotation_number", "quotation_date", "vendor_code", "rfq_reference", "validity_date", "currency"],
+    "patterns": {
+      "header_keywords": ["QUOTATION", "VENDOR QUOTE", "SUPPLIER QUOTATION", "PRICE QUOTE"],
+      "field_patterns": {
+        "quotation_number": ["Quotation\\s*No[.:]?\\s*([A-Z0-9-]+)", "Quote\\s*No[.:]?\\s*([A-Z0-9-]+)", "QT[.:]?\\s*([A-Z0-9-]+)"],
+        "vendor_code": ["Vendor[.:]?\\s*([A-Z0-9]+)", "Supplier[.:]?\\s*([A-Z0-9]+)"],
+        "rfq_reference": ["RFQ\\s*Ref[.:]?\\s*([A-Z0-9-]+)", "Reference[.:]?\\s*([A-Z0-9-]+)"],
+        "validity_date": ["Valid\\s*Until[.:]?\\s*([0-9]{2,4}[/-][0-9]{1,2}[/-][0-9]{2,4})", "Validity[.:]?\\s*([0-9]{2,4}[/-][0-9]{1,2}[/-][0-9]{2,4})"]
+      }
+    },
+    "excel_template": {
+      "format": "xlsx",
+      "sheets": [
+        {"name": "Header", "columns": ["Quotation Number", "Quotation Date", "Vendor Code", "RFQ Reference", "Validity Date", "Currency"]},
+        {"name": "Line Items", "columns": ["Line No", "Material", "Description", "Quantity", "Unit", "Unit Price", "Total Price", "Delivery Time"]}
+      ]
+    }
+  },
+  {
+    "id": "sap_va21_sales_quotation",
+    "name": "Sales Quotation - VA21",
+    "module": "SD",
+    "doc_type": "SALES_QUOTATION",
+    "sap_tcode": "VA21",
+    "sap_bapi": "BAPI_QUOTATION_CREATEFROMDATA2",
+    "canonical_fields": ["quotation_number", "quotation_date", "customer_code", "sales_org", "validity_date", "currency", "total_amount"],
+    "patterns": {
+      "header_keywords": ["QUOTATION", "SALES QUOTE", "PRICE QUOTATION", "QUOTE"],
+      "field_patterns": {
+        "quotation_number": ["Quotation\\s*No[.:]?\\s*([A-Z0-9-]+)", "Quote\\s*No[.:]?\\s*([A-Z0-9-]+)"],
+        "customer_code": ["Customer[.:]?\\s*([A-Z0-9]+)", "Sold-to[.:]?\\s*([A-Z0-9]+)"],
+        "validity_date": ["Valid\\s*Until[.:]?\\s*([0-9]{2,4}[/-][0-9]{1,2}[/-][0-9]{2,4})", "Validity[.:]?\\s*([0-9]{2,4}[/-][0-9]{1,2}[/-][0-9]{2,4})"],
+        "total_amount": ["Total[.:]?\\s*([0-9,.]+)", "Quote\\s*Total[.:]?\\s*([0-9,.]+)"]
+      }
+    },
+    "excel_template": {
+      "format": "xlsx",
+      "sheets": [
+        {"name": "Header", "columns": ["Quotation Number", "Quotation Date", "Customer Code", "Sales Org", "Validity Date", "Currency", "Total Amount"]},
+        {"name": "Line Items", "columns": ["Line No", "Material", "Description", "Quantity", "Unit", "Unit Price", "Discount", "Net Price", "Total"]}
+      ]
+    }
+  },
+  {
+    "id": "sap_vf01_proforma_invoice",
+    "name": "Proforma Invoice - VF01",
+    "module": "SD",
+    "doc_type": "PROFORMA_INVOICE",
+    "sap_tcode": "VF01",
+    "sap_bapi": "BAPI_BILLINGDOC_CREATE1",
+    "canonical_fields": ["proforma_number", "proforma_date", "customer_code", "sales_order_ref", "currency", "total_amount"],
+    "patterns": {
+      "header_keywords": ["PROFORMA INVOICE", "PRO FORMA", "PROFORMA", "PRELIMINARY INVOICE"],
+      "field_patterns": {
+        "proforma_number": ["Proforma\\s*No[.:]?\\s*([A-Z0-9-]+)", "Pro\\s*Forma[.:]?\\s*([A-Z0-9-]+)"],
+        "customer_code": ["Customer[.:]?\\s*([A-Z0-9]+)", "Sold-to[.:]?\\s*([A-Z0-9]+)"],
+        "sales_order_ref": ["SO\\s*Ref[.:]?\\s*([A-Z0-9-]+)", "Sales\\s*Order[.:]?\\s*([A-Z0-9-]+)"],
+        "total_amount": ["Total[.:]?\\s*([0-9,.]+)", "Amount[.:]?\\s*([0-9,.]+)"]
+      }
+    },
+    "excel_template": {
+      "format": "xlsx",
+      "sheets": [
+        {"name": "Header", "columns": ["Proforma Number", "Proforma Date", "Customer Code", "Sales Order Ref", "Currency", "Total Amount"]},
+        {"name": "Line Items", "columns": ["Line No", "Material", "Description", "Quantity", "Unit", "Unit Price", "Total"]}
+      ]
+    }
+  },
+  {
+    "id": "sap_vl01n_packing_list",
+    "name": "Packing List - VL01N",
+    "module": "SD-LE",
+    "doc_type": "PACKING_LIST",
+    "sap_tcode": "VL01N",
+    "sap_bapi": "BAPI_OUTB_DELIVERY_CREATE_SLS",
+    "canonical_fields": ["packing_list_number", "packing_date", "delivery_number", "customer_code", "ship_to_address", "total_packages"],
+    "patterns": {
+      "header_keywords": ["PACKING LIST", "PACKING SLIP", "PACKAGE LIST", "SHIPPING LIST"],
+      "field_patterns": {
+        "packing_list_number": ["Packing\\s*List\\s*No[.:]?\\s*([A-Z0-9-]+)", "PL[.:]?\\s*([A-Z0-9-]+)"],
+        "delivery_number": ["Delivery\\s*No[.:]?\\s*([A-Z0-9-]+)", "DN[.:]?\\s*([A-Z0-9-]+)"],
+        "customer_code": ["Customer[.:]?\\s*([A-Z0-9]+)", "Ship-to[.:]?\\s*([A-Z0-9]+)"],
+        "total_packages": ["Total\\s*Packages[.:]?\\s*([0-9]+)", "No\\.\\s*of\\s*Packages[.:]?\\s*([0-9]+)"]
+      }
+    },
+    "excel_template": {
+      "format": "xlsx",
+      "sheets": [
+        {"name": "Header", "columns": ["Packing List Number", "Packing Date", "Delivery Number", "Customer Code", "Ship To Address", "Total Packages"]},
+        {"name": "Line Items", "columns": ["Line No", "Material", "Description", "Quantity", "Unit", "Package Number", "Weight", "Dimensions"]}
+      ]
+    }
+  },
+  {
+    "id": "sap_mb1a_goods_return",
+    "name": "Goods Return - MB1A",
+    "module": "MM",
+    "doc_type": "GOODS_RETURN",
+    "sap_tcode": "MB1A",
+    "sap_bapi": "BAPI_GOODSMVT_CREATE",
+    "canonical_fields": ["return_number", "return_date", "movement_type", "vendor_code", "plant", "storage_location", "reason_code"],
+    "patterns": {
+      "header_keywords": ["GOODS RETURN", "RETURN DELIVERY", "MATERIAL RETURN", "RMA", "RETURN AUTHORIZATION"],
+      "field_patterns": {
+        "return_number": ["Return\\s*No[.:]?\\s*([A-Z0-9-]+)", "RMA[.:]?\\s*([A-Z0-9-]+)"],
+        "movement_type": ["Movement\\s*Type[.:]?\\s*([0-9]+)", "Mvt\\s*Type[.:]?\\s*([0-9]+)"],
+        "vendor_code": ["Vendor[.:]?\\s*([A-Z0-9]+)", "Supplier[.:]?\\s*([A-Z0-9]+)"],
+        "plant": ["Plant[.:]?\\s*([A-Z0-9]+)"],
+        "reason_code": ["Reason[.:]?\\s*([A-Z0-9]+)", "Return\\s*Reason[.:]?\\s*([A-Z0-9]+)"]
+      }
+    },
+    "excel_template": {
+      "format": "xlsx",
+      "sheets": [
+        {"name": "Header", "columns": ["Return Number", "Return Date", "Movement Type", "Vendor Code", "Plant", "Storage Location", "Reason Code"]},
+        {"name": "Line Items", "columns": ["Line No", "Material", "Batch", "Quantity", "Unit", "Reason", "Condition"]}
+      ]
+    }
+  },
+  {
+    "id": "sap_j1b3n_withholding_tax_cert",
+    "name": "Withholding Tax Certificate",
+    "module": "FI",
+    "doc_type": "WITHHOLDING_TAX_CERTIFICATE",
+    "sap_tcode": "J1B3N",
+    "sap_bapi": null,
+    "canonical_fields": ["certificate_number", "certificate_date", "vendor_code", "company_code", "tax_type", "tax_amount", "fiscal_year"],
+    "patterns": {
+      "header_keywords": ["WITHHOLDING TAX CERTIFICATE", "TAX CERTIFICATE", "WHT CERTIFICATE", "WITHHOLDING CERTIFICATE"],
+      "field_patterns": {
+        "certificate_number": ["Certificate\\s*No[.:]?\\s*([A-Z0-9-]+)", "Cert\\s*No[.:]?\\s*([A-Z0-9-]+)"],
+        "vendor_code": ["Vendor[.:]?\\s*([A-Z0-9]+)", "Supplier[.:]?\\s*([A-Z0-9]+)"],
+        "tax_type": ["Tax\\s*Type[.:]?\\s*([A-Z0-9]+)", "WHT\\s*Type[.:]?\\s*([A-Z0-9]+)"],
+        "tax_amount": ["Tax\\s*Amount[.:]?\\s*([0-9,.]+)", "WHT\\s*Amount[.:]?\\s*([0-9,.]+)"]
+      }
+    },
+    "excel_template": {
+      "format": "xlsx",
+      "sheets": [
+        {"name": "Header", "columns": ["Certificate Number", "Certificate Date", "Vendor Code", "Company Code", "Tax Type", "Tax Amount", "Fiscal Year"]},
+        {"name": "Details", "columns": ["Line No", "Document Number", "Invoice Number", "Invoice Date", "Gross Amount", "Tax Base", "Tax Amount"]}
+      ]
+    }
+  },
+  {
+    "id": "sap_f26_vat_return",
+    "name": "VAT Return",
+    "module": "FI",
+    "doc_type": "VAT_RETURN",
+    "sap_tcode": "F26",
+    "sap_bapi": null,
+    "canonical_fields": ["return_period", "company_code", "total_sales", "total_purchases", "output_vat", "input_vat", "vat_payable"],
+    "patterns": {
+      "header_keywords": ["VAT RETURN", "VALUE ADDED TAX", "TAX RETURN", "GST RETURN", "SALES TAX RETURN"],
+      "field_patterns": {
+        "return_period": ["Period[.:]?\\s*([0-9]{2}/[0-9]{4})", "Tax\\s*Period[.:]?\\s*([0-9]{2}/[0-9]{4})"],
+        "total_sales": ["Total\\s*Sales[.:]?\\s*([0-9,.]+)", "Sales\\s*Revenue[.:]?\\s*([0-9,.]+)"],
+        "total_purchases": ["Total\\s*Purchases[.:]?\\s*([0-9,.]+)"],
+        "output_vat": ["Output\\s*(VAT|Tax)[.:]?\\s*([0-9,.]+)", "VAT\\s*on\\s*Sales[.:]?\\s*([0-9,.]+)"],
+        "input_vat": ["Input\\s*(VAT|Tax)[.:]?\\s*([0-9,.]+)", "VAT\\s*on\\s*Purchases[.:]?\\s*([0-9,.]+)"],
+        "vat_payable": ["VAT\\s*Payable[.:]?\\s*([0-9,.]+)", "Net\\s*VAT[.:]?\\s*([0-9,.]+)"]
+      }
+    },
+    "excel_template": {
+      "format": "xlsx",
+      "sheets": [
+        {"name": "Summary", "columns": ["Return Period", "Company Code", "Total Sales", "Total Purchases", "Output VAT", "Input VAT", "VAT Payable"]},
+        {"name": "Details", "columns": ["Line No", "Transaction Type", "Document Number", "Date", "Net Amount", "VAT Amount", "Gross Amount"]}
+      ]
+    }
+  },
+  {
+    "id": "sap_pc00_payslip",
+    "name": "Payslip",
+    "module": "HR-PY",
+    "doc_type": "PAYSLIP",
+    "sap_tcode": "PC00",
+    "sap_bapi": null,
+    "canonical_fields": ["employee_number", "employee_name", "pay_period", "pay_date", "gross_pay", "deductions", "net_pay", "company_code"],
+    "patterns": {
+      "header_keywords": ["PAYSLIP", "PAY SLIP", "SALARY SLIP", "WAGE SLIP", "REMUNERATION ADVICE"],
+      "field_patterns": {
+        "employee_number": ["Employee\\s*(No\\.|Number|ID)[.:]?\\s*([A-Z0-9-]+)", "Staff\\s*No[.:]?\\s*([A-Z0-9-]+)"],
+        "employee_name": ["Employee\\s*Name[.:]?\\s*([A-Za-z\\s]+)", "Name[.:]?\\s*([A-Za-z\\s]+)"],
+        "pay_period": ["Pay\\s*Period[.:]?\\s*([A-Za-z0-9\\s/-]+)", "Period[.:]?\\s*([A-Za-z0-9\\s/-]+)"],
+        "gross_pay": ["Gross\\s*(Pay|Salary)[.:]?\\s*([0-9,.]+)"],
+        "deductions": ["Total\\s*Deductions[.:]?\\s*([0-9,.]+)", "Deductions[.:]?\\s*([0-9,.]+)"],
+        "net_pay": ["Net\\s*(Pay|Salary)[.:]?\\s*([0-9,.]+)", "Take\\s*Home[.:]?\\s*([0-9,.]+)"]
+      }
+    },
+    "excel_template": {
+      "format": "xlsx",
+      "sheets": [
+        {"name": "Header", "columns": ["Employee Number", "Employee Name", "Pay Period", "Pay Date", "Gross Pay", "Total Deductions", "Net Pay", "Company Code"]},
+        {"name": "Earnings", "columns": ["Line No", "Wage Type", "Description", "Amount"]},
+        {"name": "Deductions", "columns": ["Line No", "Deduction Type", "Description", "Amount"]}
+      ]
+    }
+  },
+  {
+    "id": "sap_bill_of_lading",
+    "name": "Bill of Lading",
+    "module": "SD-LE",
+    "doc_type": "BILL_OF_LADING",
+    "sap_tcode": "VT01N",
+    "sap_bapi": null,
+    "canonical_fields": ["bl_number", "bl_date", "shipper", "consignee", "vessel_name", "port_of_loading", "port_of_discharge", "delivery_number"],
+    "patterns": {
+      "header_keywords": ["BILL OF LADING", "B/L", "BOL", "SHIPPING DOCUMENT", "OCEAN BILL"],
+      "field_patterns": {
+        "bl_number": ["B/L\\s*No[.:]?\\s*([A-Z0-9-]+)", "Bill\\s*of\\s*Lading[.:]?\\s*([A-Z0-9-]+)", "BOL[.:]?\\s*([A-Z0-9-]+)"],
+        "shipper": ["Shipper[.:]?\\s*([A-Za-z0-9&.,\\-\\s]{3,})"],
+        "consignee": ["Consignee[.:]?\\s*([A-Za-z0-9&.,\\-\\s]{3,})"],
+        "vessel_name": ["Vessel[.:]?\\s*([A-Za-z0-9\\s]+)", "Ship[.:]?\\s*([A-Za-z0-9\\s]+)"],
+        "port_of_loading": ["Port\\s*of\\s*Loading[.:]?\\s*([A-Za-z\\s]+)", "POL[.:]?\\s*([A-Za-z\\s]+)"],
+        "port_of_discharge": ["Port\\s*of\\s*Discharge[.:]?\\s*([A-Za-z\\s]+)", "POD[.:]?\\s*([A-Za-z\\s]+)"]
+      }
+    },
+    "excel_template": {
+      "format": "xlsx",
+      "sheets": [
+        {"name": "Header", "columns": ["B/L Number", "B/L Date", "Shipper", "Consignee", "Vessel Name", "Port of Loading", "Port of Discharge", "Delivery Number"]},
+        {"name": "Cargo", "columns": ["Line No", "Description", "Quantity", "Unit", "Weight", "Volume", "Package Type", "Marks & Numbers"]}
+      ]
+    }
+  },
+  {
+    "id": "sap_commercial_invoice",
+    "name": "Commercial Invoice",
+    "module": "SD-FT",
+    "doc_type": "COMMERCIAL_INVOICE",
+    "sap_tcode": "VF01",
+    "sap_bapi": "BAPI_BILLINGDOC_CREATE1",
+    "canonical_fields": ["invoice_number", "invoice_date", "exporter", "importer", "country_of_origin", "incoterms", "currency", "total_amount"],
+    "patterns": {
+      "header_keywords": ["COMMERCIAL INVOICE", "EXPORT INVOICE", "INTERNATIONAL INVOICE"],
+      "field_patterns": {
+        "invoice_number": ["Invoice\\s*No[.:]?\\s*([A-Z0-9-]+)", "Commercial\\s*Invoice[.:]?\\s*([A-Z0-9-]+)"],
+        "exporter": ["Exporter[.:]?\\s*([A-Za-z0-9&.,\\-\\s]{3,})", "Seller[.:]?\\s*([A-Za-z0-9&.,\\-\\s]{3,})"],
+        "importer": ["Importer[.:]?\\s*([A-Za-z0-9&.,\\-\\s]{3,})", "Buyer[.:]?\\s*([A-Za-z0-9&.,\\-\\s]{3,})"],
+        "country_of_origin": ["Country\\s*of\\s*Origin[.:]?\\s*([A-Za-z\\s]+)", "Origin[.:]?\\s*([A-Za-z\\s]+)"],
+        "incoterms": ["Incoterms[.:]?\\s*([A-Z]{3})", "Terms[.:]?\\s*([A-Z]{3})"],
+        "total_amount": ["Total[.:]?\\s*([0-9,.]+)", "Invoice\\s*Total[.:]?\\s*([0-9,.]+)"]
+      }
+    },
+    "excel_template": {
+      "format": "xlsx",
+      "sheets": [
+        {"name": "Header", "columns": ["Invoice Number", "Invoice Date", "Exporter", "Importer", "Country of Origin", "Incoterms", "Currency", "Total Amount"]},
+        {"name": "Line Items", "columns": ["Line No", "HS Code", "Description", "Quantity", "Unit", "Unit Price", "Total Value", "Country of Origin"]}
+      ]
+    }
   }
 ]
