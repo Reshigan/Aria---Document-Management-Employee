@@ -161,6 +161,7 @@ function App() {
           <Route path="/ask-aria" element={<AskAriaChat />} />
           <Route path="/ask-aria/classify" element={<DocumentClassification />} />
           <Route path="/document-classification" element={<DocumentClassification />} />
+          <Route path="/documents" element={<DocumentClassification />} />
           
           {/* Admin */}
           <Route path="/admin/system" element={<SystemSettings />} />
