@@ -493,48 +493,50 @@ def seed_ar_invoices(conn, company_id, customer_ids, product_ids):
             
             days_old = (END_DATE - invoice_date).days
             if days_old > 60:
-                payment_status = 'paid'
-                amount_paid = total
-                amount_outstanding = Decimal("0.00")
+                status = 'paid'
+                paid_amount = total
+                balance_due = Decimal("0.00")
             elif days_old > 30:
-                payment_status = random.choice(['paid', 'partial', 'unpaid'])
-                if payment_status == 'paid':
-                    amount_paid = total
-                    amount_outstanding = Decimal("0.00")
-                elif payment_status == 'partial':
-                    amount_paid = total * Decimal("0.5")
-                    amount_outstanding = total - amount_paid
+                status = random.choice(['paid', 'partial', 'draft'])
+                if status == 'paid':
+                    paid_amount = total
+                    balance_due = Decimal("0.00")
+                elif status == 'partial':
+                    paid_amount = total * Decimal("0.5")
+                    balance_due = total - paid_amount
                 else:
-                    amount_paid = Decimal("0.00")
-                    amount_outstanding = total
+                    paid_amount = Decimal("0.00")
+                    balance_due = total
             else:
-                payment_status = 'unpaid'
-                amount_paid = Decimal("0.00")
-                amount_outstanding = total
+                status = 'draft'
+                paid_amount = Decimal("0.00")
+                balance_due = total
             
             cur.execute("""
                 INSERT INTO customer_invoices (
                     id, company_id, invoice_number, customer_id,
-                    invoice_date, due_date, status, payment_status,
-                    subtotal, tax_amount, total_amount, amount_paid, amount_outstanding,
-                    created_at, posted_at
+                    invoice_date, due_date, status,
+                    subtotal, tax_amount, total_amount, paid_amount, balance_due,
+                    currency, created_at, updated_at
                 ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             """, (
                 inv_id, company_id, f"INV-{invoice_num:05d}", customer_id,
-                invoice_date, due_date, 'posted', payment_status,
-                subtotal, tax_amount, total, amount_paid, amount_outstanding,
-                datetime.now(), datetime.now()
+                invoice_date, due_date, status,
+                subtotal, tax_amount, total, paid_amount, balance_due,
+                CURRENCY, datetime.now(), datetime.now()
             ))
             
             product_id = random.choice(product_ids) if product_ids else None
             cur.execute("""
-                INSERT INTO customer_invoice_lines (
+                INSERT INTO invoice_line_items (
                     id, invoice_id, line_number, product_id, description,
-                    quantity, unit_price, tax_rate, line_total, tax_amount
-                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    quantity, unit_price, tax_rate, line_total, tax_amount,
+                    created_at, updated_at
+                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             """, (
                 str(uuid4()), inv_id, 1, product_id, "Manufacturing Services",
-                Decimal("1.00"), subtotal, Decimal("15.00"), subtotal, tax_amount
+                Decimal("1.00"), subtotal, Decimal("15.00"), subtotal, tax_amount,
+                datetime.now(), datetime.now()
             ))
             
             invoices_created += 1
@@ -606,24 +608,26 @@ def seed_ap_invoices(conn, company_id, supplier_ids):
                 INSERT INTO supplier_invoices (
                     id, company_id, invoice_number, supplier_id,
                     invoice_date, due_date, status,
-                    subtotal, tax_amount, total_amount, amount_paid,
-                    created_at
-                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    subtotal, tax_amount, total_amount, paid_amount, balance_due,
+                    currency, created_at, updated_at
+                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             """, (
                 inv_id, company_id, f"SINV-{supp_num}-{invoice_num:04d}", supplier_id,
                 invoice_date, due_date, status,
-                subtotal, tax_amount, total, amount_paid,
-                datetime.now()
+                subtotal, tax_amount, total, paid_amount, total - paid_amount,
+                CURRENCY, datetime.now(), datetime.now()
             ))
             
             cur.execute("""
-                INSERT INTO supplier_invoice_lines (
-                    id, invoice_id, line_number, description,
-                    quantity, unit_price, tax_rate, line_total
-                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                INSERT INTO supplier_invoice_line_items (
+                    id, supplier_invoice_id, line_number, description,
+                    quantity, unit_price, tax_rate, line_total, tax_amount,
+                    created_at, updated_at
+                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             """, (
                 str(uuid4()), inv_id, 1, "Raw Materials Purchase",
-                Decimal("1.00"), subtotal, Decimal("15.00"), subtotal
+                Decimal("1.00"), subtotal, Decimal("15.00"), subtotal, tax_amount,
+                datetime.now(), datetime.now()
             ))
             
             invoices_created += 1
@@ -649,7 +653,7 @@ def seed_bank_transactions(conn, company_id, bank_ids):
         cur.close()
         return
     
-    cur.execute("SELECT COUNT(*) FROM bank_transactions WHERE company_id = %s", (company_id,))
+    cur.execute("SELECT COUNT(*) FROM bank_transactions")
     count = cur.fetchone()[0]
     
     if count > 0:
@@ -693,14 +697,14 @@ def seed_bank_transactions(conn, company_id, bank_ids):
             
             cur.execute("""
                 INSERT INTO bank_transactions (
-                    id, company_id, bank_account_id, transaction_date,
+                    id, bank_account_id, transaction_date,
                     transaction_type, amount, description, reference,
-                    status, created_at
-                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    created_at, updated_at
+                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
             """, (
-                trans_id, company_id, bank_id, trans_date,
+                trans_id, bank_id, trans_date,
                 trans_type, amount, description, f"REF-{trans_num:06d}",
-                'posted', datetime.now()
+                datetime.now(), datetime.now()
             ))
             
             transactions_created += 1
