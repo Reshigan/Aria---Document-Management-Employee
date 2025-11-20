@@ -103,32 +103,86 @@ const AskAriaChat: React.FC = () => {
     };
 
     setMessages((prev) => [...prev, userMessage]);
+    const messageToSend = inputMessage;
     setInputMessage('');
     setLoading(true);
 
+    const assistantMessageId = (Date.now() + 1).toString();
+    const assistantMessage: Message = {
+      id: assistantMessageId,
+      role: 'assistant',
+      content: '',
+      created_at: new Date().toISOString(),
+    };
+    setMessages((prev) => [...prev, assistantMessage]);
+
     try {
-      const response = await api.post('/ask-aria/message', {
-        conversation_id: conversationId,
-        message: inputMessage,
+      const response = await fetch(`${api.defaults.baseURL}/ask-aria/message/stream`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': api.defaults.headers.common['Authorization'] || '',
+        },
+        body: JSON.stringify({
+          conversation_id: conversationId,
+          message: messageToSend,
+        }),
       });
 
-      const assistantMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        role: 'assistant',
-        content: response.data.response,
-        created_at: new Date().toISOString(),
-      };
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
 
-      setMessages((prev) => [...prev, assistantMessage]);
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder();
+      let accumulatedContent = '';
+
+      if (reader) {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          const chunk = decoder.decode(value, { stream: true });
+          const lines = chunk.split('\n');
+
+          for (const line of lines) {
+            if (line.startsWith('data: ')) {
+              const data = line.slice(6);
+              
+              if (data === '[DONE]') {
+                break;
+              }
+              
+              if (data.startsWith('[ERROR]')) {
+                throw new Error(data.slice(8));
+              }
+
+              accumulatedContent += data;
+              
+              setMessages((prev) =>
+                prev.map((msg) =>
+                  msg.id === assistantMessageId
+                    ? { ...msg, content: accumulatedContent }
+                    : msg
+                )
+              );
+            }
+          }
+        }
+      }
     } catch (error) {
       console.error('Failed to send message:', error);
       const errorMessage: Message = {
-        id: (Date.now() + 1).toString(),
+        id: assistantMessageId,
         role: 'assistant',
         content: 'Sorry, I encountered an error processing your message. Please try again.',
         created_at: new Date().toISOString(),
       };
-      setMessages((prev) => [...prev, errorMessage]);
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.id === assistantMessageId ? errorMessage : msg
+        )
+      );
     } finally {
       setLoading(false);
     }
