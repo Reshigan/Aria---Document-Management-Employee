@@ -596,13 +596,13 @@ def seed_ap_invoices(conn, company_id, supplier_ids):
             days_old = (END_DATE - invoice_date).days
             if days_old > 60:
                 status = 'paid'
-                amount_paid = total
+                paid_amount = total
             elif days_old > 30:
                 status = random.choice(['paid', 'posted', 'posted'])
-                amount_paid = total if status == 'paid' else Decimal("0.00")
+                paid_amount = total if status == 'paid' else Decimal("0.00")
             else:
                 status = 'posted'
-                amount_paid = Decimal("0.00")
+                paid_amount = Decimal("0.00")
             
             cur.execute("SELECT supplier_number FROM suppliers WHERE id = %s", (supplier_id,))
             supp_result = cur.fetchone()
