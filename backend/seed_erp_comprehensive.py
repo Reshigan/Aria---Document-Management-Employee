@@ -199,15 +199,15 @@ def seed_customers(conn, company_id):
         cust_id = str(uuid4())
         cur.execute("""
             INSERT INTO customers (
-                id, company_id, customer_number, name, tax_reference, vat_number,
-                billing_city, billing_state, billing_country, currency_code,
+                id, company_id, customer_number, name, tax_number, vat_number,
+                billing_city, billing_state, billing_country, currency,
                 payment_terms, is_active, created_at
             ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             ON CONFLICT (company_id, customer_number) DO NOTHING
         """, (
             cust_id, company_id, cust_num, name, tax_ref, vat_num,
             city, state, 'South Africa', CURRENCY,
-            'Net 30', True, datetime.now()
+            30, True, datetime.now()
         ))
         customer_ids.append(cust_id)
     
@@ -236,17 +236,18 @@ def seed_suppliers(conn, company_id):
     supplier_ids = []
     for supp_num, name, tax_ref, vat_num, city, state, bbbee in suppliers_data:
         supp_id = str(uuid4())
+        bbbee_num = int(bbbee.split()[-1]) if bbbee else None
         cur.execute("""
             INSERT INTO suppliers (
-                id, company_id, supplier_number, name, tax_reference, vat_number,
-                city, state, country, currency_code, payment_terms,
+                id, company_id, supplier_number, name, tax_number, vat_number,
+                city, state, country, currency, payment_terms,
                 bbbee_level, is_active, created_at
             ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             ON CONFLICT (company_id, supplier_number) DO NOTHING
         """, (
             supp_id, company_id, supp_num, name, tax_ref, vat_num,
-            city, state, 'South Africa', CURRENCY, 'Net 30',
-            bbbee, True, datetime.now()
+            city, state, 'South Africa', CURRENCY, 30,
+            bbbee_num, True, datetime.now()
         ))
         supplier_ids.append(supp_id)
     
@@ -280,14 +281,14 @@ def seed_products(conn, company_id, supplier_ids):
         cur.execute("""
             INSERT INTO products (
                 id, company_id, product_code, name, product_type, category,
-                standard_cost, selling_price, currency_code, supplier_id,
-                is_active, is_purchasable, is_saleable, created_at
-            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                standard_cost, selling_price, currency, supplier_id,
+                is_active, created_at
+            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             ON CONFLICT (company_id, product_code) DO NOTHING
         """, (
             prod_id, company_id, prod_code, name, prod_type, category,
             cost, price, CURRENCY, supplier_id,
-            True, True, True, datetime.now()
+            True, datetime.now()
         ))
         product_ids.append(prod_id)
     
