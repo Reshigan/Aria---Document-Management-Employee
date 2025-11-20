@@ -201,13 +201,13 @@ def seed_customers(conn, company_id):
             INSERT INTO customers (
                 id, company_id, customer_number, name, tax_number, vat_number,
                 billing_city, billing_state, billing_country, currency,
-                payment_terms, is_active, created_at
-            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                payment_terms, is_active, created_at, updated_at
+            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             ON CONFLICT (customer_number) DO NOTHING
         """, (
             cust_id, company_id, cust_num, name, tax_ref, vat_num,
             city, state, 'South Africa', CURRENCY,
-            30, True, datetime.now()
+            30, True, datetime.now(), datetime.now()
         ))
         customer_ids.append(cust_id)
     
@@ -241,13 +241,13 @@ def seed_suppliers(conn, company_id):
             INSERT INTO suppliers (
                 id, company_id, supplier_number, name, tax_number, vat_number,
                 city, state, country, currency, payment_terms,
-                bbbee_level, is_active, created_at
-            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                bbbee_level, is_active, created_at, updated_at
+            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             ON CONFLICT (supplier_number) DO NOTHING
         """, (
             supp_id, company_id, supp_num, name, tax_ref, vat_num,
             city, state, 'South Africa', CURRENCY, 30,
-            bbbee_num, True, datetime.now()
+            bbbee_num, True, datetime.now(), datetime.now()
         ))
         supplier_ids.append(supp_id)
     
@@ -281,12 +281,12 @@ def seed_products(conn, company_id, supplier_ids):
         cur.execute("""
             INSERT INTO products (
                 id, company_id, code, name, product_type, category,
-                standard_cost, selling_price, is_active, created_at
-            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                standard_cost, selling_price, is_active, created_at, updated_at
+            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             ON CONFLICT (company_id, code) DO NOTHING
         """, (
             prod_id, company_id, prod_code, name, prod_type, category,
-            cost, price, True, datetime.now()
+            cost, price, True, datetime.now(), datetime.now()
         ))
         product_ids.append(prod_id)
     
