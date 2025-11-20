@@ -93,7 +93,7 @@ export default function GeneralLedger() {
       if (searchTerm) params.search = searchTerm;
       if (typeFilter) params.type = typeFilter;
       
-      const response = await api.get('/erp/gl/accounts', { params });
+      const response = await api.get('/erp/gl/chart-of-accounts', { params });
       setAccounts(response.data.accounts || response.data || []);
       setError(null);
     } catch (err: any) {
@@ -164,7 +164,7 @@ export default function GeneralLedger() {
     if (!selectedAccount) return;
     
     try {
-      await api.delete(`/erp/gl/accounts/${selectedAccount.account_code}`);
+      await api.delete(`/erp/gl/chart-of-accounts/${selectedAccount.account_code}`);
       loadAccounts();
       setSelectedAccount(null);
     } catch (err: any) {
@@ -183,9 +183,9 @@ export default function GeneralLedger() {
 
     try {
       if (showEditAccountModal && selectedAccount) {
-        await api.put(`/erp/gl/accounts/${selectedAccount.account_code}`, accountFormData);
+        await api.put(`/erp/gl/chart-of-accounts/${selectedAccount.account_code}`, accountFormData);
       } else {
-        await api.post('/erp/gl/accounts', accountFormData);
+        await api.post('/erp/gl/chart-of-accounts', accountFormData);
       }
 
       loadAccounts();

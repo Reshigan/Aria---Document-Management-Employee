@@ -107,7 +107,7 @@ const BankingDashboard: React.FC = () => {
     setAccountsLoading(true);
     setError('');
     try {
-      const response = await api.get('/erp/banking/accounts');
+      const response = await api.get('/banking/accounts');
       setAccounts(response.data.accounts || []);
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Failed to load bank accounts');
@@ -153,9 +153,9 @@ const BankingDashboard: React.FC = () => {
       };
       
       if (editingAccount) {
-        await api.put(`/erp/banking/accounts/${editingAccount.id}`, payload);
+        await api.put(`/banking/accounts/${editingAccount.id}`, payload);
       } else {
-        await api.post('/erp/banking/accounts', payload);
+        await api.post('/banking/accounts', payload);
       }
       setShowAccountModal(false);
       loadAccounts();
@@ -166,7 +166,7 @@ const BankingDashboard: React.FC = () => {
 
   const handleDeleteAccount = async (id: number) => {
     try {
-      await api.delete(`/erp/banking/accounts/${id}`);
+      await api.delete(`/banking/accounts/${id}`);
       loadAccounts();
       setDeleteConfirm({ show: false, type: 'account', id: 0, name: '' });
     } catch (err: any) {
@@ -178,7 +178,7 @@ const BankingDashboard: React.FC = () => {
     setTransactionsLoading(true);
     setError('');
     try {
-      const response = await api.get('/erp/banking/transactions');
+      const response = await api.get('/banking/transactions');
       setTransactions(response.data.transactions || []);
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Failed to load transactions');
@@ -226,9 +226,9 @@ const BankingDashboard: React.FC = () => {
       };
       
       if (editingTransaction) {
-        await api.put(`/erp/banking/transactions/${editingTransaction.id}`, payload);
+        await api.put(`/banking/transactions/${editingTransaction.id}`, payload);
       } else {
-        await api.post('/erp/banking/transactions', payload);
+        await api.post('/banking/transactions', payload);
       }
       setShowTransactionModal(false);
       loadTransactions();
@@ -239,7 +239,7 @@ const BankingDashboard: React.FC = () => {
 
   const handleDeleteTransaction = async (id: number) => {
     try {
-      await api.delete(`/erp/banking/transactions/${id}`);
+      await api.delete(`/banking/transactions/${id}`);
       loadTransactions();
       setDeleteConfirm({ show: false, type: 'transaction', id: 0, name: '' });
     } catch (err: any) {
@@ -249,7 +249,7 @@ const BankingDashboard: React.FC = () => {
 
   const handleReconcileTransaction = async (transactionId: number) => {
     try {
-      await api.post(`/erp/banking/transactions/${transactionId}/reconcile`);
+      await api.post(`/banking/transactions/${transactionId}/reconcile`);
       loadTransactions();
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Failed to reconcile transaction');
@@ -260,7 +260,7 @@ const BankingDashboard: React.FC = () => {
     setReconciliationsLoading(true);
     setError('');
     try {
-      const response = await api.get('/erp/banking/reconciliations');
+      const response = await api.get('/banking/reconciliations');
       setReconciliations(response.data.reconciliations || []);
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Failed to load reconciliations');
@@ -302,9 +302,9 @@ const BankingDashboard: React.FC = () => {
       };
       
       if (editingReconciliation) {
-        await api.put(`/erp/banking/reconciliations/${editingReconciliation.id}`, payload);
+        await api.put(`/banking/reconciliations/${editingReconciliation.id}`, payload);
       } else {
-        await api.post('/erp/banking/reconciliations', payload);
+        await api.post('/banking/reconciliations', payload);
       }
       setShowReconciliationModal(false);
       loadReconciliations();
@@ -315,7 +315,7 @@ const BankingDashboard: React.FC = () => {
 
   const handleDeleteReconciliation = async (id: number) => {
     try {
-      await api.delete(`/erp/banking/reconciliations/${id}`);
+      await api.delete(`/banking/reconciliations/${id}`);
       loadReconciliations();
       setDeleteConfirm({ show: false, type: 'reconciliation', id: 0, name: '' });
     } catch (err: any) {
@@ -325,7 +325,7 @@ const BankingDashboard: React.FC = () => {
 
   const handleCompleteReconciliation = async (reconciliationId: number) => {
     try {
-      await api.post(`/erp/banking/reconciliations/${reconciliationId}/complete`);
+      await api.post(`/banking/reconciliations/${reconciliationId}/complete`);
       loadReconciliations();
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Failed to complete reconciliation');
