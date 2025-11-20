@@ -430,23 +430,23 @@ def seed_bank_accounts(conn, company_id):
         return bank_ids
     
     bank_accounts = [
-        ("Standard Bank Current", "123456789", "051001", "SBZAZAJJ"),
-        ("FNB Savings", "987654321", "250655", "FIRNZAJJ"),
+        ("Standard Bank", "Sandton Branch", "123456789", "current"),
+        ("FNB", "Rosebank Branch", "987654321", "savings"),
     ]
     
     bank_ids = []
-    for name, acc_num, branch, swift in bank_accounts:
+    for bank_name, branch_name, acc_num, acc_type in bank_accounts:
         bank_id = str(uuid4())
         cur.execute("""
             INSERT INTO bank_accounts (
-                id, company_id, account_name, account_number,
-                bank_name, branch_code, swift_code, currency,
-                is_active, created_at
-            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                id, company_id, bank_name, branch_name, account_number,
+                account_type, currency, opening_balance, current_balance,
+                is_active, created_at, updated_at
+            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """, (
-            bank_id, company_id, name, acc_num,
-            name.split()[0], branch, swift, CURRENCY,
-            True, datetime.now()
+            bank_id, company_id, bank_name, branch_name, acc_num,
+            acc_type, CURRENCY, 0.00, 0.00,
+            True, datetime.now(), datetime.now()
         ))
         bank_ids.append(bank_id)
     
