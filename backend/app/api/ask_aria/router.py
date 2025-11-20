@@ -176,7 +176,7 @@ async def send_message(
     request: SendMessageRequest,
     current_user: dict = Depends(get_current_user)
 ):
-    """Send a message in a conversation"""
+    """Send a message in a conversation (non-streaming)"""
     try:
         conversation = conversation_manager.get_conversation(request.conversation_id)
         if not conversation:
@@ -202,6 +202,68 @@ async def send_message(
         raise
     except Exception as e:
         logger.error(f"Failed to process message: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/message/stream")
+async def send_message_stream(
+    request: SendMessageRequest,
+    current_user: dict = Depends(get_current_user)
+):
+    """Send a message in a conversation (streaming response)"""
+    from fastapi.responses import StreamingResponse
+    import asyncio
+    
+    try:
+        conversation = conversation_manager.get_conversation(request.conversation_id)
+        if not conversation:
+            raise HTTPException(status_code=404, detail="Conversation not found")
+        
+        if conversation['company_id'] != current_user['company_id']:
+            raise HTTPException(status_code=403, detail="Access denied")
+        
+        async def generate_stream():
+            try:
+                conversation_manager.add_message(
+                    request.conversation_id,
+                    role="user",
+                    content=request.message
+                )
+                
+                messages = orchestrator._build_message_history(request.conversation_id)
+                
+                full_response = ""
+                for chunk in ollama_client.chat_stream(messages=messages, temperature=0.7):
+                    full_response += chunk
+                    yield f"data: {chunk}\n\n"
+                    await asyncio.sleep(0)
+                
+                conversation_manager.add_message(
+                    request.conversation_id,
+                    role="assistant",
+                    content=full_response
+                )
+                
+                yield "data: [DONE]\n\n"
+                
+            except Exception as e:
+                logger.error(f"Streaming error: {str(e)}")
+                yield f"data: [ERROR] {str(e)}\n\n"
+        
+        return StreamingResponse(
+            generate_stream(),
+            media_type="text/event-stream",
+            headers={
+                "Cache-Control": "no-cache",
+                "Connection": "keep-alive",
+                "X-Accel-Buffering": "no"
+            }
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to start streaming: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 

@@ -67,7 +67,7 @@ Always confirm with the user before finalizing any document."""
             
             messages = self._build_message_history(conversation_id)
             
-            max_iterations = 10
+            max_iterations = 4  # Reduced from 10 to limit latency
             iteration = 0
             
             while iteration < max_iterations:
@@ -136,12 +136,14 @@ Always confirm with the user before finalizing any document."""
             return f"I encountered an error: {str(e)}. Please try again."
     
     def _build_message_history(self, conversation_id: str) -> List[Dict[str, str]]:
-        """Build message history for LLM context"""
+        """Build message history for LLM context (truncated to last 8 turns)"""
         messages = [{"role": "system", "content": self.system_prompt}]
         
         db_messages = self.conversation_manager.get_messages(conversation_id)
         
-        for msg in db_messages:
+        recent_messages = db_messages[-16:] if len(db_messages) > 16 else db_messages
+        
+        for msg in recent_messages:
             if msg['role'] in ['user', 'assistant']:
                 messages.append({
                     "role": msg['role'],

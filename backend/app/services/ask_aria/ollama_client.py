@@ -46,8 +46,9 @@ class OllamaClient:
                 "stream": stream,
                 "keep_alive": "1h",
                 "options": {
-                    "num_predict": 128,
+                    "num_predict": 80,
                     "num_ctx": 768,
+                    "num_threads": 2,
                     "temperature": 0.2,
                     "top_k": 40,
                     "top_p": 0.9,
@@ -93,8 +94,9 @@ class OllamaClient:
                 "stream": False,
                 "keep_alive": "1h",
                 "options": {
-                    "num_predict": 128,
+                    "num_predict": 80,
                     "num_ctx": 768,
+                    "num_threads": 2,
                     "temperature": 0.2,
                     "top_k": 40,
                     "top_p": 0.9,
@@ -152,6 +154,68 @@ class OllamaClient:
             return response.status_code == 200
         except:
             return False
+    
+    def chat_stream(
+        self,
+        messages: List[Dict[str, str]],
+        tools: Optional[List[Dict[str, Any]]] = None,
+        temperature: float = 0.2
+    ):
+        """
+        Stream chat completion from Ollama (generator)
+        
+        Args:
+            messages: List of message dicts with 'role' and 'content'
+            tools: Optional list of tool/function definitions
+            temperature: Sampling temperature (0-1)
+            
+        Yields:
+            Chunks of response text as they arrive
+        """
+        try:
+            payload = {
+                "model": self.model,
+                "messages": messages,
+                "temperature": temperature,
+                "stream": True,
+                "keep_alive": "1h",
+                "options": {
+                    "num_predict": 80,
+                    "num_ctx": 768,
+                    "num_threads": 2,
+                    "temperature": 0.2,
+                    "top_k": 40,
+                    "top_p": 0.9,
+                    "repeat_penalty": 1.1
+                }
+            }
+            
+            if tools:
+                payload["tools"] = tools
+            
+            response = requests.post(
+                f"{self.base_url}/api/chat",
+                json=payload,
+                timeout=self.timeout,
+                stream=True
+            )
+            response.raise_for_status()
+            
+            for line in response.iter_lines():
+                if line:
+                    try:
+                        chunk = json.loads(line)
+                        if chunk.get("message", {}).get("content"):
+                            yield chunk["message"]["content"]
+                        
+                        if chunk.get("done"):
+                            break
+                    except json.JSONDecodeError:
+                        continue
+                        
+        except requests.exceptions.RequestException as e:
+            logger.error(f"Ollama streaming failed: {str(e)}")
+            raise Exception(f"Failed to stream from Ollama: {str(e)}")
     
     def _warmup(self):
         """Warmup the model on initialization to reduce first-call latency"""
