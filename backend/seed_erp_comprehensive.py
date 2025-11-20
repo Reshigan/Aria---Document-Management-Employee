@@ -194,7 +194,6 @@ def seed_customers(conn, company_id):
         ("CUST010", "Spar Group Limited", "1988/005639/06", "4890123467", "Durban", "KwaZulu-Natal"),
     ]
     
-    customer_ids = []
     for cust_num, name, tax_ref, vat_num, city, state in customers_data:
         cust_id = str(uuid4())
         cur.execute("""
@@ -209,9 +208,12 @@ def seed_customers(conn, company_id):
             city, state, 'South Africa', CURRENCY,
             30, True, datetime.now(), datetime.now()
         ))
-        customer_ids.append(cust_id)
     
     conn.commit()
+    
+    cur.execute("SELECT id FROM customers WHERE company_id = %s", (company_id,))
+    customer_ids = [row[0] for row in cur.fetchall()]
+    
     print(f"   ✓ Seeded {len(customers_data)} customers")
     cur.close()
     return customer_ids
@@ -233,7 +235,6 @@ def seed_suppliers(conn, company_id):
         ("SUPP008", "Afrimat Limited", "2006/022534/06", "4888999000", "Johannesburg", "Gauteng", "Level 5"),
     ]
     
-    supplier_ids = []
     for supp_num, name, tax_ref, vat_num, city, state, bbbee in suppliers_data:
         supp_id = str(uuid4())
         bbbee_num = int(bbbee.split()[-1]) if bbbee else None
@@ -249,9 +250,12 @@ def seed_suppliers(conn, company_id):
             city, state, 'South Africa', CURRENCY, 30,
             bbbee_num, True, datetime.now(), datetime.now()
         ))
-        supplier_ids.append(supp_id)
     
     conn.commit()
+    
+    cur.execute("SELECT id FROM suppliers WHERE company_id = %s", (company_id,))
+    supplier_ids = [row[0] for row in cur.fetchall()]
+    
     print(f"   ✓ Seeded {len(suppliers_data)} suppliers")
     cur.close()
     return supplier_ids
@@ -275,7 +279,6 @@ def seed_products(conn, company_id, supplier_ids):
         ("PROD010", "Project Management (per day)", "service", "Professional Services", 4500.00, 0.00, None),
     ]
     
-    product_ids = []
     for prod_code, name, prod_type, category, price, cost, supplier_id in products_data:
         prod_id = str(uuid4())
         cur.execute("""
@@ -288,9 +291,12 @@ def seed_products(conn, company_id, supplier_ids):
             prod_id, company_id, prod_code, name, prod_type, category,
             cost, price, True, datetime.now(), datetime.now()
         ))
-        product_ids.append(prod_id)
     
     conn.commit()
+    
+    cur.execute("SELECT id FROM products WHERE company_id = %s", (company_id,))
+    product_ids = [row[0] for row in cur.fetchall()]
+    
     print(f"   ✓ Seeded {len(products_data)} products")
     cur.close()
     return product_ids
