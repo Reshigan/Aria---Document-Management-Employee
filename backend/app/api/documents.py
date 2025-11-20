@@ -29,7 +29,7 @@ UPLOAD_DIR = Path("/var/www/aria/uploads")
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
 MAX_FILE_SIZE = 10 * 1024 * 1024  # 10MB
-ALLOWED_EXTENSIONS = {'.pdf', '.jpg', '.jpeg', '.png'}
+ALLOWED_EXTENSIONS = {'.pdf', '.jpg', '.jpeg', '.png', '.xls', '.xlsx'}
 
 
 def get_file_hash(file_path: str) -> str:

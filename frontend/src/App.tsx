@@ -109,6 +109,12 @@ function App() {
           <Route path="/inventory/stock" element={<WMSStock />} />
           <Route path="/inventory/items" element={<ProductCatalog />} />
           
+          {/* Master Data */}
+          <Route path="/master-data" element={<ProductCatalog />} />
+          <Route path="/master-data/customers" element={<Customers />} />
+          <Route path="/master-data/suppliers" element={<Suppliers />} />
+          <Route path="/master-data/products" element={<ProductCatalog />} />
+          
           {/* Procurement */}
           <Route path="/procurement" element={<PurchaseOrders />} />
           <Route path="/procurement/purchase-orders" element={<PurchaseOrders />} />
