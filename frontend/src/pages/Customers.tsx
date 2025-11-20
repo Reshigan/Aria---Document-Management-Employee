@@ -16,7 +16,7 @@ export default function Customers() {
 
   const loadCustomers = async () => {
     try {
-      const response = await api.get('/customers/')
+      const response = await api.get('/erp/master-data/customers')
       setCustomers(response.data)
     } catch (error) {
       console.error('Failed to load customers:', error)
@@ -28,7 +28,7 @@ export default function Customers() {
   const handleDelete = async (id: string) => {
     if (!confirm('Are you sure you want to delete this customer?')) return
     try {
-      await api.delete(`/customers/${id}`)
+      await api.delete(`/erp/master-data/customers/${id}`)
       loadCustomers()
     } catch (error) {
       console.error('Failed to delete customer:', error)
@@ -157,9 +157,9 @@ function CustomerModal({ customer, onClose, onSave }: { customer: Customer | nul
     setSaving(true)
     try {
       if (customer) {
-        await api.put(`/customers/${customer.id}`, formData)
+        await api.put(`/erp/master-data/customers/${customer.id}`, formData)
       } else {
-        await api.post('/customers/', formData)
+        await api.post('/erp/master-data/customers', formData)
       }
       onSave()
     } catch (error) {

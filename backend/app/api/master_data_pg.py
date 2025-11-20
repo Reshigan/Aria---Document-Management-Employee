@@ -24,7 +24,7 @@ def get_connection():
 # ========================================
 # ========================================
 
-customers_router = APIRouter(prefix="/erp/master-data/customers", tags=["Master Data Customers"])
+customers_router = APIRouter(prefix="/api/erp/master-data/customers", tags=["Master Data Customers"])
 
 @customers_router.get("")
 async def list_customers(
@@ -242,7 +242,7 @@ async def delete_customer(
 # ========================================
 # ========================================
 
-suppliers_router = APIRouter(prefix="/erp/master-data/suppliers", tags=["Master Data Suppliers"])
+suppliers_router = APIRouter(prefix="/api/erp/master-data/suppliers", tags=["Master Data Suppliers"])
 
 @suppliers_router.get("")
 async def list_suppliers(
@@ -388,7 +388,7 @@ async def create_supplier(
 # ========================================
 # ========================================
 
-products_router = APIRouter(prefix="/erp/order-to-cash/products", tags=["Master Data Products"])
+products_router = APIRouter(prefix="/api/erp/order-to-cash/products", tags=["Master Data Products"])
 
 @products_router.get("")
 async def list_products(
