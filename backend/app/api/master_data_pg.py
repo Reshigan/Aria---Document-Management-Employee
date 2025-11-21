@@ -29,9 +29,12 @@ customers_router = APIRouter(prefix="/api/erp/master-data/customers", tags=["Mas
 @customers_router.get("")
 async def list_customers(
     search: Optional[str] = Query(None),
+    page: int = Query(1, ge=1, description="Page number (1-indexed)"),
+    page_size: int = Query(50, ge=1, le=1000, description="Items per page"),
+    sort: Optional[str] = Query("customer_name", description="Sort field"),
     current_user: Dict = Depends(get_current_user)
 ):
-    """List all customers"""
+    """List all customers with pagination, search, and sorting"""
     conn = get_connection()
     cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     
@@ -39,6 +42,17 @@ async def list_customers(
         company_id = current_user.get('company_id')
         if not company_id:
             raise HTTPException(status_code=400, detail="User must be associated with a company")
+        
+        count_query = "SELECT COUNT(*) FROM customers WHERE company_id = %s"
+        count_params = [company_id]
+        
+        if search:
+            count_query += " AND (customer_name ILIKE %s OR customer_code ILIKE %s OR email ILIKE %s)"
+            search_pattern = f"%{search}%"
+            count_params.extend([search_pattern, search_pattern, search_pattern])
+        
+        cursor.execute(count_query, count_params)
+        total_count = cursor.fetchone()['count']
         
         query = """
             SELECT id, customer_code, customer_name, email, phone, address, 
@@ -53,7 +67,14 @@ async def list_customers(
             search_pattern = f"%{search}%"
             params.extend([search_pattern, search_pattern, search_pattern])
         
-        query += " ORDER BY customer_name"
+        valid_sort_fields = ['customer_name', 'customer_code', 'created_at', 'updated_at']
+        sort_field = sort if sort in valid_sort_fields else 'customer_name'
+        query += f" ORDER BY {sort_field}"
+        
+        # Apply pagination
+        offset = (page - 1) * page_size
+        query += " LIMIT %s OFFSET %s"
+        params.extend([page_size, offset])
         
         cursor.execute(query, params)
         customers = cursor.fetchall()
@@ -76,7 +97,15 @@ async def list_customers(
                 'updated_at': customer['updated_at'].isoformat() if customer.get('updated_at') else None
             })
         
-        return result
+        return {
+            "data": result,
+            "meta": {
+                "page": page,
+                "page_size": page_size,
+                "total_count": total_count,
+                "total_pages": (total_count + page_size - 1) // page_size
+            }
+        }
     except HTTPException:
         raise
     except Exception as e:
@@ -247,9 +276,12 @@ suppliers_router = APIRouter(prefix="/api/erp/master-data/suppliers", tags=["Mas
 @suppliers_router.get("")
 async def list_suppliers(
     search: Optional[str] = Query(None),
+    page: int = Query(1, ge=1, description="Page number (1-indexed)"),
+    page_size: int = Query(50, ge=1, le=1000, description="Items per page"),
+    sort: Optional[str] = Query("supplier_name", description="Sort field"),
     current_user: Dict = Depends(get_current_user)
 ):
-    """List all suppliers"""
+    """List all suppliers with pagination, search, and sorting"""
     conn = get_connection()
     cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     
@@ -257,6 +289,17 @@ async def list_suppliers(
         company_id = current_user.get('company_id')
         if not company_id:
             raise HTTPException(status_code=400, detail="User must be associated with a company")
+        
+        count_query = "SELECT COUNT(*) FROM suppliers WHERE company_id = %s"
+        count_params = [company_id]
+        
+        if search:
+            count_query += " AND (supplier_name ILIKE %s OR supplier_code ILIKE %s OR email ILIKE %s)"
+            search_pattern = f"%{search}%"
+            count_params.extend([search_pattern, search_pattern, search_pattern])
+        
+        cursor.execute(count_query, count_params)
+        total_count = cursor.fetchone()['count']
         
         query = """
             SELECT id, supplier_code, supplier_name, email, phone, address,
@@ -271,7 +314,13 @@ async def list_suppliers(
             search_pattern = f"%{search}%"
             params.extend([search_pattern, search_pattern, search_pattern])
         
-        query += " ORDER BY supplier_name"
+        valid_sort_fields = ['supplier_name', 'supplier_code', 'created_at', 'updated_at']
+        sort_field = sort if sort in valid_sort_fields else 'supplier_name'
+        query += f" ORDER BY {sort_field}"
+        
+        offset = (page - 1) * page_size
+        query += " LIMIT %s OFFSET %s"
+        params.extend([page_size, offset])
         
         cursor.execute(query, params)
         suppliers = cursor.fetchall()
@@ -293,7 +342,15 @@ async def list_suppliers(
                 'updated_at': supplier['updated_at'].isoformat() if supplier.get('updated_at') else None
             })
         
-        return result
+        return {
+            "data": result,
+            "meta": {
+                "page": page,
+                "page_size": page_size,
+                "total_count": total_count,
+                "total_pages": (total_count + page_size - 1) // page_size
+            }
+        }
     except HTTPException:
         raise
     except Exception as e:
@@ -393,9 +450,12 @@ products_router = APIRouter(prefix="/api/erp/order-to-cash/products", tags=["Mas
 @products_router.get("")
 async def list_products(
     search: Optional[str] = Query(None),
+    page: int = Query(1, ge=1, description="Page number (1-indexed)"),
+    page_size: int = Query(50, ge=1, le=1000, description="Items per page"),
+    sort: Optional[str] = Query("product_name", description="Sort field"),
     current_user: Dict = Depends(get_current_user)
 ):
-    """List all products"""
+    """List all products with pagination, search, and sorting"""
     conn = get_connection()
     cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     
@@ -403,6 +463,17 @@ async def list_products(
         company_id = current_user.get('company_id')
         if not company_id:
             raise HTTPException(status_code=400, detail="User must be associated with a company")
+        
+        count_query = "SELECT COUNT(*) FROM products WHERE company_id = %s"
+        count_params = [company_id]
+        
+        if search:
+            count_query += " AND (product_name ILIKE %s OR product_code ILIKE %s OR description ILIKE %s)"
+            search_pattern = f"%{search}%"
+            count_params.extend([search_pattern, search_pattern, search_pattern])
+        
+        cursor.execute(count_query, count_params)
+        total_count = cursor.fetchone()['count']
         
         query = """
             SELECT id, product_code, product_name, description, unit_of_measure,
@@ -417,7 +488,13 @@ async def list_products(
             search_pattern = f"%{search}%"
             params.extend([search_pattern, search_pattern, search_pattern])
         
-        query += " ORDER BY product_name"
+        valid_sort_fields = ['product_name', 'product_code', 'selling_price', 'created_at', 'updated_at']
+        sort_field = sort if sort in valid_sort_fields else 'product_name'
+        query += f" ORDER BY {sort_field}"
+        
+        offset = (page - 1) * page_size
+        query += " LIMIT %s OFFSET %s"
+        params.extend([page_size, offset])
         
         cursor.execute(query, params)
         products = cursor.fetchall()
@@ -440,7 +517,15 @@ async def list_products(
                 'updated_at': product['updated_at'].isoformat() if product.get('updated_at') else None
             })
         
-        return result
+        return {
+            "data": result,
+            "meta": {
+                "page": page,
+                "page_size": page_size,
+                "total_count": total_count,
+                "total_pages": (total_count + page_size - 1) // page_size
+            }
+        }
     except HTTPException:
         raise
     except Exception as e:

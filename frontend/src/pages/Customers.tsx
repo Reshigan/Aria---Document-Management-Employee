@@ -17,7 +17,8 @@ export default function Customers() {
   const loadCustomers = async () => {
     try {
       const response = await api.get('/erp/master-data/customers')
-      setCustomers(response.data)
+      const data = response.data.data || response.data
+      setCustomers(Array.isArray(data) ? data : [])
     } catch (error) {
       console.error('Failed to load customers:', error)
     } finally {
