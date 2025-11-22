@@ -4,7 +4,7 @@
  */
 import { test, expect } from '@playwright/test';
 
-const BASE_URL = 'http://localhost:12000';
+const BASE_URL = process.env.BASE_URL || 'http://localhost:12001';
 const API_URL = 'http://localhost:8000';
 
 // Generate unique email for each test run

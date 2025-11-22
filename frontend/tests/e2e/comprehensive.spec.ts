@@ -7,7 +7,7 @@
 import { test, expect, Page } from '@playwright/test';
 
 // Test configuration
-const BASE_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
+const BASE_URL = process.env.FRONTEND_URL || 'http://localhost:12001';
 const DEMO_USERS = {
   admin: {
     email: 'admin@techforge.co.za',
