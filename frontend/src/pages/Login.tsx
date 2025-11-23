@@ -81,7 +81,12 @@ export default function Login() {
             disabled={isLoading}
             className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {isLoading ? 'Signing in...' : 'Sign in'}
+            {isLoading ? (
+              <span className="flex items-center justify-center gap-2">
+                <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" data-testid="loading-spinner"></span>
+                Signing in...
+              </span>
+            ) : 'Sign in'}
           </button>
         </form>
 
