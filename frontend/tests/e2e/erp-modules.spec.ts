@@ -6,13 +6,6 @@ import { test, expect, Page } from '@playwright/test';
 
 const BASE_URL = process.env.BASE_URL || 'http://localhost:12001';
 
-async function login(page: Page) {
-  await page.goto(`${BASE_URL}/login`);
-  await page.fill('input[type="email"]', 'admin@vantax.co.za');
-  await page.fill('input[type="password"]', 'admin123');
-  await page.click('button[type="submit"]');
-  await page.waitForURL(/dashboard|erp/, { timeout: 10000 });
-}
 
 test.describe('General Ledger Module', () => {
   test.beforeEach(async ({ page }) => {
