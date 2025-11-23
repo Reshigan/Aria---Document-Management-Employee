@@ -2,17 +2,10 @@
  * Comprehensive E2E tests for Documents and Ask Aria modules
  * Tests: Document Management, Ask Aria AI Chat
  */
-import { test, expect, Page } from '@playwright/test';
+import { test, expect } from '@playwright/test';
+import { login } from '../helpers/auth';
 
 const BASE_URL = process.env.BASE_URL || 'http://localhost:12001';
-
-async function login(page: Page) {
-  await page.goto(`${BASE_URL}/login`);
-  await page.fill('input[type="email"]', 'admin@vantax.co.za');
-  await page.fill('input[type="password"]', 'admin123');
-  await page.click('button[type="submit"]');
-  await page.waitForURL(/dashboard|documents/, { timeout: 10000 });
-}
 
 test.describe('Documents Module', () => {
   test.beforeEach(async ({ page }) => {
