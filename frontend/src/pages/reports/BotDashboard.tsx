@@ -46,7 +46,7 @@ export default function BotDashboardPage() {
       </h1>
 
       <div className="grid grid-cols-4 gap-6 mb-8">
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white rounded-lg shadow p-6" data-testid="metric-total-actions">
           <div className="flex items-center justify-between mb-2">
             <div className="text-sm font-medium text-gray-600">Total Actions</div>
             <BarChart3 className="h-5 w-5 text-blue-600" />
