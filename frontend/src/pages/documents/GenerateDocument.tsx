@@ -46,6 +46,11 @@ export default function GenerateDocumentPage() {
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Customer/Supplier *</label>
               <input type="text" className="w-full px-4 py-2 border border-gray-300 rounded-md" placeholder="Start typing to search..." />
+              <div className="mt-2 space-y-1">
+                <div className="p-2 hover:bg-gray-50 cursor-pointer rounded" data-testid="customer-abc-manufacturing">
+                  ABC Manufacturing Ltd.
+                </div>
+              </div>
             </div>
 
             <div className="grid grid-cols-2 gap-6">
