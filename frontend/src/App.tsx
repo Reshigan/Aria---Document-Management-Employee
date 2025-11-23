@@ -55,6 +55,7 @@ import GoodsReceiptDetail from './pages/ERP/Detail/GoodsReceiptDetail';
 import DataImport from './pages/Admin/DataImport';
 import RoleDashboard from './pages/Admin/RoleDashboard';
 import RBACManagement from './pages/Admin/RBACManagement';
+import MobileManagement from './pages/mobile/MobileManagement';
 import './styles/design-system.css';
 
 function App() {
@@ -186,6 +187,9 @@ function App() {
           <Route path="/admin/data-import" element={<DataImport />} />
           <Route path="/admin/dashboard" element={<RoleDashboard />} />
           <Route path="/admin/rbac" element={<RBACManagement />} />
+          
+          {/* Mobile */}
+          <Route path="/mobile" element={<MobileManagement />} />
               </Routes>
             </MainLayout>
           </ProtectedRoute>
