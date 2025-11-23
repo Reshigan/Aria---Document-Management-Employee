@@ -15,7 +15,7 @@ export default function PendingActionsPage() {
         <CheckSquare className="h-8 w-8" />
         My Pending Actions
       </h1>
-      <div className="bg-white rounded-lg shadow">
+      <div className="bg-white rounded-lg shadow" data-testid="actions-table">
         <DataTable
           data={actions}
           columns={[
@@ -28,8 +28,8 @@ export default function PendingActionsPage() {
             }},
             { key: 'actions', label: 'Actions', render: (row: any) => (
               <div className="flex gap-2">
-                <button className="p-2 text-green-600 hover:bg-green-50 rounded"><Check className="h-4 w-4" /></button>
-                <button className="p-2 text-red-600 hover:bg-red-50 rounded"><X className="h-4 w-4" /></button>
+                <button className="p-2 text-green-600 hover:bg-green-50 rounded" data-testid={`action-approve-${row.id}`}><Check className="h-4 w-4" /></button>
+                <button className="p-2 text-red-600 hover:bg-red-50 rounded" data-testid={`action-reject-${row.id}`}><X className="h-4 w-4" /></button>
               </div>
             )}
           ]}

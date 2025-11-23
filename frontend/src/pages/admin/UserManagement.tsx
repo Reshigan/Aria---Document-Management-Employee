@@ -282,6 +282,7 @@ export default function UserManagementPage() {
         <Button
           onClick={() => setInviteModal({ ...inviteModal, isOpen: true })}
           className="bg-blue-600 hover:bg-blue-700 text-white"
+          data-testid="button-invite-user"
         >
           <UserPlus className="h-4 w-4 mr-2" />
           Invite User
@@ -291,12 +292,12 @@ export default function UserManagementPage() {
       {/* Stats */}
       <div className="grid grid-cols-4 gap-6 mb-6">
         {[
-          { label: 'Total Users', value: users.length, color: 'blue' },
-          { label: 'Active', value: users.filter(u => u.status === 'active').length, color: 'green' },
-          { label: 'Invited', value: users.filter(u => u.status === 'invited').length, color: 'yellow' },
-          { label: 'Inactive', value: users.filter(u => u.status === 'inactive').length, color: 'red' }
+          { label: 'Total Users', value: users.length, color: 'blue', testId: 'stat-total' },
+          { label: 'Active', value: users.filter(u => u.status === 'active').length, color: 'green', testId: 'stat-active' },
+          { label: 'Invited', value: users.filter(u => u.status === 'invited').length, color: 'yellow', testId: 'stat-invited' },
+          { label: 'Inactive', value: users.filter(u => u.status === 'inactive').length, color: 'red', testId: 'stat-inactive' }
         ].map((stat, idx) => (
-          <div key={idx} className="bg-white rounded-lg shadow p-6">
+          <div key={idx} className="bg-white rounded-lg shadow p-6" data-testid={stat.testId}>
             <div className="text-sm font-medium text-gray-600">{stat.label}</div>
             <div className={`text-3xl font-bold mt-2 text-${stat.color}-600`}>{stat.value}</div>
           </div>
@@ -304,7 +305,7 @@ export default function UserManagementPage() {
       </div>
 
       {/* Users Table */}
-      <div className="bg-white rounded-lg shadow">
+      <div className="bg-white rounded-lg shadow" data-testid="user-table">
         <DataTable
           data={users}
           columns={columns}
@@ -318,7 +319,7 @@ export default function UserManagementPage() {
       {/* Invite User Modal */}
       {inviteModal.isOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6" data-testid="modal-invite-user">
             <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
               <UserPlus className="h-6 w-6" />
               Invite New User
