@@ -32,6 +32,9 @@ export default defineConfig({
 
     /* Record video on failure */
     video: 'retain-on-failure',
+
+    /* Ignore HTTPS errors for production testing */
+    ignoreHTTPSErrors: true,
   },
 
   /* Configure projects for major browsers */
