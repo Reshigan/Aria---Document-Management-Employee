@@ -1,5 +1,7 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { MainLayout } from './components/layout/MainLayout';
+import { ProtectedRoute } from './components/auth/ProtectedRoute';
+import Login from './pages/auth/Login';
 import ExecutiveDashboard from './pages/Dashboard/ExecutiveDashboard';
 import Quotes from './pages/ERP/Quotes';
 import SalesOrders from './pages/ERP/SalesOrders';
@@ -58,11 +60,18 @@ import './styles/design-system.css';
 function App() {
   return (
     <BrowserRouter>
-      <MainLayout>
-        <Routes>
-          {/* Dashboard */}
-          <Route path="/" element={<ExecutiveDashboard />} />
-          <Route path="/dashboard" element={<ExecutiveDashboard />} />
+      <Routes>
+        {/* Public routes */}
+        <Route path="/login" element={<Login />} />
+        
+        {/* Protected routes */}
+        <Route path="/*" element={
+          <ProtectedRoute>
+            <MainLayout>
+              <Routes>
+                {/* Dashboard */}
+                <Route path="/" element={<ExecutiveDashboard />} />
+                <Route path="/dashboard" element={<ExecutiveDashboard />} />
           <Route path="/erp-dashboard" element={<ERPDashboard />} />
           
           {/* Order-to-Cash */}
@@ -177,8 +186,11 @@ function App() {
           <Route path="/admin/data-import" element={<DataImport />} />
           <Route path="/admin/dashboard" element={<RoleDashboard />} />
           <Route path="/admin/rbac" element={<RBACManagement />} />
-        </Routes>
-      </MainLayout>
+              </Routes>
+            </MainLayout>
+          </ProtectedRoute>
+        } />
+      </Routes>
     </BrowserRouter>
   );
 }
