@@ -2,10 +2,20 @@
  * Comprehensive E2E tests for Documents and Ask Aria modules
  * Tests: Document Management, Ask Aria AI Chat
  */
-import { test, expect } from '@playwright/test';
-import { login } from '../helpers/auth';
+import { test, expect, Page } from '@playwright/test';
 
 const BASE_URL = process.env.FRONTEND_URL || 'http://localhost:12001';
+const TEST_EMAIL = process.env.TEST_EMAIL!;
+const TEST_PASSWORD = process.env.TEST_PASSWORD!;
+
+// Helper function for login
+async function login(page: Page) {
+  await page.goto(`${BASE_URL}/login`);
+  await page.fill('input[name="email"]', TEST_EMAIL);
+  await page.fill('input[name="password"]', TEST_PASSWORD);
+  await page.click('button[type="submit"]');
+  await page.waitForLoadState('networkidle');
+}
 
 test.describe('Documents Module', () => {
   test.beforeEach(async ({ page }) => {
