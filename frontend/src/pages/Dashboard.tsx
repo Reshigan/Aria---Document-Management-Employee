@@ -176,6 +176,21 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="bg-white rounded-lg shadow p-6" data-testid="revenue-chart">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">Revenue Chart</h2>
+          <div className="h-64 flex items-center justify-center text-gray-400">
+            Revenue chart placeholder
+          </div>
+        </div>
+        <div className="bg-white rounded-lg shadow p-6" data-testid="expense-chart">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">Expense Chart</h2>
+          <div className="h-64 flex items-center justify-center text-gray-400">
+            Expense chart placeholder
+          </div>
+        </div>
+      </div>
     </div>
   )
 }
