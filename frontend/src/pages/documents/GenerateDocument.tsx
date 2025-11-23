@@ -18,7 +18,7 @@ export default function GenerateDocumentPage() {
         Generate Document
       </h1>
 
-      <div className="bg-white rounded-lg shadow p-6 space-y-6">
+      <div className="bg-white rounded-lg shadow p-6 space-y-6" data-testid="invoice-form">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Document Type *
@@ -60,16 +60,16 @@ export default function GenerateDocumentPage() {
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Line Items</label>
               <div className="border border-gray-300 rounded-md p-4">
-                <button className="text-blue-600 hover:underline text-sm">+ Add Line Item</button>
+                <button className="text-blue-600 hover:underline text-sm" data-testid="button-add-line-item">+ Add Line Item</button>
               </div>
             </div>
 
             <div className="flex gap-3 pt-4 border-t">
-              <button className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
+              <button className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50" data-testid="button-preview">
                 <FileText className="h-4 w-4 inline mr-2" />
                 Preview
               </button>
-              <button className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+              <button className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700" data-testid="button-download">
                 <Download className="h-4 w-4 inline mr-2" />
                 Generate & Download
               </button>

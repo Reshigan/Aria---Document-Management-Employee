@@ -22,7 +22,11 @@ export default function IntegrationsListPage() {
 
       <div className="grid grid-cols-3 gap-6">
         {integrations.map((integration) => (
-          <div key={integration.id} className="bg-white rounded-lg shadow p-6">
+          <div 
+            key={integration.id} 
+            className="bg-white rounded-lg shadow p-6"
+            data-testid={`integration-${integration.id}`}
+          >
             <div className="flex items-start justify-between mb-4">
               <div className="flex items-center gap-3">
                 <div className="text-3xl">{integration.logo}</div>
@@ -54,10 +58,16 @@ export default function IntegrationsListPage() {
 
             {integration.connected ? (
               <div className="flex gap-2">
-                <button className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
+                <button 
+                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                  data-testid={integration.id === 'xero' ? 'button-configure-xero' : undefined}
+                >
                   Configure
                 </button>
-                <button className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                <button 
+                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                  data-testid={integration.id === 'xero' ? 'button-sync-xero' : undefined}
+                >
                   Sync Now
                 </button>
               </div>

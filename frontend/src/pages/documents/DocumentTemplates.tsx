@@ -37,6 +37,7 @@ export default function DocumentTemplatesPage() {
           value={selectedCategory}
           onChange={(e) => setSelectedCategory(e.target.value)}
           className="px-4 py-2 border border-gray-300 rounded-lg"
+          data-testid="filter-sales"
         >
           <option>All Categories</option>
           {DOCUMENT_CATEGORIES.map((cat) => (
@@ -47,12 +48,20 @@ export default function DocumentTemplatesPage() {
 
       <div className="grid grid-cols-3 gap-6">
         {DOCUMENT_CATEGORIES.map((category) => (
-          <div key={category.name} className="bg-white rounded-lg shadow p-6">
+          <div 
+            key={category.name} 
+            className="bg-white rounded-lg shadow p-6"
+            data-testid={`category-${category.name.toLowerCase().replace(/[^a-z]/g, '')}`}
+          >
             <h3 className="text-lg font-bold mb-2">{category.name}</h3>
             <p className="text-gray-600 text-sm mb-4">{category.count} templates</p>
             <ul className="space-y-2">
               {category.templates.map((template) => (
-                <li key={template} className="text-sm text-blue-600 hover:underline cursor-pointer">
+                <li 
+                  key={template} 
+                  className="text-sm text-blue-600 hover:underline cursor-pointer"
+                  data-testid={template === 'Tax Invoice' ? 'template-tax-invoice' : undefined}
+                >
                   {template}
                 </li>
               ))}
