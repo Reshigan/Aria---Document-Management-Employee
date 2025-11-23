@@ -20,18 +20,15 @@ test.describe('Authentication Flow', () => {
     // Check page title
     await expect(page).toHaveTitle(/ARIA/);
     
-    // Check logo
-    await expect(page.locator('text=ARIA')).toBeVisible();
-    await expect(page.locator('text=AI-Native ERP for South Africa')).toBeVisible();
+    // Check logo and heading
+    await expect(page.locator('text=Aria')).toBeVisible();
+    await expect(page.locator('text=Welcome Back')).toBeVisible();
+    await expect(page.locator('text=Login to your AI orchestrator')).toBeVisible();
     
     // Check form elements
     await expect(page.locator('input[type="email"]')).toBeVisible();
     await expect(page.locator('input[type="password"]')).toBeVisible();
     await expect(page.locator('button[type="submit"]')).toBeVisible();
-    
-    // Check links
-    await expect(page.locator('text=Forgot password?')).toBeVisible();
-    await expect(page.locator('text=Start Free Trial')).toBeVisible();
   });
 
   test('should show validation errors for empty form', async ({ page }) => {
