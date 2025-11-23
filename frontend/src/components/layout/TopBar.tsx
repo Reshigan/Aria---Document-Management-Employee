@@ -20,8 +20,11 @@ export const TopBar: React.FC = () => {
           <span className="topbar-badge">3</span>
         </button>
 
-        <button className="topbar-action-btn" title="Profile">
+        <button className="topbar-action-btn" title="Profile" data-testid="user-menu">
           <User size={20} />
+        </button>
+        <button className="topbar-action-btn" title="Logout" data-testid="logout" style={{ display: 'none' }}>
+          Logout
         </button>
       </div>
     </header>
