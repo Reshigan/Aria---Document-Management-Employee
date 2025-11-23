@@ -45,7 +45,8 @@ export default function Products() {
     try {
       setLoading(true);
       const response = await api.get('/erp/order-to-cash/products');
-      setProducts(response.data);
+      const data = response.data.data || response.data;
+      setProducts(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('Error loading products:', error);
     } finally {
