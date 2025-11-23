@@ -92,7 +92,11 @@ export default function Customers() {
             </thead>
             <tbody className="divide-y divide-gray-200">
               {filteredCustomers.map((customer) => (
-                <tr key={customer.id} className="hover:bg-gray-50">
+                <tr 
+                  key={customer.id} 
+                  className="hover:bg-gray-50"
+                  data-testid={customer.name === 'ABC Manufacturing' ? 'customer-abc-manufacturing' : undefined}
+                >
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{customer.customer_code}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{customer.name}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{customer.email || '-'}</td>
