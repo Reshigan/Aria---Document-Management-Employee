@@ -1,8 +1,8 @@
 import { test, expect } from '@playwright/test'
 
 test('homepage loads successfully', async ({ page }) => {
-  // Navigate to the app (CI starts it on port 12000)
-  await page.goto('http://localhost:12000')
+  // Navigate to the app (CI starts it on port 12001)
+  await page.goto('http://localhost:12001')
   
   // Wait for the page to load
   await page.waitForLoadState('networkidle')

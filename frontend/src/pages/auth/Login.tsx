@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Bot, Mail, Lock, ArrowRight } from 'lucide-react';
-import { auth } from '../../lib/api';
+import { Mail, Lock, ArrowRight } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 
-export const Login: React.FC = () => {
+const Login: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -18,15 +17,10 @@ export const Login: React.FC = () => {
     setError('');
 
     try {
-      const formData = new URLSearchParams();
-      formData.append('username', email);
-      formData.append('password', password);
-      
-      const { data } = await auth.login(formData.toString());
-      login(data.access_token, data.user);
-      navigate('/app');
+      await login({ email, password });
+      navigate('/dashboard');
     } catch (err: any) {
-      setError(err.response?.data?.detail || 'Login failed');
+      setError(err.message || 'Login failed');
     } finally {
       setLoading(false);
     }
@@ -38,7 +32,7 @@ export const Login: React.FC = () => {
         <div className="text-center mb-8">
           <div className="inline-flex items-center space-x-3 mb-4">
             <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
-              <Agent className="w-7 h-7 text-white" />
+              <span className="text-2xl font-bold text-white">A</span>
             </div>
             <span className="text-3xl font-bold text-white">Aria</span>
           </div>
@@ -117,3 +111,5 @@ export const Login: React.FC = () => {
     </div>
   );
 };
+
+export default Login;
