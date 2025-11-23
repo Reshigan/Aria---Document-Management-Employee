@@ -57,7 +57,14 @@ export default function UserManagementPage() {
         first_name: inviteModal.firstName,
         last_name: inviteModal.lastName
       });
-      alert('Invitation sent successfully!');
+      // Show success message
+      const successDiv = document.createElement('div');
+      successDiv.setAttribute('data-testid', 'success-message');
+      successDiv.className = 'fixed top-4 right-4 bg-green-50 border border-green-200 text-green-700 px-6 py-3 rounded-lg shadow-lg z-50';
+      successDiv.textContent = 'Invitation sent successfully!';
+      document.body.appendChild(successDiv);
+      setTimeout(() => successDiv.remove(), 3000);
+      
       setInviteModal({ isOpen: false, email: '', role: 'employee', firstName: '', lastName: '' });
       fetchUsers();
     } catch (error) {
@@ -402,6 +409,7 @@ export default function UserManagementPage() {
                 onClick={handleInviteUser}
                 disabled={!inviteModal.email || !inviteModal.firstName || !inviteModal.lastName}
                 className="bg-blue-600 hover:bg-blue-700 text-white"
+                data-testid="button-send-invitation"
               >
                 <Mail className="h-4 w-4 mr-2" />
                 Send Invitation
