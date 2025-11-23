@@ -67,6 +67,7 @@ export default function Dashboard() {
           icon={DollarSign}
           color="blue"
           subtitle={`Overdue: ${formatCurrency(stats?.overdue_receivables || 0)}`}
+          testId="metric-revenue"
         />
         <StatCard
           title="Total Payables"
@@ -74,6 +75,7 @@ export default function Dashboard() {
           icon={AlertCircle}
           color="orange"
           subtitle={`Overdue: ${formatCurrency(stats?.overdue_payables || 0)}`}
+          testId="metric-expenses"
         />
         <StatCard
           title="Revenue (MTD)"
@@ -81,6 +83,7 @@ export default function Dashboard() {
           icon={TrendingUp}
           color="green"
           subtitle={`Growth: ${stats?.revenue_growth?.toFixed(1) || 0}%`}
+          testId="revenue-chart"
         />
         <StatCard
           title="Profit (MTD)"
@@ -88,6 +91,7 @@ export default function Dashboard() {
           icon={DollarSign}
           color="purple"
           subtitle="Net profit this month"
+          testId="metric-profit"
         />
       </div>
 
@@ -182,9 +186,10 @@ interface StatCardProps {
   icon: any
   color: string
   subtitle?: string
+  testId?: string
 }
 
-function StatCard({ title, value, icon: Icon, color, subtitle }: StatCardProps) {
+function StatCard({ title, value, icon: Icon, color, subtitle, testId }: StatCardProps) {
   const colors = {
     blue: 'bg-blue-100 text-blue-600',
     orange: 'bg-orange-100 text-orange-600',
@@ -193,7 +198,7 @@ function StatCard({ title, value, icon: Icon, color, subtitle }: StatCardProps) 
   }
 
   return (
-    <div className="bg-white rounded-lg shadow p-6">
+    <div className="bg-white rounded-lg shadow p-6" data-testid={testId}>
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-sm font-medium text-gray-600">{title}</h3>
         <div className={`p-2 rounded-lg ${colors[color as keyof typeof colors]}`}>

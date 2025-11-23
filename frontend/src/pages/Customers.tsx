@@ -57,6 +57,7 @@ export default function Customers() {
         <button
           onClick={() => { setEditingCustomer(null); setShowModal(true) }}
           className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-blue-700"
+          data-testid="button-add-customer"
         >
           <Plus className="h-5 w-5 mr-2" />
           Add Customer
@@ -78,7 +79,7 @@ export default function Customers() {
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full">
+          <table className="w-full" data-testid="customer-table">
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Code</th>
