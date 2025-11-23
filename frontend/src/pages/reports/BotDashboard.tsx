@@ -55,7 +55,7 @@ export default function BotDashboardPage() {
           <div className="text-sm text-green-600 mt-2">↑ 12% from last month</div>
         </div>
 
-        <div className="bg-white rounded-lg shadow p-6" data-testid="success-rate">
+        <div className="bg-white rounded-lg shadow p-6" data-testid="metric-success-rate">
           <div className="flex items-center justify-between mb-2">
             <div className="text-sm font-medium text-gray-600">Success Rate</div>
             <CheckCircle className="h-5 w-5 text-green-600" />
@@ -64,7 +64,7 @@ export default function BotDashboardPage() {
           <div className="text-sm text-green-600 mt-2">↑ 2% from last month</div>
         </div>
 
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white rounded-lg shadow p-6" data-testid="metric-time-saved">
           <div className="flex items-center justify-between mb-2">
             <div className="text-sm font-medium text-gray-600">Time Saved</div>
             <Clock className="h-5 w-5 text-purple-600" />
