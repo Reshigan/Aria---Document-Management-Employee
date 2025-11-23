@@ -2,13 +2,13 @@ import React, { useState } from 'react';
 import { FileText, Search } from 'lucide-react';
 
 const DOCUMENT_CATEGORIES = [
-  { name: 'Sales', count: 11, templates: ['Quote', 'Sales Order', 'Delivery Note', 'Tax Invoice', 'Credit Note', 'Debit Note', 'Statement'] },
-  { name: 'Purchase', count: 8, templates: ['Purchase Requisition', 'RFQ', 'Purchase Order', 'GRN'] },
-  { name: 'Manufacturing', count: 10, templates: ['BOM', 'Manufacturing Order', 'Work Order', 'Job Card'] },
-  { name: 'Inventory', count: 10, templates: ['Stock Transfer', 'Stock Adjustment', 'Stock Take Sheet'] },
-  { name: 'HR/Payroll', count: 12, templates: ['Employment Contract', 'Payslip', 'IRP5', 'Leave Request'] },
-  { name: 'Finance', count: 13, templates: ['Payment Voucher', 'Journal Entry', 'P&L', 'Balance Sheet'] },
-  { name: 'Compliance (SA)', count: 9, templates: ['VAT201', 'EMP201', 'BBBEE Certificate', 'Tax Clearance'] }
+  { name: 'Sales', testId: 'category-sales', count: 11, templates: ['Quote', 'Sales Order', 'Delivery Note', 'Tax Invoice', 'Credit Note', 'Debit Note', 'Statement'] },
+  { name: 'Purchase', testId: 'category-purchase', count: 8, templates: ['Purchase Requisition', 'RFQ', 'Purchase Order', 'GRN'] },
+  { name: 'Manufacturing', testId: 'category-manufacturing', count: 10, templates: ['BOM', 'Manufacturing Order', 'Work Order', 'Job Card'] },
+  { name: 'Inventory', testId: 'category-inventory', count: 10, templates: ['Stock Transfer', 'Stock Adjustment', 'Stock Take Sheet'] },
+  { name: 'HR/Payroll', testId: 'category-hr', count: 12, templates: ['Employment Contract', 'Payslip', 'IRP5', 'Leave Request'] },
+  { name: 'Finance', testId: 'category-finance', count: 13, templates: ['Payment Voucher', 'Journal Entry', 'P&L', 'Balance Sheet'] },
+  { name: 'Compliance (SA)', testId: 'category-compliance', count: 9, templates: ['VAT201', 'EMP201', 'BBBEE Certificate', 'Tax Clearance'] }
 ];
 
 export default function DocumentTemplatesPage() {
@@ -51,7 +51,7 @@ export default function DocumentTemplatesPage() {
           <div 
             key={category.name} 
             className="bg-white rounded-lg shadow p-6"
-            data-testid={`category-${category.name.toLowerCase().replace(/[^a-z]/g, '')}`}
+            data-testid={category.testId}
           >
             <h3 className="text-lg font-bold mb-2">{category.name}</h3>
             <p className="text-gray-600 text-sm mb-4">{category.count} templates</p>
