@@ -67,7 +67,7 @@ export default function Dashboard() {
           icon={DollarSign}
           color="blue"
           subtitle={`Overdue: ${formatCurrency(stats?.overdue_receivables || 0)}`}
-          testId="metric-revenue"
+          testId="metric-cost-saved"
         />
         <StatCard
           title="Total Payables"
@@ -83,7 +83,7 @@ export default function Dashboard() {
           icon={TrendingUp}
           color="green"
           subtitle={`Growth: ${stats?.revenue_growth?.toFixed(1) || 0}%`}
-          testId="revenue-chart"
+          testId="metric-success-rate"
         />
         <StatCard
           title="Profit (MTD)"
@@ -91,7 +91,7 @@ export default function Dashboard() {
           icon={DollarSign}
           color="purple"
           subtitle="Net profit this month"
-          testId="metric-profit"
+          testId="metric-time-saved"
         />
       </div>
 
