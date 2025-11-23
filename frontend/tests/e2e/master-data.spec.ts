@@ -4,7 +4,7 @@
  */
 import { test, expect, Page } from '@playwright/test';
 
-const BASE_URL = process.env.BASE_URL || 'http://localhost:12001';
+const BASE_URL = process.env.FRONTEND_URL || 'http://localhost:12001';
 
 
 test.describe('Customers Module', () => {

@@ -5,7 +5,7 @@
 import { test, expect } from '@playwright/test';
 import { login } from '../helpers/auth';
 
-const BASE_URL = process.env.BASE_URL || 'http://localhost:12001';
+const BASE_URL = process.env.FRONTEND_URL || 'http://localhost:12001';
 
 test.describe('Documents Module', () => {
   test.beforeEach(async ({ page }) => {
