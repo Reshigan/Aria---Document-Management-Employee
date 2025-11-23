@@ -12,6 +12,7 @@ const INTEGRATIONS = [
 
 export default function IntegrationsListPage() {
   const [integrations, setIntegrations] = useState(INTEGRATIONS);
+  const [showConfigModal, setShowConfigModal] = useState(false);
 
   return (
     <div className="container mx-auto p-6">
@@ -61,6 +62,7 @@ export default function IntegrationsListPage() {
                 <button 
                   className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
                   data-testid={integration.id === 'xero' ? 'button-configure-xero' : undefined}
+                  onClick={() => integration.id === 'xero' && setShowConfigModal(true)}
                 >
                   Configure
                 </button>
@@ -79,6 +81,43 @@ export default function IntegrationsListPage() {
           </div>
         ))}
       </div>
+
+      {/* Xero Config Modal */}
+      {showConfigModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6" data-testid="modal-xero-config">
+            <h2 className="text-xl font-bold text-gray-900 mb-4">Configure Xero Integration</h2>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Client ID</label>
+                <input type="text" className="w-full px-4 py-2 border border-gray-300 rounded-md" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Client Secret</label>
+                <input type="password" className="w-full px-4 py-2 border border-gray-300 rounded-md" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Tenant ID</label>
+                <input type="text" className="w-full px-4 py-2 border border-gray-300 rounded-md" />
+              </div>
+            </div>
+            <div className="flex justify-end gap-3 mt-6">
+              <button
+                onClick={() => setShowConfigModal(false)}
+                className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => setShowConfigModal(false)}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -83,7 +83,7 @@ export default function Dashboard() {
           icon={TrendingUp}
           color="green"
           subtitle={`Growth: ${stats?.revenue_growth?.toFixed(1) || 0}%`}
-          testId="metric-success-rate"
+          testId="metric-revenue"
         />
         <StatCard
           title="Profit (MTD)"
@@ -91,7 +91,7 @@ export default function Dashboard() {
           icon={DollarSign}
           color="purple"
           subtitle="Net profit this month"
-          testId="metric-time-saved"
+          testId="metric-profit"
         />
       </div>
 
