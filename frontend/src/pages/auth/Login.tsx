@@ -43,7 +43,7 @@ const Login: React.FC = () => {
         <div className="bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 p-8">
           <form onSubmit={handleSubmit} className="space-y-6">
             {error && (
-              <div className="p-4 bg-red-500/20 border border-red-500/50 rounded-lg text-red-200 text-sm">
+              <div data-testid="error-message" className="p-4 bg-red-500/20 border border-red-500/50 rounded-lg text-red-200 text-sm">
                 {error}
               </div>
             )}
@@ -56,6 +56,7 @@ const Login: React.FC = () => {
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                 <input
                   type="email"
+                  name="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
@@ -73,6 +74,7 @@ const Login: React.FC = () => {
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                 <input
                   type="password"
+                  name="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
