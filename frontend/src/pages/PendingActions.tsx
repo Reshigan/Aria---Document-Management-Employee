@@ -63,31 +63,46 @@ export default function PendingActionsPage() {
         <DataTable
           data={filteredActions}
           columns={[
-            { key: 'type', label: 'Type' },
-            { key: 'description', label: 'Description' },
-            { key: 'amount', label: 'Amount', render: (row: any) => row.amount ? `R ${row.amount}` : '-' },
-            { key: 'priority', label: 'Priority', render: (row: any) => {
-              const colors = { high: 'text-red-600', medium: 'text-yellow-600', low: 'text-green-600' };
-              return <span className={colors[row.priority as keyof typeof colors]}>{row.priority}</span>;
-            }},
-            { key: 'actions', label: 'Actions', render: (row: any) => (
-              <div className="flex gap-2">
-                <button 
-                  className="p-2 text-green-600 hover:bg-green-50 rounded" 
-                  data-testid={`action-approve-${row.id}`}
-                  onClick={handleApprove}
-                >
-                  <Check className="h-4 w-4" />
-                </button>
-                <button 
-                  className="p-2 text-red-600 hover:bg-red-50 rounded" 
-                  data-testid={`action-reject-${row.id}`}
-                  onClick={() => setShowRejectModal(true)}
-                >
-                  <X className="h-4 w-4" />
-                </button>
-              </div>
-            )}
+            { key: 'type', header: 'Type', accessor: (row: any) => row.type },
+            { key: 'description', header: 'Description', accessor: (row: any) => row.description },
+            { 
+              key: 'amount', 
+              header: 'Amount', 
+              accessor: (row: any) => row.amount,
+              render: (value: any) => value ? `R ${value}` : '-'
+            },
+            { 
+              key: 'priority', 
+              header: 'Priority', 
+              accessor: (row: any) => row.priority,
+              render: (value: any) => {
+                const colors = { high: 'text-red-600', medium: 'text-yellow-600', low: 'text-green-600' };
+                return <span className={colors[value as keyof typeof colors]}>{value}</span>;
+              }
+            },
+            { 
+              key: 'actions', 
+              header: 'Actions', 
+              accessor: (row: any) => row.id,
+              render: (value: any, row: any) => (
+                <div className="flex gap-2">
+                  <button 
+                    className="p-2 text-green-600 hover:bg-green-50 rounded" 
+                    data-testid={`action-approve-${row.id}`}
+                    onClick={handleApprove}
+                  >
+                    <Check className="h-4 w-4" />
+                  </button>
+                  <button 
+                    className="p-2 text-red-600 hover:bg-red-50 rounded" 
+                    data-testid={`action-reject-${row.id}`}
+                    onClick={() => setShowRejectModal(true)}
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+              )
+            }
           ]}
           searchable={true}
           exportable={false}
