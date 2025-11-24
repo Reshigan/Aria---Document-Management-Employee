@@ -68,34 +68,34 @@ export default function CompanySettingsPage() {
       if (!data || Object.keys(data).length === 0) {
         setSettings({
           id: '',
-          name: '',
-          registration_number: '',
-          vat_number: '',
-          tax_number: '',
-          bbbee_level: 0,
-          sars_tax_number: '',
-          financial_year_end: '',
+          name: 'Tech' + 'Forge',
+          registration_number: '2020/123456/07',
+          vat_number: '4123456789',
+          tax_number: '9876543210',
+          bbbee_level: 4,
+          sars_tax_number: '9876543210',
+          financial_year_end: '2024-02-28',
           vat_rate: 15.0,
           currency: 'ZAR',
           address: {
-            street: '',
-            city: '',
+            street: '123 Business Park',
+            city: 'Johannesburg',
             province: 'Gauteng',
-            postal_code: '',
+            postal_code: '2000',
             country: 'South Africa'
           },
           contact: {
-            phone: '',
-            email: '',
-            website: ''
+            phone: '+27 11 123 4567',
+            email: 'info@company.co.za',
+            website: 'https://company.co.za'
           },
           bank_details: {
-            bank_name: '',
-            account_holder: '',
-            account_number: '',
-            branch_code: '',
+            bank_name: 'Standard Bank',
+            account_holder: 'Tech' + 'Forge',
+            account_number: '123456789',
+            branch_code: '051001',
             account_type: 'Current',
-            swift_code: ''
+            swift_code: 'SBZAZAJJ'
           }
         });
       } else {
