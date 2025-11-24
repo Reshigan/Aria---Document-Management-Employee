@@ -29,7 +29,7 @@ export default function PendingActionsPage() {
     <div className="container mx-auto p-6">
       <h1 className="text-3xl font-bold mb-6 flex items-center gap-3">
         <CheckSquare className="h-8 w-8" />
-        My Pending Actions
+        Pending Actions
       </h1>
       <div className="bg-white rounded-lg shadow" data-testid="actions-table">
         <DataTable

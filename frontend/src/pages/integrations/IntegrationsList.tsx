@@ -5,7 +5,7 @@ const INTEGRATIONS = [
   { id: 'xero', name: 'Xero', logo: '📊', connected: true, lastSync: '2 hours ago' },
   { id: 'sage', name: 'Sage 50cloud', logo: '💼', connected: true, lastSync: '1 day ago' },
   { id: 'pastel', name: 'Pastel', logo: '📋', connected: false, lastSync: null },
-  { id: 'microsoft', name: 'Microsoft 365', logo: '🔷', connected: true, lastSync: '5 min ago' },
+  { id: 'microsoft365', name: 'Microsoft 365', logo: '🔷', connected: true, lastSync: '5 min ago' },
   { id: 'sars', name: 'SARS eFiling', logo: '🇿🇦', connected: true, lastSync: '3 days ago' },
   { id: 'odoo', name: 'Odoo', logo: '🔧', connected: false, lastSync: null }
 ];
