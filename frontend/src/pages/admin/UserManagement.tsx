@@ -24,6 +24,7 @@ interface InviteUserModal {
 export default function UserManagementPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
   const [inviteModal, setInviteModal] = useState<InviteUserModal>({
     isOpen: false,
     email: '',
@@ -316,6 +317,8 @@ export default function UserManagementPage() {
         <input
           type="text"
           name="search"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="Search users..."
           className="w-full px-4 py-2 border border-gray-300 rounded-md"
         />
@@ -324,10 +327,18 @@ export default function UserManagementPage() {
       {/* Users Table */}
       <div className="bg-white rounded-lg shadow" data-testid="user-table">
         <DataTable
-          data={users}
+          data={users.filter(user => {
+            if (!searchQuery) return true;
+            const query = searchQuery.toLowerCase();
+            return (
+              user.first_name?.toLowerCase().includes(query) ||
+              user.last_name?.toLowerCase().includes(query) ||
+              user.email?.toLowerCase().includes(query) ||
+              user.role?.toLowerCase().includes(query)
+            );
+          })}
           columns={columns}
-          searchable={true}
-          searchPlaceholder="Search users..."
+          searchable={false}
           exportable={true}
           exportFilename="users"
         />
