@@ -41,8 +41,8 @@ export default function BotDashboardPage() {
   return (
     <div className="container mx-auto p-6">
       <h1 className="text-3xl font-bold text-gray-900 mb-6 flex items-center gap-3">
-        <Agent className="h-8 w-8" />
-        Agent Activity Dashboard
+        <Bot className="h-8 w-8" />
+        Bot Dashboard
       </h1>
 
       <div className="grid grid-cols-4 gap-6 mb-8">

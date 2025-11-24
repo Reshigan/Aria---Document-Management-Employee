@@ -38,6 +38,7 @@ import FinancialReports from './pages/Reports/FinancialReports';
 import PayrollActivityReport from './pages/reports/PayrollActivityReport';
 import ExpenseManagementReport from './pages/reports/ExpenseManagementReport';
 import BbbeeComplianceReport from './pages/reports/BbbeeComplianceReport';
+import BotDashboard from './pages/reports/BotDashboard';
 import BankingDashboard from './pages/Banking/BankingDashboard';
 import ChatInterface from './components/Chat/ChatInterface';
 import AskAriaChat from './pages/AskAria/AskAriaChat';
@@ -56,6 +57,10 @@ import DataImport from './pages/Admin/DataImport';
 import RoleDashboard from './pages/Admin/RoleDashboard';
 import RBACManagement from './pages/Admin/RBACManagement';
 import MobileManagement from './pages/mobile/MobileManagement';
+import ProfitLossStatement from './pages/financial/ProfitLossStatement';
+import BalanceSheet from './pages/financial/BalanceSheet';
+import PendingActions from './pages/PendingActions';
+import IntegrationsList from './pages/integrations/IntegrationsList';
 import './styles/design-system.css';
 
 function App() {
@@ -152,6 +157,9 @@ function App() {
           
           {/* Reports */}
           <Route path="/reports" element={<ReportsDashboard />} />
+          <Route path="/reports/bot-dashboard" element={<BotDashboard />} />
+          <Route path="/reports/profit-loss" element={<ProfitLossStatement />} />
+          <Route path="/reports/balance-sheet" element={<BalanceSheet />} />
           <Route path="/reports/ar-aging" element={<AgedReceivablesReport />} />
           <Route path="/reports/ar-ap/ar-aging" element={<AgedReceivablesReport />} />
           <Route path="/reports/ar-ap/ap-aging" element={<AgedReceivablesReport />} />
@@ -178,6 +186,12 @@ function App() {
           <Route path="/ask-aria/classify" element={<DocumentClassification />} />
           <Route path="/document-classification" element={<DocumentClassification />} />
           <Route path="/documents" element={<DocumentClassification />} />
+          
+          {/* Pending Actions */}
+          <Route path="/actions" element={<PendingActions />} />
+          
+          {/* Integrations */}
+          <Route path="/integrations" element={<IntegrationsList />} />
           
           {/* Admin */}
           <Route path="/admin/system" element={<SystemSettings />} />
