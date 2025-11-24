@@ -125,6 +125,34 @@ export const ExecutiveDashboard: React.FC = () => {
         />
       </div>
 
+      <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem', marginBottom: '1.5rem'}}>
+        <Card data-testid="revenue-chart">
+          <CardHeader><CardTitle>Accounts Payable</CardTitle></CardHeader>
+          <CardBody>
+            <div style={{fontSize: '2rem', fontWeight: 700, marginBottom: '1rem'}}>
+              {formatCurrency(metrics?.ap_outstanding || 0)}
+            </div>
+            <div style={{fontSize: '0.875rem', color: 'var(--gray-600)', display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
+              <Bot size={14} />
+              <span>Invoice Reconciliation Agent: 45 invoices processed today</span>
+            </div>
+          </CardBody>
+        </Card>
+
+        <Card data-testid="expense-chart">
+          <CardHeader><CardTitle>Accounts Receivable</CardTitle></CardHeader>
+          <CardBody>
+            <div style={{fontSize: '2rem', fontWeight: 700, marginBottom: '1rem'}}>
+              {formatCurrency(metrics?.ar_outstanding || 0)}
+            </div>
+            <div style={{fontSize: '0.875rem', color: 'var(--gray-600)', display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
+              <Bot size={14} />
+              <span>Payment Prediction Agent: 23 payments expected this week</span>
+            </div>
+          </CardBody>
+        </Card>
+      </div>
+
       <Card style={{marginBottom: '1.5rem'}}>
         <CardHeader>
           <CardTitle>🤖 Automation Agents - All {metrics?.active_bots || 15} Active</CardTitle>
@@ -165,34 +193,6 @@ export const ExecutiveDashboard: React.FC = () => {
           </div>
         </CardBody>
       </Card>
-
-      <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem'}}>
-        <Card data-testid="revenue-chart">
-          <CardHeader><CardTitle>Accounts Payable</CardTitle></CardHeader>
-          <CardBody>
-            <div style={{fontSize: '2rem', fontWeight: 700, marginBottom: '1rem'}}>
-              {formatCurrency(metrics?.ap_outstanding || 0)}
-            </div>
-            <div style={{fontSize: '0.875rem', color: 'var(--gray-600)', display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
-              <Bot size={14} />
-              <span>Invoice Reconciliation Agent: 45 invoices processed today</span>
-            </div>
-          </CardBody>
-        </Card>
-
-        <Card data-testid="expense-chart">
-          <CardHeader><CardTitle>Accounts Receivable</CardTitle></CardHeader>
-          <CardBody>
-            <div style={{fontSize: '2rem', fontWeight: 700, marginBottom: '1rem'}}>
-              {formatCurrency(metrics?.ar_outstanding || 0)}
-            </div>
-            <div style={{fontSize: '0.875rem', color: 'var(--gray-600)', display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
-              <Bot size={14} />
-              <span>Payment Prediction Agent: 23 payments expected this week</span>
-            </div>
-          </CardBody>
-        </Card>
-      </div>
     </div>
   );
 };
