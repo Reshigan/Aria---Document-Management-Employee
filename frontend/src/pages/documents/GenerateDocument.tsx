@@ -79,15 +79,14 @@ export default function GenerateDocumentPage() {
                   </div>
                 </div>
               )}
-              {customerName && (
-                <input 
-                  type="text" 
-                  name="customer_name"
-                  value={customerName}
-                  readOnly
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md mt-2 bg-gray-50" 
-                />
-              )}
+              <input 
+                type="text" 
+                name="customer_name"
+                value={customerName}
+                onChange={(e) => setCustomerName(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-md mt-2" 
+                placeholder="Or enter customer name directly..."
+              />
             </div>
 
             <div className="grid grid-cols-2 gap-6">
