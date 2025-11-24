@@ -28,8 +28,8 @@ export default function DocumentTemplatesPage() {
         Document Templates
       </h1>
 
-      <div className="mb-6 flex gap-4">
-        <div className="flex-1 relative">
+      <div className="mb-6">
+        <div className="flex-1 relative mb-4">
           <Search className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
           <input
             type="text"
@@ -40,24 +40,31 @@ export default function DocumentTemplatesPage() {
             className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg"
           />
         </div>
-        <select
-          value={selectedCategory}
-          onChange={(e) => setSelectedCategory(e.target.value)}
-          className="px-4 py-2 border border-gray-300 rounded-lg"
-          data-testid="filter-sales"
-        >
-          <option>All Categories</option>
+        <div className="flex gap-2 flex-wrap">
+          <button
+            onClick={() => setSelectedCategory('All')}
+            className={`px-4 py-2 rounded-lg ${selectedCategory === 'All' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'}`}
+          >
+            All Categories
+          </button>
           {DOCUMENT_CATEGORIES.map((cat) => (
-            <option key={cat.name}>{cat.name}</option>
+            <button
+              key={cat.name}
+              onClick={() => setSelectedCategory(cat.name)}
+              className={`px-4 py-2 rounded-lg ${selectedCategory === cat.name ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'}`}
+              data-testid={`filter-${cat.name.toLowerCase()}`}
+            >
+              {cat.name}
+            </button>
           ))}
-        </select>
+        </div>
       </div>
 
       <div className="grid grid-cols-3 gap-6">
         {DOCUMENT_CATEGORIES.map((category) => (
           <div 
             key={category.name} 
-            className="bg-white rounded-lg shadow p-6"
+            className={`bg-white rounded-lg shadow p-6 ${selectedCategory === category.name ? 'ring-2 ring-blue-600 active' : ''}`}
             data-testid={category.testId}
           >
             <h3 className="text-lg font-bold mb-2">{category.name}</h3>
