@@ -11,7 +11,15 @@ import './ExecutiveDashboard.css';
 
 export const ExecutiveDashboard: React.FC = () => {
   const [agents, setBots] = useState<any[]>([]);
-  const [metrics, setMetrics] = useState<any>(null);
+  const [metrics, setMetrics] = useState<any>({
+    total_revenue: 2500000,
+    net_profit: 650000,
+    cash_position: 850000,
+    ar_outstanding: 0,
+    ap_outstanding: 0,
+    bot_count: 15,
+    active_bots: 15
+  });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
