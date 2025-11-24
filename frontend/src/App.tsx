@@ -129,6 +129,8 @@ function App() {
           <Route path="/master-data/customers" element={<Customers />} />
           <Route path="/master-data/suppliers" element={<Suppliers />} />
           <Route path="/master-data/products" element={<ProductCatalog />} />
+          <Route path="/customers" element={<Customers />} />
+          <Route path="/suppliers" element={<Suppliers />} />
           
           {/* Procurement */}
           <Route path="/procurement" element={<PurchaseOrders />} />
