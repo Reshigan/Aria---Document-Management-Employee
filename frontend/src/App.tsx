@@ -213,6 +213,9 @@ function App() {
           
           {/* Mobile */}
           <Route path="/mobile" element={<MobileManagement />} />
+          
+          {/* Catch-all: redirect to dashboard for 404 pages */}
+          <Route path="*" element={<Navigate to="/dashboard" replace />} />
               </Routes>
             </MainLayout>
           </ProtectedRoute>
