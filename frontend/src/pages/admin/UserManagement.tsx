@@ -311,6 +311,16 @@ export default function UserManagementPage() {
         ))}
       </div>
 
+      {/* Search Bar */}
+      <div className="bg-white rounded-lg shadow p-4 mb-4">
+        <input
+          type="text"
+          name="search"
+          placeholder="Search users..."
+          className="w-full px-4 py-2 border border-gray-300 rounded-md"
+        />
+      </div>
+
       {/* Users Table */}
       <div className="bg-white rounded-lg shadow" data-testid="user-table">
         <DataTable
@@ -366,6 +376,7 @@ export default function UserManagementPage() {
                 </label>
                 <input
                   type="email"
+                  name="email"
                   value={inviteModal.email}
                   onChange={(e) => setInviteModal({ ...inviteModal, email: e.target.value })}
                   className="w-full px-4 py-2 border border-gray-300 rounded-md"
@@ -378,6 +389,7 @@ export default function UserManagementPage() {
                   Role *
                 </label>
                 <select
+                  name="role"
                   value={inviteModal.role}
                   onChange={(e) => setInviteModal({ ...inviteModal, role: e.target.value })}
                   className="w-full px-4 py-2 border border-gray-300 rounded-md"
