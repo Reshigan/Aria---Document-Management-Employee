@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { FileText, Search } from 'lucide-react';
 
 const DOCUMENT_CATEGORIES = [
@@ -14,6 +15,11 @@ const DOCUMENT_CATEGORIES = [
 export default function DocumentTemplatesPage() {
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
+  const navigate = useNavigate();
+
+  const handleTemplateClick = (template: string) => {
+    navigate('/documents/generate');
+  };
 
   return (
     <div className="container mx-auto p-6">
@@ -27,6 +33,7 @@ export default function DocumentTemplatesPage() {
           <Search className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
           <input
             type="text"
+            name="search"
             placeholder="Search templates..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -61,6 +68,7 @@ export default function DocumentTemplatesPage() {
                   key={template} 
                   className="text-sm text-blue-600 hover:underline cursor-pointer"
                   data-testid={template === 'Tax Invoice' ? 'template-tax-invoice' : undefined}
+                  onClick={() => handleTemplateClick(template)}
                 >
                   {template}
                 </li>
