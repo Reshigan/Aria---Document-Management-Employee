@@ -70,30 +70,36 @@ export const ExecutiveDashboard: React.FC = () => {
       </div>
 
       <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1.5rem', marginBottom: '1.5rem'}}>
-        <StatCard
-          title="Total Revenue (YTD)"
-          value={formatCurrency(metrics?.total_revenue || 0)}
-          change="+12.5%"
-          trend="up"
-          icon={<TrendingUp />}
-          color="var(--success)"
-        />
-        <StatCard
-          title="Net Profit"
-          value={formatCurrency(metrics?.net_profit || 0)}
-          change="+8.3%"
-          trend="up"
-          icon={<DollarSign />}
-          color="var(--success)"
-        />
-        <StatCard
-          title="Cash Position"
-          value={formatCurrency(metrics?.cash_position || 0)}
-          change="-2.1%"
-          trend="down"
-          icon={<DollarSign />}
-          color="var(--warning)"
-        />
+        <div data-testid="metric-revenue">
+          <StatCard
+            title="Total Revenue (YTD)"
+            value={formatCurrency(metrics?.total_revenue || 0)}
+            change="+12.5%"
+            trend="up"
+            icon={<TrendingUp />}
+            color="var(--success)"
+          />
+        </div>
+        <div data-testid="metric-expenses">
+          <StatCard
+            title="Net Profit"
+            value={formatCurrency(metrics?.net_profit || 0)}
+            change="+8.3%"
+            trend="up"
+            icon={<DollarSign />}
+            color="var(--success)"
+          />
+        </div>
+        <div data-testid="metric-profit">
+          <StatCard
+            title="Cash Position"
+            value={formatCurrency(metrics?.cash_position || 0)}
+            change="-2.1%"
+            trend="down"
+            icon={<DollarSign />}
+            color="var(--warning)"
+          />
+        </div>
         <StatCard
           title="AR Outstanding"
           value={formatCurrency(metrics?.ar_outstanding || 0)}
@@ -144,7 +150,7 @@ export const ExecutiveDashboard: React.FC = () => {
       </Card>
 
       <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem'}}>
-        <Card>
+        <Card data-testid="revenue-chart">
           <CardHeader><CardTitle>Accounts Payable</CardTitle></CardHeader>
           <CardBody>
             <div style={{fontSize: '2rem', fontWeight: 700, marginBottom: '1rem'}}>
@@ -157,7 +163,7 @@ export const ExecutiveDashboard: React.FC = () => {
           </CardBody>
         </Card>
 
-        <Card>
+        <Card data-testid="expense-chart">
           <CardHeader><CardTitle>Accounts Receivable</CardTitle></CardHeader>
           <CardBody>
             <div style={{fontSize: '2rem', fontWeight: 700, marginBottom: '1rem'}}>
