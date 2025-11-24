@@ -20,7 +20,7 @@ const Login: React.FC = () => {
       await login({ email, password });
       navigate('/dashboard');
     } catch (err: any) {
-      setError(err.message || 'Login failed');
+      setError(err.response?.data?.error || err.message || 'Login failed');
     } finally {
       setLoading(false);
     }
@@ -36,8 +36,8 @@ const Login: React.FC = () => {
             </div>
             <span className="text-3xl font-bold text-white">Aria</span>
           </div>
-          <h1 className="text-3xl font-bold text-white mb-2">Login</h1>
-          <p className="text-gray-300">Sign in to your AI orchestrator</p>
+          <h1 className="text-3xl font-bold text-white mb-2">Welcome Back</h1>
+          <p className="text-gray-300">Login to your AI orchestrator</p>
         </div>
 
         <div className="bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 p-8">

@@ -1,8 +1,11 @@
 import React from 'react';
 import { Search, Bell, User } from 'lucide-react';
+import { useAuthStore } from '../../store/authStore';
 import './TopBar.css';
 
 export const TopBar: React.FC = () => {
+  const user = useAuthStore(state => state.user);
+  
   return (
     <header className="topbar">
       <div className="topbar-search">
@@ -20,9 +23,14 @@ export const TopBar: React.FC = () => {
           <span className="topbar-badge">3</span>
         </button>
 
-        <button className="topbar-action-btn" title="Profile" data-testid="user-menu">
+        <div className="topbar-action-btn" title="Profile" data-testid="user-menu" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <User size={20} />
-        </button>
+          {user && (
+            <span data-testid="user-name" style={{ fontSize: '14px' }}>
+              {user.full_name || user.email?.split('@')[0] || 'User'}
+            </span>
+          )}
+        </div>
         <button className="topbar-action-btn" title="Logout" data-testid="logout" style={{ display: 'none' }}>
           Logout
         </button>
