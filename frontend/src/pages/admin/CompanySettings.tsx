@@ -469,12 +469,8 @@ export default function CompanySettingsPage() {
               <div className="grid grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">BBBEE Level *</label>
-                  <input
-                    type="hidden"
-                    name="bbbee_level"
-                    value={settings.bbbee_level}
-                  />
                   <select
+                    name="bbbee_level"
                     value={settings.bbbee_level}
                     onChange={(e) => setSettings({ ...settings, bbbee_level: parseInt(e.target.value) })}
                     className="w-full px-4 py-2 border border-gray-300 rounded-md"
