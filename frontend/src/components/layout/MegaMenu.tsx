@@ -259,7 +259,7 @@ export const MegaMenu: React.FC = () => {
       <div className="mega-menu-header">
         <div className="mega-menu-logo">
           <Link to="/dashboard">
-            <h1 className="mega-menu-brand">ARIA</h1>
+            <div className="mega-menu-brand">ARIA</div>
             <span className="mega-menu-tagline">by VantaX</span>
           </Link>
         </div>
