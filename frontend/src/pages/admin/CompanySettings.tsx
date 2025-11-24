@@ -469,17 +469,16 @@ export default function CompanySettingsPage() {
               <div className="grid grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">BBBEE Level *</label>
-                  <select
+                  <input
+                    type="number"
                     name="bbbee_level"
+                    min="0"
+                    max="8"
                     value={settings.bbbee_level}
                     onChange={(e) => setSettings({ ...settings, bbbee_level: parseInt(e.target.value) })}
                     className="w-full px-4 py-2 border border-gray-300 rounded-md"
-                  >
-                    {[1, 2, 3, 4, 5, 6, 7, 8].map(level => (
-                      <option key={level} value={level}>Level {level}</option>
-                    ))}
-                    <option value="0">Non-Compliant</option>
-                  </select>
+                  />
+                  <p className="text-sm text-gray-500 mt-1">Enter 1-8 for BBBEE Level, or 0 for Non-Compliant</p>
                 </div>
 
                 <div>
