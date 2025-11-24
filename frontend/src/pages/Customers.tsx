@@ -21,6 +21,7 @@ export default function Customers() {
       setCustomers(Array.isArray(data) ? data : [])
     } catch (error) {
       console.error('Failed to load customers:', error)
+      setCustomers([]) // Set empty array so UI still renders
     } finally {
       setLoading(false)
     }
@@ -42,10 +43,6 @@ export default function Customers() {
       c.customer_code.toLowerCase().includes(searchTerm.toLowerCase()) ||
       c.email?.toLowerCase().includes(searchTerm.toLowerCase())
   )
-
-  if (loading) {
-    return <div className="flex justify-center p-8"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div></div>
-  }
 
   return (
     <div className="space-y-6">

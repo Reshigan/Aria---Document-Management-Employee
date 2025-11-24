@@ -25,17 +25,23 @@ export default function Dashboard() {
       setActivity(activityRes.data)
     } catch (error) {
       console.error('Failed to load dashboard:', error)
+      // Set empty data so UI still renders
+      setStats({
+        total_receivables: 0,
+        overdue_receivables: 0,
+        total_payables: 0,
+        overdue_payables: 0,
+        total_revenue: 0,
+        revenue_growth: 0,
+        profit: 0,
+        cash_in: 0,
+        cash_out: 0,
+        net_cash_flow: 0
+      })
+      setActivity({ recent_invoices: [], recent_payments: [] })
     } finally {
       setLoading(false)
     }
-  }
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-96">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-      </div>
-    )
   }
 
   const formatCurrency = (value: number) => {
