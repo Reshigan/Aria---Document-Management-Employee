@@ -1,13 +1,23 @@
-import React from 'react';
-import { Search, Bell, User } from 'lucide-react';
+import React, { useState } from 'react';
+import { Search, Bell, User, Menu } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import './TopBar.css';
 
 export const TopBar: React.FC = () => {
   const user = useAuthStore(state => state.user);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   
   return (
     <header className="topbar">
+      <button 
+        className="topbar-action-btn md:hidden" 
+        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+        data-testid="mobile-menu"
+        title="Menu"
+      >
+        <Menu size={20} />
+      </button>
+
       <div className="topbar-search">
         <Search size={18} className="topbar-search-icon" />
         <input
