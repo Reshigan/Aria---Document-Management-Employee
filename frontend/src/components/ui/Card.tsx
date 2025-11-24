@@ -1,7 +1,7 @@
 import React from 'react';
 import './Card.css';
 
-export interface CardProps {
+export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
   className?: string;
   padding?: 'none' | 'sm' | 'md' | 'lg';
@@ -10,10 +10,11 @@ export interface CardProps {
 export const Card: React.FC<CardProps> = ({ 
   children, 
   className = '',
-  padding = 'md'
+  padding = 'md',
+  ...rest
 }) => {
   return (
-    <div className={`card card-padding-${padding} ${className}`}>
+    <div className={`card card-padding-${padding} ${className}`} {...rest}>
       {children}
     </div>
   );
