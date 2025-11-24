@@ -61,6 +61,8 @@ import ProfitLossStatement from './pages/financial/ProfitLossStatement';
 import BalanceSheet from './pages/financial/BalanceSheet';
 import PendingActions from './pages/PendingActions';
 import IntegrationsList from './pages/integrations/IntegrationsList';
+import DocumentTemplates from './pages/documents/DocumentTemplates';
+import GenerateDocument from './pages/documents/GenerateDocument';
 import './styles/design-system.css';
 
 function App() {
@@ -188,6 +190,10 @@ function App() {
           <Route path="/ask-aria/classify" element={<DocumentClassification />} />
           <Route path="/document-classification" element={<DocumentClassification />} />
           <Route path="/documents" element={<DocumentClassification />} />
+          
+          {/* Document Management */}
+          <Route path="/documents/templates" element={<DocumentTemplates />} />
+          <Route path="/documents/generate" element={<GenerateDocument />} />
           
           {/* Pending Actions */}
           <Route path="/actions" element={<PendingActions />} />
