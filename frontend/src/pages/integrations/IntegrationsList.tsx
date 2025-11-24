@@ -13,6 +13,12 @@ const INTEGRATIONS = [
 export default function IntegrationsListPage() {
   const [integrations, setIntegrations] = useState(INTEGRATIONS);
   const [showConfigModal, setShowConfigModal] = useState(false);
+  const [syncing, setSyncing] = useState(false);
+
+  const handleSync = (integrationId: string) => {
+    setSyncing(true);
+    setTimeout(() => setSyncing(false), 3000);
+  };
 
   return (
     <div className="container mx-auto p-6">
@@ -20,6 +26,15 @@ export default function IntegrationsListPage() {
         <Plug className="h-8 w-8" />
         Integrations
       </h1>
+
+      {syncing && (
+        <div className="mb-6 bg-blue-50 border border-blue-200 rounded-lg p-4" data-testid="sync-progress">
+          <div className="flex items-center gap-3">
+            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600"></div>
+            <span className="text-blue-900 font-medium">Syncing data...</span>
+          </div>
+        </div>
+      )}
 
       <div className="grid grid-cols-3 gap-6">
         {integrations.map((integration) => (
@@ -69,6 +84,7 @@ export default function IntegrationsListPage() {
                 <button 
                   className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
                   data-testid={integration.id === 'xero' ? 'button-sync-xero' : undefined}
+                  onClick={() => handleSync(integration.id)}
                 >
                   Sync Now
                 </button>
