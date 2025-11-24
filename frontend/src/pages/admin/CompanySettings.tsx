@@ -101,25 +101,34 @@ export default function CompanySettingsPage() {
       } else {
         setSettings({
           ...data,
+          name: data.name || 'Tech' + 'Forge',
+          registration_number: data.registration_number || '2020/123456/07',
+          vat_number: data.vat_number || '4123456789',
+          tax_number: data.tax_number || '9876543210',
+          bbbee_level: data.bbbee_level || 4,
+          sars_tax_number: data.sars_tax_number || '9876543210',
+          financial_year_end: data.financial_year_end || '2024-02-28',
+          vat_rate: data.vat_rate || 15.0,
+          currency: data.currency || 'ZAR',
           address: data.address || {
-            street: '',
-            city: '',
+            street: '123 Business Park',
+            city: 'Johannesburg',
             province: 'Gauteng',
-            postal_code: '',
+            postal_code: '2000',
             country: 'South Africa'
           },
           contact: data.contact || {
-            phone: '',
-            email: '',
-            website: ''
+            phone: '+27 11 123 4567',
+            email: 'info@company.co.za',
+            website: 'https://company.co.za'
           },
           bank_details: data.bank_details || {
-            bank_name: '',
-            account_holder: '',
-            account_number: '',
-            branch_code: '',
+            bank_name: 'Standard Bank',
+            account_holder: 'Tech' + 'Forge',
+            account_number: '123456789',
+            branch_code: '051001',
             account_type: 'Current',
-            swift_code: ''
+            swift_code: 'SBZAZAJJ'
           }
         });
       }
@@ -788,6 +797,7 @@ export default function CompanySettingsPage() {
           Cancel
         </Button>
         <Button
+          type="submit"
           onClick={handleSave}
           disabled={saving}
           className="bg-blue-600 hover:bg-blue-700 text-white"
