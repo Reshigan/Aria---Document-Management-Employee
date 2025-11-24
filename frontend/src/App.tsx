@@ -182,6 +182,7 @@ function App() {
           {/* Admin */}
           <Route path="/admin/system" element={<SystemSettings />} />
           <Route path="/admin/company" element={<CompanySettings />} />
+          <Route path="/admin/company-settings" element={<CompanySettings />} />
           <Route path="/admin/agents" element={<BotConfiguration />} />
           <Route path="/admin/users" element={<UserManagement />} />
           <Route path="/admin/data-import" element={<DataImport />} />

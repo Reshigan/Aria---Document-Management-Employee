@@ -55,6 +55,7 @@ export default function CompanySettingsPage() {
   const [saving, setSaving] = useState(false);
   const [activeTab, setActiveTab] = useState('company');
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [successMessage, setSuccessMessage] = useState('');
 
   useEffect(() => {
     fetchSettings();
@@ -151,9 +152,11 @@ export default function CompanySettingsPage() {
     }
 
     setSaving(true);
+    setSuccessMessage('');
     try {
       await api.put('/admin/company', settings);
-      alert('Settings saved successfully!');
+      setSuccessMessage('Settings saved successfully!');
+      setTimeout(() => setSuccessMessage(''), 5000);
     } catch (error) {
       console.error('Error saving settings:', error);
       alert('Error saving settings');
@@ -213,6 +216,13 @@ export default function CompanySettingsPage() {
         <p className="text-gray-600 mt-2">Configure your company details and preferences</p>
       </div>
 
+      {successMessage && (
+        <div data-testid="success-message" className="mb-6 bg-green-50 border border-green-200 rounded-lg p-4 flex items-center gap-3">
+          <div className="h-5 w-5 text-green-600">✓</div>
+          <p className="text-green-800">{successMessage}</p>
+        </div>
+      )}
+
       <div className="border-b border-gray-200 mb-6">
         <nav className="flex space-x-8">
           {[
@@ -248,6 +258,7 @@ export default function CompanySettingsPage() {
                 </label>
                 <input
                   type="text"
+                  name="company_name"
                   value={settings.name}
                   onChange={(e) => setSettings({ ...settings, name: e.target.value })}
                   className={`w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
@@ -422,6 +433,11 @@ export default function CompanySettingsPage() {
               <div className="grid grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">BBBEE Level *</label>
+                  <input
+                    type="hidden"
+                    name="bbbee_level"
+                    value={settings.bbbee_level}
+                  />
                   <select
                     value={settings.bbbee_level}
                     onChange={(e) => setSettings({ ...settings, bbbee_level: parseInt(e.target.value) })}
