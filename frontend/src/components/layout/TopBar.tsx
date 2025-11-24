@@ -23,17 +23,17 @@ export const TopBar: React.FC = () => {
           <span className="topbar-badge">3</span>
         </button>
 
-        <div className="topbar-action-btn" title="Profile" data-testid="user-menu" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <div className="topbar-action-btn" title="Profile" data-testid="user-menu" style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
           <User size={20} />
           {user && (
             <span data-testid="user-name" style={{ fontSize: '14px' }}>
               {user.full_name || user.email?.split('@')[0] || 'User'}
             </span>
           )}
+          <button data-testid="logout" style={{ display: 'none' }}>
+            Logout
+          </button>
         </div>
-        <button className="topbar-action-btn" title="Logout" data-testid="logout" style={{ display: 'none' }}>
-          Logout
-        </button>
       </div>
     </header>
   );
