@@ -3,14 +3,32 @@ import { FileText, Download, Mail, MessageSquare } from 'lucide-react';
 
 export default function GenerateDocumentPage() {
   const [docType, setDocType] = useState('');
-  const [formData, setFormData] = useState({});
+  const [customerSearch, setCustomerSearch] = useState('');
+  const [customerName, setCustomerName] = useState('');
   const [lineItems, setLineItems] = useState([{ description: '', quantity: 1, unitPrice: 0 }]);
   const [showPreview, setShowPreview] = useState(false);
 
-  const documentTypes = {
-    'Sales': ['Quote', 'Sales Order', 'Tax Invoice', 'Delivery Note'],
-    'Purchase': ['Purchase Order', 'RFQ', 'GRN'],
-    'Finance': ['Payment Voucher', 'Journal Entry']
+  const documentTypes = [
+    { value: 'quote', label: 'Quote' },
+    { value: 'sales_order', label: 'Sales Order' },
+    { value: 'tax_invoice', label: 'Tax Invoice' },
+    { value: 'delivery_note', label: 'Delivery Note' },
+    { value: 'purchase_order', label: 'Purchase Order' },
+    { value: 'rfq', label: 'RFQ' },
+    { value: 'grn', label: 'GRN' },
+    { value: 'payment_voucher', label: 'Payment Voucher' },
+    { value: 'journal_entry', label: 'Journal Entry' }
+  ];
+
+  const handleLineItemChange = (index: number, field: string, value: string | number) => {
+    const newLineItems = [...lineItems];
+    newLineItems[index] = { ...newLineItems[index], [field]: value };
+    setLineItems(newLineItems);
+  };
+
+  const handleCustomerSelect = (name: string) => {
+    setCustomerName(name);
+    setCustomerSearch('');
   };
 
   return (
@@ -26,17 +44,14 @@ export default function GenerateDocumentPage() {
             Document Type *
           </label>
           <select
+            name="document_type"
             value={docType}
             onChange={(e) => setDocType(e.target.value)}
             className="w-full px-4 py-2 border border-gray-300 rounded-md"
           >
             <option value="">Select document type...</option>
-            {Object.entries(documentTypes).map(([category, types]) => (
-              <optgroup key={category} label={category}>
-                {types.map((type) => (
-                  <option key={type} value={type}>{type}</option>
-                ))}
-              </optgroup>
+            {documentTypes.map((type) => (
+              <option key={type.value} value={type.value}>{type.label}</option>
             ))}
           </select>
         </div>
@@ -45,12 +60,34 @@ export default function GenerateDocumentPage() {
           <>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Customer/Supplier *</label>
-              <input type="text" className="w-full px-4 py-2 border border-gray-300 rounded-md" placeholder="Start typing to search..." />
-              <div className="mt-2 space-y-1">
-                <div className="p-2 hover:bg-gray-50 cursor-pointer rounded" data-testid="customer-abc-manufacturing">
-                  ABC Manufacturing Ltd.
+              <input 
+                type="text" 
+                name="customer_search"
+                value={customerSearch}
+                onChange={(e) => setCustomerSearch(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-md" 
+                placeholder="Start typing to search..." 
+              />
+              {customerSearch && (
+                <div className="mt-2 space-y-1 border border-gray-200 rounded-md p-2">
+                  <div 
+                    className="p-2 hover:bg-gray-50 cursor-pointer rounded" 
+                    data-testid="customer-abc-manufacturing"
+                    onClick={() => handleCustomerSelect('ABC Manufacturing Ltd.')}
+                  >
+                    ABC Manufacturing Ltd.
+                  </div>
                 </div>
-              </div>
+              )}
+              {customerName && (
+                <input 
+                  type="text" 
+                  name="customer_name"
+                  value={customerName}
+                  readOnly
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md mt-2 bg-gray-50" 
+                />
+              )}
             </div>
 
             <div className="grid grid-cols-2 gap-6">
@@ -69,9 +106,30 @@ export default function GenerateDocumentPage() {
               <div className="border border-gray-300 rounded-md p-4 space-y-3">
                 {lineItems.map((item, index) => (
                   <div key={index} className="flex gap-3 items-center">
-                    <input type="text" placeholder="Description" className="flex-1 px-3 py-2 border rounded" value={item.description} />
-                    <input type="number" placeholder="Qty" className="w-20 px-3 py-2 border rounded" value={item.quantity} />
-                    <input type="number" placeholder="Price" className="w-28 px-3 py-2 border rounded" value={item.unitPrice} />
+                    <input 
+                      type="text" 
+                      name={`description_${index}`}
+                      placeholder="Description" 
+                      className="flex-1 px-3 py-2 border rounded" 
+                      value={item.description}
+                      onChange={(e) => handleLineItemChange(index, 'description', e.target.value)}
+                    />
+                    <input 
+                      type="number" 
+                      name={`quantity_${index}`}
+                      placeholder="Qty" 
+                      className="w-20 px-3 py-2 border rounded" 
+                      value={item.quantity}
+                      onChange={(e) => handleLineItemChange(index, 'quantity', parseFloat(e.target.value) || 0)}
+                    />
+                    <input 
+                      type="number" 
+                      name={`unit_price_${index}`}
+                      placeholder="Price" 
+                      className="w-28 px-3 py-2 border rounded" 
+                      value={item.unitPrice}
+                      onChange={(e) => handleLineItemChange(index, 'unitPrice', parseFloat(e.target.value) || 0)}
+                    />
                     <div className="w-28 text-right font-medium" data-testid={`line-total-${index}`}>
                       R {(item.quantity * item.unitPrice).toFixed(2)}
                     </div>
