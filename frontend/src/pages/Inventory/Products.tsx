@@ -241,6 +241,7 @@ export default function Products() {
                   </label>
                   <input
                     type="text"
+                    name="code"
                     required
                     value={formData.code}
                     onChange={(e) => setFormData({ ...formData, code: e.target.value })}
@@ -259,6 +260,7 @@ export default function Products() {
                   </label>
                   <input
                     type="text"
+                    name="name"
                     required
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -278,6 +280,7 @@ export default function Products() {
                   Description
                 </label>
                 <textarea
+                  name="description"
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   rows={2}
@@ -298,6 +301,7 @@ export default function Products() {
                     Product Type
                   </label>
                   <select
+                    name="product_type"
                     value={formData.product_type}
                     onChange={(e) => setFormData({ ...formData, product_type: e.target.value })}
                     style={{
@@ -320,6 +324,7 @@ export default function Products() {
                   </label>
                   <input
                     type="text"
+                    name="category"
                     value={formData.category}
                     onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                     style={{
@@ -336,6 +341,7 @@ export default function Products() {
                     Unit of Measure
                   </label>
                   <select
+                    name="unit_of_measure"
                     value={formData.unit_of_measure}
                     onChange={(e) => setFormData({ ...formData, unit_of_measure: e.target.value })}
                     style={{
@@ -363,6 +369,7 @@ export default function Products() {
                   </label>
                   <input
                     type="number"
+                    name="standard_cost"
                     step="0.01"
                     value={formData.standard_cost}
                     onChange={(e) => setFormData({ ...formData, standard_cost: parseFloat(e.target.value) })}
@@ -381,6 +388,7 @@ export default function Products() {
                   </label>
                   <input
                     type="number"
+                    name="selling_price"
                     step="0.01"
                     value={formData.selling_price}
                     onChange={(e) => setFormData({ ...formData, selling_price: parseFloat(e.target.value) })}

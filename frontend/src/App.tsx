@@ -26,6 +26,7 @@ import PayrollDashboard from './pages/HR/PayrollDashboard';
 import CRMDashboard from './pages/CRM/CRMDashboard';
 import ProcurementDashboard from './pages/Procurement/ProcurementDashboard';
 import ProductCatalog from './pages/Procurement/ProductCatalog';
+import Products from './pages/Inventory/Products';
 import RFQManagement from './pages/Procurement/RFQManagement';
 import ManufacturingDashboard from './pages/Manufacturing/ManufacturingDashboard';
 import BOMManagement from './pages/Manufacturing/BOMManagement';
@@ -122,7 +123,7 @@ function App() {
           
           {/* Inventory */}
           <Route path="/inventory" element={<WMSStock />} />
-          <Route path="/inventory/products" element={<ProductCatalog />} />
+          <Route path="/inventory/products" element={<Products />} />
           <Route path="/inventory/stock" element={<WMSStock />} />
           <Route path="/inventory/items" element={<ProductCatalog />} />
           
