@@ -476,7 +476,7 @@ export default function Products() {
                     cursor: 'pointer'
                   }}
                 >
-                  {editingProduct ? 'Update' : 'Create'}
+                  Save
                 </button>
               </div>
             </form>
