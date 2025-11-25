@@ -51,14 +51,16 @@ export default function Customers() {
           <h1 className="text-3xl font-bold text-gray-900">Customers</h1>
           <p className="text-gray-600 mt-1">Manage your customer relationships</p>
         </div>
-        <button
-          onClick={() => { setEditingCustomer(null); setShowModal(true) }}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-blue-700"
-          data-testid="button-add-customer"
-        >
-          <Plus className="h-5 w-5 mr-2" />
-          Add Customer
-        </button>
+        {!showModal && (
+          <button
+            onClick={() => { setEditingCustomer(null); setShowModal(true) }}
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-blue-700"
+            data-testid="button-add-customer"
+          >
+            <Plus className="h-5 w-5 mr-2" />
+            Add Customer
+          </button>
+        )}
       </div>
 
       <div className="bg-white rounded-lg shadow">

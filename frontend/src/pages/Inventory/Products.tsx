@@ -159,29 +159,31 @@ export default function Products() {
             }}
           />
         </div>
-        <button
-          onClick={() => {
-            setEditingProduct(null);
-            resetForm();
-            setShowForm(true);
-          }}
-          style={{
-            padding: '0.5rem 1.5rem',
-            background: '#8b5cf6',
-            color: 'white',
-            border: 'none',
-            borderRadius: '0.375rem',
-            fontSize: '0.875rem',
-            fontWeight: '500',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem'
-          }}
-        >
-          <Plus size={16} />
-          Add Product
-        </button>
+        {!showForm && (
+          <button
+            onClick={() => {
+              setEditingProduct(null);
+              resetForm();
+              setShowForm(true);
+            }}
+            style={{
+              padding: '0.5rem 1.5rem',
+              background: '#8b5cf6',
+              color: 'white',
+              border: 'none',
+              borderRadius: '0.375rem',
+              fontSize: '0.875rem',
+              fontWeight: '500',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem'
+            }}
+          >
+            <Plus size={16} />
+            Add Product
+          </button>
+        )}
       </div>
 
       {/* Stats */}
