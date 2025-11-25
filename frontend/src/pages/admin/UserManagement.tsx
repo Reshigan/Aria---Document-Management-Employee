@@ -305,9 +305,9 @@ export default function UserManagementPage() {
           { label: 'Invited', value: users.filter(u => u.status === 'invited').length, color: 'yellow', testId: 'stat-invited' },
           { label: 'Inactive', value: users.filter(u => u.status === 'inactive').length, color: 'red', testId: 'stat-inactive' }
         ].map((stat, idx) => (
-          <div key={idx} className="bg-white rounded-lg shadow p-6" data-testid={stat.testId}>
+          <div key={idx} className="bg-white rounded-lg shadow p-6">
             <div className="text-sm font-medium text-gray-600">{stat.label}</div>
-            <div className={`text-3xl font-bold mt-2 text-${stat.color}-600`}>{stat.value}</div>
+            <div className={`text-3xl font-bold mt-2 text-${stat.color}-600`} data-testid={stat.testId}>{stat.value}</div>
           </div>
         ))}
       </div>
