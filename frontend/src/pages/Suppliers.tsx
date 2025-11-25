@@ -122,14 +122,16 @@ export default function Suppliers() {
                     <button
                       onClick={() => { setEditingSupplier(supplier); setShowModal(true) }}
                       className="text-blue-600 hover:text-blue-900 mr-3"
+                      data-testid="edit-supplier-button"
                     >
-                      <Edit className="h-5 w-5" />
+                      <Edit className="h-5 w-5 Edit" />
                     </button>
                     <button
                       onClick={() => handleDelete(supplier.id)}
                       className="text-red-600 hover:text-red-900"
+                      data-testid="delete-supplier-button"
                     >
-                      <Trash2 className="h-5 w-5" />
+                      <Trash2 className="h-5 w-5 Trash" />
                     </button>
                   </td>
                 </tr>

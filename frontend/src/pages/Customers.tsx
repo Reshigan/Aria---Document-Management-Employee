@@ -114,14 +114,16 @@ export default function Customers() {
                     <button
                       onClick={() => { setEditingCustomer(customer); setShowModal(true) }}
                       className="text-blue-600 hover:text-blue-900 mr-3"
+                      data-testid="edit-customer-button"
                     >
-                      <Edit className="h-5 w-5" />
+                      <Edit className="h-5 w-5 Edit" />
                     </button>
                     <button
                       onClick={() => handleDelete(customer.id)}
                       className="text-red-600 hover:text-red-900"
+                      data-testid="delete-customer-button"
                     >
-                      <Trash2 className="h-5 w-5" />
+                      <Trash2 className="h-5 w-5 Trash" />
                     </button>
                   </td>
                 </tr>
