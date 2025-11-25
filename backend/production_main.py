@@ -3776,15 +3776,132 @@ async def api_health():
 
 @app.get("/api/erp/master-data/customers")
 async def get_customers_inline(skip: int = 0, limit: int = 100, search: str = None):
-    return {"customers": [], "total": 0, "skip": skip, "limit": limit}
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        query = "SELECT id, customer_number, name, email, phone, customer_type, is_active, created_at FROM customers"
+        count_query = "SELECT COUNT(*) FROM customers"
+        params = []
+        
+        if search:
+            query += " WHERE name ILIKE %s OR customer_number ILIKE %s OR email ILIKE %s"
+            count_query += " WHERE name ILIKE %s OR customer_number ILIKE %s OR email ILIKE %s"
+            search_param = f"%{search}%"
+            params = [search_param, search_param, search_param]
+        
+        query += f" ORDER BY created_at DESC LIMIT {limit} OFFSET {skip}"
+        
+        cursor.execute(count_query, params if search else None)
+        total = cursor.fetchone()[0]
+        
+        cursor.execute(query, params if search else None)
+        rows = cursor.fetchall()
+        
+        customers = []
+        for row in rows:
+            customers.append({
+                "id": row[0],
+                "customer_number": row[1],
+                "name": row[2],
+                "email": row[3],
+                "phone": row[4],
+                "customer_type": row[5],
+                "is_active": row[6],
+                "created_at": row[7].isoformat() if row[7] else None
+            })
+        
+        return {"customers": customers, "total": total, "skip": skip, "limit": limit}
+    finally:
+        cursor.close()
+        conn.close()
 
 @app.get("/api/erp/master-data/suppliers")
 async def get_suppliers_inline(skip: int = 0, limit: int = 100, search: str = None):
-    return {"suppliers": [], "total": 0, "skip": skip, "limit": limit}
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        query = "SELECT id, supplier_number, name, email, phone, supplier_type, is_active, created_at FROM suppliers"
+        count_query = "SELECT COUNT(*) FROM suppliers"
+        params = []
+        
+        if search:
+            query += " WHERE name ILIKE %s OR supplier_number ILIKE %s OR email ILIKE %s"
+            count_query += " WHERE name ILIKE %s OR supplier_number ILIKE %s OR email ILIKE %s"
+            search_param = f"%{search}%"
+            params = [search_param, search_param, search_param]
+        
+        query += f" ORDER BY created_at DESC LIMIT {limit} OFFSET {skip}"
+        
+        cursor.execute(count_query, params if search else None)
+        total = cursor.fetchone()[0]
+        
+        cursor.execute(query, params if search else None)
+        rows = cursor.fetchall()
+        
+        suppliers = []
+        for row in rows:
+            suppliers.append({
+                "id": row[0],
+                "supplier_number": row[1],
+                "name": row[2],
+                "email": row[3],
+                "phone": row[4],
+                "supplier_type": row[5],
+                "is_active": row[6],
+                "created_at": row[7].isoformat() if row[7] else None
+            })
+        
+        return {"suppliers": suppliers, "total": total, "skip": skip, "limit": limit}
+    finally:
+        cursor.close()
+        conn.close()
 
 @app.get("/api/erp/master-data/products")
 async def get_products_inline(skip: int = 0, limit: int = 100, search: str = None):
-    return {"products": [], "total": 0, "skip": skip, "limit": limit}
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        query = "SELECT id, code, name, description, product_type, category, unit_of_measure, standard_cost, selling_price, is_active, created_at FROM products"
+        count_query = "SELECT COUNT(*) FROM products"
+        params = []
+        
+        if search:
+            query += " WHERE name ILIKE %s OR code ILIKE %s OR description ILIKE %s"
+            count_query += " WHERE name ILIKE %s OR code ILIKE %s OR description ILIKE %s"
+            search_param = f"%{search}%"
+            params = [search_param, search_param, search_param]
+        
+        query += f" ORDER BY created_at DESC LIMIT {limit} OFFSET {skip}"
+        
+        cursor.execute(count_query, params if search else None)
+        total = cursor.fetchone()[0]
+        
+        cursor.execute(query, params if search else None)
+        rows = cursor.fetchall()
+        
+        products = []
+        for row in rows:
+            products.append({
+                "id": row[0],
+                "code": row[1],
+                "name": row[2],
+                "description": row[3],
+                "product_type": row[4],
+                "category": row[5],
+                "unit_of_measure": row[6],
+                "standard_cost": float(row[7]) if row[7] else 0,
+                "selling_price": float(row[8]) if row[8] else 0,
+                "is_active": row[9],
+                "created_at": row[10].isoformat() if row[10] else None
+            })
+        
+        return {"products": products, "total": total, "skip": skip, "limit": limit}
+    finally:
+        cursor.close()
+        conn.close()
 
 @app.get("/api/erp/general-ledger")
 async def get_general_ledger_inline(skip: int = 0, limit: int = 100):
