@@ -162,13 +162,18 @@ function CustomerModal({ customer, onClose, onSave }: { customer: Customer | nul
     setSaving(true)
     try {
       if (customer) {
-        await api.put(`/erp/master-data/customers/${customer.id}`, formData)
+        const response = await api.put(`/erp/master-data/customers/${customer.id}`, formData)
+        console.log('Customer updated successfully:', response.data)
       } else {
-        await api.post('/erp/master-data/customers', formData)
+        const response = await api.post('/erp/master-data/customers', formData)
+        console.log('Customer created successfully:', response.data)
       }
       onSave()
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to save customer:', error)
+      console.error('Error response:', error.response?.data)
+      console.error('Error status:', error.response?.status)
+      alert(`Failed to save customer: ${error.response?.data?.detail || error.message}`)
     } finally {
       setSaving(false)
     }
