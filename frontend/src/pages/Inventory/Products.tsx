@@ -349,10 +349,12 @@ export default function Products() {
                   <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>
                     Unit of Measure
                   </label>
-                  <select
+                  <input
+                    type="text"
                     name="unit_of_measure"
                     value={formData.unit_of_measure}
                     onChange={(e) => setFormData({ ...formData, unit_of_measure: e.target.value })}
+                    placeholder="EA, KG, L, etc."
                     style={{
                       width: '100%',
                       padding: '0.5rem',
@@ -360,9 +362,7 @@ export default function Products() {
                       borderRadius: '0.375rem',
                       fontSize: '0.875rem'
                     }}
-                  >
-                    <option value="EA">Each (EA)</option>
-                    <option value="KG">Kilogram (KG)</option>
+                  />
                     <option value="L">Liter (L)</option>
                     <option value="M">Meter (M)</option>
                     <option value="BOX">Box</option>
