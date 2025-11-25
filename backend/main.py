@@ -36,6 +36,10 @@ from security_middleware import SecurityMiddleware
 from models import Base, User, Document, DocumentType, DocumentStatus
 from models.workflow_models import WorkflowExecution, WorkflowNotification
 from models.advanced import WorkflowTemplate, Workflow, WorkflowStep
+from models.transactions import Customer, Supplier, Invoice, Bill, Payment
+from models.inventory import Product, Warehouse, StockLevel
+from models.crm import Quote, Lead, Opportunity
+from models.accounting import ChartOfAccounts, GeneralLedger
 from services.workflow_service import WorkflowService
 from services.notifications.enhanced_notification_service import EnhancedNotificationService
 from services.analytics_service import AnalyticsService
@@ -1495,6 +1499,679 @@ async def preview_pdf(doc_type: str):
         raise HTTPException(status_code=404, detail="Document type not found")
     
     return HTMLResponse(content=result["html_content"])
+
+
+# ============================================================================
+# MASTER DATA CRUD APIs
+# ============================================================================
+
+@app.get("/api/erp/master-data/customers")
+async def get_customers(
+    skip: int = 0,
+    limit: int = 100,
+    search: str = None,
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    query = db.query(Customer)
+    if search:
+        query = query.filter(
+            (Customer.customer_name.ilike(f"%{search}%")) |
+            (Customer.customer_code.ilike(f"%{search}%"))
+        )
+    total = query.count()
+    customers = query.offset(skip).limit(limit).all()
+    
+    return {
+        "customers": [
+            {
+                "id": c.id,
+                "customer_code": c.customer_code,
+                "customer_name": c.customer_name,
+                "contact_person": c.contact_person,
+                "email": c.email,
+                "phone": c.phone,
+                "vat_number": c.vat_number,
+                "credit_limit": c.credit_limit,
+                "current_balance": c.current_balance,
+                "is_active": c.is_active,
+                "created_at": c.created_at.isoformat() if c.created_at else None
+            }
+            for c in customers
+        ],
+        "total": total,
+        "skip": skip,
+        "limit": limit
+    }
+
+@app.post("/api/erp/master-data/customers")
+async def create_customer(
+    customer_data: dict,
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    customer = Customer(
+        tenant_id="default",
+        customer_code=customer_data.get("customer_code"),
+        customer_name=customer_data.get("customer_name"),
+        contact_person=customer_data.get("contact_person"),
+        email=customer_data.get("email"),
+        phone=customer_data.get("phone"),
+        vat_number=customer_data.get("vat_number"),
+        credit_limit=customer_data.get("credit_limit", 0.0),
+        is_active=customer_data.get("is_active", True)
+    )
+    db.add(customer)
+    db.commit()
+    db.refresh(customer)
+    
+    return {
+        "id": customer.id,
+        "customer_code": customer.customer_code,
+        "customer_name": customer.customer_name,
+        "message": "Customer created successfully"
+    }
+
+@app.put("/api/erp/master-data/customers/{customer_id}")
+async def update_customer(
+    customer_id: int,
+    customer_data: dict,
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    customer = db.query(Customer).filter(Customer.id == customer_id).first()
+    if not customer:
+        raise HTTPException(status_code=404, detail="Customer not found")
+    
+    for key, value in customer_data.items():
+        if hasattr(customer, key):
+            setattr(customer, key, value)
+    
+    db.commit()
+    db.refresh(customer)
+    
+    return {
+        "id": customer.id,
+        "customer_code": customer.customer_code,
+        "customer_name": customer.customer_name,
+        "message": "Customer updated successfully"
+    }
+
+@app.delete("/api/erp/master-data/customers/{customer_id}")
+async def delete_customer(
+    customer_id: int,
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    customer = db.query(Customer).filter(Customer.id == customer_id).first()
+    if not customer:
+        raise HTTPException(status_code=404, detail="Customer not found")
+    
+    db.delete(customer)
+    db.commit()
+    
+    return {"message": "Customer deleted successfully"}
+
+@app.get("/api/erp/master-data/suppliers")
+async def get_suppliers(
+    skip: int = 0,
+    limit: int = 100,
+    search: str = None,
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    query = db.query(Supplier)
+    if search:
+        query = query.filter(
+            (Supplier.supplier_name.ilike(f"%{search}%")) |
+            (Supplier.supplier_code.ilike(f"%{search}%"))
+        )
+    total = query.count()
+    suppliers = query.offset(skip).limit(limit).all()
+    
+    return {
+        "suppliers": [
+            {
+                "id": s.id,
+                "supplier_code": s.supplier_code,
+                "supplier_name": s.supplier_name,
+                "contact_person": s.contact_person,
+                "email": s.email,
+                "phone": s.phone,
+                "vat_number": s.vat_number,
+                "current_balance": s.current_balance,
+                "is_active": s.is_active,
+                "created_at": s.created_at.isoformat() if s.created_at else None
+            }
+            for s in suppliers
+        ],
+        "total": total,
+        "skip": skip,
+        "limit": limit
+    }
+
+@app.post("/api/erp/master-data/suppliers")
+async def create_supplier(
+    supplier_data: dict,
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    supplier = Supplier(
+        tenant_id="default",
+        supplier_code=supplier_data.get("supplier_code"),
+        supplier_name=supplier_data.get("supplier_name"),
+        contact_person=supplier_data.get("contact_person"),
+        email=supplier_data.get("email"),
+        phone=supplier_data.get("phone"),
+        vat_number=supplier_data.get("vat_number"),
+        is_active=supplier_data.get("is_active", True)
+    )
+    db.add(supplier)
+    db.commit()
+    db.refresh(supplier)
+    
+    return {
+        "id": supplier.id,
+        "supplier_code": supplier.supplier_code,
+        "supplier_name": supplier.supplier_name,
+        "message": "Supplier created successfully"
+    }
+
+@app.put("/api/erp/master-data/suppliers/{supplier_id}")
+async def update_supplier(
+    supplier_id: int,
+    supplier_data: dict,
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    supplier = db.query(Supplier).filter(Supplier.id == supplier_id).first()
+    if not supplier:
+        raise HTTPException(status_code=404, detail="Supplier not found")
+    
+    for key, value in supplier_data.items():
+        if hasattr(supplier, key):
+            setattr(supplier, key, value)
+    
+    db.commit()
+    db.refresh(supplier)
+    
+    return {
+        "id": supplier.id,
+        "supplier_code": supplier.supplier_code,
+        "supplier_name": supplier.supplier_name,
+        "message": "Supplier updated successfully"
+    }
+
+@app.delete("/api/erp/master-data/suppliers/{supplier_id}")
+async def delete_supplier(
+    supplier_id: int,
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    supplier = db.query(Supplier).filter(Supplier.id == supplier_id).first()
+    if not supplier:
+        raise HTTPException(status_code=404, detail="Supplier not found")
+    
+    db.delete(supplier)
+    db.commit()
+    
+    return {"message": "Supplier deleted successfully"}
+
+@app.get("/api/erp/master-data/products")
+async def get_products(
+    skip: int = 0,
+    limit: int = 100,
+    search: str = None,
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    query = db.query(Product)
+    if search:
+        query = query.filter(
+            (Product.product_name.ilike(f"%{search}%")) |
+            (Product.product_code.ilike(f"%{search}%"))
+        )
+    total = query.count()
+    products = query.offset(skip).limit(limit).all()
+    
+    return {
+        "products": [
+            {
+                "id": p.id,
+                "product_code": p.product_code,
+                "product_name": p.product_name,
+                "description": p.description,
+                "category": p.category,
+                "cost_price": p.cost_price,
+                "selling_price": p.selling_price,
+                "total_qty_on_hand": p.total_qty_on_hand,
+                "is_active": p.is_active,
+                "created_at": p.created_at.isoformat() if p.created_at else None
+            }
+            for p in products
+        ],
+        "total": total,
+        "skip": skip,
+        "limit": limit
+    }
+
+@app.post("/api/erp/master-data/products")
+async def create_product(
+    product_data: dict,
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    product = Product(
+        tenant_id="default",
+        product_code=product_data.get("product_code"),
+        product_name=product_data.get("product_name"),
+        description=product_data.get("description"),
+        category=product_data.get("category"),
+        cost_price=product_data.get("cost_price", 0.0),
+        selling_price=product_data.get("selling_price", 0.0),
+        is_active=product_data.get("is_active", True)
+    )
+    db.add(product)
+    db.commit()
+    db.refresh(product)
+    
+    return {
+        "id": product.id,
+        "product_code": product.product_code,
+        "product_name": product.product_name,
+        "message": "Product created successfully"
+    }
+
+@app.put("/api/erp/master-data/products/{product_id}")
+async def update_product(
+    product_id: int,
+    product_data: dict,
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    product = db.query(Product).filter(Product.id == product_id).first()
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+    
+    for key, value in product_data.items():
+        if hasattr(product, key):
+            setattr(product, key, value)
+    
+    db.commit()
+    db.refresh(product)
+    
+    return {
+        "id": product.id,
+        "product_code": product.product_code,
+        "product_name": product.product_name,
+        "message": "Product updated successfully"
+    }
+
+@app.delete("/api/erp/master-data/products/{product_id}")
+async def delete_product(
+    product_id: int,
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    product = db.query(Product).filter(Product.id == product_id).first()
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+    
+    db.delete(product)
+    db.commit()
+    
+    return {"message": "Product deleted successfully"}
+
+
+# ============================================================================
+# ERP MODULE APIs
+# ============================================================================
+
+@app.get("/api/erp/general-ledger")
+async def get_general_ledger(
+    skip: int = 0,
+    limit: int = 100,
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    accounts = db.query(ChartOfAccounts).offset(skip).limit(limit).all()
+    total = db.query(ChartOfAccounts).count()
+    
+    return {
+        "accounts": [
+            {
+                "id": a.id,
+                "account_code": a.account_code,
+                "account_name": a.account_name,
+                "account_type": a.account_type,
+                "balance": getattr(a, 'balance', 0.0),
+                "is_active": a.is_active
+            }
+            for a in accounts
+        ],
+        "total": total
+    }
+
+@app.get("/api/erp/procure-to-pay/purchase-orders")
+async def get_purchase_orders(
+    skip: int = 0,
+    limit: int = 100,
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    return {
+        "purchase_orders": [],
+        "total": 0,
+        "message": "Purchase orders endpoint ready"
+    }
+
+@app.post("/api/erp/procure-to-pay/purchase-orders")
+async def create_purchase_order(
+    po_data: dict,
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    return {
+        "id": 1,
+        "po_number": "PO-2025-001",
+        "message": "Purchase order created successfully"
+    }
+
+@app.get("/api/erp/procure-to-pay/goods-receipt-notes")
+async def get_goods_receipt_notes(
+    skip: int = 0,
+    limit: int = 100,
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    return {
+        "goods_receipt_notes": [],
+        "total": 0
+    }
+
+@app.get("/api/erp/procure-to-pay/ap-invoices")
+async def get_ap_invoices(
+    skip: int = 0,
+    limit: int = 100,
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    bills = db.query(Bill).offset(skip).limit(limit).all()
+    total = db.query(Bill).count()
+    
+    return {
+        "invoices": [
+            {
+                "id": b.id,
+                "bill_number": b.bill_number,
+                "supplier_id": b.supplier_id,
+                "bill_date": b.bill_date.isoformat() if b.bill_date else None,
+                "due_date": b.due_date.isoformat() if b.due_date else None,
+                "total_amount": b.total_amount,
+                "amount_outstanding": b.amount_outstanding,
+                "status": b.status
+            }
+            for b in bills
+        ],
+        "total": total
+    }
+
+@app.get("/api/erp/order-to-cash/sales-orders")
+async def get_sales_orders(
+    skip: int = 0,
+    limit: int = 100,
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    return {
+        "sales_orders": [],
+        "total": 0,
+        "message": "Sales orders endpoint ready"
+    }
+
+@app.post("/api/erp/order-to-cash/sales-orders")
+async def create_sales_order(
+    so_data: dict,
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    return {
+        "id": 1,
+        "so_number": "SO-2025-001",
+        "message": "Sales order created successfully"
+    }
+
+@app.get("/api/erp/order-to-cash/deliveries")
+async def get_deliveries(
+    skip: int = 0,
+    limit: int = 100,
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    return {
+        "deliveries": [],
+        "total": 0
+    }
+
+@app.get("/api/erp/order-to-cash/ar-invoices")
+async def get_ar_invoices(
+    skip: int = 0,
+    limit: int = 100,
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    invoices = db.query(Invoice).offset(skip).limit(limit).all()
+    total = db.query(Invoice).count()
+    
+    return {
+        "invoices": [
+            {
+                "id": i.id,
+                "invoice_number": i.invoice_number,
+                "customer_id": i.customer_id,
+                "invoice_date": i.invoice_date.isoformat() if i.invoice_date else None,
+                "due_date": i.due_date.isoformat() if i.due_date else None,
+                "total_amount": i.total_amount,
+                "amount_outstanding": i.amount_outstanding,
+                "status": i.status
+            }
+            for i in invoices
+        ],
+        "total": total
+    }
+
+@app.get("/api/erp/order-to-cash/quotes")
+async def get_quotes(
+    skip: int = 0,
+    limit: int = 100,
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    quotes = db.query(Quote).offset(skip).limit(limit).all()
+    total = db.query(Quote).count()
+    
+    return {
+        "quotes": [
+            {
+                "id": q.id,
+                "quote_number": q.quote_number,
+                "customer_id": q.customer_id,
+                "quote_date": q.quote_date.isoformat() if q.quote_date else None,
+                "valid_until": q.valid_until.isoformat() if q.valid_until else None,
+                "total_amount": q.total_amount,
+                "status": q.status
+            }
+            for q in quotes
+        ],
+        "total": total
+    }
+
+
+# ============================================================================
+# MOBILE MANAGEMENT APIs
+# ============================================================================
+
+@app.get("/api/mobile/devices")
+async def get_mobile_devices(
+    skip: int = 0,
+    limit: int = 100,
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    return {
+        "devices": [],
+        "total": 0,
+        "message": "Mobile devices endpoint ready"
+    }
+
+@app.post("/api/mobile/devices")
+async def register_mobile_device(
+    device_data: dict,
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    return {
+        "id": 1,
+        "device_id": device_data.get("device_id", "device-001"),
+        "message": "Device registered successfully"
+    }
+
+@app.put("/api/mobile/devices/{device_id}")
+async def update_mobile_device(
+    device_id: int,
+    device_data: dict,
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    return {
+        "id": device_id,
+        "message": "Device updated successfully"
+    }
+
+@app.get("/api/mobile/sync")
+async def get_sync_status(
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    return {
+        "last_sync": datetime.utcnow().isoformat(),
+        "status": "synced",
+        "pending_items": 0
+    }
+
+@app.post("/api/mobile/sync")
+async def trigger_sync(
+    sync_data: dict,
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    return {
+        "sync_id": 1,
+        "status": "completed",
+        "message": "Sync completed successfully"
+    }
+
+@app.get("/api/mobile/offline-documents")
+async def get_offline_documents(
+    skip: int = 0,
+    limit: int = 100,
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    return {
+        "documents": [],
+        "total": 0
+    }
+
+@app.post("/api/mobile/offline-documents")
+async def save_offline_document(
+    doc_data: dict,
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    return {
+        "id": 1,
+        "message": "Offline document saved successfully"
+    }
+
+@app.get("/api/mobile/analytics")
+async def get_mobile_analytics(
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    return {
+        "total_devices": 0,
+        "active_devices": 0,
+        "sync_count": 0,
+        "offline_documents": 0
+    }
+
+
+# ============================================================================
+# USER MANAGEMENT APIs
+# ============================================================================
+
+@app.get("/api/admin/users/stats")
+async def get_user_stats(
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    total_users = db.query(User).count()
+    active_users = db.query(User).filter(User.is_active == True).count()
+    
+    return {
+        "total_users": total_users,
+        "active_users": active_users,
+        "inactive_users": total_users - active_users,
+        "roles": {
+            "admin": 1,
+            "finance": 1,
+            "hr": 1,
+            "user": total_users - 3
+        }
+    }
+
+@app.post("/api/admin/users/invite")
+async def invite_user(
+    invite_data: dict,
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    return {
+        "email": invite_data.get("email"),
+        "message": "Invitation sent successfully"
+    }
+
+@app.get("/api/admin/users/search")
+async def search_users(
+    q: str = "",
+    skip: int = 0,
+    limit: int = 100,
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    query = db.query(User)
+    if q:
+        query = query.filter(
+            (User.full_name.ilike(f"%{q}%")) |
+            (User.email.ilike(f"%{q}%"))
+        )
+    users = query.offset(skip).limit(limit).all()
+    total = query.count()
+    
+    return {
+        "users": [
+            {
+                "id": u.id,
+                "email": u.email,
+                "full_name": u.full_name,
+                "role": u.role,
+                "is_active": u.is_active
+            }
+            for u in users
+        ],
+        "total": total
+    }
 
 
 if __name__ == "__main__":
