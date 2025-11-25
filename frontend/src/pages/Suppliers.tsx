@@ -29,7 +29,7 @@ export default function Suppliers() {
   const loadSuppliers = async () => {
     try {
       const response = await api.get('/erp/master-data/suppliers')
-      const data = response.data.data || response.data
+      const data = response.data.suppliers || response.data.data || response.data
       setSuppliers(Array.isArray(data) ? data : [])
     } catch (error) {
       console.error('Failed to load suppliers:', error)
@@ -52,7 +52,7 @@ export default function Suppliers() {
   const filteredSuppliers = suppliers.filter(
     (s) =>
       (s.supplier_name || s.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-      s.supplier_code.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (s.supplier_code || s.supplier_number || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
       s.email?.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
@@ -102,7 +102,7 @@ export default function Suppliers() {
             <tbody className="divide-y divide-gray-200">
               {filteredSuppliers.map((supplier) => (
                 <tr key={supplier.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{supplier.supplier_code}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{supplier.supplier_code || supplier.supplier_number}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{supplier.supplier_name || supplier.name}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{supplier.email || '-'}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{supplier.phone || '-'}</td>

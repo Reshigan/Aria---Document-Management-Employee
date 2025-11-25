@@ -17,7 +17,7 @@ export default function Customers() {
   const loadCustomers = async () => {
     try {
       const response = await api.get('/erp/master-data/customers')
-      const data = response.data.data || response.data
+      const data = response.data.customers || response.data.data || response.data
       setCustomers(Array.isArray(data) ? data : [])
     } catch (error) {
       console.error('Failed to load customers:', error)
@@ -40,7 +40,7 @@ export default function Customers() {
   const filteredCustomers = customers.filter(
     (c) =>
       c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      c.customer_code.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (c.customer_code || c.customer_number || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
       c.email?.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
@@ -94,7 +94,7 @@ export default function Customers() {
                   className="hover:bg-gray-50"
                   data-testid={customer.name === 'ABC Manufacturing' ? 'customer-abc-manufacturing' : undefined}
                 >
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{customer.customer_code}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{customer.customer_code || customer.customer_number}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{customer.name}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{customer.email || '-'}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{customer.phone || '-'}</td>
