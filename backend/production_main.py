@@ -3961,9 +3961,9 @@ async def create_customer_inline(request: dict):
         customer_number = request.get('customer_number') or f"CUST{datetime.now().strftime('%Y%m%d%H%M%S')}"
         
         query = """
-            INSERT INTO customers (id, customer_number, name, email, phone, address, tax_number, 
-                                 payment_terms, credit_limit, is_active, company_id, created_at)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            INSERT INTO customers (id, customer_number, name, email, phone, billing_address_line1, tax_number, 
+                                 payment_terms, credit_limit, is_active, company_id, created_at, updated_at)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             RETURNING id, customer_number, name, email, phone, is_active, created_at
         """
         
@@ -3979,6 +3979,7 @@ async def create_customer_inline(request: dict):
             request.get('credit_limit', 0),
             request.get('is_active', True),
             'b0598135-52fd-4f67-ac56-8f0237e6355e',
+            datetime.utcnow(),
             datetime.utcnow()
         ))
         
@@ -4006,12 +4007,13 @@ async def update_customer_inline(customer_id: str, request: dict):
     try:
         query = """
             UPDATE customers 
-            SET name = %s, email = %s, phone = %s, address = %s, tax_number = %s,
-                payment_terms = %s, credit_limit = %s, is_active = %s
+            SET name = %s, email = %s, phone = %s, billing_address_line1 = %s, tax_number = %s,
+                payment_terms = %s, credit_limit = %s, is_active = %s, updated_at = %s
             WHERE id = %s
             RETURNING id, customer_number, name, email, phone, is_active, created_at
         """
         
+        from datetime import datetime
         cursor.execute(query, (
             request.get('name'),
             request.get('email'),
@@ -4021,6 +4023,7 @@ async def update_customer_inline(customer_id: str, request: dict):
             request.get('payment_terms', 30),
             request.get('credit_limit', 0),
             request.get('is_active', True),
+            datetime.utcnow(),
             customer_id
         ))
         
@@ -4069,9 +4072,9 @@ async def create_supplier_inline(request: dict):
         supplier_number = request.get('supplier_number') or request.get('supplier_code') or f"SUPP{datetime.now().strftime('%Y%m%d%H%M%S')}"
         
         query = """
-            INSERT INTO suppliers (id, supplier_number, name, email, phone, address, tax_number, 
-                                 payment_terms, is_active, company_id, created_at)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            INSERT INTO suppliers (id, supplier_number, name, email, phone, address_line1, tax_number, 
+                                 payment_terms, is_active, company_id, created_at, updated_at)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             RETURNING id, supplier_number, name, email, phone, is_active, created_at
         """
         
@@ -4086,6 +4089,7 @@ async def create_supplier_inline(request: dict):
             request.get('payment_terms', 30),
             request.get('is_active', True),
             'b0598135-52fd-4f67-ac56-8f0237e6355e',
+            datetime.utcnow(),
             datetime.utcnow()
         ))
         
@@ -4113,12 +4117,13 @@ async def update_supplier_inline(supplier_id: str, request: dict):
     try:
         query = """
             UPDATE suppliers 
-            SET name = %s, email = %s, phone = %s, address = %s, tax_number = %s,
-                payment_terms = %s, is_active = %s
+            SET name = %s, email = %s, phone = %s, address_line1 = %s, tax_number = %s,
+                payment_terms = %s, is_active = %s, updated_at = %s
             WHERE id = %s
             RETURNING id, supplier_number, name, email, phone, is_active, created_at
         """
         
+        from datetime import datetime
         cursor.execute(query, (
             request.get('supplier_name') or request.get('name'),
             request.get('email'),
@@ -4127,6 +4132,7 @@ async def update_supplier_inline(supplier_id: str, request: dict):
             request.get('tax_number'),
             request.get('payment_terms', 30),
             request.get('is_active', True),
+            datetime.utcnow(),
             supplier_id
         ))
         
@@ -4177,8 +4183,8 @@ async def create_product_inline(request: dict):
         query = """
             INSERT INTO products (id, code, name, description, product_type, category, 
                                 unit_of_measure, standard_cost, selling_price, is_active, 
-                                company_id, created_at)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                                company_id, created_at, updated_at)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             RETURNING id, code, name, description, product_type, category, unit_of_measure, 
                      standard_cost, selling_price, is_active, created_at
         """
@@ -4195,6 +4201,7 @@ async def create_product_inline(request: dict):
             request.get('selling_price', 0),
             request.get('is_active', True),
             'b0598135-52fd-4f67-ac56-8f0237e6355e',
+            datetime.utcnow(),
             datetime.utcnow()
         ))
         
@@ -4227,12 +4234,13 @@ async def update_product_inline(product_id: str, request: dict):
         query = """
             UPDATE products 
             SET name = %s, description = %s, product_type = %s, category = %s,
-                unit_of_measure = %s, standard_cost = %s, selling_price = %s, is_active = %s
+                unit_of_measure = %s, standard_cost = %s, selling_price = %s, is_active = %s, updated_at = %s
             WHERE id = %s
             RETURNING id, code, name, description, product_type, category, unit_of_measure,
                      standard_cost, selling_price, is_active, created_at
         """
         
+        from datetime import datetime
         cursor.execute(query, (
             request.get('name'),
             request.get('description'),
@@ -4242,6 +4250,7 @@ async def update_product_inline(product_id: str, request: dict):
             request.get('standard_cost', 0),
             request.get('selling_price', 0),
             request.get('is_active', True),
+            datetime.utcnow(),
             product_id
         ))
         
