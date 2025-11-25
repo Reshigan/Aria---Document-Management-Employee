@@ -9,7 +9,9 @@ export default function Customers() {
   const [showModal, setShowModal] = useState(false)
   const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
-  const [hasCreatedCustomer, setHasCreatedCustomer] = useState(false)
+  const [hasCreatedCustomer, setHasCreatedCustomer] = useState(() => {
+    return typeof window !== 'undefined' && window.sessionStorage.getItem('hasCreatedCustomer') === 'true'
+  })
 
   useEffect(() => {
     loadCustomers()
@@ -138,7 +140,14 @@ export default function Customers() {
         <CustomerModal
           customer={editingCustomer}
           onClose={() => setShowModal(false)}
-          onSave={() => { setShowModal(false); loadCustomers(); setHasCreatedCustomer(true) }}
+          onSave={() => { 
+            setShowModal(false); 
+            loadCustomers(); 
+            if (typeof window !== 'undefined') {
+              window.sessionStorage.setItem('hasCreatedCustomer', 'true')
+            }
+            setHasCreatedCustomer(true)
+          }}
         />
       )}
     </div>

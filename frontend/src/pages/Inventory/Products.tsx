@@ -24,7 +24,9 @@ export default function Products() {
   const [searchTerm, setSearchTerm] = useState('');
   const [showForm, setShowForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-  const [hasCreatedProduct, setHasCreatedProduct] = useState(false);
+  const [hasCreatedProduct, setHasCreatedProduct] = useState(() => {
+    return typeof window !== 'undefined' && window.sessionStorage.getItem('hasCreatedProduct') === 'true'
+  });
   const [formData, setFormData] = useState({
     code: '',
     name: '',
@@ -67,6 +69,9 @@ export default function Products() {
       setEditingProduct(null);
       resetForm();
       loadProducts();
+      if (typeof window !== 'undefined') {
+        window.sessionStorage.setItem('hasCreatedProduct', 'true')
+      }
       setHasCreatedProduct(true);
     } catch (error) {
       console.error('Error saving product:', error);

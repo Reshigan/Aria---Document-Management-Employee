@@ -21,7 +21,9 @@ export default function Suppliers() {
   const [showModal, setShowModal] = useState(false)
   const [editingSupplier, setEditingSupplier] = useState<Supplier | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
-  const [hasCreatedSupplier, setHasCreatedSupplier] = useState(false)
+  const [hasCreatedSupplier, setHasCreatedSupplier] = useState(() => {
+    return typeof window !== 'undefined' && window.sessionStorage.getItem('hasCreatedSupplier') === 'true'
+  })
 
   useEffect(() => {
     loadSuppliers()
@@ -146,7 +148,14 @@ export default function Suppliers() {
         <SupplierModal
           supplier={editingSupplier}
           onClose={() => setShowModal(false)}
-          onSave={() => { setShowModal(false); loadSuppliers(); setHasCreatedSupplier(true) }}
+          onSave={() => { 
+            setShowModal(false); 
+            loadSuppliers(); 
+            if (typeof window !== 'undefined') {
+              window.sessionStorage.setItem('hasCreatedSupplier', 'true')
+            }
+            setHasCreatedSupplier(true)
+          }}
         />
       )}
     </div>
