@@ -1055,31 +1055,6 @@ export default function GeneralLedger() {
               <div style={{ padding: '3rem', textAlign: 'center', color: '#6b7280' }}>
                 Loading accounts...
               </div>
-            ) : accounts.length === 0 ? (
-              <div style={{ padding: '3rem', textAlign: 'center' }}>
-                <BookOpen size={48} style={{ margin: '0 auto 1rem', color: '#d1d5db' }} />
-                <h3 style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '0.5rem' }}>No accounts found</h3>
-                <p style={{ color: '#6b7280', marginBottom: '1.5rem' }}>
-                  {searchTerm || typeFilter ? 'Try adjusting your filters' : 'Get started by creating your first account'}
-                </p>
-                {!searchTerm && !typeFilter && (
-                  <button
-                    onClick={handleCreateAccount}
-                    style={{
-                      padding: '0.5rem 1rem',
-                      background: '#2563eb',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '0.375rem',
-                      fontSize: '0.875rem',
-                      fontWeight: '500',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    Create Account
-                  </button>
-                )}
-              </div>
             ) : (
               <div style={{ overflowX: 'auto' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse' }}>
@@ -1094,73 +1069,102 @@ export default function GeneralLedger() {
                     </tr>
                   </thead>
                   <tbody>
-                    {accounts.map((account) => (
-                      <tr key={account.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
-                        <td style={{ padding: '1rem', fontSize: '0.875rem', fontWeight: '500', fontFamily: 'monospace' }}>{account.account_code}</td>
-                        <td style={{ padding: '1rem', fontSize: '0.875rem' }}>{account.account_name}</td>
-                        <td style={{ padding: '1rem' }}>
-                          <span style={{
-                            padding: '0.25rem 0.75rem',
-                            borderRadius: '9999px',
-                            fontSize: '0.75rem',
-                            fontWeight: '500',
-                            background: getAccountTypeColor(account.account_type) + '20',
-                            color: getAccountTypeColor(account.account_type)
-                          }}>
-                            {account.account_type}
-                          </span>
-                        </td>
-                        <td style={{ padding: '1rem', fontSize: '0.875rem', color: '#6b7280' }}>{account.account_category || '-'}</td>
-                        <td style={{ padding: '1rem', textAlign: 'center' }}>
-                          <span style={{
-                            padding: '0.25rem 0.75rem',
-                            borderRadius: '9999px',
-                            fontSize: '0.75rem',
-                            fontWeight: '500',
-                            background: account.is_active ? '#d1fae5' : '#f3f4f6',
-                            color: account.is_active ? '#065f46' : '#6b7280'
-                          }}>
-                            {account.is_active ? 'Active' : 'Inactive'}
-                          </span>
-                        </td>
-                        <td style={{ padding: '1rem' }}>
-                          <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
+                    {accounts.length === 0 ? (
+                      <tr>
+                        <td colSpan={6} style={{ padding: '3rem', textAlign: 'center' }}>
+                          <BookOpen size={48} style={{ margin: '0 auto 1rem', color: '#d1d5db' }} />
+                          <h3 style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '0.5rem' }}>No accounts found</h3>
+                          <p style={{ color: '#6b7280', marginBottom: '1.5rem' }}>
+                            {searchTerm || typeFilter ? 'Try adjusting your filters' : 'Get started by creating your first account'}
+                          </p>
+                          {!searchTerm && !typeFilter && (
                             <button
-                              onClick={() => handleEditAccount(account)}
+                              onClick={handleCreateAccount}
                               style={{
-                                padding: '0.25rem 0.5rem',
-                                background: 'transparent',
-                                border: '1px solid #d1d5db',
-                                borderRadius: '0.25rem',
-                                color: '#6b7280',
-                                cursor: 'pointer',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '0.25rem'
+                                padding: '0.5rem 1rem',
+                                background: '#2563eb',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '0.375rem',
+                                fontSize: '0.875rem',
+                                fontWeight: '500',
+                                cursor: 'pointer'
                               }}
                             >
-                              <Edit size={14} />
+                              Create Account
                             </button>
-                            <button
-                              onClick={() => handleDeleteAccount(account)}
-                              style={{
-                                padding: '0.25rem 0.5rem',
-                                background: 'transparent',
-                                border: '1px solid #fecaca',
-                                borderRadius: '0.25rem',
-                                color: '#ef4444',
-                                cursor: 'pointer',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '0.25rem'
-                              }}
-                            >
-                              <Trash2 size={14} />
-                            </button>
-                          </div>
+                          )}
                         </td>
                       </tr>
-                    ))}
+                    ) : (
+                      accounts.map((account) => (
+                        <tr key={account.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
+                          <td style={{ padding: '1rem', fontSize: '0.875rem', fontWeight: '500', fontFamily: 'monospace' }}>{account.account_code}</td>
+                          <td style={{ padding: '1rem', fontSize: '0.875rem' }}>{account.account_name}</td>
+                          <td style={{ padding: '1rem' }}>
+                            <span style={{
+                              padding: '0.25rem 0.75rem',
+                              borderRadius: '9999px',
+                              fontSize: '0.75rem',
+                              fontWeight: '500',
+                              background: getAccountTypeColor(account.account_type) + '20',
+                              color: getAccountTypeColor(account.account_type)
+                            }}>
+                              {account.account_type}
+                            </span>
+                          </td>
+                          <td style={{ padding: '1rem', fontSize: '0.875rem', color: '#6b7280' }}>{account.account_category || '-'}</td>
+                          <td style={{ padding: '1rem', textAlign: 'center' }}>
+                            <span style={{
+                              padding: '0.25rem 0.75rem',
+                              borderRadius: '9999px',
+                              fontSize: '0.75rem',
+                              fontWeight: '500',
+                              background: account.is_active ? '#d1fae5' : '#f3f4f6',
+                              color: account.is_active ? '#065f46' : '#6b7280'
+                            }}>
+                              {account.is_active ? 'Active' : 'Inactive'}
+                            </span>
+                          </td>
+                          <td style={{ padding: '1rem' }}>
+                            <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
+                              <button
+                                onClick={() => handleEditAccount(account)}
+                                style={{
+                                  padding: '0.25rem 0.5rem',
+                                  background: 'transparent',
+                                  border: '1px solid #d1d5db',
+                                  borderRadius: '0.25rem',
+                                  color: '#6b7280',
+                                  cursor: 'pointer',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: '0.25rem'
+                                }}
+                              >
+                                <Edit size={14} />
+                              </button>
+                              <button
+                                onClick={() => handleDeleteAccount(account)}
+                                style={{
+                                  padding: '0.25rem 0.5rem',
+                                  background: 'transparent',
+                                  border: '1px solid #fecaca',
+                                  borderRadius: '0.25rem',
+                                  color: '#ef4444',
+                                  cursor: 'pointer',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: '0.25rem'
+                                }}
+                              >
+                                <Trash2 size={14} />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    )}
                   </tbody>
                 </table>
               </div>

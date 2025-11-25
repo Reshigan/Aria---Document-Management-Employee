@@ -509,16 +509,6 @@ export default function SalesOrders() {
       {/* Orders Table */}
       {loading ? (
         <div style={{ textAlign: 'center', padding: '3rem' }}>Loading sales orders...</div>
-      ) : orders.length === 0 ? (
-        <div style={{ 
-          textAlign: 'center', 
-          padding: '3rem',
-          background: 'white',
-          borderRadius: '0.5rem',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-        }}>
-          <p style={{ color: '#6b7280' }}>No sales orders found</p>
-        </div>
       ) : (
         <div style={{ 
           background: 'white', 
@@ -539,49 +529,57 @@ export default function SalesOrders() {
               </tr>
             </thead>
             <tbody>
-              {orders.map((order) => (
-                <tr key={order.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
-                  <td style={{ padding: '1rem', fontSize: '0.875rem', fontWeight: '500' }}>
-                    <Link to={`/sales-orders/${order.id}`} style={{ color: '#2563eb', textDecoration: 'none' }}>
-                      {order.order_number}
-                    </Link>
-                  </td>
-                  <td style={{ padding: '1rem', fontSize: '0.875rem' }}>{order.customer_name || '-'}</td>
-                  <td style={{ padding: '1rem', fontSize: '0.875rem' }}>{new Date(order.order_date).toLocaleDateString()}</td>
-                  <td style={{ padding: '1rem', fontSize: '0.875rem' }}>{order.required_date ? new Date(order.required_date).toLocaleDateString() : '-'}</td>
-                  <td style={{ padding: '1rem', fontSize: '0.875rem', textAlign: 'right', fontWeight: '500' }}>
-                    R {order.total_amount.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                  </td>
-                  <td style={{ padding: '1rem' }}>
-                    <span style={{
-                      padding: '0.25rem 0.75rem',
-                      borderRadius: '9999px',
-                      fontSize: '0.75rem',
-                      fontWeight: '500'
-                    }} className={getStatusColor(order.status)}>
-                      {order.status}
-                    </span>
-                  </td>
-                  <td style={{ padding: '1rem', textAlign: 'right' }}>
-                    {order.status === 'draft' && (
-                      <button
-                        onClick={() => approveOrder(order.id)}
-                        style={{
-                          padding: '0.25rem 0.75rem',
-                          background: '#10b981',
-                          color: 'white',
-                          border: 'none',
-                          borderRadius: '0.25rem',
-                          fontSize: '0.75rem',
-                          cursor: 'pointer'
-                        }}
-                      >
-                        Approve
-                      </button>
-                    )}
+              {orders.length === 0 ? (
+                <tr>
+                  <td colSpan={7} style={{ padding: '3rem', textAlign: 'center', color: '#6b7280' }}>
+                    No sales orders found
                   </td>
                 </tr>
-              ))}
+              ) : (
+                orders.map((order) => (
+                  <tr key={order.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
+                    <td style={{ padding: '1rem', fontSize: '0.875rem', fontWeight: '500' }}>
+                      <Link to={`/sales-orders/${order.id}`} style={{ color: '#2563eb', textDecoration: 'none' }}>
+                        {order.order_number}
+                      </Link>
+                    </td>
+                    <td style={{ padding: '1rem', fontSize: '0.875rem' }}>{order.customer_name || '-'}</td>
+                    <td style={{ padding: '1rem', fontSize: '0.875rem' }}>{new Date(order.order_date).toLocaleDateString()}</td>
+                    <td style={{ padding: '1rem', fontSize: '0.875rem' }}>{order.required_date ? new Date(order.required_date).toLocaleDateString() : '-'}</td>
+                    <td style={{ padding: '1rem', fontSize: '0.875rem', textAlign: 'right', fontWeight: '500' }}>
+                      R {order.total_amount.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    </td>
+                    <td style={{ padding: '1rem' }}>
+                      <span style={{
+                        padding: '0.25rem 0.75rem',
+                        borderRadius: '9999px',
+                        fontSize: '0.75rem',
+                        fontWeight: '500'
+                      }} className={getStatusColor(order.status)}>
+                        {order.status}
+                      </span>
+                    </td>
+                    <td style={{ padding: '1rem', textAlign: 'right' }}>
+                      {order.status === 'draft' && (
+                        <button
+                          onClick={() => approveOrder(order.id)}
+                          style={{
+                            padding: '0.25rem 0.75rem',
+                            background: '#10b981',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '0.25rem',
+                            fontSize: '0.75rem',
+                            cursor: 'pointer'
+                          }}
+                        >
+                          Approve
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>

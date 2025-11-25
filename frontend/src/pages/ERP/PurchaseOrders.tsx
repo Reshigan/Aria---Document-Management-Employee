@@ -212,16 +212,6 @@ export default function PurchaseOrders() {
       {/* Purchase Orders Table */}
       {loading ? (
         <div style={{ textAlign: 'center', padding: '3rem' }}>Loading purchase orders...</div>
-      ) : filteredOrders.length === 0 ? (
-        <div style={{ 
-          textAlign: 'center', 
-          padding: '3rem',
-          background: 'white',
-          borderRadius: '0.5rem',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-        }}>
-          <p style={{ color: '#6b7280' }}>No purchase orders found</p>
-        </div>
       ) : (
         <div style={{ 
           background: 'white', 
@@ -242,39 +232,65 @@ export default function PurchaseOrders() {
               </tr>
             </thead>
             <tbody>
-              {filteredOrders.map((order) => (
-                <tr key={order.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
-                  <td style={{ padding: '1rem', fontSize: '0.875rem', fontWeight: '500' }}>
-                    <Link to={`/procurement/purchase-orders/${order.id}`} style={{ color: '#2563eb', textDecoration: 'none' }}>
-                      {order.po_number}
-                    </Link>
+              {filteredOrders.length === 0 ? (
+                <tr>
+                  <td colSpan={7} style={{ padding: '3rem', textAlign: 'center', color: '#6b7280' }}>
+                    No purchase orders found
                   </td>
-                  <td style={{ padding: '1rem', fontSize: '0.875rem' }}>{order.supplier_name}</td>
-                  <td style={{ padding: '1rem', fontSize: '0.875rem' }}>{new Date(order.po_date).toLocaleDateString()}</td>
-                  <td style={{ padding: '1rem', fontSize: '0.875rem' }}>
-                    {order.expected_delivery_date ? new Date(order.expected_delivery_date).toLocaleDateString() : '-'}
-                  </td>
-                  <td style={{ padding: '1rem', fontSize: '0.875rem', textAlign: 'right', fontWeight: '500' }}>
-                    R {order.total_amount.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                  </td>
-                  <td style={{ padding: '1rem' }}>
-                    <span style={{
-                      padding: '0.25rem 0.75rem',
-                      borderRadius: '9999px',
-                      fontSize: '0.75rem',
-                      fontWeight: '500'
-                    }} className={getStatusColor(order.status)}>
-                      {order.status}
-                    </span>
-                  </td>
-                  <td style={{ padding: '1rem', textAlign: 'right' }}>
-                    <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
-                      {order.status === 'draft' && (
+                </tr>
+              ) : (
+                filteredOrders.map((order) => (
+                  <tr key={order.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
+                    <td style={{ padding: '1rem', fontSize: '0.875rem', fontWeight: '500' }}>
+                      <Link to={`/procurement/purchase-orders/${order.id}`} style={{ color: '#2563eb', textDecoration: 'none' }}>
+                        {order.po_number}
+                      </Link>
+                    </td>
+                    <td style={{ padding: '1rem', fontSize: '0.875rem' }}>{order.supplier_name}</td>
+                    <td style={{ padding: '1rem', fontSize: '0.875rem' }}>{new Date(order.po_date).toLocaleDateString()}</td>
+                    <td style={{ padding: '1rem', fontSize: '0.875rem' }}>
+                      {order.expected_delivery_date ? new Date(order.expected_delivery_date).toLocaleDateString() : '-'}
+                    </td>
+                    <td style={{ padding: '1rem', fontSize: '0.875rem', textAlign: 'right', fontWeight: '500' }}>
+                      R {order.total_amount.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    </td>
+                    <td style={{ padding: '1rem' }}>
+                      <span style={{
+                        padding: '0.25rem 0.75rem',
+                        borderRadius: '9999px',
+                        fontSize: '0.75rem',
+                        fontWeight: '500'
+                      }} className={getStatusColor(order.status)}>
+                        {order.status}
+                      </span>
+                    </td>
+                    <td style={{ padding: '1rem', textAlign: 'right' }}>
+                      <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
+                        {order.status === 'draft' && (
+                          <button
+                            onClick={() => approvePO(order.id)}
+                            style={{
+                              padding: '0.25rem 0.75rem',
+                              background: '#3b82f6',
+                              color: 'white',
+                              border: 'none',
+                              borderRadius: '0.25rem',
+                              fontSize: '0.75rem',
+                              cursor: 'pointer',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '0.25rem'
+                            }}
+                          >
+                            <Check size={12} />
+                            Approve
+                          </button>
+                        )}
                         <button
-                          onClick={() => approvePO(order.id)}
+                          onClick={() => setSelectedOrder(order)}
                           style={{
                             padding: '0.25rem 0.75rem',
-                            background: '#3b82f6',
+                            background: '#6b7280',
                             color: 'white',
                             border: 'none',
                             borderRadius: '0.25rem',
@@ -285,32 +301,14 @@ export default function PurchaseOrders() {
                             gap: '0.25rem'
                           }}
                         >
-                          <Check size={12} />
-                          Approve
+                          <Eye size={12} />
+                          View
                         </button>
-                      )}
-                      <button
-                        onClick={() => setSelectedOrder(order)}
-                        style={{
-                          padding: '0.25rem 0.75rem',
-                          background: '#6b7280',
-                          color: 'white',
-                          border: 'none',
-                          borderRadius: '0.25rem',
-                          fontSize: '0.75rem',
-                          cursor: 'pointer',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '0.25rem'
-                        }}
-                      >
-                        <Eye size={12} />
-                        View
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
