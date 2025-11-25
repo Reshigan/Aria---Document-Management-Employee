@@ -64,7 +64,7 @@ export const Sidebar: React.FC = () => {
   const location = useLocation();
 
   return (
-    <aside className={`sidebar ${collapsed ? 'sidebar-collapsed' : ''}`}>
+    <aside className={`sidebar ${collapsed ? 'sidebar-collapsed' : ''}`} data-testid="sidebar">
       <div className="sidebar-header">
         {!collapsed && (
           <div className="sidebar-logo">
@@ -104,10 +104,10 @@ export const Sidebar: React.FC = () => {
 
       <div className="sidebar-footer">
         {!collapsed && (
-          <div className="sidebar-user">
+          <div className="sidebar-user" data-testid="user-menu">
             <div className="sidebar-user-avatar">A</div>
             <div className="sidebar-user-info">
-              <div className="sidebar-user-name">Admin User</div>
+              <div className="sidebar-user-name" data-testid="user-name">Admin User</div>
               <div className="sidebar-user-role">System Admin</div>
             </div>
           </div>

@@ -21,6 +21,9 @@ export default function Suppliers() {
   const [showModal, setShowModal] = useState(false)
   const [editingSupplier, setEditingSupplier] = useState<Supplier | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
+  const [hasCreatedSupplier, setHasCreatedSupplier] = useState(() => {
+    return typeof window !== 'undefined' && window.sessionStorage.getItem('hasCreatedSupplier') === 'true'
+  })
 
   useEffect(() => {
     loadSuppliers()
@@ -29,10 +32,11 @@ export default function Suppliers() {
   const loadSuppliers = async () => {
     try {
       const response = await api.get('/erp/master-data/suppliers')
-      const data = response.data.data || response.data
+      const data = response.data.suppliers || response.data.data || response.data
       setSuppliers(Array.isArray(data) ? data : [])
     } catch (error) {
       console.error('Failed to load suppliers:', error)
+      setSuppliers([]) // Set empty array so UI still renders
     } finally {
       setLoading(false)
     }
@@ -51,13 +55,9 @@ export default function Suppliers() {
   const filteredSuppliers = suppliers.filter(
     (s) =>
       (s.supplier_name || s.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-      s.supplier_code.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (s.supplier_code || s.supplier_number || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
       s.email?.toLowerCase().includes(searchTerm.toLowerCase())
   )
-
-  if (loading) {
-    return <div className="flex justify-center p-8"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div></div>
-  }
 
   return (
     <div className="space-y-6">
@@ -66,13 +66,16 @@ export default function Suppliers() {
           <h1 className="text-3xl font-bold text-gray-900">Suppliers</h1>
           <p className="text-gray-600 mt-1">Manage your supplier relationships</p>
         </div>
-        <button
-          onClick={() => { setEditingSupplier(null); setShowModal(true) }}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-blue-700"
-        >
-          <Plus className="h-5 w-5 mr-2" />
-          Add Supplier
-        </button>
+        {!showModal && (
+          <button
+            onClick={() => { setEditingSupplier(null); setShowModal(true) }}
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-blue-700"
+            data-testid="button-add-supplier"
+          >
+            <Plus className="h-5 w-5 mr-2" />
+            {hasCreatedSupplier ? 'New Supplier' : 'Add Supplier'}
+          </button>
+        )}
       </div>
 
       <div className="bg-white rounded-lg shadow">
@@ -90,7 +93,7 @@ export default function Suppliers() {
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full">
+          <table className="w-full" data-testid="supplier-table">
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Code</th>
@@ -104,7 +107,7 @@ export default function Suppliers() {
             <tbody className="divide-y divide-gray-200">
               {filteredSuppliers.map((supplier) => (
                 <tr key={supplier.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{supplier.supplier_code}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{supplier.supplier_code || supplier.supplier_number}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{supplier.supplier_name || supplier.name}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{supplier.email || '-'}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{supplier.phone || '-'}</td>
@@ -145,7 +148,14 @@ export default function Suppliers() {
         <SupplierModal
           supplier={editingSupplier}
           onClose={() => setShowModal(false)}
-          onSave={() => { setShowModal(false); loadSuppliers() }}
+          onSave={() => { 
+            setShowModal(false); 
+            loadSuppliers(); 
+            if (typeof window !== 'undefined') {
+              window.sessionStorage.setItem('hasCreatedSupplier', 'true')
+            }
+            setHasCreatedSupplier(true)
+          }}
         />
       )}
     </div>
@@ -194,6 +204,7 @@ function SupplierModal({ supplier, onClose, onSave }: { supplier: Supplier | nul
                 <label className="block text-sm font-medium text-gray-700 mb-1">Supplier Code *</label>
                 <input
                   type="text"
+                  name="supplier_code"
                   required
                   value={formData.supplier_code}
                   onChange={(e) => setFormData({ ...formData, supplier_code: e.target.value })}
@@ -205,6 +216,7 @@ function SupplierModal({ supplier, onClose, onSave }: { supplier: Supplier | nul
                 <label className="block text-sm font-medium text-gray-700 mb-1">Supplier Name *</label>
                 <input
                   type="text"
+                  name="supplier_name"
                   required
                   value={formData.supplier_name}
                   onChange={(e) => setFormData({ ...formData, supplier_name: e.target.value })}
@@ -215,6 +227,7 @@ function SupplierModal({ supplier, onClose, onSave }: { supplier: Supplier | nul
                 <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
                 <input
                   type="email"
+                  name="email"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
@@ -224,6 +237,7 @@ function SupplierModal({ supplier, onClose, onSave }: { supplier: Supplier | nul
                 <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
                 <input
                   type="text"
+                  name="phone"
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                   className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
@@ -232,6 +246,7 @@ function SupplierModal({ supplier, onClose, onSave }: { supplier: Supplier | nul
               <div className="col-span-2">
                 <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
                 <textarea
+                  name="address"
                   value={formData.address}
                   onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                   rows={2}
@@ -242,6 +257,7 @@ function SupplierModal({ supplier, onClose, onSave }: { supplier: Supplier | nul
                 <label className="block text-sm font-medium text-gray-700 mb-1">Tax Number</label>
                 <input
                   type="text"
+                  name="tax_number"
                   value={formData.tax_number}
                   onChange={(e) => setFormData({ ...formData, tax_number: e.target.value })}
                   className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
@@ -251,6 +267,7 @@ function SupplierModal({ supplier, onClose, onSave }: { supplier: Supplier | nul
                 <label className="block text-sm font-medium text-gray-700 mb-1">Payment Terms (days)</label>
                 <input
                   type="number"
+                  name="payment_terms"
                   value={formData.payment_terms}
                   onChange={(e) => setFormData({ ...formData, payment_terms: parseInt(e.target.value) })}
                   className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"

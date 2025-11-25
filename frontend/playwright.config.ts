@@ -22,7 +22,7 @@ export default defineConfig({
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
-    baseURL: 'http://localhost:12001',
+    baseURL: process.env.FRONTEND_URL || 'http://localhost:12001',
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
@@ -32,6 +32,9 @@ export default defineConfig({
 
     /* Record video on failure */
     video: 'retain-on-failure',
+
+    /* Ignore HTTPS errors for production testing */
+    ignoreHTTPSErrors: true,
   },
 
   /* Configure projects for major browsers */
@@ -73,7 +76,7 @@ export default defineConfig({
   ],
 
   /* Run your local dev server before starting the tests */
-  webServer: {
+  webServer: process.env.FRONTEND_URL ? undefined : {
     command: 'npm run dev',
     url: 'http://localhost:12001',
     reuseExistingServer: !process.env.CI,

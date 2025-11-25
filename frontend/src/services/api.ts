@@ -19,9 +19,14 @@ api.interceptors.response.use(
   (response) => response,
   async (error) => {
     if (error.response?.status === 401) {
+      // Only redirect to login if we had a token (i.e., session expired)
+      // Don't redirect if we're already trying to login (no token = login failure)
+      const hadToken = localStorage.getItem('access_token')
       localStorage.removeItem('access_token')
       localStorage.removeItem('refresh_token')
-      window.location.href = '/login'
+      if (hadToken && window.location.pathname !== '/login') {
+        window.location.href = '/login'
+      }
     }
     return Promise.reject(error)
   }

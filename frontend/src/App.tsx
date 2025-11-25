@@ -26,6 +26,7 @@ import PayrollDashboard from './pages/HR/PayrollDashboard';
 import CRMDashboard from './pages/CRM/CRMDashboard';
 import ProcurementDashboard from './pages/Procurement/ProcurementDashboard';
 import ProductCatalog from './pages/Procurement/ProductCatalog';
+import Products from './pages/Inventory/Products';
 import RFQManagement from './pages/Procurement/RFQManagement';
 import ManufacturingDashboard from './pages/Manufacturing/ManufacturingDashboard';
 import BOMManagement from './pages/Manufacturing/BOMManagement';
@@ -38,6 +39,7 @@ import FinancialReports from './pages/Reports/FinancialReports';
 import PayrollActivityReport from './pages/reports/PayrollActivityReport';
 import ExpenseManagementReport from './pages/reports/ExpenseManagementReport';
 import BbbeeComplianceReport from './pages/reports/BbbeeComplianceReport';
+import BotDashboard from './pages/reports/BotDashboard';
 import BankingDashboard from './pages/Banking/BankingDashboard';
 import ChatInterface from './components/Chat/ChatInterface';
 import AskAriaChat from './pages/AskAria/AskAriaChat';
@@ -55,6 +57,13 @@ import GoodsReceiptDetail from './pages/ERP/Detail/GoodsReceiptDetail';
 import DataImport from './pages/Admin/DataImport';
 import RoleDashboard from './pages/Admin/RoleDashboard';
 import RBACManagement from './pages/Admin/RBACManagement';
+import MobileManagement from './pages/mobile/MobileManagement';
+import ProfitLossStatement from './pages/financial/ProfitLossStatement';
+import BalanceSheet from './pages/financial/BalanceSheet';
+import PendingActions from './pages/PendingActions';
+import IntegrationsList from './pages/integrations/IntegrationsList';
+import DocumentTemplates from './pages/documents/DocumentTemplates';
+import GenerateDocument from './pages/documents/GenerateDocument';
 import './styles/design-system.css';
 
 function App() {
@@ -114,7 +123,7 @@ function App() {
           
           {/* Inventory */}
           <Route path="/inventory" element={<WMSStock />} />
-          <Route path="/inventory/products" element={<ProductCatalog />} />
+          <Route path="/inventory/products" element={<Products />} />
           <Route path="/inventory/stock" element={<WMSStock />} />
           <Route path="/inventory/items" element={<ProductCatalog />} />
           
@@ -123,6 +132,8 @@ function App() {
           <Route path="/master-data/customers" element={<Customers />} />
           <Route path="/master-data/suppliers" element={<Suppliers />} />
           <Route path="/master-data/products" element={<ProductCatalog />} />
+          <Route path="/customers" element={<Customers />} />
+          <Route path="/suppliers" element={<Suppliers />} />
           
           {/* Procurement */}
           <Route path="/procurement" element={<PurchaseOrders />} />
@@ -151,6 +162,9 @@ function App() {
           
           {/* Reports */}
           <Route path="/reports" element={<ReportsDashboard />} />
+          <Route path="/reports/bot-dashboard" element={<BotDashboard />} />
+          <Route path="/reports/profit-loss" element={<ProfitLossStatement />} />
+          <Route path="/reports/balance-sheet" element={<BalanceSheet />} />
           <Route path="/reports/ar-aging" element={<AgedReceivablesReport />} />
           <Route path="/reports/ar-ap/ar-aging" element={<AgedReceivablesReport />} />
           <Route path="/reports/ar-ap/ap-aging" element={<AgedReceivablesReport />} />
@@ -178,14 +192,31 @@ function App() {
           <Route path="/document-classification" element={<DocumentClassification />} />
           <Route path="/documents" element={<DocumentClassification />} />
           
+          {/* Document Management */}
+          <Route path="/documents/templates" element={<DocumentTemplates />} />
+          <Route path="/documents/generate" element={<GenerateDocument />} />
+          
+          {/* Pending Actions */}
+          <Route path="/actions" element={<PendingActions />} />
+          
+          {/* Integrations */}
+          <Route path="/integrations" element={<IntegrationsList />} />
+          
           {/* Admin */}
           <Route path="/admin/system" element={<SystemSettings />} />
           <Route path="/admin/company" element={<CompanySettings />} />
+          <Route path="/admin/company-settings" element={<CompanySettings />} />
           <Route path="/admin/agents" element={<BotConfiguration />} />
           <Route path="/admin/users" element={<UserManagement />} />
           <Route path="/admin/data-import" element={<DataImport />} />
           <Route path="/admin/dashboard" element={<RoleDashboard />} />
           <Route path="/admin/rbac" element={<RBACManagement />} />
+          
+          {/* Mobile */}
+          <Route path="/mobile" element={<MobileManagement />} />
+          
+          {/* Catch-all: redirect to dashboard for 404 pages */}
+          <Route path="*" element={<Navigate to="/dashboard" replace />} />
               </Routes>
             </MainLayout>
           </ProtectedRoute>

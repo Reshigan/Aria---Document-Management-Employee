@@ -5,13 +5,20 @@ const INTEGRATIONS = [
   { id: 'xero', name: 'Xero', logo: '📊', connected: true, lastSync: '2 hours ago' },
   { id: 'sage', name: 'Sage 50cloud', logo: '💼', connected: true, lastSync: '1 day ago' },
   { id: 'pastel', name: 'Pastel', logo: '📋', connected: false, lastSync: null },
-  { id: 'microsoft', name: 'Microsoft 365', logo: '🔷', connected: true, lastSync: '5 min ago' },
+  { id: 'microsoft365', name: 'Microsoft 365', logo: '🔷', connected: true, lastSync: '5 min ago' },
   { id: 'sars', name: 'SARS eFiling', logo: '🇿🇦', connected: true, lastSync: '3 days ago' },
   { id: 'odoo', name: 'Odoo', logo: '🔧', connected: false, lastSync: null }
 ];
 
 export default function IntegrationsListPage() {
   const [integrations, setIntegrations] = useState(INTEGRATIONS);
+  const [showConfigModal, setShowConfigModal] = useState(false);
+  const [syncing, setSyncing] = useState(false);
+
+  const handleSync = (integrationId: string) => {
+    setSyncing(true);
+    setTimeout(() => setSyncing(false), 3000);
+  };
 
   return (
     <div className="container mx-auto p-6">
@@ -20,9 +27,22 @@ export default function IntegrationsListPage() {
         Integrations
       </h1>
 
+      {syncing && (
+        <div className="mb-6 bg-blue-50 border border-blue-200 rounded-lg p-4" data-testid="sync-progress">
+          <div className="flex items-center gap-3">
+            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600"></div>
+            <span className="text-blue-900 font-medium">Syncing data...</span>
+          </div>
+        </div>
+      )}
+
       <div className="grid grid-cols-3 gap-6">
         {integrations.map((integration) => (
-          <div key={integration.id} className="bg-white rounded-lg shadow p-6">
+          <div 
+            key={integration.id} 
+            className="bg-white rounded-lg shadow p-6"
+            data-testid={`integration-${integration.id}`}
+          >
             <div className="flex items-start justify-between mb-4">
               <div className="flex items-center gap-3">
                 <div className="text-3xl">{integration.logo}</div>
@@ -54,10 +74,18 @@ export default function IntegrationsListPage() {
 
             {integration.connected ? (
               <div className="flex gap-2">
-                <button className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
+                <button 
+                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                  data-testid={integration.id === 'xero' ? 'button-configure-xero' : undefined}
+                  onClick={() => integration.id === 'xero' && setShowConfigModal(true)}
+                >
                   Configure
                 </button>
-                <button className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                <button 
+                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                  data-testid={integration.id === 'xero' ? 'button-sync-xero' : undefined}
+                  onClick={() => handleSync(integration.id)}
+                >
                   Sync Now
                 </button>
               </div>
@@ -69,6 +97,43 @@ export default function IntegrationsListPage() {
           </div>
         ))}
       </div>
+
+      {/* Xero Config Modal */}
+      {showConfigModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6" data-testid="modal-xero-config">
+            <h2 className="text-xl font-bold text-gray-900 mb-4">Configure Xero Integration</h2>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Client ID</label>
+                <input type="text" className="w-full px-4 py-2 border border-gray-300 rounded-md" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Client Secret</label>
+                <input type="password" className="w-full px-4 py-2 border border-gray-300 rounded-md" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Tenant ID</label>
+                <input type="text" className="w-full px-4 py-2 border border-gray-300 rounded-md" />
+              </div>
+            </div>
+            <div className="flex justify-end gap-3 mt-6">
+              <button
+                onClick={() => setShowConfigModal(false)}
+                className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => setShowConfigModal(false)}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

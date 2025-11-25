@@ -18,12 +18,9 @@ export const useAuthStore = create<AuthStore>((set) => ({
   isLoading: true,
 
   login: async (credentials) => {
-    const formData = new FormData()
-    formData.append('username', credentials.email)
-    formData.append('password', credentials.password)
-    
-    const response = await api.post<AuthResponse>('/auth/login', formData, {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    const response = await api.post<AuthResponse>('/auth/login', {
+      email: credentials.email,
+      password: credentials.password,
     })
     
     localStorage.setItem('access_token', response.data.access_token)
@@ -52,8 +49,8 @@ export const useAuthStore = create<AuthStore>((set) => ({
     }
     
     try {
-      const response = await api.get<User>('/auth/me')
-      set({ user: response.data, isAuthenticated: true, isLoading: false })
+      const response = await api.get<{user: User}>('/auth/me')
+      set({ user: response.data.user, isAuthenticated: true, isLoading: false })
     } catch (error) {
       localStorage.removeItem('access_token')
       localStorage.removeItem('refresh_token')

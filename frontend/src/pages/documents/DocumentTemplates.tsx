@@ -1,19 +1,25 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { FileText, Search } from 'lucide-react';
 
 const DOCUMENT_CATEGORIES = [
-  { name: 'Sales', count: 11, templates: ['Quote', 'Sales Order', 'Delivery Note', 'Tax Invoice', 'Credit Note', 'Debit Note', 'Statement'] },
-  { name: 'Purchase', count: 8, templates: ['Purchase Requisition', 'RFQ', 'Purchase Order', 'GRN'] },
-  { name: 'Manufacturing', count: 10, templates: ['BOM', 'Manufacturing Order', 'Work Order', 'Job Card'] },
-  { name: 'Inventory', count: 10, templates: ['Stock Transfer', 'Stock Adjustment', 'Stock Take Sheet'] },
-  { name: 'HR/Payroll', count: 12, templates: ['Employment Contract', 'Payslip', 'IRP5', 'Leave Request'] },
-  { name: 'Finance', count: 13, templates: ['Payment Voucher', 'Journal Entry', 'P&L', 'Balance Sheet'] },
-  { name: 'Compliance (SA)', count: 9, templates: ['VAT201', 'EMP201', 'BBBEE Certificate', 'Tax Clearance'] }
+  { name: 'Sales', testId: 'category-sales', count: 11, templates: ['Quote', 'Sales Order', 'Delivery Note', 'Tax Invoice', 'Credit Note', 'Debit Note', 'Statement'] },
+  { name: 'Purchase', testId: 'category-purchase', count: 8, templates: ['Purchase Requisition', 'RFQ', 'Purchase Order', 'GRN'] },
+  { name: 'Manufacturing', testId: 'category-manufacturing', count: 10, templates: ['BOM', 'Manufacturing Order', 'Work Order', 'Job Card'] },
+  { name: 'Inventory', testId: 'category-inventory', count: 10, templates: ['Stock Transfer', 'Stock Adjustment', 'Stock Take Sheet'] },
+  { name: 'HR/Payroll', testId: 'category-hr', count: 12, templates: ['Employment Contract', 'Payslip', 'IRP5', 'Leave Request'] },
+  { name: 'Finance', testId: 'category-finance', count: 13, templates: ['Payment Voucher', 'Journal Entry', 'P&L', 'Balance Sheet'] },
+  { name: 'Compliance (SA)', testId: 'category-compliance', count: 9, templates: ['VAT201', 'EMP201', 'BBBEE Certificate', 'Tax Clearance'] }
 ];
 
 export default function DocumentTemplatesPage() {
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
+  const navigate = useNavigate();
+
+  const handleTemplateClick = (template: string) => {
+    navigate('/documents/generate');
+  };
 
   return (
     <div className="container mx-auto p-6">
@@ -22,37 +28,55 @@ export default function DocumentTemplatesPage() {
         Document Templates
       </h1>
 
-      <div className="mb-6 flex gap-4">
-        <div className="flex-1 relative">
+      <div className="mb-6">
+        <div className="flex-1 relative mb-4">
           <Search className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
           <input
             type="text"
+            name="search"
             placeholder="Search templates..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg"
           />
         </div>
-        <select
-          value={selectedCategory}
-          onChange={(e) => setSelectedCategory(e.target.value)}
-          className="px-4 py-2 border border-gray-300 rounded-lg"
-        >
-          <option>All Categories</option>
+        <div className="flex gap-2 flex-wrap">
+          <button
+            onClick={() => setSelectedCategory('All')}
+            className={`px-4 py-2 rounded-lg ${selectedCategory === 'All' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'}`}
+          >
+            All Categories
+          </button>
           {DOCUMENT_CATEGORIES.map((cat) => (
-            <option key={cat.name}>{cat.name}</option>
+            <button
+              key={cat.name}
+              onClick={() => setSelectedCategory(cat.name)}
+              className={`px-4 py-2 rounded-lg ${selectedCategory === cat.name ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'}`}
+              data-testid={`filter-${cat.name.toLowerCase()}`}
+            >
+              {cat.name}
+            </button>
           ))}
-        </select>
+        </div>
       </div>
 
       <div className="grid grid-cols-3 gap-6">
         {DOCUMENT_CATEGORIES.map((category) => (
-          <div key={category.name} className="bg-white rounded-lg shadow p-6">
+          <div 
+            key={category.name} 
+            className={`bg-white rounded-lg shadow p-6 ${selectedCategory === category.name ? 'ring-2 ring-blue-600 active' : ''}`}
+            data-testid={category.testId}
+          >
             <h3 className="text-lg font-bold mb-2">{category.name}</h3>
             <p className="text-gray-600 text-sm mb-4">{category.count} templates</p>
             <ul className="space-y-2">
               {category.templates.map((template) => (
-                <li key={template} className="text-sm text-blue-600 hover:underline cursor-pointer">
+                <li 
+                  key={template} 
+                  className="text-sm text-blue-600 hover:underline cursor-pointer"
+                  data-testid={template === 'Tax Invoice' ? 'template-tax-invoice' : undefined}
+                  onClick={() => handleTemplateClick(template)}
+                >
                   {template}
                 </li>
               ))}

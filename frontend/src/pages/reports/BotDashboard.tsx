@@ -41,12 +41,12 @@ export default function BotDashboardPage() {
   return (
     <div className="container mx-auto p-6">
       <h1 className="text-3xl font-bold text-gray-900 mb-6 flex items-center gap-3">
-        <Agent className="h-8 w-8" />
-        Agent Activity Dashboard
+        <Bot className="h-8 w-8" />
+        Bot Dashboard
       </h1>
 
       <div className="grid grid-cols-4 gap-6 mb-8">
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white rounded-lg shadow p-6" data-testid="metric-total-actions">
           <div className="flex items-center justify-between mb-2">
             <div className="text-sm font-medium text-gray-600">Total Actions</div>
             <BarChart3 className="h-5 w-5 text-blue-600" />
@@ -55,7 +55,7 @@ export default function BotDashboardPage() {
           <div className="text-sm text-green-600 mt-2">↑ 12% from last month</div>
         </div>
 
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white rounded-lg shadow p-6" data-testid="metric-success-rate">
           <div className="flex items-center justify-between mb-2">
             <div className="text-sm font-medium text-gray-600">Success Rate</div>
             <CheckCircle className="h-5 w-5 text-green-600" />
@@ -64,7 +64,7 @@ export default function BotDashboardPage() {
           <div className="text-sm text-green-600 mt-2">↑ 2% from last month</div>
         </div>
 
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white rounded-lg shadow p-6" data-testid="metric-time-saved">
           <div className="flex items-center justify-between mb-2">
             <div className="text-sm font-medium text-gray-600">Time Saved</div>
             <Clock className="h-5 w-5 text-purple-600" />
@@ -73,17 +73,17 @@ export default function BotDashboardPage() {
           <div className="text-sm text-gray-600 mt-2">This month</div>
         </div>
 
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white rounded-lg shadow p-6" data-testid="metric-cost-saved">
           <div className="flex items-center justify-between mb-2">
-            <div className="text-sm font-medium text-gray-600">Active Agents</div>
+            <div className="text-sm font-medium text-gray-600">Cost Saved</div>
             <TrendingUp className="h-5 w-5 text-orange-600" />
           </div>
-          <div className="text-3xl font-bold text-gray-900">{stats.active_bots}/4</div>
-          <div className="text-sm text-gray-600 mt-2">All systems operational</div>
+          <div className="text-3xl font-bold text-gray-900">R {(stats.time_saved_hours * 500).toLocaleString()}</div>
+          <div className="text-sm text-gray-600 mt-2">Based on R500/hour</div>
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow p-6 mb-8">
+      <div className="bg-white rounded-lg shadow p-6 mb-8" data-testid="activity-chart">
         <h3 className="text-lg font-bold text-gray-900 mb-4">Activity Last 7 Days</h3>
         <ResponsiveContainer width="100%" height={300}>
           <LineChart data={chartData}>
@@ -119,7 +119,7 @@ export default function BotDashboardPage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white rounded-lg shadow p-6" data-testid="recent-activities">
           <h3 className="text-lg font-bold text-gray-900 mb-4">Recent Actions</h3>
           <div className="space-y-3">
             {[
@@ -129,7 +129,7 @@ export default function BotDashboardPage() {
               { agent: 'Expense Agent', action: 'Auto-coded 12 expense claims', time: '2 hours ago' }
             ].map((item, idx) => (
               <div key={idx} className="flex items-start gap-3 p-3 bg-gray-50 rounded">
-                <Agent className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                <Bot className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
                 <div className="flex-1">
                   <div className="text-sm font-medium text-gray-900">{item.agent}</div>
                   <div className="text-sm text-gray-600">{item.action}</div>

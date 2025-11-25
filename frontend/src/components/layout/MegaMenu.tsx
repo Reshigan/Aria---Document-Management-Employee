@@ -259,7 +259,7 @@ export const MegaMenu: React.FC = () => {
       <div className="mega-menu-header">
         <div className="mega-menu-logo">
           <Link to="/dashboard">
-            <h1 className="mega-menu-brand">ARIA</h1>
+            <div className="mega-menu-brand">ARIA</div>
             <span className="mega-menu-tagline">by VantaX</span>
           </Link>
         </div>
@@ -348,12 +348,12 @@ export const MegaMenu: React.FC = () => {
           </Link>
         </nav>
 
-        <div className="mega-menu-user">
+        <div className="mega-menu-user" data-testid="user-menu">
           <div className="mega-menu-user-info">
-            <span className="mega-menu-user-name">{user?.full_name || 'User'}</span>
+            <span className="mega-menu-user-name" data-testid="user-name">{user?.full_name || 'User'}</span>
             <span className="mega-menu-user-role">{user?.email}</span>
           </div>
-          <button onClick={logout} className="mega-menu-logout" title="Logout">
+          <button onClick={logout} className="mega-menu-logout" title="Logout" data-testid="logout">
             <LogOut size={18} />
           </button>
         </div>

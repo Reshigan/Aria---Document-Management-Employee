@@ -1,5 +1,7 @@
 import { test, expect } from '@playwright/test'
 
+const BASE_URL = process.env.FRONTEND_URL || 'http://localhost:12001';
+
 test.describe('Mobile Management Page', () => {
   test.beforeEach(async ({ page }) => {
     // Mock API responses
@@ -60,7 +62,7 @@ test.describe('Mobile Management Page', () => {
     })
 
     // Navigate to mobile page
-    await page.goto('/mobile')
+    await page.goto(`${BASE_URL}/mobile`)
   })
 
   test('should display mobile management page', async ({ page }) => {

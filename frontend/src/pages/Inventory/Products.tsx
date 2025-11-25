@@ -24,6 +24,9 @@ export default function Products() {
   const [searchTerm, setSearchTerm] = useState('');
   const [showForm, setShowForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [hasCreatedProduct, setHasCreatedProduct] = useState(() => {
+    return typeof window !== 'undefined' && window.sessionStorage.getItem('hasCreatedProduct') === 'true'
+  });
   const [formData, setFormData] = useState({
     code: '',
     name: '',
@@ -66,6 +69,10 @@ export default function Products() {
       setEditingProduct(null);
       resetForm();
       loadProducts();
+      if (typeof window !== 'undefined') {
+        window.sessionStorage.setItem('hasCreatedProduct', 'true')
+      }
+      setHasCreatedProduct(true);
     } catch (error) {
       console.error('Error saving product:', error);
       alert('Error saving product. Please try again.');
@@ -159,29 +166,31 @@ export default function Products() {
             }}
           />
         </div>
-        <button
-          onClick={() => {
-            setEditingProduct(null);
-            resetForm();
-            setShowForm(true);
-          }}
-          style={{
-            padding: '0.5rem 1.5rem',
-            background: '#8b5cf6',
-            color: 'white',
-            border: 'none',
-            borderRadius: '0.375rem',
-            fontSize: '0.875rem',
-            fontWeight: '500',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem'
-          }}
-        >
-          <Plus size={16} />
-          Add Product
-        </button>
+        {!showForm && (
+          <button
+            onClick={() => {
+              setEditingProduct(null);
+              resetForm();
+              setShowForm(true);
+            }}
+            style={{
+              padding: '0.5rem 1.5rem',
+              background: '#8b5cf6',
+              color: 'white',
+              border: 'none',
+              borderRadius: '0.375rem',
+              fontSize: '0.875rem',
+              fontWeight: '500',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem'
+            }}
+          >
+            <Plus size={16} />
+            {hasCreatedProduct ? 'New Product' : 'Add Product'}
+          </button>
+        )}
       </div>
 
       {/* Stats */}
@@ -241,6 +250,7 @@ export default function Products() {
                   </label>
                   <input
                     type="text"
+                    name="code"
                     required
                     value={formData.code}
                     onChange={(e) => setFormData({ ...formData, code: e.target.value })}
@@ -259,6 +269,7 @@ export default function Products() {
                   </label>
                   <input
                     type="text"
+                    name="name"
                     required
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -278,6 +289,7 @@ export default function Products() {
                   Description
                 </label>
                 <textarea
+                  name="description"
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   rows={2}
@@ -298,6 +310,7 @@ export default function Products() {
                     Product Type
                   </label>
                   <select
+                    name="product_type"
                     value={formData.product_type}
                     onChange={(e) => setFormData({ ...formData, product_type: e.target.value })}
                     style={{
@@ -320,6 +333,7 @@ export default function Products() {
                   </label>
                   <input
                     type="text"
+                    name="category"
                     value={formData.category}
                     onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                     style={{
@@ -336,6 +350,7 @@ export default function Products() {
                     Unit of Measure
                   </label>
                   <select
+                    name="unit_of_measure"
                     value={formData.unit_of_measure}
                     onChange={(e) => setFormData({ ...formData, unit_of_measure: e.target.value })}
                     style={{
@@ -363,6 +378,7 @@ export default function Products() {
                   </label>
                   <input
                     type="number"
+                    name="standard_cost"
                     step="0.01"
                     value={formData.standard_cost}
                     onChange={(e) => setFormData({ ...formData, standard_cost: parseFloat(e.target.value) })}
@@ -381,6 +397,7 @@ export default function Products() {
                   </label>
                   <input
                     type="number"
+                    name="selling_price"
                     step="0.01"
                     value={formData.selling_price}
                     onChange={(e) => setFormData({ ...formData, selling_price: parseFloat(e.target.value) })}
@@ -468,7 +485,7 @@ export default function Products() {
                     cursor: 'pointer'
                   }}
                 >
-                  {editingProduct ? 'Update' : 'Create'}
+                  Save
                 </button>
               </div>
             </form>

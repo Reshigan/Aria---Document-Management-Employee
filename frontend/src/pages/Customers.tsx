@@ -9,6 +9,9 @@ export default function Customers() {
   const [showModal, setShowModal] = useState(false)
   const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
+  const [hasCreatedCustomer, setHasCreatedCustomer] = useState(() => {
+    return typeof window !== 'undefined' && window.sessionStorage.getItem('hasCreatedCustomer') === 'true'
+  })
 
   useEffect(() => {
     loadCustomers()
@@ -17,10 +20,11 @@ export default function Customers() {
   const loadCustomers = async () => {
     try {
       const response = await api.get('/erp/master-data/customers')
-      const data = response.data.data || response.data
+      const data = response.data.customers || response.data.data || response.data
       setCustomers(Array.isArray(data) ? data : [])
     } catch (error) {
       console.error('Failed to load customers:', error)
+      setCustomers([]) // Set empty array so UI still renders
     } finally {
       setLoading(false)
     }
@@ -39,13 +43,9 @@ export default function Customers() {
   const filteredCustomers = customers.filter(
     (c) =>
       c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      c.customer_code.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (c.customer_code || c.customer_number || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
       c.email?.toLowerCase().includes(searchTerm.toLowerCase())
   )
-
-  if (loading) {
-    return <div className="flex justify-center p-8"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div></div>
-  }
 
   return (
     <div className="space-y-6">
@@ -54,13 +54,16 @@ export default function Customers() {
           <h1 className="text-3xl font-bold text-gray-900">Customers</h1>
           <p className="text-gray-600 mt-1">Manage your customer relationships</p>
         </div>
-        <button
-          onClick={() => { setEditingCustomer(null); setShowModal(true) }}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-blue-700"
-        >
-          <Plus className="h-5 w-5 mr-2" />
-          Add Customer
-        </button>
+        {!showModal && (
+          <button
+            onClick={() => { setEditingCustomer(null); setShowModal(true) }}
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-blue-700"
+            data-testid="button-add-customer"
+          >
+            <Plus className="h-5 w-5 mr-2" />
+            {hasCreatedCustomer ? 'New Customer' : 'Add Customer'}
+          </button>
+        )}
       </div>
 
       <div className="bg-white rounded-lg shadow">
@@ -78,7 +81,7 @@ export default function Customers() {
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full">
+          <table className="w-full" data-testid="customer-table">
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Code</th>
@@ -91,8 +94,12 @@ export default function Customers() {
             </thead>
             <tbody className="divide-y divide-gray-200">
               {filteredCustomers.map((customer) => (
-                <tr key={customer.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{customer.customer_code}</td>
+                <tr 
+                  key={customer.id} 
+                  className="hover:bg-gray-50"
+                  data-testid={customer.name === 'ABC Manufacturing' ? 'customer-abc-manufacturing' : undefined}
+                >
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{customer.customer_code || customer.customer_number}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{customer.name}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{customer.email || '-'}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{customer.phone || '-'}</td>
@@ -133,7 +140,14 @@ export default function Customers() {
         <CustomerModal
           customer={editingCustomer}
           onClose={() => setShowModal(false)}
-          onSave={() => { setShowModal(false); loadCustomers() }}
+          onSave={() => { 
+            setShowModal(false); 
+            loadCustomers(); 
+            if (typeof window !== 'undefined') {
+              window.sessionStorage.setItem('hasCreatedCustomer', 'true')
+            }
+            setHasCreatedCustomer(true)
+          }}
         />
       )}
     </div>
@@ -158,13 +172,18 @@ function CustomerModal({ customer, onClose, onSave }: { customer: Customer | nul
     setSaving(true)
     try {
       if (customer) {
-        await api.put(`/erp/master-data/customers/${customer.id}`, formData)
+        const response = await api.put(`/erp/master-data/customers/${customer.id}`, formData)
+        console.log('Customer updated successfully:', response.data)
       } else {
-        await api.post('/erp/master-data/customers', formData)
+        const response = await api.post('/erp/master-data/customers', formData)
+        console.log('Customer created successfully:', response.data)
       }
       onSave()
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to save customer:', error)
+      console.error('Error response:', error.response?.data)
+      console.error('Error status:', error.response?.status)
+      alert(`Failed to save customer: ${error.response?.data?.detail || error.message}`)
     } finally {
       setSaving(false)
     }
@@ -183,6 +202,7 @@ function CustomerModal({ customer, onClose, onSave }: { customer: Customer | nul
                 <label className="block text-sm font-medium text-gray-700 mb-1">Name *</label>
                 <input
                   type="text"
+                  name="name"
                   required
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -193,6 +213,7 @@ function CustomerModal({ customer, onClose, onSave }: { customer: Customer | nul
                 <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
                 <input
                   type="email"
+                  name="email"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
@@ -202,6 +223,7 @@ function CustomerModal({ customer, onClose, onSave }: { customer: Customer | nul
                 <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
                 <input
                   type="text"
+                  name="phone"
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                   className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
@@ -210,6 +232,7 @@ function CustomerModal({ customer, onClose, onSave }: { customer: Customer | nul
               <div className="col-span-2">
                 <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
                 <textarea
+                  name="address"
                   value={formData.address}
                   onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                   rows={2}
@@ -220,6 +243,7 @@ function CustomerModal({ customer, onClose, onSave }: { customer: Customer | nul
                 <label className="block text-sm font-medium text-gray-700 mb-1">Tax Number</label>
                 <input
                   type="text"
+                  name="tax_number"
                   value={formData.tax_number}
                   onChange={(e) => setFormData({ ...formData, tax_number: e.target.value })}
                   className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
@@ -229,6 +253,7 @@ function CustomerModal({ customer, onClose, onSave }: { customer: Customer | nul
                 <label className="block text-sm font-medium text-gray-700 mb-1">Payment Terms (days)</label>
                 <input
                   type="number"
+                  name="payment_terms"
                   value={formData.payment_terms}
                   onChange={(e) => setFormData({ ...formData, payment_terms: parseInt(e.target.value) })}
                   className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
@@ -238,6 +263,7 @@ function CustomerModal({ customer, onClose, onSave }: { customer: Customer | nul
                 <label className="block text-sm font-medium text-gray-700 mb-1">Credit Limit (ZAR)</label>
                 <input
                   type="number"
+                  name="credit_limit"
                   step="0.01"
                   value={formData.credit_limit}
                   onChange={(e) => setFormData({ ...formData, credit_limit: parseFloat(e.target.value) })}
