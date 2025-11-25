@@ -24,6 +24,7 @@ export default function Products() {
   const [searchTerm, setSearchTerm] = useState('');
   const [showForm, setShowForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [hasCreatedProduct, setHasCreatedProduct] = useState(false);
   const [formData, setFormData] = useState({
     code: '',
     name: '',
@@ -66,6 +67,7 @@ export default function Products() {
       setEditingProduct(null);
       resetForm();
       loadProducts();
+      setHasCreatedProduct(true);
     } catch (error) {
       console.error('Error saving product:', error);
       alert('Error saving product. Please try again.');
@@ -181,7 +183,7 @@ export default function Products() {
             }}
           >
             <Plus size={16} />
-            Add Product
+            {hasCreatedProduct ? 'New Product' : 'Add Product'}
           </button>
         )}
       </div>

@@ -9,6 +9,7 @@ export default function Customers() {
   const [showModal, setShowModal] = useState(false)
   const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
+  const [hasCreatedCustomer, setHasCreatedCustomer] = useState(false)
 
   useEffect(() => {
     loadCustomers()
@@ -58,7 +59,7 @@ export default function Customers() {
             data-testid="button-add-customer"
           >
             <Plus className="h-5 w-5 mr-2" />
-            Add Customer
+            {hasCreatedCustomer ? 'New Customer' : 'Add Customer'}
           </button>
         )}
       </div>
@@ -137,7 +138,7 @@ export default function Customers() {
         <CustomerModal
           customer={editingCustomer}
           onClose={() => setShowModal(false)}
-          onSave={() => { setShowModal(false); loadCustomers() }}
+          onSave={() => { setShowModal(false); loadCustomers(); setHasCreatedCustomer(true) }}
         />
       )}
     </div>

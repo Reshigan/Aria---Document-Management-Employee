@@ -21,6 +21,7 @@ export default function Suppliers() {
   const [showModal, setShowModal] = useState(false)
   const [editingSupplier, setEditingSupplier] = useState<Supplier | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
+  const [hasCreatedSupplier, setHasCreatedSupplier] = useState(false)
 
   useEffect(() => {
     loadSuppliers()
@@ -70,7 +71,7 @@ export default function Suppliers() {
             data-testid="button-add-supplier"
           >
             <Plus className="h-5 w-5 mr-2" />
-            Add Supplier
+            {hasCreatedSupplier ? 'New Supplier' : 'Add Supplier'}
           </button>
         )}
       </div>
@@ -145,7 +146,7 @@ export default function Suppliers() {
         <SupplierModal
           supplier={editingSupplier}
           onClose={() => setShowModal(false)}
-          onSave={() => { setShowModal(false); loadSuppliers() }}
+          onSave={() => { setShowModal(false); loadSuppliers(); setHasCreatedSupplier(true) }}
         />
       )}
     </div>
