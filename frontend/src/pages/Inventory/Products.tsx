@@ -363,11 +363,6 @@ export default function Products() {
                       fontSize: '0.875rem'
                     }}
                   />
-                    <option value="L">Liter (L)</option>
-                    <option value="M">Meter (M)</option>
-                    <option value="BOX">Box</option>
-                    <option value="PACK">Pack</option>
-                  </select>
                 </div>
               </div>
 
