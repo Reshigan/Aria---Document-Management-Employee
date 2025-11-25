@@ -65,6 +65,7 @@ import PendingActions from './pages/PendingActions';
 import IntegrationsList from './pages/integrations/IntegrationsList';
 import DocumentTemplates from './pages/documents/DocumentTemplates';
 import GenerateDocument from './pages/documents/GenerateDocument';
+import NotFound from './pages/NotFound';
 import './styles/design-system.css';
 
 function App() {
@@ -224,8 +225,8 @@ function App() {
           {/* Mobile */}
           <Route path="/mobile" element={<MobileManagement />} />
           
-          {/* Catch-all: redirect to dashboard for 404 pages */}
-          <Route path="*" element={<Navigate to="/dashboard" replace />} />
+          {/* Catch-all: 404 page */}
+          <Route path="*" element={<NotFound />} />
               </Routes>
             </MainLayout>
           </ProtectedRoute>
