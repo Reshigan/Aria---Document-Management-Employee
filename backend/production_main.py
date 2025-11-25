@@ -3811,7 +3811,22 @@ async def get_customers_inline(skip: int = 0, limit: int = 100, search: str = No
                 "created_at": row[7].isoformat() if row[7] else None
             })
         
-        return {"customers": customers, "total": total, "skip": skip, "limit": limit}
+        page = (skip // limit) + 1 if limit > 0 else 1
+        total_pages = (total + limit - 1) // limit if limit > 0 else 1
+        
+        return {
+            "data": customers,
+            "meta": {
+                "page": page,
+                "page_size": limit,
+                "total_count": total,
+                "total_pages": total_pages
+            },
+            "customers": customers,
+            "total": total,
+            "skip": skip,
+            "limit": limit
+        }
     finally:
         cursor.close()
         conn.close()
@@ -3853,7 +3868,22 @@ async def get_suppliers_inline(skip: int = 0, limit: int = 100, search: str = No
                 "created_at": row[7].isoformat() if row[7] else None
             })
         
-        return {"suppliers": suppliers, "total": total, "skip": skip, "limit": limit}
+        page = (skip // limit) + 1 if limit > 0 else 1
+        total_pages = (total + limit - 1) // limit if limit > 0 else 1
+        
+        return {
+            "data": suppliers,
+            "meta": {
+                "page": page,
+                "page_size": limit,
+                "total_count": total,
+                "total_pages": total_pages
+            },
+            "suppliers": suppliers,
+            "total": total,
+            "skip": skip,
+            "limit": limit
+        }
     finally:
         cursor.close()
         conn.close()
@@ -3898,7 +3928,22 @@ async def get_products_inline(skip: int = 0, limit: int = 100, search: str = Non
                 "created_at": row[10].isoformat() if row[10] else None
             })
         
-        return {"products": products, "total": total, "skip": skip, "limit": limit}
+        page = (skip // limit) + 1 if limit > 0 else 1
+        total_pages = (total + limit - 1) // limit if limit > 0 else 1
+        
+        return {
+            "data": products,
+            "meta": {
+                "page": page,
+                "page_size": limit,
+                "total_count": total,
+                "total_pages": total_pages
+            },
+            "products": products,
+            "total": total,
+            "skip": skip,
+            "limit": limit
+        }
     finally:
         cursor.close()
         conn.close()
