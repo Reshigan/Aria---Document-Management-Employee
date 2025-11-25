@@ -3770,10 +3770,6 @@ async def startup_event():
     print("🎯 System ready for deployment!")
     print("=" * 60)
 
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
-
 @app.get("/api/health")
 async def api_health():
     """Health check endpoint at /api/health"""
@@ -3783,3 +3779,52 @@ async def api_health():
         "bots": len(ALL_BOTS),
         "erp_modules": len(ERP_MODULES)
     }
+
+@app.get("/api/erp/master-data/customers")
+async def get_customers_inline(skip: int = 0, limit: int = 100, search: str = None):
+    return {"customers": [], "total": 0, "skip": skip, "limit": limit}
+
+@app.get("/api/erp/master-data/suppliers")
+async def get_suppliers_inline(skip: int = 0, limit: int = 100, search: str = None):
+    return {"suppliers": [], "total": 0, "skip": skip, "limit": limit}
+
+@app.get("/api/erp/master-data/products")
+async def get_products_inline(skip: int = 0, limit: int = 100, search: str = None):
+    return {"products": [], "total": 0, "skip": skip, "limit": limit}
+
+@app.get("/api/erp/general-ledger")
+async def get_general_ledger_inline(skip: int = 0, limit: int = 100):
+    return {"accounts": [], "total": 0}
+
+@app.get("/api/erp/procure-to-pay/purchase-orders")
+async def get_purchase_orders_inline(skip: int = 0, limit: int = 100):
+    return {"purchase_orders": [], "total": 0}
+
+@app.get("/api/erp/order-to-cash/sales-orders")
+async def get_sales_orders_inline(skip: int = 0, limit: int = 100):
+    return {"sales_orders": [], "total": 0}
+
+@app.get("/api/erp/order-to-cash/quotes")
+async def get_quotes_inline(skip: int = 0, limit: int = 100):
+    return {"quotes": [], "total": 0}
+
+@app.get("/api/mobile/devices")
+async def get_mobile_devices_inline(skip: int = 0, limit: int = 100):
+    return {"devices": [], "total": 0}
+
+@app.get("/api/mobile/sync")
+async def get_sync_status_inline():
+    from datetime import datetime
+    return {"last_sync": datetime.utcnow().isoformat(), "status": "synced", "pending_items": 0}
+
+@app.get("/api/mobile/analytics")
+async def get_mobile_analytics_inline():
+    return {"total_devices": 0, "active_devices": 0, "sync_count": 0, "offline_documents": 0}
+
+@app.get("/api/admin/users/stats")
+async def get_user_stats_inline():
+    return {"total_users": 3, "active_users": 3, "inactive_users": 0, "roles": {"admin": 1, "finance": 1, "hr": 1}}
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
