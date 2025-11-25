@@ -343,15 +343,13 @@ except Exception as e:
 
 try:
     from app.api.customers import router as customers_router
-    app.include_router(customers_router, prefix="/api")
-    print("✅ Customers API loaded")
+    print("⚠️ Customers API disabled - using inline endpoints instead")
 except Exception as e:
     print(f"⚠️ Customers API not loaded: {e}")
 
 try:
     from app.api.procurement import router as procurement_router
-    app.include_router(procurement_router)
-    print("✅ Procurement API loaded (Suppliers, Products, Purchase Orders)")
+    print("⚠️ Procurement API disabled - using inline endpoints instead")
 except Exception as e:
     print(f"⚠️ Procurement API not loaded: {e}")
 
