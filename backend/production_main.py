@@ -3903,6 +3903,339 @@ async def get_products_inline(skip: int = 0, limit: int = 100, search: str = Non
         cursor.close()
         conn.close()
 
+@app.post("/api/erp/master-data/customers")
+async def create_customer_inline(request: dict):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        import uuid
+        from datetime import datetime
+        
+        customer_id = str(uuid.uuid4())
+        customer_number = request.get('customer_number') or f"CUST{datetime.now().strftime('%Y%m%d%H%M%S')}"
+        
+        query = """
+            INSERT INTO customers (id, customer_number, name, email, phone, address, tax_number, 
+                                 payment_terms, credit_limit, is_active, company_id, created_at)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            RETURNING id, customer_number, name, email, phone, is_active, created_at
+        """
+        
+        cursor.execute(query, (
+            customer_id,
+            customer_number,
+            request.get('name'),
+            request.get('email'),
+            request.get('phone'),
+            request.get('address'),
+            request.get('tax_number'),
+            request.get('payment_terms', 30),
+            request.get('credit_limit', 0),
+            request.get('is_active', True),
+            'b0598135-52fd-4f67-ac56-8f0237e6355e',
+            datetime.utcnow()
+        ))
+        
+        row = cursor.fetchone()
+        conn.commit()
+        
+        return {
+            "id": row[0],
+            "customer_number": row[1],
+            "name": row[2],
+            "email": row[3],
+            "phone": row[4],
+            "is_active": row[5],
+            "created_at": row[6].isoformat() if row[6] else None
+        }
+    finally:
+        cursor.close()
+        conn.close()
+
+@app.put("/api/erp/master-data/customers/{customer_id}")
+async def update_customer_inline(customer_id: str, request: dict):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        query = """
+            UPDATE customers 
+            SET name = %s, email = %s, phone = %s, address = %s, tax_number = %s,
+                payment_terms = %s, credit_limit = %s, is_active = %s
+            WHERE id = %s
+            RETURNING id, customer_number, name, email, phone, is_active, created_at
+        """
+        
+        cursor.execute(query, (
+            request.get('name'),
+            request.get('email'),
+            request.get('phone'),
+            request.get('address'),
+            request.get('tax_number'),
+            request.get('payment_terms', 30),
+            request.get('credit_limit', 0),
+            request.get('is_active', True),
+            customer_id
+        ))
+        
+        row = cursor.fetchone()
+        conn.commit()
+        
+        if not row:
+            return {"error": "Customer not found"}, 404
+        
+        return {
+            "id": row[0],
+            "customer_number": row[1],
+            "name": row[2],
+            "email": row[3],
+            "phone": row[4],
+            "is_active": row[5],
+            "created_at": row[6].isoformat() if row[6] else None
+        }
+    finally:
+        cursor.close()
+        conn.close()
+
+@app.delete("/api/erp/master-data/customers/{customer_id}")
+async def delete_customer_inline(customer_id: str):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        cursor.execute("DELETE FROM customers WHERE id = %s", (customer_id,))
+        conn.commit()
+        return {"message": "Customer deleted successfully"}
+    finally:
+        cursor.close()
+        conn.close()
+
+@app.post("/api/erp/master-data/suppliers")
+async def create_supplier_inline(request: dict):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        import uuid
+        from datetime import datetime
+        
+        supplier_id = str(uuid.uuid4())
+        supplier_number = request.get('supplier_number') or request.get('supplier_code') or f"SUPP{datetime.now().strftime('%Y%m%d%H%M%S')}"
+        
+        query = """
+            INSERT INTO suppliers (id, supplier_number, name, email, phone, address, tax_number, 
+                                 payment_terms, is_active, company_id, created_at)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            RETURNING id, supplier_number, name, email, phone, is_active, created_at
+        """
+        
+        cursor.execute(query, (
+            supplier_id,
+            supplier_number,
+            request.get('supplier_name') or request.get('name'),
+            request.get('email'),
+            request.get('phone'),
+            request.get('address'),
+            request.get('tax_number'),
+            request.get('payment_terms', 30),
+            request.get('is_active', True),
+            'b0598135-52fd-4f67-ac56-8f0237e6355e',
+            datetime.utcnow()
+        ))
+        
+        row = cursor.fetchone()
+        conn.commit()
+        
+        return {
+            "id": row[0],
+            "supplier_number": row[1],
+            "name": row[2],
+            "email": row[3],
+            "phone": row[4],
+            "is_active": row[5],
+            "created_at": row[6].isoformat() if row[6] else None
+        }
+    finally:
+        cursor.close()
+        conn.close()
+
+@app.put("/api/erp/master-data/suppliers/{supplier_id}")
+async def update_supplier_inline(supplier_id: str, request: dict):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        query = """
+            UPDATE suppliers 
+            SET name = %s, email = %s, phone = %s, address = %s, tax_number = %s,
+                payment_terms = %s, is_active = %s
+            WHERE id = %s
+            RETURNING id, supplier_number, name, email, phone, is_active, created_at
+        """
+        
+        cursor.execute(query, (
+            request.get('supplier_name') or request.get('name'),
+            request.get('email'),
+            request.get('phone'),
+            request.get('address'),
+            request.get('tax_number'),
+            request.get('payment_terms', 30),
+            request.get('is_active', True),
+            supplier_id
+        ))
+        
+        row = cursor.fetchone()
+        conn.commit()
+        
+        if not row:
+            return {"error": "Supplier not found"}, 404
+        
+        return {
+            "id": row[0],
+            "supplier_number": row[1],
+            "name": row[2],
+            "email": row[3],
+            "phone": row[4],
+            "is_active": row[5],
+            "created_at": row[6].isoformat() if row[6] else None
+        }
+    finally:
+        cursor.close()
+        conn.close()
+
+@app.delete("/api/erp/master-data/suppliers/{supplier_id}")
+async def delete_supplier_inline(supplier_id: str):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        cursor.execute("DELETE FROM suppliers WHERE id = %s", (supplier_id,))
+        conn.commit()
+        return {"message": "Supplier deleted successfully"}
+    finally:
+        cursor.close()
+        conn.close()
+
+@app.post("/api/erp/master-data/products")
+async def create_product_inline(request: dict):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        import uuid
+        from datetime import datetime
+        
+        product_id = str(uuid.uuid4())
+        product_code = request.get('code') or f"PROD{datetime.now().strftime('%Y%m%d%H%M%S')}"
+        
+        query = """
+            INSERT INTO products (id, code, name, description, product_type, category, 
+                                unit_of_measure, standard_cost, selling_price, is_active, 
+                                company_id, created_at)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            RETURNING id, code, name, description, product_type, category, unit_of_measure, 
+                     standard_cost, selling_price, is_active, created_at
+        """
+        
+        cursor.execute(query, (
+            product_id,
+            product_code,
+            request.get('name'),
+            request.get('description'),
+            request.get('product_type', 'finished_good'),
+            request.get('category'),
+            request.get('unit_of_measure', 'EA'),
+            request.get('standard_cost', 0),
+            request.get('selling_price', 0),
+            request.get('is_active', True),
+            'b0598135-52fd-4f67-ac56-8f0237e6355e',
+            datetime.utcnow()
+        ))
+        
+        row = cursor.fetchone()
+        conn.commit()
+        
+        return {
+            "id": row[0],
+            "code": row[1],
+            "name": row[2],
+            "description": row[3],
+            "product_type": row[4],
+            "category": row[5],
+            "unit_of_measure": row[6],
+            "standard_cost": float(row[7]) if row[7] else 0,
+            "selling_price": float(row[8]) if row[8] else 0,
+            "is_active": row[9],
+            "created_at": row[10].isoformat() if row[10] else None
+        }
+    finally:
+        cursor.close()
+        conn.close()
+
+@app.put("/api/erp/master-data/products/{product_id}")
+async def update_product_inline(product_id: str, request: dict):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        query = """
+            UPDATE products 
+            SET name = %s, description = %s, product_type = %s, category = %s,
+                unit_of_measure = %s, standard_cost = %s, selling_price = %s, is_active = %s
+            WHERE id = %s
+            RETURNING id, code, name, description, product_type, category, unit_of_measure,
+                     standard_cost, selling_price, is_active, created_at
+        """
+        
+        cursor.execute(query, (
+            request.get('name'),
+            request.get('description'),
+            request.get('product_type', 'finished_good'),
+            request.get('category'),
+            request.get('unit_of_measure', 'EA'),
+            request.get('standard_cost', 0),
+            request.get('selling_price', 0),
+            request.get('is_active', True),
+            product_id
+        ))
+        
+        row = cursor.fetchone()
+        conn.commit()
+        
+        if not row:
+            return {"error": "Product not found"}, 404
+        
+        return {
+            "id": row[0],
+            "code": row[1],
+            "name": row[2],
+            "description": row[3],
+            "product_type": row[4],
+            "category": row[5],
+            "unit_of_measure": row[6],
+            "standard_cost": float(row[7]) if row[7] else 0,
+            "selling_price": float(row[8]) if row[8] else 0,
+            "is_active": row[9],
+            "created_at": row[10].isoformat() if row[10] else None
+        }
+    finally:
+        cursor.close()
+        conn.close()
+
+@app.delete("/api/erp/master-data/products/{product_id}")
+async def delete_product_inline(product_id: str):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        cursor.execute("DELETE FROM products WHERE id = %s", (product_id,))
+        conn.commit()
+        return {"message": "Product deleted successfully"}
+    finally:
+        cursor.close()
+        conn.close()
+
 @app.get("/api/erp/general-ledger")
 async def get_general_ledger_inline(skip: int = 0, limit: int = 100):
     return {"accounts": [], "total": 0}
