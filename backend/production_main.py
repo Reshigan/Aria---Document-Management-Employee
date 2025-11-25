@@ -203,10 +203,7 @@ try:
         suppliers_router,
         products_router
     )
-    app.include_router(customers_router)
-    app.include_router(suppliers_router)
-    app.include_router(products_router)
-    print("✅ Master Data API loaded (PostgreSQL): Customers, Suppliers, Products with full CRUD")
+    print("⚠️ Master Data API (PostgreSQL) disabled - using inline endpoints instead")
 except Exception as e:
     print(f"⚠️ Master Data API not loaded: {e}")
 
