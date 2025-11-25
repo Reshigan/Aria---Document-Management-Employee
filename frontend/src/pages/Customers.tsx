@@ -185,6 +185,7 @@ function CustomerModal({ customer, onClose, onSave }: { customer: Customer | nul
                 <label className="block text-sm font-medium text-gray-700 mb-1">Name *</label>
                 <input
                   type="text"
+                  name="name"
                   required
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -195,6 +196,7 @@ function CustomerModal({ customer, onClose, onSave }: { customer: Customer | nul
                 <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
                 <input
                   type="email"
+                  name="email"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
@@ -204,6 +206,7 @@ function CustomerModal({ customer, onClose, onSave }: { customer: Customer | nul
                 <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
                 <input
                   type="text"
+                  name="phone"
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                   className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
@@ -212,6 +215,7 @@ function CustomerModal({ customer, onClose, onSave }: { customer: Customer | nul
               <div className="col-span-2">
                 <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
                 <textarea
+                  name="address"
                   value={formData.address}
                   onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                   rows={2}
@@ -222,6 +226,7 @@ function CustomerModal({ customer, onClose, onSave }: { customer: Customer | nul
                 <label className="block text-sm font-medium text-gray-700 mb-1">Tax Number</label>
                 <input
                   type="text"
+                  name="tax_number"
                   value={formData.tax_number}
                   onChange={(e) => setFormData({ ...formData, tax_number: e.target.value })}
                   className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
@@ -231,6 +236,7 @@ function CustomerModal({ customer, onClose, onSave }: { customer: Customer | nul
                 <label className="block text-sm font-medium text-gray-700 mb-1">Payment Terms (days)</label>
                 <input
                   type="number"
+                  name="payment_terms"
                   value={formData.payment_terms}
                   onChange={(e) => setFormData({ ...formData, payment_terms: parseInt(e.target.value) })}
                   className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
@@ -240,6 +246,7 @@ function CustomerModal({ customer, onClose, onSave }: { customer: Customer | nul
                 <label className="block text-sm font-medium text-gray-700 mb-1">Credit Limit (ZAR)</label>
                 <input
                   type="number"
+                  name="credit_limit"
                   step="0.01"
                   value={formData.credit_limit}
                   onChange={(e) => setFormData({ ...formData, credit_limit: parseFloat(e.target.value) })}

@@ -192,6 +192,7 @@ function SupplierModal({ supplier, onClose, onSave }: { supplier: Supplier | nul
                 <label className="block text-sm font-medium text-gray-700 mb-1">Supplier Code *</label>
                 <input
                   type="text"
+                  name="supplier_code"
                   required
                   value={formData.supplier_code}
                   onChange={(e) => setFormData({ ...formData, supplier_code: e.target.value })}
@@ -203,6 +204,7 @@ function SupplierModal({ supplier, onClose, onSave }: { supplier: Supplier | nul
                 <label className="block text-sm font-medium text-gray-700 mb-1">Supplier Name *</label>
                 <input
                   type="text"
+                  name="supplier_name"
                   required
                   value={formData.supplier_name}
                   onChange={(e) => setFormData({ ...formData, supplier_name: e.target.value })}
@@ -213,6 +215,7 @@ function SupplierModal({ supplier, onClose, onSave }: { supplier: Supplier | nul
                 <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
                 <input
                   type="email"
+                  name="email"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
@@ -222,6 +225,7 @@ function SupplierModal({ supplier, onClose, onSave }: { supplier: Supplier | nul
                 <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
                 <input
                   type="text"
+                  name="phone"
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                   className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
@@ -230,6 +234,7 @@ function SupplierModal({ supplier, onClose, onSave }: { supplier: Supplier | nul
               <div className="col-span-2">
                 <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
                 <textarea
+                  name="address"
                   value={formData.address}
                   onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                   rows={2}
@@ -240,6 +245,7 @@ function SupplierModal({ supplier, onClose, onSave }: { supplier: Supplier | nul
                 <label className="block text-sm font-medium text-gray-700 mb-1">Tax Number</label>
                 <input
                   type="text"
+                  name="tax_number"
                   value={formData.tax_number}
                   onChange={(e) => setFormData({ ...formData, tax_number: e.target.value })}
                   className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
@@ -249,6 +255,7 @@ function SupplierModal({ supplier, onClose, onSave }: { supplier: Supplier | nul
                 <label className="block text-sm font-medium text-gray-700 mb-1">Payment Terms (days)</label>
                 <input
                   type="number"
+                  name="payment_terms"
                   value={formData.payment_terms}
                   onChange={(e) => setFormData({ ...formData, payment_terms: parseInt(e.target.value) })}
                   className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
