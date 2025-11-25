@@ -49,6 +49,7 @@ import CompanySettings from './pages/admin/CompanySettings';
 import BotConfiguration from './pages/admin/BotConfiguration';
 import UserManagement from './pages/admin/UserManagement';
 import AccountsReceivable from './pages/ERP/AccountsReceivable';
+import AccountsPayable from './pages/ERP/AccountsPayable';
 import QuoteDetail from './pages/ERP/Detail/QuoteDetail';
 import SalesOrderDetail from './pages/ERP/Detail/SalesOrderDetail';
 import DeliveryDetail from './pages/ERP/Detail/DeliveryDetail';
@@ -86,28 +87,34 @@ function App() {
           {/* Order-to-Cash */}
           <Route path="/quotes" element={<Quotes />} />
           <Route path="/quotes/:id" element={<QuoteDetail />} />
+          <Route path="/erp/order-to-cash/quotes" element={<Quotes />} />
           <Route path="/sales-orders" element={<SalesOrders />} />
           <Route path="/sales-orders/:id" element={<SalesOrderDetail />} />
+          <Route path="/erp/order-to-cash/sales-orders" element={<SalesOrders />} />
           <Route path="/deliveries" element={<Deliveries />} />
           <Route path="/deliveries/:id" element={<DeliveryDetail />} />
+          <Route path="/erp/order-to-cash/deliveries" element={<Deliveries />} />
           <Route path="/wms-stock" element={<WMSStock />} />
           
           {/* General Ledger */}
           <Route path="/gl" element={<GeneralLedger />} />
           <Route path="/general-ledger" element={<GeneralLedger />} />
+          <Route path="/erp/general-ledger" element={<GeneralLedger />} />
           <Route path="/gl/journal-entries" element={<GeneralLedger />} />
           <Route path="/gl/chart-of-accounts" element={<GeneralLedger />} />
           
           {/* Accounts Payable */}
-          <Route path="/ap" element={<InvoiceList />} />
-          <Route path="/ap/invoices" element={<InvoiceList />} />
+          <Route path="/ap" element={<AccountsPayable />} />
+          <Route path="/ap/invoices" element={<AccountsPayable />} />
           <Route path="/ap/invoices/new" element={<InvoiceForm />} />
           <Route path="/ap/suppliers" element={<Suppliers />} />
+          <Route path="/erp/procure-to-pay/ap-invoices" element={<AccountsPayable />} />
           
           {/* Accounts Receivable */}
           <Route path="/ar" element={<AccountsReceivable />} />
           <Route path="/ar/customers" element={<Customers />} />
           <Route path="/ar/invoices" element={<InvoiceList />} />
+          <Route path="/erp/order-to-cash/ar-invoices" element={<AccountsReceivable />} />
           
           {/* Banking */}
           <Route path="/banking" element={<BankingDashboard />} />
@@ -139,8 +146,10 @@ function App() {
           <Route path="/procurement" element={<PurchaseOrders />} />
           <Route path="/procurement/purchase-orders" element={<PurchaseOrders />} />
           <Route path="/procurement/purchase-orders/:id" element={<PurchaseOrderDetail />} />
+          <Route path="/erp/procure-to-pay/purchase-orders" element={<PurchaseOrders />} />
           <Route path="/procurement/goods-receipts" element={<GoodsReceipts />} />
           <Route path="/procurement/goods-receipts/:id" element={<GoodsReceiptDetail />} />
+          <Route path="/erp/procure-to-pay/goods-receipt-notes" element={<GoodsReceipts />} />
           <Route path="/procurement/suppliers" element={<ProcurementDashboard />} />
           <Route path="/procurement/rfq" element={<ProcurementDashboard />} />
           <Route path="/procurement/products" element={<ProductCatalog />} />
