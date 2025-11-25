@@ -79,8 +79,7 @@ except Exception as e:
 
 try:
     from modules.master_data_module import router as master_data_router
-    app.include_router(master_data_router)
-    print("✅ Master Data module loaded")
+    print("⚠️ Master Data module disabled - using inline endpoints instead")
 except Exception as e:
     print(f"⚠️ Master Data module not loaded: {e}")
 
