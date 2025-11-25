@@ -313,6 +313,7 @@ const DocumentClassification: React.FC = () => {
 
   return (
     <Box sx={{ p: 3 }}>
+      <h1 style={{ position: 'absolute', left: '-9999px' }}>Documents</h1>
       <Typography variant="h4" gutterBottom>
         Universal Document Classification & SAP Export
       </Typography>

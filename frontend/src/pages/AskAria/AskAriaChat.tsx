@@ -253,6 +253,7 @@ const AskAriaChat: React.FC = () => {
 
   return (
     <Box sx={{ height: '100vh', display: 'flex', flexDirection: 'column', bgcolor: '#f5f5f5' }}>
+      <h1 style={{ position: 'absolute', left: '-9999px' }}>Ask Aria</h1>
       <Paper
         elevation={2}
         sx={{
