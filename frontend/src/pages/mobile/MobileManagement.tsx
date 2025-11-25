@@ -41,8 +41,46 @@ export default function MobileManagement() {
     deviceCount: 1,
     syncSessions: 10,
     storageUsage: '125 MB',
+    successRate: '80%',
     eventCount: 45
   });
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const [storageRes, syncRes] = await Promise.all([
+          fetch('/api/mobile/storage/usage').catch(() => null),
+          fetch('/api/mobile/sync/statistics').catch(() => null)
+        ]);
+
+        const updates: any = {};
+
+        if (storageRes?.ok) {
+          const storageData = await storageRes.json();
+          if (storageData.success && storageData.storage_usage) {
+            const bytes = storageData.storage_usage.total_size;
+            updates.storageUsage = bytes < 1024 ? `${bytes} B` : bytes < 1024 * 1024 ? `${Math.round(bytes / 1024)} KB` : `${Math.round(bytes / (1024 * 1024))} MB`;
+          }
+        }
+
+        if (syncRes?.ok) {
+          const syncData = await syncRes.json();
+          if (syncData.success && syncData.sync_statistics) {
+            updates.syncSessions = syncData.sync_statistics.total_sessions;
+            updates.successRate = `${syncData.sync_statistics.success_rate}%`;
+          }
+        }
+
+        if (Object.keys(updates).length > 0) {
+          setStats(prev => ({ ...prev, ...updates }));
+        }
+      } catch (error) {
+        console.error('Error fetching mobile stats:', error);
+      }
+    };
+
+    fetchStats();
+  }, []);
 
   return (
     <div className="container mx-auto p-6">
@@ -86,8 +124,8 @@ export default function MobileManagement() {
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Events</p>
-              <p className="text-2xl font-bold" data-testid="event-count">{stats.eventCount}</p>
+              <p className="text-sm text-gray-600">Success Rate</p>
+              <p className="text-2xl font-bold" data-testid="success-rate">{stats.successRate}</p>
             </div>
             <BarChart3 className="h-8 w-8 text-orange-600" />
           </div>
