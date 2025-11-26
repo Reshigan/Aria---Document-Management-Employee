@@ -335,7 +335,7 @@ const DocumentClassification: React.FC = () => {
       </Typography>
 
       {/* Document History Table */}
-      {activeStep === 0 && documentHistory.length > 0 && (
+      {activeStep === 0 && (
         <Card sx={{ mb: 3 }}>
           <CardContent>
             <Typography variant="h6" gutterBottom>
@@ -353,25 +353,33 @@ const DocumentClassification: React.FC = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {documentHistory.map((doc) => (
-                    <TableRow key={doc.document_id}>
-                      <TableCell>{doc.filename}</TableCell>
-                      <TableCell>{doc.doc_type || 'Unknown'}</TableCell>
-                      <TableCell>
-                        <Chip 
-                          label={doc.status} 
-                          size="small"
-                          color={doc.status === 'completed' ? 'success' : 'default'}
-                        />
-                      </TableCell>
-                      <TableCell>{new Date(doc.uploaded_at).toLocaleDateString()}</TableCell>
-                      <TableCell align="right">
-                        <IconButton size="small">
-                          <DownloadIcon fontSize="small" />
-                        </IconButton>
+                  {documentHistory.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={5} align="center" sx={{ py: 3, color: 'text.secondary' }}>
+                        No documents uploaded yet
                       </TableCell>
                     </TableRow>
-                  ))}
+                  ) : (
+                    documentHistory.map((doc) => (
+                      <TableRow key={doc.document_id}>
+                        <TableCell>{doc.filename}</TableCell>
+                        <TableCell>{doc.doc_type || 'Unknown'}</TableCell>
+                        <TableCell>
+                          <Chip 
+                            label={doc.status} 
+                            size="small"
+                            color={doc.status === 'completed' ? 'success' : 'default'}
+                          />
+                        </TableCell>
+                        <TableCell>{new Date(doc.uploaded_at).toLocaleDateString()}</TableCell>
+                        <TableCell align="right">
+                          <IconButton size="small">
+                            <DownloadIcon fontSize="small" />
+                          </IconButton>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
                 </TableBody>
               </Table>
             </TableContainer>
