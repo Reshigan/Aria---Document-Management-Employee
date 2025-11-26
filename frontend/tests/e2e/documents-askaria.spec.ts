@@ -186,7 +186,13 @@ test.describe('Dashboard', () => {
 test.describe('Authentication Flow', () => {
   test('should redirect to login when not authenticated', async ({ page }) => {
     await page.context().clearCookies();
-    await page.evaluate(() => localStorage.clear());
+    await page.evaluate(() => {
+      try {
+        localStorage.clear();
+      } catch (e) {
+        // Ignore errors
+      }
+    });
     
     await page.goto(`${BASE_URL}/dashboard`);
     
@@ -198,11 +204,11 @@ test.describe('Authentication Flow', () => {
   test('should login successfully', async ({ page }) => {
     await page.goto(`${BASE_URL}/login`);
     
-    await page.fill('input[type="email"]', 'admin@vantax.co.za');
-    await page.fill('input[type="password"]', 'admin123');
+    await page.fill('input[type="email"]', TEST_EMAIL);
+    await page.fill('input[type="password"]', TEST_PASSWORD);
     await page.click('button[type="submit"]');
     
-    await page.waitForURL(url => !url.includes('login'), { timeout: 10000 });
+    await page.waitForURL(url => !url.toString().includes('login'), { timeout: 10000 });
     expect(page.url()).not.toContain('login');
   });
 
