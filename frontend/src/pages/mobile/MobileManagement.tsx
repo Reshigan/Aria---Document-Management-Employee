@@ -119,7 +119,7 @@ export default function MobileManagement() {
           setDevices(data.devices.map((d: any) => ({
             id: d.id,
             name: d.device_name,
-            type: d.device_type,
+            type: d.device_type === 'ios' ? 'iOS' : d.device_type === 'android' ? 'Android' : d.device_type.charAt(0).toUpperCase() + d.device_type.slice(1),
             status: d.is_active ? 'Online' : 'Offline',
             lastSync: d.last_seen
           })));
