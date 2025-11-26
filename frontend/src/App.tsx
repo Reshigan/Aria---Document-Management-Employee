@@ -225,8 +225,8 @@ function App() {
           {/* Mobile */}
           <Route path="/mobile" element={<MobileManagement />} />
           
-          {/* Catch-all: 404 page */}
-          <Route path="*" element={<NotFound />} />
+          {/* Catch-all: redirect to dashboard for 404 pages */}
+          <Route path="*" element={<Navigate to="/dashboard" replace />} />
               </Routes>
             </MainLayout>
           </ProtectedRoute>
