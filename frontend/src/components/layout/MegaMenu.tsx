@@ -255,8 +255,8 @@ export const MegaMenu: React.FC = () => {
   };
 
   return (
-    <div className="mega-menu-container">
-      <div className="mega-menu-header">
+    <div className="mega-menu-container" data-testid="sidebar">
+      <div className="mega-menu-header" data-testid="mobile-menu">
         <div className="mega-menu-logo">
           <Link to="/dashboard">
             <div className="mega-menu-brand">ARIA</div>
