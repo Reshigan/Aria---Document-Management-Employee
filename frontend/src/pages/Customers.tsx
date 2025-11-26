@@ -6,6 +6,7 @@ import { Plus, Edit, Trash2, Search } from 'lucide-react'
 export default function Customers() {
   const [customers, setCustomers] = useState<Customer[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [showModal, setShowModal] = useState(false)
   const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
@@ -19,12 +20,14 @@ export default function Customers() {
 
   const loadCustomers = async () => {
     try {
+      setError(null)
       const response = await api.get('/erp/master-data/customers')
       const data = response.data.customers || response.data.data || response.data
       setCustomers(Array.isArray(data) ? data : [])
     } catch (error) {
       console.error('Failed to load customers:', error)
-      setCustomers([]) // Set empty array so UI still renders
+      setError('Error loading customers. Please try again later.')
+      setCustomers([])
     } finally {
       setLoading(false)
     }
@@ -65,6 +68,12 @@ export default function Customers() {
           </button>
         )}
       </div>
+
+      {error && (
+        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4">
+          {error}
+        </div>
+      )}
 
       <div className="bg-white rounded-lg shadow">
         <div className="p-4 border-b">
