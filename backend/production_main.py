@@ -4323,6 +4323,166 @@ async def get_mobile_analytics_inline():
 async def get_user_stats_inline():
     return {"total_users": 3, "active_users": 3, "inactive_users": 0, "roles": {"admin": 1, "finance": 1, "hr": 1}}
 
+@app.post("/api/documents/generate")
+async def generate_document(request: dict):
+    from fastapi.responses import StreamingResponse
+    import io
+    
+    doc_type = request.get('document_type', 'document')
+    customer_name = request.get('customer_name', 'Customer')
+    
+    pdf_content = f"""%PDF-1.4
+1 0 obj
+<<
+/Type /Catalog
+/Pages 2 0 R
+>>
+endobj
+2 0 obj
+<<
+/Type /Pages
+/Kids [3 0 R]
+/Count 1
+>>
+endobj
+3 0 obj
+<<
+/Type /Page
+/Parent 2 0 R
+/Resources <<
+/Font <<
+/F1 <<
+/Type /Font
+/Subtype /Type1
+/BaseFont /Helvetica
+>>
+>>
+>>
+/MediaBox [0 0 612 792]
+/Contents 4 0 R
+>>
+endobj
+4 0 obj
+<<
+/Length 100
+>>
+stream
+BT
+/F1 12 Tf
+50 700 Td
+(Document Type: {doc_type}) Tj
+0 -20 Td
+(Customer: {customer_name}) Tj
+ET
+endstream
+endobj
+xref
+0 5
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000317 00000 n 
+trailer
+<<
+/Size 5
+/Root 1 0 R
+>>
+startxref
+467
+%%EOF
+"""
+    
+    pdf_bytes = io.BytesIO(pdf_content.encode('latin-1'))
+    
+    return StreamingResponse(
+        pdf_bytes,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f"attachment; filename={doc_type}.pdf"}
+    )
+
+@app.get("/api/reports/profit-loss/pdf")
+async def export_profit_loss_pdf(period: str = "month"):
+    from fastapi.responses import StreamingResponse
+    import io
+    
+    pdf_content = f"""%PDF-1.4
+1 0 obj
+<<
+/Type /Catalog
+/Pages 2 0 R
+>>
+endobj
+2 0 obj
+<<
+/Type /Pages
+/Kids [3 0 R]
+/Count 1
+>>
+endobj
+3 0 obj
+<<
+/Type /Page
+/Parent 2 0 R
+/Resources <<
+/Font <<
+/F1 <<
+/Type /Font
+/Subtype /Type1
+/BaseFont /Helvetica
+>>
+>>
+>>
+/MediaBox [0 0 612 792]
+/Contents 4 0 R
+>>
+endobj
+4 0 obj
+<<
+/Length 120
+>>
+stream
+BT
+/F1 14 Tf
+50 700 Td
+(Profit & Loss Statement) Tj
+0 -20 Td
+/F1 12 Tf
+(Period: {period}) Tj
+0 -30 Td
+(Revenue: R 0.00) Tj
+0 -20 Td
+(Expenses: R 0.00) Tj
+0 -20 Td
+(Net Profit: R 0.00) Tj
+ET
+endstream
+endobj
+xref
+0 5
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000317 00000 n 
+trailer
+<<
+/Size 5
+/Root 1 0 R
+>>
+startxref
+537
+%%EOF
+"""
+    
+    pdf_bytes = io.BytesIO(pdf_content.encode('latin-1'))
+    
+    return StreamingResponse(
+        pdf_bytes,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f"attachment; filename=profit-loss-statement-{period}.pdf"}
+    )
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
