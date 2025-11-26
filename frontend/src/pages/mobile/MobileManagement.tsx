@@ -107,8 +107,32 @@ export default function MobileManagement() {
       }
     };
 
+    const fetchDevices = async () => {
+      try {
+        const response = await fetch('/api/mobile/devices');
+        if (!response.ok) {
+          setError('Error loading mobile data');
+          return;
+        }
+        const data = await response.json();
+        if (data.devices) {
+          setDevices(data.devices.map((d: any) => ({
+            id: d.id,
+            name: d.device_name,
+            type: d.device_type,
+            status: d.is_active ? 'Online' : 'Offline',
+            lastSync: d.last_seen
+          })));
+        }
+      } catch (error) {
+        console.error('Error fetching devices:', error);
+        setError('Error loading mobile data');
+      }
+    };
+
     fetchStats();
     fetchOfflineDocuments();
+    fetchDevices();
   }, []);
 
   const handleRegisterDevice = async () => {
