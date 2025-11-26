@@ -8,6 +8,18 @@ export default function GenerateDocumentPage() {
   const [lineItems, setLineItems] = useState([{ description: '', quantity: 1, unitPrice: 0 }]);
   const [showPreview, setShowPreview] = useState(false);
 
+  const handleDownload = () => {
+    const blob = new Blob(['PDF content'], { type: 'application/pdf' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${docType || 'document'}.pdf`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
   const documentTypes = [
     { value: 'quote', label: 'Quote' },
     { value: 'sales_order', label: 'Sales Order' },
@@ -173,7 +185,11 @@ export default function GenerateDocumentPage() {
                 <FileText className="h-4 w-4 inline mr-2" />
                 Preview
               </button>
-              <button className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700" data-testid="button-download">
+              <button 
+                className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700" 
+                data-testid="button-download"
+                onClick={handleDownload}
+              >
                 <Download className="h-4 w-4 inline mr-2" />
                 Generate & Download
               </button>
