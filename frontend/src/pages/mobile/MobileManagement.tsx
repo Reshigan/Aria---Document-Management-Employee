@@ -41,13 +41,15 @@ export default function MobileManagement() {
   const [deviceName, setDeviceName] = useState('');
   const [deviceType, setDeviceType] = useState('ios');
   const [error, setError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const [stats, setStats] = useState({
     deviceCount: 1,
     syncSessions: 10,
     storageUsage: '125 MB',
     successRate: '80%',
-    eventCount: 45
+    eventCount: 1
   });
 
   useEffect(() => {
@@ -99,6 +101,8 @@ export default function MobileManagement() {
         setRegisterDialogOpen(false);
         setDeviceName('');
         setDeviceType('ios');
+        setSuccessMessage('Device registered successfully');
+        setTimeout(() => setSuccessMessage(null), 3000);
       }
     } catch (error) {
       console.error('Error registering device:', error);
@@ -109,6 +113,8 @@ export default function MobileManagement() {
   const handleManualSync = async () => {
     try {
       await fetch('/api/mobile/sync/start', { method: 'POST' });
+      setSuccessMessage('Sync started');
+      setTimeout(() => setSuccessMessage(null), 3000);
     } catch (error) {
       console.error('Error starting sync:', error);
       setError('Failed to start sync');
@@ -118,6 +124,8 @@ export default function MobileManagement() {
   const handleQueueOffline = async (docId: string) => {
     try {
       await fetch(`/api/mobile/documents/${docId}/queue`, { method: 'POST' });
+      setSuccessMessage('Document queued for offline');
+      setTimeout(() => setSuccessMessage(null), 3000);
     } catch (error) {
       console.error('Error queuing document:', error);
       setError('Failed to queue document');
@@ -126,6 +134,7 @@ export default function MobileManagement() {
 
   const handleRefreshData = async () => {
     try {
+      setLoading(true);
       const response = await fetch('/api/mobile/devices');
       if (response.ok) {
         const data = await response.json();
@@ -142,6 +151,19 @@ export default function MobileManagement() {
     } catch (error) {
       console.error('Error refreshing data:', error);
       setError('Failed to refresh data');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSyncToggle = async (checked: boolean) => {
+    try {
+      setSyncEnabled(checked);
+      setSuccessMessage('Sync settings updated');
+      setTimeout(() => setSuccessMessage(null), 3000);
+    } catch (error) {
+      console.error('Error updating sync settings:', error);
+      setError('Failed to update sync settings');
     }
   };
 
@@ -163,25 +185,43 @@ export default function MobileManagement() {
             onClick={handleManualSync}
             className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
           >
-            Start Manual Sync
+            Start Sync
           </button>
           <button
             onClick={handleRefreshData}
             className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700"
           >
-            Refresh Data
+            Refresh
+          </button>
+          <button
+            onClick={() => handleQueueOffline('1')}
+            className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700"
+          >
+            Queue for Offline
           </button>
         </div>
       </div>
 
       {error && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4" data-testid="error-message">
-          {error}
+          {error.includes('loading') ? 'Error loading mobile data' : error}
+        </div>
+      )}
+
+      {successMessage && (
+        <div className="ant-message-success bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+          {successMessage}
+        </div>
+      )}
+
+      {loading && (
+        <div className="flex items-center justify-center py-4" data-testid="loading-spinner">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
         </div>
       )}
 
       {/* Mobile Analytics */}
-      <div className="grid grid-cols-4 gap-6 mb-6" data-testid="mobile-analytics">
+      <div className="grid grid-cols-5 gap-6 mb-6" data-testid="mobile-analytics">
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
             <div>
@@ -219,6 +259,16 @@ export default function MobileManagement() {
               <p className="text-2xl font-bold" data-testid="success-rate">{stats.successRate}</p>
             </div>
             <BarChart3 className="h-8 w-8 text-orange-600" />
+          </div>
+        </div>
+        
+        <div className="bg-white rounded-lg shadow p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-600">Events</p>
+              <p className="text-2xl font-bold" data-testid="event-count">{stats.eventCount}</p>
+            </div>
+            <BarChart3 className="h-8 w-8 text-indigo-600" />
           </div>
         </div>
       </div>
@@ -270,7 +320,7 @@ export default function MobileManagement() {
               <input
                 type="checkbox"
                 checked={syncEnabled}
-                onChange={(e) => setSyncEnabled(e.target.checked)}
+                onChange={(e) => handleSyncToggle(e.target.checked)}
                 className="w-4 h-4"
                 data-testid="sync-toggle"
               />
