@@ -40,6 +40,7 @@ export default function MobileManagement() {
   const [registerDialogOpen, setRegisterDialogOpen] = useState(false);
   const [deviceName, setDeviceName] = useState('');
   const [deviceType, setDeviceType] = useState('ios');
+  const [platformVersion, setPlatformVersion] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -87,7 +88,27 @@ export default function MobileManagement() {
       }
     };
 
+    const fetchOfflineDocuments = async () => {
+      try {
+        const response = await fetch('/api/mobile/offline/documents');
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success && data.documents) {
+            setOfflineDocuments(data.documents.map((doc: any) => ({
+              id: doc.id.toString(),
+              name: doc.local_path ? doc.local_path.split('/').pop() : `Document ${doc.document_id}`,
+              size: doc.file_size ? (doc.file_size < 1024 ? `${doc.file_size} B` : doc.file_size < 1024 * 1024 ? `${Math.round(doc.file_size / 1024)} KB` : `${Math.round(doc.file_size / (1024 * 1024))} MB`) : 'Unknown',
+              downloadStatus: doc.download_status === 'completed' ? 'Completed' : doc.download_status === 'pending' ? 'Pending' : 'Failed'
+            })));
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching offline documents:', error);
+      }
+    };
+
     fetchStats();
+    fetchOfflineDocuments();
   }, []);
 
   const handleRegisterDevice = async () => {
@@ -95,12 +116,13 @@ export default function MobileManagement() {
       const response = await fetch('/api/mobile/devices/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ device_name: deviceName, device_type: deviceType })
+        body: JSON.stringify({ device_name: deviceName, device_type: deviceType, platform_version: platformVersion })
       });
       if (response.ok) {
         setRegisterDialogOpen(false);
         setDeviceName('');
         setDeviceType('ios');
+        setPlatformVersion('');
         setSuccessMessage('Device registered successfully');
         setTimeout(() => setSuccessMessage(null), 3000);
       }
@@ -402,6 +424,17 @@ export default function MobileManagement() {
                   <option value="android">Android</option>
                   <option value="tablet">Tablet</option>
                 </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Platform Version</label>
+                <input
+                  type="text"
+                  name="platform_version"
+                  value={platformVersion}
+                  onChange={(e) => setPlatformVersion(e.target.value)}
+                  className="w-full border rounded px-3 py-2"
+                  placeholder="e.g., Android 13 or iOS 17"
+                />
               </div>
               <div className="flex gap-2 justify-end">
                 <button
