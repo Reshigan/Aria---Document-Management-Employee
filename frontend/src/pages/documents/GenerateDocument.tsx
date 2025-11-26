@@ -8,16 +8,36 @@ export default function GenerateDocumentPage() {
   const [lineItems, setLineItems] = useState([{ description: '', quantity: 1, unitPrice: 0 }]);
   const [showPreview, setShowPreview] = useState(false);
 
-  const handleDownload = () => {
-    const blob = new Blob(['PDF content'], { type: 'application/pdf' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${docType || 'document'}.pdf`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+  const handleDownload = async () => {
+    try {
+      const response = await fetch('http://localhost:8000/api/documents/generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          document_type: docType,
+          customer_name: customerName,
+        }),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to generate document');
+      }
+      
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${docType || 'document'}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Error generating document:', error);
+      alert('Failed to generate document. Please try again.');
+    }
   };
 
   const documentTypes = [

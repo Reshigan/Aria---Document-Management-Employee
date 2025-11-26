@@ -15,16 +15,29 @@ export default function ProfitLossStatementPage() {
   const totalExpenses = Object.values(data.expenses).reduce((a, b) => a + b, 0);
   const netProfit = totalRevenue - totalCosts - totalExpenses;
 
-  const handleExportPDF = () => {
-    const blob = new Blob(['PDF content'], { type: 'application/pdf' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `profit-loss-statement-${period}.pdf`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+  const handleExportPDF = async () => {
+    try {
+      const response = await fetch(`http://localhost:8000/api/reports/profit-loss/pdf?period=${period}`, {
+        method: 'GET',
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to export PDF');
+      }
+      
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `profit-loss-statement-${period}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Error exporting PDF:', error);
+      alert('Failed to export PDF. Please try again.');
+    }
   };
 
   return (
