@@ -327,6 +327,7 @@ const AskAriaChat: React.FC = () => {
         {messages.map((message) => (
           <Box
             key={message.id}
+            className="chat-message"
             sx={{
               display: 'flex',
               justifyContent: message.role === 'user' ? 'flex-end' : 'flex-start',
