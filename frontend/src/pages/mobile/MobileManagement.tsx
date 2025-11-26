@@ -37,6 +37,11 @@ export default function MobileManagement() {
     { id: '1', name: 'Invoice-001.pdf', size: '2.5 MB', downloadStatus: 'Downloaded' }
   ]);
 
+  const [registerDialogOpen, setRegisterDialogOpen] = useState(false);
+  const [deviceName, setDeviceName] = useState('');
+  const [deviceType, setDeviceType] = useState('ios');
+  const [error, setError] = useState<string | null>(null);
+
   const [stats, setStats] = useState({
     deviceCount: 1,
     syncSessions: 10,
@@ -76,18 +81,104 @@ export default function MobileManagement() {
         }
       } catch (error) {
         console.error('Error fetching mobile stats:', error);
+        setError('Failed to load mobile statistics');
       }
     };
 
     fetchStats();
   }, []);
 
+  const handleRegisterDevice = async () => {
+    try {
+      const response = await fetch('/api/mobile/devices/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ device_name: deviceName, device_type: deviceType })
+      });
+      if (response.ok) {
+        setRegisterDialogOpen(false);
+        setDeviceName('');
+        setDeviceType('ios');
+      }
+    } catch (error) {
+      console.error('Error registering device:', error);
+      setError('Failed to register device');
+    }
+  };
+
+  const handleManualSync = async () => {
+    try {
+      await fetch('/api/mobile/sync/start', { method: 'POST' });
+    } catch (error) {
+      console.error('Error starting sync:', error);
+      setError('Failed to start sync');
+    }
+  };
+
+  const handleQueueOffline = async (docId: string) => {
+    try {
+      await fetch(`/api/mobile/documents/${docId}/queue`, { method: 'POST' });
+    } catch (error) {
+      console.error('Error queuing document:', error);
+      setError('Failed to queue document');
+    }
+  };
+
+  const handleRefreshData = async () => {
+    try {
+      const response = await fetch('/api/mobile/devices');
+      if (response.ok) {
+        const data = await response.json();
+        if (data.devices) {
+          setDevices(data.devices.map((d: any) => ({
+            id: d.id,
+            name: d.device_name,
+            type: d.device_type,
+            status: d.is_active ? 'Online' : 'Offline',
+            lastSync: d.last_seen
+          })));
+        }
+      }
+    } catch (error) {
+      console.error('Error refreshing data:', error);
+      setError('Failed to refresh data');
+    }
+  };
+
   return (
     <div className="container mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-6 flex items-center gap-3">
-        <Smartphone className="h-8 w-8" />
-        Mobile Management
-      </h1>
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-3xl font-bold flex items-center gap-3">
+          <Smartphone className="h-8 w-8" />
+          Mobile Management
+        </h1>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setRegisterDialogOpen(true)}
+            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          >
+            Register Device
+          </button>
+          <button
+            onClick={handleManualSync}
+            className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+          >
+            Start Manual Sync
+          </button>
+          <button
+            onClick={handleRefreshData}
+            className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700"
+          >
+            Refresh Data
+          </button>
+        </div>
+      </div>
+
+      {error && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4" data-testid="error-message">
+          {error}
+        </div>
+      )}
 
       {/* Mobile Analytics */}
       <div className="grid grid-cols-4 gap-6 mb-6" data-testid="mobile-analytics">
@@ -231,6 +322,55 @@ export default function MobileManagement() {
       <div className="hidden" data-testid="mobile-menu">
         <button className="p-2">Menu</button>
       </div>
+
+      {/* Register Device Dialog */}
+      {registerDialogOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-96" role="dialog">
+            <h2 className="text-xl font-bold mb-4">Register New Device</h2>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">Device Name</label>
+                <input
+                  type="text"
+                  name="device_name"
+                  value={deviceName}
+                  onChange={(e) => setDeviceName(e.target.value)}
+                  className="w-full border rounded px-3 py-2"
+                  placeholder="Enter device name"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Device Type</label>
+                <select
+                  name="device_type"
+                  value={deviceType}
+                  onChange={(e) => setDeviceType(e.target.value)}
+                  className="w-full border rounded px-3 py-2"
+                >
+                  <option value="ios">iOS</option>
+                  <option value="android">Android</option>
+                  <option value="tablet">Tablet</option>
+                </select>
+              </div>
+              <div className="flex gap-2 justify-end">
+                <button
+                  onClick={() => setRegisterDialogOpen(false)}
+                  className="px-4 py-2 border rounded hover:bg-gray-100"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleRegisterDevice}
+                  className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                >
+                  Register
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
