@@ -3889,6 +3889,7 @@ async def get_suppliers_inline(skip: int = 0, limit: int = 100, search: str = No
         conn.close()
 
 @app.get("/api/erp/master-data/products")
+@app.get("/api/erp/order-to-cash/products")
 async def get_products_inline(skip: int = 0, limit: int = 100, search: str = None):
     conn = get_db_connection()
     cursor = conn.cursor()
