@@ -15,6 +15,18 @@ export default function ProfitLossStatementPage() {
   const totalExpenses = Object.values(data.expenses).reduce((a, b) => a + b, 0);
   const netProfit = totalRevenue - totalCosts - totalExpenses;
 
+  const handleExportPDF = () => {
+    const blob = new Blob(['PDF content'], { type: 'application/pdf' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `profit-loss-statement-${period}.pdf`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="container mx-auto p-6 max-w-4xl">
       <div className="flex justify-between items-center mb-6">
@@ -28,7 +40,11 @@ export default function ProfitLossStatementPage() {
             <option value="quarter">This Quarter</option>
             <option value="year">This Year</option>
           </select>
-          <button className="px-4 py-2 bg-blue-600 text-white rounded-lg" data-testid="button-export-pdf">
+          <button 
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg" 
+            data-testid="button-export-pdf"
+            onClick={handleExportPDF}
+          >
             <Download className="h-4 w-4 inline mr-2" />
             Export PDF
           </button>
