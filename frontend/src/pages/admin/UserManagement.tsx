@@ -37,11 +37,12 @@ export default function UserManagementPage() {
 
   useEffect(() => {
     fetchUsers();
-  }, []);
+  }, [searchQuery]);
 
   const fetchUsers = async () => {
     try {
-      const data = await api.get('/admin/users');
+      const params = searchQuery ? `?search=${encodeURIComponent(searchQuery)}` : '';
+      const data = await api.get(`/admin/users${params}`);
       setUsers(data.users || []);
     } catch (error) {
       console.error('Error fetching users:', error);
@@ -327,16 +328,7 @@ export default function UserManagementPage() {
       {/* Users Table */}
       <div className="bg-white rounded-lg shadow" data-testid="user-table">
         <DataTable
-          data={users.filter(user => {
-            if (!searchQuery) return true;
-            const query = searchQuery.toLowerCase();
-            return (
-              user.first_name?.toLowerCase().includes(query) ||
-              user.last_name?.toLowerCase().includes(query) ||
-              user.email?.toLowerCase().includes(query) ||
-              user.role?.toLowerCase().includes(query)
-            );
-          })}
+          data={users}
           columns={columns}
           searchable={false}
           exportable={true}
