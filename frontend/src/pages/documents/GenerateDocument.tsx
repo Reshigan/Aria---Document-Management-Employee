@@ -10,7 +10,7 @@ export default function GenerateDocumentPage() {
 
   const handleDownload = async () => {
     try {
-      const response = await fetch('http://localhost:8000/api/documents/generate', {
+      const response = await fetch('/api/documents/generate', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

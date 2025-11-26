@@ -17,7 +17,7 @@ export default function ProfitLossStatementPage() {
 
   const handleExportPDF = async () => {
     try {
-      const response = await fetch(`http://localhost:8000/api/reports/profit-loss/pdf?period=${period}`, {
+      const response = await fetch(`/api/reports/profit-loss/pdf?period=${period}`, {
         method: 'GET',
       });
       
