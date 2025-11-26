@@ -94,6 +94,7 @@ const DocumentClassification: React.FC = () => {
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [editingField, setEditingField] = useState<{ key: string; value: any } | null>(null);
   const [availableTemplates, setAvailableTemplates] = useState<any[]>([]);
+  const [documentHistory, setDocumentHistory] = useState<any[]>([]);
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -311,6 +312,18 @@ const DocumentClassification: React.FC = () => {
     loadTemplates();
   }, []);
 
+  React.useEffect(() => {
+    const loadDocumentHistory = async () => {
+      try {
+        const response = await api.get('/ask-aria/documents');
+        setDocumentHistory(response.data.documents || []);
+      } catch (err) {
+        console.error('Failed to load document history:', err);
+      }
+    };
+    loadDocumentHistory();
+  }, []);
+
   return (
     <Box sx={{ p: 3 }}>
       <h1 style={{ position: 'absolute', left: '-9999px' }}>Documents</h1>
@@ -320,6 +333,51 @@ const DocumentClassification: React.FC = () => {
       <Typography variant="body2" color="text.secondary" gutterBottom>
         Upload any business document, classify it, and export to SAP or post to ARIA ERP
       </Typography>
+
+      {/* Document History Table */}
+      {activeStep === 0 && documentHistory.length > 0 && (
+        <Card sx={{ mb: 3 }}>
+          <CardContent>
+            <Typography variant="h6" gutterBottom>
+              Recent Documents
+            </Typography>
+            <TableContainer>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Filename</TableCell>
+                    <TableCell>Document Type</TableCell>
+                    <TableCell>Status</TableCell>
+                    <TableCell>Uploaded</TableCell>
+                    <TableCell align="right">Actions</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {documentHistory.map((doc) => (
+                    <TableRow key={doc.document_id}>
+                      <TableCell>{doc.filename}</TableCell>
+                      <TableCell>{doc.doc_type || 'Unknown'}</TableCell>
+                      <TableCell>
+                        <Chip 
+                          label={doc.status} 
+                          size="small"
+                          color={doc.status === 'completed' ? 'success' : 'default'}
+                        />
+                      </TableCell>
+                      <TableCell>{new Date(doc.uploaded_at).toLocaleDateString()}</TableCell>
+                      <TableCell align="right">
+                        <IconButton size="small">
+                          <DownloadIcon fontSize="small" />
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </CardContent>
+        </Card>
+      )}
 
       <Stepper activeStep={activeStep} sx={{ my: 4 }}>
         {steps.map((label) => (
