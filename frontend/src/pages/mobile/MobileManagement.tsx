@@ -421,8 +421,8 @@ export default function MobileManagement() {
 
       {/* Register Device Dialog */}
       {registerDialogOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999]" onClick={(e) => { if (e.target === e.currentTarget) setRegisterDialogOpen(false); }}>
-          <div className="bg-white rounded-lg p-6 w-96 relative z-[10000]" role="dialog" data-testid="modal-register-device">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999] pointer-events-none">
+          <div className="bg-white rounded-lg p-6 w-96 relative z-[10000] pointer-events-auto" role="dialog" data-testid="modal-register-device">
             <h2 className="text-xl font-bold mb-4">Register New Device</h2>
             <div className="space-y-4">
               <div>
