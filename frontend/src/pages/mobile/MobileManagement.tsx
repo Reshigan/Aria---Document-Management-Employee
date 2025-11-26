@@ -143,12 +143,16 @@ export default function MobileManagement() {
         body: JSON.stringify({ device_name: deviceName, device_type: deviceType, platform_version: platformVersion })
       });
       if (response.ok) {
+        // Close modal first
         setRegisterDialogOpen(false);
         setDeviceName('');
         setDeviceType('ios');
         setPlatformVersion('');
-        setSuccessMessage('Device registered successfully');
-        setTimeout(() => setSuccessMessage(null), 3000);
+        // Show success message after a brief delay to ensure modal is closed
+        setTimeout(() => {
+          setSuccessMessage('Device registered successfully');
+          setTimeout(() => setSuccessMessage(null), 3000);
+        }, 100);
       }
     } catch (error) {
       console.error('Error registering device:', error);
