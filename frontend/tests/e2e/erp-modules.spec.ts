@@ -238,6 +238,7 @@ test.describe('Error Handling', () => {
 
   test('should handle 404 pages gracefully', async ({ page }) => {
     await page.goto(`${BASE_URL}/nonexistent-page`);
+    await page.waitForLoadState('networkidle');
     
     const is404 = await page.locator('text=/404|not found/i').isVisible().catch(() => false);
     const isDashboard = page.url().includes('dashboard');
