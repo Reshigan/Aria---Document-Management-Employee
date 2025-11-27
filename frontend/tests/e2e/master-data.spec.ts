@@ -266,7 +266,7 @@ test.describe('Products Module', () => {
     // Navigate to page and wait for API response simultaneously
     const [response] = await Promise.all([
       page.waitForResponse(
-        response => response.url().includes('/api/order-to-cash/products') && response.status() === 200,
+        response => response.url().includes('/api/erp/order-to-cash/products') && response.status() === 200,
         { timeout: 10000 }
       ),
       page.goto(`${BASE_URL}/inventory/products`),
