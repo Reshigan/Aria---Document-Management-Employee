@@ -452,7 +452,7 @@ export default function UserManagementPage() {
               </Button>
               <Button
                 onClick={handleInviteUser}
-                disabled={!inviteModal.email || !inviteModal.firstName || !inviteModal.lastName}
+                disabled={!inviteModal.email}
                 className="bg-blue-600 hover:bg-blue-700 text-white"
                 data-testid="button-send-invitation"
               >
