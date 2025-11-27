@@ -55,10 +55,16 @@ export default function UserManagementPage() {
 
   const fetchStats = async () => {
     try {
-      const data = await api.get('/admin/stats');
+      console.log('Fetching stats from /admin/stats...');
+      const response = await api.get('/admin/stats');
+      console.log('Stats API response:', response);
+      const data = response.data || response;
+      console.log('Stats data:', data);
       setStats(data);
+      console.log('Stats state updated:', data);
     } catch (error) {
       console.error('Error fetching stats:', error);
+      console.error('Error details:', error.response?.data, error.response?.status);
     }
   };
 
