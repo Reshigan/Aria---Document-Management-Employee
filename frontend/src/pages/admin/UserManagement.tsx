@@ -381,6 +381,7 @@ export default function UserManagementPage() {
                   </label>
                   <input
                     type="text"
+                    name="firstName"
                     value={inviteModal.firstName}
                     onChange={(e) => setInviteModal({ ...inviteModal, firstName: e.target.value })}
                     className="w-full px-4 py-2 border border-gray-300 rounded-md"
@@ -393,6 +394,7 @@ export default function UserManagementPage() {
                   </label>
                   <input
                     type="text"
+                    name="lastName"
                     value={inviteModal.lastName}
                     onChange={(e) => setInviteModal({ ...inviteModal, lastName: e.target.value })}
                     className="w-full px-4 py-2 border border-gray-300 rounded-md"
