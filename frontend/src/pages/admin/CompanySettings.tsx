@@ -99,6 +99,21 @@ export default function CompanySettingsPage() {
           }
         });
       } else {
+        // Parse JSON strings from backend for address, contact, bank_details
+        let address = data.address;
+        let contact = data.contact;
+        let bank_details = data.bank_details;
+        
+        if (typeof data.address === 'string') {
+          try { address = JSON.parse(data.address); } catch (e) { address = null; }
+        }
+        if (typeof data.contact === 'string') {
+          try { contact = JSON.parse(data.contact); } catch (e) { contact = null; }
+        }
+        if (typeof data.bank_details === 'string') {
+          try { bank_details = JSON.parse(data.bank_details); } catch (e) { bank_details = null; }
+        }
+        
         setSettings({
           ...data,
           name: data.name || 'Tech' + 'Forge',
@@ -110,19 +125,19 @@ export default function CompanySettingsPage() {
           financial_year_end: data.financial_year_end || '2024-02-28',
           vat_rate: data.vat_rate || 15.0,
           currency: data.currency || 'ZAR',
-          address: data.address || {
+          address: address || {
             street: '123 Business Park',
             city: 'Johannesburg',
             province: 'Gauteng',
             postal_code: '2000',
             country: 'South Africa'
           },
-          contact: data.contact || {
+          contact: contact || {
             phone: '+27 11 123 4567',
             email: 'info@company.co.za',
             website: 'https://company.co.za'
           },
-          bank_details: data.bank_details || {
+          bank_details: bank_details || {
             bank_name: 'Standard Bank',
             account_holder: 'Tech' + 'Forge',
             account_number: '123456789',
