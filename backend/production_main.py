@@ -4371,38 +4371,50 @@ async def invite_user_inline(request: dict):
 
 @app.get("/api/admin/company")
 async def get_company_settings_inline():
-    return {
-        "id": "1",
-        "name": "TechForge",
-        "registration_number": "2020/123456/07",
-        "vat_number": "4123456789",
-        "tax_number": "9876543210",
-        "bbbee_level": 4,
-        "sars_tax_number": "9876543210",
-        "financial_year_end": "2024-02-28",
-        "vat_rate": 15.0,
-        "currency": "ZAR",
-        "address": {
-            "street": "123 Business Park",
-            "city": "Johannesburg",
-            "province": "Gauteng",
-            "postal_code": "2000",
-            "country": "South Africa"
-        },
-        "contact": {
-            "phone": "+27 11 123 4567",
-            "email": "info@techforge.co.za",
-            "website": "https://techforge.co.za"
-        },
-        "bank_details": {
-            "bank_name": "Standard Bank",
-            "account_holder": "TechForge",
-            "account_number": "123456789",
-            "branch_code": "051001",
-            "account_type": "Current",
-            "swift_code": "SBZAZAJJ"
+    import logging
+    logger = logging.getLogger("uvicorn.error")
+    logger.error("DEBUG: /api/admin/company endpoint called")
+    
+    try:
+        data = {
+            "id": "1",
+            "name": "TechForge",
+            "registration_number": "2020/123456/07",
+            "vat_number": "4123456789",
+            "tax_number": "9876543210",
+            "bbbee_level": 4,
+            "sars_tax_number": "9876543210",
+            "financial_year_end": "2024-02-28",
+            "vat_rate": 15.0,
+            "currency": "ZAR",
+            "address": {
+                "street": "123 Business Park",
+                "city": "Johannesburg",
+                "province": "Gauteng",
+                "postal_code": "2000",
+                "country": "South Africa"
+            },
+            "contact": {
+                "phone": "+27 11 123 4567",
+                "email": "info@techforge.co.za",
+                "website": "https://techforge.co.za"
+            },
+            "bank_details": {
+                "bank_name": "Standard Bank",
+                "account_holder": "TechForge",
+                "account_number": "123456789",
+                "branch_code": "051001",
+                "account_type": "Current",
+                "swift_code": "SBZAZAJJ"
+            }
         }
-    }
+        logger.error(f"DEBUG: Returning data with {len(data)} keys")
+        return data
+    except Exception as e:
+        logger.error(f"DEBUG: Exception in /api/admin/company: {e}")
+        import traceback
+        logger.error(f"DEBUG: Traceback: {traceback.format_exc()}")
+        raise
 
 @app.put("/api/admin/company")
 async def update_company_settings_inline(request: dict):

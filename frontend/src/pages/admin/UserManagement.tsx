@@ -25,6 +25,7 @@ export default function UserManagementPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [stats, setStats] = useState({ total_users: 0, active_users: 0 });
   const [inviteModal, setInviteModal] = useState<InviteUserModal>({
     isOpen: false,
     email: '',
@@ -37,6 +38,7 @@ export default function UserManagementPage() {
 
   useEffect(() => {
     fetchUsers();
+    fetchStats();
   }, [searchQuery]);
 
   const fetchUsers = async () => {
@@ -48,6 +50,15 @@ export default function UserManagementPage() {
       console.error('Error fetching users:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchStats = async () => {
+    try {
+      const data = await api.get('/admin/stats');
+      setStats(data);
+    } catch (error) {
+      console.error('Error fetching stats:', error);
     }
   };
 
@@ -301,8 +312,8 @@ export default function UserManagementPage() {
       {/* Stats */}
       <div className="grid grid-cols-4 gap-6 mb-6">
         {[
-          { label: 'Total Users', value: users.length, color: 'blue', testId: 'stat-total' },
-          { label: 'Active', value: users.filter(u => u.status === 'active').length, color: 'green', testId: 'stat-active' },
+          { label: 'Total Users', value: stats.total_users, color: 'blue', testId: 'stat-total' },
+          { label: 'Active', value: stats.active_users, color: 'green', testId: 'stat-active' },
           { label: 'Invited', value: users.filter(u => u.status === 'invited').length, color: 'yellow', testId: 'stat-invited' },
           { label: 'Inactive', value: users.filter(u => u.status === 'inactive').length, color: 'red', testId: 'stat-inactive' }
         ].map((stat, idx) => (
