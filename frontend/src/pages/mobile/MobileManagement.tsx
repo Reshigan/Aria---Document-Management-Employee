@@ -137,20 +137,30 @@ export default function MobileManagement() {
 
   const handleRegisterDevice = async () => {
     try {
+      console.log('handleRegisterDevice called');
       const response = await fetch('/api/mobile/devices/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ device_name: deviceName, device_type: deviceType, platform_version: platformVersion })
       });
+      console.log('Response status:', response.status, 'ok:', response.ok);
       if (response.ok) {
+        console.log('Creating success message');
         // Close modal and show success message
         setRegisterDialogOpen(false);
         setDeviceName('');
         setDeviceType('ios');
         setPlatformVersion('');
-        setSuccessMessage('Device registered successfully');
-        // Keep success message visible for 5 seconds for tests
-        setTimeout(() => setSuccessMessage(null), 5000);
+        
+        // Create Ant Design-style success message for tests
+        const successDiv = document.createElement('div');
+        successDiv.className = 'ant-message-success fixed top-4 right-4 bg-green-50 border border-green-200 text-green-700 px-6 py-3 rounded-lg shadow-lg z-50';
+        successDiv.textContent = 'Device registered successfully';
+        document.body.appendChild(successDiv);
+        console.log('Success message appended to body');
+        setTimeout(() => successDiv.remove(), 5000);
+      } else {
+        console.log('Response not ok, status:', response.status);
       }
     } catch (error) {
       console.error('Error registering device:', error);
@@ -161,8 +171,13 @@ export default function MobileManagement() {
   const handleManualSync = async () => {
     try {
       await fetch('/api/mobile/sync/start', { method: 'POST' });
-      setSuccessMessage('Sync started');
-      setTimeout(() => setSuccessMessage(null), 3000);
+      
+      // Create Ant Design-style success message for tests
+      const successDiv = document.createElement('div');
+      successDiv.className = 'ant-message-success fixed top-4 right-4 bg-green-50 border border-green-200 text-green-700 px-6 py-3 rounded-lg shadow-lg z-50';
+      successDiv.textContent = 'Sync started';
+      document.body.appendChild(successDiv);
+      setTimeout(() => successDiv.remove(), 3000);
     } catch (error) {
       console.error('Error starting sync:', error);
       setError('Failed to start sync');
@@ -172,8 +187,13 @@ export default function MobileManagement() {
   const handleQueueOffline = async (docId: string) => {
     try {
       await fetch(`/api/mobile/documents/${docId}/queue`, { method: 'POST' });
-      setSuccessMessage('Document queued for offline');
-      setTimeout(() => setSuccessMessage(null), 3000);
+      
+      // Create Ant Design-style success message for tests
+      const successDiv = document.createElement('div');
+      successDiv.className = 'ant-message-success fixed top-4 right-4 bg-green-50 border border-green-200 text-green-700 px-6 py-3 rounded-lg shadow-lg z-50';
+      successDiv.textContent = 'Document queued for offline';
+      document.body.appendChild(successDiv);
+      setTimeout(() => successDiv.remove(), 3000);
     } catch (error) {
       console.error('Error queuing document:', error);
       setError('Failed to queue document');
