@@ -44,8 +44,13 @@ export default function UserManagementPage() {
   const fetchUsers = async () => {
     try {
       const params = searchQuery ? `?search=${encodeURIComponent(searchQuery)}` : '';
-      const data = await api.get(`/admin/users${params}`);
+      console.log('Fetching users with params:', params);
+      const response = await api.get(`/admin/users${params}`);
+      console.log('Users API response:', response);
+      const data = response.data || response;
+      console.log('Users data:', data);
       setUsers(data.users || []);
+      console.log('Users state updated:', data.users);
     } catch (error) {
       console.error('Error fetching users:', error);
     } finally {
