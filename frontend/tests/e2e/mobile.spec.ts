@@ -145,12 +145,12 @@ test.describe('Mobile Management Page', () => {
     
     // Submit registration and wait for API call
     await Promise.all([
-      page.waitForResponse(response => response.url().includes('/api/mobile/devices/register')),
-      page.click('button:has-text("Register")')
+      page.waitForResponse(response => response.url().includes('/api/mobile/devices/register'), { timeout: 10000 }),
+      page.click('[data-testid="button-register-submit"]')
     ]);
     
     // Wait a bit for the success message to be created
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(1000);
     
     // Wait for success message
     await expect(page.locator('.ant-message-success')).toBeVisible({ timeout: 10000 })
