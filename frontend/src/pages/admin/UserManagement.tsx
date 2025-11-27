@@ -213,8 +213,9 @@ export default function UserManagementPage() {
   const columns = [
     {
       key: 'name',
-      label: 'Name',
-      render: (user: User) => (
+      header: 'Name',
+      accessor: (user: User) => `${user.first_name} ${user.last_name}`,
+      render: (_value: any, user: User) => (
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
             <span className="text-blue-600 font-medium">
@@ -232,25 +233,29 @@ export default function UserManagementPage() {
     },
     {
       key: 'role',
-      label: 'Role',
-      render: (user: User) => getRoleBadge(user.role)
+      header: 'Role',
+      accessor: (user: User) => user.role,
+      render: (_value: any, user: User) => getRoleBadge(user.role)
     },
     {
       key: 'status',
-      label: 'Status',
-      render: (user: User) => getStatusBadge(user.status)
+      header: 'Status',
+      accessor: (user: User) => user.status,
+      render: (_value: any, user: User) => getStatusBadge(user.status)
     },
     {
       key: 'last_login',
-      label: 'Last Login',
-      render: (user: User) => (
+      header: 'Last Login',
+      accessor: (user: User) => user.last_login || 'Never',
+      render: (_value: any, user: User) => (
         user.last_login ? new Date(user.last_login).toLocaleString() : 'Never'
       )
     },
     {
       key: 'actions',
-      label: 'Actions',
-      render: (user: User) => (
+      header: 'Actions',
+      accessor: (user: User) => '',
+      render: (_value: any, user: User) => (
         <div className="flex items-center gap-2">
           <button
             onClick={() => {
