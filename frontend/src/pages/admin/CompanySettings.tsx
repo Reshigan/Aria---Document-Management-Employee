@@ -203,15 +203,22 @@ export default function CompanySettingsPage() {
   };
 
   const handleSave = async () => {
+    console.log('handleSave called, settings:', settings);
+    console.log('Validating settings...');
+    
     if (!validateSettings()) {
+      console.error('Validation failed');
       alert('Please fix the errors before saving');
       return;
     }
 
+    console.log('Validation passed, saving...');
     setSaving(true);
     setSuccessMessage('');
     try {
-      await api.put('/admin/company', settings);
+      console.log('Calling API PUT /admin/company with settings:', settings);
+      const response = await api.put('/admin/company', settings);
+      console.log('API response:', response);
       setSuccessMessage('Settings saved successfully!');
       
       // Also create a visible success message element for tests
@@ -220,6 +227,7 @@ export default function CompanySettingsPage() {
       successDiv.className = 'fixed top-4 right-4 bg-green-50 border border-green-200 text-green-700 px-6 py-3 rounded-lg shadow-lg z-50';
       successDiv.textContent = 'Settings saved successfully!';
       document.body.appendChild(successDiv);
+      console.log('Success message element created and appended to body');
       
       setTimeout(() => {
         setSuccessMessage('');
