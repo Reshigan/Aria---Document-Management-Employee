@@ -319,7 +319,7 @@ export default function UserManagementPage() {
         ].map((stat, idx) => (
           <div key={idx} className="bg-white rounded-lg shadow p-6">
             <div className="text-sm font-medium text-gray-600">{stat.label}</div>
-            <div className={`text-3xl font-bold mt-2 text-${stat.color}-600`} data-testid={stat.testId}>{stat.value}</div>
+            <div className={`text-3xl font-bold mt-2 text-${stat.color}-600`} data-testid={stat.testId}>{stat.value || 0}</div>
           </div>
         ))}
       </div>
