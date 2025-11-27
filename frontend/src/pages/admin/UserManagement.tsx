@@ -178,9 +178,10 @@ export default function UserManagementPage() {
       finance: 'bg-yellow-100 text-yellow-800',
       hr: 'bg-pink-100 text-pink-800'
     };
+    const displayRole = role ? role.charAt(0).toUpperCase() + role.slice(1) : 'Unknown';
     return (
       <span className={`px-2 py-1 rounded-full text-xs font-medium ${colors[role] || 'bg-gray-100 text-gray-800'}`}>
-        {role.charAt(0).toUpperCase() + role.slice(1)}
+        {displayRole}
       </span>
     );
   };
