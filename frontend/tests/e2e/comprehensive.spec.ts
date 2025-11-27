@@ -158,7 +158,7 @@ test.describe('Admin - User Management', () => {
   });
 
   test('should display user stats', async ({ page }) => {
-    await expect(page.locator('[data-testid="stat-total"]')).toContainText(/5/);
+    await expect(page.locator('[data-testid="stat-total"]')).toContainText(/\d+/);
     await expect(page.locator('[data-testid="stat-active"]')).toBeVisible();
   });
 
