@@ -100,9 +100,14 @@ test.describe('Customers Module', () => {
   });
 
   test('should handle pagination metadata', async ({ page }) => {
-    const response = await page.waitForResponse(
-      response => response.url().includes('/api/erp/master-data/customers') && response.status() === 200
-    );
+    // Navigate to page and wait for API response simultaneously
+    const [response] = await Promise.all([
+      page.waitForResponse(
+        response => response.url().includes('/api/erp/master-data/customers') && response.status() === 200,
+        { timeout: 10000 }
+      ),
+      page.goto(`${BASE_URL}/customers`),
+    ]);
     
     const data = await response.json();
     
@@ -190,9 +195,14 @@ test.describe('Suppliers Module', () => {
   });
 
   test('should handle pagination metadata', async ({ page }) => {
-    const response = await page.waitForResponse(
-      response => response.url().includes('/api/erp/master-data/suppliers') && response.status() === 200
-    );
+    // Navigate to page and wait for API response simultaneously
+    const [response] = await Promise.all([
+      page.waitForResponse(
+        response => response.url().includes('/api/erp/master-data/suppliers') && response.status() === 200,
+        { timeout: 10000 }
+      ),
+      page.goto(`${BASE_URL}/suppliers`),
+    ]);
     
     const data = await response.json();
     
@@ -253,9 +263,14 @@ test.describe('Products Module', () => {
   });
 
   test('should handle pagination metadata', async ({ page }) => {
-    const response = await page.waitForResponse(
-      response => response.url().includes('/api/erp/order-to-cash/products') && response.status() === 200
-    );
+    // Navigate to page and wait for API response simultaneously
+    const [response] = await Promise.all([
+      page.waitForResponse(
+        response => response.url().includes('/api/order-to-cash/products') && response.status() === 200,
+        { timeout: 10000 }
+      ),
+      page.goto(`${BASE_URL}/inventory/products`),
+    ]);
     
     const data = await response.json();
     
