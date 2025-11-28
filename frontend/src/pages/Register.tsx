@@ -8,7 +8,6 @@ export default function Register() {
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const navigate = useNavigate()
-  const setAuth = useAuthStore((state) => state.setAuth)
 
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
@@ -72,7 +71,9 @@ export default function Register() {
       })
       // Backend auto-logs in after registration
       if (response.data && response.data.access_token) {
-        setAuth(response.data.access_token, response.data.refresh_token, response.data.user)
+        localStorage.setItem('access_token', response.data.access_token)
+        localStorage.setItem('refresh_token', response.data.refresh_token)
+        localStorage.setItem('user', JSON.stringify(response.data.user))
         navigate('/dashboard')
       } else {
         setError('Registration succeeded but login failed. Please try logging in manually.')
