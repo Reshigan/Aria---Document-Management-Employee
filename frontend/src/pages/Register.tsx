@@ -70,12 +70,17 @@ export default function Register() {
         phone,
         province
       })
-      if (response.data.access_token) {
+      // Backend auto-logs in after registration
+      if (response.data && response.data.access_token) {
         setAuth(response.data.access_token, response.data.refresh_token, response.data.user)
         navigate('/dashboard')
+      } else {
+        setError('Registration succeeded but login failed. Please try logging in manually.')
       }
     } catch (err: any) {
-      setError(err.response?.data?.detail || 'Failed to register')
+      console.error('Registration error:', err)
+      const errorMessage = err.response?.data?.detail || err.message || 'Failed to register'
+      setError(errorMessage)
     } finally {
       setIsLoading(false)
     }
