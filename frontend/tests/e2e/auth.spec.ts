@@ -93,8 +93,8 @@ test.describe('Authentication Flow', () => {
     
     // Should see dashboard elements
     await expect(page.locator('text=Executive Dashboard')).toBeVisible();
-    await expect(page.locator('text=Active Users')).toBeVisible();
-    await expect(page.locator('text=Your AI Bots')).toBeVisible();
+    await expect(page.locator('text=Total Revenue')).toBeVisible();
+    await expect(page.locator('text=Net Profit')).toBeVisible();
     
     // Logout
     await page.click('button:has-text("Logout")');
