@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Optional, List, Dict, Any
 import json
 
-DATABASE_PATH = Path(__file__).parent / "aria_production.db"
+DATABASE_PATH = Path(__file__).parent / "aria.db"
 
 def get_connection():
     """Get database connection"""

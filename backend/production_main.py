@@ -3655,31 +3655,61 @@ class DelegateRequest(BaseModel):
 
 @app.post("/api/aria/chat")
 async def aria_chat(request: ChatRequest, user: dict = Depends(get_current_user)):
-    """ARIA voice chat endpoint"""
-    message = request.message.lower()
-    
-    # Simple AI response based on keywords
-    if "status" in message or "hello" in message or "hi" in message:
-        response = f"Hello! I'm ARIA, your AI assistant. I can help you with document management, bot execution, and ERP operations. How can I assist you today?"
-    elif "bot" in message:
-        response = f"You have {len(ALL_BOTS)} bots available. Would you like me to help you execute one?"
-    elif "document" in message:
-        response = "I can help you manage documents. Would you like to upload, search, or process documents?"
-    elif "help" in message:
-        response = "I can help you with:\n• Bot execution and management\n• Document processing and classification\n• ERP operations (invoices, orders, etc.)\n• Analytics and reporting\n\nWhat would you like to do?"
-    else:
-        response = "I understand you need help. Could you please be more specific about what you'd like to do? I can help with bots, documents, ERP operations, and more."
-    
-    return {
-        "response": response,
-        "timestamp": datetime.now().isoformat(),
-        "suggestions": [
-            "Show me available bots",
-            "Process a document",
-            "View analytics",
-            "Help me with invoices"
-        ]
-    }
+    """Enhanced ARIA chat endpoint with LLM, ERP data, actions, and context"""
+    try:
+        # Import enhanced ARIA module
+        from aria_enhanced import process_message
+        
+        # Get conversation_id from request if provided
+        conversation_id = getattr(request, 'conversation_id', None)
+        
+        # Process message through enhanced ARIA
+        result = process_message(
+            message=request.message,
+            user=user,
+            conversation_id=conversation_id
+        )
+        
+        return {
+            "response": result['response'],
+            "conversation_id": result['conversation_id'],
+            "intent": result.get('intent'),
+            "confidence": result.get('confidence'),
+            "data": result.get('data'),
+            "timestamp": result['timestamp'],
+            "suggestions": [
+                "List my customers",
+                "Show me products",
+                "What bots are available?",
+                "Create a new customer"
+            ]
+        }
+    except Exception as e:
+        # Fallback to simple keyword-based response if enhanced ARIA fails
+        print(f"Enhanced ARIA error: {e}")
+        message = request.message.lower()
+        
+        if "status" in message or "hello" in message or "hi" in message:
+            response = f"Hello! I'm ARIA, your AI assistant. I can help you with document management, bot execution, and ERP operations. How can I assist you today?"
+        elif "bot" in message:
+            response = f"You have {len(ALL_BOTS)} bots available. Would you like me to help you execute one?"
+        elif "document" in message:
+            response = "I can help you manage documents. Would you like to upload, search, or process documents?"
+        elif "help" in message:
+            response = "I can help you with:\n• Bot execution and management\n• Document processing and classification\n• ERP operations (invoices, orders, etc.)\n• Analytics and reporting\n\nWhat would you like to do?"
+        else:
+            response = "I understand you need help. Could you please be more specific about what you'd like to do? I can help with bots, documents, ERP operations, and more."
+        
+        return {
+            "response": response,
+            "timestamp": datetime.now().isoformat(),
+            "suggestions": [
+                "Show me available bots",
+                "Process a document",
+                "View analytics",
+                "Help me with invoices"
+            ]
+        }
 
 @app.post("/api/aria/delegate")
 async def aria_delegate(request: DelegateRequest, user: dict = Depends(get_current_user)):
