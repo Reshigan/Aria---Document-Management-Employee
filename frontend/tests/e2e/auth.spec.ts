@@ -52,8 +52,8 @@ test.describe('Authentication Flow', () => {
     await expect(page.locator('text=/incorrect|failed/i')).toBeVisible({ timeout: 5000 });
   });
 
-  test.skip('complete registration and login flow', async ({ page }) => {
-    // Skipping: Registration page doesn't exist yet
+  test('complete registration and login flow', async ({ page }) => {
+    // Test registration flow
     const testEmail = generateTestEmail();
     const testPassword = 'TestPassword123!';
     

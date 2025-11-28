@@ -622,7 +622,13 @@ except Exception as e:
 class RegisterRequest(BaseModel):
     email: EmailStr
     password: str
-    full_name: str
+    first_name: str
+    last_name: str
+    company_name: Optional[str] = None
+    phone: Optional[str] = None
+    province: Optional[str] = None
+    # Legacy support
+    full_name: Optional[str] = None
     organization_name: Optional[str] = None
 
 class LoginRequest(BaseModel):
@@ -2989,11 +2995,32 @@ async def health_check():
 
 # Authentication endpoints
 @app.post("/api/auth/register", status_code=201)
-async def register(data: RegisterRequest):
-    result = register_user(data.email, data.password, data.full_name, data.organization_name)
-    if result.get("error"):
-        raise HTTPException(status_code=400, detail=result["error"])
-    return result
+async def register(data: RegisterRequest, request: Request):
+    # Build full_name from first_name and last_name
+    full_name = data.full_name or f"{data.first_name} {data.last_name}"
+    organization_name = data.organization_name or data.company_name
+    
+    # Get IP address from request
+    ip_address = request.client.host if request.client else None
+    
+    # Register user
+    user = register_user(
+        email=data.email,
+        password=data.password,
+        full_name=full_name,
+        organization_name=organization_name,
+        ip_address=ip_address
+    )
+    
+    # Auto-login after registration
+    login_result = login_user(
+        email=data.email,
+        password=data.password,
+        ip_address=ip_address,
+        user_agent=request.headers.get("user-agent")
+    )
+    
+    return login_result
 
 @app.post("/api/auth/login")
 async def login(data: LoginRequest):

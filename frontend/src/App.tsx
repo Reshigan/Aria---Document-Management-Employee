@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { MainLayout } from './components/layout/MainLayout';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import Login from './pages/auth/Login';
+import Register from './pages/Register';
 import ExecutiveDashboard from './pages/Dashboard/ExecutiveDashboard';
 import Quotes from './pages/ERP/Quotes';
 import SalesOrders from './pages/ERP/SalesOrders';
@@ -74,6 +75,7 @@ function App() {
       <Routes>
         {/* Public routes */}
         <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
         
         {/* Protected routes */}
         <Route path="/*" element={

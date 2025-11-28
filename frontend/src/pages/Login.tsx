@@ -95,7 +95,7 @@ export default function Login() {
         <p className="mt-6 text-center text-sm text-gray-600">
           Don't have an account?{' '}
           <Link to="/register" className="text-blue-600 font-medium hover:text-blue-700">
-            Register here
+            Start Free Trial
           </Link>
         </p>
       </div>
