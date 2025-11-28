@@ -88,11 +88,11 @@ test.describe('Authentication Flow', () => {
     // Should redirect to dashboard
     await expect(page).toHaveURL(/.*dashboard/, { timeout: 10000 });
     
-    // Should see welcome message
-    await expect(page.locator('text=/welcome.*john/i')).toBeVisible({ timeout: 5000 });
+    // Should see user's name in navigation
+    await expect(page.locator('text=John Smith')).toBeVisible({ timeout: 5000 });
     
     // Should see dashboard elements
-    await expect(page.locator('text=Bot Requests')).toBeVisible();
+    await expect(page.locator('text=Executive Dashboard')).toBeVisible();
     await expect(page.locator('text=Active Users')).toBeVisible();
     await expect(page.locator('text=Your AI Bots')).toBeVisible();
     
