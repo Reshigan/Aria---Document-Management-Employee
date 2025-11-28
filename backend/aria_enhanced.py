@@ -238,11 +238,12 @@ def detect_intent(message: str, conversation_history: List[Dict] = None) -> Dict
     if any(word in message_lower for word in ['create', 'add', 'new']) and 'product' in message_lower:
         return {"intent": "create_product", "confidence": 0.9}
     
-    # Query intents
-    if any(word in message_lower for word in ['list', 'show', 'get', 'view']) and 'customer' in message_lower:
+    # Query intents - check for customers (including "my customers")
+    if 'customer' in message_lower and any(word in message_lower for word in ['list', 'show', 'get', 'view', 'my', 'all', 'see']):
         return {"intent": "list_customers", "confidence": 0.9}
     
-    if any(word in message_lower for word in ['list', 'show', 'get', 'view']) and 'product' in message_lower:
+    # Query intents - check for products (including "my products")
+    if 'product' in message_lower and any(word in message_lower for word in ['list', 'show', 'get', 'view', 'my', 'all', 'see']):
         return {"intent": "list_products", "confidence": 0.9}
     
     if any(word in message_lower for word in ['revenue', 'sales', 'income']):
