@@ -135,16 +135,20 @@ def create_journal_entry(company_id: str, entry_data: Dict[str, Any], dry_run: b
         cursor.close()
         conn.close()
 
-def fetch_chart_of_accounts(company_id: str) -> List[Dict[str, Any]]:
+def fetch_chart_of_accounts(company_id: str, limit: int = None) -> List[Dict[str, Any]]:
     """Fetch chart of accounts for a company"""
     conn = get_connection()
     cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     try:
-        cursor.execute("""
+        query = """
             SELECT * FROM chart_of_accounts
             WHERE company_id = %s
             ORDER BY account_code
-        """, (company_id,))
+        """
+        if limit:
+            query += f" LIMIT {limit}"
+        
+        cursor.execute(query, (company_id,))
         return cursor.fetchall()
     finally:
         cursor.close()
