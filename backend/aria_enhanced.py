@@ -129,6 +129,24 @@ def get_products_summary(organization_id: str, limit: int = 10) -> List[Dict]:
     
     return [dict(row) for row in rows]
 
+def get_suppliers_summary(organization_id: str, limit: int = 10) -> List[Dict]:
+    """Get supplier list"""
+    conn = get_connection()
+    cursor = conn.cursor()
+    
+    cursor.execute("""
+        SELECT supplier_number, name, email, phone, is_active, created_at
+        FROM suppliers 
+        WHERE organization_id = ? 
+        ORDER BY created_at DESC 
+        LIMIT ?
+    """, (organization_id, limit))
+    
+    rows = cursor.fetchall()
+    conn.close()
+    
+    return [dict(row) for row in rows]
+
 def get_revenue_summary(organization_id: str) -> Dict:
     """Get revenue summary (placeholder - would query actual transactions)"""
     # This would query actual sales/invoices in a real implementation
@@ -231,16 +249,43 @@ def detect_intent(message: str, conversation_history: List[Dict] = None) -> Dict
     """Detect user intent from message"""
     message_lower = message.lower()
     
-    # Action intents
+    # Action intents - Create
     if any(word in message_lower for word in ['create', 'add', 'new']) and 'customer' in message_lower:
         return {"intent": "create_customer", "confidence": 0.9}
+    
+    if any(word in message_lower for word in ['create', 'add', 'new']) and 'supplier' in message_lower:
+        return {"intent": "create_supplier", "confidence": 0.9}
     
     if any(word in message_lower for word in ['create', 'add', 'new']) and 'product' in message_lower:
         return {"intent": "create_product", "confidence": 0.9}
     
+    # Action intents - Update
+    if any(word in message_lower for word in ['update', 'modify', 'change', 'edit']) and 'customer' in message_lower:
+        return {"intent": "update_customer", "confidence": 0.9}
+    
+    if any(word in message_lower for word in ['update', 'modify', 'change', 'edit']) and 'supplier' in message_lower:
+        return {"intent": "update_supplier", "confidence": 0.9}
+    
+    if any(word in message_lower for word in ['update', 'modify', 'change', 'edit']) and 'product' in message_lower:
+        return {"intent": "update_product", "confidence": 0.9}
+    
+    # Action intents - Delete
+    if any(word in message_lower for word in ['delete', 'remove', 'deactivate']) and 'customer' in message_lower:
+        return {"intent": "delete_customer", "confidence": 0.9}
+    
+    if any(word in message_lower for word in ['delete', 'remove', 'deactivate']) and 'supplier' in message_lower:
+        return {"intent": "delete_supplier", "confidence": 0.9}
+    
+    if any(word in message_lower for word in ['delete', 'remove', 'deactivate']) and 'product' in message_lower:
+        return {"intent": "delete_product", "confidence": 0.9}
+    
     # Query intents - check for customers (including "my customers")
     if 'customer' in message_lower and any(word in message_lower for word in ['list', 'show', 'get', 'view', 'my', 'all', 'see']):
         return {"intent": "list_customers", "confidence": 0.9}
+    
+    # Query intents - check for suppliers
+    if 'supplier' in message_lower and any(word in message_lower for word in ['list', 'show', 'get', 'view', 'my', 'all', 'see']):
+        return {"intent": "list_suppliers", "confidence": 0.9}
     
     # Query intents - check for products (including "my products")
     if 'product' in message_lower and any(word in message_lower for word in ['list', 'show', 'get', 'view', 'my', 'all', 'see']):
@@ -279,6 +324,20 @@ def route_intent(intent_data: Dict, message: str, user: Dict, conversation_id: s
                 "data": []
             }
     
+    elif intent == "list_suppliers":
+        suppliers = get_suppliers_summary(organization_id)
+        if suppliers:
+            supplier_list = "\n".join([f"- {s['name']} ({s['supplier_number']}) - {s['email']}" for s in suppliers[:5]])
+            return {
+                "response": f"Here are your recent suppliers:\n\n{supplier_list}\n\nShowing {len(suppliers[:5])} of {len(suppliers)} suppliers.",
+                "data": suppliers
+            }
+        else:
+            return {
+                "response": "You don't have any suppliers yet. Would you like to create one?",
+                "data": []
+            }
+    
     elif intent == "list_products":
         products = get_products_summary(organization_id)
         if products:
@@ -312,17 +371,61 @@ def route_intent(intent_data: Dict, message: str, user: Dict, conversation_id: s
             "data": {}
         }
     
-    # Action handlers (would need more context/confirmation in real implementation)
+    # Action handlers - Create
     elif intent == "create_customer":
         return {
             "response": "To create a customer, I'll need some information:\n\n• Customer name (required)\n• Email address\n• Phone number\n• Billing address\n\nPlease provide the customer details, or I can guide you through the process step by step.",
             "data": {"action": "create_customer", "status": "awaiting_data"}
         }
     
+    elif intent == "create_supplier":
+        return {
+            "response": "To create a supplier, I'll need:\n\n• Supplier name (required)\n• Email address\n• Phone number\n• Address\n\nPlease provide the supplier details, or I can guide you through the process.",
+            "data": {"action": "create_supplier", "status": "awaiting_data"}
+        }
+    
     elif intent == "create_product":
         return {
             "response": "To create a product, I'll need:\n\n• Product name (required)\n• Product code\n• Product type (Product/Service)\n• Unit of measure\n• Cost and selling price\n\nPlease provide the product details, or I can guide you through the process.",
             "data": {"action": "create_product", "status": "awaiting_data"}
+        }
+    
+    # Action handlers - Update
+    elif intent == "update_customer":
+        return {
+            "response": "To update a customer, I need:\n\n• Customer ID or number\n• Fields to update (name, email, phone, address)\n\nPlease provide the customer details you want to update.",
+            "data": {"action": "update_customer", "status": "awaiting_data"}
+        }
+    
+    elif intent == "update_supplier":
+        return {
+            "response": "To update a supplier, I need:\n\n• Supplier ID or number\n• Fields to update (name, email, phone, address)\n\nPlease provide the supplier details you want to update.",
+            "data": {"action": "update_supplier", "status": "awaiting_data"}
+        }
+    
+    elif intent == "update_product":
+        return {
+            "response": "To update a product, I need:\n\n• Product code or ID\n• Fields to update (name, price, cost, description)\n\nPlease provide the product details you want to update.",
+            "data": {"action": "update_product", "status": "awaiting_data"}
+        }
+    
+    # Action handlers - Delete
+    elif intent == "delete_customer":
+        return {
+            "response": "To deactivate a customer, I need:\n\n• Customer ID or number\n\n⚠️ This will mark the customer as inactive. Are you sure?",
+            "data": {"action": "delete_customer", "status": "awaiting_confirmation"}
+        }
+    
+    elif intent == "delete_supplier":
+        return {
+            "response": "To deactivate a supplier, I need:\n\n• Supplier ID or number\n\n⚠️ This will mark the supplier as inactive. Are you sure?",
+            "data": {"action": "delete_supplier", "status": "awaiting_confirmation"}
+        }
+    
+    elif intent == "delete_product":
+        return {
+            "response": "To deactivate a product, I need:\n\n• Product code or ID\n\n⚠️ This will mark the product as inactive. Are you sure?",
+            "data": {"action": "delete_product", "status": "awaiting_confirmation"}
         }
     
     # General/fallback
