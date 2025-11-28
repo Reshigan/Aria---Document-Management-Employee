@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../store/authStore'
-import axios from 'axios'
+import api from '../lib/api'
 
 export default function Register() {
   const [step, setStep] = useState(1)
@@ -61,7 +61,7 @@ export default function Register() {
     }
     setIsLoading(true)
     try {
-      const response = await axios.post('/api/auth/register', {
+      const response = await api.post('/api/auth/register', {
         email,
         password,
         first_name: firstName,
