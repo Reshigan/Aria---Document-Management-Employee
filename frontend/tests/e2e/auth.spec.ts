@@ -97,7 +97,7 @@ test.describe('Authentication Flow', () => {
     await expect(page.locator('text=Net Profit')).toBeVisible();
     
     // Logout
-    await page.click('button:has-text("Logout")');
+    await page.click('button:has-text("Logout")', { timeout: 5000 });
     
     // Should redirect to login
     await expect(page).toHaveURL(/.*login/);
