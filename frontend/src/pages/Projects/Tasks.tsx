@@ -18,6 +18,22 @@ const Tasks: React.FC = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(false);
   const [filter, setFilter] = useState<'ALL' | 'TODO' | 'IN_PROGRESS' | 'REVIEW' | 'DONE'>('ALL');
+  const [showModal, setShowModal] = useState(false);
+  const [editingTask, setEditingTask] = useState<Task | null>(null);
+  const [form, setForm] = useState({
+    title: '',
+    project_id: '',
+    assigned_to: '',
+    priority: 'MEDIUM' as 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT',
+    status: 'TODO' as 'TODO' | 'IN_PROGRESS' | 'REVIEW' | 'DONE',
+    due_date: '',
+    description: ''
+  });
+  const [deleteConfirm, setDeleteConfirm] = useState<{ show: boolean; id: number; title: string }>({
+    show: false,
+    id: 0,
+    title: ''
+  });
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -34,6 +50,59 @@ const Tasks: React.FC = () => {
       setError(err.response?.data?.detail || 'Failed to load tasks');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleCreate = () => {
+    setEditingTask(null);
+    setForm({
+      title: '',
+      project_id: '',
+      assigned_to: '',
+      priority: 'MEDIUM',
+      status: 'TODO',
+      due_date: new Date().toISOString().split('T')[0],
+      description: ''
+    });
+    setShowModal(true);
+  };
+
+  const handleEdit = (task: Task) => {
+    setEditingTask(task);
+    setForm({
+      title: task.title,
+      project_id: '',
+      assigned_to: task.assigned_to || '',
+      priority: task.priority,
+      status: task.status,
+      due_date: task.due_date,
+      description: ''
+    });
+    setShowModal(true);
+  };
+
+  const handleSave = async () => {
+    setError('');
+    try {
+      if (editingTask) {
+        await api.put(`/projects/tasks/${editingTask.id}`, form);
+      } else {
+        await api.post('/projects/tasks', form);
+      }
+      setShowModal(false);
+      loadTasks();
+    } catch (err: any) {
+      setError(err.response?.data?.detail || 'Failed to save task');
+    }
+  };
+
+  const handleDelete = async (id: number) => {
+    try {
+      await api.delete(`/projects/tasks/${id}`);
+      loadTasks();
+      setDeleteConfirm({ show: false, id: 0, title: '' });
+    } catch (err: any) {
+      setError(err.response?.data?.detail || 'Failed to delete task');
     }
   };
 
@@ -78,25 +147,34 @@ const Tasks: React.FC = () => {
         </div>
       )}
 
-      <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
-        {(['ALL', 'TODO', 'IN_PROGRESS', 'REVIEW', 'DONE'] as const).map((f) => (
-          <button
-            key={f}
-            onClick={() => setFilter(f)}
-            style={{
-              padding: '8px 16px',
-              fontSize: '14px',
-              fontWeight: 600,
-              color: filter === f ? 'white' : '#6b7280',
-              backgroundColor: filter === f ? '#2563eb' : 'white',
-              border: '1px solid #d1d5db',
-              borderRadius: '6px',
-              cursor: 'pointer'
-            }}
-          >
-            {f.replace('_', ' ')}
-          </button>
-        ))}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+        <div style={{ display: 'flex', gap: '8px' }}>
+          {(['ALL', 'TODO', 'IN_PROGRESS', 'REVIEW', 'DONE'] as const).map((f) => (
+            <button
+              key={f}
+              onClick={() => setFilter(f)}
+              style={{
+                padding: '8px 16px',
+                fontSize: '14px',
+                fontWeight: 600,
+                color: filter === f ? 'white' : '#6b7280',
+                backgroundColor: filter === f ? '#2563eb' : 'white',
+                border: '1px solid #d1d5db',
+                borderRadius: '6px',
+                cursor: 'pointer'
+              }}
+            >
+              {f.replace('_', ' ')}
+            </button>
+          ))}
+        </div>
+        <button
+          onClick={handleCreate}
+          style={{ padding: '8px 16px', backgroundColor: '#2563eb', color: 'white', border: 'none', borderRadius: '6px', fontWeight: 600, cursor: 'pointer' }}
+          data-testid="create-button"
+        >
+          + New Task
+        </button>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '16px' }}>
@@ -128,13 +206,14 @@ const Tasks: React.FC = () => {
               <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Priority</th>
               <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Status</th>
               <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Due Date</th>
+              <th style={{ padding: '12px 16px', textAlign: 'right', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Actions</th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
-              <tr><td colSpan={6} style={{ padding: '40px', textAlign: 'center', color: '#6b7280' }}>Loading...</td></tr>
+              <tr><td colSpan={7} style={{ padding: '40px', textAlign: 'center', color: '#6b7280' }}>Loading...</td></tr>
             ) : filtered.length === 0 ? (
-              <tr><td colSpan={6} style={{ padding: '40px', textAlign: 'center', color: '#6b7280' }}>No tasks found</td></tr>
+              <tr><td colSpan={7} style={{ padding: '40px', textAlign: 'center', color: '#6b7280' }}>No tasks found</td></tr>
             ) : (
               filtered.map((task) => (
                 <tr key={task.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
@@ -144,12 +223,131 @@ const Tasks: React.FC = () => {
                   <td style={{ padding: '12px 16px' }}>{getPriorityBadge(task.priority)}</td>
                   <td style={{ padding: '12px 16px' }}>{getStatusBadge(task.status)}</td>
                   <td style={{ padding: '12px 16px', fontSize: '14px', color: '#6b7280' }}>{formatDate(task.due_date)}</td>
+                  <td style={{ padding: '12px 16px', textAlign: 'right' }}>
+                    <button
+                      onClick={() => handleEdit(task)}
+                      style={{ padding: '4px 8px', marginRight: '8px', fontSize: '12px', color: '#2563eb', background: 'none', border: 'none', cursor: 'pointer' }}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => setDeleteConfirm({ show: true, id: task.id, title: task.title })}
+                      style={{ padding: '4px 8px', fontSize: '12px', color: '#dc2626', background: 'none', border: 'none', cursor: 'pointer' }}
+                    >
+                      Delete
+                    </button>
+                  </td>
                 </tr>
               ))
             )}
           </tbody>
         </table>
       </div>
+
+      {showModal && (
+        <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}>
+          <div style={{ backgroundColor: 'white', borderRadius: '8px', padding: '24px', width: '600px', maxHeight: '90vh', overflow: 'auto' }}>
+            <h2 style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '16px' }}>
+              {editingTask ? 'Edit Task' : 'New Task'}
+            </h2>
+            <div style={{ marginBottom: '16px' }}>
+              <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Title *</label>
+              <input
+                type="text"
+                value={form.title}
+                onChange={(e) => setForm({ ...form, title: e.target.value })}
+                style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+              />
+            </div>
+            <div style={{ marginBottom: '16px' }}>
+              <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Project ID</label>
+              <input
+                type="text"
+                value={form.project_id}
+                onChange={(e) => setForm({ ...form, project_id: e.target.value })}
+                style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+              />
+            </div>
+            <div style={{ marginBottom: '16px' }}>
+              <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Assigned To</label>
+              <input
+                type="text"
+                value={form.assigned_to}
+                onChange={(e) => setForm({ ...form, assigned_to: e.target.value })}
+                style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+              />
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+              <div>
+                <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Priority *</label>
+                <select
+                  value={form.priority}
+                  onChange={(e) => setForm({ ...form, priority: e.target.value as any })}
+                  style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                >
+                  <option value="LOW">Low</option>
+                  <option value="MEDIUM">Medium</option>
+                  <option value="HIGH">High</option>
+                  <option value="URGENT">Urgent</option>
+                </select>
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Status *</label>
+                <select
+                  value={form.status}
+                  onChange={(e) => setForm({ ...form, status: e.target.value as any })}
+                  style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                >
+                  <option value="TODO">To Do</option>
+                  <option value="IN_PROGRESS">In Progress</option>
+                  <option value="REVIEW">Review</option>
+                  <option value="DONE">Done</option>
+                </select>
+              </div>
+            </div>
+            <div style={{ marginBottom: '16px' }}>
+              <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Due Date *</label>
+              <input
+                type="date"
+                value={form.due_date}
+                onChange={(e) => setForm({ ...form, due_date: e.target.value })}
+                style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+              />
+            </div>
+            <div style={{ marginBottom: '16px' }}>
+              <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Description</label>
+              <textarea
+                value={form.description}
+                onChange={(e) => setForm({ ...form, description: e.target.value })}
+                rows={3}
+                style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+              />
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
+              <button
+                onClick={() => setShowModal(false)}
+                style={{ padding: '8px 16px', border: '1px solid #d1d5db', borderRadius: '6px', fontWeight: 600, cursor: 'pointer', background: 'white' }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSave}
+                style={{ padding: '8px 16px', backgroundColor: '#2563eb', color: 'white', border: 'none', borderRadius: '6px', fontWeight: 600, cursor: 'pointer' }}
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <ConfirmDialog
+        isOpen={deleteConfirm.show}
+        title="Delete Task"
+        message={`Are you sure you want to delete "${deleteConfirm.title}"? This action cannot be undone.`}
+        onConfirm={() => handleDelete(deleteConfirm.id)}
+        onCancel={() => setDeleteConfirm({ show: false, id: 0, title: '' })}
+      />
     </div>
   );
 };
