@@ -30,49 +30,56 @@ async def list_departments(
     current_user: Dict = Depends(get_current_user)
 ):
     """List all departments"""
-    departments = [
-        {
-            'id': str(uuid.uuid4()),
-            'department_code': 'IT',
-            'department_name': 'Information Technology',
-            'manager_id': str(uuid.uuid4()),
-            'manager_name': 'John Doe',
-            'employee_count': 15,
-            'budget': 2500000.00,
-            'budget_spent': 1875000.00,
-            'status': 'ACTIVE',
-            'created_at': datetime.utcnow().isoformat()
-        },
-        {
-            'id': str(uuid.uuid4()),
-            'department_code': 'FIN',
-            'department_name': 'Finance',
-            'manager_id': str(uuid.uuid4()),
-            'manager_name': 'Jane Smith',
-            'employee_count': 8,
-            'budget': 1500000.00,
-            'budget_spent': 1125000.00,
-            'status': 'ACTIVE',
-            'created_at': datetime.utcnow().isoformat()
-        },
-        {
-            'id': str(uuid.uuid4()),
-            'department_code': 'HR',
-            'department_name': 'Human Resources',
-            'manager_id': str(uuid.uuid4()),
-            'manager_name': 'Bob Johnson',
-            'employee_count': 5,
-            'budget': 800000.00,
-            'budget_spent': 600000.00,
-            'status': 'ACTIVE',
-            'created_at': datetime.utcnow().isoformat()
-        }
-    ]
+    conn = get_connection()
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     
-    if status:
-        departments = [d for d in departments if d['status'] == status]
-    
-    return {'departments': departments, 'total': len(departments)}
+    try:
+        company_id = current_user.get('company_id')
+        if not company_id:
+            raise HTTPException(status_code=400, detail="User must be associated with a company")
+        
+        query = """
+            SELECT 
+                d.id, d.department_code, d.department_name, d.budget, d.budget_spent, d.status, d.created_at,
+                d.manager_id, u.first_name || ' ' || u.last_name as manager_name,
+                COUNT(e.id) as employee_count
+            FROM departments d
+            LEFT JOIN users u ON d.manager_id = u.id
+            LEFT JOIN users e ON e.department = d.department_name AND e.company_id = d.company_id
+            WHERE d.company_id = %s
+        """
+        params = [company_id]
+        
+        if status:
+            query += " AND d.status = %s"
+            params.append(status)
+        
+        query += " GROUP BY d.id, u.first_name, u.last_name ORDER BY d.department_name"
+        
+        cursor.execute(query, params)
+        departments = cursor.fetchall()
+        
+        result = []
+        for dept in departments:
+            result.append({
+                'id': str(dept['id']),
+                'department_code': dept.get('department_code'),
+                'department_name': dept.get('department_name'),
+                'manager_id': str(dept['manager_id']) if dept.get('manager_id') else None,
+                'manager_name': dept.get('manager_name'),
+                'employee_count': int(dept.get('employee_count', 0)),
+                'budget': float(dept.get('budget', 0)),
+                'budget_spent': float(dept.get('budget_spent', 0)),
+                'status': dept.get('status'),
+                'created_at': dept['created_at'].isoformat() if dept.get('created_at') else None
+            })
+        
+        return {'departments': result, 'total': len(result)}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+    finally:
+        cursor.close()
+        conn.close()
 
 @departments_router.get("/{department_id}")
 async def get_department(
@@ -80,18 +87,48 @@ async def get_department(
     current_user: Dict = Depends(get_current_user)
 ):
     """Get a single department"""
-    return {
-        'id': department_id,
-        'department_code': 'IT',
-        'department_name': 'Information Technology',
-        'manager_id': str(uuid.uuid4()),
-        'manager_name': 'John Doe',
-        'employee_count': 15,
-        'budget': 2500000.00,
-        'budget_spent': 1875000.00,
-        'status': 'ACTIVE',
-        'created_at': datetime.utcnow().isoformat()
-    }
+    conn = get_connection()
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    
+    try:
+        company_id = current_user.get('company_id')
+        if not company_id:
+            raise HTTPException(status_code=400, detail="User must be associated with a company")
+        
+        cursor.execute("""
+            SELECT 
+                d.*, u.first_name || ' ' || u.last_name as manager_name,
+                COUNT(e.id) as employee_count
+            FROM departments d
+            LEFT JOIN users u ON d.manager_id = u.id
+            LEFT JOIN users e ON e.department = d.department_name AND e.company_id = d.company_id
+            WHERE d.id = %s AND d.company_id = %s
+            GROUP BY d.id, u.first_name, u.last_name
+        """, (department_id, company_id))
+        
+        dept = cursor.fetchone()
+        if not dept:
+            raise HTTPException(status_code=404, detail="Department not found")
+        
+        return {
+            'id': str(dept['id']),
+            'department_code': dept.get('department_code'),
+            'department_name': dept.get('department_name'),
+            'manager_id': str(dept['manager_id']) if dept.get('manager_id') else None,
+            'manager_name': dept.get('manager_name'),
+            'employee_count': int(dept.get('employee_count', 0)),
+            'budget': float(dept.get('budget', 0)),
+            'budget_spent': float(dept.get('budget_spent', 0)),
+            'status': dept.get('status'),
+            'created_at': dept['created_at'].isoformat() if dept.get('created_at') else None
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+    finally:
+        cursor.close()
+        conn.close()
 
 @departments_router.post("")
 async def create_department(
@@ -99,12 +136,34 @@ async def create_department(
     current_user: Dict = Depends(get_current_user)
 ):
     """Create a new department"""
-    department_id = str(uuid.uuid4())
-    return {
-        'id': department_id,
-        'department_code': department_data.get('department_code'),
-        'message': 'Department created successfully'
-    }
+    conn = get_connection()
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    
+    try:
+        company_id = current_user.get('company_id')
+        if not company_id:
+            raise HTTPException(status_code=400, detail="User must be associated with a company")
+        
+        department_id = str(uuid.uuid4())
+        cursor.execute("""
+            INSERT INTO departments (id, company_id, department_code, department_name, manager_id, budget, budget_spent, status, created_at, updated_at)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, NOW(), NOW())
+            RETURNING id, department_code
+        """, (department_id, company_id, department_data.get('department_code'), department_data.get('department_name'),
+              department_data.get('manager_id'), department_data.get('budget', 0), department_data.get('budget_spent', 0),
+              department_data.get('status', 'ACTIVE')))
+        
+        result = cursor.fetchone()
+        conn.commit()
+        return {'id': str(result['id']), 'department_code': result['department_code'], 'message': 'Department created successfully'}
+    except HTTPException:
+        raise
+    except Exception as e:
+        conn.rollback()
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+    finally:
+        cursor.close()
+        conn.close()
 
 @departments_router.put("/{department_id}")
 async def update_department(
@@ -113,7 +172,35 @@ async def update_department(
     current_user: Dict = Depends(get_current_user)
 ):
     """Update a department"""
-    return {"message": "Department updated successfully"}
+    conn = get_connection()
+    cursor = conn.cursor()
+    
+    try:
+        company_id = current_user.get('company_id')
+        if not company_id:
+            raise HTTPException(status_code=400, detail="User must be associated with a company")
+        
+        cursor.execute("""
+            UPDATE departments
+            SET department_name = %s, manager_id = %s, budget = %s, budget_spent = %s, status = %s, updated_at = NOW()
+            WHERE id = %s AND company_id = %s
+        """, (department_data.get('department_name'), department_data.get('manager_id'),
+              department_data.get('budget'), department_data.get('budget_spent'),
+              department_data.get('status'), department_id, company_id))
+        
+        if cursor.rowcount == 0:
+            raise HTTPException(status_code=404, detail="Department not found")
+        
+        conn.commit()
+        return {"message": "Department updated successfully"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        conn.rollback()
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+    finally:
+        cursor.close()
+        conn.close()
 
 @departments_router.delete("/{department_id}")
 async def delete_department(
@@ -121,4 +208,26 @@ async def delete_department(
     current_user: Dict = Depends(get_current_user)
 ):
     """Delete a department"""
-    return {"message": "Department deleted successfully"}
+    conn = get_connection()
+    cursor = conn.cursor()
+    
+    try:
+        company_id = current_user.get('company_id')
+        if not company_id:
+            raise HTTPException(status_code=400, detail="User must be associated with a company")
+        
+        cursor.execute("DELETE FROM departments WHERE id = %s AND company_id = %s", (department_id, company_id))
+        
+        if cursor.rowcount == 0:
+            raise HTTPException(status_code=404, detail="Department not found")
+        
+        conn.commit()
+        return {"message": "Department deleted successfully"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        conn.rollback()
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+    finally:
+        cursor.close()
+        conn.close()

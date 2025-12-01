@@ -32,48 +32,61 @@ async def list_attendance(
     current_user: Dict = Depends(get_current_user)
 ):
     """List all attendance records"""
-    # Generate mock attendance data for the last 7 days
-    attendance_records = []
-    today = datetime.utcnow()
+    conn = get_connection()
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     
-    employees = [
-        {'id': str(uuid.uuid4()), 'name': 'John Doe', 'employee_number': 'EMP-001'},
-        {'id': str(uuid.uuid4()), 'name': 'Jane Smith', 'employee_number': 'EMP-002'},
-        {'id': str(uuid.uuid4()), 'name': 'Bob Johnson', 'employee_number': 'EMP-003'},
-    ]
-    
-    statuses = ['PRESENT', 'ABSENT', 'LATE', 'HALF_DAY', 'LEAVE']
-    
-    for i in range(7):
-        date_obj = today - timedelta(days=i)
-        for emp in employees:
-            attendance_records.append({
-                'id': str(uuid.uuid4()),
-                'employee_id': emp['id'],
-                'employee_name': emp['name'],
-                'employee_number': emp['employee_number'],
-                'date': date_obj.strftime('%Y-%m-%d'),
-                'check_in': '08:00:00' if i % 3 != 0 else '08:30:00',
-                'check_out': '17:00:00' if i % 3 != 0 else '16:30:00',
-                'status': statuses[i % len(statuses)],
-                'hours_worked': 8.0 if i % 3 != 0 else 7.5,
-                'notes': 'Regular attendance' if i % 3 != 0 else 'Late arrival',
-                'created_at': date_obj.isoformat()
+    try:
+        company_id = current_user.get('company_id')
+        if not company_id:
+            raise HTTPException(status_code=400, detail="User must be associated with a company")
+        
+        query = """
+            SELECT 
+                a.id, a.date, a.check_in, a.check_out, a.status, a.hours_worked, a.notes, a.created_at,
+                a.employee_id, u.first_name || ' ' || u.last_name as employee_name, u.employee_number
+            FROM attendance_records a
+            LEFT JOIN users u ON a.employee_id = u.id
+            WHERE a.company_id = %s
+        """
+        params = [company_id]
+        
+        if date:
+            query += " AND a.date = %s"
+            params.append(date)
+        if status:
+            query += " AND a.status = %s"
+            params.append(status)
+        if employee_id:
+            query += " AND a.employee_id = %s"
+            params.append(employee_id)
+        
+        query += " ORDER BY a.date DESC, a.employee_id"
+        
+        cursor.execute(query, params)
+        attendance_records = cursor.fetchall()
+        
+        result = []
+        for record in attendance_records:
+            result.append({
+                'id': str(record['id']),
+                'employee_id': str(record['employee_id']) if record.get('employee_id') else None,
+                'employee_name': record.get('employee_name'),
+                'employee_number': record.get('employee_number'),
+                'date': record['date'].isoformat() if record.get('date') else None,
+                'check_in': str(record['check_in']) if record.get('check_in') else None,
+                'check_out': str(record['check_out']) if record.get('check_out') else None,
+                'status': record.get('status'),
+                'hours_worked': float(record['hours_worked']) if record.get('hours_worked') else 0.0,
+                'notes': record.get('notes'),
+                'created_at': record['created_at'].isoformat() if record.get('created_at') else None
             })
-    
-    # Filter by date if provided
-    if date:
-        attendance_records = [a for a in attendance_records if a['date'] == date]
-    
-    # Filter by status if provided
-    if status:
-        attendance_records = [a for a in attendance_records if a['status'] == status]
-    
-    # Filter by employee_id if provided
-    if employee_id:
-        attendance_records = [a for a in attendance_records if a['employee_id'] == employee_id]
-    
-    return {'attendance': attendance_records, 'total': len(attendance_records)}
+        
+        return {'attendance': result, 'total': len(result)}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+    finally:
+        cursor.close()
+        conn.close()
 
 @attendance_router.get("/{attendance_id}")
 async def get_attendance(
@@ -81,19 +94,46 @@ async def get_attendance(
     current_user: Dict = Depends(get_current_user)
 ):
     """Get a single attendance record"""
-    return {
-        'id': attendance_id,
-        'employee_id': str(uuid.uuid4()),
-        'employee_name': 'John Doe',
-        'employee_number': 'EMP-001',
-        'date': datetime.utcnow().strftime('%Y-%m-%d'),
-        'check_in': '08:00:00',
-        'check_out': '17:00:00',
-        'status': 'PRESENT',
-        'hours_worked': 8.0,
-        'notes': 'Regular attendance',
-        'created_at': datetime.utcnow().isoformat()
-    }
+    conn = get_connection()
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    
+    try:
+        company_id = current_user.get('company_id')
+        if not company_id:
+            raise HTTPException(status_code=400, detail="User must be associated with a company")
+        
+        cursor.execute("""
+            SELECT 
+                a.*, u.first_name || ' ' || u.last_name as employee_name, u.employee_number
+            FROM attendance_records a
+            LEFT JOIN users u ON a.employee_id = u.id
+            WHERE a.id = %s AND a.company_id = %s
+        """, (attendance_id, company_id))
+        
+        record = cursor.fetchone()
+        if not record:
+            raise HTTPException(status_code=404, detail="Attendance record not found")
+        
+        return {
+            'id': str(record['id']),
+            'employee_id': str(record['employee_id']) if record.get('employee_id') else None,
+            'employee_name': record.get('employee_name'),
+            'employee_number': record.get('employee_number'),
+            'date': record['date'].isoformat() if record.get('date') else None,
+            'check_in': str(record['check_in']) if record.get('check_in') else None,
+            'check_out': str(record['check_out']) if record.get('check_out') else None,
+            'status': record.get('status'),
+            'hours_worked': float(record['hours_worked']) if record.get('hours_worked') else 0.0,
+            'notes': record.get('notes'),
+            'created_at': record['created_at'].isoformat() if record.get('created_at') else None
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+    finally:
+        cursor.close()
+        conn.close()
 
 @attendance_router.post("")
 async def create_attendance(
@@ -101,11 +141,34 @@ async def create_attendance(
     current_user: Dict = Depends(get_current_user)
 ):
     """Create a new attendance record"""
-    attendance_id = str(uuid.uuid4())
-    return {
-        'id': attendance_id,
-        'message': 'Attendance record created successfully'
-    }
+    conn = get_connection()
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    
+    try:
+        company_id = current_user.get('company_id')
+        if not company_id:
+            raise HTTPException(status_code=400, detail="User must be associated with a company")
+        
+        attendance_id = str(uuid.uuid4())
+        cursor.execute("""
+            INSERT INTO attendance_records (id, company_id, employee_id, date, check_in, check_out, status, hours_worked, notes, created_at, updated_at)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, NOW(), NOW())
+            RETURNING id
+        """, (attendance_id, company_id, attendance_data.get('employee_id'), attendance_data.get('date'),
+              attendance_data.get('check_in'), attendance_data.get('check_out'), attendance_data.get('status', 'PRESENT'),
+              attendance_data.get('hours_worked'), attendance_data.get('notes')))
+        
+        result = cursor.fetchone()
+        conn.commit()
+        return {'id': str(result['id']), 'message': 'Attendance record created successfully'}
+    except HTTPException:
+        raise
+    except Exception as e:
+        conn.rollback()
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+    finally:
+        cursor.close()
+        conn.close()
 
 @attendance_router.put("/{attendance_id}")
 async def update_attendance(
@@ -114,7 +177,34 @@ async def update_attendance(
     current_user: Dict = Depends(get_current_user)
 ):
     """Update an attendance record"""
-    return {"message": "Attendance record updated successfully"}
+    conn = get_connection()
+    cursor = conn.cursor()
+    
+    try:
+        company_id = current_user.get('company_id')
+        if not company_id:
+            raise HTTPException(status_code=400, detail="User must be associated with a company")
+        
+        cursor.execute("""
+            UPDATE attendance_records
+            SET check_in = %s, check_out = %s, status = %s, hours_worked = %s, notes = %s, updated_at = NOW()
+            WHERE id = %s AND company_id = %s
+        """, (attendance_data.get('check_in'), attendance_data.get('check_out'), attendance_data.get('status'),
+              attendance_data.get('hours_worked'), attendance_data.get('notes'), attendance_id, company_id))
+        
+        if cursor.rowcount == 0:
+            raise HTTPException(status_code=404, detail="Attendance record not found")
+        
+        conn.commit()
+        return {"message": "Attendance record updated successfully"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        conn.rollback()
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+    finally:
+        cursor.close()
+        conn.close()
 
 @attendance_router.delete("/{attendance_id}")
 async def delete_attendance(
@@ -122,4 +212,26 @@ async def delete_attendance(
     current_user: Dict = Depends(get_current_user)
 ):
     """Delete an attendance record"""
-    return {"message": "Attendance record deleted successfully"}
+    conn = get_connection()
+    cursor = conn.cursor()
+    
+    try:
+        company_id = current_user.get('company_id')
+        if not company_id:
+            raise HTTPException(status_code=400, detail="User must be associated with a company")
+        
+        cursor.execute("DELETE FROM attendance_records WHERE id = %s AND company_id = %s", (attendance_id, company_id))
+        
+        if cursor.rowcount == 0:
+            raise HTTPException(status_code=404, detail="Attendance record not found")
+        
+        conn.commit()
+        return {"message": "Attendance record deleted successfully"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        conn.rollback()
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+    finally:
+        cursor.close()
+        conn.close()
