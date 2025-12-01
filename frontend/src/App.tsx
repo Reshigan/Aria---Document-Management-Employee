@@ -64,6 +64,34 @@ import PendingActions from './pages/PendingActions';
 import IntegrationsList from './pages/integrations/IntegrationsList';
 import DocumentTemplates from './pages/documents/DocumentTemplates';
 import GenerateDocument from './pages/documents/GenerateDocument';
+import HRDashboard from './pages/HR/HRDashboard';
+import HREmployees from './pages/HR/Employees';
+import Departments from './pages/HR/Departments';
+import Attendance from './pages/HR/Attendance';
+import LeaveManagement from './pages/HR/LeaveManagement';
+import ProjectsDashboard from './pages/Projects/ProjectsDashboard';
+import Tasks from './pages/Projects/Tasks';
+import Timesheets from './pages/Projects/Timesheets';
+import ProjectReports from './pages/Projects/ProjectReports';
+import PayrollRuns from './pages/Payroll/PayrollRuns';
+import TaxFilings from './pages/Payroll/TaxFilings';
+import ServiceOrders from './pages/FieldService/ServiceOrders';
+import Technicians from './pages/FieldService/Technicians';
+import Scheduling from './pages/FieldService/Scheduling';
+import Bills from './pages/AP/Bills';
+import Payments from './pages/AP/Payments';
+import Receipts from './pages/AR/Receipts';
+import BankAccounts from './pages/Banking/BankAccounts';
+import Reconciliation from './pages/Banking/Reconciliation';
+import Warehouses from './pages/Inventory/Warehouses';
+import StockMovements from './pages/Inventory/StockMovements';
+import BOMs from './pages/Manufacturing/BOMs';
+import Production from './pages/Manufacturing/Production';
+import TaxCompliance from './pages/Tax/TaxCompliance';
+import LegalCompliance from './pages/Legal/LegalCompliance';
+import FixedAssets from './pages/FixedAssets/FixedAssets';
+import ComplianceDashboard from './pages/Compliance/ComplianceDashboard';
+import QualityDashboard from './pages/Quality/QualityDashboard';
 import './styles/design-system.css';
 
 function App() {
@@ -102,20 +130,35 @@ function App() {
           <Route path="/ap" element={<InvoiceList />} />
           <Route path="/ap/invoices" element={<InvoiceList />} />
           <Route path="/ap/invoices/new" element={<InvoiceForm />} />
+          <Route path="/ap/bills" element={<Bills />} />
+          <Route path="/ap/payments" element={<Payments />} />
           <Route path="/ap/suppliers" element={<Suppliers />} />
           
           {/* Accounts Receivable */}
           <Route path="/ar" element={<AccountsReceivable />} />
           <Route path="/ar/customers" element={<Customers />} />
           <Route path="/ar/invoices" element={<InvoiceList />} />
+          <Route path="/ar/receipts" element={<Receipts />} />
           
           {/* Banking */}
           <Route path="/banking" element={<BankingDashboard />} />
+          <Route path="/banking/accounts" element={<BankAccounts />} />
+          <Route path="/banking/reconciliation" element={<Reconciliation />} />
+          
+          {/* HR */}
+          <Route path="/hr" element={<HRDashboard />} />
+          <Route path="/hr/dashboard" element={<HRDashboard />} />
+          <Route path="/hr/employees" element={<HREmployees />} />
+          <Route path="/hr/departments" element={<Departments />} />
+          <Route path="/hr/attendance" element={<Attendance />} />
+          <Route path="/hr/leave" element={<LeaveManagement />} />
           
           {/* Payroll */}
           <Route path="/payroll" element={<PayrollDashboard />} />
           <Route path="/payroll/employees" element={<Employees />} />
           <Route path="/payroll/payslips" element={<PayrollDashboard />} />
+          <Route path="/payroll/runs" element={<PayrollRuns />} />
+          <Route path="/payroll/tax" element={<TaxFilings />} />
           
           {/* CRM */}
           <Route path="/crm" element={<CRMDashboard />} />
@@ -126,6 +169,8 @@ function App() {
           <Route path="/inventory/products" element={<Products />} />
           <Route path="/inventory/stock" element={<WMSStock />} />
           <Route path="/inventory/items" element={<ProductCatalog />} />
+          <Route path="/inventory/warehouses" element={<Warehouses />} />
+          <Route path="/inventory/stock-movements" element={<StockMovements />} />
           
           {/* Master Data */}
           <Route path="/master-data" element={<ProductCatalog />} />
@@ -149,12 +194,33 @@ function App() {
           <Route path="/manufacturing" element={<WorkOrdersERP />} />
           <Route path="/manufacturing/work-orders" element={<WorkOrdersERP />} />
           <Route path="/manufacturing/bom" element={<BOMManagement />} />
+          <Route path="/manufacturing/boms" element={<BOMs />} />
+          <Route path="/manufacturing/production" element={<Production />} />
           <Route path="/manufacturing/dashboard" element={<ManufacturingDashboard />} />
           
           {/* Field Service */}
           <Route path="/field-service" element={<FieldService />} />
           <Route path="/field-service/requests" element={<FieldService />} />
           <Route path="/field-service/work-orders" element={<FieldService />} />
+          <Route path="/field-service/orders" element={<ServiceOrders />} />
+          <Route path="/field-service/technicians" element={<Technicians />} />
+          <Route path="/field-service/scheduling" element={<Scheduling />} />
+          
+          {/* Projects */}
+          <Route path="/projects" element={<ProjectsDashboard />} />
+          <Route path="/projects/dashboard" element={<ProjectsDashboard />} />
+          <Route path="/projects/tasks" element={<Tasks />} />
+          <Route path="/projects/timesheets" element={<Timesheets />} />
+          <Route path="/projects/reports" element={<ProjectReports />} />
+          
+          {/* Compliance */}
+          <Route path="/compliance" element={<ComplianceDashboard />} />
+          <Route path="/tax" element={<TaxCompliance />} />
+          <Route path="/legal" element={<LegalCompliance />} />
+          <Route path="/fixed-assets" element={<FixedAssets />} />
+          
+          {/* Quality */}
+          <Route path="/quality" element={<QualityDashboard />} />
           
           {/* Agents */}
           <Route path="/agents" element={<Agents />} />
