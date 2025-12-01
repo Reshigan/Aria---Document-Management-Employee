@@ -255,6 +255,84 @@ except Exception as e:
     print(f"⚠️ HR & Payroll API not loaded: {e}")
 
 try:
+    from app.api.hr_metrics_pg import hr_metrics_router
+    app.include_router(hr_metrics_router)
+    print("✅ HR Metrics API loaded (PostgreSQL): HR Dashboard Metrics")
+except Exception as e:
+    print(f"⚠️ HR Metrics API not loaded: {e}")
+
+try:
+    from app.api.hr_departments_pg import departments_router
+    app.include_router(departments_router)
+    print("✅ HR Departments API loaded (PostgreSQL): Departments with full CRUD")
+except Exception as e:
+    print(f"⚠️ HR Departments API not loaded: {e}")
+
+try:
+    from app.api.hr_attendance_pg import attendance_router
+    app.include_router(attendance_router)
+    print("✅ HR Attendance API loaded (PostgreSQL): Attendance with full CRUD")
+except Exception as e:
+    print(f"⚠️ HR Attendance API not loaded: {e}")
+
+try:
+    from app.api.tax_filings_pg import tax_filings_router
+    app.include_router(tax_filings_router)
+    print("✅ Tax Filings API loaded (PostgreSQL): Tax Filings with full CRUD")
+except Exception as e:
+    print(f"⚠️ Tax Filings API not loaded: {e}")
+
+try:
+    from app.api.projects_pg import (
+        projects_dashboard_router,
+        tasks_router,
+        timesheets_router,
+        reports_router
+    )
+    app.include_router(projects_dashboard_router)
+    app.include_router(tasks_router)
+    app.include_router(timesheets_router)
+    app.include_router(reports_router)
+    print("✅ Projects API loaded (PostgreSQL): Dashboard, Tasks, Timesheets, Reports with full CRUD")
+except Exception as e:
+    print(f"⚠️ Projects API not loaded: {e}")
+
+try:
+    from app.api.field_service_orders_pg import (
+        service_orders_router,
+        scheduling_router
+    )
+    app.include_router(service_orders_router)
+    app.include_router(scheduling_router)
+    print("✅ Field Service Orders & Scheduling API loaded (PostgreSQL): Orders, Scheduling with full CRUD")
+except Exception as e:
+    print(f"⚠️ Field Service Orders & Scheduling API not loaded: {e}")
+
+try:
+    from app.api.compliance_pg import (
+        compliance_dashboard_router,
+        tax_compliance_router,
+        legal_compliance_router
+    )
+    app.include_router(compliance_dashboard_router)
+    app.include_router(tax_compliance_router)
+    app.include_router(legal_compliance_router)
+    print("✅ Compliance API loaded (PostgreSQL): Dashboard, Tax, Legal with full CRUD")
+except Exception as e:
+    print(f"⚠️ Compliance API not loaded: {e}")
+
+try:
+    from app.api.quality_pg import (
+        quality_dashboard_router,
+        non_conformances_router
+    )
+    app.include_router(quality_dashboard_router)
+    app.include_router(non_conformances_router)
+    print("✅ Quality API loaded (PostgreSQL): Dashboard, Inspections, Non-Conformances with full CRUD")
+except Exception as e:
+    print(f"⚠️ Quality API not loaded: {e}")
+
+try:
     from app.api.manufacturing_pg import (
         work_orders_router,
         production_runs_router
