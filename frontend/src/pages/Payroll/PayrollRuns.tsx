@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../lib/api';
+import { ConfirmDialog } from '../../components/ConfirmDialog';
 
 interface PayrollRun {
   id: number;
@@ -17,6 +18,19 @@ interface PayrollRun {
 const PayrollRuns: React.FC = () => {
   const [runs, setRuns] = useState<PayrollRun[]>([]);
   const [loading, setLoading] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [editingRun, setEditingRun] = useState<PayrollRun | null>(null);
+  const [form, setForm] = useState({
+    run_code: '',
+    period_start: '',
+    period_end: '',
+    status: 'DRAFT' as 'DRAFT' | 'PROCESSING' | 'COMPLETED' | 'PAID'
+  });
+  const [deleteConfirm, setDeleteConfirm] = useState<{ show: boolean; id: number; code: string }>({
+    show: false,
+    id: 0,
+    code: ''
+  });
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -33,6 +47,53 @@ const PayrollRuns: React.FC = () => {
       setError(err.response?.data?.detail || 'Failed to load payroll runs');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleCreate = () => {
+    setEditingRun(null);
+    setForm({
+      run_code: '',
+      period_start: '',
+      period_end: '',
+      status: 'DRAFT'
+    });
+    setShowModal(true);
+  };
+
+  const handleEdit = (run: PayrollRun) => {
+    setEditingRun(run);
+    setForm({
+      run_code: run.run_code,
+      period_start: run.period_start,
+      period_end: run.period_end,
+      status: run.status
+    });
+    setShowModal(true);
+  };
+
+  const handleSave = async () => {
+    setError('');
+    try {
+      if (editingRun) {
+        await api.put(`/erp/payroll/runs/${editingRun.id}`, form);
+      } else {
+        await api.post('/erp/payroll/runs', form);
+      }
+      setShowModal(false);
+      loadRuns();
+    } catch (err: any) {
+      setError(err.response?.data?.detail || 'Failed to save payroll run');
+    }
+  };
+
+  const handleDelete = async (id: number) => {
+    try {
+      await api.delete(`/erp/payroll/runs/${id}`);
+      loadRuns();
+      setDeleteConfirm({ show: false, id: 0, code: '' });
+    } catch (err: any) {
+      setError(err.response?.data?.detail || 'Failed to delete payroll run');
     }
   };
 
@@ -68,6 +129,16 @@ const PayrollRuns: React.FC = () => {
         </div>
       )}
 
+      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '16px' }}>
+        <button
+          onClick={handleCreate}
+          style={{ padding: '8px 16px', backgroundColor: '#2563eb', color: 'white', border: 'none', borderRadius: '6px', fontWeight: 600, cursor: 'pointer' }}
+          data-testid="create-button"
+        >
+          + New Payroll Run
+        </button>
+      </div>
+
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginBottom: '16px' }}>
         <div style={{ backgroundColor: 'white', padding: '16px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
           <div style={{ fontSize: '14px', color: '#6b7280', marginBottom: '4px' }}>Total Runs</div>
@@ -98,13 +169,14 @@ const PayrollRuns: React.FC = () => {
               <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Deductions</th>
               <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Net</th>
               <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Status</th>
+              <th style={{ padding: '12px 16px', textAlign: 'right', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Actions</th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
-              <tr><td colSpan={7} style={{ padding: '40px', textAlign: 'center', color: '#6b7280' }}>Loading...</td></tr>
+              <tr><td colSpan={8} style={{ padding: '40px', textAlign: 'center', color: '#6b7280' }}>Loading...</td></tr>
             ) : runs.length === 0 ? (
-              <tr><td colSpan={7} style={{ padding: '40px', textAlign: 'center', color: '#6b7280' }}>No payroll runs found</td></tr>
+              <tr><td colSpan={8} style={{ padding: '40px', textAlign: 'center', color: '#6b7280' }}>No payroll runs found</td></tr>
             ) : (
               runs.map((run) => (
                 <tr key={run.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
@@ -117,12 +189,100 @@ const PayrollRuns: React.FC = () => {
                   <td style={{ padding: '12px 16px', fontSize: '14px', color: '#6b7280' }}>{formatCurrency(run.total_deductions)}</td>
                   <td style={{ padding: '12px 16px', fontSize: '14px', color: '#6b7280' }}>{formatCurrency(run.total_net)}</td>
                   <td style={{ padding: '12px 16px' }}>{getStatusBadge(run.status)}</td>
+                  <td style={{ padding: '12px 16px', textAlign: 'right' }}>
+                    <button
+                      onClick={() => handleEdit(run)}
+                      style={{ padding: '4px 8px', marginRight: '8px', fontSize: '12px', color: '#2563eb', background: 'none', border: 'none', cursor: 'pointer' }}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => setDeleteConfirm({ show: true, id: run.id, code: run.run_code })}
+                      style={{ padding: '4px 8px', fontSize: '12px', color: '#dc2626', background: 'none', border: 'none', cursor: 'pointer' }}
+                    >
+                      Delete
+                    </button>
+                  </td>
                 </tr>
               ))
             )}
           </tbody>
         </table>
       </div>
+
+      {showModal && (
+        <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}>
+          <div style={{ backgroundColor: 'white', borderRadius: '8px', padding: '24px', width: '500px', maxHeight: '90vh', overflow: 'auto' }}>
+            <h2 style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '16px' }}>
+              {editingRun ? 'Edit Payroll Run' : 'New Payroll Run'}
+            </h2>
+            <div style={{ marginBottom: '16px' }}>
+              <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Run Code *</label>
+              <input
+                type="text"
+                value={form.run_code}
+                onChange={(e) => setForm({ ...form, run_code: e.target.value })}
+                style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+              />
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+              <div>
+                <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Period Start *</label>
+                <input
+                  type="date"
+                  value={form.period_start}
+                  onChange={(e) => setForm({ ...form, period_start: e.target.value })}
+                  style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                />
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Period End *</label>
+                <input
+                  type="date"
+                  value={form.period_end}
+                  onChange={(e) => setForm({ ...form, period_end: e.target.value })}
+                  style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                />
+              </div>
+            </div>
+            <div style={{ marginBottom: '16px' }}>
+              <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Status *</label>
+              <select
+                value={form.status}
+                onChange={(e) => setForm({ ...form, status: e.target.value as any })}
+                style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+              >
+                <option value="DRAFT">Draft</option>
+                <option value="PROCESSING">Processing</option>
+                <option value="COMPLETED">Completed</option>
+                <option value="PAID">Paid</option>
+              </select>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
+              <button
+                onClick={() => setShowModal(false)}
+                style={{ padding: '8px 16px', border: '1px solid #d1d5db', borderRadius: '6px', fontWeight: 600, cursor: 'pointer', background: 'white' }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSave}
+                style={{ padding: '8px 16px', backgroundColor: '#2563eb', color: 'white', border: 'none', borderRadius: '6px', fontWeight: 600, cursor: 'pointer' }}
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <ConfirmDialog
+        isOpen={deleteConfirm.show}
+        title="Delete Payroll Run"
+        message={`Are you sure you want to delete payroll run ${deleteConfirm.code}? This action cannot be undone.`}
+        onConfirm={() => handleDelete(deleteConfirm.id)}
+        onCancel={() => setDeleteConfirm({ show: false, id: 0, code: '' })}
+      />
     </div>
   );
 };
