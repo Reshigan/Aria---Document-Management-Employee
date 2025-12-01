@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../lib/api';
+import { ConfirmDialog } from '../../components/ConfirmDialog';
 
 interface AttendanceRecord {
   id: number;
@@ -17,6 +18,21 @@ const Attendance: React.FC = () => {
   const [records, setRecords] = useState<AttendanceRecord[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+  const [showModal, setShowModal] = useState(false);
+  const [editingRecord, setEditingRecord] = useState<AttendanceRecord | null>(null);
+  const [form, setForm] = useState({
+    employee_id: '',
+    date: '',
+    check_in: '',
+    check_out: '',
+    status: 'PRESENT' as 'PRESENT' | 'ABSENT' | 'LATE' | 'HALF_DAY' | 'LEAVE',
+    notes: ''
+  });
+  const [deleteConfirm, setDeleteConfirm] = useState<{ show: boolean; id: number; name: string }>({
+    show: false,
+    id: 0,
+    name: ''
+  });
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -33,6 +49,62 @@ const Attendance: React.FC = () => {
       setError(err.response?.data?.detail || 'Failed to load attendance records');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleCreate = () => {
+    setEditingRecord(null);
+    setForm({
+      employee_id: '',
+      date: selectedDate,
+      check_in: '',
+      check_out: '',
+      status: 'PRESENT',
+      notes: ''
+    });
+    setShowModal(true);
+  };
+
+  const handleEdit = (record: AttendanceRecord) => {
+    setEditingRecord(record);
+    setForm({
+      employee_id: record.employee_id.toString(),
+      date: record.date,
+      check_in: record.check_in || '',
+      check_out: record.check_out || '',
+      status: record.status,
+      notes: record.notes || ''
+    });
+    setShowModal(true);
+  };
+
+  const handleSave = async () => {
+    setError('');
+    try {
+      const payload = {
+        ...form,
+        employee_id: parseInt(form.employee_id)
+      };
+      
+      if (editingRecord) {
+        await api.put(`/hr/attendance/${editingRecord.id}`, payload);
+      } else {
+        await api.post('/hr/attendance', payload);
+      }
+      setShowModal(false);
+      loadAttendance();
+    } catch (err: any) {
+      setError(err.response?.data?.detail || 'Failed to save attendance record');
+    }
+  };
+
+  const handleDelete = async (id: number) => {
+    try {
+      await api.delete(`/hr/attendance/${id}`);
+      loadAttendance();
+      setDeleteConfirm({ show: false, id: 0, name: '' });
+    } catch (err: any) {
+      setError(err.response?.data?.detail || 'Failed to delete attendance record');
     }
   };
 
@@ -77,6 +149,13 @@ const Attendance: React.FC = () => {
             data-testid="date-input"
           />
         </div>
+        <button
+          onClick={handleCreate}
+          style={{ padding: '8px 16px', backgroundColor: '#2563eb', color: 'white', border: 'none', borderRadius: '6px', fontWeight: 600, cursor: 'pointer' }}
+          data-testid="create-button"
+        >
+          + New Attendance Record
+        </button>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '16px' }}>
@@ -108,13 +187,14 @@ const Attendance: React.FC = () => {
               <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Hours Worked</th>
               <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Status</th>
               <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Notes</th>
+              <th style={{ padding: '12px 16px', textAlign: 'right', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Actions</th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
-              <tr><td colSpan={6} style={{ padding: '40px', textAlign: 'center', color: '#6b7280' }}>Loading...</td></tr>
+              <tr><td colSpan={7} style={{ padding: '40px', textAlign: 'center', color: '#6b7280' }}>Loading...</td></tr>
             ) : records.length === 0 ? (
-              <tr><td colSpan={6} style={{ padding: '40px', textAlign: 'center', color: '#6b7280' }}>No attendance records for this date</td></tr>
+              <tr><td colSpan={7} style={{ padding: '40px', textAlign: 'center', color: '#6b7280' }}>No attendance records for this date</td></tr>
             ) : (
               records.map((record) => (
                 <tr key={record.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
@@ -134,12 +214,119 @@ const Attendance: React.FC = () => {
                   <td style={{ padding: '12px 16px', fontSize: '14px', color: '#6b7280' }}>
                     {record.notes || '-'}
                   </td>
+                  <td style={{ padding: '12px 16px', textAlign: 'right' }}>
+                    <button
+                      onClick={() => handleEdit(record)}
+                      style={{ padding: '4px 8px', marginRight: '8px', fontSize: '12px', color: '#2563eb', background: 'none', border: 'none', cursor: 'pointer' }}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => setDeleteConfirm({ show: true, id: record.id, name: record.employee_name })}
+                      style={{ padding: '4px 8px', fontSize: '12px', color: '#dc2626', background: 'none', border: 'none', cursor: 'pointer' }}
+                    >
+                      Delete
+                    </button>
+                  </td>
                 </tr>
               ))
             )}
           </tbody>
         </table>
       </div>
+
+      {showModal && (
+        <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}>
+          <div style={{ backgroundColor: 'white', borderRadius: '8px', padding: '24px', width: '500px', maxHeight: '90vh', overflow: 'auto' }}>
+            <h2 style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '16px' }}>
+              {editingRecord ? 'Edit Attendance Record' : 'New Attendance Record'}
+            </h2>
+            <div style={{ marginBottom: '16px' }}>
+              <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Employee ID *</label>
+              <input
+                type="number"
+                value={form.employee_id}
+                onChange={(e) => setForm({ ...form, employee_id: e.target.value })}
+                style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+              />
+            </div>
+            <div style={{ marginBottom: '16px' }}>
+              <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Date *</label>
+              <input
+                type="date"
+                value={form.date}
+                onChange={(e) => setForm({ ...form, date: e.target.value })}
+                style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+              />
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+              <div>
+                <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Check In</label>
+                <input
+                  type="time"
+                  value={form.check_in}
+                  onChange={(e) => setForm({ ...form, check_in: e.target.value })}
+                  style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                />
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Check Out</label>
+                <input
+                  type="time"
+                  value={form.check_out}
+                  onChange={(e) => setForm({ ...form, check_out: e.target.value })}
+                  style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                />
+              </div>
+            </div>
+            <div style={{ marginBottom: '16px' }}>
+              <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Status *</label>
+              <select
+                value={form.status}
+                onChange={(e) => setForm({ ...form, status: e.target.value as any })}
+                style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+              >
+                <option value="PRESENT">Present</option>
+                <option value="ABSENT">Absent</option>
+                <option value="LATE">Late</option>
+                <option value="HALF_DAY">Half Day</option>
+                <option value="LEAVE">Leave</option>
+              </select>
+            </div>
+            <div style={{ marginBottom: '16px' }}>
+              <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Notes</label>
+              <textarea
+                value={form.notes}
+                onChange={(e) => setForm({ ...form, notes: e.target.value })}
+                rows={3}
+                style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+              />
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
+              <button
+                onClick={() => setShowModal(false)}
+                style={{ padding: '8px 16px', border: '1px solid #d1d5db', borderRadius: '6px', fontWeight: 600, cursor: 'pointer', background: 'white' }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSave}
+                style={{ padding: '8px 16px', backgroundColor: '#2563eb', color: 'white', border: 'none', borderRadius: '6px', fontWeight: 600, cursor: 'pointer' }}
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <ConfirmDialog
+        isOpen={deleteConfirm.show}
+        title="Delete Attendance Record"
+        message={`Are you sure you want to delete the attendance record for ${deleteConfirm.name}? This action cannot be undone.`}
+        onConfirm={() => handleDelete(deleteConfirm.id)}
+        onCancel={() => setDeleteConfirm({ show: false, id: 0, name: '' })}
+      />
     </div>
   );
 };
