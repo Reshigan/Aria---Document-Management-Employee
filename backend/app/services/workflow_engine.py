@@ -7,8 +7,16 @@ from datetime import datetime
 from typing import Dict, Any, List, Optional
 import psycopg2
 import psycopg2.extras
-from database import get_db_connection
 import uuid
+import os
+
+DATABASE_URL = os.getenv("DATABASE_URL_PG") or os.getenv("DATABASE_URL")
+
+def get_db_connection():
+    """Get PostgreSQL database connection"""
+    if not DATABASE_URL:
+        raise RuntimeError("DATABASE_URL_PG or DATABASE_URL environment variable must be set")
+    return psycopg2.connect(DATABASE_URL)
 
 
 class WorkflowEngine:
