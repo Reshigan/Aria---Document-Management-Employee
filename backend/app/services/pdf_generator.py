@@ -14,7 +14,7 @@ from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, 
 from reportlab.lib.enums import TA_CENTER, TA_RIGHT, TA_LEFT
 import psycopg2
 import psycopg2.extras
-from app.database import get_db_connection
+from database import get_db_connection
 
 
 class PDFGenerator:

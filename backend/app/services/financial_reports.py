@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 from typing import Dict, Any, List, Optional
 import psycopg2
 import psycopg2.extras
-from app.database import get_db_connection
+from database import get_db_connection
 
 
 class FinancialReportsService:
