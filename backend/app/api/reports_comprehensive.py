@@ -6,7 +6,7 @@ Provides endpoints for all financial and operational reports
 from fastapi import APIRouter, Depends, HTTPException, Query
 from typing import Optional
 from datetime import datetime, timedelta
-from app.dependencies import get_current_user
+from auth_integrated import get_current_user
 from app.services.financial_reports import financial_reports_service
 
 router = APIRouter(prefix="/api/reports", tags=["Comprehensive Reports"])

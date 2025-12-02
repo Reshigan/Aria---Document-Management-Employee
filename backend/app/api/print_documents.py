@@ -6,7 +6,7 @@ Provides endpoints to generate and download PDF documents
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import StreamingResponse
 from typing import Optional
-from app.dependencies import get_current_user
+from auth_integrated import get_current_user
 from app.services.pdf_generator import pdf_generator
 
 router = APIRouter(prefix="/api/print", tags=["Document Printing"])
