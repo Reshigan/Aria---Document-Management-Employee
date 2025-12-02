@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../lib/api';
+import { ConfirmDialog } from '../../components/ConfirmDialog';
 
 interface Reconciliation {
   id: number;
@@ -16,6 +17,22 @@ interface Reconciliation {
 const Reconciliation: React.FC = () => {
   const [reconciliations, setReconciliations] = useState<Reconciliation[]>([]);
   const [loading, setLoading] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [editingRecon, setEditingRecon] = useState<Reconciliation | null>(null);
+  const [form, setForm] = useState({
+    account_name: '',
+    period_start: '',
+    period_end: '',
+    opening_balance: '',
+    closing_balance: '',
+    statement_balance: '',
+    status: 'IN_PROGRESS' as 'IN_PROGRESS' | 'COMPLETED' | 'APPROVED'
+  });
+  const [deleteConfirm, setDeleteConfirm] = useState<{ show: boolean; id: number; account: string }>({
+    show: false,
+    id: 0,
+    account: ''
+  });
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -32,6 +49,66 @@ const Reconciliation: React.FC = () => {
       setError(err.response?.data?.detail || 'Failed to load reconciliations');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleCreate = () => {
+    setEditingRecon(null);
+    setForm({
+      account_name: '',
+      period_start: '',
+      period_end: '',
+      opening_balance: '',
+      closing_balance: '',
+      statement_balance: '',
+      status: 'IN_PROGRESS'
+    });
+    setShowModal(true);
+  };
+
+  const handleEdit = (recon: Reconciliation) => {
+    setEditingRecon(recon);
+    setForm({
+      account_name: recon.account_name,
+      period_start: recon.period_start,
+      period_end: recon.period_end,
+      opening_balance: recon.opening_balance.toString(),
+      closing_balance: recon.closing_balance.toString(),
+      statement_balance: recon.statement_balance.toString(),
+      status: recon.status
+    });
+    setShowModal(true);
+  };
+
+  const handleSave = async () => {
+    setError('');
+    try {
+      const payload = {
+        ...form,
+        opening_balance: parseFloat(form.opening_balance) || 0,
+        closing_balance: parseFloat(form.closing_balance) || 0,
+        statement_balance: parseFloat(form.statement_balance) || 0
+      };
+      
+      if (editingRecon) {
+        await api.put(`/banking/reconciliations/${editingRecon.id}`, payload);
+      } else {
+        await api.post('/banking/reconciliations', payload);
+      }
+      setShowModal(false);
+      loadReconciliations();
+    } catch (err: any) {
+      setError(err.response?.data?.detail || 'Failed to save reconciliation');
+    }
+  };
+
+  const handleDelete = async (id: number) => {
+    try {
+      await api.delete(`/banking/reconciliations/${id}`);
+      loadReconciliations();
+      setDeleteConfirm({ show: false, id: 0, account: '' });
+    } catch (err: any) {
+      setError(err.response?.data?.detail || 'Failed to delete reconciliation');
     }
   };
 
@@ -66,6 +143,16 @@ const Reconciliation: React.FC = () => {
         </div>
       )}
 
+      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '16px' }}>
+        <button
+          onClick={handleCreate}
+          style={{ padding: '8px 16px', backgroundColor: '#2563eb', color: 'white', border: 'none', borderRadius: '6px', fontWeight: 600, cursor: 'pointer' }}
+          data-testid="create-button"
+        >
+          + New Reconciliation
+        </button>
+      </div>
+
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginBottom: '16px' }}>
         <div style={{ backgroundColor: 'white', padding: '16px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
           <div style={{ fontSize: '14px', color: '#6b7280', marginBottom: '4px' }}>In Progress</div>
@@ -92,13 +179,14 @@ const Reconciliation: React.FC = () => {
               <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Statement</th>
               <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Difference</th>
               <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Status</th>
+              <th style={{ padding: '12px 16px', textAlign: 'right', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Actions</th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
-              <tr><td colSpan={7} style={{ padding: '40px', textAlign: 'center', color: '#6b7280' }}>Loading...</td></tr>
+              <tr><td colSpan={8} style={{ padding: '40px', textAlign: 'center', color: '#6b7280' }}>Loading...</td></tr>
             ) : reconciliations.length === 0 ? (
-              <tr><td colSpan={7} style={{ padding: '40px', textAlign: 'center', color: '#6b7280' }}>No reconciliations found</td></tr>
+              <tr><td colSpan={8} style={{ padding: '40px', textAlign: 'center', color: '#6b7280' }}>No reconciliations found</td></tr>
             ) : (
               reconciliations.map((recon) => (
                 <tr key={recon.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
@@ -113,12 +201,131 @@ const Reconciliation: React.FC = () => {
                     {formatCurrency(recon.difference)}
                   </td>
                   <td style={{ padding: '12px 16px' }}>{getStatusBadge(recon.status)}</td>
+                  <td style={{ padding: '12px 16px', textAlign: 'right' }}>
+                    <button
+                      onClick={() => handleEdit(recon)}
+                      style={{ padding: '4px 8px', marginRight: '8px', fontSize: '12px', color: '#2563eb', background: 'none', border: 'none', cursor: 'pointer' }}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => setDeleteConfirm({ show: true, id: recon.id, account: recon.account_name })}
+                      style={{ padding: '4px 8px', fontSize: '12px', color: '#dc2626', background: 'none', border: 'none', cursor: 'pointer' }}
+                    >
+                      Delete
+                    </button>
+                  </td>
                 </tr>
               ))
             )}
           </tbody>
         </table>
       </div>
+
+      {showModal && (
+        <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}>
+          <div style={{ backgroundColor: 'white', borderRadius: '8px', padding: '24px', width: '500px', maxHeight: '90vh', overflow: 'auto' }}>
+            <h2 style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '16px' }}>
+              {editingRecon ? 'Edit Reconciliation' : 'New Reconciliation'}
+            </h2>
+            <div style={{ marginBottom: '16px' }}>
+              <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Account Name *</label>
+              <input
+                type="text"
+                value={form.account_name}
+                onChange={(e) => setForm({ ...form, account_name: e.target.value })}
+                style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+              />
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+              <div>
+                <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Period Start *</label>
+                <input
+                  type="date"
+                  value={form.period_start}
+                  onChange={(e) => setForm({ ...form, period_start: e.target.value })}
+                  style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                />
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Period End *</label>
+                <input
+                  type="date"
+                  value={form.period_end}
+                  onChange={(e) => setForm({ ...form, period_end: e.target.value })}
+                  style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                />
+              </div>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+              <div>
+                <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Opening Balance *</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  value={form.opening_balance}
+                  onChange={(e) => setForm({ ...form, opening_balance: e.target.value })}
+                  style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                />
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Closing Balance *</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  value={form.closing_balance}
+                  onChange={(e) => setForm({ ...form, closing_balance: e.target.value })}
+                  style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                />
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Statement Balance *</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  value={form.statement_balance}
+                  onChange={(e) => setForm({ ...form, statement_balance: e.target.value })}
+                  style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                />
+              </div>
+            </div>
+            <div style={{ marginBottom: '16px' }}>
+              <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Status *</label>
+              <select
+                value={form.status}
+                onChange={(e) => setForm({ ...form, status: e.target.value as any })}
+                style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+              >
+                <option value="IN_PROGRESS">In Progress</option>
+                <option value="COMPLETED">Completed</option>
+                <option value="APPROVED">Approved</option>
+              </select>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
+              <button
+                onClick={() => setShowModal(false)}
+                style={{ padding: '8px 16px', border: '1px solid #d1d5db', borderRadius: '6px', fontWeight: 600, cursor: 'pointer', background: 'white' }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSave}
+                style={{ padding: '8px 16px', backgroundColor: '#2563eb', color: 'white', border: 'none', borderRadius: '6px', fontWeight: 600, cursor: 'pointer' }}
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <ConfirmDialog
+        isOpen={deleteConfirm.show}
+        title="Delete Reconciliation"
+        message={`Are you sure you want to delete reconciliation for ${deleteConfirm.account}? This action cannot be undone.`}
+        onConfirm={() => handleDelete(deleteConfirm.id)}
+        onCancel={() => setDeleteConfirm({ show: false, id: 0, account: '' })}
+      />
     </div>
   );
 };
