@@ -42,18 +42,18 @@ class WorkflowEngine:
             so_id = str(uuid.uuid4())
             cursor.execute("""
                 INSERT INTO sales_orders (
-                    id, company_id, customer_id, so_number, so_date, 
-                    delivery_date, status, subtotal, tax_amount, total_amount,
-                    notes, created_by, created_at, updated_at
+                    id, company_id, customer_id, order_number, order_date, 
+                    required_date, status, subtotal, tax_amount, total_amount,
+                    notes, created_by, quote_id, created_at, updated_at
                 )
                 SELECT 
                     %s, company_id, customer_id, 
                     'SO-' || TO_CHAR(NOW(), 'YYYYMMDD') || '-' || LPAD(CAST(FLOOR(RANDOM() * 10000) AS TEXT), 4, '0'),
-                    NOW(), delivery_date, 'CONFIRMED', 
-                    subtotal, tax_amount, total_amount, notes, %s, NOW(), NOW()
+                    NOW(), valid_until, 'draft', 
+                    subtotal, tax_amount, total_amount, notes, %s, %s, NOW(), NOW()
                 FROM quotes WHERE id = %s
-                RETURNING id, so_number
-            """, [so_id, user_id, quote_id])
+                RETURNING id, order_number
+            """, [so_id, user_id, quote_id, quote_id])
             
             so_result = dict(cursor.fetchone())
             
@@ -65,28 +65,31 @@ class WorkflowEngine:
             for line in quote_lines:
                 cursor.execute("""
                     INSERT INTO sales_order_lines (
-                        id, sales_order_id, line_number, product_id, item_code,
-                        description, quantity, unit_price, tax_rate, tax_amount,
-                        line_total, created_at, updated_at
-                    ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, NOW(), NOW())
+                        id, sales_order_id, line_number, product_id,
+                        description, quantity, unit_price, tax_rate,
+                        created_at, updated_at
+                    ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, NOW(), NOW())
                 """, [
                     str(uuid.uuid4()), so_id, line['line_number'], line.get('product_id'),
-                    line['item_code'], line['description'], line['quantity'],
-                    line['unit_price'], line.get('tax_rate', 0), line.get('tax_amount', 0),
-                    line['line_total']
+                    line['description'], line['quantity'],
+                    line['unit_price'], line.get('tax_rate', 0)
                 ])
             
             cursor.execute("""
-                UPDATE quotes SET status = 'CONVERTED', updated_at = NOW()
+                UPDATE quotes 
+                SET status = 'CONVERTED', 
+                    sales_order_id = %s,
+                    converted_to_sales_order = TRUE,
+                    updated_at = NOW()
                 WHERE id = %s
-            """, [quote_id])
+            """, [so_id, quote_id])
             
             conn.commit()
             
             return {
                 'success': True,
                 'sales_order_id': so_result['id'],
-                'sales_order_number': so_result['so_number'],
+                'sales_order_number': so_result['order_number'],
                 'message': 'Quote successfully converted to sales order'
             }
         except Exception as e:
@@ -118,16 +121,16 @@ class WorkflowEngine:
                 INSERT INTO customer_invoices (
                     id, company_id, customer_id, invoice_number, invoice_date,
                     due_date, status, subtotal, tax_amount, total_amount,
-                    amount_paid, notes, created_by, created_at, updated_at
+                    paid_amount, balance_due, sales_order_id, notes, created_by, created_at, updated_at
                 )
                 SELECT 
                     %s, company_id, customer_id,
                     'INV-' || TO_CHAR(NOW(), 'YYYYMMDD') || '-' || LPAD(CAST(FLOOR(RANDOM() * 10000) AS TEXT), 4, '0'),
                     NOW(), NOW() + INTERVAL '30 days', 'DRAFT',
-                    subtotal, tax_amount, total_amount, 0, notes, %s, NOW(), NOW()
+                    subtotal, tax_amount, total_amount, 0, total_amount, %s, notes, %s, NOW(), NOW()
                 FROM sales_orders WHERE id = %s
                 RETURNING id, invoice_number
-            """, [invoice_id, user_id, so_id])
+            """, [invoice_id, so_id, user_id, so_id])
             
             invoice_result = dict(cursor.fetchone())
             
@@ -137,21 +140,26 @@ class WorkflowEngine:
             so_lines = [dict(row) for row in cursor.fetchall()]
             
             for line in so_lines:
+                line_total = float(line['quantity']) * float(line['unit_price'])
+                tax_amount = line_total * float(line.get('tax_rate', 0)) / 100
                 cursor.execute("""
-                    INSERT INTO customer_invoice_lines (
-                        id, invoice_id, line_number, product_id, item_code,
+                    INSERT INTO invoice_line_items (
+                        id, invoice_id, line_number, product_id,
                         description, quantity, unit_price, tax_rate, tax_amount,
                         line_total, created_at, updated_at
-                    ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, NOW(), NOW())
+                    ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, NOW(), NOW())
                 """, [
                     str(uuid.uuid4()), invoice_id, line['line_number'], line.get('product_id'),
-                    line['item_code'], line['description'], line['quantity'],
-                    line['unit_price'], line.get('tax_rate', 0), line.get('tax_amount', 0),
-                    line['line_total']
+                    line['description'], line['quantity'],
+                    line['unit_price'], line.get('tax_rate', 0), tax_amount,
+                    line_total + tax_amount
                 ])
             
             cursor.execute("""
-                UPDATE sales_orders SET status = 'INVOICED', updated_at = NOW()
+                UPDATE sales_orders 
+                SET status = 'INVOICED', 
+                    converted_to_invoice = TRUE,
+                    updated_at = NOW()
                 WHERE id = %s
             """, [so_id])
             
@@ -190,16 +198,16 @@ class WorkflowEngine:
             gr_id = str(uuid.uuid4())
             cursor.execute("""
                 INSERT INTO goods_receipts (
-                    id, company_id, purchase_order_id, gr_number, receipt_date,
+                    id, company_id, purchase_order_id, supplier_id, receipt_number, receipt_date,
                     status, received_by, notes, created_at, updated_at
                 )
-                VALUES (
-                    %s, %s, %s,
+                SELECT 
+                    %s, %s, %s, supplier_id,
                     'GR-' || TO_CHAR(NOW(), 'YYYYMMDD') || '-' || LPAD(CAST(FLOOR(RANDOM() * 10000) AS TEXT), 4, '0'),
-                    NOW(), 'RECEIVED', %s, 'Goods received from PO', NOW(), NOW()
-                )
-                RETURNING id, gr_number
-            """, [gr_id, company_id, po_id, user_id])
+                    NOW(), 'draft', %s, 'Goods received from PO', NOW(), NOW()
+                FROM purchase_orders WHERE id = %s
+                RETURNING id, receipt_number
+            """, [gr_id, company_id, po_id, user_id, po_id])
             
             gr_result = dict(cursor.fetchone())
             
@@ -211,18 +219,20 @@ class WorkflowEngine:
             for line in po_lines:
                 cursor.execute("""
                     INSERT INTO goods_receipt_lines (
-                        id, goods_receipt_id, line_number, product_id, item_code,
-                        description, quantity_ordered, quantity_received, unit_price,
+                        id, goods_receipt_id, purchase_order_line_id, product_id,
+                        description, quantity_received,
                         created_at, updated_at
-                    ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, NOW(), NOW())
+                    ) VALUES (%s, %s, %s, %s, %s, %s, NOW(), NOW())
                 """, [
-                    str(uuid.uuid4()), gr_id, line['line_number'], line.get('product_id'),
-                    line['item_code'], line['description'], line['quantity'], line['quantity'],
-                    line['unit_price']
+                    str(uuid.uuid4()), gr_id, line['id'], line.get('product_id'),
+                    line['description'], line['quantity']
                 ])
             
             cursor.execute("""
-                UPDATE purchase_orders SET status = 'RECEIVED', updated_at = NOW()
+                UPDATE purchase_orders 
+                SET status = 'RECEIVED', 
+                    converted_to_goods_receipt = TRUE,
+                    updated_at = NOW()
                 WHERE id = %s
             """, [po_id])
             
@@ -231,7 +241,7 @@ class WorkflowEngine:
             return {
                 'success': True,
                 'goods_receipt_id': gr_result['id'],
-                'goods_receipt_number': gr_result['gr_number'],
+                'goods_receipt_number': gr_result['receipt_number'],
                 'message': 'Goods receipt successfully created from purchase order'
             }
         except Exception as e:
