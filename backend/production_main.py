@@ -655,6 +655,27 @@ except Exception as e:
     print(f"⚠️ Data Import API not loaded: {e}")
 
 try:
+    from app.api.print_documents import router as print_documents_router
+    app.include_router(print_documents_router)
+    print("✅ Document Printing API loaded (PDF generation for all documents)")
+except Exception as e:
+    print(f"⚠️ Document Printing API not loaded: {e}")
+
+try:
+    from app.api.reports_comprehensive import router as reports_comprehensive_router
+    app.include_router(reports_comprehensive_router)
+    print("✅ Comprehensive Reports API loaded (Financial & Operational Reports)")
+except Exception as e:
+    print(f"⚠️ Comprehensive Reports API not loaded: {e}")
+
+try:
+    from app.api.workflows import router as workflows_router
+    app.include_router(workflows_router)
+    print("✅ Workflows API loaded (Quote-to-Cash, Procure-to-Pay, Approvals)")
+except Exception as e:
+    print(f"⚠️ Workflows API not loaded: {e}")
+
+try:
     from app.api import attachments, comments, activity, approval, batch
     app.include_router(attachments.router, prefix="/api/attachments", tags=["attachments"])
     app.include_router(comments.router, prefix="/api/comments", tags=["comments"])
