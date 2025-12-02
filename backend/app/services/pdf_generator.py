@@ -118,7 +118,7 @@ class PDFGenerator:
                 raise ValueError(f"Invoice {invoice_id} not found")
             
             cursor.execute("""
-                SELECT * FROM customer_invoice_lines
+                SELECT * FROM invoice_line_items
                 WHERE invoice_id = %s
                 ORDER BY line_number
             """, [invoice_id])
@@ -155,10 +155,10 @@ class PDFGenerator:
             elements.append(Paragraph(f"{invoice['address_line1']}, {invoice.get('city', '')}", customer_style))
         elements.append(Spacer(1, 20))
         
-        line_data = [['Item', 'Description', 'Qty', 'Unit Price', 'Tax', 'Amount']]
+        line_data = [['Product', 'Description', 'Qty', 'Unit Price', 'Tax', 'Amount']]
         for line in lines:
             line_data.append([
-                line.get('item_code', ''),
+                str(line.get('product_id', ''))[:8] if line.get('product_id') else '',
                 line.get('description', ''),
                 str(line.get('quantity', 0)),
                 f"{float(line.get('unit_price', 0)):.2f}",
@@ -327,9 +327,9 @@ class PDFGenerator:
                 raise ValueError(f"Purchase Order {po_id} not found")
             
             cursor.execute("""
-                SELECT * FROM purchase_order_lines
-                WHERE purchase_order_id = %s
-                ORDER BY line_number
+                SELECT pol.* FROM purchase_order_lines pol
+                WHERE pol.purchase_order_id = %s
+                ORDER BY pol.line_number
             """, [po_id])
             lines = [dict(row) for row in cursor.fetchall()]
             
@@ -342,7 +342,7 @@ class PDFGenerator:
         info_data = [
             ['PO Number:', po.get('po_number', 'N/A')],
             ['PO Date:', str(po.get('po_date', ''))],
-            ['Delivery Date:', str(po.get('delivery_date', ''))],
+            ['Delivery Date:', str(po.get('expected_delivery_date', ''))],
             ['Status:', po.get('status', 'DRAFT')]
         ]
         

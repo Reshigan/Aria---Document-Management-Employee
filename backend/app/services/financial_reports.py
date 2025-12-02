@@ -29,20 +29,20 @@ class FinancialReportsService:
         try:
             cursor.execute("""
                 SELECT 
-                    coa.account_code,
-                    coa.account_name,
+                    coa.code as account_code,
+                    coa.name as account_name,
                     coa.account_type,
                     coa.account_category,
-                    COALESCE(SUM(jel.debit - jel.credit), 0) as balance
+                    COALESCE(SUM(jel.debit_amount - jel.credit_amount), 0) as balance
                 FROM chart_of_accounts coa
-                LEFT JOIN journal_entry_lines jel ON coa.id = jel.account_id
+                LEFT JOIN journal_entry_lines jel ON coa.code = jel.account_code
                 LEFT JOIN journal_entries je ON jel.journal_entry_id = je.id
                 WHERE coa.company_id = %s
                     AND coa.account_type IN ('ASSET', 'LIABILITY', 'EQUITY')
                     AND (je.posting_date IS NULL OR je.posting_date <= %s)
                     AND (je.status IS NULL OR je.status = 'POSTED')
-                GROUP BY coa.id, coa.account_code, coa.account_name, coa.account_type, coa.account_category
-                ORDER BY coa.account_code
+                GROUP BY coa.id, coa.code, coa.name, coa.account_type, coa.account_category
+                ORDER BY coa.code
             """, [company_id, as_of_date])
             
             accounts = [dict(row) for row in cursor.fetchall()]
@@ -84,20 +84,20 @@ class FinancialReportsService:
         try:
             cursor.execute("""
                 SELECT 
-                    coa.account_code,
-                    coa.account_name,
+                    coa.code as account_code,
+                    coa.name as account_name,
                     coa.account_type,
                     coa.account_category,
-                    COALESCE(SUM(jel.credit - jel.debit), 0) as amount
+                    COALESCE(SUM(jel.credit_amount - jel.debit_amount), 0) as amount
                 FROM chart_of_accounts coa
-                LEFT JOIN journal_entry_lines jel ON coa.id = jel.account_id
+                LEFT JOIN journal_entry_lines jel ON coa.code = jel.account_code
                 LEFT JOIN journal_entries je ON jel.journal_entry_id = je.id
                 WHERE coa.company_id = %s
                     AND coa.account_type IN ('REVENUE', 'EXPENSE', 'COST_OF_SALES')
                     AND je.posting_date BETWEEN %s AND %s
                     AND je.status = 'POSTED'
-                GROUP BY coa.id, coa.account_code, coa.account_name, coa.account_type, coa.account_category
-                ORDER BY coa.account_code
+                GROUP BY coa.id, coa.code, coa.name, coa.account_type, coa.account_category
+                ORDER BY coa.code
             """, [company_id, start_date, end_date])
             
             accounts = [dict(row) for row in cursor.fetchall()]
@@ -146,9 +146,9 @@ class FinancialReportsService:
             cursor.execute("""
                 SELECT 
                     coa.account_category,
-                    COALESCE(SUM(jel.debit - jel.credit), 0) as net_change
+                    COALESCE(SUM(jel.debit_amount - jel.credit_amount), 0) as net_change
                 FROM chart_of_accounts coa
-                LEFT JOIN journal_entry_lines jel ON coa.id = jel.account_id
+                LEFT JOIN journal_entry_lines jel ON coa.code = jel.account_code
                 LEFT JOIN journal_entries je ON jel.journal_entry_id = je.id
                 WHERE coa.company_id = %s
                     AND coa.account_type = 'ASSET'
@@ -162,9 +162,9 @@ class FinancialReportsService:
             
             cursor.execute("""
                 SELECT 
-                    COALESCE(SUM(jel.credit - jel.debit), 0) as operating_cash_flow
+                    COALESCE(SUM(jel.credit_amount - jel.debit_amount), 0) as operating_cash_flow
                 FROM chart_of_accounts coa
-                LEFT JOIN journal_entry_lines jel ON coa.id = jel.account_id
+                LEFT JOIN journal_entry_lines jel ON coa.code = jel.account_code
                 LEFT JOIN journal_entries je ON jel.journal_entry_id = je.id
                 WHERE coa.company_id = %s
                     AND coa.account_type IN ('REVENUE', 'EXPENSE')
@@ -204,21 +204,21 @@ class FinancialReportsService:
         try:
             cursor.execute("""
                 SELECT 
-                    coa.account_code,
-                    coa.account_name,
+                    coa.code as account_code,
+                    coa.name as account_name,
                     coa.account_type,
-                    COALESCE(SUM(jel.debit), 0) as total_debit,
-                    COALESCE(SUM(jel.credit), 0) as total_credit,
-                    COALESCE(SUM(jel.debit - jel.credit), 0) as balance
+                    COALESCE(SUM(jel.debit_amount), 0) as total_debit,
+                    COALESCE(SUM(jel.credit_amount), 0) as total_credit,
+                    COALESCE(SUM(jel.debit_amount - jel.credit_amount), 0) as balance
                 FROM chart_of_accounts coa
-                LEFT JOIN journal_entry_lines jel ON coa.id = jel.account_id
+                LEFT JOIN journal_entry_lines jel ON coa.code = jel.account_code
                 LEFT JOIN journal_entries je ON jel.journal_entry_id = je.id
                 WHERE coa.company_id = %s
                     AND (je.posting_date IS NULL OR je.posting_date <= %s)
                     AND (je.status IS NULL OR je.status = 'POSTED')
-                GROUP BY coa.id, coa.account_code, coa.account_name, coa.account_type
-                HAVING COALESCE(SUM(jel.debit), 0) != 0 OR COALESCE(SUM(jel.credit), 0) != 0
-                ORDER BY coa.account_code
+                GROUP BY coa.id, coa.code, coa.name, coa.account_type
+                HAVING COALESCE(SUM(jel.debit_amount), 0) != 0 OR COALESCE(SUM(jel.credit_amount), 0) != 0
+                ORDER BY coa.code
             """, [company_id, as_of_date])
             
             accounts = [dict(row) for row in cursor.fetchall()]
@@ -251,14 +251,14 @@ class FinancialReportsService:
                     ci.invoice_date,
                     ci.due_date,
                     ci.total_amount,
-                    ci.amount_paid,
-                    (ci.total_amount - ci.amount_paid) as balance,
+                    COALESCE(ci.paid_amount, 0) as amount_paid,
+                    ci.balance_due as balance,
                     (%s::date - ci.due_date) as days_overdue
                 FROM customer_invoices ci
                 JOIN customers c ON ci.customer_id = c.id
                 WHERE ci.company_id = %s
                     AND ci.status IN ('SENT', 'OVERDUE', 'PARTIAL')
-                    AND (ci.total_amount - ci.amount_paid) > 0
+                    AND ci.balance_due > 0
                     AND ci.invoice_date <= %s
                 ORDER BY c.name, ci.due_date
             """, [as_of_date, company_id, as_of_date])
@@ -319,14 +319,14 @@ class FinancialReportsService:
                     si.invoice_date,
                     si.due_date,
                     si.total_amount,
-                    si.amount_paid,
-                    (si.total_amount - si.amount_paid) as balance,
+                    COALESCE(si.paid_amount, 0) as amount_paid,
+                    si.balance_due as balance,
                     (%s::date - si.due_date) as days_overdue
                 FROM supplier_invoices si
                 JOIN suppliers s ON si.supplier_id = s.id
                 WHERE si.company_id = %s
                     AND si.status IN ('RECEIVED', 'APPROVED', 'PARTIAL')
-                    AND (si.total_amount - si.amount_paid) > 0
+                    AND si.balance_due > 0
                     AND si.invoice_date <= %s
                 ORDER BY s.name, si.due_date
             """, [as_of_date, company_id, as_of_date])
