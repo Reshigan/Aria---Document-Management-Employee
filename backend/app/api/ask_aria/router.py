@@ -154,9 +154,15 @@ async def start_session(
 ):
     """Start a new conversation session"""
     try:
+        company_id = current_user.get("company_id")
+        user_id = current_user.get("user_id") or current_user.get("id")
+        
+        if not company_id:
+            raise HTTPException(status_code=400, detail="User must be associated with a company")
+        
         conversation_id = conversation_manager.create_conversation(
-            company_id=current_user["company_id"],
-            user_id=current_user["user_id"],
+            company_id=company_id,
+            user_id=user_id,
             intent=request.intent
         )
         
