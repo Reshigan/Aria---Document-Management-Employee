@@ -4419,13 +4419,14 @@ async def delete_product_inline(product_id: str):
         cursor.close()
         conn.close()
 
-@app.get("/api/erp/general-ledger")
-async def get_general_ledger_inline(skip: int = 0, limit: int = 100):
-    return {"accounts": [], "total": 0}
+# Removed hardcoded inline endpoints - using database-backed routers instead
+# @app.get("/api/erp/general-ledger")
+# async def get_general_ledger_inline(skip: int = 0, limit: int = 100):
+#     return {"accounts": [], "total": 0}
 
-@app.get("/api/erp/procure-to-pay/purchase-orders")
-async def get_purchase_orders_inline(skip: int = 0, limit: int = 100):
-    return {"purchase_orders": [], "total": 0}
+# @app.get("/api/erp/procure-to-pay/purchase-orders")
+# async def get_purchase_orders_inline(skip: int = 0, limit: int = 100):
+#     return {"purchase_orders": [], "total": 0}
 
 # Removed hardcoded inline endpoints - using database-backed routers from order_to_cash_pg.py instead
 # @app.get("/api/erp/order-to-cash/sales-orders")
