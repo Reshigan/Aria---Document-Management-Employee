@@ -31,5 +31,5 @@ class User(Base):
     last_login = Column(DateTime, nullable=True)
     last_login_at = Column(DateTime, nullable=True)
     
-    # Relationships
-    documents = relationship("Document", back_populates="uploaded_by_user", foreign_keys="Document.uploaded_by")
+    # Relationships removed to avoid SQLAlchemy configuration errors
+    # documents = relationship("Document", back_populates="uploaded_by_user", foreign_keys="Document.uploaded_by")
