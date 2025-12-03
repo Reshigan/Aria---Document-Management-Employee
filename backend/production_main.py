@@ -4427,13 +4427,14 @@ async def get_general_ledger_inline(skip: int = 0, limit: int = 100):
 async def get_purchase_orders_inline(skip: int = 0, limit: int = 100):
     return {"purchase_orders": [], "total": 0}
 
-@app.get("/api/erp/order-to-cash/sales-orders")
-async def get_sales_orders_inline(skip: int = 0, limit: int = 100):
-    return {"sales_orders": [], "total": 0}
+# Removed hardcoded inline endpoints - using database-backed routers from order_to_cash_pg.py instead
+# @app.get("/api/erp/order-to-cash/sales-orders")
+# async def get_sales_orders_inline(skip: int = 0, limit: int = 100):
+#     return {"sales_orders": [], "total": 0}
 
-@app.get("/api/erp/order-to-cash/quotes")
-async def get_quotes_inline(skip: int = 0, limit: int = 100):
-    return {"quotes": [], "total": 0}
+# @app.get("/api/erp/order-to-cash/quotes")
+# async def get_quotes_inline(skip: int = 0, limit: int = 100):
+#     return {"quotes": [], "total": 0}
 
 @app.get("/api/mobile/devices")
 async def get_mobile_devices_inline(skip: int = 0, limit: int = 100):
