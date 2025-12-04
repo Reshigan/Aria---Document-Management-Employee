@@ -198,7 +198,7 @@ async def send_message(
             conversation_id=request.conversation_id,
             user_message=request.message,
             company_id=current_user["company_id"],
-            user_id=current_user["user_id"]
+            user_id=current_user.get("user_id") or current_user.get("id")
         )
         
         return SendMessageResponse(
