@@ -71,7 +71,7 @@ class Notification(Base):
     # Relationships
     # Relationship removed to avoid SQLAlchemy configuration errors with User model
     # recipient = relationship("User", foreign_keys=[recipient_id], back_populates="received_notifications")
-    sender = relationship("User", foreign_keys=[sender_id], back_populates="sent_notifications")
+    # sender = relationship("User", foreign_keys=[sender_id], back_populates="sent_notifications")
     document = relationship("Document", back_populates="notifications")
     workflow = relationship("Workflow", back_populates="notifications")
     task = relationship("WorkflowTask", back_populates="notifications")
