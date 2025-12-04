@@ -240,10 +240,18 @@ def login_user(email: str, password: str, ip_address: Optional[str] = None,
     
     # Create tokens
     access_token = create_access_token(
-        data={"sub": str(user['id']), "email": user['email']}
+        data={
+            "sub": str(user['id']), 
+            "email": user['email'],
+            "company_id": str(user['company_id']) if user.get('company_id') else None
+        }
     )
     refresh_token = create_refresh_token(
-        data={"sub": str(user['id']), "email": user['email']}
+        data={
+            "sub": str(user['id']), 
+            "email": user['email'],
+            "company_id": str(user['company_id']) if user.get('company_id') else None
+        }
     )
     
     # Create session in database
@@ -335,7 +343,11 @@ def refresh_access_token(refresh_token: str) -> Dict:
     
     # Create new access token
     new_access_token = create_access_token(
-        data={"sub": str(user['id']), "email": user['email']}
+        data={
+            "sub": str(user['id']), 
+            "email": user['email'],
+            "company_id": str(user['company_id']) if user.get('company_id') else None
+        }
     )
     
     return {
