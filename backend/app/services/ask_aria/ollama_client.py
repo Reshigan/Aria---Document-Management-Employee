@@ -46,9 +46,8 @@ class OllamaClient:
                 "stream": stream,
                 "keep_alive": "1h",
                 "options": {
-                    "num_predict": 80,
-                    "num_ctx": 768,
-                    "num_threads": 2,
+                    "num_predict": 150,  # Increased from 80 for better responses
+                    "num_ctx": 2048,  # Increased from 768 to prevent truncation
                     "temperature": 0.2,
                     "top_k": 40,
                     "top_p": 0.9,
@@ -179,9 +178,8 @@ class OllamaClient:
                 "stream": True,
                 "keep_alive": "1h",
                 "options": {
-                    "num_predict": 80,
-                    "num_ctx": 768,
-                    "num_threads": 2,
+                    "num_predict": 150,  # Increased from 80 for better responses
+                    "num_ctx": 2048,  # Increased from 768 to prevent truncation
                     "temperature": 0.2,
                     "top_k": 40,
                     "top_p": 0.9,
