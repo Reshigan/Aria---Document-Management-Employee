@@ -313,6 +313,84 @@ async def delete_journal_entry(
 
 chart_of_accounts_router = APIRouter(prefix="/api/erp/gl/chart-of-accounts", tags=["General Ledger Chart of Accounts"])
 
+@chart_of_accounts_router.get("")
+async def list_accounts(
+    account_type: Optional[str] = Query(None),
+    is_active: Optional[bool] = Query(None),
+    current_user: Dict = Depends(get_current_user)
+):
+    """List all chart of accounts with optional filters"""
+    conn = get_connection()
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    
+    try:
+        company_id = current_user.get('company_id')
+        if not company_id:
+            raise HTTPException(status_code=400, detail="User must be associated with a company")
+        
+        query = """
+            SELECT id, account_code, account_name, account_type, parent_account_id, 
+                   is_active, created_at, updated_at
+            FROM chart_of_accounts
+            WHERE company_id = %s
+        """
+        params = [company_id]
+        
+        if account_type:
+            query += " AND account_type = %s"
+            params.append(account_type)
+        if is_active is not None:
+            query += " AND is_active = %s"
+            params.append(is_active)
+        
+        query += " ORDER BY account_code"
+        
+        cursor.execute(query, params)
+        accounts = cursor.fetchall()
+        
+        return [dict(account) for account in accounts]
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+    finally:
+        cursor.close()
+        conn.close()
+
+@chart_of_accounts_router.get("/{account_id}")
+async def get_account(
+    account_id: str = Path(...),
+    current_user: Dict = Depends(get_current_user)
+):
+    """Get a specific account by ID"""
+    conn = get_connection()
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    
+    try:
+        company_id = current_user.get('company_id')
+        if not company_id:
+            raise HTTPException(status_code=400, detail="User must be associated with a company")
+        
+        cursor.execute("""
+            SELECT id, account_code, account_name, account_type, parent_account_id,
+                   is_active, created_at, updated_at
+            FROM chart_of_accounts
+            WHERE id = %s AND company_id = %s
+        """, (account_id, company_id))
+        
+        account = cursor.fetchone()
+        if not account:
+            raise HTTPException(status_code=404, detail="Account not found")
+        
+        return dict(account)
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+    finally:
+        cursor.close()
+        conn.close()
+
 @chart_of_accounts_router.post("")
 async def create_account(
     account_data: Dict[str, Any] = Body(...),
