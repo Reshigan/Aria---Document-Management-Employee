@@ -78,7 +78,8 @@ class UserActivityLog(Base):
     timestamp = Column(DateTime, default=func.now())
     
     # Relationships
-    user = relationship("User", back_populates="activity_logs")
+    # Relationship removed to avoid SQLAlchemy configuration errors with User model
+    # user = relationship("User", back_populates="activity_logs")
     
     # Indexes
     __table_args__ = (

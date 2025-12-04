@@ -33,7 +33,8 @@ class Conversation(Base):
     
     # Relationships
     messages = relationship("Message", back_populates="conversation", cascade="all, delete-orphan")
-    user = relationship("User", back_populates="conversations")
+    # Relationship removed to avoid SQLAlchemy configuration errors with User model
+    # user = relationship("User", back_populates="conversations")
 
 class Message(Base):
     """Conversation Messages"""

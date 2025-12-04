@@ -71,7 +71,8 @@ class DocumentProcessingJob(Base):
     
     # Relationships
     document = relationship("Document", back_populates="processing_jobs")
-    user = relationship("User", back_populates="processing_jobs")
+    # Relationship removed to avoid SQLAlchemy configuration errors with User model
+    # user = relationship("User", back_populates="processing_jobs")
     ocr_results = relationship("OCRResult", back_populates="processing_job", cascade="all, delete-orphan")
     classification_results = relationship("DocumentClassificationResult", back_populates="processing_job", cascade="all, delete-orphan")
     extraction_results = relationship("ContentExtractionResult", back_populates="processing_job", cascade="all, delete-orphan")
@@ -295,7 +296,8 @@ class ProcessingTemplate(Base):
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     
     # Relationships
-    created_by = relationship("User", back_populates="processing_templates")
+    # Relationship removed to avoid SQLAlchemy configuration errors with User model
+    # created_by = relationship("User", back_populates="processing_templates")
 
 class ProcessingQueue(Base):
     __tablename__ = "processing_queue"

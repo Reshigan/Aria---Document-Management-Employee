@@ -65,7 +65,8 @@ class Integration(Base):
     updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
     
     # Relationships
-    creator = relationship("User", back_populates="created_integrations")
+    # Relationship removed to avoid SQLAlchemy configuration errors with User model
+    # creator = relationship("User", back_populates="created_integrations")
     sync_logs = relationship("IntegrationSyncLog", back_populates="integration", cascade="all, delete-orphan")
     webhooks = relationship("WebhookEndpoint", back_populates="integration", cascade="all, delete-orphan")
 
