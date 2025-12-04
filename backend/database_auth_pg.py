@@ -81,6 +81,7 @@ def get_user_by_email(email: str) -> Optional[Dict]:
         
         if row:
             # Map PostgreSQL columns to expected format
+            company_id_str = str(row['company_id']) if row['company_id'] else None
             return {
                 'id': str(row['id']),
                 'email': row['email'],
@@ -88,7 +89,8 @@ def get_user_by_email(email: str) -> Optional[Dict]:
                 'full_name': f"{row['first_name']} {row['last_name']}".strip(),
                 'role': row['role'] or 'user',
                 'is_active': row['is_active'],
-                'organization_id': str(row['company_id']) if row['company_id'] else None,
+                'organization_id': company_id_str,
+                'company_id': company_id_str,
                 'last_login': row['last_login_at']
             }
         return None
@@ -114,6 +116,7 @@ def get_user_by_id(user_id: Any) -> Optional[Dict]:
         
         if row:
             # Map PostgreSQL columns to expected format
+            company_id_str = str(row['company_id']) if row['company_id'] else None
             return {
                 'id': str(row['id']),
                 'email': row['email'],
@@ -121,7 +124,8 @@ def get_user_by_id(user_id: Any) -> Optional[Dict]:
                 'full_name': f"{row['first_name']} {row['last_name']}".strip(),
                 'role': row['role'] or 'user',
                 'is_active': row['is_active'],
-                'organization_id': str(row['company_id']) if row['company_id'] else None,
+                'organization_id': company_id_str,
+                'company_id': company_id_str,
                 'last_login': row['last_login_at']
             }
         return None
