@@ -6,10 +6,19 @@ from uuid import UUID
 from decimal import Decimal
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
+import logging
+import os
 
 from app.core.deps import get_db, get_current_company_id
 from app.models.financial import CustomerInvoice, InvoiceLineItem, Customer
 from app.schemas.invoice import InvoiceCreate, InvoiceUpdate, InvoiceResponse, InvoiceLineItemResponse
+from services.gl_posting_service import GLPostingService
+
+logger = logging.getLogger(__name__)
+
+# Initialize GL posting service
+DATABASE_URL = os.getenv("DATABASE_URL_PG") or os.getenv("DATABASE_URL")
+gl_posting_service = GLPostingService(DATABASE_URL)
 
 
 router = APIRouter(prefix="/invoices", tags=["Invoices"])
@@ -112,6 +121,27 @@ async def create_invoice(
     
     db.commit()
     db.refresh(invoice)
+    
+    # Post to GL (AR, Revenue, VAT Output)
+    try:
+        journal_entry_id = await gl_posting_service.post_invoice(
+            company_id=str(company_id),
+            invoice_id=str(invoice.id),
+            invoice_number=invoice_number,
+            invoice_date=invoice.invoice_date,
+            customer_name=customer.customer_name if hasattr(customer, 'customer_name') else customer.name if hasattr(customer, 'name') else "Unknown",
+            subtotal=subtotal,
+            vat_amount=total_tax,
+            total_amount=invoice.total_amount,
+            user_id="system"
+        )
+        if journal_entry_id:
+            logger.info(f"✅ GL posting created for invoice {invoice_number}: JE-{journal_entry_id}")
+        else:
+            logger.warning(f"⚠️ GL posting skipped for invoice {invoice_number}")
+    except Exception as e:
+        logger.error(f"❌ Failed to post invoice {invoice_number} to GL: {e}")
+        # Don't fail the invoice creation if GL posting fails
     
     # Load line items
     line_items = db.query(InvoiceLineItem).filter(
