@@ -329,8 +329,8 @@ async def list_accounts(
             raise HTTPException(status_code=400, detail="User must be associated with a company")
         
         query = """
-            SELECT id, account_code, account_name, account_type, parent_account_id, 
-                   is_active, created_at, updated_at
+            SELECT id, code as account_code, name as account_name, account_type, 
+                   account_category, parent_account_id, is_active, created_at, updated_at
             FROM chart_of_accounts
             WHERE company_id = %s
         """
@@ -372,8 +372,8 @@ async def get_account(
             raise HTTPException(status_code=400, detail="User must be associated with a company")
         
         cursor.execute("""
-            SELECT id, account_code, account_name, account_type, parent_account_id,
-                   is_active, created_at, updated_at
+            SELECT id, code as account_code, name as account_name, account_type,
+                   account_category, parent_account_id, is_active, created_at, updated_at
             FROM chart_of_accounts
             WHERE id = %s AND company_id = %s
         """, (account_id, company_id))
@@ -407,9 +407,9 @@ async def create_account(
         
         account_id = str(uuid.uuid4())
         cursor.execute("""
-            INSERT INTO chart_of_accounts (id, company_id, account_code, account_name, account_type, parent_account_id, is_active, created_at, updated_at)
+            INSERT INTO chart_of_accounts (id, company_id, code, name, account_type, parent_account_id, is_active, created_at, updated_at)
             VALUES (%s, %s, %s, %s, %s, %s, %s, NOW(), NOW())
-            RETURNING id, account_code, account_name
+            RETURNING id, code as account_code, name as account_name
         """, (account_id, company_id, account_data.get('account_code'), account_data.get('account_name'),
               account_data.get('account_type'), account_data.get('parent_account_id'), 
               account_data.get('is_active', True)))
@@ -443,7 +443,7 @@ async def update_account(
         
         cursor.execute("""
             UPDATE chart_of_accounts
-            SET account_name = %s, account_type = %s, is_active = %s, updated_at = NOW()
+            SET name = %s, account_type = %s, is_active = %s, updated_at = NOW()
             WHERE id = %s AND company_id = %s
         """, (account_data.get('account_name'), account_data.get('account_type'),
               account_data.get('is_active', True), account_id, company_id))
