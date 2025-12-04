@@ -13,10 +13,10 @@ logger = logging.getLogger(__name__)
 class OllamaClient:
     """Client for interacting with Ollama local LLM"""
     
-    def __init__(self, base_url: str = "http://localhost:11434", model: str = "qwen2.5:1.5b-instruct"):
+    def __init__(self, base_url: str = "http://localhost:11434", model: str = "tinyllama:latest"):
         self.base_url = base_url
-        self.model = model
-        self.timeout = 60  # 60 second timeout for LLM inference
+        self.model = model  # Using tinyllama for faster inference (was qwen2.5:1.5b-instruct)
+        self.timeout = 120  # 120 second timeout for LLM inference (increased from 60)
         self._warmup()
     
     def chat(
@@ -46,9 +46,8 @@ class OllamaClient:
                 "stream": stream,
                 "keep_alive": "1h",
                 "options": {
-                    "num_predict": 80,
-                    "num_ctx": 768,
-                    "num_threads": 2,
+                    "num_predict": 150,  # Increased from 80 for better responses
+                    "num_ctx": 2048,  # Increased from 768 to prevent truncation
                     "temperature": 0.2,
                     "top_k": 40,
                     "top_p": 0.9,
@@ -94,9 +93,8 @@ class OllamaClient:
                 "stream": False,
                 "keep_alive": "1h",
                 "options": {
-                    "num_predict": 80,
-                    "num_ctx": 768,
-                    "num_threads": 2,
+                    "num_predict": 150,  # Increased from 80 for better responses
+                    "num_ctx": 2048,  # Increased from 768 to prevent truncation
                     "temperature": 0.2,
                     "top_k": 40,
                     "top_p": 0.9,
@@ -180,9 +178,8 @@ class OllamaClient:
                 "stream": True,
                 "keep_alive": "1h",
                 "options": {
-                    "num_predict": 80,
-                    "num_ctx": 768,
-                    "num_threads": 2,
+                    "num_predict": 150,  # Increased from 80 for better responses
+                    "num_ctx": 2048,  # Increased from 768 to prevent truncation
                     "temperature": 0.2,
                     "top_k": 40,
                     "top_p": 0.9,

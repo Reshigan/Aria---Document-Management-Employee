@@ -62,7 +62,7 @@ class AuthService:
             )
 
 def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(database_get_db)):
-    """Get current authenticated user"""
+    """Get current authenticated user - returns dict for API compatibility"""
     from models.user import User
     
     credentials_exception = HTTPException(
@@ -73,7 +73,7 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
     
     try:
         payload = AuthService.decode_token(token)
-        user_id: int = payload.get("user_id")
+        user_id = payload.get("user_id") or payload.get("sub")
         if user_id is None:
             raise credentials_exception
     except JWTError:
@@ -83,4 +83,12 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
     if user is None:
         raise credentials_exception
     
-    return user
+    # Return dict for API compatibility
+    return {
+        "id": str(user.id),
+        "email": user.email,
+        "company_id": str(user.company_id) if user.company_id else None,
+        "role": user.role,
+        "full_name": user.full_name or f"{user.first_name or ''} {user.last_name or ''}".strip(),
+        "is_active": user.is_active
+    }

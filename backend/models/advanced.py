@@ -54,7 +54,8 @@ class FolderPermission(BaseModel):
     
     # Relationships
     folder = relationship("Folder", back_populates="detailed_permissions")
-    user = relationship("User", foreign_keys=[user_id], back_populates="folder_permissions")
+    # Relationship removed to avoid SQLAlchemy configuration errors with User model
+    # user = relationship("User", foreign_keys=[user_id], back_populates="folder_permissions")
     granted_by = Column(Integer, ForeignKey('users.id'), nullable=False)
     grantor = relationship("User", foreign_keys=[granted_by])
     

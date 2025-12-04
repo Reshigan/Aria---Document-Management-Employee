@@ -10,10 +10,15 @@ import psycopg2
 import psycopg2.extras
 import os
 from datetime import datetime, timedelta
+from decimal import Decimal
 import uuid
+import logging
 
 from core.auth import get_current_user
 from core.rbac import require_permission, Permission
+from services.gl_posting_service_sync import GLPostingServiceSync
+
+logger = logging.getLogger(__name__)
 
 DATABASE_URL = os.getenv("DATABASE_URL_PG") or os.getenv("DATABASE_URL")
 if not DATABASE_URL:
@@ -22,6 +27,9 @@ if not DATABASE_URL:
 def get_connection():
     """Get PostgreSQL database connection"""
     return psycopg2.connect(DATABASE_URL)
+
+# Initialize GL posting service
+gl_posting_service = GLPostingServiceSync()
 
 # ========================================
 # ========================================
@@ -702,6 +710,28 @@ async def create_delivery(
         """, (delivery_id, company_id, delivery_number, sales_order_id, datetime.now().date(), 'draft', delivery_data.get('notes'), user_email))
         
         result = cursor.fetchone()
+        
+        # Get delivery lines for GL posting (if provided)
+        lines = delivery_data.get('lines', [])
+        if lines:
+            try:
+                # Post to GL (COGS and Inventory reduction)
+                journal_entry_id = gl_posting_service.post_delivery(
+                    company_id=company_id,
+                    delivery_id=delivery_id,
+                    delivery_number=delivery_number,
+                    delivery_date=datetime.now().date(),
+                    lines=lines,
+                    user_id=user_email
+                )
+                if journal_entry_id:
+                    logger.info(f"✅ GL posting created for delivery {delivery_number}: JE-{journal_entry_id}")
+                else:
+                    logger.warning(f"⚠️ GL posting skipped for delivery {delivery_number} (zero cost or error)")
+            except Exception as e:
+                logger.error(f"❌ Failed to post delivery {delivery_number} to GL: {e}")
+                # Don't fail the delivery creation if GL posting fails
+        
         conn.commit()
         return {'id': str(result['id']), 'delivery_number': result['delivery_number']}
     except HTTPException:

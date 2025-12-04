@@ -8,6 +8,8 @@ from sqlalchemy import and_, or_, func
 from typing import List, Optional
 from datetime import datetime, date
 from decimal import Decimal
+import logging
+import os
 
 from core.database import get_db
 from core.auth import get_current_user
@@ -19,6 +21,13 @@ from models.accounting import (
 )
 from models.user import User
 from pydantic import BaseModel, Field
+from services.gl_posting_service import GLPostingService
+
+logger = logging.getLogger(__name__)
+
+# Initialize GL posting service
+DATABASE_URL = os.getenv("DATABASE_URL_PG") or os.getenv("DATABASE_URL")
+gl_posting_service = GLPostingService(DATABASE_URL)
 
 router = APIRouter(prefix="/api/financial", tags=["Financial"])
 
@@ -111,7 +120,7 @@ class BankReconciliationCreate(BaseModel):
 # ===================== INVOICE ENDPOINTS =====================
 
 @router.post("/invoices", response_model=InvoiceResponse, status_code=status.HTTP_201_CREATED)
-def create_invoice(
+async def create_invoice(
     invoice: InvoiceCreate,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
@@ -186,6 +195,31 @@ def create_invoice(
     
     db.commit()
     db.refresh(db_invoice)
+    
+    # Post to GL (AR, Revenue, VAT Output)
+    try:
+        # Get customer name for GL posting
+        customer = db.query(Invoice).filter(Invoice.id == db_invoice.id).first()
+        customer_name = f"Customer {invoice.customer_id}"  # Fallback if customer name not available
+        
+        journal_entry_id = await gl_posting_service.post_invoice(
+            company_id=str(current_user.tenant_id),
+            invoice_id=str(db_invoice.id),
+            invoice_number=invoice_number,
+            invoice_date=invoice.invoice_date,
+            customer_name=customer_name,
+            subtotal=subtotal,
+            vat_amount=vat_amount,
+            total_amount=total_amount,
+            user_id=str(current_user.id)
+        )
+        if journal_entry_id:
+            logger.info(f"✅ GL posting created for invoice {invoice_number}: JE-{journal_entry_id}")
+        else:
+            logger.warning(f"⚠️ GL posting skipped for invoice {invoice_number}")
+    except Exception as e:
+        logger.error(f"❌ Failed to post invoice {invoice_number} to GL: {e}")
+        # Don't fail the invoice creation if GL posting fails
     
     return db_invoice
 

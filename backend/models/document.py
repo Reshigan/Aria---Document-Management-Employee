@@ -110,7 +110,8 @@ class Document(BaseModel):
     
     # Relationships
     uploaded_by = Column(Integer, ForeignKey('users.id'), nullable=False)
-    uploaded_by_user = relationship("User", foreign_keys=[uploaded_by], back_populates="documents")
+    # Relationship removed to avoid SQLAlchemy configuration errors with User model
+    # uploaded_by_user = relationship("User", foreign_keys=[uploaded_by], back_populates="documents")
     validated_by_user = relationship("User", foreign_keys=[validated_by])
     approved_by_user = relationship("User", foreign_keys=[approved_by])
     posted_by_user = relationship("User", foreign_keys=[posted_to_sap_by])

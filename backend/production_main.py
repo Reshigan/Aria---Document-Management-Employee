@@ -655,6 +655,27 @@ except Exception as e:
     print(f"⚠️ Data Import API not loaded: {e}")
 
 try:
+    from app.api.print_documents import router as print_documents_router
+    app.include_router(print_documents_router)
+    print("✅ Document Printing API loaded (PDF generation for all documents)")
+except Exception as e:
+    print(f"⚠️ Document Printing API not loaded: {e}")
+
+try:
+    from app.api.reports_comprehensive import router as reports_comprehensive_router
+    app.include_router(reports_comprehensive_router)
+    print("✅ Comprehensive Reports API loaded (Financial & Operational Reports)")
+except Exception as e:
+    print(f"⚠️ Comprehensive Reports API not loaded: {e}")
+
+try:
+    from app.api.workflows import router as workflows_router
+    app.include_router(workflows_router)
+    print("✅ Workflows API loaded (Quote-to-Cash, Procure-to-Pay, Approvals)")
+except Exception as e:
+    print(f"⚠️ Workflows API not loaded: {e}")
+
+try:
     from app.api import attachments, comments, activity, approval, batch
     app.include_router(attachments.router, prefix="/api/attachments", tags=["attachments"])
     app.include_router(comments.router, prefix="/api/comments", tags=["comments"])
@@ -4398,21 +4419,23 @@ async def delete_product_inline(product_id: str):
         cursor.close()
         conn.close()
 
-@app.get("/api/erp/general-ledger")
-async def get_general_ledger_inline(skip: int = 0, limit: int = 100):
-    return {"accounts": [], "total": 0}
+# Removed hardcoded inline endpoints - using database-backed routers instead
+# @app.get("/api/erp/general-ledger")
+# async def get_general_ledger_inline(skip: int = 0, limit: int = 100):
+#     return {"accounts": [], "total": 0}
 
-@app.get("/api/erp/procure-to-pay/purchase-orders")
-async def get_purchase_orders_inline(skip: int = 0, limit: int = 100):
-    return {"purchase_orders": [], "total": 0}
+# @app.get("/api/erp/procure-to-pay/purchase-orders")
+# async def get_purchase_orders_inline(skip: int = 0, limit: int = 100):
+#     return {"purchase_orders": [], "total": 0}
 
-@app.get("/api/erp/order-to-cash/sales-orders")
-async def get_sales_orders_inline(skip: int = 0, limit: int = 100):
-    return {"sales_orders": [], "total": 0}
+# Removed hardcoded inline endpoints - using database-backed routers from order_to_cash_pg.py instead
+# @app.get("/api/erp/order-to-cash/sales-orders")
+# async def get_sales_orders_inline(skip: int = 0, limit: int = 100):
+#     return {"sales_orders": [], "total": 0}
 
-@app.get("/api/erp/order-to-cash/quotes")
-async def get_quotes_inline(skip: int = 0, limit: int = 100):
-    return {"quotes": [], "total": 0}
+# @app.get("/api/erp/order-to-cash/quotes")
+# async def get_quotes_inline(skip: int = 0, limit: int = 100):
+#     return {"quotes": [], "total": 0}
 
 @app.get("/api/mobile/devices")
 async def get_mobile_devices_inline(skip: int = 0, limit: int = 100):

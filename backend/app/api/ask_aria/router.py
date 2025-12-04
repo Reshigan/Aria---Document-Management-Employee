@@ -154,9 +154,15 @@ async def start_session(
 ):
     """Start a new conversation session"""
     try:
+        company_id = current_user.get("company_id")
+        user_id = current_user.get("user_id") or current_user.get("id")
+        
+        if not company_id:
+            raise HTTPException(status_code=400, detail="User must be associated with a company")
+        
         conversation_id = conversation_manager.create_conversation(
-            company_id=current_user["company_id"],
-            user_id=current_user["user_id"],
+            company_id=company_id,
+            user_id=user_id,
             intent=request.intent
         )
         
@@ -167,8 +173,11 @@ async def start_session(
         )
         
     except Exception as e:
-        logger.error(f"Failed to start session: {str(e)}")
-        raise HTTPException(status_code=500, detail=str(e))
+        import traceback
+        error_detail = f"{type(e).__name__}: {str(e)}"
+        logger.error(f"Failed to start session: {error_detail}")
+        logger.error(f"Traceback: {traceback.format_exc()}")
+        raise HTTPException(status_code=500, detail=error_detail)
 
 
 @router.post("/message", response_model=SendMessageResponse)
@@ -189,7 +198,7 @@ async def send_message(
             conversation_id=request.conversation_id,
             user_message=request.message,
             company_id=current_user["company_id"],
-            user_id=current_user["user_id"]
+            user_id=current_user.get("user_id") or current_user.get("id")
         )
         
         return SendMessageResponse(

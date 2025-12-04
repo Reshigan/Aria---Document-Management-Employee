@@ -11,9 +11,14 @@ import psycopg2.extras
 import os
 from datetime import datetime
 import uuid
+import logging
+from decimal import Decimal
 
 from core.auth import get_current_user
 from core.rbac import require_permission, Permission
+from services.gl_posting_service_sync import GLPostingServiceSync
+
+logger = logging.getLogger(__name__)
 
 DATABASE_URL = os.getenv("DATABASE_URL_PG") or os.getenv("DATABASE_URL")
 if not DATABASE_URL:
@@ -22,6 +27,9 @@ if not DATABASE_URL:
 def get_connection():
     """Get PostgreSQL database connection"""
     return psycopg2.connect(DATABASE_URL)
+
+# Initialize GL posting service
+gl_posting_service = GLPostingServiceSync(DATABASE_URL)
 
 # ========================================
 # ========================================
@@ -737,6 +745,122 @@ async def get_ap_invoice(
     except HTTPException:
         raise
     except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+    finally:
+        cursor.close()
+        conn.close()
+
+@ap_invoices_router.post("")
+async def create_ap_invoice(
+    invoice_data: Dict[str, Any] = Body(...),
+    current_user: Dict = Depends(get_current_user)
+):
+    """Create a new AP invoice (supplier invoice)"""
+    conn = get_connection()
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    
+    try:
+        company_id = current_user.get('company_id')
+        user_email = current_user.get('email', 'system')
+        if not company_id:
+            raise HTTPException(status_code=400, detail="User must be associated with a company")
+        
+        supplier_id = invoice_data.get('supplier_id')
+        if not supplier_id:
+            raise HTTPException(status_code=400, detail="supplier_id is required")
+        
+        # Generate invoice number
+        cursor.execute("SELECT COALESCE(MAX(CAST(SUBSTRING(invoice_number FROM 'BILL-([0-9]+)') AS INTEGER)), 0) + 1 as next_num FROM supplier_invoices WHERE company_id = %s", (company_id,))
+        next_num = cursor.fetchone()['next_num']
+        invoice_number = f"BILL-{next_num:05d}"
+        
+        # Calculate totals
+        lines = invoice_data.get('lines', [])
+        subtotal = Decimal('0.00')
+        tax_amount = Decimal('0.00')
+        
+        for line in lines:
+            quantity = Decimal(str(line.get('quantity', 0)))
+            unit_price = Decimal(str(line.get('unit_price', 0)))
+            tax_rate = Decimal(str(line.get('tax_rate', 0)))
+            line_subtotal = quantity * unit_price
+            subtotal += line_subtotal
+            tax_amount += line_subtotal * tax_rate
+        
+        total_amount = subtotal + tax_amount
+        
+        # Get supplier name for GL posting
+        cursor.execute("SELECT supplier_name FROM suppliers WHERE id = %s", (supplier_id,))
+        supplier_result = cursor.fetchone()
+        supplier_name = supplier_result['supplier_name'] if supplier_result else f"Supplier {supplier_id}"
+        
+        # Create invoice
+        invoice_id = str(uuid.uuid4())
+        invoice_date = invoice_data.get('invoice_date', datetime.now().date())
+        due_date = invoice_data.get('due_date')
+        
+        cursor.execute("""
+            INSERT INTO supplier_invoices (
+                id, company_id, invoice_number, supplier_id, invoice_date, due_date,
+                subtotal, tax_amount, total_amount, amount_paid, amount_outstanding,
+                status, payment_status, purchase_order_id, goods_receipt_id, notes,
+                created_by, created_at, updated_at
+            ) VALUES (
+                %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, NOW(), NOW()
+            ) RETURNING id, invoice_number
+        """, (
+            invoice_id, company_id, invoice_number, supplier_id, invoice_date, due_date,
+            float(subtotal), float(tax_amount), float(total_amount), 0.0, float(total_amount),
+            'draft', 'unpaid', invoice_data.get('purchase_order_id'), invoice_data.get('goods_receipt_id'),
+            invoice_data.get('notes'), user_email
+        ))
+        
+        result = cursor.fetchone()
+        
+        # Create invoice line items
+        for idx, line in enumerate(lines, start=1):
+            line_id = str(uuid.uuid4())
+            cursor.execute("""
+                INSERT INTO supplier_invoice_line_items (
+                    id, invoice_id, line_number, product_id, description,
+                    quantity, unit_price, discount_percent, tax_rate, total_amount,
+                    created_at
+                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, NOW())
+            """, (
+                line_id, invoice_id, idx, line.get('product_id'),
+                line.get('description'), line.get('quantity'), line.get('unit_price'),
+                line.get('discount_percent', 0), line.get('tax_rate', 0),
+                float(Decimal(str(line.get('quantity', 0))) * Decimal(str(line.get('unit_price', 0))))
+            ))
+        
+        conn.commit()
+        
+        # Post to GL (GRNI, VAT Input, AP)
+        try:
+            journal_entry_id = gl_posting_service.post_supplier_bill(
+                company_id=company_id,
+                bill_id=invoice_id,
+                bill_number=invoice_number,
+                bill_date=invoice_date,
+                supplier_name=supplier_name,
+                subtotal=subtotal,
+                vat_amount=tax_amount,
+                total_amount=total_amount,
+                user_id=user_email
+            )
+            if journal_entry_id:
+                logger.info(f"✅ GL posting created for supplier invoice {invoice_number}: JE-{journal_entry_id}")
+            else:
+                logger.warning(f"⚠️ GL posting skipped for supplier invoice {invoice_number}")
+        except Exception as e:
+            logger.error(f"❌ Failed to post supplier invoice {invoice_number} to GL: {e}")
+            # Don't fail the invoice creation if GL posting fails
+        
+        return {'id': str(result['id']), 'invoice_number': result['invoice_number']}
+    except HTTPException:
+        raise
+    except Exception as e:
+        conn.rollback()
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
     finally:
         cursor.close()

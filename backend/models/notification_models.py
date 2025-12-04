@@ -69,8 +69,9 @@ class Notification(Base):
     expires_at = Column(DateTime, nullable=True)  # For expiring notifications
     
     # Relationships
-    recipient = relationship("User", foreign_keys=[recipient_id], back_populates="received_notifications")
-    sender = relationship("User", foreign_keys=[sender_id], back_populates="sent_notifications")
+    # Relationship removed to avoid SQLAlchemy configuration errors with User model
+    # recipient = relationship("User", foreign_keys=[recipient_id], back_populates="received_notifications")
+    # sender = relationship("User", foreign_keys=[sender_id], back_populates="sent_notifications")
     document = relationship("Document", back_populates="notifications")
     workflow = relationship("Workflow", back_populates="notifications")
     task = relationship("WorkflowTask", back_populates="notifications")
@@ -162,7 +163,8 @@ class NotificationPreference(Base):
     updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
     
     # Relationships
-    user = relationship("User", back_populates="notification_preferences")
+    # Relationship removed to avoid SQLAlchemy configuration errors with User model
+    # user = relationship("User", back_populates="notification_preferences")
 
 
 class NotificationSubscription(Base):
@@ -185,6 +187,7 @@ class NotificationSubscription(Base):
     updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
     
     # Relationships
-    user = relationship("User", back_populates="notification_subscriptions")
+    # Relationship removed to avoid SQLAlchemy configuration errors with User model
+    # user = relationship("User", back_populates="notification_subscriptions")
     document = relationship("Document", back_populates="notification_subscriptions")
     workflow = relationship("Workflow", back_populates="notification_subscriptions")
