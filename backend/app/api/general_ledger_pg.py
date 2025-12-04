@@ -72,7 +72,7 @@ async def list_journal_entries(
             raise HTTPException(status_code=400, detail="User must be associated with a company")
         
         query = """
-            SELECT je.id, je.entry_number, je.entry_date, je.description, je.status,
+            SELECT je.id, je.entry_date, je.description, je.status,
                    je.reference, je.created_at, je.updated_at, je.created_by,
                    COALESCE(SUM(CASE WHEN jel.debit_amount > 0 THEN jel.debit_amount ELSE 0 END), 0) as total_debit,
                    COALESCE(SUM(CASE WHEN jel.credit_amount > 0 THEN jel.credit_amount ELSE 0 END), 0) as total_credit
@@ -101,7 +101,6 @@ async def list_journal_entries(
         for entry in entries:
             result.append({
                 'id': str(entry['id']),
-                'entry_number': entry['entry_number'],
                 'entry_date': entry['entry_date'].isoformat() if entry['entry_date'] else None,
                 'description': entry['description'],
                 'status': entry['status'],
