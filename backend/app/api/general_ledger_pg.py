@@ -343,7 +343,7 @@ async def list_accounts(
             query += " AND is_active = %s"
             params.append(is_active)
         
-        query += " ORDER BY account_code"
+        query += " ORDER BY code"
         
         cursor.execute(query, params)
         accounts = cursor.fetchall()
