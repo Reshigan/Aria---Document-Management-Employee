@@ -106,18 +106,21 @@ Always confirm with the user before finalizing any document."""
                     try:
                         tool_result = self._execute_tool(tool_name, tool_args)
                         
+                        # Truncate tool results to prevent huge prompts
+                        tool_result_for_llm = self._summarize_tool_result(tool_result)
+                        
                         self.conversation_manager.add_message(
                             conversation_id,
                             role="tool",
-                            content=json.dumps(tool_result),
+                            content=json.dumps(tool_result_for_llm),
                             tool_name=tool_name,
                             tool_args=tool_args,
-                            tool_result=tool_result
+                            tool_result=tool_result_for_llm
                         )
                         
                         messages.append({
                             "role": "tool",
-                            "content": json.dumps(tool_result)
+                            "content": json.dumps(tool_result_for_llm)
                         })
                         
                     except Exception as e:
@@ -136,12 +139,13 @@ Always confirm with the user before finalizing any document."""
             return f"I encountered an error: {str(e)}. Please try again."
     
     def _build_message_history(self, conversation_id: str) -> List[Dict[str, str]]:
-        """Build message history for LLM context (truncated to last 8 turns)"""
+        """Build message history for LLM context (truncated to last 6 turns to reduce prompt size)"""
         messages = [{"role": "system", "content": self.system_prompt}]
         
         db_messages = self.conversation_manager.get_messages(conversation_id)
         
-        recent_messages = db_messages[-16:] if len(db_messages) > 16 else db_messages
+        # Reduced from 16 to 6 messages to prevent prompt truncation and timeouts
+        recent_messages = db_messages[-6:] if len(db_messages) > 6 else db_messages
         
         for msg in recent_messages:
             if msg['role'] in ['user', 'assistant']:
@@ -156,6 +160,31 @@ Always confirm with the user before finalizing any document."""
                 })
         
         return messages
+    
+    def _summarize_tool_result(self, tool_result: Any) -> Any:
+        """
+        Truncate tool results to prevent huge prompts that cause Ollama timeouts.
+        Keep only first 8 items from lists to reduce token count.
+        """
+        if isinstance(tool_result, list):
+            if len(tool_result) > 8:
+                logger.info(f"Truncating tool result list from {len(tool_result)} to 8 items")
+                return tool_result[:8]
+            return tool_result
+        
+        if isinstance(tool_result, dict):
+            # If dict has a 'data' key with a list, truncate that list
+            if "data" in tool_result and isinstance(tool_result["data"], list):
+                if len(tool_result["data"]) > 8:
+                    logger.info(f"Truncating tool result data list from {len(tool_result['data'])} to 8 items")
+                    result_copy = dict(tool_result)
+                    result_copy["data"] = tool_result["data"][:8]
+                    result_copy["truncated"] = True
+                    result_copy["total_count"] = len(tool_result["data"])
+                    return result_copy
+            return tool_result
+        
+        return tool_result
     
     def _execute_tool(self, tool_name: str, tool_args: Dict[str, Any]) -> Any:
         """Execute a tool by name"""
