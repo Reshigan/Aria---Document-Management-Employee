@@ -173,8 +173,11 @@ async def start_session(
         )
         
     except Exception as e:
-        logger.error(f"Failed to start session: {str(e)}")
-        raise HTTPException(status_code=500, detail=str(e))
+        import traceback
+        error_detail = f"{type(e).__name__}: {str(e)}"
+        logger.error(f"Failed to start session: {error_detail}")
+        logger.error(f"Traceback: {traceback.format_exc()}")
+        raise HTTPException(status_code=500, detail=error_detail)
 
 
 @router.post("/message", response_model=SendMessageResponse)
