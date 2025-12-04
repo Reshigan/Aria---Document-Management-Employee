@@ -13,7 +13,7 @@ import os
 from core.database import get_db as database_get_db
 
 # JWT Configuration
-SECRET_KEY = os.getenv("SECRET_KEY", "CHANGE_THIS_IN_PRODUCTION_12345678901234567890")
+SECRET_KEY = os.getenv("JWT_SECRET_KEY") or os.getenv("SECRET_KEY", "CHANGE_THIS_IN_PRODUCTION_12345678901234567890")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7  # 7 days
 
