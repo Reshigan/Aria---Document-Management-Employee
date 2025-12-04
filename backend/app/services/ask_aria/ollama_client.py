@@ -13,9 +13,9 @@ logger = logging.getLogger(__name__)
 class OllamaClient:
     """Client for interacting with Ollama local LLM"""
     
-    def __init__(self, base_url: str = "http://localhost:11434", model: str = "qwen2.5:1.5b-instruct"):
+    def __init__(self, base_url: str = "http://localhost:11434", model: str = "tinyllama:latest"):
         self.base_url = base_url
-        self.model = model
+        self.model = model  # Using tinyllama for faster inference (was qwen2.5:1.5b-instruct)
         self.timeout = 120  # 120 second timeout for LLM inference (increased from 60)
         self._warmup()
     
