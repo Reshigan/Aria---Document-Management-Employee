@@ -934,3 +934,185 @@ async def cancel_invoice(
     finally:
         cursor.close()
         conn.close()
+
+# ========================================
+# RECEIPTS / CUSTOMER PAYMENTS
+# ========================================
+
+receipts_router = APIRouter(prefix="/api/erp/order-to-cash/receipts", tags=["Order-to-Cash Receipts"])
+
+@receipts_router.get("")
+async def list_receipts(
+    status: Optional[str] = Query(None),
+    current_user: Dict = Depends(get_current_user)
+):
+    """List all customer receipts/payments"""
+    conn = get_connection()
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    
+    try:
+        company_id = current_user.get('company_id')
+        if not company_id:
+            raise HTTPException(status_code=400, detail="User must be associated with a company")
+        
+        query = """
+            SELECT cp.id, cp.payment_number, cp.customer_id, c.customer_name,
+                   cp.payment_date, cp.amount, cp.payment_method, cp.reference,
+                   cp.status, cp.created_at
+            FROM customer_payments cp
+            LEFT JOIN customers c ON cp.customer_id = c.id
+            WHERE cp.company_id = %s
+        """
+        params = [company_id]
+        
+        if status:
+            query += " AND cp.status = %s"
+            params.append(status)
+        
+        query += " ORDER BY cp.payment_date DESC, cp.created_at DESC"
+        
+        cursor.execute(query, params)
+        receipts = cursor.fetchall()
+        
+        result = []
+        for receipt in receipts:
+            result.append({
+                'id': str(receipt['id']),
+                'payment_number': receipt.get('payment_number'),
+                'customer_id': str(receipt['customer_id']) if receipt.get('customer_id') else None,
+                'customer_name': receipt.get('customer_name'),
+                'payment_date': receipt['payment_date'].isoformat() if receipt.get('payment_date') else None,
+                'amount': float(receipt['amount']) if receipt.get('amount') else 0.0,
+                'payment_method': receipt.get('payment_method'),
+                'reference': receipt.get('reference'),
+                'status': receipt.get('status'),
+                'created_at': receipt['created_at'].isoformat() if receipt.get('created_at') else None
+            })
+        
+        return result
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+    finally:
+        cursor.close()
+        conn.close()
+
+@receipts_router.get("/{receipt_id}")
+async def get_receipt(
+    receipt_id: str = Path(...),
+    current_user: Dict = Depends(get_current_user)
+):
+    """Get a single customer receipt/payment"""
+    conn = get_connection()
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    
+    try:
+        company_id = current_user.get('company_id')
+        if not company_id:
+            raise HTTPException(status_code=400, detail="User must be associated with a company")
+        
+        cursor.execute("""
+            SELECT cp.*, c.customer_name
+            FROM customer_payments cp
+            LEFT JOIN customers c ON cp.customer_id = c.id
+            WHERE cp.id = %s AND cp.company_id = %s
+        """, (receipt_id, company_id))
+        
+        receipt = cursor.fetchone()
+        if not receipt:
+            raise HTTPException(status_code=404, detail="Receipt not found")
+        
+        return {
+            'id': str(receipt['id']),
+            'payment_number': receipt.get('payment_number'),
+            'customer_id': str(receipt['customer_id']) if receipt.get('customer_id') else None,
+            'customer_name': receipt.get('customer_name'),
+            'payment_date': receipt['payment_date'].isoformat() if receipt.get('payment_date') else None,
+            'amount': float(receipt['amount']) if receipt.get('amount') else 0.0,
+            'payment_method': receipt.get('payment_method'),
+            'reference': receipt.get('reference'),
+            'status': receipt.get('status'),
+            'notes': receipt.get('notes'),
+            'created_at': receipt['created_at'].isoformat() if receipt.get('created_at') else None,
+            'updated_at': receipt['updated_at'].isoformat() if receipt.get('updated_at') else None
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+    finally:
+        cursor.close()
+        conn.close()
+
+@receipts_router.post("")
+async def create_receipt(
+    receipt_data: Dict[str, Any] = Body(...),
+    current_user: Dict = Depends(get_current_user)
+):
+    """Create a new customer receipt/payment"""
+    conn = get_connection()
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    
+    try:
+        company_id = current_user.get('company_id')
+        user_email = current_user.get('email')
+        if not company_id:
+            raise HTTPException(status_code=400, detail="User must be associated with a company")
+        
+        cursor.execute("SELECT COALESCE(MAX(CAST(SUBSTRING(payment_number FROM 'PMT-([0-9]+)') AS INTEGER)), 0) + 1 as next_num FROM customer_payments WHERE company_id = %s", (company_id,))
+        next_num = cursor.fetchone()['next_num']
+        payment_number = f"PMT-{next_num:05d}"
+        
+        receipt_id = str(uuid.uuid4())
+        cursor.execute("""
+            INSERT INTO customer_payments (id, company_id, payment_number, customer_id, payment_date, 
+                                          amount, payment_method, reference, status, notes, created_by, created_at, updated_at)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, NOW(), NOW())
+            RETURNING id, payment_number
+        """, (receipt_id, company_id, payment_number, receipt_data.get('customer_id'),
+              receipt_data.get('payment_date'), receipt_data.get('amount'),
+              receipt_data.get('payment_method'), receipt_data.get('reference'),
+              'received', receipt_data.get('notes'), user_email))
+        
+        result = cursor.fetchone()
+        conn.commit()
+        return {'id': str(result['id']), 'payment_number': result['payment_number']}
+    except HTTPException:
+        raise
+    except Exception as e:
+        conn.rollback()
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+    finally:
+        cursor.close()
+        conn.close()
+
+@receipts_router.delete("/{receipt_id}")
+async def delete_receipt(
+    receipt_id: str = Path(...),
+    current_user: Dict = Depends(get_current_user)
+):
+    """Delete a customer receipt/payment"""
+    conn = get_connection()
+    cursor = conn.cursor()
+    
+    try:
+        company_id = current_user.get('company_id')
+        if not company_id:
+            raise HTTPException(status_code=400, detail="User must be associated with a company")
+        
+        cursor.execute("DELETE FROM customer_payments WHERE id = %s AND company_id = %s", (receipt_id, company_id))
+        
+        if cursor.rowcount == 0:
+            raise HTTPException(status_code=404, detail="Receipt not found")
+        
+        conn.commit()
+        return {"message": "Receipt deleted successfully"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        conn.rollback()
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+    finally:
+        cursor.close()
+        conn.close()

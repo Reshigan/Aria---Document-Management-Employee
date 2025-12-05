@@ -72,8 +72,8 @@ async def list_journal_entries(
             raise HTTPException(status_code=400, detail="User must be associated with a company")
         
         query = """
-            SELECT je.id, je.entry_number, je.entry_date, je.description, je.status,
-                   je.reference, je.created_at, je.updated_at, je.created_by,
+            SELECT je.id, je.entry_date, je.description, je.status,
+                   je.reference, je.created_at, je.posted_at, je.created_by,
                    COALESCE(SUM(CASE WHEN jel.debit_amount > 0 THEN jel.debit_amount ELSE 0 END), 0) as total_debit,
                    COALESCE(SUM(CASE WHEN jel.credit_amount > 0 THEN jel.credit_amount ELSE 0 END), 0) as total_credit
             FROM journal_entries je
@@ -101,7 +101,6 @@ async def list_journal_entries(
         for entry in entries:
             result.append({
                 'id': str(entry['id']),
-                'entry_number': entry['entry_number'],
                 'entry_date': entry['entry_date'].isoformat() if entry['entry_date'] else None,
                 'description': entry['description'],
                 'status': entry['status'],
@@ -109,7 +108,7 @@ async def list_journal_entries(
                 'total_debit': float(entry.get('total_debit', 0)),
                 'total_credit': float(entry.get('total_credit', 0)),
                 'created_at': entry['created_at'].isoformat() if entry.get('created_at') else None,
-                'updated_at': entry['updated_at'].isoformat() if entry.get('updated_at') else None,
+                'posted_at': entry['posted_at'].isoformat() if entry.get('posted_at') else None,
                 'created_by': entry.get('created_by')
             })
         
@@ -313,6 +312,84 @@ async def delete_journal_entry(
 
 chart_of_accounts_router = APIRouter(prefix="/api/erp/gl/chart-of-accounts", tags=["General Ledger Chart of Accounts"])
 
+@chart_of_accounts_router.get("")
+async def list_accounts(
+    account_type: Optional[str] = Query(None),
+    is_active: Optional[bool] = Query(None),
+    current_user: Dict = Depends(get_current_user)
+):
+    """List all chart of accounts with optional filters"""
+    conn = get_connection()
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    
+    try:
+        company_id = current_user.get('company_id')
+        if not company_id:
+            raise HTTPException(status_code=400, detail="User must be associated with a company")
+        
+        query = """
+            SELECT id, code as account_code, name as account_name, account_type, 
+                   account_category, parent_account_id, is_active, created_at, updated_at
+            FROM chart_of_accounts
+            WHERE company_id = %s
+        """
+        params = [company_id]
+        
+        if account_type:
+            query += " AND account_type = %s"
+            params.append(account_type)
+        if is_active is not None:
+            query += " AND is_active = %s"
+            params.append(is_active)
+        
+        query += " ORDER BY code"
+        
+        cursor.execute(query, params)
+        accounts = cursor.fetchall()
+        
+        return [dict(account) for account in accounts]
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+    finally:
+        cursor.close()
+        conn.close()
+
+@chart_of_accounts_router.get("/{account_id}")
+async def get_account(
+    account_id: str = Path(...),
+    current_user: Dict = Depends(get_current_user)
+):
+    """Get a specific account by ID"""
+    conn = get_connection()
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    
+    try:
+        company_id = current_user.get('company_id')
+        if not company_id:
+            raise HTTPException(status_code=400, detail="User must be associated with a company")
+        
+        cursor.execute("""
+            SELECT id, code as account_code, name as account_name, account_type,
+                   account_category, parent_account_id, is_active, created_at, updated_at
+            FROM chart_of_accounts
+            WHERE id = %s AND company_id = %s
+        """, (account_id, company_id))
+        
+        account = cursor.fetchone()
+        if not account:
+            raise HTTPException(status_code=404, detail="Account not found")
+        
+        return dict(account)
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+    finally:
+        cursor.close()
+        conn.close()
+
 @chart_of_accounts_router.post("")
 async def create_account(
     account_data: Dict[str, Any] = Body(...),
@@ -329,9 +406,9 @@ async def create_account(
         
         account_id = str(uuid.uuid4())
         cursor.execute("""
-            INSERT INTO chart_of_accounts (id, company_id, account_code, account_name, account_type, parent_account_id, is_active, created_at, updated_at)
+            INSERT INTO chart_of_accounts (id, company_id, code, name, account_type, parent_account_id, is_active, created_at, updated_at)
             VALUES (%s, %s, %s, %s, %s, %s, %s, NOW(), NOW())
-            RETURNING id, account_code, account_name
+            RETURNING id, code as account_code, name as account_name
         """, (account_id, company_id, account_data.get('account_code'), account_data.get('account_name'),
               account_data.get('account_type'), account_data.get('parent_account_id'), 
               account_data.get('is_active', True)))
@@ -365,7 +442,7 @@ async def update_account(
         
         cursor.execute("""
             UPDATE chart_of_accounts
-            SET account_name = %s, account_type = %s, is_active = %s, updated_at = NOW()
+            SET name = %s, account_type = %s, is_active = %s, updated_at = NOW()
             WHERE id = %s AND company_id = %s
         """, (account_data.get('account_name'), account_data.get('account_type'),
               account_data.get('is_active', True), account_id, company_id))

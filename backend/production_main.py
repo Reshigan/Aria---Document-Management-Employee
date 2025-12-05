@@ -186,13 +186,15 @@ try:
         quotes_router as otc_quotes_router,
         sales_orders_router as otc_sales_orders_router,
         deliveries_router as otc_deliveries_router,
-        invoices_router as otc_invoices_router
+        invoices_router as otc_invoices_router,
+        receipts_router as otc_receipts_router
     )
     app.include_router(otc_quotes_router)
     app.include_router(otc_sales_orders_router)
     app.include_router(otc_deliveries_router)
     app.include_router(otc_invoices_router)
-    print("✅ Order-to-Cash API loaded (PostgreSQL): Quotes, Sales Orders, Deliveries, Invoices with full CRUD")
+    app.include_router(otc_receipts_router)
+    print("✅ Order-to-Cash API loaded (PostgreSQL): Quotes, Sales Orders, Deliveries, Invoices, Receipts with full CRUD")
 except Exception as e:
     print(f"⚠️ Order-to-Cash API not loaded: {e}")
 
