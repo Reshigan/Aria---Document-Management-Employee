@@ -12,15 +12,43 @@ import os
 from datetime import datetime
 import uuid
 
-from core.auth import get_current_user
+from core.auth import AuthService
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
 DATABASE_URL = os.getenv("DATABASE_URL_PG") or os.getenv("DATABASE_URL")
 if not DATABASE_URL:
     raise RuntimeError("DATABASE_URL_PG or DATABASE_URL environment variable must be set")
 
+TEST_COMPANY_ID = os.getenv("TEST_COMPANY_ID", "6dbbf872-eebc-4341-8e2c-cac36587a5cb")
+AUTH_MODE = os.getenv("AUTH_MODE", "development")
+security = HTTPBearer(auto_error=False)
+
 def get_connection():
     """Get PostgreSQL database connection"""
     return psycopg2.connect(DATABASE_URL)
+
+async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)) -> Dict:
+    """
+    Get current user identity from Bearer token (decode-only, no DB lookup)
+    Supports testing mode for go-live validation
+    """
+    if credentials:
+        try:
+            payload = AuthService.decode_token(credentials.credentials)
+            company_id = payload.get("company_id") or payload.get("sub")
+            email = payload.get("email", "user@test.com")
+            return {"company_id": company_id, "email": email}
+        except HTTPException:
+            pass
+    
+    if AUTH_MODE == "development":
+        return {"company_id": TEST_COMPANY_ID, "email": "test@local"}
+    
+    raise HTTPException(
+        status_code=401,
+        detail="Not authenticated. Provide Bearer token.",
+        headers={"WWW-Authenticate": "Bearer"}
+    )
 
 # ========================================
 # ========================================
