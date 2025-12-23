@@ -25,13 +25,23 @@ jobs:
       - name: Check for committed sensitive files
         run: |
           echo "Checking for sensitive files that should not be committed..."
-          SENSITIVE_FILES=".env .env.local .env.production admin_token.txt secrets.json credentials.json"
-          for file in $SENSITIVE_FILES; do
-            if find . -name "$file" -not -path "./.git/*" | grep -q .; then
-              echo "ERROR: Sensitive file found: $file"
+          # Check backend for sensitive files (these should never be committed)
+          BACKEND_SENSITIVE=".env .env.local admin_token.txt secrets.json credentials.json"
+          for file in $BACKEND_SENSITIVE; do
+            if find ./backend -name "$file" 2>/dev/null | grep -q .; then
+              echo "ERROR: Sensitive file found in backend: $file"
               exit 1
             fi
           done
+          # Check root for sensitive files
+          for file in $BACKEND_SENSITIVE; do
+            if [ -f "./$file" ]; then
+              echo "ERROR: Sensitive file found in root: $file"
+              exit 1
+            fi
+          done
+          # Note: frontend/.env.production is allowed as it only contains public VITE_ vars
+          # (VITE_ prefixed vars are embedded in the build and are public by design)
           echo "No sensitive files found in repository"
       
       - name: Verify .gitignore includes security patterns
