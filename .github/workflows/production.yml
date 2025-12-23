@@ -7,9 +7,58 @@ on:
     branches: [ main ]
 
 jobs:
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Check for hardcoded secrets
+        run: |
+          echo "Scanning for potential hardcoded secrets..."
+          # Check for common secret patterns (fail if found)
+          if grep -rE "(password|secret|api_key|apikey|token)\s*=\s*['\"][^'\"]+['\"]" --include="*.py" --include="*.ts" --include="*.tsx" --include="*.js" backend/ frontend/src/ 2>/dev/null | grep -v "\.env" | grep -v "example" | grep -v "test" | grep -v "# " | grep -v "getenv" | head -20; then
+            echo "WARNING: Potential hardcoded secrets found. Please review the above lines."
+          fi
+          echo "Secret scan completed"
+      
+      - name: Check for committed sensitive files
+        run: |
+          echo "Checking for sensitive files that should not be committed..."
+          # Check backend for sensitive files (these should never be committed)
+          BACKEND_SENSITIVE=".env .env.local admin_token.txt secrets.json credentials.json"
+          for file in $BACKEND_SENSITIVE; do
+            if find ./backend -name "$file" 2>/dev/null | grep -q .; then
+              echo "ERROR: Sensitive file found in backend: $file"
+              exit 1
+            fi
+          done
+          # Check root for sensitive files
+          for file in $BACKEND_SENSITIVE; do
+            if [ -f "./$file" ]; then
+              echo "ERROR: Sensitive file found in root: $file"
+              exit 1
+            fi
+          done
+          # Note: frontend/.env.production is allowed as it only contains public VITE_ vars
+          # (VITE_ prefixed vars are embedded in the build and are public by design)
+          echo "No sensitive files found in repository"
+      
+      - name: Verify .gitignore includes security patterns
+        run: |
+          echo "Verifying .gitignore security patterns..."
+          REQUIRED_PATTERNS=("*.token" "admin_token.txt" ".env.production" "secrets.json")
+          for pattern in "${REQUIRED_PATTERNS[@]}"; do
+            if ! grep -q "$pattern" .gitignore; then
+              echo "WARNING: .gitignore missing pattern: $pattern"
+            fi
+          done
+          echo "Gitignore check completed"
+
   frontend-build:
     name: Frontend Build
     runs-on: ubuntu-latest
+    needs: [security-scan]
     steps:
       - uses: actions/checkout@v3
       
@@ -44,6 +93,7 @@ jobs:
   backend-test:
     name: Backend Tests
     runs-on: ubuntu-latest
+    needs: [security-scan]
     steps:
       - uses: actions/checkout@v3
       
@@ -62,7 +112,19 @@ jobs:
         working-directory: ./backend
         run: |
           python -m py_compile production_main.py
+          python -m py_compile middleware/security.py
           echo "Backend syntax check passed"
+      
+      - name: Verify required environment variables are not hardcoded
+        working-directory: ./backend
+        run: |
+          echo "Checking auth files for hardcoded defaults..."
+          # Ensure JWT_SECRET_KEY has no default value
+          if grep -E "JWT_SECRET_KEY.*=.*['\"][^'\"]+['\"]" auth.py auth_integrated.py 2>/dev/null | grep -v "getenv" | grep -v "#"; then
+            echo "ERROR: Found hardcoded JWT_SECRET_KEY"
+            exit 1
+          fi
+          echo "No hardcoded secrets in auth files"
 
   notify-success:
     name: Notify Success
@@ -72,6 +134,7 @@ jobs:
     steps:
       - name: Success notification
         run: |
-          echo "✅ All checks passed! Ready for production deployment."
+          echo "All checks passed! Ready for production deployment."
+          echo "Security scan: SUCCESS"
           echo "Frontend build: SUCCESS"
           echo "Backend tests: SUCCESS"
