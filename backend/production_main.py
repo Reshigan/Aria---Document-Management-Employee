@@ -19,9 +19,17 @@ import os
 import psycopg2
 import psycopg2.extras
 import uuid
+import logging
 
 from dotenv import load_dotenv
 load_dotenv()
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
 
 # Import authentication system
 from auth_integrated import (
@@ -76,6 +84,28 @@ app.add_middleware(
     allow_methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     allow_headers=["Authorization", "Content-Type", "X-Company-ID", "X-Request-ID"],
 )
+
+# Security Middleware - Headers, Rate Limiting, and Request Logging
+try:
+    from middleware.security import (
+        SecurityHeadersMiddleware,
+        RateLimitMiddleware,
+        RequestLoggingMiddleware,
+    )
+    
+    # Add security headers to all responses
+    app.add_middleware(SecurityHeadersMiddleware)
+    
+    # Add rate limiting (use Redis in production for multi-instance deployments)
+    use_redis = os.getenv("ENVIRONMENT", "development") == "production"
+    app.add_middleware(RateLimitMiddleware, use_redis=use_redis)
+    
+    # Add request logging for audit trail
+    app.add_middleware(RequestLoggingMiddleware)
+    
+    logger.info("Security middleware loaded: Headers, Rate Limiting, Request Logging")
+except Exception as e:
+    logger.warning(f"Security middleware not loaded: {e}")
 
 # ========================================
 # ========================================
