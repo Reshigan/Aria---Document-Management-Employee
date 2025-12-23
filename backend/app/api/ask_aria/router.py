@@ -126,10 +126,19 @@ async def get_current_user_optional(
         except Exception as e:
             logger.warning(f"Auth failed, using fallback: {e}")
     
-    logger.info("Using fallback authentication for Ask Aria")
+    # SECURITY: In production, authentication should always be required
+    # This fallback is only for development/testing - log a warning
+    logger.warning("SECURITY: Using fallback authentication - this should not happen in production!")
+    demo_company_id = os.getenv("DEMO_COMPANY_ID", "")
+    demo_user_id = os.getenv("DEMO_USER_ID", "")
+    if not demo_company_id or not demo_user_id:
+        raise HTTPException(
+            status_code=401,
+            detail="Authentication required. No demo credentials configured."
+        )
     return {
-        "user_id": "8e88001e-9d74-4b5a-a45b-66d126bee6d5",
-        "company_id": "b0598135-52fd-4f67-ac56-8f0237e6355e"
+        "user_id": demo_user_id,
+        "company_id": demo_company_id
     }
 
 get_current_user = get_current_user_optional

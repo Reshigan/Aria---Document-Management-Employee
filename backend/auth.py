@@ -12,10 +12,15 @@ import os
 from models import User
 from core.database_pg import SessionLocal
 
-# JWT Configuration
-SECRET_KEY = os.getenv("SECRET_KEY", "AriaProductionSecretKey2024VantaxSecure!")
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+# JWT Configuration - MUST be set via environment variables in production
+SECRET_KEY = os.getenv("JWT_SECRET_KEY") or os.getenv("SECRET_KEY")
+if not SECRET_KEY:
+    raise RuntimeError(
+        "CRITICAL: JWT_SECRET_KEY or SECRET_KEY environment variable must be set. "
+        "Generate a secure key with: python -c \"import secrets; print(secrets.token_urlsafe(64))\""
+    )
+ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
 
 security = HTTPBearer()
 

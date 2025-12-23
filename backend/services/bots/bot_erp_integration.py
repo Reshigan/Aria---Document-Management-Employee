@@ -19,7 +19,13 @@ class BotERPIntegration:
     
     def __init__(self, base_url: str = "http://localhost:8000", company_id: str = None):
         self.base_url = base_url
-        self.company_id = company_id or "b0598135-52fd-4f67-ac56-8f0237e6355e"
+        # SECURITY: company_id MUST be provided - never use hardcoded fallback
+        if not company_id:
+            raise ValueError(
+                "company_id is required for BotERPIntegration. "
+                "Tenant isolation requires explicit company context."
+            )
+        self.company_id = company_id
         self.session = requests.Session()
         self.session.headers.update({
             "Content-Type": "application/json",
