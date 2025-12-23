@@ -58,13 +58,23 @@ app = FastAPI(
     version="3.0.0"
 )
 
-# CORS Configuration
+# CORS Configuration - Restrict to allowed origins in production
+ALLOWED_ORIGINS = os.getenv("CORS_ORIGINS", "").split(",") if os.getenv("CORS_ORIGINS") else [
+    "https://aria.vantax.co.za",
+    "https://www.aria.vantax.co.za",
+    "http://localhost:3000",
+    "http://localhost:5173",
+    "http://localhost:12001",
+]
+# Filter out empty strings
+ALLOWED_ORIGINS = [origin.strip() for origin in ALLOWED_ORIGINS if origin.strip()]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allow_headers=["Authorization", "Content-Type", "X-Company-ID", "X-Request-ID"],
 )
 
 # ========================================
@@ -4080,7 +4090,12 @@ async def get_products_inline(skip: int = 0, limit: int = 100, search: str = Non
         conn.close()
 
 @app.post("/api/erp/master-data/customers")
-async def create_customer_inline(request: dict):
+async def create_customer_inline(request: dict, current_user: dict = Depends(get_current_user)):
+    # SECURITY: Get company_id from authenticated user - never use hardcoded values
+    company_id = current_user.get('company_id')
+    if not company_id:
+        raise HTTPException(status_code=400, detail="Company ID required. Please select a company.")
+    
     conn = get_db_connection()
     cursor = conn.cursor()
     
@@ -4109,7 +4124,7 @@ async def create_customer_inline(request: dict):
             request.get('payment_terms', 30),
             request.get('credit_limit', 0),
             request.get('is_active', True),
-            'b0598135-52fd-4f67-ac56-8f0237e6355e',
+            company_id,
             datetime.utcnow(),
             datetime.utcnow()
         ))
@@ -4191,7 +4206,12 @@ async def delete_customer_inline(customer_id: str):
         conn.close()
 
 @app.post("/api/erp/master-data/suppliers")
-async def create_supplier_inline(request: dict):
+async def create_supplier_inline(request: dict, current_user: dict = Depends(get_current_user)):
+    # SECURITY: Get company_id from authenticated user - never use hardcoded values
+    company_id = current_user.get('company_id')
+    if not company_id:
+        raise HTTPException(status_code=400, detail="Company ID required. Please select a company.")
+    
     conn = get_db_connection()
     cursor = conn.cursor()
     
@@ -4219,7 +4239,7 @@ async def create_supplier_inline(request: dict):
             request.get('tax_number'),
             request.get('payment_terms', 30),
             request.get('is_active', True),
-            'b0598135-52fd-4f67-ac56-8f0237e6355e',
+            company_id,
             datetime.utcnow(),
             datetime.utcnow()
         ))
@@ -4300,7 +4320,12 @@ async def delete_supplier_inline(supplier_id: str):
         conn.close()
 
 @app.post("/api/erp/master-data/products")
-async def create_product_inline(request: dict):
+async def create_product_inline(request: dict, current_user: dict = Depends(get_current_user)):
+    # SECURITY: Get company_id from authenticated user - never use hardcoded values
+    company_id = current_user.get('company_id')
+    if not company_id:
+        raise HTTPException(status_code=400, detail="Company ID required. Please select a company.")
+    
     conn = get_db_connection()
     cursor = conn.cursor()
     
@@ -4331,7 +4356,7 @@ async def create_product_inline(request: dict):
             request.get('standard_cost', 0),
             request.get('selling_price', 0),
             request.get('is_active', True),
-            'b0598135-52fd-4f67-ac56-8f0237e6355e',
+            company_id,
             datetime.utcnow(),
             datetime.utcnow()
         ))

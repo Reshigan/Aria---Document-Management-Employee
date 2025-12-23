@@ -32,7 +32,12 @@ export const ExecutiveDashboard: React.FC = () => {
       setBots(botsResponse.data.agents || []);
 
       const today = new Date().toISOString().split('T')[0];
-      const companyId = 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+      // Get company_id from localStorage (set by auth) - never hardcode tenant IDs
+      const companyId = localStorage.getItem('aria_company_id') || '';
+      
+      if (!companyId) {
+        console.warn('No company_id found - user may need to select a company');
+      }
       
       const [apResponse, arResponse] = await Promise.all([
         api.get(`/reports/ar-ap/ap-aging?company_id=${companyId}&as_of_date=${today}`),

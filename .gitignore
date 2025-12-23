@@ -108,3 +108,14 @@ phase1_test_report_*.json
 
 # Old/backup files
 *_old.py
+
+# Security - Never commit tokens or secrets
+admin_token.txt
+*_token.txt
+*.token
+secrets.json
+credentials.json
+
+# Sensitive configuration
+.env.production
+.env.staging

@@ -16,11 +16,16 @@ from database_auth_pg import (
     create_organization, log_action
 )
 
-# Security configuration
-SECRET_KEY = os.getenv("JWT_SECRET_KEY", "your-secret-key-change-in-production")
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
-REFRESH_TOKEN_EXPIRE_DAYS = 7
+# Security configuration - MUST be set via environment variables in production
+SECRET_KEY = os.getenv("JWT_SECRET_KEY")
+if not SECRET_KEY:
+    raise RuntimeError(
+        "CRITICAL: JWT_SECRET_KEY environment variable must be set. "
+        "Generate a secure key with: python -c \"import secrets; print(secrets.token_urlsafe(64))\""
+    )
+ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
+REFRESH_TOKEN_EXPIRE_DAYS = int(os.getenv("REFRESH_TOKEN_EXPIRE_DAYS", "7"))
 
 # HTTP Bearer token security
 security = HTTPBearer()
