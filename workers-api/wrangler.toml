@@ -1,0 +1,34 @@
+# ARIA ERP - Cloudflare Workers API Configuration
+name = "aria-api"
+main = "src/index.ts"
+compatibility_date = "2024-12-01"
+
+# Environment variables (secrets should be set via wrangler secret)
+[vars]
+ENVIRONMENT = "production"
+APP_NAME = "ARIA ERP"
+
+# D1 Database binding
+[[d1_databases]]
+binding = "DB"
+database_name = "aria-erp-db"
+database_id = "fedd74aa-749e-42a3-ba7a-2eaf3d53315b"
+
+# KV Namespace for sessions/cache (optional)
+# [[kv_namespaces]]
+# binding = "SESSIONS"
+# id = ""
+
+# Routes
+# routes = [
+#   { pattern = "api.aria.vantax.co.za/*", zone_name = "vantax.co.za" }
+# ]
+
+# Build configuration
+[build]
+command = "npm run build"
+
+# Development settings
+[dev]
+port = 8787
+local_protocol = "http"
