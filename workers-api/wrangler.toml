@@ -12,7 +12,7 @@ APP_NAME = "ARIA ERP"
 [[d1_databases]]
 binding = "DB"
 database_name = "aria-erp-db"
-database_id = "" # Will be filled after creating the database
+database_id = "fedd74aa-749e-42a3-ba7a-2eaf3d53315b"
 
 # KV Namespace for sessions/cache (optional)
 # [[kv_namespaces]]

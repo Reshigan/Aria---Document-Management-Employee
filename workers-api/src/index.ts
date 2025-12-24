@@ -25,6 +25,8 @@ interface User {
   is_superuser: number;
   company_id: string | null;
   role: string;
+  locked_until: string | null;
+  failed_login_attempts: number;
 }
 
 interface LoginRequest {
