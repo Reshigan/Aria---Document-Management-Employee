@@ -45,14 +45,19 @@ interface TokenPayload {
 // Create Hono app
 const app = new Hono<{ Bindings: Env }>();
 
-// CORS middleware
+// CORS middleware - allow all aria-erp.pages.dev subdomains for preview deployments
 app.use('*', cors({
-  origin: [
-    'http://localhost:5173',
-    'http://localhost:3000',
-    'https://aria.vantax.co.za',
-    'https://aria-erp.pages.dev',
-  ],
+  origin: (origin) => {
+    // Allow localhost for development
+    if (origin?.startsWith('http://localhost:')) return origin;
+    // Allow main production domains
+    if (origin === 'https://aria.vantax.co.za') return origin;
+    if (origin === 'https://aria-erp.pages.dev') return origin;
+    // Allow all Cloudflare Pages preview subdomains
+    if (origin?.endsWith('.aria-erp.pages.dev')) return origin;
+    // Reject unknown origins
+    return null;
+  },
   allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
