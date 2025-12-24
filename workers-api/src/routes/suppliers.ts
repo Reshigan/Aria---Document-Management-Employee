@@ -71,26 +71,31 @@ suppliers.get('/', async (c) => {
 
     const result = await c.env.DB.prepare(query).bind(...params).all<Supplier>();
 
+    const suppliersData = result.results.map(supplier => ({
+      id: supplier.id,
+      code: supplier.supplier_code,
+      supplier_code: supplier.supplier_code,
+      name: supplier.supplier_name,
+      supplier_name: supplier.supplier_name,
+      contact_person: null,
+      email: supplier.email,
+      phone: supplier.phone,
+      address: supplier.address,
+      city: supplier.city,
+      country: supplier.country,
+      tax_number: supplier.tax_number,
+      payment_terms: supplier.payment_terms ? parseInt(supplier.payment_terms.replace(/\D/g, '')) || 30 : 30,
+      bbbee_level: 4,
+      bank_name: supplier.bank_name,
+      bank_account: supplier.bank_account,
+      is_active: supplier.is_active === 1,
+      created_at: supplier.created_at,
+      updated_at: supplier.updated_at,
+    }));
+
     return c.json({
-      data: result.results.map(supplier => ({
-        id: supplier.id,
-        code: supplier.supplier_code,
-        supplier_code: supplier.supplier_code,
-        name: supplier.supplier_name,
-        supplier_name: supplier.supplier_name,
-        email: supplier.email,
-        phone: supplier.phone,
-        address: supplier.address,
-        city: supplier.city,
-        country: supplier.country,
-        tax_number: supplier.tax_number,
-        payment_terms: supplier.payment_terms,
-        bank_name: supplier.bank_name,
-        bank_account: supplier.bank_account,
-        is_active: supplier.is_active === 1,
-        created_at: supplier.created_at,
-        updated_at: supplier.updated_at,
-      })),
+      data: suppliersData,
+      suppliers: suppliersData,
       meta: {
         page,
         page_size: pageSize,
