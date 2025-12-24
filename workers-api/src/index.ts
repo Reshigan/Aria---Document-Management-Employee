@@ -146,7 +146,7 @@ app.get('/api', (c) => {
   });
 });
 
-// Mount route modules
+// Mount route modules - primary paths
 app.route('/api/erp/master-data/customers', customers);
 app.route('/api/erp/master-data/suppliers', suppliers);
 app.route('/api/erp/order-to-cash/products', products);
@@ -155,6 +155,20 @@ app.route('/api/erp/order-to-cash/sales-orders', salesOrders);
 app.route('/api/erp/procure-to-pay/purchase-orders', purchaseOrders);
 app.route('/api/erp/invoices', invoices);
 app.route('/api/dashboard', dashboard);
+
+// Route aliases for legacy frontend paths (without /api prefix)
+app.route('/erp/master-data/customers', customers);
+app.route('/erp/master-data/suppliers', suppliers);
+app.route('/erp/order-to-cash/products', products);
+app.route('/erp/order-to-cash/quotes', quotes);
+app.route('/erp/order-to-cash/sales-orders', salesOrders);
+app.route('/erp/procure-to-pay/purchase-orders', purchaseOrders);
+app.route('/erp/invoices', invoices);
+app.route('/dashboard', dashboard);
+
+// Additional legacy path aliases for procurement pages
+app.route('/erp/procurement/suppliers', suppliers);
+app.route('/erp/procurement/purchase-orders', purchaseOrders);
 
 // Simple password hashing (for demo - use proper bcrypt in production)
 async function hashPassword(password: string): Promise<string> {
