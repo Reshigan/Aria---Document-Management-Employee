@@ -26,7 +26,7 @@ const PrintButton: React.FC<PrintButtonProps> = ({
       const token = localStorage.getItem('token');
       
       const response = await axios.get(
-        `${import.meta.env.VITE_API_URL || 'https://aria.vantax.co.za'}/api/print/${documentType}/${documentId}`,
+        `${import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev/api'}/print/${documentType}/${documentId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

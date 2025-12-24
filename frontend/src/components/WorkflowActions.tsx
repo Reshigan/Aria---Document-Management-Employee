@@ -36,7 +36,7 @@ const WorkflowActions: React.FC<WorkflowActionsProps> = ({
       }
 
       const response = await axios.post(
-        `${import.meta.env.VITE_API_URL || 'https://aria.vantax.co.za'}${endpoint}`,
+        `${import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev/api'}${endpoint}`,
         {},
         {
           headers: {
@@ -61,7 +61,7 @@ const WorkflowActions: React.FC<WorkflowActionsProps> = ({
       const token = localStorage.getItem('token');
       
       const response = await axios.post(
-        `${import.meta.env.VITE_API_URL || 'https://aria.vantax.co.za'}/api/workflows/approve/${documentType}/${documentId}`,
+        `${import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev/api'}/workflows/approve/${documentType}/${documentId}`,
         { notes: approvalNotes },
         {
           headers: {

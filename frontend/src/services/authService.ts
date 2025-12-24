@@ -5,7 +5,7 @@
 
 import axios, { AxiosInstance } from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || 'https://aria.vantax.co.za/api';
+const API_URL = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev/api';
 
 // Types
 export interface User {
