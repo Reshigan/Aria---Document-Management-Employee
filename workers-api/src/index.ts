@@ -1,11 +1,23 @@
 /**
  * ARIA ERP - Cloudflare Workers API
  * Phase 1: Authentication endpoints
+ * Phase 2: Core ERP CRUD (Customers, Suppliers, Products, O2C, P2P)
+ * Phase 3: Dashboard and Reports
  */
 
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { SignJWT, jwtVerify } from 'jose';
+
+// Import route modules
+import customers from './routes/customers';
+import suppliers from './routes/suppliers';
+import products from './routes/products';
+import quotes from './routes/quotes';
+import salesOrders from './routes/sales-orders';
+import purchaseOrders from './routes/purchase-orders';
+import invoices from './routes/invoices';
+import dashboard from './routes/dashboard';
 
 // Types
 interface Env {
@@ -77,18 +89,72 @@ app.get('/health', (c) => {
 app.get('/api', (c) => {
   return c.json({
     name: 'ARIA ERP API',
-    version: '1.0.0',
-    phase: 'Phase 1 - Authentication',
-    endpoints: [
-      'GET /health',
-      'GET /api',
-      'POST /api/auth/login',
-      'POST /api/auth/logout',
-      'GET /api/auth/me',
-      'POST /api/auth/refresh',
-    ],
+    version: '2.0.0',
+    phase: 'Phase 2-3 - Full ERP',
+    endpoints: {
+      auth: [
+        'POST /api/auth/login',
+        'POST /api/auth/logout',
+        'GET /api/auth/me',
+        'POST /api/auth/refresh',
+        'POST /api/auth/register',
+      ],
+      master_data: [
+        'GET/POST /api/erp/master-data/customers',
+        'GET/PUT/DELETE /api/erp/master-data/customers/:id',
+        'GET/POST /api/erp/master-data/suppliers',
+        'GET/PUT/DELETE /api/erp/master-data/suppliers/:id',
+        'GET/POST /api/erp/order-to-cash/products',
+        'GET/PUT/DELETE /api/erp/order-to-cash/products/:id',
+      ],
+      order_to_cash: [
+        'GET/POST /api/erp/order-to-cash/quotes',
+        'GET/DELETE /api/erp/order-to-cash/quotes/:id',
+        'PUT /api/erp/order-to-cash/quotes/:id/status',
+        'POST /api/erp/order-to-cash/quotes/:id/convert',
+        'GET/POST /api/erp/order-to-cash/sales-orders',
+        'GET/DELETE /api/erp/order-to-cash/sales-orders/:id',
+        'PUT /api/erp/order-to-cash/sales-orders/:id/status',
+        'POST /api/erp/order-to-cash/sales-orders/:id/invoice',
+      ],
+      procure_to_pay: [
+        'GET/POST /api/erp/procure-to-pay/purchase-orders',
+        'GET/DELETE /api/erp/procure-to-pay/purchase-orders/:id',
+        'PUT /api/erp/procure-to-pay/purchase-orders/:id/status',
+        'POST /api/erp/procure-to-pay/purchase-orders/:id/receive',
+        'POST /api/erp/procure-to-pay/purchase-orders/:id/invoice',
+      ],
+      invoices: [
+        'GET /api/erp/invoices/customer',
+        'GET /api/erp/invoices/customer/:id',
+        'PUT /api/erp/invoices/customer/:id/status',
+        'POST /api/erp/invoices/customer/:id/payment',
+        'GET /api/erp/invoices/supplier',
+        'GET /api/erp/invoices/supplier/:id',
+        'PUT /api/erp/invoices/supplier/:id/status',
+        'POST /api/erp/invoices/supplier/:id/payment',
+      ],
+      dashboard: [
+        'GET /api/dashboard/executive',
+        'GET /api/dashboard/sales-summary',
+        'GET /api/dashboard/purchasing-summary',
+        'GET /api/dashboard/ar-aging',
+        'GET /api/dashboard/ap-aging',
+        'GET /api/dashboard/inventory-summary',
+      ],
+    },
   });
 });
+
+// Mount route modules
+app.route('/api/erp/master-data/customers', customers);
+app.route('/api/erp/master-data/suppliers', suppliers);
+app.route('/api/erp/order-to-cash/products', products);
+app.route('/api/erp/order-to-cash/quotes', quotes);
+app.route('/api/erp/order-to-cash/sales-orders', salesOrders);
+app.route('/api/erp/procure-to-pay/purchase-orders', purchaseOrders);
+app.route('/api/erp/invoices', invoices);
+app.route('/api/dashboard', dashboard);
 
 // Simple password hashing (for demo - use proper bcrypt in production)
 async function hashPassword(password: string): Promise<string> {
