@@ -27,6 +27,7 @@ import reports from './routes/reports';
 import onboarding from './routes/onboarding';
 import periods from './routes/periods';
 import approvals from './routes/approvals';
+import localization from './routes/localization';
 
 // Types
 interface Env {
@@ -259,7 +260,11 @@ app.route('/erp/periods', periods);
 app.route('/api/approvals', approvals);
 app.route('/approvals', approvals);
 
-// Simple password hashing (for demo - use proper bcrypt in production)
+// Country Localization routes (tax calculations, e-invoicing, payroll)
+app.route('/api/localization', localization);
+app.route('/localization', localization);
+
+// Simple password hashing(for demo - use proper bcrypt in production)
 async function hashPassword(password: string): Promise<string> {
   const encoder = new TextEncoder();
   const data = encoder.encode(password);
