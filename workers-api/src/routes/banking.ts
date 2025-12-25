@@ -1,8 +1,11 @@
 import { Hono } from 'hono';
+import { getSecureCompanyId, getSecureUserId } from '../middleware/auth';
+
 interface Env {
   DB: D1Database;
   DOCUMENTS: R2Bucket;
   JWT_SECRET: string;
+  ENVIRONMENT?: string;
 }
 
 const app = new Hono<{ Bindings: Env }>();
@@ -13,7 +16,7 @@ const app = new Hono<{ Bindings: Env }>();
 
 // List bank accounts
 app.get('/accounts', async (c) => {
-  const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+  const companyId = await getSecureCompanyId(c);
   
 
   try {
@@ -32,7 +35,7 @@ app.get('/accounts', async (c) => {
 
 // Get bank account by ID
 app.get('/accounts/:id', async (c) => {
-  const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+  const companyId = await getSecureCompanyId(c);
   
 
   try {
@@ -56,7 +59,7 @@ app.get('/accounts/:id', async (c) => {
 
 // Create bank account
 app.post('/accounts', async (c) => {
-  const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+  const companyId = await getSecureCompanyId(c);
   
 
   try {
@@ -92,7 +95,7 @@ app.post('/accounts', async (c) => {
 
 // Update bank account
 app.put('/accounts/:id', async (c) => {
-  const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+  const companyId = await getSecureCompanyId(c);
   
 
   try {
@@ -132,7 +135,7 @@ app.put('/accounts/:id', async (c) => {
 
 // List bank transactions
 app.get('/accounts/:accountId/transactions', async (c) => {
-  const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+  const companyId = await getSecureCompanyId(c);
   
 
   try {
@@ -196,7 +199,7 @@ app.get('/accounts/:accountId/transactions', async (c) => {
 
 // Import bank transactions (CSV)
 app.post('/accounts/:accountId/import', async (c) => {
-  const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+  const companyId = await getSecureCompanyId(c);
   
 
   try {
@@ -287,7 +290,7 @@ app.post('/accounts/:accountId/import', async (c) => {
 
 // Get reconciliation summary
 app.get('/accounts/:accountId/reconciliation', async (c) => {
-  const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+  const companyId = await getSecureCompanyId(c);
   
 
   try {
@@ -370,7 +373,7 @@ app.get('/accounts/:accountId/reconciliation', async (c) => {
 
 // Reconcile transaction
 app.post('/transactions/:txnId/reconcile', async (c) => {
-  const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+  const companyId = await getSecureCompanyId(c);
   
 
   try {
@@ -378,7 +381,7 @@ app.post('/transactions/:txnId/reconcile', async (c) => {
     const body = await c.req.json();
     const { matched_transaction_id, matched_transaction_type } = body;
     const db = c.env.DB;
-    const userId = 'system';
+    const userId = await getSecureUserId(c);
     
     // Update bank transaction
     await db.prepare(`
@@ -417,7 +420,7 @@ app.post('/transactions/:txnId/reconcile', async (c) => {
 
 // Bulk reconcile transactions
 app.post('/accounts/:accountId/reconcile-bulk', async (c) => {
-  const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+  const companyId = await getSecureCompanyId(c);
   
 
   try {
@@ -425,7 +428,7 @@ app.post('/accounts/:accountId/reconcile-bulk', async (c) => {
     const body = await c.req.json();
     const { matches } = body; // Array of { bank_transaction_id, matched_transaction_id, matched_transaction_type }
     const db = c.env.DB;
-    const userId = 'system';
+    const userId = await getSecureUserId(c);
     
     let reconciled = 0;
     
@@ -474,7 +477,7 @@ app.post('/accounts/:accountId/reconcile-bulk', async (c) => {
 
 // List matching rules
 app.get('/rules', async (c) => {
-  const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+  const companyId = await getSecureCompanyId(c);
   
 
   try {
@@ -493,7 +496,7 @@ app.get('/rules', async (c) => {
 
 // Create matching rule
 app.post('/rules', async (c) => {
-  const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+  const companyId = await getSecureCompanyId(c);
   
 
   try {
@@ -533,7 +536,7 @@ app.post('/rules', async (c) => {
 
 // Apply matching rules to unreconciled transactions
 app.post('/accounts/:accountId/apply-rules', async (c) => {
-  const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+  const companyId = await getSecureCompanyId(c);
   
 
   try {

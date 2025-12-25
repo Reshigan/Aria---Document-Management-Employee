@@ -4,10 +4,12 @@
  */
 
 import { Hono } from 'hono';
+import { getSecureCompanyId } from '../middleware/auth';
 
 interface Env {
   DB: D1Database;
   JWT_SECRET: string;
+  ENVIRONMENT?: string;
 }
 
 interface Supplier {
@@ -34,7 +36,7 @@ const suppliers = new Hono<{ Bindings: Env }>();
 // List all suppliers
 suppliers.get('/', async (c) => {
   try {
-    const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+    const companyId = await getSecureCompanyId(c);
     const search = c.req.query('search') || '';
     const page = parseInt(c.req.query('page') || '1');
     const pageSize = parseInt(c.req.query('page_size') || '50');
@@ -113,7 +115,7 @@ suppliers.get('/', async (c) => {
 suppliers.get('/:id', async (c) => {
   try {
     const supplierId = c.req.param('id');
-    const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+    const companyId = await getSecureCompanyId(c);
 
     const supplier = await c.env.DB.prepare(`
       SELECT s.*,
@@ -155,7 +157,7 @@ suppliers.get('/:id', async (c) => {
 // Create supplier
 suppliers.post('/', async (c) => {
   try {
-    const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+    const companyId = await getSecureCompanyId(c);
     const body = await c.req.json<Partial<Supplier>>();
 
     if (!body.supplier_name) {
@@ -212,7 +214,7 @@ suppliers.post('/', async (c) => {
 suppliers.put('/:id', async (c) => {
   try {
     const supplierId = c.req.param('id');
-    const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+    const companyId = await getSecureCompanyId(c);
     const body = await c.req.json<Partial<Supplier>>();
 
     const result = await c.env.DB.prepare(`
@@ -260,7 +262,7 @@ suppliers.put('/:id', async (c) => {
 suppliers.delete('/:id', async (c) => {
   try {
     const supplierId = c.req.param('id');
-    const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+    const companyId = await getSecureCompanyId(c);
 
     const result = await c.env.DB.prepare(
       'DELETE FROM suppliers WHERE id = ? AND company_id = ?'

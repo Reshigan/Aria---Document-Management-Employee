@@ -1,9 +1,11 @@
 import { Hono } from 'hono';
+import { getSecureCompanyId, getSecureUserId } from '../middleware/auth';
 
 interface Env {
   DB: D1Database;
   DOCUMENTS: R2Bucket;
   JWT_SECRET: string;
+  ENVIRONMENT?: string;
 }
 
 const app = new Hono<{ Bindings: Env }>();
@@ -740,7 +742,7 @@ app.get('/types', async (c) => {
 
 // Generate document preview (HTML)
 app.post('/preview', async (c) => {
-  const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+  const companyId = await getSecureCompanyId(c);
   
 
   try {
@@ -813,7 +815,7 @@ app.post('/preview', async (c) => {
 
 // Save document
 app.post('/save', async (c) => {
-  const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+  const companyId = await getSecureCompanyId(c);
   
 
   try {
@@ -877,7 +879,7 @@ app.post('/save', async (c) => {
 
 // Get document by ID
 app.get('/:id', async (c) => {
-  const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+  const companyId = await getSecureCompanyId(c);
   
 
   try {
@@ -905,7 +907,7 @@ app.get('/:id', async (c) => {
 
 // Get document HTML for printing
 app.get('/:id/html', async (c) => {
-  const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+  const companyId = await getSecureCompanyId(c);
   
 
   try {
@@ -974,7 +976,7 @@ app.get('/:id/html', async (c) => {
 
 // List documents
 app.get('/', async (c) => {
-  const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+  const companyId = await getSecureCompanyId(c);
   
 
   try {
@@ -1035,7 +1037,7 @@ app.get('/', async (c) => {
 
 // Update document status
 app.patch('/:id/status', async (c) => {
-  const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+  const companyId = await getSecureCompanyId(c);
   
 
   try {
@@ -1061,7 +1063,7 @@ app.patch('/:id/status', async (c) => {
 
 // Send document via email
 app.post('/:id/send', async (c) => {
-  const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+  const companyId = await getSecureCompanyId(c);
   
 
   try {
@@ -1131,7 +1133,7 @@ app.post('/:id/send', async (c) => {
 
 // Get email history for a document
 app.get('/:id/emails', async (c) => {
-  const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+  const companyId = await getSecureCompanyId(c);
   
 
   try {
@@ -1153,7 +1155,7 @@ app.get('/:id/emails', async (c) => {
 
 // Generate document from existing transaction
 app.post('/from-transaction', async (c) => {
-  const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+  const companyId = await getSecureCompanyId(c);
   
 
   try {

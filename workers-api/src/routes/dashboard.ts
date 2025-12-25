@@ -4,10 +4,12 @@
  */
 
 import { Hono } from 'hono';
+import { getSecureCompanyId } from '../middleware/auth';
 
 interface Env {
   DB: D1Database;
   JWT_SECRET: string;
+  ENVIRONMENT?: string;
 }
 
 const dashboard = new Hono<{ Bindings: Env }>();
@@ -15,7 +17,7 @@ const dashboard = new Hono<{ Bindings: Env }>();
 // Get executive dashboard metrics
 dashboard.get('/executive', async (c) => {
   try {
-    const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+    const companyId = await getSecureCompanyId(c);
 
     // Get revenue metrics
     const revenueResult = await c.env.DB.prepare(`
@@ -105,7 +107,7 @@ dashboard.get('/executive', async (c) => {
 // Get sales summary
 dashboard.get('/sales-summary', async (c) => {
   try {
-    const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+    const companyId = await getSecureCompanyId(c);
     const period = c.req.query('period') || 'month';
 
     // Get sales by status
@@ -156,7 +158,7 @@ dashboard.get('/sales-summary', async (c) => {
 // Get purchasing summary
 dashboard.get('/purchasing-summary', async (c) => {
   try {
-    const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+    const companyId = await getSecureCompanyId(c);
 
     // Get PO by status
     const poByStatus = await c.env.DB.prepare(`
@@ -192,7 +194,7 @@ dashboard.get('/purchasing-summary', async (c) => {
 // Get AR aging report
 dashboard.get('/ar-aging', async (c) => {
   try {
-    const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+    const companyId = await getSecureCompanyId(c);
 
     const aging = await c.env.DB.prepare(`
       SELECT 
@@ -241,7 +243,7 @@ dashboard.get('/ar-aging', async (c) => {
 // Get AP aging report
 dashboard.get('/ap-aging', async (c) => {
   try {
-    const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+    const companyId = await getSecureCompanyId(c);
 
     const aging = await c.env.DB.prepare(`
       SELECT 
@@ -290,7 +292,7 @@ dashboard.get('/ap-aging', async (c) => {
 // Get inventory summary
 dashboard.get('/inventory-summary', async (c) => {
   try {
-    const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+    const companyId = await getSecureCompanyId(c);
 
     // Get inventory value
     const inventoryValue = await c.env.DB.prepare(`

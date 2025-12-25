@@ -4,10 +4,12 @@
  */
 
 import { Hono } from 'hono';
+import { getSecureCompanyId } from '../middleware/auth';
 
 interface Env {
   DB: D1Database;
   JWT_SECRET: string;
+  ENVIRONMENT?: string;
 }
 
 interface SalesOrder {
@@ -49,7 +51,7 @@ const salesOrders = new Hono<{ Bindings: Env }>();
 // List all sales orders
 salesOrders.get('/', async (c) => {
   try {
-    const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+    const companyId = await getSecureCompanyId(c);
     const status = c.req.query('status') || '';
     const customerId = c.req.query('customer_id') || '';
     const page = parseInt(c.req.query('page') || '1');
@@ -128,7 +130,7 @@ salesOrders.get('/', async (c) => {
 salesOrders.get('/:id', async (c) => {
   try {
     const orderId = c.req.param('id');
-    const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+    const companyId = await getSecureCompanyId(c);
 
     const order = await c.env.DB.prepare(`
       SELECT so.*, c.customer_name, c.customer_code, c.email as customer_email
@@ -174,7 +176,7 @@ salesOrders.get('/:id', async (c) => {
 // Create sales order
 salesOrders.post('/', async (c) => {
   try {
-    const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+    const companyId = await getSecureCompanyId(c);
     const body = await c.req.json<Partial<SalesOrder> & { items?: Partial<SalesOrderItem>[] }>();
 
     if (!body.customer_id) {
@@ -268,7 +270,7 @@ salesOrders.post('/', async (c) => {
 salesOrders.put('/:id/status', async (c) => {
   try {
     const orderId = c.req.param('id');
-    const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+    const companyId = await getSecureCompanyId(c);
     const body = await c.req.json<{ status: string }>();
 
     const validStatuses = ['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled', 'invoiced'];
@@ -295,7 +297,7 @@ salesOrders.put('/:id/status', async (c) => {
 salesOrders.post('/:id/invoice', async (c) => {
   try {
     const orderId = c.req.param('id');
-    const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+    const companyId = await getSecureCompanyId(c);
 
     // Get sales order
     const order = await c.env.DB.prepare(
@@ -389,7 +391,7 @@ salesOrders.post('/:id/invoice', async (c) => {
 salesOrders.delete('/:id', async (c) => {
   try {
     const orderId = c.req.param('id');
-    const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+    const companyId = await getSecureCompanyId(c);
 
     // Delete line items first
     await c.env.DB.prepare('DELETE FROM sales_order_items WHERE sales_order_id = ?').bind(orderId).run();

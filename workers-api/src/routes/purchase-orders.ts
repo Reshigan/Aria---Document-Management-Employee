@@ -4,10 +4,12 @@
  */
 
 import { Hono } from 'hono';
+import { getSecureCompanyId } from '../middleware/auth';
 
 interface Env {
   DB: D1Database;
   JWT_SECRET: string;
+  ENVIRONMENT?: string;
 }
 
 interface PurchaseOrder {
@@ -48,7 +50,7 @@ const purchaseOrders = new Hono<{ Bindings: Env }>();
 // List all purchase orders
 purchaseOrders.get('/', async (c) => {
   try {
-    const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+    const companyId = await getSecureCompanyId(c);
     const status = c.req.query('status') || '';
     const supplierId = c.req.query('supplier_id') || '';
     const page = parseInt(c.req.query('page') || '1');
@@ -126,7 +128,7 @@ purchaseOrders.get('/', async (c) => {
 purchaseOrders.get('/:id', async (c) => {
   try {
     const poId = c.req.param('id');
-    const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+    const companyId = await getSecureCompanyId(c);
 
     const po = await c.env.DB.prepare(`
       SELECT po.*, s.supplier_name, s.supplier_code, s.email as supplier_email
@@ -172,7 +174,7 @@ purchaseOrders.get('/:id', async (c) => {
 // Create purchase order
 purchaseOrders.post('/', async (c) => {
   try {
-    const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+    const companyId = await getSecureCompanyId(c);
     const body = await c.req.json<Partial<PurchaseOrder> & { items?: Partial<PurchaseOrderItem>[] }>();
 
     if (!body.supplier_id) {
@@ -265,7 +267,7 @@ purchaseOrders.post('/', async (c) => {
 purchaseOrders.put('/:id/status', async (c) => {
   try {
     const poId = c.req.param('id');
-    const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+    const companyId = await getSecureCompanyId(c);
     const body = await c.req.json<{ status: string }>();
 
     const validStatuses = ['draft', 'sent', 'confirmed', 'partial', 'received', 'cancelled', 'invoiced'];
@@ -292,7 +294,7 @@ purchaseOrders.put('/:id/status', async (c) => {
 purchaseOrders.post('/:id/receive', async (c) => {
   try {
     const poId = c.req.param('id');
-    const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+    const companyId = await getSecureCompanyId(c);
     const body = await c.req.json<{ items: { item_id: string; quantity_received: number }[] }>();
 
     // Get purchase order
@@ -345,7 +347,7 @@ purchaseOrders.post('/:id/receive', async (c) => {
 purchaseOrders.post('/:id/invoice', async (c) => {
   try {
     const poId = c.req.param('id');
-    const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+    const companyId = await getSecureCompanyId(c);
 
     // Get purchase order
     const po = await c.env.DB.prepare(
@@ -415,7 +417,7 @@ purchaseOrders.post('/:id/invoice', async (c) => {
 purchaseOrders.delete('/:id', async (c) => {
   try {
     const poId = c.req.param('id');
-    const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+    const companyId = await getSecureCompanyId(c);
 
     // Delete line items first
     await c.env.DB.prepare('DELETE FROM purchase_order_items WHERE purchase_order_id = ?').bind(poId).run();

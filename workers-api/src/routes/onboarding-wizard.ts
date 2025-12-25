@@ -1,8 +1,11 @@
 import { Hono } from 'hono';
+import { getSecureCompanyId, getSecureUserId } from '../middleware/auth';
+
 interface Env {
   DB: D1Database;
   DOCUMENTS: R2Bucket;
   JWT_SECRET: string;
+  ENVIRONMENT?: string;
 }
 
 const app = new Hono<{ Bindings: Env }>();
@@ -213,7 +216,7 @@ app.get('/steps', async (c) => {
 
 // Get onboarding progress
 app.get('/progress', async (c) => {
-  const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+  const companyId = await getSecureCompanyId(c);
   
 
   try {
@@ -270,7 +273,7 @@ app.get('/progress', async (c) => {
 
 // Complete a step
 app.post('/steps/:stepId/complete', async (c) => {
-  const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+  const companyId = await getSecureCompanyId(c);
   
 
   try {
@@ -363,7 +366,7 @@ app.post('/steps/:stepId/complete', async (c) => {
 
 // Skip a step
 app.post('/steps/:stepId/skip', async (c) => {
-  const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+  const companyId = await getSecureCompanyId(c);
   
 
   try {
@@ -445,7 +448,7 @@ app.get('/coa-templates/:templateId', async (c) => {
 
 // Apply COA template
 app.post('/coa-templates/:templateId/apply', async (c) => {
-  const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+  const companyId = await getSecureCompanyId(c);
   
 
   try {
@@ -546,7 +549,7 @@ app.get('/import/templates/:type', async (c) => {
 
 // Validate import data
 app.post('/import/validate', async (c) => {
-  const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+  const companyId = await getSecureCompanyId(c);
   
 
   try {
@@ -644,7 +647,7 @@ app.post('/import/validate', async (c) => {
 
 // Execute import
 app.post('/import/execute', async (c) => {
-  const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+  const companyId = await getSecureCompanyId(c);
   
 
   try {
@@ -779,7 +782,7 @@ app.post('/import/execute', async (c) => {
 
 // Set go-live date
 app.post('/go-live', async (c) => {
-  const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+  const companyId = await getSecureCompanyId(c);
   
 
   try {

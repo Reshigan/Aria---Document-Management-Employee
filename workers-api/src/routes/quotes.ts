@@ -4,10 +4,12 @@
  */
 
 import { Hono } from 'hono';
+import { getSecureCompanyId } from '../middleware/auth';
 
 interface Env {
   DB: D1Database;
   JWT_SECRET: string;
+  ENVIRONMENT?: string;
 }
 
 interface Quote {
@@ -47,7 +49,7 @@ const quotes = new Hono<{ Bindings: Env }>();
 // List all quotes
 quotes.get('/', async (c) => {
   try {
-    const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+    const companyId = await getSecureCompanyId(c);
     const status = c.req.query('status') || '';
     const customerId = c.req.query('customer_id') || '';
     const page = parseInt(c.req.query('page') || '1');
@@ -125,7 +127,7 @@ quotes.get('/', async (c) => {
 quotes.get('/:id', async (c) => {
   try {
     const quoteId = c.req.param('id');
-    const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+    const companyId = await getSecureCompanyId(c);
 
     const quote = await c.env.DB.prepare(`
       SELECT q.*, c.customer_name, c.customer_code, c.email as customer_email
@@ -170,7 +172,7 @@ quotes.get('/:id', async (c) => {
 // Create quote
 quotes.post('/', async (c) => {
   try {
-    const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+    const companyId = await getSecureCompanyId(c);
     const body = await c.req.json<Partial<Quote> & { items?: Partial<QuoteItem>[] }>();
 
     if (!body.customer_id) {
@@ -264,7 +266,7 @@ quotes.post('/', async (c) => {
 quotes.put('/:id/status', async (c) => {
   try {
     const quoteId = c.req.param('id');
-    const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+    const companyId = await getSecureCompanyId(c);
     const body = await c.req.json<{ status: string }>();
 
     const validStatuses = ['draft', 'sent', 'accepted', 'rejected', 'expired', 'converted'];
@@ -291,7 +293,7 @@ quotes.put('/:id/status', async (c) => {
 quotes.post('/:id/convert', async (c) => {
   try {
     const quoteId = c.req.param('id');
-    const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+    const companyId = await getSecureCompanyId(c);
 
     // Get quote
     const quote = await c.env.DB.prepare(
@@ -382,7 +384,7 @@ quotes.post('/:id/convert', async (c) => {
 quotes.delete('/:id', async (c) => {
   try {
     const quoteId = c.req.param('id');
-    const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+    const companyId = await getSecureCompanyId(c);
 
     // Delete line items first
     await c.env.DB.prepare('DELETE FROM quote_items WHERE quote_id = ?').bind(quoteId).run();
