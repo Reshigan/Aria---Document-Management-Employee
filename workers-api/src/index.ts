@@ -18,10 +18,29 @@ import salesOrders from './routes/sales-orders';
 import purchaseOrders from './routes/purchase-orders';
 import invoices from './routes/invoices';
 import dashboard from './routes/dashboard';
+import askAria from './routes/ask-aria';
+import bots from './routes/bots';
+import gl from './routes/gl';
+import admin from './routes/admin';
+import hr from './routes/hr';
+import reports from './routes/reports';
+import onboarding from './routes/onboarding';
+import periods from './routes/periods';
+import approvals from './routes/approvals';
+import localization from './routes/localization';
+import verticals from './routes/verticals';
+import differentiators from './routes/differentiators';
+import bi from './routes/bi';
+import documents from './routes/documents';
+import banking from './routes/banking';
+import botObservability from './routes/bot-observability';
+import payments from './routes/payments';
+import onboardingWizard from './routes/onboarding-wizard';
 
 // Types
 interface Env {
   DB: D1Database;
+  DOCUMENTS: R2Bucket;
   JWT_SECRET: string;
   ENVIRONMENT: string;
 }
@@ -142,6 +161,28 @@ app.get('/api', (c) => {
         'GET /api/dashboard/ap-aging',
         'GET /api/dashboard/inventory-summary',
       ],
+      ask_aria: [
+        'POST /api/ask-aria/session',
+        'POST /api/ask-aria/message',
+        'POST /api/ask-aria/message/stream',
+        'POST /api/ask-aria/upload',
+        'POST /api/ask-aria/classify/:documentId',
+        'POST /api/ask-aria/extract/:documentId',
+        'POST /api/ask-aria/documents/:documentId/validate',
+        'POST /api/ask-aria/documents/:documentId/post-to-aria',
+        'POST /api/ask-aria/documents/:documentId/export-to-sap',
+        'GET /api/ask-aria/sap/export-templates',
+      ],
+      bots: [
+        'GET /api/agents/marketplace',
+        'GET /api/agents/marketplace/:botId',
+        'POST /api/agents/marketplace/:botId/execute',
+        'GET /api/admin/agents/config',
+        'PUT /api/admin/agents/config',
+        'POST /api/admin/agents/:botId/toggle',
+        'GET /api/agents/runs',
+        'GET /api/agents/runs/:runId',
+      ],
     },
   });
 });
@@ -186,7 +227,84 @@ app.route('/ar/invoices', invoices);
 app.route('/api/ap/invoices', invoices);
 app.route('/ap/invoices', invoices);
 
-// Simple password hashing (for demo - use proper bcrypt in production)
+// Ask ARIA routes
+app.route('/api/ask-aria', askAria);
+app.route('/ask-aria', askAria);
+
+// Bot/Agent routes
+app.route('/api/agents', bots);
+app.route('/agents', bots);
+app.route('/api/admin/agents', bots);
+app.route('/admin/agents', bots);
+// Route alias for frontend Agents.tsx which calls /api/bots
+app.route('/api/bots', bots);
+app.route('/bots', bots);
+
+// General Ledger routes
+app.route('/api/erp/gl', gl);
+app.route('/erp/gl', gl);
+
+// Admin routes (company settings)
+app.route('/api/admin', admin);
+app.route('/admin', admin);
+
+// HR routes (employees, departments)
+app.route('/api/hr', hr);
+app.route('/hr', hr);
+
+// Reports routes (trial balance, income statement, balance sheet)
+app.route('/api/erp/reports', reports);
+app.route('/erp/reports', reports);
+
+// Onboarding routes (guided setup wizard)
+app.route('/api/onboarding', onboarding);
+app.route('/onboarding', onboarding);
+
+// Financial Period Management routes
+app.route('/api/erp/periods', periods);
+app.route('/erp/periods', periods);
+
+// Approval Workflow routes
+app.route('/api/approvals', approvals);
+app.route('/approvals', approvals);
+
+// Country Localization routes (tax calculations, e-invoicing, payroll)
+app.route('/api/localization', localization);
+app.route('/localization', localization);
+
+// Vertical Industry Packs (Distribution, Retail, Services/Projects)
+app.route('/api/verticals', verticals);
+app.route('/verticals', verticals);
+
+// Phase D Differentiators (WhatsApp, Mobile/Offline, Spreadsheet Migration)
+app.route('/api/differentiators', differentiators);
+app.route('/differentiators', differentiators);
+
+// Business Intelligence & Reporting
+app.route('/api/bi', bi);
+app.route('/bi', bi);
+
+// Document Generation & Management (branded documents, print, email)
+app.route('/api/documents', documents);
+app.route('/documents', documents);
+
+// Banking & Reconciliation
+app.route('/api/banking', banking);
+app.route('/banking', banking);
+
+// Bot Observability & Exception Handling
+app.route('/api/bot-observability', botObservability);
+app.route('/bot-observability', botObservability);
+
+// Payment Integrations
+app.route('/api/payments', payments);
+app.route('/payments', payments);
+
+// Enhanced Onboarding Wizard
+app.route('/api/onboarding-wizard', onboardingWizard);
+app.route('/onboarding-wizard', onboardingWizard);
+
+// Simple password hashing(for demo - use proper bcrypt in production)
 async function hashPassword(password: string): Promise<string> {
   const encoder = new TextEncoder();
   const data = encoder.encode(password);

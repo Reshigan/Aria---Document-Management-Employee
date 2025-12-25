@@ -92,6 +92,7 @@ import LegalCompliance from './pages/Legal/LegalCompliance';
 import FixedAssets from './pages/FixedAssets/FixedAssets';
 import ComplianceDashboard from './pages/Compliance/ComplianceDashboard';
 import QualityDashboard from './pages/Quality/QualityDashboard';
+import AnalyticsDashboard from './pages/Analytics/AnalyticsDashboard';
 import './styles/design-system.css';
 
 function App() {
@@ -226,8 +227,12 @@ function App() {
           <Route path="/agents" element={<Agents />} />
           <Route path="/agents/:agentId" element={<AgentSettings />} />
           
-          {/* Reports */}
-          <Route path="/reports" element={<ReportsDashboard />} />
+                    {/* Analytics / BI */}
+                    <Route path="/analytics" element={<AnalyticsDashboard />} />
+                    <Route path="/bi" element={<AnalyticsDashboard />} />
+          
+                    {/* Reports */}
+                    <Route path="/reports" element={<ReportsDashboard />} />
           <Route path="/reports/bot-dashboard" element={<BotDashboard />} />
           <Route path="/reports/profit-loss" element={<ProfitLossStatement />} />
           <Route path="/reports/balance-sheet" element={<BalanceSheet />} />

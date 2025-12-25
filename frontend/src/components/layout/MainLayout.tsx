@@ -1,5 +1,6 @@
 import React from 'react';
 import MegaMenu from './MegaMenu';
+import CommandPalette, { useCommandPalette } from '../CommandPalette/CommandPalette';
 import './MainLayout.css';
 
 interface MainLayoutProps {
@@ -7,9 +8,12 @@ interface MainLayoutProps {
 }
 
 export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
+  const commandPalette = useCommandPalette();
+  
   return (
     <div className="main-layout-mega">
-      <MegaMenu />
+      <CommandPalette isOpen={commandPalette.isOpen} onClose={commandPalette.close} />
+      <MegaMenu onSearchClick={commandPalette.open} />
       <main className="main-content-mega">
         {children}
       </main>

@@ -14,6 +14,11 @@ binding = "DB"
 database_name = "aria-erp-db"
 database_id = "fedd74aa-749e-42a3-ba7a-2eaf3d53315b"
 
+# R2 Bucket for document storage
+[[r2_buckets]]
+binding = "DOCUMENTS"
+bucket_name = "aria-documents"
+
 # KV Namespace for sessions/cache (optional)
 # [[kv_namespaces]]
 # binding = "SESSIONS"
