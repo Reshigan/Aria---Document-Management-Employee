@@ -1,5 +1,7 @@
 import { Hono } from 'hono';
 import { getSecureCompanyId, getSecureUserId } from '../middleware/auth';
+import { verifyWebhook, getWebhookSecrets } from '../services/webhook-verification';
+import { sendPaymentConfirmation } from '../services/email-service';
 
 interface Env {
   DB: D1Database;
@@ -400,16 +402,66 @@ app.post('/manual', async (c) => {
 app.post('/webhook/:provider', async (c) => {
   try {
     const provider = c.req.param('provider');
-    const body = await c.req.json();
+    const rawBody = await c.req.text();
+    const body = JSON.parse(rawBody);
     const db = c.env.DB;
     
-    // In production, verify webhook signature
-    // const signature = c.req.header('X-Webhook-Signature');
+    // Get all headers for signature verification
+    const headers: Record<string, string> = {};
+    c.req.raw.headers.forEach((value, key) => {
+      headers[key.toLowerCase()] = value;
+    });
+    
+    // Find the company associated with this webhook (from metadata or lookup)
+    let companyId: string | null = null;
+    
+    // Try to extract company ID from webhook metadata
+    if (provider === 'stripe' && body.data?.object?.metadata?.company_id) {
+      companyId = body.data.object.metadata.company_id;
+    } else if (provider === 'payfast' && body.custom_str1) {
+      companyId = body.custom_str1;
+    } else if (provider === 'paypal' && body.resource?.custom_id) {
+      try {
+        const customData = JSON.parse(body.resource.custom_id);
+        companyId = customData.company_id;
+      } catch {
+        companyId = body.resource.custom_id;
+      }
+    } else if (provider === 'flutterwave' && body.data?.meta?.company_id) {
+      companyId = body.data.meta.company_id;
+    } else if (provider === 'razorpay' && body.payload?.payment?.entity?.notes?.company_id) {
+      companyId = body.payload.payment.entity.notes.company_id;
+    }
+    
+    // Verify webhook signature if company is identified
+    if (companyId) {
+      const secrets = await getWebhookSecrets(db, companyId, provider);
+      
+      if (Object.keys(secrets).length > 0) {
+        const verification = await verifyWebhook(provider, rawBody, headers, {
+          stripeWebhookSecret: secrets.webhookSecret,
+          payfastPassphrase: secrets.passphrase,
+          paypalWebhookId: secrets.webhookId,
+          flutterwaveSecretHash: secrets.secretHash,
+          razorpayWebhookSecret: secrets.webhookSecret
+        });
+        
+        if (!verification.valid) {
+          console.error(`Webhook verification failed for ${provider}:`, verification.error);
+          return c.json({ error: 'Webhook signature verification failed' }, 401);
+        }
+        
+        console.log(`Webhook verified successfully for ${provider}`);
+      }
+    }
     
     let externalId: string | null = null;
     let status: string = 'pending';
     let amount: number = 0;
+    let currency: string = 'ZAR';
     let metadata: any = {};
+    let payerEmail: string | null = null;
+    let payerName: string | null = null;
     
     // Parse webhook based on provider
     switch (provider) {
@@ -418,7 +470,10 @@ app.post('/webhook/:provider', async (c) => {
         status = body.data?.object?.status === 'succeeded' ? 'completed' : 
                  body.data?.object?.status === 'failed' ? 'failed' : 'pending';
         amount = (body.data?.object?.amount || 0) / 100; // Stripe uses cents
+        currency = (body.data?.object?.currency || 'usd').toUpperCase();
         metadata = body.data?.object?.metadata || {};
+        payerEmail = body.data?.object?.receipt_email || body.data?.object?.billing_details?.email;
+        payerName = body.data?.object?.billing_details?.name;
         break;
         
       case 'payfast':
@@ -426,7 +481,10 @@ app.post('/webhook/:provider', async (c) => {
         status = body.payment_status === 'COMPLETE' ? 'completed' : 
                  body.payment_status === 'FAILED' ? 'failed' : 'pending';
         amount = parseFloat(body.amount_gross || '0');
+        currency = 'ZAR';
         metadata = { item_name: body.item_name, item_description: body.item_description };
+        payerEmail = body.email_address;
+        payerName = `${body.name_first || ''} ${body.name_last || ''}`.trim();
         break;
         
       case 'paypal':
@@ -434,7 +492,34 @@ app.post('/webhook/:provider', async (c) => {
         status = body.event_type?.includes('COMPLETED') ? 'completed' : 
                  body.event_type?.includes('DENIED') ? 'failed' : 'pending';
         amount = parseFloat(body.resource?.amount?.value || '0');
+        currency = body.resource?.amount?.currency_code || 'USD';
         metadata = body.resource?.custom_id ? { custom_id: body.resource.custom_id } : {};
+        payerEmail = body.resource?.payer?.email_address;
+        payerName = body.resource?.payer?.name?.given_name ? 
+          `${body.resource.payer.name.given_name} ${body.resource.payer.name.surname || ''}`.trim() : null;
+        break;
+        
+      case 'flutterwave':
+        externalId = body.data?.id?.toString();
+        status = body.data?.status === 'successful' ? 'completed' : 
+                 body.data?.status === 'failed' ? 'failed' : 'pending';
+        amount = body.data?.amount || 0;
+        currency = body.data?.currency || 'NGN';
+        metadata = body.data?.meta || {};
+        payerEmail = body.data?.customer?.email;
+        payerName = body.data?.customer?.name;
+        break;
+        
+      case 'razorpay':
+        const payment = body.payload?.payment?.entity;
+        externalId = payment?.id;
+        status = body.event === 'payment.captured' ? 'completed' : 
+                 body.event === 'payment.failed' ? 'failed' : 'pending';
+        amount = (payment?.amount || 0) / 100; // Razorpay uses paise
+        currency = (payment?.currency || 'INR').toUpperCase();
+        metadata = payment?.notes || {};
+        payerEmail = payment?.email;
+        payerName = payment?.contact;
         break;
         
       default:
