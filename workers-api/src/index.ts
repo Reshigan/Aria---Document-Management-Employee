@@ -29,6 +29,7 @@ import periods from './routes/periods';
 import approvals from './routes/approvals';
 import localization from './routes/localization';
 import verticals from './routes/verticals';
+import differentiators from './routes/differentiators';
 
 // Types
 interface Env {
@@ -268,6 +269,10 @@ app.route('/localization', localization);
 // Vertical Industry Packs (Distribution, Retail, Services/Projects)
 app.route('/api/verticals', verticals);
 app.route('/verticals', verticals);
+
+// Phase D Differentiators (WhatsApp, Mobile/Offline, Spreadsheet Migration)
+app.route('/api/differentiators', differentiators);
+app.route('/differentiators', differentiators);
 
 // Simple password hashing(for demo - use proper bcrypt in production)
 async function hashPassword(password: string): Promise<string> {
