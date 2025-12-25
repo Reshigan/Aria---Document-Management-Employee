@@ -1,8 +1,11 @@
 import { Hono } from 'hono';
+import { getSecureCompanyId, getSecureUserId } from '../middleware/auth';
+
 interface Env {
   DB: D1Database;
   DOCUMENTS: R2Bucket;
   JWT_SECRET: string;
+  ENVIRONMENT?: string;
 }
 
 const app = new Hono<{ Bindings: Env }>();
@@ -47,7 +50,7 @@ app.get('/providers', async (c) => {
 
 // List configured integrations
 app.get('/integrations', async (c) => {
-  const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+  const companyId = await getSecureCompanyId(c);
   
 
   try {
@@ -73,7 +76,7 @@ app.get('/integrations', async (c) => {
 
 // Add payment integration
 app.post('/integrations', async (c) => {
-  const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+  const companyId = await getSecureCompanyId(c);
   
 
   try {
@@ -115,7 +118,7 @@ app.post('/integrations', async (c) => {
 
 // Update payment integration
 app.put('/integrations/:id', async (c) => {
-  const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+  const companyId = await getSecureCompanyId(c);
   
 
   try {
@@ -150,7 +153,7 @@ app.put('/integrations/:id', async (c) => {
 
 // Delete payment integration
 app.delete('/integrations/:id', async (c) => {
-  const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+  const companyId = await getSecureCompanyId(c);
   
 
   try {
@@ -174,7 +177,7 @@ app.delete('/integrations/:id', async (c) => {
 
 // List payment transactions
 app.get('/transactions', async (c) => {
-  const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+  const companyId = await getSecureCompanyId(c);
   
 
   try {
@@ -248,7 +251,7 @@ app.get('/transactions', async (c) => {
 
 // Get payment transaction by ID
 app.get('/transactions/:id', async (c) => {
-  const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+  const companyId = await getSecureCompanyId(c);
   
 
   try {
@@ -278,7 +281,7 @@ app.get('/transactions/:id', async (c) => {
 
 // Create payment request (for invoice payment links)
 app.post('/request', async (c) => {
-  const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+  const companyId = await getSecureCompanyId(c);
   
 
   try {
@@ -333,7 +336,7 @@ app.post('/request', async (c) => {
 
 // Record manual payment
 app.post('/manual', async (c) => {
-  const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+  const companyId = await getSecureCompanyId(c);
   
 
   try {
@@ -499,7 +502,7 @@ app.post('/webhook/:provider', async (c) => {
 
 // Get payment analytics
 app.get('/analytics', async (c) => {
-  const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+  const companyId = await getSecureCompanyId(c);
   
 
   try {

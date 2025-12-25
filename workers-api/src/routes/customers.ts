@@ -4,10 +4,12 @@
  */
 
 import { Hono } from 'hono';
+import { getSecureCompanyId } from '../middleware/auth';
 
 interface Env {
   DB: D1Database;
   JWT_SECRET: string;
+  ENVIRONMENT?: string;
 }
 
 interface Customer {
@@ -33,7 +35,7 @@ const customers = new Hono<{ Bindings: Env }>();
 // List all customers
 customers.get('/', async (c) => {
   try {
-    const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+    const companyId = await getSecureCompanyId(c);
     const search = c.req.query('search') || '';
     const page = parseInt(c.req.query('page') || '1');
     const pageSize = parseInt(c.req.query('page_size') || '50');
@@ -108,7 +110,7 @@ customers.get('/', async (c) => {
 customers.get('/:id', async (c) => {
   try {
     const customerId = c.req.param('id');
-    const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+    const companyId = await getSecureCompanyId(c);
 
     const customer = await c.env.DB.prepare(`
       SELECT c.*,
@@ -151,7 +153,7 @@ customers.get('/:id', async (c) => {
 // Create customer
 customers.post('/', async (c) => {
   try {
-    const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+    const companyId = await getSecureCompanyId(c);
     const body = await c.req.json<Partial<Customer>>();
 
     if (!body.customer_name) {
@@ -208,7 +210,7 @@ customers.post('/', async (c) => {
 customers.put('/:id', async (c) => {
   try {
     const customerId = c.req.param('id');
-    const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+    const companyId = await getSecureCompanyId(c);
     const body = await c.req.json<Partial<Customer>>();
 
     const result = await c.env.DB.prepare(`
@@ -254,7 +256,7 @@ customers.put('/:id', async (c) => {
 customers.delete('/:id', async (c) => {
   try {
     const customerId = c.req.param('id');
-    const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+    const companyId = await getSecureCompanyId(c);
 
     const result = await c.env.DB.prepare(
       'DELETE FROM customers WHERE id = ? AND company_id = ?'

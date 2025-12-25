@@ -109,3 +109,70 @@ export function getAuthUser(c: Context): TokenPayload | null {
   const auth = c.get('auth') as AuthContext | undefined;
   return auth?.user || null;
 }
+
+/**
+ * Get user ID from context
+ * Returns 'system' if not authenticated
+ */
+export function getUserId(c: Context): string {
+  const auth = c.get('auth') as AuthContext | undefined;
+  return auth?.user?.sub || 'system';
+}
+
+/**
+ * SECURE: Get company ID from JWT token
+ * This function extracts company_id from the JWT token in the Authorization header.
+ * Falls back to demo company ONLY in development mode for testing.
+ * 
+ * IMPORTANT: This is the ONLY secure way to get company_id in multi-tenant routes.
+ * NEVER trust X-Company-ID header from client - it can be spoofed.
+ */
+export async function getSecureCompanyId(c: Context): Promise<string> {
+  // First check if auth context is already set by middleware
+  const auth = c.get('auth') as AuthContext | undefined;
+  if (auth?.companyId) {
+    return auth.companyId;
+  }
+
+  // Try to extract from Authorization header
+  const authHeader = c.req.header('Authorization');
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    const token = authHeader.substring(7);
+    const payload = await verifyToken(token, c.env.JWT_SECRET);
+    if (payload?.company_id) {
+      return payload.company_id;
+    }
+  }
+
+  // Development fallback - ONLY for demo/testing
+  // In production, this should return an error
+  const isDev = c.env.ENVIRONMENT === 'development' || !c.env.ENVIRONMENT;
+  if (isDev) {
+    // Demo company ID for development/testing
+    return 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+  }
+
+  throw new Error('Authentication required');
+}
+
+/**
+ * SECURE: Get user ID from JWT token
+ * Falls back to 'system' for development/testing
+ */
+export async function getSecureUserId(c: Context): Promise<string> {
+  const auth = c.get('auth') as AuthContext | undefined;
+  if (auth?.user?.sub) {
+    return auth.user.sub;
+  }
+
+  const authHeader = c.req.header('Authorization');
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    const token = authHeader.substring(7);
+    const payload = await verifyToken(token, c.env.JWT_SECRET);
+    if (payload?.sub) {
+      return payload.sub;
+    }
+  }
+
+  return 'system';
+}

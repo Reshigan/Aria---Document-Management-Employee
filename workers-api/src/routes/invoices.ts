@@ -4,10 +4,12 @@
  */
 
 import { Hono } from 'hono';
+import { getSecureCompanyId } from '../middleware/auth';
 
 interface Env {
   DB: D1Database;
   JWT_SECRET: string;
+  ENVIRONMENT?: string;
 }
 
 interface CustomerInvoice {
@@ -61,7 +63,7 @@ const invoices = new Hono<{ Bindings: Env }>();
 // List customer invoices
 invoices.get('/customer', async (c) => {
   try {
-    const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+    const companyId = await getSecureCompanyId(c);
     const status = c.req.query('status') || '';
     const customerId = c.req.query('customer_id') || '';
     const page = parseInt(c.req.query('page') || '1');
@@ -140,7 +142,7 @@ invoices.get('/customer', async (c) => {
 invoices.get('/customer/:id', async (c) => {
   try {
     const invoiceId = c.req.param('id');
-    const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+    const companyId = await getSecureCompanyId(c);
 
     const invoice = await c.env.DB.prepare(`
       SELECT ci.*, c.customer_name, c.customer_code, c.email as customer_email
@@ -175,7 +177,7 @@ invoices.get('/customer/:id', async (c) => {
 invoices.put('/customer/:id/status', async (c) => {
   try {
     const invoiceId = c.req.param('id');
-    const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+    const companyId = await getSecureCompanyId(c);
     const body = await c.req.json<{ status: string }>();
 
     const validStatuses = ['draft', 'sent', 'posted', 'partial', 'paid', 'overdue', 'cancelled'];
@@ -202,7 +204,7 @@ invoices.put('/customer/:id/status', async (c) => {
 invoices.post('/customer/:id/payment', async (c) => {
   try {
     const invoiceId = c.req.param('id');
-    const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+    const companyId = await getSecureCompanyId(c);
     const body = await c.req.json<{ amount: number; payment_method?: string; reference?: string }>();
 
     if (!body.amount || body.amount <= 0) {
@@ -277,7 +279,7 @@ invoices.post('/customer/:id/payment', async (c) => {
 // List supplier invoices
 invoices.get('/supplier', async (c) => {
   try {
-    const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+    const companyId = await getSecureCompanyId(c);
     const status = c.req.query('status') || '';
     const supplierId = c.req.query('supplier_id') || '';
     const page = parseInt(c.req.query('page') || '1');
@@ -356,7 +358,7 @@ invoices.get('/supplier', async (c) => {
 invoices.get('/supplier/:id', async (c) => {
   try {
     const invoiceId = c.req.param('id');
-    const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+    const companyId = await getSecureCompanyId(c);
 
     const invoice = await c.env.DB.prepare(`
       SELECT si.*, s.supplier_name, s.supplier_code, s.email as supplier_email
@@ -380,7 +382,7 @@ invoices.get('/supplier/:id', async (c) => {
 invoices.put('/supplier/:id/status', async (c) => {
   try {
     const invoiceId = c.req.param('id');
-    const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+    const companyId = await getSecureCompanyId(c);
     const body = await c.req.json<{ status: string }>();
 
     const validStatuses = ['draft', 'received', 'approved', 'partial', 'paid', 'overdue', 'cancelled'];
@@ -407,7 +409,7 @@ invoices.put('/supplier/:id/status', async (c) => {
 invoices.post('/supplier/:id/payment', async (c) => {
   try {
     const invoiceId = c.req.param('id');
-    const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+    const companyId = await getSecureCompanyId(c);
     const body = await c.req.json<{ amount: number; payment_method?: string; reference?: string }>();
 
     if (!body.amount || body.amount <= 0) {

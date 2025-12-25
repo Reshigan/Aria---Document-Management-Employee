@@ -1,8 +1,11 @@
 import { Hono } from 'hono';
+import { getSecureCompanyId, getSecureUserId } from '../middleware/auth';
+
 interface Env {
   DB: D1Database;
   DOCUMENTS: R2Bucket;
   JWT_SECRET: string;
+  ENVIRONMENT?: string;
 }
 
 const app = new Hono<{ Bindings: Env }>();
@@ -13,7 +16,7 @@ const app = new Hono<{ Bindings: Env }>();
 
 // List bot executions
 app.get('/executions', async (c) => {
-  const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+  const companyId = await getSecureCompanyId(c);
   
 
   try {
@@ -87,7 +90,7 @@ app.get('/executions', async (c) => {
 
 // Get execution details
 app.get('/executions/:id', async (c) => {
-  const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+  const companyId = await getSecureCompanyId(c);
   
 
   try {
@@ -121,7 +124,7 @@ app.get('/executions/:id', async (c) => {
 
 // Start bot execution (for tracking)
 app.post('/executions', async (c) => {
-  const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+  const companyId = await getSecureCompanyId(c);
   
 
   try {
@@ -156,7 +159,7 @@ app.post('/executions', async (c) => {
 
 // Update execution status
 app.patch('/executions/:id', async (c) => {
-  const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+  const companyId = await getSecureCompanyId(c);
   
 
   try {
@@ -240,7 +243,7 @@ app.patch('/executions/:id', async (c) => {
 
 // List exceptions
 app.get('/exceptions', async (c) => {
-  const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+  const companyId = await getSecureCompanyId(c);
   
 
   try {
@@ -316,7 +319,7 @@ app.get('/exceptions', async (c) => {
 
 // Get exception details
 app.get('/exceptions/:id', async (c) => {
-  const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+  const companyId = await getSecureCompanyId(c);
   
 
   try {
@@ -352,7 +355,7 @@ app.get('/exceptions/:id', async (c) => {
 
 // Create exception
 app.post('/exceptions', async (c) => {
-  const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+  const companyId = await getSecureCompanyId(c);
   
 
   try {
@@ -393,14 +396,14 @@ app.post('/exceptions', async (c) => {
 
 // Resolve exception
 app.post('/exceptions/:id/resolve', async (c) => {
-  const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+  const companyId = await getSecureCompanyId(c);
   
 
   try {
     const exceptionId = c.req.param('id');
     const body = await c.req.json();
     const db = c.env.DB;
-    const userId = 'system';
+    const userId = await getSecureUserId(c);
     
     await db.prepare(`
       UPDATE bot_exceptions SET
@@ -430,7 +433,7 @@ app.post('/exceptions/:id/resolve', async (c) => {
 
 // Assign exception
 app.post('/exceptions/:id/assign', async (c) => {
-  const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+  const companyId = await getSecureCompanyId(c);
   
 
   try {
@@ -460,14 +463,14 @@ app.post('/exceptions/:id/assign', async (c) => {
 
 // Dismiss exception
 app.post('/exceptions/:id/dismiss', async (c) => {
-  const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+  const companyId = await getSecureCompanyId(c);
   
 
   try {
     const exceptionId = c.req.param('id');
     const body = await c.req.json();
     const db = c.env.DB;
-    const userId = 'system';
+    const userId = await getSecureUserId(c);
     
     await db.prepare(`
       UPDATE bot_exceptions SET
@@ -499,7 +502,7 @@ app.post('/exceptions/:id/dismiss', async (c) => {
 
 // Get bot performance metrics
 app.get('/metrics', async (c) => {
-  const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+  const companyId = await getSecureCompanyId(c);
   
 
   try {
@@ -592,7 +595,7 @@ app.get('/metrics', async (c) => {
 
 // Get bot health status
 app.get('/health', async (c) => {
-  const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+  const companyId = await getSecureCompanyId(c);
   
 
   try {
