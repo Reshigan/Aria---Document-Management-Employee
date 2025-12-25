@@ -20,6 +20,11 @@ import invoices from './routes/invoices';
 import dashboard from './routes/dashboard';
 import askAria from './routes/ask-aria';
 import bots from './routes/bots';
+import gl from './routes/gl';
+import admin from './routes/admin';
+import hr from './routes/hr';
+import reports from './routes/reports';
+import onboarding from './routes/onboarding';
 
 // Types
 interface Env {
@@ -223,6 +228,26 @@ app.route('/admin/agents', bots);
 // Route alias for frontend Agents.tsx which calls /api/bots
 app.route('/api/bots', bots);
 app.route('/bots', bots);
+
+// General Ledger routes
+app.route('/api/erp/gl', gl);
+app.route('/erp/gl', gl);
+
+// Admin routes (company settings)
+app.route('/api/admin', admin);
+app.route('/admin', admin);
+
+// HR routes (employees, departments)
+app.route('/api/hr', hr);
+app.route('/hr', hr);
+
+// Reports routes (trial balance, income statement, balance sheet)
+app.route('/api/erp/reports', reports);
+app.route('/erp/reports', reports);
+
+// Onboarding routes (guided setup wizard)
+app.route('/api/onboarding', onboarding);
+app.route('/onboarding', onboarding);
 
 // Simple password hashing (for demo - use proper bcrypt in production)
 async function hashPassword(password: string): Promise<string> {
