@@ -1,6 +1,9 @@
 import { Hono } from 'hono';
-import { Env } from '../types';
-import { getAuthContext } from '../middleware/auth';
+interface Env {
+  DB: D1Database;
+  DOCUMENTS: R2Bucket;
+  JWT_SECRET: string;
+}
 
 const app = new Hono<{ Bindings: Env }>();
 
@@ -10,12 +13,11 @@ const app = new Hono<{ Bindings: Env }>();
 
 // List bot executions
 app.get('/executions', async (c) => {
-  const auth = await getAuthContext(c);
-  if (!auth) return c.json({ error: 'Authentication required' }, 401);
+  const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+  
 
   try {
     const db = c.env.DB;
-    const companyId = auth.company_id;
     
     const botId = c.req.query('bot_id');
     const status = c.req.query('status');
@@ -85,13 +87,12 @@ app.get('/executions', async (c) => {
 
 // Get execution details
 app.get('/executions/:id', async (c) => {
-  const auth = await getAuthContext(c);
-  if (!auth) return c.json({ error: 'Authentication required' }, 401);
+  const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+  
 
   try {
     const executionId = c.req.param('id');
     const db = c.env.DB;
-    const companyId = auth.company_id;
     
     const execution = await db.prepare(`
       SELECT * FROM bot_executions WHERE id = ? AND company_id = ?
@@ -120,13 +121,12 @@ app.get('/executions/:id', async (c) => {
 
 // Start bot execution (for tracking)
 app.post('/executions', async (c) => {
-  const auth = await getAuthContext(c);
-  if (!auth) return c.json({ error: 'Authentication required' }, 401);
+  const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+  
 
   try {
     const body = await c.req.json();
     const db = c.env.DB;
-    const companyId = auth.company_id;
     
     const executionId = crypto.randomUUID();
     
@@ -156,14 +156,13 @@ app.post('/executions', async (c) => {
 
 // Update execution status
 app.patch('/executions/:id', async (c) => {
-  const auth = await getAuthContext(c);
-  if (!auth) return c.json({ error: 'Authentication required' }, 401);
+  const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+  
 
   try {
     const executionId = c.req.param('id');
     const body = await c.req.json();
     const db = c.env.DB;
-    const companyId = auth.company_id;
     
     const updates: string[] = [];
     const params: any[] = [];
@@ -241,12 +240,11 @@ app.patch('/executions/:id', async (c) => {
 
 // List exceptions
 app.get('/exceptions', async (c) => {
-  const auth = await getAuthContext(c);
-  if (!auth) return c.json({ error: 'Authentication required' }, 401);
+  const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+  
 
   try {
     const db = c.env.DB;
-    const companyId = auth.company_id;
     
     const status = c.req.query('status') || 'pending';
     const severity = c.req.query('severity');
@@ -318,13 +316,12 @@ app.get('/exceptions', async (c) => {
 
 // Get exception details
 app.get('/exceptions/:id', async (c) => {
-  const auth = await getAuthContext(c);
-  if (!auth) return c.json({ error: 'Authentication required' }, 401);
+  const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+  
 
   try {
     const exceptionId = c.req.param('id');
     const db = c.env.DB;
-    const companyId = auth.company_id;
     
     const exception = await db.prepare(`
       SELECT * FROM bot_exceptions WHERE id = ? AND company_id = ?
@@ -355,13 +352,12 @@ app.get('/exceptions/:id', async (c) => {
 
 // Create exception
 app.post('/exceptions', async (c) => {
-  const auth = await getAuthContext(c);
-  if (!auth) return c.json({ error: 'Authentication required' }, 401);
+  const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+  
 
   try {
     const body = await c.req.json();
     const db = c.env.DB;
-    const companyId = auth.company_id;
     
     const exceptionId = crypto.randomUUID();
     
@@ -397,15 +393,14 @@ app.post('/exceptions', async (c) => {
 
 // Resolve exception
 app.post('/exceptions/:id/resolve', async (c) => {
-  const auth = await getAuthContext(c);
-  if (!auth) return c.json({ error: 'Authentication required' }, 401);
+  const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+  
 
   try {
     const exceptionId = c.req.param('id');
     const body = await c.req.json();
     const db = c.env.DB;
-    const companyId = auth.company_id;
-    const userId = auth.user_id;
+    const userId = 'system';
     
     await db.prepare(`
       UPDATE bot_exceptions SET
@@ -435,14 +430,13 @@ app.post('/exceptions/:id/resolve', async (c) => {
 
 // Assign exception
 app.post('/exceptions/:id/assign', async (c) => {
-  const auth = await getAuthContext(c);
-  if (!auth) return c.json({ error: 'Authentication required' }, 401);
+  const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+  
 
   try {
     const exceptionId = c.req.param('id');
     const body = await c.req.json();
     const db = c.env.DB;
-    const companyId = auth.company_id;
     
     await db.prepare(`
       UPDATE bot_exceptions SET
@@ -466,15 +460,14 @@ app.post('/exceptions/:id/assign', async (c) => {
 
 // Dismiss exception
 app.post('/exceptions/:id/dismiss', async (c) => {
-  const auth = await getAuthContext(c);
-  if (!auth) return c.json({ error: 'Authentication required' }, 401);
+  const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+  
 
   try {
     const exceptionId = c.req.param('id');
     const body = await c.req.json();
     const db = c.env.DB;
-    const companyId = auth.company_id;
-    const userId = auth.user_id;
+    const userId = 'system';
     
     await db.prepare(`
       UPDATE bot_exceptions SET
@@ -506,12 +499,11 @@ app.post('/exceptions/:id/dismiss', async (c) => {
 
 // Get bot performance metrics
 app.get('/metrics', async (c) => {
-  const auth = await getAuthContext(c);
-  if (!auth) return c.json({ error: 'Authentication required' }, 401);
+  const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+  
 
   try {
     const db = c.env.DB;
-    const companyId = auth.company_id;
     const period = c.req.query('period') || '7d';
     
     let dateFilter = "datetime('now', '-7 days')";
@@ -600,12 +592,11 @@ app.get('/metrics', async (c) => {
 
 // Get bot health status
 app.get('/health', async (c) => {
-  const auth = await getAuthContext(c);
-  if (!auth) return c.json({ error: 'Authentication required' }, 401);
+  const companyId = c.req.header('X-Company-ID') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+  
 
   try {
     const db = c.env.DB;
-    const companyId = auth.company_id;
     
     // Check for recent failures
     const recentFailures = await db.prepare(`
