@@ -37,3 +37,8 @@ command = "npm run build"
 [dev]
 port = 8787
 local_protocol = "http"
+
+# Scheduled triggers for autonomous bot execution
+# Runs every hour to process pending bot tasks
+[triggers]
+crons = ["0 * * * *"]
