@@ -28,6 +28,7 @@ import onboarding from './routes/onboarding';
 import periods from './routes/periods';
 import approvals from './routes/approvals';
 import localization from './routes/localization';
+import verticals from './routes/verticals';
 
 // Types
 interface Env {
@@ -263,6 +264,10 @@ app.route('/approvals', approvals);
 // Country Localization routes (tax calculations, e-invoicing, payroll)
 app.route('/api/localization', localization);
 app.route('/localization', localization);
+
+// Vertical Industry Packs (Distribution, Retail, Services/Projects)
+app.route('/api/verticals', verticals);
+app.route('/verticals', verticals);
 
 // Simple password hashing(for demo - use proper bcrypt in production)
 async function hashPassword(password: string): Promise<string> {
