@@ -77,7 +77,8 @@ export default function Customers() {
     try {
       setLoading(true);
       const response = await api.get('/erp/order-to-cash/customers');
-      setCustomers(response.data);
+      const data = response.data?.data || response.data || [];
+      setCustomers(Array.isArray(data) ? data : []);
       setError(null);
     } catch (error: any) {
       console.error('Failed to load customers:', error);

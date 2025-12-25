@@ -75,7 +75,8 @@ export default function WMSStock() {
       if (searchTerm) params.search = searchTerm;
       
       const response = await api.get('/erp/order-to-cash/products', { params });
-      setProducts(response.data);
+      const data = response.data?.data || response.data || [];
+      setProducts(Array.isArray(data) ? data : []);
       setError(null);
     } catch (err: any) {
       console.error('Error loading products:', err);
@@ -92,7 +93,8 @@ export default function WMSStock() {
       if (warehouseFilter) params.warehouse_id = warehouseFilter;
       
       const response = await api.get('/erp/order-to-cash/stock-on-hand', { params });
-      setStock(response.data);
+      const data = response.data?.data || response.data || [];
+      setStock(Array.isArray(data) ? data : []);
       setError(null);
     } catch (err: any) {
       console.error('Error loading stock:', err);
@@ -105,7 +107,8 @@ export default function WMSStock() {
   const loadWarehouses = async () => {
     try {
       const response = await api.get('/erp/order-to-cash/warehouses');
-      setWarehouses(response.data);
+      const data = response.data?.data || response.data || [];
+      setWarehouses(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error('Error loading warehouses:', err);
     }

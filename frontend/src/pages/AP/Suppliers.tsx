@@ -51,7 +51,8 @@ export default function Suppliers() {
     try {
       setLoading(true);
       const response = await api.get('/erp/master-data/suppliers');
-      setSuppliers(response.data);
+      const data = response.data?.data || response.data || [];
+      setSuppliers(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('Error loading suppliers:', error);
     } finally {

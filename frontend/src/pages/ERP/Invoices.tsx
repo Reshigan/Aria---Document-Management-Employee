@@ -65,7 +65,8 @@ export default function Invoices() {
       if (statusFilter) params.status = statusFilter;
       
       const response = await api.get('/erp/order-to-cash/invoices', { params });
-      setInvoices(response.data);
+      const data = response.data?.data || response.data || [];
+      setInvoices(Array.isArray(data) ? data : []);
       setError(null);
     } catch (err: any) {
       console.error('Error loading invoices:', err);
@@ -78,7 +79,8 @@ export default function Invoices() {
   const loadProducts = async () => {
     try {
       const response = await api.get('/erp/order-to-cash/products');
-      setProducts(response.data);
+      const data = response.data?.data || response.data || [];
+      setProducts(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error('Error loading products:', err);
     }
