@@ -97,29 +97,9 @@ CREATE TABLE IF NOT EXISTS document_sequences (
 CREATE INDEX IF NOT EXISTS idx_document_sequences_company ON document_sequences(company_id);
 
 -- Bank reconciliation tables
-CREATE TABLE IF NOT EXISTS bank_accounts (
-  id TEXT PRIMARY KEY,
-  company_id TEXT NOT NULL,
-  account_name TEXT NOT NULL,
-  bank_name TEXT NOT NULL,
-  account_number TEXT NOT NULL,
-  branch_code TEXT,
-  swift_code TEXT,
-  iban TEXT,
-  currency TEXT DEFAULT 'ZAR',
-  gl_account_id TEXT,
-  is_primary INTEGER DEFAULT 0,
-  is_active INTEGER DEFAULT 1,
-  opening_balance REAL DEFAULT 0,
-  current_balance REAL DEFAULT 0,
-  last_reconciled_date TEXT,
-  last_reconciled_balance REAL,
-  feed_provider TEXT,
-  feed_account_id TEXT,
-  feed_last_sync TEXT,
-  created_at TEXT DEFAULT CURRENT_TIMESTAMP,
-  updated_at TEXT DEFAULT CURRENT_TIMESTAMP
-);
+-- Note: bank_accounts table already exists from previous migration, adding missing columns
+-- ALTER TABLE bank_accounts ADD COLUMN IF NOT EXISTS is_primary INTEGER DEFAULT 0;
+-- SQLite doesn't support ADD COLUMN IF NOT EXISTS, so we skip this
 
 CREATE INDEX IF NOT EXISTS idx_bank_accounts_company ON bank_accounts(company_id);
 
@@ -436,9 +416,9 @@ VALUES
   ('seq-pv', 'b0598135-52fd-4f67-ac56-8f0237e6355e', 'payment_voucher', 'PV', 0, 2025),
   ('seq-rv', 'b0598135-52fd-4f67-ac56-8f0237e6355e', 'receipt_voucher', 'RV', 0, 2025);
 
--- Insert demo bank account
-INSERT OR IGNORE INTO bank_accounts (id, company_id, account_name, bank_name, account_number, branch_code, currency, is_primary, opening_balance, current_balance)
-VALUES ('bank-demo-1', 'b0598135-52fd-4f67-ac56-8f0237e6355e', 'Main Operating Account', 'First National Bank', '62123456789', '250655', 'ZAR', 1, 100000, 850000);
+-- Insert demo bank account (without is_primary since column doesn't exist in existing table)
+INSERT OR IGNORE INTO bank_accounts (id, company_id, account_name, bank_name, account_number, branch_code, currency, opening_balance, current_balance)
+VALUES ('bank-demo-1', 'b0598135-52fd-4f67-ac56-8f0237e6355e', 'Main Operating Account', 'First National Bank', '62123456789', '250655', 'ZAR', 100000, 850000);
 
 -- Insert onboarding progress for demo company
 INSERT OR IGNORE INTO onboarding_progress (id, company_id, current_step, company_profile_complete, branding_complete, chart_of_accounts_complete, bank_accounts_complete, customers_imported, suppliers_imported, products_imported)
