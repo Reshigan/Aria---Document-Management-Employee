@@ -4,7 +4,8 @@
  */
 
 import { Hono } from 'hono';
-import { getSecureCompanyId } from '../middleware/auth';
+import { getSecureCompanyId, getSecureUserId } from '../middleware/auth';
+import { postCustomerInvoice, postCustomerPayment, postSupplierInvoice, postSupplierPayment } from '../services/gl-posting-engine';
 
 interface Env {
   DB: D1Database;
@@ -178,11 +179,24 @@ invoices.put('/customer/:id/status', async (c) => {
   try {
     const invoiceId = c.req.param('id');
     const companyId = await getSecureCompanyId(c);
+    const userId = await getSecureUserId(c);
     const body = await c.req.json<{ status: string }>();
 
     const validStatuses = ['draft', 'sent', 'posted', 'partial', 'paid', 'overdue', 'cancelled'];
     if (!validStatuses.includes(body.status)) {
       return c.json({ error: 'Invalid status' }, 400);
+    }
+
+    // Get invoice details for GL posting
+    const invoice = await c.env.DB.prepare(`
+      SELECT ci.*, c.customer_name
+      FROM customer_invoices ci
+      LEFT JOIN customers c ON ci.customer_id = c.id
+      WHERE ci.id = ? AND ci.company_id = ?
+    `).bind(invoiceId, companyId).first<CustomerInvoice & { customer_name: string }>();
+
+    if (!invoice) {
+      return c.json({ error: 'Invoice not found' }, 404);
     }
 
     const result = await c.env.DB.prepare(`
@@ -193,7 +207,28 @@ invoices.put('/customer/:id/status', async (c) => {
       return c.json({ error: 'Invoice not found' }, 404);
     }
 
-    return c.json({ message: 'Invoice status updated successfully' });
+    // Post to GL when status changes to 'posted'
+    let glPostingResult = null;
+    if (body.status === 'posted' && invoice.status !== 'posted') {
+      glPostingResult = await postCustomerInvoice(c.env.DB, companyId, userId, {
+        id: invoice.id,
+        invoice_number: invoice.invoice_number,
+        invoice_date: invoice.invoice_date,
+        customer_name: invoice.customer_name || 'Unknown Customer',
+        subtotal: invoice.subtotal,
+        tax_amount: invoice.tax_amount,
+        total_amount: invoice.total_amount
+      });
+      
+      if (!glPostingResult.success) {
+        console.error('GL posting failed:', glPostingResult.error);
+      }
+    }
+
+    return c.json({ 
+      message: 'Invoice status updated successfully',
+      gl_posting: glPostingResult
+    });
   } catch (error) {
     console.error('Update invoice status error:', error);
     return c.json({ error: 'Internal server error' }, 500);
@@ -205,16 +240,20 @@ invoices.post('/customer/:id/payment', async (c) => {
   try {
     const invoiceId = c.req.param('id');
     const companyId = await getSecureCompanyId(c);
+    const userId = await getSecureUserId(c);
     const body = await c.req.json<{ amount: number; payment_method?: string; reference?: string }>();
 
     if (!body.amount || body.amount <= 0) {
       return c.json({ error: 'Valid payment amount is required' }, 400);
     }
 
-    // Get invoice
-    const invoice = await c.env.DB.prepare(
-      'SELECT * FROM customer_invoices WHERE id = ? AND company_id = ?'
-    ).bind(invoiceId, companyId).first<CustomerInvoice>();
+    // Get invoice with customer name
+    const invoice = await c.env.DB.prepare(`
+      SELECT ci.*, c.customer_name
+      FROM customer_invoices ci
+      LEFT JOIN customers c ON ci.customer_id = c.id
+      WHERE ci.id = ? AND ci.company_id = ?
+    `).bind(invoiceId, companyId).first<CustomerInvoice & { customer_name: string }>();
 
     if (!invoice) {
       return c.json({ error: 'Invoice not found' }, 404);
@@ -230,6 +269,7 @@ invoices.post('/customer/:id/payment', async (c) => {
 
     const paymentId = crypto.randomUUID();
     const now = new Date().toISOString();
+    const paymentDate = now.split('T')[0];
 
     // Create payment record
     await c.env.DB.prepare(`
@@ -241,7 +281,7 @@ invoices.post('/customer/:id/payment', async (c) => {
       paymentNumber,
       invoice.customer_id,
       invoiceId,
-      now.split('T')[0],
+      paymentDate,
       body.amount,
       body.payment_method || 'bank_transfer',
       body.reference || null,
@@ -259,12 +299,26 @@ invoices.post('/customer/:id/payment', async (c) => {
       WHERE id = ?
     `).bind(newAmountPaid, Math.max(0, newBalanceDue), newStatus, now, invoiceId).run();
 
+    // Post payment to GL
+    const glPostingResult = await postCustomerPayment(c.env.DB, companyId, userId, {
+      id: paymentId,
+      payment_number: paymentNumber,
+      payment_date: paymentDate,
+      customer_name: invoice.customer_name || 'Unknown Customer',
+      amount: body.amount
+    });
+
+    if (!glPostingResult.success) {
+      console.error('GL posting failed for payment:', glPostingResult.error);
+    }
+
     return c.json({
       id: paymentId,
       payment_number: paymentNumber,
       amount: body.amount,
       balance_due: Math.max(0, newBalanceDue),
       message: 'Payment recorded successfully',
+      gl_posting: glPostingResult
     }, 201);
   } catch (error) {
     console.error('Record payment error:', error);
@@ -383,11 +437,24 @@ invoices.put('/supplier/:id/status', async (c) => {
   try {
     const invoiceId = c.req.param('id');
     const companyId = await getSecureCompanyId(c);
+    const userId = await getSecureUserId(c);
     const body = await c.req.json<{ status: string }>();
 
     const validStatuses = ['draft', 'received', 'approved', 'partial', 'paid', 'overdue', 'cancelled'];
     if (!validStatuses.includes(body.status)) {
       return c.json({ error: 'Invalid status' }, 400);
+    }
+
+    // Get invoice details for GL posting
+    const invoice = await c.env.DB.prepare(`
+      SELECT si.*, s.supplier_name
+      FROM supplier_invoices si
+      LEFT JOIN suppliers s ON si.supplier_id = s.id
+      WHERE si.id = ? AND si.company_id = ?
+    `).bind(invoiceId, companyId).first<SupplierInvoice & { supplier_name: string }>();
+
+    if (!invoice) {
+      return c.json({ error: 'Invoice not found' }, 404);
     }
 
     const result = await c.env.DB.prepare(`
@@ -398,7 +465,28 @@ invoices.put('/supplier/:id/status', async (c) => {
       return c.json({ error: 'Invoice not found' }, 404);
     }
 
-    return c.json({ message: 'Invoice status updated successfully' });
+    // Post to GL when status changes to 'approved'
+    let glPostingResult = null;
+    if (body.status === 'approved' && invoice.status !== 'approved') {
+      glPostingResult = await postSupplierInvoice(c.env.DB, companyId, userId, {
+        id: invoice.id,
+        invoice_number: invoice.invoice_number,
+        invoice_date: invoice.invoice_date,
+        supplier_name: invoice.supplier_name || 'Unknown Supplier',
+        subtotal: invoice.subtotal,
+        tax_amount: invoice.tax_amount,
+        total_amount: invoice.total_amount
+      });
+      
+      if (!glPostingResult.success) {
+        console.error('GL posting failed:', glPostingResult.error);
+      }
+    }
+
+    return c.json({ 
+      message: 'Invoice status updated successfully',
+      gl_posting: glPostingResult
+    });
   } catch (error) {
     console.error('Update supplier invoice status error:', error);
     return c.json({ error: 'Internal server error' }, 500);
@@ -410,16 +498,20 @@ invoices.post('/supplier/:id/payment', async (c) => {
   try {
     const invoiceId = c.req.param('id');
     const companyId = await getSecureCompanyId(c);
+    const userId = await getSecureUserId(c);
     const body = await c.req.json<{ amount: number; payment_method?: string; reference?: string }>();
 
     if (!body.amount || body.amount <= 0) {
       return c.json({ error: 'Valid payment amount is required' }, 400);
     }
 
-    // Get invoice
-    const invoice = await c.env.DB.prepare(
-      'SELECT * FROM supplier_invoices WHERE id = ? AND company_id = ?'
-    ).bind(invoiceId, companyId).first<SupplierInvoice>();
+    // Get invoice with supplier name
+    const invoice = await c.env.DB.prepare(`
+      SELECT si.*, s.supplier_name
+      FROM supplier_invoices si
+      LEFT JOIN suppliers s ON si.supplier_id = s.id
+      WHERE si.id = ? AND si.company_id = ?
+    `).bind(invoiceId, companyId).first<SupplierInvoice & { supplier_name: string }>();
 
     if (!invoice) {
       return c.json({ error: 'Invoice not found' }, 404);
@@ -435,6 +527,7 @@ invoices.post('/supplier/:id/payment', async (c) => {
 
     const paymentId = crypto.randomUUID();
     const now = new Date().toISOString();
+    const paymentDate = now.split('T')[0];
 
     // Create payment record
     await c.env.DB.prepare(`
@@ -446,7 +539,7 @@ invoices.post('/supplier/:id/payment', async (c) => {
       paymentNumber,
       invoice.supplier_id,
       invoiceId,
-      now.split('T')[0],
+      paymentDate,
       body.amount,
       body.payment_method || 'bank_transfer',
       body.reference || null,
@@ -464,12 +557,26 @@ invoices.post('/supplier/:id/payment', async (c) => {
       WHERE id = ?
     `).bind(newAmountPaid, Math.max(0, newBalanceDue), newStatus, now, invoiceId).run();
 
+    // Post payment to GL
+    const glPostingResult = await postSupplierPayment(c.env.DB, companyId, userId, {
+      id: paymentId,
+      payment_number: paymentNumber,
+      payment_date: paymentDate,
+      supplier_name: invoice.supplier_name || 'Unknown Supplier',
+      amount: body.amount
+    });
+
+    if (!glPostingResult.success) {
+      console.error('GL posting failed for supplier payment:', glPostingResult.error);
+    }
+
     return c.json({
       id: paymentId,
       payment_number: paymentNumber,
       amount: body.amount,
       balance_due: Math.max(0, newBalanceDue),
       message: 'Payment recorded successfully',
+      gl_posting: glPostingResult
     }, 201);
   } catch (error) {
     console.error('Record supplier payment error:', error);
