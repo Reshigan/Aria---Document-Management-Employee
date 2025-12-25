@@ -51,7 +51,8 @@ export default function Customers() {
     try {
       setLoading(true);
       const response = await api.get('/erp/master-data/customers');
-      setCustomers(response.data);
+      const data = response.data?.data || response.data || [];
+      setCustomers(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('Error loading customers:', error);
     } finally {

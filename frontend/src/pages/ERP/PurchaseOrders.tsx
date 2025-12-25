@@ -68,7 +68,8 @@ export default function PurchaseOrders() {
     try {
       setLoading(true);
       const response = await api.get('/erp/procure-to-pay/purchase-orders');
-      setOrders(response.data);
+      const data = response.data?.data || response.data || [];
+      setOrders(Array.isArray(data) ? data : []);
       setError(null);
     } catch (err: any) {
       console.error('Error loading purchase orders:', err);
@@ -81,7 +82,8 @@ export default function PurchaseOrders() {
   const loadSuppliers = async () => {
     try {
       const response = await api.get('/erp/procure-to-pay/suppliers');
-      setSuppliers(response.data);
+      const data = response.data?.data || response.data || [];
+      setSuppliers(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error('Error loading suppliers:', err);
     }
@@ -90,7 +92,8 @@ export default function PurchaseOrders() {
   const loadProducts = async () => {
     try {
       const response = await api.get('/erp/order-to-cash/products');
-      setProducts(response.data);
+      const data = response.data?.data || response.data || [];
+      setProducts(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error('Error loading products:', err);
     }

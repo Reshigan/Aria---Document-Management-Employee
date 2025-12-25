@@ -102,7 +102,8 @@ export default function SalesOrderDetail() {
       const response = await api.get('/erp/order-to-cash/deliveries', {
         params: { sales_order_id: orderId }
       });
-      setDeliveries(response.data);
+      const data = response.data?.data || response.data || [];
+      setDeliveries(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('Error loading deliveries:', error);
     }
@@ -113,7 +114,8 @@ export default function SalesOrderDetail() {
       const response = await api.get('/erp/order-to-cash/invoices', {
         params: { sales_order_id: orderId }
       });
-      setInvoices(response.data);
+      const data = response.data?.data || response.data || [];
+      setInvoices(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('Error loading invoices:', error);
     }

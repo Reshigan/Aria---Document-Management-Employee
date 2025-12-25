@@ -73,7 +73,8 @@ export default function Quotes() {
       if (statusFilter) params.status = statusFilter;
       
       const response = await api.get('/erp/order-to-cash/quotes', { params });
-      setQuotes(response.data);
+      const data = response.data?.data || response.data || [];
+      setQuotes(Array.isArray(data) ? data : []);
       setError(null);
     } catch (err: any) {
       console.error('Error loading quotes:', err);
@@ -86,7 +87,8 @@ export default function Quotes() {
   const loadProducts = async () => {
     try {
       const response = await api.get('/erp/order-to-cash/products');
-      setProducts(response.data);
+      const data = response.data?.data || response.data || [];
+      setProducts(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error('Error loading products:', err);
     }
@@ -95,7 +97,8 @@ export default function Quotes() {
   const loadCustomers = async () => {
     try {
       const response = await api.get('/erp/order-to-cash/customers');
-      setCustomers(response.data);
+      const data = response.data?.data || response.data || [];
+      setCustomers(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error('Error loading customers:', err);
     }

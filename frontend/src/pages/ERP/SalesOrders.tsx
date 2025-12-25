@@ -64,7 +64,8 @@ export default function SalesOrders() {
       if (statusFilter) params.status = statusFilter;
       
       const response = await api.get('/erp/order-to-cash/sales-orders', { params });
-      setOrders(response.data);
+      const data = response.data?.data || response.data || [];
+      setOrders(Array.isArray(data) ? data : []);
       setError(null);
     } catch (err: any) {
       console.error('Error loading sales orders:', err);
@@ -77,7 +78,8 @@ export default function SalesOrders() {
   const loadProducts = async () => {
     try {
       const response = await api.get('/erp/order-to-cash/products');
-      setProducts(response.data);
+      const data = response.data?.data || response.data || [];
+      setProducts(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error('Error loading products:', err);
     }
