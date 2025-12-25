@@ -220,6 +220,9 @@ app.route('/api/agents', bots);
 app.route('/agents', bots);
 app.route('/api/admin/agents', bots);
 app.route('/admin/agents', bots);
+// Route alias for frontend Agents.tsx which calls /api/bots
+app.route('/api/bots', bots);
+app.route('/bots', bots);
 
 // Simple password hashing (for demo - use proper bcrypt in production)
 async function hashPassword(password: string): Promise<string> {
