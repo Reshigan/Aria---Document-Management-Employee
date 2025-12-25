@@ -174,6 +174,18 @@ app.route('/erp/procurement/purchase-orders', purchaseOrders);
 app.route('/api/erp/procurement/suppliers', suppliers);
 app.route('/api/erp/procurement/purchase-orders', purchaseOrders);
 
+// Route aliases for order-to-cash paths that frontend uses
+app.route('/api/erp/order-to-cash/customers', customers);
+app.route('/erp/order-to-cash/customers', customers);
+app.route('/api/erp/order-to-cash/invoices', invoices);
+app.route('/erp/order-to-cash/invoices', invoices);
+
+// Route aliases for AR/AP invoice paths
+app.route('/api/ar/invoices', invoices);
+app.route('/ar/invoices', invoices);
+app.route('/api/ap/invoices', invoices);
+app.route('/ap/invoices', invoices);
+
 // Simple password hashing (for demo - use proper bcrypt in production)
 async function hashPassword(password: string): Promise<string> {
   const encoder = new TextEncoder();
