@@ -31,6 +31,11 @@ import localization from './routes/localization';
 import verticals from './routes/verticals';
 import differentiators from './routes/differentiators';
 import bi from './routes/bi';
+import documents from './routes/documents';
+import banking from './routes/banking';
+import botObservability from './routes/bot-observability';
+import payments from './routes/payments';
+import onboardingWizard from './routes/onboarding-wizard';
 
 // Types
 interface Env {
@@ -278,6 +283,26 @@ app.route('/differentiators', differentiators);
 // Business Intelligence & Reporting
 app.route('/api/bi', bi);
 app.route('/bi', bi);
+
+// Document Generation & Management (branded documents, print, email)
+app.route('/api/documents', documents);
+app.route('/documents', documents);
+
+// Banking & Reconciliation
+app.route('/api/banking', banking);
+app.route('/banking', banking);
+
+// Bot Observability & Exception Handling
+app.route('/api/bot-observability', botObservability);
+app.route('/bot-observability', botObservability);
+
+// Payment Integrations
+app.route('/api/payments', payments);
+app.route('/payments', payments);
+
+// Enhanced Onboarding Wizard
+app.route('/api/onboarding-wizard', onboardingWizard);
+app.route('/onboarding-wizard', onboardingWizard);
 
 // Simple password hashing(for demo - use proper bcrypt in production)
 async function hashPassword(password: string): Promise<string> {
