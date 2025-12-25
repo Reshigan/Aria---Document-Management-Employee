@@ -4,7 +4,7 @@ import {
   LayoutDashboard, BookOpen, FileDown, FileUp, Building2, Wallet, Users, Package,
   Bot, FileText, Settings, MessageSquare, FileSpreadsheet, ShoppingCart, Truck,
   ShoppingBag, Factory, Shield, Wrench, ClipboardList, Scale, Briefcase, 
-  FolderOpen, TrendingUp, ChevronDown, LogOut
+  FolderOpen, TrendingUp, ChevronDown, LogOut, Search, BarChart3, Command
 } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import './MegaMenu.css';
@@ -205,7 +205,11 @@ const fallbackMenuData: Record<string, MegaMenuCategory[]> = {
   ],
 };
 
-export const MegaMenu: React.FC = () => {
+interface MegaMenuProps {
+  onSearchClick?: () => void;
+}
+
+export const MegaMenu: React.FC<MegaMenuProps> = ({ onSearchClick }) => {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [menuData, setMenuData] = useState<Record<string, MegaMenuCategory[]>>(fallbackMenuData);
   const [isLoading, setIsLoading] = useState(true);
@@ -273,15 +277,34 @@ export const MegaMenu: React.FC = () => {
             <span>Dashboard</span>
           </Link>
 
-          <Link 
-            to="/aria" 
-            className={`mega-menu-item mega-menu-item-special ${isActive('/aria') ? 'active' : ''}`}
-          >
-            <MessageSquare size={18} />
-            <span>Ask ARIA</span>
-          </Link>
+                    {/* Command Palette Search Button */}
+                    <button 
+                      onClick={onSearchClick}
+                      className="mega-menu-item mega-menu-search"
+                      title="Search (Ctrl+K)"
+                    >
+                      <Search size={18} />
+                      <span>Search</span>
+                      <kbd className="mega-menu-kbd">Ctrl+K</kbd>
+                    </button>
 
-          {Object.entries(menuData).map(([menuName, categories]) => (
+                    <Link 
+                      to="/aria" 
+                      className={`mega-menu-item mega-menu-item-special ${isActive('/aria') ? 'active' : ''}`}
+                    >
+                      <MessageSquare size={18} />
+                      <span>Ask ARIA</span>
+                    </Link>
+
+                    <Link 
+                      to="/analytics" 
+                      className={`mega-menu-item ${isActive('/analytics') ? 'active' : ''}`}
+                    >
+                      <BarChart3 size={18} />
+                      <span>Analytics</span>
+                    </Link>
+
+                    {Object.entries(menuData).map(([menuName, categories]) => (
             <div
               key={menuName}
               className="mega-menu-dropdown"
