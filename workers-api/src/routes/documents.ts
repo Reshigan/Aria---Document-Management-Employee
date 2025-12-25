@@ -1,5 +1,6 @@
 import { Hono } from 'hono';
 import { getSecureCompanyId, getSecureUserId } from '../middleware/auth';
+import { sendDocumentEmail, getEmailConfig } from '../services/email-service';
 
 interface Env {
   DB: D1Database;
@@ -1068,7 +1069,7 @@ app.post('/:id/send', async (c) => {
 
   try {
     const docId = c.req.param('id');
-    const { to_email, cc_email, subject, message } = await c.req.json();
+    const { to_email, cc_email, subject, message, recipient_name } = await c.req.json();
     const db = c.env.DB;
     
     // Get document
@@ -1083,47 +1084,74 @@ app.post('/:id/send', async (c) => {
     // Get company settings
     const company = await getCompanySettings(db, companyId);
     
-    // In a real implementation, this would send via an email provider
-    // For now, we'll log the email and update the document status
+    // Get document HTML content
+    const documentHtml = doc.html_content || '';
     
-    const emailRecord = {
-      id: crypto.randomUUID(),
-      document_id: docId,
-      to_email,
-      cc_email,
-      subject: subject || `${DOCUMENT_TYPES[doc.document_type as keyof typeof DOCUMENT_TYPES]?.title || 'Document'} ${doc.document_number} from ${company.name}`,
-      message,
-      sent_at: new Date().toISOString(),
-      status: 'sent'
-    };
+    // Prepare email record
+    const emailId = crypto.randomUUID();
+    const emailSubject = subject || `${DOCUMENT_TYPES[doc.document_type as keyof typeof DOCUMENT_TYPES]?.title || 'Document'} ${doc.document_number} from ${company.name}`;
+    const sentAt = new Date().toISOString();
+    
+    // Send email using the email service
+    const emailResult = await sendDocumentEmail(
+      db,
+      companyId,
+      documentHtml,
+      {
+        email: to_email,
+        name: recipient_name || to_email.split('@')[0]
+      },
+      {
+        type: DOCUMENT_TYPES[doc.document_type as keyof typeof DOCUMENT_TYPES]?.title || 'Document',
+        number: doc.document_number,
+        companyName: company.name
+      },
+      message
+    );
+    
+    // Determine email status based on result
+    const emailStatus = emailResult.success ? 'sent' : 'failed';
     
     // Save email record
     await db.prepare(`
-      INSERT INTO document_emails (id, document_id, company_id, to_email, cc_email, subject, message, sent_at, status)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO document_emails (id, document_id, company_id, to_email, cc_email, subject, message, sent_at, status, provider_message_id, error_message)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).bind(
-      emailRecord.id,
+      emailId,
       docId,
       companyId,
       to_email,
       cc_email || null,
-      emailRecord.subject,
+      emailSubject,
       message || null,
-      emailRecord.sent_at,
-      'sent'
+      sentAt,
+      emailStatus,
+      emailResult.messageId || null,
+      emailResult.error || null
     ).run();
     
-    // Update document status to sent
-    if (doc.status === 'draft') {
+    // Update document status to sent if email was successful
+    if (emailResult.success && doc.status === 'draft') {
       await db.prepare(`
         UPDATE documents SET status = 'sent', updated_at = ? WHERE id = ?
-      `).bind(new Date().toISOString(), docId).run();
+      `).bind(sentAt, docId).run();
+    }
+    
+    if (!emailResult.success) {
+      return c.json({
+        success: false,
+        message: 'Failed to send email',
+        error: emailResult.error,
+        email_id: emailId
+      }, 500);
     }
     
     return c.json({
       success: true,
       message: 'Document sent successfully',
-      email_id: emailRecord.id
+      email_id: emailId,
+      provider: emailResult.provider,
+      message_id: emailResult.messageId
     });
   } catch (error: any) {
     console.error('Document send error:', error);
