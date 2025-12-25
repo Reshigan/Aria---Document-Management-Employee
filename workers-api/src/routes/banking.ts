@@ -20,7 +20,7 @@ app.get('/accounts', async (c) => {
     const db = c.env.DB;
     
     const accounts = await db.prepare(`
-      SELECT * FROM bank_accounts WHERE company_id = ? ORDER BY is_primary DESC, account_name
+      SELECT * FROM bank_accounts WHERE company_id = ? ORDER BY account_name
     `).bind(companyId).all();
     
     return c.json({ accounts: accounts.results });
