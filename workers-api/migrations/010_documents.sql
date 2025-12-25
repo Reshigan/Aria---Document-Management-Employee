@@ -416,9 +416,9 @@ VALUES
   ('seq-pv', 'b0598135-52fd-4f67-ac56-8f0237e6355e', 'payment_voucher', 'PV', 0, 2025),
   ('seq-rv', 'b0598135-52fd-4f67-ac56-8f0237e6355e', 'receipt_voucher', 'RV', 0, 2025);
 
--- Insert demo bank account (without is_primary since column doesn't exist in existing table)
-INSERT OR IGNORE INTO bank_accounts (id, company_id, account_name, bank_name, account_number, branch_code, currency, opening_balance, current_balance)
-VALUES ('bank-demo-1', 'b0598135-52fd-4f67-ac56-8f0237e6355e', 'Main Operating Account', 'First National Bank', '62123456789', '250655', 'ZAR', 100000, 850000);
+-- Insert demo bank account (matching existing table schema)
+INSERT OR IGNORE INTO bank_accounts (id, company_id, account_name, bank_name, account_number, branch_code, currency, current_balance)
+VALUES ('bank-demo-1', 'b0598135-52fd-4f67-ac56-8f0237e6355e', 'Main Operating Account', 'First National Bank', '62123456789', '250655', 'ZAR', 850000);
 
 -- Insert onboarding progress for demo company
 INSERT OR IGNORE INTO onboarding_progress (id, company_id, current_step, company_profile_complete, branding_complete, chart_of_accounts_complete, bank_accounts_complete, customers_imported, suppliers_imported, products_imported)

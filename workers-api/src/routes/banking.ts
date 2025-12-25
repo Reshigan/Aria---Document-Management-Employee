@@ -68,8 +68,8 @@ app.post('/accounts', async (c) => {
     await db.prepare(`
       INSERT INTO bank_accounts (
         id, company_id, account_name, bank_name, account_number, branch_code,
-        swift_code, iban, currency, gl_account_id, opening_balance, current_balance
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        swift_code, currency, gl_account_id, current_balance
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).bind(
       accountId,
       companyId,
@@ -78,10 +78,8 @@ app.post('/accounts', async (c) => {
       body.account_number,
       body.branch_code || null,
       body.swift_code || null,
-      body.iban || null,
       body.currency || 'ZAR',
       body.gl_account_id || null,
-      body.opening_balance || 0,
       body.opening_balance || 0
     ).run();
     
@@ -106,7 +104,7 @@ app.put('/accounts/:id', async (c) => {
     await db.prepare(`
       UPDATE bank_accounts SET
         account_name = ?, bank_name = ?, account_number = ?, branch_code = ?,
-        swift_code = ?, iban = ?, currency = ?, gl_account_id = ?,
+        swift_code = ?, currency = ?, gl_account_id = ?,
         updated_at = ?
       WHERE id = ? AND company_id = ?
     `).bind(
@@ -115,7 +113,6 @@ app.put('/accounts/:id', async (c) => {
       body.account_number,
       body.branch_code || null,
       body.swift_code || null,
-      body.iban || null,
       body.currency || 'ZAR',
       body.gl_account_id || null,
       new Date().toISOString(),
