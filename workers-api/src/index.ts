@@ -170,6 +170,10 @@ app.route('/dashboard', dashboard);
 app.route('/erp/procurement/suppliers', suppliers);
 app.route('/erp/procurement/purchase-orders', purchaseOrders);
 
+// Route aliases with /api prefix for procurement pages (frontend uses /api baseURL)
+app.route('/api/erp/procurement/suppliers', suppliers);
+app.route('/api/erp/procurement/purchase-orders', purchaseOrders);
+
 // Simple password hashing (for demo - use proper bcrypt in production)
 async function hashPassword(password: string): Promise<string> {
   const encoder = new TextEncoder();

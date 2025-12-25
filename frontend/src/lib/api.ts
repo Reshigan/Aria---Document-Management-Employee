@@ -3,8 +3,11 @@
  */
 import axios from 'axios';
 
+// Use Workers API URL for Cloudflare deployment, fallback to relative /api for local dev
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev/api';
+
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
