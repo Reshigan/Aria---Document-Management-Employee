@@ -18,10 +18,13 @@ import salesOrders from './routes/sales-orders';
 import purchaseOrders from './routes/purchase-orders';
 import invoices from './routes/invoices';
 import dashboard from './routes/dashboard';
+import askAria from './routes/ask-aria';
+import bots from './routes/bots';
 
 // Types
 interface Env {
   DB: D1Database;
+  DOCUMENTS: R2Bucket;
   JWT_SECRET: string;
   ENVIRONMENT: string;
 }
@@ -142,6 +145,28 @@ app.get('/api', (c) => {
         'GET /api/dashboard/ap-aging',
         'GET /api/dashboard/inventory-summary',
       ],
+      ask_aria: [
+        'POST /api/ask-aria/session',
+        'POST /api/ask-aria/message',
+        'POST /api/ask-aria/message/stream',
+        'POST /api/ask-aria/upload',
+        'POST /api/ask-aria/classify/:documentId',
+        'POST /api/ask-aria/extract/:documentId',
+        'POST /api/ask-aria/documents/:documentId/validate',
+        'POST /api/ask-aria/documents/:documentId/post-to-aria',
+        'POST /api/ask-aria/documents/:documentId/export-to-sap',
+        'GET /api/ask-aria/sap/export-templates',
+      ],
+      bots: [
+        'GET /api/agents/marketplace',
+        'GET /api/agents/marketplace/:botId',
+        'POST /api/agents/marketplace/:botId/execute',
+        'GET /api/admin/agents/config',
+        'PUT /api/admin/agents/config',
+        'POST /api/admin/agents/:botId/toggle',
+        'GET /api/agents/runs',
+        'GET /api/agents/runs/:runId',
+      ],
     },
   });
 });
@@ -185,6 +210,16 @@ app.route('/api/ar/invoices', invoices);
 app.route('/ar/invoices', invoices);
 app.route('/api/ap/invoices', invoices);
 app.route('/ap/invoices', invoices);
+
+// Ask ARIA routes
+app.route('/api/ask-aria', askAria);
+app.route('/ask-aria', askAria);
+
+// Bot/Agent routes
+app.route('/api/agents', bots);
+app.route('/agents', bots);
+app.route('/api/admin/agents', bots);
+app.route('/admin/agents', bots);
 
 // Simple password hashing (for demo - use proper bcrypt in production)
 async function hashPassword(password: string): Promise<string> {
