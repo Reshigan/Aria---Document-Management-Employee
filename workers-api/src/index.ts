@@ -25,6 +25,8 @@ import admin from './routes/admin';
 import hr from './routes/hr';
 import reports from './routes/reports';
 import onboarding from './routes/onboarding';
+import periods from './routes/periods';
+import approvals from './routes/approvals';
 
 // Types
 interface Env {
@@ -248,6 +250,14 @@ app.route('/erp/reports', reports);
 // Onboarding routes (guided setup wizard)
 app.route('/api/onboarding', onboarding);
 app.route('/onboarding', onboarding);
+
+// Financial Period Management routes
+app.route('/api/erp/periods', periods);
+app.route('/erp/periods', periods);
+
+// Approval Workflow routes
+app.route('/api/approvals', approvals);
+app.route('/approvals', approvals);
 
 // Simple password hashing (for demo - use proper bcrypt in production)
 async function hashPassword(password: string): Promise<string> {

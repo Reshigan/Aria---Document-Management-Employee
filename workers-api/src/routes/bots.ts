@@ -3,11 +3,19 @@
  * Provides bot registry, configuration, execution, and run history
  * Bot IDs match frontend BotRegistry.tsx exactly
  * 
- * GO-LIVE VERSION: Includes authentication, tenant isolation, and state-changing bots
+ * GO-LIVE VERSION: Includes authentication, tenant isolation, state-changing bots,
+ * and automatic GL posting for accounting integrity
  */
 
 import { Hono } from 'hono';
 import { jwtVerify } from 'jose';
+import { 
+  postCustomerInvoice, 
+  postSupplierInvoice, 
+  postCustomerPayment, 
+  postSupplierPayment,
+  postGoodsReceipt
+} from '../services/gl-posting-engine';
 
 interface Env {
   DB: D1Database;
@@ -1908,7 +1916,7 @@ async function executeARCollectionsBot(
   }
 }
 
-// Payment Processing Bot - Processes payments for approved invoices
+// Payment Processing Bot - Processes payments for approved invoices with GL posting
 async function executePaymentProcessingBot(
   companyId: string, 
   config: Record<string, any>, 
@@ -1919,7 +1927,7 @@ async function executePaymentProcessingBot(
   try {
     // Find pending supplier invoices to pay
     const pendingInvoices = await db.prepare(
-      'SELECT id, invoice_number, supplier_id, total_amount FROM supplier_invoices WHERE company_id = ? AND status = ? LIMIT 5'
+      'SELECT si.id, si.invoice_number, si.supplier_id, si.total_amount, s.name as supplier_name FROM supplier_invoices si LEFT JOIN suppliers s ON si.supplier_id = s.id WHERE si.company_id = ? AND si.status = ? LIMIT 5'
     ).bind(companyId, 'pending').all();
 
     if (!pendingInvoices.results?.length) {
@@ -1934,25 +1942,42 @@ async function executePaymentProcessingBot(
 
     let paymentsProcessed = 0;
     let totalAmount = 0;
+    let glPostingsCreated = 0;
     const batchId = `PAY-${Date.now()}`;
     
     for (const invoice of pendingInvoices.results as any[]) {
+      const paymentId = crypto.randomUUID();
+      const paymentNumber = `PMT-${Date.now()}-${paymentsProcessed}`;
+      
       // Create payment record
       await db.prepare(`
         INSERT INTO payments (id, payment_number, reference_id, reference_type, company_id, amount, payment_method, status, batch_id, created_at)
         VALUES (?, ?, ?, 'supplier_invoice', ?, ?, 'eft', 'completed', ?, datetime('now'))
       `).bind(
-        crypto.randomUUID(),
-        `PMT-${Date.now()}-${paymentsProcessed}`,
+        paymentId,
+        paymentNumber,
         invoice.id,
         companyId,
         invoice.total_amount,
         batchId
       ).run();
       
-      // Update invoice status to paid (using updated_at since paid_at doesn't exist)
+      // Update invoice status to paid
       await db.prepare('UPDATE supplier_invoices SET status = ?, amount_paid = total_amount, balance_due = 0, updated_at = datetime(\'now\') WHERE id = ?')
         .bind('paid', invoice.id).run();
+      
+      // POST TO GL: DR Accounts Payable, CR Bank
+      const glResult = await postSupplierPayment(db, companyId, userId, {
+        id: paymentId,
+        payment_number: paymentNumber,
+        payment_date: new Date().toISOString().split('T')[0],
+        supplier_name: invoice.supplier_name || 'Unknown Supplier',
+        amount: invoice.total_amount
+      });
+      
+      if (glResult.success) {
+        glPostingsCreated++;
+      }
       
       paymentsProcessed++;
       totalAmount += invoice.total_amount;
@@ -1963,7 +1988,8 @@ async function executePaymentProcessingBot(
       payments_processed: paymentsProcessed,
       total_amount: totalAmount,
       batch_id: batchId,
-      message: `Processed ${paymentsProcessed} payments totaling R${totalAmount}. Batch ID: ${batchId}`,
+      gl_postings_created: glPostingsCreated,
+      message: `Processed ${paymentsProcessed} payments totaling R${totalAmount}. ${glPostingsCreated} GL postings created. Batch ID: ${batchId}`,
       executed_at: timestamp,
       state_changed: true,
     };
