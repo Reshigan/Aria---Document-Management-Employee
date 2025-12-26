@@ -1449,6 +1449,74 @@ async function executeBot(botId: string, companyId: string, config: Record<strin
 // STATE-CHANGING BOT EXECUTION - Actually creates/updates records in the database
 // Tier-1 bots: quote_generation, sales_order, purchase_order, goods_receipt, invoice_reconciliation, 
 //              ar_collections, payment_processing, workflow_automation
+// Check if bot is paused for this company
+async function isBotPaused(botId: string, companyId: string, db: D1Database): Promise<boolean> {
+  try {
+    const config = await db.prepare(
+      'SELECT enabled FROM bot_configs WHERE bot_id = ? AND company_id = ?'
+    ).bind(botId, companyId).first();
+    
+    // If no config exists, bot is enabled by default
+    if (!config) return false;
+    
+    return (config as any).enabled === 0;
+  } catch {
+    return false;
+  }
+}
+
+// Create escalation task when bot fails
+async function createEscalationTask(
+  botId: string,
+  companyId: string,
+  error: string,
+  context: Record<string, any>,
+  db: D1Database
+): Promise<void> {
+  try {
+    const taskId = crypto.randomUUID();
+    const bot = botRegistry.find(b => b.id === botId);
+    
+    await db.prepare(`
+      INSERT INTO tasks (id, type, reference_id, reference_type, company_id, status, description, priority, created_at)
+      VALUES (?, 'bot_escalation', ?, 'bot', ?, 'pending', ?, 'high', datetime('now'))
+    `).bind(
+      taskId,
+      botId,
+      companyId,
+      `Bot "${bot?.name || botId}" failed: ${error}. Context: ${JSON.stringify(context).substring(0, 500)}`
+    ).run();
+  } catch (e) {
+    console.error('Failed to create escalation task:', e);
+  }
+}
+
+// Record bot execution in audit trail
+async function recordBotAudit(
+  runId: string,
+  botId: string,
+  companyId: string,
+  action: string,
+  details: Record<string, any>,
+  db: D1Database
+): Promise<void> {
+  try {
+    await db.prepare(`
+      INSERT INTO audit_log (id, company_id, entity_type, entity_id, action, actor_type, actor_id, details, created_at)
+      VALUES (?, ?, 'bot', ?, ?, 'bot', ?, ?, datetime('now'))
+    `).bind(
+      crypto.randomUUID(),
+      companyId,
+      botId,
+      action,
+      botId,
+      JSON.stringify({ run_id: runId, ...details })
+    ).run();
+  } catch (e) {
+    console.error('Failed to record bot audit:', e);
+  }
+}
+
 async function executeBotWithStateChanges(
   botId: string, 
   companyId: string, 
@@ -1461,30 +1529,88 @@ async function executeBotWithStateChanges(
     return { success: false, error: 'Bot not found' };
   }
 
-  const counts = await getDatabaseCounts(companyId, db);
+  const runId = crypto.randomUUID();
   const timestamp = new Date().toISOString();
 
-  // Tier-1 bots with actual state changes
-  switch (botId) {
-    case 'quote_generation':
-      return await executeQuoteGenerationBot(companyId, config, db, userId, timestamp);
-    case 'sales_order':
-      return await executeSalesOrderBot(companyId, config, db, userId, timestamp);
-    case 'purchase_order':
-      return await executePurchaseOrderBot(companyId, config, db, userId, timestamp);
-    case 'goods_receipt':
-      return await executeGoodsReceiptBot(companyId, config, db, userId, timestamp);
-    case 'invoice_reconciliation':
-      return await executeInvoiceReconciliationBot(companyId, config, db, userId, timestamp);
-    case 'ar_collections':
-      return await executeARCollectionsBot(companyId, config, db, userId, timestamp);
-    case 'payment_processing':
-      return await executePaymentProcessingBot(companyId, config, db, userId, timestamp);
-    case 'workflow_automation':
-      return await executeWorkflowAutomationBot(companyId, config, db, userId, timestamp);
-    default:
-      // Tier-2 bots: reporting/analytics only (no state changes)
-      return executeBot(botId, companyId, config, db);
+  // Phase 4: Check if bot is paused for this company
+  const paused = await isBotPaused(botId, companyId, db);
+  if (paused) {
+    return {
+      success: false,
+      error: 'Bot is paused',
+      message: `Bot "${bot.name}" is currently paused for this company. Enable it in Bot Settings to resume.`,
+      run_id: runId,
+      executed_at: timestamp,
+      state_changed: false,
+    };
+  }
+
+  // Record bot execution start
+  await recordBotAudit(runId, botId, companyId, 'execution_started', { config }, db);
+
+  let result: any;
+  
+  try {
+    // Tier-1 bots with actual state changes
+    switch (botId) {
+      case 'quote_generation':
+        result = await executeQuoteGenerationBot(companyId, config, db, userId, timestamp);
+        break;
+      case 'sales_order':
+        result = await executeSalesOrderBot(companyId, config, db, userId, timestamp);
+        break;
+      case 'purchase_order':
+        result = await executePurchaseOrderBot(companyId, config, db, userId, timestamp);
+        break;
+      case 'goods_receipt':
+        result = await executeGoodsReceiptBot(companyId, config, db, userId, timestamp);
+        break;
+      case 'invoice_reconciliation':
+        result = await executeInvoiceReconciliationBot(companyId, config, db, userId, timestamp);
+        break;
+      case 'ar_collections':
+        result = await executeARCollectionsBot(companyId, config, db, userId, timestamp);
+        break;
+      case 'payment_processing':
+        result = await executePaymentProcessingBot(companyId, config, db, userId, timestamp);
+        break;
+      case 'workflow_automation':
+        result = await executeWorkflowAutomationBot(companyId, config, db, userId, timestamp);
+        break;
+      default:
+        // Tier-2 bots: reporting/analytics only (no state changes)
+        result = await executeBot(botId, companyId, config, db);
+    }
+
+    // Add run_id to result for traceability
+    result.run_id = runId;
+
+    // Record successful execution
+    await recordBotAudit(runId, botId, companyId, 'execution_completed', {
+      success: result.success,
+      state_changed: result.state_changed,
+      message: result.message,
+    }, db);
+
+    return result;
+  } catch (error) {
+    const errorMessage = String(error);
+    
+    // Phase 5: Create escalation task on failure
+    await createEscalationTask(botId, companyId, errorMessage, { config, run_id: runId }, db);
+    
+    // Record failed execution
+    await recordBotAudit(runId, botId, companyId, 'execution_failed', { error: errorMessage }, db);
+
+    return {
+      success: false,
+      error: 'Bot execution failed',
+      message: errorMessage,
+      run_id: runId,
+      executed_at: timestamp,
+      state_changed: false,
+      escalation_created: true,
+    };
   }
 }
 
@@ -1520,38 +1646,59 @@ async function executeQuoteGenerationBot(
       };
     }
 
-    // Create quotes for customers without recent quotes
+    // Create quotes for customers without recent quotes (idempotency check)
     const quotesCreated: string[] = [];
-    const customer = customers.results[0] as any;
-    const product = products.results[0] as any;
+    const skippedCustomers: string[] = [];
     
-    const quoteId = crypto.randomUUID();
-    const quoteNumber = `QT-${Date.now()}`;
-    const quantity = config.default_quantity || 10;
-    const unitPrice = product.unit_price || 1000;
-    const totalAmount = quantity * unitPrice;
-    
-    await db.prepare(`
-      INSERT INTO quotes (id, quote_number, customer_id, company_id, quote_date, status, total_amount, valid_until, created_by, created_at)
-      VALUES (?, ?, ?, ?, date('now'), 'draft', ?, date('now', '+30 days'), ?, datetime('now'))
-    `).bind(quoteId, quoteNumber, customer.id, companyId, totalAmount, userId).run();
-    
-    // Add quote line item (using actual column names from schema: description, line_total)
-    await db.prepare(`
-      INSERT INTO quote_items (id, quote_id, product_id, description, quantity, unit_price, line_total, created_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'))
-    `).bind(crypto.randomUUID(), quoteId, product.id, product.name || 'Product', quantity, unitPrice, totalAmount).run();
-    
-    quotesCreated.push(quoteNumber);
+    for (const customer of customers.results as any[]) {
+      // Idempotency check: skip if customer already has a quote created today
+      const existingQuote = await db.prepare(
+        'SELECT id FROM quotes WHERE company_id = ? AND customer_id = ? AND date(quote_date) = date(\'now\')'
+      ).bind(companyId, customer.id).first();
+      
+      if (existingQuote) {
+        skippedCustomers.push(customer.name);
+        continue;
+      }
+      
+      const product = products.results[0] as any;
+      const quoteId = crypto.randomUUID();
+      const quoteNumber = `QT-${Date.now()}-${customer.id.substring(0, 4)}`;
+      const quantity = config.default_quantity || 10;
+      const unitPrice = product.unit_price || 1000;
+      const totalAmount = quantity * unitPrice;
+      
+      await db.prepare(`
+        INSERT INTO quotes (id, quote_number, customer_id, company_id, quote_date, status, total_amount, valid_until, created_by, created_at)
+        VALUES (?, ?, ?, ?, date('now'), 'draft', ?, date('now', '+30 days'), ?, datetime('now'))
+      `).bind(quoteId, quoteNumber, customer.id, companyId, totalAmount, userId).run();
+      
+      // Add quote line item (using actual column names from schema: description, line_total)
+      await db.prepare(`
+        INSERT INTO quote_items (id, quote_id, product_id, description, quantity, unit_price, line_total, created_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'))
+      `).bind(crypto.randomUUID(), quoteId, product.id, product.name || 'Product', quantity, unitPrice, totalAmount).run();
+      
+      quotesCreated.push(quoteNumber);
+      
+      // Limit to config.max_quotes_per_run or 3 by default
+      if (quotesCreated.length >= (config.max_quotes_per_run || 3)) break;
+    }
+
+    const message = quotesCreated.length > 0
+      ? `Created ${quotesCreated.length} quote(s): ${quotesCreated.join(', ')}`
+      : skippedCustomers.length > 0
+        ? `No new quotes created. ${skippedCustomers.length} customer(s) already have quotes today (idempotency).`
+        : 'No quotes created.';
 
     return {
       success: true,
       quotes_created: quotesCreated.length,
       quote_numbers: quotesCreated,
-      total_value: totalAmount,
-      message: `Created ${quotesCreated.length} quote(s): ${quotesCreated.join(', ')}`,
+      skipped_customers: skippedCustomers,
+      message,
       executed_at: timestamp,
-      state_changed: true,
+      state_changed: quotesCreated.length > 0,
     };
   } catch (error) {
     console.error('Quote generation error:', error);
@@ -1797,15 +1944,29 @@ async function executeInvoiceReconciliationBot(
 
     let matchedCount = 0;
     let unmatchedCount = 0;
+    const matchedInvoices: string[] = [];
+    const unmatchedInvoices: string[] = [];
     
     for (const invoice of unreconciledInvoices.results as any[]) {
-      // Simulate matching logic - mark 80% as reconciled (using updated_at since reconciled_at doesn't exist)
-      if (Math.random() < 0.8) {
+      // Deterministic matching logic: check if there's a matching payment or bank transaction
+      const matchingPayment = await db.prepare(
+        'SELECT id FROM customer_payments WHERE company_id = ? AND invoice_id = ? AND amount >= ?'
+      ).bind(companyId, invoice.id, invoice.total_amount * 0.99).first(); // Allow 1% tolerance
+      
+      const matchingBankTx = await db.prepare(
+        'SELECT id FROM bank_transactions WHERE company_id = ? AND reference LIKE ? AND amount >= ?'
+      ).bind(companyId, `%${invoice.invoice_number}%`, invoice.total_amount * 0.99).first();
+      
+      if (matchingPayment || matchingBankTx) {
+        // Found matching payment or bank transaction - reconcile
         await db.prepare('UPDATE customer_invoices SET status = ?, updated_at = datetime(\'now\') WHERE id = ?')
           .bind('reconciled', invoice.id).run();
         matchedCount++;
+        matchedInvoices.push(invoice.invoice_number);
       } else {
+        // No match found - mark for manual review
         unmatchedCount++;
+        unmatchedInvoices.push(invoice.invoice_number);
       }
     }
 
@@ -1813,6 +1974,8 @@ async function executeInvoiceReconciliationBot(
       success: true,
       matched_count: matchedCount,
       unmatched_count: unmatchedCount,
+      matched_invoices: matchedInvoices,
+      unmatched_invoices: unmatchedInvoices,
       total_processed: matchedCount + unmatchedCount,
       message: `Reconciled ${matchedCount} invoices, ${unmatchedCount} require manual review`,
       executed_at: timestamp,
