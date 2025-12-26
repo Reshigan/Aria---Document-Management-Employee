@@ -39,6 +39,7 @@ import onboardingWizard from './routes/onboarding-wizard';
 import manufacturing from './routes/manufacturing';
 import enterprise from './routes/enterprise';
 import marketing from './routes/marketing';
+import criticalFeatures from './routes/critical-features';
 import { executeScheduledBots as runScheduledBots } from './services/bot-executor';
 import { processPendingDeliveries } from './services/webhook-service';
 import { processDueScheduledReports } from './services/report-builder-service';
@@ -322,6 +323,10 @@ app.route('/enterprise', enterprise);
 // Marketing Automation routes (Social Media, Content Generation, Influencer Tracking)
 app.route('/api/marketing', marketing);
 app.route('/marketing', marketing);
+
+// Critical Features routes (Token Vault, Connectors, Bank, Tax, SSO, Accounting Sync, E-Commerce, Shipping, Fixed Assets, Payroll, E-Invoicing, MRP, Monitoring, Admin, Backup)
+app.route('/api/critical', criticalFeatures);
+app.route('/critical', criticalFeatures);
 
 // Simple password hashing(for demo - use proper bcrypt in production)
 async function hashPassword(password: string): Promise<string> {
