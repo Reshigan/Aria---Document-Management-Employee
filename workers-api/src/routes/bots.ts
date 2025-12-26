@@ -1223,6 +1223,162 @@ const botRegistry: BotDefinition[] = [
     hasConfig: true,
     hasReport: true,
   },
+  // ============================================
+  // ADDITIONAL AUTOMATION BOTS (9 more to reach 67)
+  // ============================================
+  {
+    id: 'customer_onboarding',
+    name: 'Customer Onboarding Agent',
+    category: 'Sales',
+    description: 'Automates customer onboarding and activation workflows',
+    icon: '👋',
+    capabilities: ['customer_activation', 'welcome_emails', 'setup_tasks', 'status_tracking'],
+    inputs: [
+      { name: 'auto_activate', type: 'boolean', required: false, description: 'Auto-activate pending customers' },
+    ],
+    outputs: [
+      { name: 'customers_onboarded', type: 'number', description: 'Customers onboarded' },
+      { name: 'welcome_emails_sent', type: 'number', description: 'Welcome emails sent' },
+    ],
+    hasConfig: true,
+    hasReport: true,
+  },
+  {
+    id: 'supplier_onboarding',
+    name: 'Supplier Onboarding Agent',
+    category: 'Procurement',
+    description: 'Automates supplier onboarding and verification',
+    icon: '🤝',
+    capabilities: ['supplier_activation', 'verification', 'document_collection', 'status_tracking'],
+    inputs: [
+      { name: 'auto_activate', type: 'boolean', required: false, description: 'Auto-activate pending suppliers' },
+    ],
+    outputs: [
+      { name: 'suppliers_onboarded', type: 'number', description: 'Suppliers onboarded' },
+      { name: 'verifications_completed', type: 'number', description: 'Verifications completed' },
+    ],
+    hasConfig: true,
+    hasReport: true,
+  },
+  {
+    id: 'delivery_scheduling',
+    name: 'Delivery Scheduling Agent',
+    category: 'Operations',
+    description: 'Automates delivery scheduling for confirmed orders',
+    icon: '🚚',
+    capabilities: ['schedule_optimization', 'route_planning', 'delivery_tracking', 'notification'],
+    inputs: [
+      { name: 'lead_time_days', type: 'number', required: false, description: 'Default lead time in days' },
+    ],
+    outputs: [
+      { name: 'deliveries_scheduled', type: 'number', description: 'Deliveries scheduled' },
+      { name: 'orders_processed', type: 'number', description: 'Orders processed' },
+    ],
+    hasConfig: true,
+    hasReport: true,
+  },
+  {
+    id: 'reorder_point',
+    name: 'Reorder Point Agent',
+    category: 'Inventory',
+    description: 'Monitors stock levels and creates reorder tasks',
+    icon: '📦',
+    capabilities: ['stock_monitoring', 'reorder_alerts', 'task_creation', 'threshold_management'],
+    inputs: [
+      { name: 'default_reorder_point', type: 'number', required: false, description: 'Default reorder point' },
+    ],
+    outputs: [
+      { name: 'reorder_tasks_created', type: 'number', description: 'Reorder tasks created' },
+      { name: 'low_stock_items', type: 'number', description: 'Low stock items found' },
+    ],
+    hasConfig: true,
+    hasReport: true,
+  },
+  {
+    id: 'credit_control',
+    name: 'Credit Control Agent',
+    category: 'Financial',
+    description: 'Monitors customer credit limits and creates alerts',
+    icon: '💳',
+    capabilities: ['credit_monitoring', 'limit_alerts', 'risk_assessment', 'collection_triggers'],
+    inputs: [
+      { name: 'alert_threshold', type: 'number', required: false, description: 'Alert threshold percentage' },
+    ],
+    outputs: [
+      { name: 'credit_alerts_created', type: 'number', description: 'Credit alerts created' },
+      { name: 'customers_over_limit', type: 'number', description: 'Customers over limit' },
+    ],
+    hasConfig: true,
+    hasReport: true,
+  },
+  {
+    id: 'quote_follow_up',
+    name: 'Quote Follow-up Agent',
+    category: 'Sales',
+    description: 'Creates follow-up tasks for pending quotes',
+    icon: '📞',
+    capabilities: ['quote_tracking', 'follow_up_tasks', 'reminder_scheduling', 'conversion_tracking'],
+    inputs: [
+      { name: 'days_before_follow_up', type: 'number', required: false, description: 'Days before follow-up' },
+    ],
+    outputs: [
+      { name: 'follow_ups_created', type: 'number', description: 'Follow-up tasks created' },
+      { name: 'quotes_pending', type: 'number', description: 'Quotes pending response' },
+    ],
+    hasConfig: true,
+    hasReport: true,
+  },
+  {
+    id: 'order_fulfillment',
+    name: 'Order Fulfillment Agent',
+    category: 'Operations',
+    description: 'Automates order fulfillment workflow',
+    icon: '📋',
+    capabilities: ['order_processing', 'fulfillment_tracking', 'status_updates', 'notification'],
+    inputs: [
+      { name: 'auto_fulfill', type: 'boolean', required: false, description: 'Auto-fulfill approved orders' },
+    ],
+    outputs: [
+      { name: 'orders_fulfilled', type: 'number', description: 'Orders fulfilled' },
+      { name: 'orders_in_progress', type: 'number', description: 'Orders in progress' },
+    ],
+    hasConfig: true,
+    hasReport: true,
+  },
+  {
+    id: 'invoice_reminder',
+    name: 'Invoice Reminder Agent',
+    category: 'Financial',
+    description: 'Sends payment reminders for upcoming due invoices',
+    icon: '⏰',
+    capabilities: ['due_date_monitoring', 'reminder_scheduling', 'notification', 'escalation'],
+    inputs: [
+      { name: 'days_before_due', type: 'number', required: false, description: 'Days before due to remind' },
+    ],
+    outputs: [
+      { name: 'reminders_created', type: 'number', description: 'Reminders created' },
+      { name: 'invoices_due_soon', type: 'number', description: 'Invoices due soon' },
+    ],
+    hasConfig: true,
+    hasReport: true,
+  },
+  {
+    id: 'auto_approval',
+    name: 'Auto Approval Agent',
+    category: 'Governance',
+    description: 'Automatically approves items under configurable thresholds',
+    icon: '✅',
+    capabilities: ['threshold_checking', 'auto_approval', 'audit_logging', 'exception_handling'],
+    inputs: [
+      { name: 'auto_approve_limit', type: 'number', required: false, description: 'Auto-approve limit' },
+    ],
+    outputs: [
+      { name: 'items_approved', type: 'number', description: 'Items auto-approved' },
+      { name: 'items_pending', type: 'number', description: 'Items pending manual approval' },
+    ],
+    hasConfig: true,
+    hasReport: true,
+  },
 ];
 
 // Get database counts for deterministic outputs
@@ -3085,6 +3241,159 @@ app.get('/', async (c) => {
     })),
     total: botRegistry.length,
   });
+});
+
+// ============================================
+// WORKFLOW / BOT CHAINING ENDPOINTS
+// ============================================
+
+import { BOT_WORKFLOWS, executeWorkflow, executeBotWithDryRun } from '../services/bot-executor';
+
+// List all available workflows
+app.get('/workflows', async (c) => {
+  const workflows = Object.entries(BOT_WORKFLOWS).map(([id, workflow]) => ({
+    id,
+    name: workflow.name,
+    description: workflow.description,
+    bots: workflow.bots,
+    trigger: workflow.trigger,
+    enabled: workflow.enabled,
+    bot_count: workflow.bots.length,
+  }));
+  
+  return c.json({
+    workflows,
+    total: workflows.length,
+  });
+});
+
+// Get single workflow details
+app.get('/workflows/:workflowId', async (c) => {
+  const workflowId = c.req.param('workflowId');
+  const workflow = BOT_WORKFLOWS[workflowId as keyof typeof BOT_WORKFLOWS];
+  
+  if (!workflow) {
+    return c.json({ error: 'Workflow not found' }, 404);
+  }
+  
+  const botDetails = workflow.bots.map(botId => {
+    const bot = botRegistry.find(b => b.id === botId);
+    return bot ? { id: botId, name: bot.name, description: bot.description } : { id: botId, name: botId, description: 'Unknown bot' };
+  });
+  
+  return c.json({
+    id: workflowId,
+    name: workflow.name,
+    description: workflow.description,
+    trigger: workflow.trigger,
+    enabled: workflow.enabled,
+    bots: botDetails,
+    bot_count: workflow.bots.length,
+  });
+});
+
+// Execute a workflow (bot chain)
+app.post('/workflows/:workflowId/execute', async (c) => {
+  try {
+    const auth = await getAuthenticatedCompanyId(c);
+    if (!auth) {
+      return c.json({ error: 'Unauthorized' }, 401);
+    }
+    
+    const workflowId = c.req.param('workflowId');
+    const body = await c.req.json<{ dry_run?: boolean; config?: Record<string, any> }>().catch(() => ({ dry_run: false, config: {} }));
+    const dryRun = body.dry_run === true;
+    const config = body.config || {};
+    
+    const workflow = BOT_WORKFLOWS[workflowId as keyof typeof BOT_WORKFLOWS];
+    if (!workflow) {
+      return c.json({ error: 'Workflow not found' }, 404);
+    }
+    
+    console.log(`Executing workflow ${workflowId} for company ${auth.companyId} (dry_run: ${dryRun})`);
+    
+    const result = await executeWorkflow(workflowId, auth.companyId, config, c.env.DB, dryRun);
+    
+    return c.json({
+      success: result.success,
+      workflow_id: workflowId,
+      workflow_name: result.workflow_name,
+      dry_run: dryRun,
+      total_bots: result.total_bots,
+      executed_bots: result.executed_bots,
+      failed_bots: result.failed_bots,
+      state_changes: result.state_changes,
+      started_at: result.started_at,
+      completed_at: result.completed_at,
+      results: result.results,
+    });
+  } catch (error) {
+    console.error('Workflow execution error:', error);
+    return c.json({ error: 'Failed to execute workflow' }, 500);
+  }
+});
+
+// Execute bot with dry_run support
+app.post('/execute-dry-run', async (c) => {
+  try {
+    const auth = await getAuthenticatedCompanyId(c);
+    if (!auth) {
+      return c.json({ error: 'Unauthorized' }, 401);
+    }
+    
+    const body = await c.req.json<{ bot_id: string; config?: Record<string, any>; dry_run?: boolean }>();
+    const { bot_id: botId, config = {}, dry_run = true } = body;
+    
+    if (!botId) {
+      return c.json({ error: 'bot_id is required' }, 400);
+    }
+    
+    const bot = botRegistry.find(b => b.id === botId);
+    if (!bot) {
+      return c.json({ error: 'Bot not found' }, 404);
+    }
+    
+    const result = await executeBotWithDryRun(botId, auth.companyId, { ...config, dry_run }, c.env.DB, 'manual');
+    
+    return c.json({
+      success: result.success,
+      bot_id: botId,
+      dry_run,
+      message: result.message,
+      state_changed: result.state_changed,
+      details: result.details,
+    });
+  } catch (error) {
+    console.error('Dry run execution error:', error);
+    return c.json({ error: 'Failed to execute dry run' }, 500);
+  }
+});
+
+// Get workflow run history
+app.get('/workflows/runs', async (c) => {
+  try {
+    const auth = await getAuthenticatedCompanyId(c);
+    const companyId = auth?.companyId || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+    const limit = parseInt(c.req.query('limit') || '50');
+    
+    const runs = await c.env.DB.prepare(`
+      SELECT * FROM bot_runs 
+      WHERE company_id = ? AND bot_id LIKE 'workflow:%'
+      ORDER BY started_at DESC LIMIT ?
+    `).bind(companyId, limit).all();
+    
+    return c.json({
+      runs: (runs.results || []).map((r: any) => ({
+        ...r,
+        result: r.result ? JSON.parse(r.result) : null,
+        config: r.config ? JSON.parse(r.config) : null,
+      })),
+      total: runs.results?.length || 0,
+    });
+  } catch (error) {
+    console.error('Workflow runs error:', error);
+    return c.json({ runs: [], total: 0 });
+  }
 });
 
 export default app;
