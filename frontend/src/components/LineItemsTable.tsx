@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { X, Plus, Search } from 'lucide-react';
+import { X, Plus, Search, Loader2 } from 'lucide-react';
+import api from '../lib/api';
 
 interface Product {
   id: string;
@@ -7,6 +8,15 @@ interface Product {
   name: string;
   selling_price: number;
   unit_of_measure: string;
+  variant_id?: string;
+  template_id?: string;
+  attribute_values?: string[];
+}
+
+interface PricingContext {
+  customer_id?: string;
+  pricelist_id?: string;
+  date?: string;
 }
 
 export interface LineItem {
@@ -30,6 +40,8 @@ interface LineItemsTableProps {
   onProductSearch?: (search: string) => void;
   readOnly?: boolean;
   showStorageLocation?: boolean;
+  pricingContext?: PricingContext;
+  onPriceCalculated?: (productId: string, price: number, discount: number) => void;
 }
 
 export function LineItemsTable({
@@ -38,10 +50,13 @@ export function LineItemsTable({
   products,
   onProductSearch,
   readOnly = false,
-  showStorageLocation = false
+  showStorageLocation = false,
+  pricingContext,
+  onPriceCalculated
 }: LineItemsTableProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [showProductSearch, setShowProductSearch] = useState<number | null>(null);
+  const [loadingPrice, setLoadingPrice] = useState<number | null>(null);
 
   const calculateLineTotal = (item: LineItem): number => {
     const subtotal = item.quantity * item.unit_price;
@@ -83,17 +98,43 @@ export function LineItemsTable({
     onChange(newItems);
   };
 
-  const selectProduct = (index: number, product: Product) => {
-    updateItem(index, {
-      product_id: product.id,
-      product_code: product.code,
-      product_name: product.name,
-      description: product.name,
-      unit_price: product.selling_price
-    });
-    setShowProductSearch(null);
-    setSearchTerm('');
-  };
+    const selectProduct = async (index: number, product: Product) => {
+      setLoadingPrice(index);
+      let finalPrice = product.selling_price;
+      let discountPercent = 0;
+    
+      if (pricingContext?.customer_id || pricingContext?.pricelist_id) {
+        try {
+          const response = await api.post('/odoo/pricing/calculate', {
+            product_id: product.variant_id || product.id,
+            pricelist_id: pricingContext.pricelist_id || null,
+            customer_id: pricingContext.customer_id || null,
+            quantity: items[index]?.quantity || 1,
+            date: pricingContext.date || new Date().toISOString().split('T')[0]
+          });
+          const priceResult = response.data.data || response.data;
+          if (priceResult && priceResult.final_price !== undefined) {
+            finalPrice = priceResult.final_price;
+            discountPercent = priceResult.discount_percentage || 0;
+            onPriceCalculated?.(product.id, finalPrice, discountPercent);
+          }
+        } catch (error) {
+          console.error('Error calculating price:', error);
+        }
+      }
+    
+      updateItem(index, {
+        product_id: product.id,
+        product_code: product.code,
+        product_name: product.name,
+        description: product.name,
+        unit_price: finalPrice,
+        discount_percent: discountPercent
+      });
+      setShowProductSearch(null);
+      setSearchTerm('');
+      setLoadingPrice(null);
+    };
 
   const subtotal = items.reduce((sum, item) => {
     const itemSubtotal = item.quantity * item.unit_price * (1 - item.discount_percent / 100);
@@ -314,27 +355,32 @@ export function LineItemsTable({
                       />
                     )}
                   </td>
-                  <td style={{ padding: '0.75rem' }}>
-                    {readOnly ? (
-                      <div style={{ fontSize: '0.875rem', textAlign: 'right' }}>R {item.unit_price.toFixed(2)}</div>
-                    ) : (
-                      <input
-                        type="number"
-                        value={item.unit_price}
-                        onChange={(e) => updateItem(index, { unit_price: parseFloat(e.target.value) || 0 })}
-                        min="0"
-                        step="0.01"
-                        style={{
-                          width: '100%',
-                          padding: '0.5rem',
-                          border: '1px solid #d1d5db',
-                          borderRadius: '0.375rem',
-                          fontSize: '0.875rem',
-                          textAlign: 'right'
-                        }}
-                      />
-                    )}
-                  </td>
+                                    <td style={{ padding: '0.75rem' }}>
+                                      {loadingPrice === index ? (
+                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '0.5rem' }}>
+                                          <Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} />
+                                          <span style={{ fontSize: '0.75rem', color: '#6b7280' }}>Calculating...</span>
+                                        </div>
+                                      ) : readOnly ? (
+                                        <div style={{ fontSize: '0.875rem', textAlign: 'right' }}>R {item.unit_price.toFixed(2)}</div>
+                                      ) : (
+                                        <input
+                                          type="number"
+                                          value={item.unit_price}
+                                          onChange={(e) => updateItem(index, { unit_price: parseFloat(e.target.value) || 0 })}
+                                          min="0"
+                                          step="0.01"
+                                          style={{
+                                            width: '100%',
+                                            padding: '0.5rem',
+                                            border: '1px solid #d1d5db',
+                                            borderRadius: '0.375rem',
+                                            fontSize: '0.875rem',
+                                            textAlign: 'right'
+                                          }}
+                                        />
+                                      )}
+                                    </td>
                   <td style={{ padding: '0.75rem' }}>
                     {readOnly ? (
                       <div style={{ fontSize: '0.875rem', textAlign: 'right' }}>{item.discount_percent}%</div>
