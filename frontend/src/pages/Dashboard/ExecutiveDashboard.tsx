@@ -28,38 +28,34 @@ export const ExecutiveDashboard: React.FC = () => {
 
   const fetchDashboardData = async () => {
     try {
-      const botsResponse = await api.get('/agents');
-      setBots(botsResponse.data.agents || []);
-
-      const today = new Date().toISOString().split('T')[0];
-      // Get company_id from localStorage (set by auth) - never hardcode tenant IDs
-      const companyId = localStorage.getItem('aria_company_id') || '';
-      
-      if (!companyId) {
-        console.warn('No company_id found - user may need to select a company');
-      }
-      
-      const [apResponse, arResponse] = await Promise.all([
-        api.get(`/reports/ar-ap/ap-aging?company_id=${companyId}&as_of_date=${today}`),
-        api.get(`/reports/ar-ap/ar-aging?company_id=${companyId}&as_of_date=${today}`)
+      // Fetch live dashboard data from the executive endpoint
+      const [botsResponse, dashboardResponse] = await Promise.all([
+        api.get('/agents'),
+        api.get('/dashboard/executive')
       ]);
-
+      
+      setBots(botsResponse.data.agents || []);
+      
+      const dashData = dashboardResponse.data;
+      const financial = dashData?.financial || {};
+      const automation = dashData?.automation || {};
+      
       setMetrics({
-        total_revenue: 2500000,
-        net_profit: 650000,
-        cash_position: 850000,
-        ar_outstanding: arResponse.data.grand_total || 0,
-        ap_outstanding: apResponse.data.grand_total || 0,
-        bot_count: botsResponse.data.agents?.length || 15,
-        active_bots: botsResponse.data.agents?.filter((b: any) => b.status === 'active').length || 15
+        total_revenue: financial.revenue || 0,
+        net_profit: financial.net_profit || 0,
+        cash_position: financial.cash_position || 0,
+        ar_outstanding: financial.ar_balance || 0,
+        ap_outstanding: financial.ap_balance || 0,
+        bot_count: botsResponse.data.agents?.length || automation.active_agents || 15,
+        active_bots: botsResponse.data.agents?.filter((b: any) => b.status === 'active').length || automation.active_agents || 15
       });
     } catch (error) {
-      console.error('Error:', error);
-      // Set default metrics so UI still renders
+      console.error('Error fetching dashboard data:', error);
+      // Set zero values on error - don't show fake data
       setMetrics({
-        total_revenue: 2500000,
-        net_profit: 650000,
-        cash_position: 850000,
+        total_revenue: 0,
+        net_profit: 0,
+        cash_position: 0,
         ar_outstanding: 0,
         ap_outstanding: 0,
         bot_count: 15,

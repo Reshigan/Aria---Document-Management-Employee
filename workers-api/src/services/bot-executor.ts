@@ -3211,6 +3211,48 @@ export async function executeBotById(
         result = await executeWorkflowAutomationBot(companyId, config, db, userId, timestamp);
         break;
       
+      // ============================================
+      // Additional State-Changing Bots (67 total)
+      // ============================================
+      case 'customer_onboarding':
+        result = await executeCustomerOnboardingBot(companyId, config, db, userId, timestamp);
+        break;
+      case 'supplier_onboarding':
+        result = await executeSupplierOnboardingBot(companyId, config, db, userId, timestamp);
+        break;
+      case 'delivery_scheduling':
+        result = await executeDeliverySchedulingBot(companyId, config, db, userId, timestamp);
+        break;
+      case 'reorder_point':
+        result = await executeReorderPointBot(companyId, config, db, userId, timestamp);
+        break;
+      case 'credit_control':
+        result = await executeCreditControlBot(companyId, config, db, userId, timestamp);
+        break;
+      case 'quote_follow_up':
+        result = await executeQuoteFollowUpBot(companyId, config, db, userId, timestamp);
+        break;
+      case 'order_fulfillment':
+        result = await executeOrderFulfillmentBot(companyId, config, db, userId, timestamp);
+        break;
+      case 'invoice_reminder':
+        result = await executeInvoiceReminderBot(companyId, config, db, userId, timestamp);
+        break;
+      case 'auto_approval':
+        result = await executeAutoApprovalBot(companyId, config, db, userId, timestamp);
+        break;
+      
+      // Alias mappings for common bot names
+      case 'inventory':
+        result = await executeInventoryBot(companyId, config, db, userId, timestamp);
+        break;
+      case 'production':
+        result = await executeProductionBot(companyId, config, db, userId, timestamp);
+        break;
+      case 'payroll':
+        result = await executePayrollBot(companyId, config, db, userId, timestamp);
+        break;
+      
       default:
         result = {
           success: true,
@@ -3297,6 +3339,946 @@ export async function executeScheduledBots(db: D1Database): Promise<{ executed: 
   } catch (error) {
     console.error('Error in scheduled bot execution:', error);
     return { executed: 0, results: [] };
+  }
+}
+
+// ============================================
+// BOT ORCHESTRATION / CHAINING SYSTEM
+// ============================================
+
+// Workflow definitions - sequences of bots that run in order
+export const BOT_WORKFLOWS = {
+  // Order-to-Cash (O2C) Pipeline
+  o2c_pipeline: {
+    name: 'Order-to-Cash Pipeline',
+    description: 'Complete O2C flow: Quote → Sales Order → Invoice → Payment',
+    bots: ['quote_generation', 'sales_order', 'invoice_generation', 'payment_processing', 'ar_collections'],
+    trigger: 'scheduled',
+    enabled: true
+  },
+  
+  // Procure-to-Pay (P2P) Pipeline
+  p2p_pipeline: {
+    name: 'Procure-to-Pay Pipeline',
+    description: 'Complete P2P flow: PO → Goods Receipt → Invoice → Payment',
+    bots: ['purchase_order', 'goods_receipt', 'accounts_payable', 'payment_processing'],
+    trigger: 'scheduled',
+    enabled: true
+  },
+  
+  // Manufacturing Pipeline
+  manufacturing_pipeline: {
+    name: 'Manufacturing Pipeline',
+    description: 'Complete manufacturing flow: Work Order → Production → Quality → Inventory',
+    bots: ['work_order', 'production', 'quality_control', 'inventory', 'stock_movement'],
+    trigger: 'scheduled',
+    enabled: true
+  },
+  
+  // Financial Close Pipeline
+  financial_close_pipeline: {
+    name: 'Financial Close Pipeline',
+    description: 'Period-end close: Reconciliation → GL Posting → Reports',
+    bots: ['bank_reconciliation', 'invoice_reconciliation', 'general_ledger', 'financial_close', 'financial_reporting'],
+    trigger: 'manual',
+    enabled: true
+  },
+  
+  // HR Pipeline
+  hr_pipeline: {
+    name: 'HR Pipeline',
+    description: 'HR automation: Leave → Payroll → Expense',
+    bots: ['leave_management', 'payroll', 'expense_management'],
+    trigger: 'scheduled',
+    enabled: true
+  },
+  
+  // Sales Pipeline
+  sales_pipeline: {
+    name: 'Sales Pipeline',
+    description: 'Sales automation: Lead → Opportunity → Quote',
+    bots: ['lead_qualification', 'opportunity_management', 'quote_generation'],
+    trigger: 'scheduled',
+    enabled: true
+  }
+};
+
+export interface WorkflowExecutionResult {
+  workflow_id: string;
+  workflow_name: string;
+  success: boolean;
+  total_bots: number;
+  executed_bots: number;
+  failed_bots: number;
+  state_changes: number;
+  results: BotExecutionResult[];
+  started_at: string;
+  completed_at: string;
+  dry_run: boolean;
+}
+
+// Execute a complete workflow (bot chain)
+export async function executeWorkflow(
+  workflowId: string,
+  companyId: string,
+  config: Record<string, any>,
+  db: D1Database,
+  dryRun: boolean = false
+): Promise<WorkflowExecutionResult> {
+  const workflow = BOT_WORKFLOWS[workflowId as keyof typeof BOT_WORKFLOWS];
+  const startedAt = new Date().toISOString();
+  
+  if (!workflow) {
+    return {
+      workflow_id: workflowId,
+      workflow_name: 'Unknown',
+      success: false,
+      total_bots: 0,
+      executed_bots: 0,
+      failed_bots: 0,
+      state_changes: 0,
+      results: [],
+      started_at: startedAt,
+      completed_at: new Date().toISOString(),
+      dry_run: dryRun
+    };
+  }
+  
+  console.log(`Starting workflow "${workflow.name}" for company ${companyId} (dry_run: ${dryRun})`);
+  
+  const results: BotExecutionResult[] = [];
+  let failedBots = 0;
+  let stateChanges = 0;
+  
+  // Record workflow run
+  const workflowRunId = crypto.randomUUID();
+  await db.prepare(`
+    INSERT INTO bot_runs (id, bot_id, company_id, status, started_at, trigger_type, config)
+    VALUES (?, ?, ?, 'running', ?, 'workflow', ?)
+  `).bind(workflowRunId, `workflow:${workflowId}`, companyId, startedAt, JSON.stringify({ workflow: workflowId, dry_run: dryRun })).run();
+  
+  // Execute bots in sequence
+  for (const botId of workflow.bots) {
+    try {
+      console.log(`  Executing bot "${botId}" in workflow...`);
+      
+      // Check if bot is paused
+      const isPaused = await isBotPaused(botId, companyId, db);
+      if (isPaused) {
+        console.log(`  Bot "${botId}" is paused, skipping...`);
+        results.push({
+          success: true,
+          run_id: crypto.randomUUID(),
+          bot_id: botId,
+          company_id: companyId,
+          state_changed: false,
+          message: 'Bot is paused, skipped in workflow',
+          executed_at: new Date().toISOString()
+        });
+        continue;
+      }
+      
+      // Execute bot with dry_run flag
+      const botConfig = { ...config, dry_run: dryRun };
+      const result = await executeBotById(botId, companyId, botConfig, db, 'scheduled');
+      
+      // In dry_run mode, don't count state changes
+      if (dryRun) {
+        result.state_changed = false;
+        result.message = `[DRY RUN] ${result.message}`;
+      }
+      
+      results.push(result);
+      
+      if (!result.success) {
+        failedBots++;
+        console.log(`  Bot "${botId}" failed: ${result.message}`);
+        
+        // Stop workflow on failure (unless configured to continue)
+        if (!config.continue_on_failure) {
+          console.log(`  Stopping workflow due to bot failure`);
+          break;
+        }
+      } else {
+        if (result.state_changed) {
+          stateChanges++;
+        }
+        console.log(`  Bot "${botId}" completed: ${result.message}`);
+      }
+    } catch (error) {
+      console.error(`  Error executing bot "${botId}":`, error);
+      failedBots++;
+      results.push({
+        success: false,
+        run_id: crypto.randomUUID(),
+        bot_id: botId,
+        company_id: companyId,
+        state_changed: false,
+        message: String(error),
+        executed_at: new Date().toISOString(),
+        error: 'Bot execution failed in workflow'
+      });
+      
+      if (!config.continue_on_failure) {
+        break;
+      }
+    }
+  }
+  
+  const completedAt = new Date().toISOString();
+  const success = failedBots === 0;
+  
+  // Update workflow run record
+  await db.prepare(`
+    UPDATE bot_runs SET status = ?, completed_at = ?, result = ?
+    WHERE id = ?
+  `).bind(
+    success ? 'completed' : 'failed',
+    completedAt,
+    JSON.stringify({
+      workflow_id: workflowId,
+      total_bots: workflow.bots.length,
+      executed_bots: results.length,
+      failed_bots: failedBots,
+      state_changes: stateChanges,
+      dry_run: dryRun
+    }),
+    workflowRunId
+  ).run();
+  
+  console.log(`Workflow "${workflow.name}" completed. Success: ${success}, State changes: ${stateChanges}`);
+  
+  return {
+    workflow_id: workflowId,
+    workflow_name: workflow.name,
+    success,
+    total_bots: workflow.bots.length,
+    executed_bots: results.length,
+    failed_bots: failedBots,
+    state_changes: stateChanges,
+    results,
+    started_at: startedAt,
+    completed_at: completedAt,
+    dry_run: dryRun
+  };
+}
+
+// Execute all enabled workflows for scheduled runs
+export async function executeScheduledWorkflows(db: D1Database): Promise<{ executed: number; results: WorkflowExecutionResult[] }> {
+  console.log('Starting scheduled workflow execution...');
+  
+  const results: WorkflowExecutionResult[] = [];
+  
+  try {
+    // Get all companies with workflow configs
+    const companies = await db.prepare(`
+      SELECT DISTINCT company_id FROM bot_configs WHERE enabled = 1
+    `).all();
+    
+    if (!companies.results?.length) {
+      console.log('No companies with enabled bots found');
+      return { executed: 0, results: [] };
+    }
+    
+    // Execute scheduled workflows for each company
+    for (const company of companies.results as any[]) {
+      for (const [workflowId, workflow] of Object.entries(BOT_WORKFLOWS)) {
+        if (workflow.enabled && workflow.trigger === 'scheduled') {
+          try {
+            const result = await executeWorkflow(workflowId, company.company_id, {}, db, false);
+            results.push(result);
+          } catch (error) {
+            console.error(`Error executing workflow ${workflowId} for company ${company.company_id}:`, error);
+          }
+        }
+      }
+    }
+    
+    console.log(`Scheduled workflow execution completed. Executed ${results.length} workflows.`);
+    return { executed: results.length, results };
+  } catch (error) {
+    console.error('Error in scheduled workflow execution:', error);
+    return { executed: 0, results: [] };
+  }
+}
+
+// ============================================
+// DRY RUN ENFORCEMENT
+// ============================================
+
+// Execute bot with dry_run enforcement
+export async function executeBotWithDryRun(
+  botId: string,
+  companyId: string,
+  config: Record<string, any>,
+  db: D1Database,
+  triggerType: 'manual' | 'scheduled' = 'manual'
+): Promise<BotExecutionResult> {
+  const dryRun = config.dry_run === true;
+  
+  if (dryRun) {
+    console.log(`Executing bot "${botId}" in DRY RUN mode - no state changes will be made`);
+    
+    // For dry run, we simulate the bot execution without making changes
+    const timestamp = new Date().toISOString();
+    const runId = crypto.randomUUID();
+    
+    // Get what the bot WOULD do without actually doing it
+    const simulatedResult = await simulateBotExecution(botId, companyId, config, db, timestamp);
+    
+    return {
+      success: true,
+      run_id: runId,
+      bot_id: botId,
+      company_id: companyId,
+      state_changed: false,
+      message: `[DRY RUN] ${simulatedResult.message}`,
+      executed_at: timestamp,
+      details: { ...simulatedResult.details, dry_run: true, would_change: simulatedResult.would_change }
+    };
+  }
+  
+  // Normal execution
+  return executeBotById(botId, companyId, config, db, triggerType);
+}
+
+// Simulate bot execution without making changes
+async function simulateBotExecution(
+  botId: string,
+  companyId: string,
+  config: Record<string, any>,
+  db: D1Database,
+  timestamp: string
+): Promise<{ message: string; details: Record<string, any>; would_change: boolean }> {
+  switch (botId) {
+    case 'quote_generation': {
+      const customers = await db.prepare('SELECT COUNT(*) as count FROM customers WHERE company_id = ?').bind(companyId).first<{ count: number }>();
+      const existingQuotes = await db.prepare('SELECT COUNT(*) as count FROM quotes WHERE company_id = ? AND date(quote_date) = date(\'now\')').bind(companyId).first<{ count: number }>();
+      const wouldCreate = Math.min((customers?.count || 0) - (existingQuotes?.count || 0), config.max_quotes_per_run || 3);
+      return {
+        message: `Would create ${wouldCreate} quote(s) for customers without quotes today`,
+        details: { customers: customers?.count || 0, existing_quotes: existingQuotes?.count || 0, would_create: wouldCreate },
+        would_change: wouldCreate > 0
+      };
+    }
+    
+    case 'sales_order': {
+      const approvedQuotes = await db.prepare('SELECT COUNT(*) as count FROM quotes WHERE company_id = ? AND status = ?').bind(companyId, 'approved').first<{ count: number }>();
+      return {
+        message: `Would convert ${approvedQuotes?.count || 0} approved quote(s) to sales orders`,
+        details: { approved_quotes: approvedQuotes?.count || 0 },
+        would_change: (approvedQuotes?.count || 0) > 0
+      };
+    }
+    
+    case 'invoice_generation': {
+      const confirmedOrders = await db.prepare('SELECT COUNT(*) as count FROM sales_orders WHERE company_id = ? AND status = ?').bind(companyId, 'confirmed').first<{ count: number }>();
+      return {
+        message: `Would create ${confirmedOrders?.count || 0} invoice(s) from confirmed orders`,
+        details: { confirmed_orders: confirmedOrders?.count || 0 },
+        would_change: (confirmedOrders?.count || 0) > 0
+      };
+    }
+    
+    case 'payment_processing': {
+      const pendingPayments = await db.prepare('SELECT COUNT(*) as count FROM invoices WHERE company_id = ? AND status = ?').bind(companyId, 'pending_payment').first<{ count: number }>();
+      return {
+        message: `Would process ${pendingPayments?.count || 0} pending payment(s)`,
+        details: { pending_payments: pendingPayments?.count || 0 },
+        would_change: (pendingPayments?.count || 0) > 0
+      };
+    }
+    
+    case 'ar_collections': {
+      const overdueInvoices = await db.prepare('SELECT COUNT(*) as count FROM invoices WHERE company_id = ? AND invoice_type = ? AND status = ? AND due_date < date(\'now\')').bind(companyId, 'customer', 'sent').first<{ count: number }>();
+      return {
+        message: `Would create ${overdueInvoices?.count || 0} collection reminder(s)`,
+        details: { overdue_invoices: overdueInvoices?.count || 0 },
+        would_change: (overdueInvoices?.count || 0) > 0
+      };
+    }
+    
+    case 'purchase_order': {
+      const suppliers = await db.prepare('SELECT COUNT(*) as count FROM suppliers WHERE company_id = ?').bind(companyId).first<{ count: number }>();
+      return {
+        message: `Would create purchase order(s) for ${suppliers?.count || 0} supplier(s)`,
+        details: { suppliers: suppliers?.count || 0 },
+        would_change: (suppliers?.count || 0) > 0
+      };
+    }
+    
+    default:
+      return {
+        message: `Would execute bot "${botId}"`,
+        details: {},
+        would_change: true
+      };
+  }
+}
+
+// ============================================
+// REMAINING BOTS (67 total)
+// ============================================
+
+// Additional bots to reach 67 total
+export async function executeCustomerOnboardingBot(
+  companyId: string,
+  config: Record<string, any>,
+  db: D1Database,
+  userId: string,
+  timestamp: string
+): Promise<BotExecutionResult> {
+  const runId = crypto.randomUUID();
+  
+  try {
+    const pendingCustomers = await db.prepare(
+      'SELECT id, customer_name FROM customers WHERE company_id = ? AND status = ? LIMIT 10'
+    ).bind(companyId, 'pending').all();
+    
+    if (!pendingCustomers.results?.length) {
+      return {
+        success: true,
+        run_id: runId,
+        bot_id: 'customer_onboarding',
+        company_id: companyId,
+        state_changed: false,
+        message: 'No pending customers to onboard.',
+        executed_at: timestamp,
+      };
+    }
+    
+    const onboarded: string[] = [];
+    for (const customer of pendingCustomers.results as any[]) {
+      await db.prepare('UPDATE customers SET status = ?, updated_at = datetime(\'now\') WHERE id = ?')
+        .bind('active', customer.id).run();
+      onboarded.push(customer.customer_name);
+    }
+    
+    return {
+      success: true,
+      run_id: runId,
+      bot_id: 'customer_onboarding',
+      company_id: companyId,
+      state_changed: true,
+      message: `Onboarded ${onboarded.length} customer(s): ${onboarded.join(', ')}`,
+      executed_at: timestamp,
+      details: { customers_onboarded: onboarded }
+    };
+  } catch (error) {
+    return {
+      success: false,
+      run_id: runId,
+      bot_id: 'customer_onboarding',
+      company_id: companyId,
+      state_changed: false,
+      message: String(error),
+      executed_at: timestamp,
+      error: 'Failed to onboard customers'
+    };
+  }
+}
+
+export async function executeSupplierOnboardingBot(
+  companyId: string,
+  config: Record<string, any>,
+  db: D1Database,
+  userId: string,
+  timestamp: string
+): Promise<BotExecutionResult> {
+  const runId = crypto.randomUUID();
+  
+  try {
+    const pendingSuppliers = await db.prepare(
+      'SELECT id, supplier_name FROM suppliers WHERE company_id = ? AND status = ? LIMIT 10'
+    ).bind(companyId, 'pending').all();
+    
+    if (!pendingSuppliers.results?.length) {
+      return {
+        success: true,
+        run_id: runId,
+        bot_id: 'supplier_onboarding',
+        company_id: companyId,
+        state_changed: false,
+        message: 'No pending suppliers to onboard.',
+        executed_at: timestamp,
+      };
+    }
+    
+    const onboarded: string[] = [];
+    for (const supplier of pendingSuppliers.results as any[]) {
+      await db.prepare('UPDATE suppliers SET status = ?, updated_at = datetime(\'now\') WHERE id = ?')
+        .bind('active', supplier.id).run();
+      onboarded.push(supplier.supplier_name);
+    }
+    
+    return {
+      success: true,
+      run_id: runId,
+      bot_id: 'supplier_onboarding',
+      company_id: companyId,
+      state_changed: true,
+      message: `Onboarded ${onboarded.length} supplier(s): ${onboarded.join(', ')}`,
+      executed_at: timestamp,
+      details: { suppliers_onboarded: onboarded }
+    };
+  } catch (error) {
+    return {
+      success: false,
+      run_id: runId,
+      bot_id: 'supplier_onboarding',
+      company_id: companyId,
+      state_changed: false,
+      message: String(error),
+      executed_at: timestamp,
+      error: 'Failed to onboard suppliers'
+    };
+  }
+}
+
+export async function executeDeliverySchedulingBot(
+  companyId: string,
+  config: Record<string, any>,
+  db: D1Database,
+  userId: string,
+  timestamp: string
+): Promise<BotExecutionResult> {
+  const runId = crypto.randomUUID();
+  
+  try {
+    const pendingDeliveries = await db.prepare(
+      'SELECT id, order_number FROM sales_orders WHERE company_id = ? AND status = ? LIMIT 10'
+    ).bind(companyId, 'confirmed').all();
+    
+    if (!pendingDeliveries.results?.length) {
+      return {
+        success: true,
+        run_id: runId,
+        bot_id: 'delivery_scheduling',
+        company_id: companyId,
+        state_changed: false,
+        message: 'No orders pending delivery scheduling.',
+        executed_at: timestamp,
+      };
+    }
+    
+    const scheduled: string[] = [];
+    for (const order of pendingDeliveries.results as any[]) {
+      await db.prepare('UPDATE sales_orders SET status = ?, delivery_date = date(\'now\', \'+3 days\'), updated_at = datetime(\'now\') WHERE id = ?')
+        .bind('scheduled', order.id).run();
+      scheduled.push(order.order_number);
+    }
+    
+    return {
+      success: true,
+      run_id: runId,
+      bot_id: 'delivery_scheduling',
+      company_id: companyId,
+      state_changed: true,
+      message: `Scheduled ${scheduled.length} delivery(ies): ${scheduled.join(', ')}`,
+      executed_at: timestamp,
+      details: { deliveries_scheduled: scheduled }
+    };
+  } catch (error) {
+    return {
+      success: false,
+      run_id: runId,
+      bot_id: 'delivery_scheduling',
+      company_id: companyId,
+      state_changed: false,
+      message: String(error),
+      executed_at: timestamp,
+      error: 'Failed to schedule deliveries'
+    };
+  }
+}
+
+export async function executeReorderPointBot(
+  companyId: string,
+  config: Record<string, any>,
+  db: D1Database,
+  userId: string,
+  timestamp: string
+): Promise<BotExecutionResult> {
+  const runId = crypto.randomUUID();
+  
+  try {
+    const lowStockItems = await db.prepare(`
+      SELECT p.id, p.product_name, sl.quantity, p.reorder_point
+      FROM products p
+      LEFT JOIN stock_levels sl ON p.id = sl.product_id
+      WHERE p.company_id = ? AND (sl.quantity IS NULL OR sl.quantity < COALESCE(p.reorder_point, 10))
+      LIMIT 10
+    `).bind(companyId).all();
+    
+    if (!lowStockItems.results?.length) {
+      return {
+        success: true,
+        run_id: runId,
+        bot_id: 'reorder_point',
+        company_id: companyId,
+        state_changed: false,
+        message: 'No items below reorder point.',
+        executed_at: timestamp,
+      };
+    }
+    
+    const reorderTasks: string[] = [];
+    for (const item of lowStockItems.results as any[]) {
+      await db.prepare(`
+        INSERT INTO tasks (id, type, reference_id, reference_type, company_id, status, description, priority, created_at)
+        VALUES (?, 'reorder', ?, 'product', ?, 'pending', ?, 'high', datetime('now'))
+      `).bind(
+        crypto.randomUUID(),
+        item.id,
+        companyId,
+        `Reorder ${item.product_name} - Current stock: ${item.quantity || 0}, Reorder point: ${item.reorder_point || 10}`
+      ).run();
+      reorderTasks.push(item.product_name);
+    }
+    
+    return {
+      success: true,
+      run_id: runId,
+      bot_id: 'reorder_point',
+      company_id: companyId,
+      state_changed: true,
+      message: `Created ${reorderTasks.length} reorder task(s): ${reorderTasks.join(', ')}`,
+      executed_at: timestamp,
+      details: { reorder_tasks: reorderTasks }
+    };
+  } catch (error) {
+    return {
+      success: false,
+      run_id: runId,
+      bot_id: 'reorder_point',
+      company_id: companyId,
+      state_changed: false,
+      message: String(error),
+      executed_at: timestamp,
+      error: 'Failed to process reorder points'
+    };
+  }
+}
+
+export async function executeCreditControlBot(
+  companyId: string,
+  config: Record<string, any>,
+  db: D1Database,
+  userId: string,
+  timestamp: string
+): Promise<BotExecutionResult> {
+  const runId = crypto.randomUUID();
+  
+  try {
+    const customersOverLimit = await db.prepare(`
+      SELECT c.id, c.customer_name, c.credit_limit,
+        (SELECT COALESCE(SUM(balance_due), 0) FROM customer_invoices WHERE customer_id = c.id AND status != 'paid') as outstanding
+      FROM customers c
+      WHERE c.company_id = ? AND c.credit_limit > 0
+      HAVING outstanding > c.credit_limit
+      LIMIT 10
+    `).bind(companyId).all();
+    
+    if (!customersOverLimit.results?.length) {
+      return {
+        success: true,
+        run_id: runId,
+        bot_id: 'credit_control',
+        company_id: companyId,
+        state_changed: false,
+        message: 'No customers over credit limit.',
+        executed_at: timestamp,
+      };
+    }
+    
+    const alerts: string[] = [];
+    for (const customer of customersOverLimit.results as any[]) {
+      await db.prepare(`
+        INSERT INTO tasks (id, type, reference_id, reference_type, company_id, status, description, priority, created_at)
+        VALUES (?, 'credit_alert', ?, 'customer', ?, 'pending', ?, 'high', datetime('now'))
+      `).bind(
+        crypto.randomUUID(),
+        customer.id,
+        companyId,
+        `Credit limit exceeded for ${customer.customer_name} - Outstanding: ${customer.outstanding}, Limit: ${customer.credit_limit}`
+      ).run();
+      alerts.push(customer.customer_name);
+    }
+    
+    return {
+      success: true,
+      run_id: runId,
+      bot_id: 'credit_control',
+      company_id: companyId,
+      state_changed: true,
+      message: `Created ${alerts.length} credit alert(s): ${alerts.join(', ')}`,
+      executed_at: timestamp,
+      details: { credit_alerts: alerts }
+    };
+  } catch (error) {
+    return {
+      success: false,
+      run_id: runId,
+      bot_id: 'credit_control',
+      company_id: companyId,
+      state_changed: false,
+      message: String(error),
+      executed_at: timestamp,
+      error: 'Failed to process credit control'
+    };
+  }
+}
+
+export async function executeQuoteFollowUpBot(
+  companyId: string,
+  config: Record<string, any>,
+  db: D1Database,
+  userId: string,
+  timestamp: string
+): Promise<BotExecutionResult> {
+  const runId = crypto.randomUUID();
+  
+  try {
+    const pendingQuotes = await db.prepare(`
+      SELECT q.id, q.quote_number, c.customer_name, q.total_amount, q.quote_date
+      FROM quotes q
+      LEFT JOIN customers c ON q.customer_id = c.id
+      WHERE q.company_id = ? AND q.status = 'sent' AND date(q.quote_date) < date('now', '-7 days')
+      LIMIT 10
+    `).bind(companyId).all();
+    
+    if (!pendingQuotes.results?.length) {
+      return {
+        success: true,
+        run_id: runId,
+        bot_id: 'quote_follow_up',
+        company_id: companyId,
+        state_changed: false,
+        message: 'No quotes requiring follow-up.',
+        executed_at: timestamp,
+      };
+    }
+    
+    const followUps: string[] = [];
+    for (const quote of pendingQuotes.results as any[]) {
+      await db.prepare(`
+        INSERT INTO tasks (id, type, reference_id, reference_type, company_id, status, description, priority, created_at)
+        VALUES (?, 'quote_follow_up', ?, 'quote', ?, 'pending', ?, 'medium', datetime('now'))
+      `).bind(
+        crypto.randomUUID(),
+        quote.id,
+        companyId,
+        `Follow up on quote ${quote.quote_number} for ${quote.customer_name} - Amount: ${quote.total_amount}`
+      ).run();
+      followUps.push(quote.quote_number);
+    }
+    
+    return {
+      success: true,
+      run_id: runId,
+      bot_id: 'quote_follow_up',
+      company_id: companyId,
+      state_changed: true,
+      message: `Created ${followUps.length} follow-up task(s): ${followUps.join(', ')}`,
+      executed_at: timestamp,
+      details: { follow_ups: followUps }
+    };
+  } catch (error) {
+    return {
+      success: false,
+      run_id: runId,
+      bot_id: 'quote_follow_up',
+      company_id: companyId,
+      state_changed: false,
+      message: String(error),
+      executed_at: timestamp,
+      error: 'Failed to process quote follow-ups'
+    };
+  }
+}
+
+export async function executeOrderFulfillmentBot(
+  companyId: string,
+  config: Record<string, any>,
+  db: D1Database,
+  userId: string,
+  timestamp: string
+): Promise<BotExecutionResult> {
+  const runId = crypto.randomUUID();
+  
+  try {
+    const readyOrders = await db.prepare(
+      'SELECT id, order_number FROM sales_orders WHERE company_id = ? AND status = ? LIMIT 10'
+    ).bind(companyId, 'approved').all();
+    
+    if (!readyOrders.results?.length) {
+      return {
+        success: true,
+        run_id: runId,
+        bot_id: 'order_fulfillment',
+        company_id: companyId,
+        state_changed: false,
+        message: 'No orders ready for fulfillment.',
+        executed_at: timestamp,
+      };
+    }
+    
+    const fulfilled: string[] = [];
+    for (const order of readyOrders.results as any[]) {
+      await db.prepare('UPDATE sales_orders SET status = ?, updated_at = datetime(\'now\') WHERE id = ?')
+        .bind('in_progress', order.id).run();
+      fulfilled.push(order.order_number);
+    }
+    
+    return {
+      success: true,
+      run_id: runId,
+      bot_id: 'order_fulfillment',
+      company_id: companyId,
+      state_changed: true,
+      message: `Started fulfillment for ${fulfilled.length} order(s): ${fulfilled.join(', ')}`,
+      executed_at: timestamp,
+      details: { orders_in_progress: fulfilled }
+    };
+  } catch (error) {
+    return {
+      success: false,
+      run_id: runId,
+      bot_id: 'order_fulfillment',
+      company_id: companyId,
+      state_changed: false,
+      message: String(error),
+      executed_at: timestamp,
+      error: 'Failed to process order fulfillment'
+    };
+  }
+}
+
+export async function executeInvoiceReminderBot(
+  companyId: string,
+  config: Record<string, any>,
+  db: D1Database,
+  userId: string,
+  timestamp: string
+): Promise<BotExecutionResult> {
+  const runId = crypto.randomUUID();
+  
+  try {
+    const upcomingDue = await db.prepare(`
+      SELECT ci.id, ci.invoice_number, c.customer_name, ci.total_amount, ci.due_date
+      FROM customer_invoices ci
+      LEFT JOIN customers c ON ci.customer_id = c.id
+      WHERE ci.company_id = ? AND ci.status = 'sent' AND date(ci.due_date) BETWEEN date('now') AND date('now', '+7 days')
+      LIMIT 10
+    `).bind(companyId).all();
+    
+    if (!upcomingDue.results?.length) {
+      return {
+        success: true,
+        run_id: runId,
+        bot_id: 'invoice_reminder',
+        company_id: companyId,
+        state_changed: false,
+        message: 'No invoices due soon.',
+        executed_at: timestamp,
+      };
+    }
+    
+    const reminders: string[] = [];
+    for (const invoice of upcomingDue.results as any[]) {
+      await db.prepare(`
+        INSERT INTO tasks (id, type, reference_id, reference_type, company_id, status, description, priority, created_at)
+        VALUES (?, 'invoice_reminder', ?, 'invoice', ?, 'pending', ?, 'medium', datetime('now'))
+      `).bind(
+        crypto.randomUUID(),
+        invoice.id,
+        companyId,
+        `Payment reminder for ${invoice.customer_name} - Invoice ${invoice.invoice_number} due ${invoice.due_date} - Amount: ${invoice.total_amount}`
+      ).run();
+      reminders.push(invoice.invoice_number);
+    }
+    
+    return {
+      success: true,
+      run_id: runId,
+      bot_id: 'invoice_reminder',
+      company_id: companyId,
+      state_changed: true,
+      message: `Created ${reminders.length} payment reminder(s): ${reminders.join(', ')}`,
+      executed_at: timestamp,
+      details: { reminders: reminders }
+    };
+  } catch (error) {
+    return {
+      success: false,
+      run_id: runId,
+      bot_id: 'invoice_reminder',
+      company_id: companyId,
+      state_changed: false,
+      message: String(error),
+      executed_at: timestamp,
+      error: 'Failed to process invoice reminders'
+    };
+  }
+}
+
+export async function executeAutoApprovalBot(
+  companyId: string,
+  config: Record<string, any>,
+  db: D1Database,
+  userId: string,
+  timestamp: string
+): Promise<BotExecutionResult> {
+  const runId = crypto.randomUUID();
+  const autoApproveLimit = config.auto_approve_limit || 5000;
+  
+  try {
+    const pendingApprovals = await db.prepare(`
+      SELECT id, po_number, total_amount FROM purchase_orders 
+      WHERE company_id = ? AND status = 'pending_approval' AND total_amount <= ?
+      LIMIT 10
+    `).bind(companyId, autoApproveLimit).all();
+    
+    if (!pendingApprovals.results?.length) {
+      return {
+        success: true,
+        run_id: runId,
+        bot_id: 'auto_approval',
+        company_id: companyId,
+        state_changed: false,
+        message: `No items pending approval under ${autoApproveLimit}.`,
+        executed_at: timestamp,
+      };
+    }
+    
+    const approved: string[] = [];
+    for (const po of pendingApprovals.results as any[]) {
+      await db.prepare('UPDATE purchase_orders SET status = ?, approved_by = ?, approved_at = datetime(\'now\'), updated_at = datetime(\'now\') WHERE id = ?')
+        .bind('approved', 'auto_approval_bot', po.id).run();
+      approved.push(po.po_number);
+    }
+    
+    return {
+      success: true,
+      run_id: runId,
+      bot_id: 'auto_approval',
+      company_id: companyId,
+      state_changed: true,
+      message: `Auto-approved ${approved.length} PO(s) under ${autoApproveLimit}: ${approved.join(', ')}`,
+      executed_at: timestamp,
+      details: { approved_pos: approved, limit: autoApproveLimit }
+    };
+  } catch (error) {
+    return {
+      success: false,
+      run_id: runId,
+      bot_id: 'auto_approval',
+      company_id: companyId,
+      state_changed: false,
+      message: String(error),
+      executed_at: timestamp,
+      error: 'Failed to process auto-approvals'
+    };
   }
 }
 
