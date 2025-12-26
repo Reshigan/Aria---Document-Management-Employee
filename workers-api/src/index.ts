@@ -38,9 +38,11 @@ import payments from './routes/payments';
 import onboardingWizard from './routes/onboarding-wizard';
 import manufacturing from './routes/manufacturing';
 import enterprise from './routes/enterprise';
+import marketing from './routes/marketing';
 import { executeScheduledBots as runScheduledBots } from './services/bot-executor';
 import { processPendingDeliveries } from './services/webhook-service';
 import { processDueScheduledReports } from './services/report-builder-service';
+import { processScheduledPosts, generateDailyPosts } from './services/marketing-service';
 
 // Types
 interface Env {
@@ -316,6 +318,10 @@ app.route('/erp/manufacturing', manufacturing);
 // Enterprise routes (API Keys, Webhooks, Audit Logs, Subscriptions, Reports, Multi-Currency, Inventory Valuation, Three-Way Match)
 app.route('/api/enterprise', enterprise);
 app.route('/enterprise', enterprise);
+
+// Marketing Automation routes (Social Media, Content Generation, Influencer Tracking)
+app.route('/api/marketing', marketing);
+app.route('/marketing', marketing);
 
 // Simple password hashing(for demo - use proper bcrypt in production)
 async function hashPassword(password: string): Promise<string> {
@@ -700,6 +706,19 @@ async function executeScheduledTasks(env: Env): Promise<void> {
     console.log('Processing due scheduled reports...');
     const reportResult = await processDueScheduledReports(env.DB);
     console.log(`Scheduled reports: ${reportResult.processed} processed, ${reportResult.succeeded} succeeded, ${reportResult.failed} failed`);
+    
+    // 4. Process scheduled marketing posts
+    console.log('Processing scheduled marketing posts...');
+    const marketingResult = await processScheduledPosts(env.DB);
+    console.log(`Marketing posts: ${marketingResult.processed} processed, ${marketingResult.succeeded} succeeded, ${marketingResult.failed} failed`);
+    
+    // 5. Generate new marketing posts for tomorrow (once daily at midnight)
+    const now = new Date();
+    if (now.getUTCHours() === 0) {
+      console.log('Generating daily marketing posts...');
+      const newPosts = await generateDailyPosts(env.DB, 3);
+      console.log(`Generated ${newPosts.length} new marketing posts for today`);
+    }
     
   } catch (error) {
     console.error('Error in scheduled tasks execution:', error);
