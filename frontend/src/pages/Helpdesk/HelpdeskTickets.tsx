@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Ticket, Plus, Search, Edit, Trash2, Clock, AlertCircle, CheckCircle, User, MessageSquare } from 'lucide-react';
+import { Ticket, Plus, Search, Edit, Trash2, Clock, AlertCircle, CheckCircle, User, MessageSquare, Wrench } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import api from '../../lib/api';
 
 interface HelpdeskTicket {
@@ -38,6 +39,7 @@ interface Stage {
 }
 
 export default function HelpdeskTickets() {
+  const navigate = useNavigate();
   const [tickets, setTickets] = useState<HelpdeskTicket[]>([]);
   const [teams, setTeams] = useState<Team[]>([]);
   const [stages, setStages] = useState<Stage[]>([]);
@@ -147,18 +149,40 @@ export default function HelpdeskTickets() {
     }
   };
 
-  const resetForm = () => {
-    setFormData({
-      subject: '',
-      description: '',
-      customer_email: '',
-      team_id: '',
-      priority: 'medium',
-      stage_id: ''
-    });
-  };
+    const resetForm = () => {
+      setFormData({
+        subject: '',
+        description: '',
+        customer_email: '',
+        team_id: '',
+        priority: 'medium',
+        stage_id: ''
+      });
+    };
 
-  const filteredTickets = tickets.filter(t =>
+    const createWorkOrder = async (ticket: HelpdeskTicket) => {
+      try {
+        const workOrderData = {
+          title: `Field Service: ${ticket.subject}`,
+          description: ticket.description || `Work order created from helpdesk ticket #${ticket.ticket_number}`,
+          customer_id: ticket.customer_id,
+          customer_name: ticket.customer_name,
+          customer_email: ticket.customer_email,
+          priority: ticket.priority,
+          source_type: 'helpdesk_ticket',
+          source_id: ticket.id,
+          source_reference: ticket.ticket_number
+        };
+        await api.post('/odoo/field-service/work-orders', workOrderData);
+        alert(`Work order created successfully for ticket #${ticket.ticket_number}`);
+        navigate('/field-service');
+      } catch (error) {
+        console.error('Error creating work order:', error);
+        alert('Error creating work order. Please try again.');
+      }
+    };
+
+    const filteredTickets = tickets.filter(t =>
     t.subject.toLowerCase().includes(searchTerm.toLowerCase()) ||
     t.ticket_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
     (t.customer_name && t.customer_name.toLowerCase().includes(searchTerm.toLowerCase()))
@@ -324,27 +348,34 @@ export default function HelpdeskTickets() {
                       <span className="text-xs text-gray-400">No SLA</span>
                     )}
                   </td>
-                  <td className="px-6 py-4 text-right">
-                    <button
-                      onClick={() => setShowDetail(ticket)}
-                      className="text-gray-600 hover:text-gray-900 mr-2"
-                      title="View Messages"
-                    >
-                      <MessageSquare size={16} />
-                    </button>
-                    <button
-                      onClick={() => handleEdit(ticket)}
-                      className="text-blue-600 hover:text-blue-900 mr-2"
-                    >
-                      <Edit size={16} />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(ticket.id)}
-                      className="text-red-600 hover:text-red-900"
-                    >
-                      <Trash2 size={16} />
-                    </button>
-                  </td>
+                                    <td className="px-6 py-4 text-right">
+                                      <button
+                                        onClick={() => createWorkOrder(ticket)}
+                                        className="text-teal-600 hover:text-teal-900 mr-2"
+                                        title="Create Field Service Work Order"
+                                      >
+                                        <Wrench size={16} />
+                                      </button>
+                                      <button
+                                        onClick={() => setShowDetail(ticket)}
+                                        className="text-gray-600 hover:text-gray-900 mr-2"
+                                        title="View Messages"
+                                      >
+                                        <MessageSquare size={16} />
+                                      </button>
+                                      <button
+                                        onClick={() => handleEdit(ticket)}
+                                        className="text-blue-600 hover:text-blue-900 mr-2"
+                                      >
+                                        <Edit size={16} />
+                                      </button>
+                                      <button
+                                        onClick={() => handleDelete(ticket.id)}
+                                        className="text-red-600 hover:text-red-900"
+                                      >
+                                        <Trash2 size={16} />
+                                      </button>
+                                    </td>
                 </tr>
               ))}
             </tbody>

@@ -21,7 +21,15 @@ import {
   ShoppingBag,
   Factory,
   Shield,
-  Wrench
+  Wrench,
+  Tags,
+  DollarSign,
+  Briefcase,
+  Headphones,
+  Database,
+  FolderTree,
+  Clock,
+  MapPin
 } from 'lucide-react';
 import './Sidebar.css';
 
@@ -48,10 +56,17 @@ const navigation: NavItem[] = [
   { label: 'Sales Orders', icon: <ShoppingCart size={20} />, path: '/sales-orders', color: '#10b981' },
   { label: 'Deliveries', icon: <Truck size={20} />, path: '/deliveries', color: '#f59e0b' },
   
+  { label: 'Products', icon: <FolderTree size={20} />, path: '/products/categories', color: '#8b5cf6' },
+  { label: 'Pricing', icon: <DollarSign size={20} />, path: '/pricing', color: '#10b981' },
   { label: 'Inventory', icon: <Package size={20} />, path: '/inventory', color: '#8b5cf6' },
   { label: 'Procurement', icon: <ShoppingBag size={20} />, path: '/procurement', color: '#6366f1' },
   { label: 'Manufacturing', icon: <Factory size={20} />, path: '/manufacturing', color: '#ef4444' },
+  
+  { label: 'Services', icon: <Briefcase size={20} />, path: '/services', color: '#0ea5e9' },
+  { label: 'Helpdesk', icon: <Headphones size={20} />, path: '/helpdesk', color: '#f97316' },
   { label: 'Field Service', icon: <Wrench size={20} />, path: '/field-service', color: '#14b8a6' },
+  
+  { label: 'Migration', icon: <Database size={20} />, path: '/migration', color: '#a855f7' },
   
   { label: 'Automation Agents', icon: <Agent size={20} />, path: '/agents', color: '#ec4899' },
   { label: 'Reports', icon: <FileText size={20} />, path: '/reports' },
