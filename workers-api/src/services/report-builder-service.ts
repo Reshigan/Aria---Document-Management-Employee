@@ -530,6 +530,53 @@ export async function deleteScheduledReport(
   return (result.meta?.changes || 0) > 0;
 }
 
+/**
+ * Process due scheduled reports (called by scheduled handler)
+ */
+export async function processDueScheduledReports(db: D1Database): Promise<{ processed: number; succeeded: number; failed: number }> {
+  const now = new Date().toISOString();
+  
+  const dueReports = await db.prepare(`
+    SELECT sr.*, rd.company_id as report_company_id
+    FROM scheduled_reports sr
+    JOIN report_definitions rd ON sr.report_id = rd.id
+    WHERE sr.is_active = 1 AND (sr.next_run_at IS NULL OR sr.next_run_at <= ?)
+    LIMIT 10
+  `).bind(now).all();
+
+  let processed = 0, succeeded = 0, failed = 0;
+
+  for (const schedule of (dueReports.results || []) as any[]) {
+    processed++;
+    try {
+      const report = await getReport(db, schedule.company_id, schedule.report_id);
+      if (!report) {
+        failed++;
+        continue;
+      }
+
+      const result = await executeReport(db, schedule.company_id, schedule.report_id, [], { page: 1, pageSize: 1000 });
+      
+      if (schedule.format === 'csv') {
+        const csv = exportToCsv(result.data, result.columns);
+        console.log(`Generated CSV report "${schedule.name}" with ${result.data.length} rows for ${schedule.recipients.length} recipients`);
+      }
+
+      const nextRun = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+      await db.prepare(`
+        UPDATE scheduled_reports SET last_run_at = ?, next_run_at = ? WHERE id = ?
+      `).bind(now, nextRun, schedule.id).run();
+
+      succeeded++;
+    } catch (error) {
+      console.error(`Failed to process scheduled report ${schedule.id}:`, error);
+      failed++;
+    }
+  }
+
+  return { processed, succeeded, failed };
+}
+
 export default {
   createReport,
   getReportTemplates,
@@ -541,4 +588,5 @@ export default {
   scheduleReport,
   listScheduledReports,
   deleteScheduledReport,
+  processDueScheduledReports,
 };

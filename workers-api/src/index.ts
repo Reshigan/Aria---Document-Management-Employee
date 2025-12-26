@@ -39,6 +39,8 @@ import onboardingWizard from './routes/onboarding-wizard';
 import manufacturing from './routes/manufacturing';
 import enterprise from './routes/enterprise';
 import { executeScheduledBots as runScheduledBots } from './services/bot-executor';
+import { processPendingDeliveries } from './services/webhook-service';
+import { processDueScheduledReports } from './services/report-builder-service';
 
 // Types
 interface Env {
@@ -427,18 +429,22 @@ app.post('/api/auth/login', async (c) => {
       c.req.header('User-Agent') || 'unknown'
     ).run();
 
-    // Log audit event
+    // Log audit event with new schema
     await c.env.DB.prepare(`
-      INSERT INTO audit_logs (id, user_id, company_id, action, details, ip_address, user_agent)
-      VALUES (?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO audit_logs (id, user_id, company_id, action, event_type, resource_type, details, metadata, ip_address, user_agent, created_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).bind(
       generateUUID(),
       user.id,
       user.company_id,
       'LOGIN',
+      'AUTH',
+      'user',
       JSON.stringify({ email: user.email }),
+      JSON.stringify({ login_method: 'password' }),
       c.req.header('CF-Connecting-IP') || 'unknown',
-      c.req.header('User-Agent') || 'unknown'
+      c.req.header('User-Agent') || 'unknown',
+      new Date().toISOString()
     ).run();
 
     return c.json({
@@ -553,17 +559,21 @@ app.post('/api/auth/logout', async (c) => {
           'UPDATE user_sessions SET is_active = 0 WHERE user_id = ?'
         ).bind(payload.sub).run();
 
-        // Log audit event
+        // Log audit event with new schema
         await c.env.DB.prepare(`
-          INSERT INTO audit_logs (id, user_id, company_id, action, ip_address, user_agent)
-          VALUES (?, ?, ?, ?, ?, ?)
+          INSERT INTO audit_logs (id, user_id, company_id, action, event_type, resource_type, metadata, ip_address, user_agent, created_at)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `).bind(
           generateUUID(),
           payload.sub,
           payload.company_id,
           'LOGOUT',
+          'AUTH',
+          'user',
+          JSON.stringify({ logout_method: 'manual' }),
           c.req.header('CF-Connecting-IP') || 'unknown',
-          c.req.header('User-Agent') || 'unknown'
+          c.req.header('User-Agent') || 'unknown',
+          new Date().toISOString()
         ).run();
       }
     }
@@ -674,6 +684,28 @@ async function executeScheduledBots(env: Env): Promise<void> {
   }
 }
 
+async function executeScheduledTasks(env: Env): Promise<void> {
+  console.log('Starting scheduled tasks execution...');
+  
+  try {
+    // 1. Execute scheduled bots
+    await executeScheduledBots(env);
+    
+    // 2. Process pending webhook deliveries (retries)
+    console.log('Processing pending webhook deliveries...');
+    const webhookResult = await processPendingDeliveries(env.DB);
+    console.log(`Webhook deliveries: ${webhookResult.processed} processed, ${webhookResult.succeeded} succeeded, ${webhookResult.failed} failed`);
+    
+    // 3. Process due scheduled reports
+    console.log('Processing due scheduled reports...');
+    const reportResult = await processDueScheduledReports(env.DB);
+    console.log(`Scheduled reports: ${reportResult.processed} processed, ${reportResult.succeeded} succeeded, ${reportResult.failed} failed`);
+    
+  } catch (error) {
+    console.error('Error in scheduled tasks execution:', error);
+  }
+}
+
 // Export with both fetch and scheduled handlers
 export default {
   fetch: app.fetch,
@@ -681,6 +713,6 @@ export default {
   // Scheduled handler for cron triggers
   async scheduled(event: ScheduledEvent, env: Env, ctx: ExecutionContext): Promise<void> {
     console.log(`Cron trigger fired at ${new Date().toISOString()}`);
-    ctx.waitUntil(executeScheduledBots(env));
+    ctx.waitUntil(executeScheduledTasks(env));
   },
 };
