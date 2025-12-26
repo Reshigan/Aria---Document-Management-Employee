@@ -2246,7 +2246,7 @@ async function executePaymentProcessingBot(
   try {
     // Find pending supplier invoices to pay
     const pendingInvoices = await db.prepare(
-      'SELECT si.id, si.invoice_number, si.supplier_id, si.total_amount, s.name as supplier_name FROM supplier_invoices si LEFT JOIN suppliers s ON si.supplier_id = s.id WHERE si.company_id = ? AND si.status = ? LIMIT 5'
+      'SELECT si.id, si.invoice_number, si.supplier_id, si.total_amount, s.supplier_name FROM supplier_invoices si LEFT JOIN suppliers s ON si.supplier_id = s.id WHERE si.company_id = ? AND si.status = ? LIMIT 5'
     ).bind(companyId, 'pending').all();
 
     if (!pendingInvoices.results?.length) {
