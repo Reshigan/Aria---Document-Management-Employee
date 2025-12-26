@@ -37,6 +37,7 @@ import botObservability from './routes/bot-observability';
 import payments from './routes/payments';
 import onboardingWizard from './routes/onboarding-wizard';
 import manufacturing from './routes/manufacturing';
+import enterprise from './routes/enterprise';
 import { executeScheduledBots as runScheduledBots } from './services/bot-executor';
 
 // Types
@@ -309,6 +310,10 @@ app.route('/onboarding-wizard', onboardingWizard);
 // Manufacturing routes (Work Orders, BOMs, Production, Quality)
 app.route('/api/erp/manufacturing', manufacturing);
 app.route('/erp/manufacturing', manufacturing);
+
+// Enterprise routes (API Keys, Webhooks, Audit Logs, Subscriptions, Reports, Multi-Currency, Inventory Valuation, Three-Way Match)
+app.route('/api/enterprise', enterprise);
+app.route('/enterprise', enterprise);
 
 // Simple password hashing(for demo - use proper bcrypt in production)
 async function hashPassword(password: string): Promise<string> {
