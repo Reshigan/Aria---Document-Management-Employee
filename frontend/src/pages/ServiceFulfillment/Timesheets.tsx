@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Clock, Plus, Search, Edit, Trash2, Calendar, User, Briefcase } from 'lucide-react';
+import { Clock, Plus, Search, Edit, Trash2, Calendar, User, Briefcase, FileText } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import api from '../../lib/api';
 
 interface Timesheet {
@@ -26,6 +27,7 @@ interface Project {
 }
 
 export default function Timesheets() {
+  const navigate = useNavigate();
   const [timesheets, setTimesheets] = useState<Timesheet[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
@@ -126,18 +128,44 @@ export default function Timesheets() {
     }
   };
 
-  const resetForm = () => {
-    setFormData({
-      project_id: filterProject || '',
-      date: new Date().toISOString().split('T')[0],
-      hours: 0,
-      description: '',
-      billable: true,
-      billing_rate: 0
-    });
-  };
+    const resetForm = () => {
+      setFormData({
+        project_id: filterProject || '',
+        date: new Date().toISOString().split('T')[0],
+        hours: 0,
+        description: '',
+        billable: true,
+        billing_rate: 0
+      });
+    };
 
-  const filteredTimesheets = timesheets.filter(t =>
+    const createInvoiceLine = async (timesheet: Timesheet) => {
+      if (!timesheet.billable || !timesheet.billing_amount) {
+        alert('This timesheet entry is not billable');
+        return;
+      }
+      try {
+        const invoiceLineData = {
+          description: `${timesheet.project_name || 'Project'} - ${timesheet.description || 'Time Entry'} (${timesheet.hours}h)`,
+          quantity: timesheet.hours,
+          unit_price: timesheet.billing_rate || 0,
+          amount: timesheet.billing_amount,
+          source_type: 'timesheet',
+          source_id: timesheet.id,
+          project_id: timesheet.project_id,
+          date: timesheet.date
+        };
+        await api.post('/erp/order-to-cash/invoice-lines', invoiceLineData);
+        await api.put(`/odoo/services/timesheets/${timesheet.id}`, { status: 'invoiced' });
+        alert(`Invoice line created for timesheet entry`);
+        loadTimesheets();
+      } catch (error) {
+        console.error('Error creating invoice line:', error);
+        alert('Error creating invoice line. Please try again.');
+      }
+    };
+
+    const filteredTimesheets = timesheets.filter(t =>
     (t.project_name && t.project_name.toLowerCase().includes(searchTerm.toLowerCase())) ||
     (t.employee_name && t.employee_name.toLowerCase().includes(searchTerm.toLowerCase())) ||
     (t.description && t.description.toLowerCase().includes(searchTerm.toLowerCase()))
@@ -280,20 +308,29 @@ export default function Timesheets() {
                       {timesheet.status}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-right">
-                    <button
-                      onClick={() => handleEdit(timesheet)}
-                      className="text-blue-600 hover:text-blue-900 mr-2"
-                    >
-                      <Edit size={16} />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(timesheet.id)}
-                      className="text-red-600 hover:text-red-900"
-                    >
-                      <Trash2 size={16} />
-                    </button>
-                  </td>
+                                    <td className="px-6 py-4 text-right">
+                                      {timesheet.billable && timesheet.status !== 'invoiced' && (
+                                        <button
+                                          onClick={() => createInvoiceLine(timesheet)}
+                                          className="text-green-600 hover:text-green-900 mr-2"
+                                          title="Create Invoice Line"
+                                        >
+                                          <FileText size={16} />
+                                        </button>
+                                      )}
+                                      <button
+                                        onClick={() => handleEdit(timesheet)}
+                                        className="text-blue-600 hover:text-blue-900 mr-2"
+                                      >
+                                        <Edit size={16} />
+                                      </button>
+                                      <button
+                                        onClick={() => handleDelete(timesheet.id)}
+                                        className="text-red-600 hover:text-red-900"
+                                      >
+                                        <Trash2 size={16} />
+                                      </button>
+                                    </td>
                 </tr>
               ))}
             </tbody>
