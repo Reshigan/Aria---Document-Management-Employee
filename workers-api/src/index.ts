@@ -36,6 +36,8 @@ import banking from './routes/banking';
 import botObservability from './routes/bot-observability';
 import payments from './routes/payments';
 import onboardingWizard from './routes/onboarding-wizard';
+import manufacturing from './routes/manufacturing';
+import { executeScheduledBots as runScheduledBots } from './services/bot-executor';
 
 // Types
 interface Env {
@@ -303,6 +305,10 @@ app.route('/payments', payments);
 // Enhanced Onboarding Wizard
 app.route('/api/onboarding-wizard', onboardingWizard);
 app.route('/onboarding-wizard', onboardingWizard);
+
+// Manufacturing routes (Work Orders, BOMs, Production, Quality)
+app.route('/api/erp/manufacturing', manufacturing);
+app.route('/erp/manufacturing', manufacturing);
 
 // Simple password hashing(for demo - use proper bcrypt in production)
 async function hashPassword(password: string): Promise<string> {
@@ -642,79 +648,22 @@ app.onError((err, c) => {
 // ============================================
 // Runs every hour to execute scheduled bots automatically
 // This enables fully autonomous ERP operation
-
-interface ScheduledBotConfig {
-  bot_id: string;
-  company_id: string;
-  schedule: string;
-  enabled: number;
-  config: string;
-}
+// 
+// CRITICAL: This now calls REAL bot execution logic via bot-executor service
+// Previously this was a stub that just logged "completed" without running bots
 
 async function executeScheduledBots(env: Env): Promise<void> {
-  console.log('Starting scheduled bot execution...');
+  console.log('Starting scheduled bot execution with REAL bot logic...');
   
   try {
-    // Get all enabled bots with schedules
-    const scheduledBots = await env.DB.prepare(`
-      SELECT bc.bot_id, bc.company_id, bc.schedule, bc.enabled, bc.config
-      FROM bot_configs bc
-      WHERE bc.enabled = 1 AND bc.schedule IS NOT NULL
-    `).all();
-
-    if (!scheduledBots.results?.length) {
-      console.log('No scheduled bots found');
-      return;
+    // Call the shared bot executor service that runs actual bot implementations
+    const result = await runScheduledBots(env.DB);
+    console.log(`Scheduled bot execution completed. Executed ${result.executed} bots.`);
+    
+    // Log summary of results
+    for (const botResult of result.results) {
+      console.log(`  - ${botResult.bot_id}: ${botResult.success ? 'SUCCESS' : 'FAILED'} - ${botResult.message}`);
     }
-
-    console.log(`Found ${scheduledBots.results.length} scheduled bots`);
-
-    // Execute each scheduled bot
-    for (const botConfig of scheduledBots.results as unknown as ScheduledBotConfig[]) {
-      try {
-        console.log(`Executing bot ${botConfig.bot_id} for company ${botConfig.company_id}`);
-        
-        // Create a bot run record
-        const runId = crypto.randomUUID();
-        const startedAt = new Date().toISOString();
-        
-        await env.DB.prepare(`
-          INSERT INTO bot_runs (id, bot_id, company_id, status, started_at, trigger_type, config)
-          VALUES (?, ?, ?, 'running', ?, 'scheduled', ?)
-        `).bind(runId, botConfig.bot_id, botConfig.company_id, startedAt, botConfig.config || '{}').run();
-
-        // Note: Actual bot execution would require importing the bot execution functions
-        // For now, we record the scheduled run and mark it as completed
-        // The full execution logic is in the bots.ts route module
-        
-        const completedAt = new Date().toISOString();
-        await env.DB.prepare(`
-          UPDATE bot_runs SET status = 'completed', completed_at = ?, result = ?
-          WHERE id = ?
-        `).bind(completedAt, JSON.stringify({ 
-          message: 'Scheduled execution completed',
-          trigger: 'cron',
-          executed_at: completedAt 
-        }), runId).run();
-
-        console.log(`Bot ${botConfig.bot_id} execution completed`);
-      } catch (botError) {
-        console.error(`Error executing bot ${botConfig.bot_id}:`, botError);
-        
-        // Record the error
-        await env.DB.prepare(`
-          INSERT INTO tasks (id, type, reference_id, reference_type, company_id, status, description, priority, created_at)
-          VALUES (?, 'bot_escalation', ?, 'bot', ?, 'pending', ?, 'high', datetime('now'))
-        `).bind(
-          crypto.randomUUID(),
-          botConfig.bot_id,
-          botConfig.company_id,
-          `Scheduled bot "${botConfig.bot_id}" failed: ${String(botError)}`
-        ).run();
-      }
-    }
-
-    console.log('Scheduled bot execution completed');
   } catch (error) {
     console.error('Error in scheduled bot execution:', error);
   }
