@@ -93,6 +93,24 @@ import FixedAssets from './pages/FixedAssets/FixedAssets';
 import ComplianceDashboard from './pages/Compliance/ComplianceDashboard';
 import QualityDashboard from './pages/Quality/QualityDashboard';
 import AnalyticsDashboard from './pages/Analytics/AnalyticsDashboard';
+import ProductCategories from './pages/ProductHierarchy/ProductCategories';
+import ProductTemplates from './pages/ProductHierarchy/ProductTemplates';
+import ProductAttributes from './pages/ProductHierarchy/ProductAttributes';
+import ProductVariants from './pages/ProductHierarchy/ProductVariants';
+import CustomerGroups from './pages/Pricing/CustomerGroups';
+import Pricelists from './pages/Pricing/Pricelists';
+import PricingRules from './pages/Pricing/PricingRules';
+import PriceCalculator from './pages/Pricing/PriceCalculator';
+import ServiceProjects from './pages/ServiceFulfillment/Projects';
+import ServiceTimesheets from './pages/ServiceFulfillment/Timesheets';
+import HelpdeskTeams from './pages/Helpdesk/HelpdeskTeams';
+import HelpdeskTickets from './pages/Helpdesk/HelpdeskTickets';
+import FieldServiceWorkOrders from './pages/FieldService/WorkOrders';
+import ServiceLocations from './pages/FieldService/ServiceLocations';
+import Milestones from './pages/ServiceFulfillment/Milestones';
+import Deliverables from './pages/ServiceFulfillment/Deliverables';
+import MigrationJobs from './pages/Migration/MigrationJobs';
+import MigrationValidation from './pages/Migration/MigrationValidation';
 import './styles/design-system.css';
 
 function App() {
@@ -199,13 +217,48 @@ function App() {
           <Route path="/manufacturing/production" element={<Production />} />
           <Route path="/manufacturing/dashboard" element={<ManufacturingDashboard />} />
           
-          {/* Field Service */}
-          <Route path="/field-service" element={<FieldService />} />
-          <Route path="/field-service/requests" element={<FieldService />} />
-          <Route path="/field-service/work-orders" element={<FieldService />} />
-          <Route path="/field-service/orders" element={<ServiceOrders />} />
-          <Route path="/field-service/technicians" element={<Technicians />} />
-          <Route path="/field-service/scheduling" element={<Scheduling />} />
+                    {/* Field Service */}
+                    <Route path="/field-service" element={<FieldService />} />
+                    <Route path="/field-service/requests" element={<FieldService />} />
+                    <Route path="/field-service/work-orders" element={<FieldServiceWorkOrders />} />
+                    <Route path="/field-service/orders" element={<ServiceOrders />} />
+                    <Route path="/field-service/technicians" element={<Technicians />} />
+                    <Route path="/field-service/scheduling" element={<Scheduling />} />
+          
+                    {/* Product Hierarchy (Odoo Parity) */}
+                    <Route path="/products/categories" element={<ProductCategories />} />
+                    <Route path="/products/templates" element={<ProductTemplates />} />
+                    <Route path="/products/attributes" element={<ProductAttributes />} />
+                    <Route path="/products/variants" element={<ProductVariants />} />
+          
+                    {/* Pricing Engine (Odoo Parity) */}
+                    <Route path="/pricing" element={<Pricelists />} />
+                    <Route path="/pricing/customer-groups" element={<CustomerGroups />} />
+                    <Route path="/pricing/pricelists" element={<Pricelists />} />
+                    <Route path="/pricing/rules" element={<PricingRules />} />
+                    <Route path="/pricing/calculator" element={<PriceCalculator />} />
+          
+                    {/* Service Fulfillment (Odoo Parity) */}
+                    <Route path="/services" element={<ServiceProjects />} />
+                    <Route path="/services/projects" element={<ServiceProjects />} />
+                    <Route path="/services/timesheets" element={<ServiceTimesheets />} />
+          
+                                        {/* Helpdesk (Odoo Parity) */}
+                                        <Route path="/helpdesk" element={<HelpdeskTickets />} />
+                                        <Route path="/helpdesk/teams" element={<HelpdeskTeams />} />
+                                        <Route path="/helpdesk/tickets" element={<HelpdeskTickets />} />
+          
+                                        {/* Service Fulfillment Extended (Odoo Parity) */}
+                                        <Route path="/services/milestones" element={<Milestones />} />
+                                        <Route path="/services/deliverables" element={<Deliverables />} />
+          
+                                        {/* Field Service Extended (Odoo Parity) */}
+                                        <Route path="/field-service/locations" element={<ServiceLocations />} />
+          
+                                        {/* Migration (Odoo Parity) */}
+                                        <Route path="/migration" element={<MigrationJobs />} />
+                                        <Route path="/migration/jobs" element={<MigrationJobs />} />
+                                        <Route path="/migration/validation" element={<MigrationValidation />} />
           
           {/* Projects */}
           <Route path="/projects" element={<ProjectsDashboard />} />
