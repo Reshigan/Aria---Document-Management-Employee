@@ -1,8 +1,12 @@
 /**
- * Manufacturing Routes - Work Orders, BOMs, Production
+ * Manufacturing Routes - Work Orders, BOMs, Production, Quality
+ * 
+ * Now queries REAL database tables instead of returning hardcoded demo data.
+ * Tables: work_orders, bill_of_materials, bom_components, production_runs, quality_checks, machines
  */
 
 import { Hono } from 'hono';
+import { jwtVerify } from 'jose';
 
 interface Env {
   DB: D1Database;
@@ -11,66 +15,67 @@ interface Env {
 
 const manufacturing = new Hono<{ Bindings: Env }>();
 
+// Helper to verify JWT and get company_id
+async function getAuthenticatedCompanyId(c: any): Promise<string | null> {
+  const authHeader = c.req.header('Authorization');
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return c.req.query('company_id') || c.req.header('X-Company-ID') || null;
+  }
+  
+  try {
+    const token = authHeader.substring(7);
+    const secretKey = new TextEncoder().encode(c.env.JWT_SECRET);
+    const { payload } = await jwtVerify(token, secretKey);
+    return (payload as any).company_id || c.req.query('company_id') || null;
+  } catch {
+    return c.req.query('company_id') || c.req.header('X-Company-ID') || null;
+  }
+}
+
+// ==================== WORK ORDERS ====================
+
 // Get all work orders
 manufacturing.get('/work-orders', async (c) => {
   try {
-    const companyId = c.req.query('company_id') || c.req.header('X-Company-ID');
+    const companyId = await getAuthenticatedCompanyId(c);
+    if (!companyId) {
+      return c.json({ error: 'Company ID required' }, 400);
+    }
     
-    // Return demo data for now - in production this would query the database
-    const workOrders = [
-      {
-        id: 'wo-001',
-        wo_number: 'WO-2025-001',
-        product_id: 'prod-001',
-        product_name: 'Laptop Dell XPS 15',
-        quantity_to_produce: 50,
-        quantity_produced: 25,
-        warehouse_id: 'wh-001',
-        warehouse_name: 'Main Warehouse',
-        start_date: '2025-01-15',
-        due_date: '2025-01-30',
-        status: 'in_progress',
-        priority: 'high',
-        notes: 'Rush order for Q1',
-        created_by: 'system',
-        created_at: '2025-01-10T08:00:00Z'
-      },
-      {
-        id: 'wo-002',
-        wo_number: 'WO-2025-002',
-        product_id: 'prod-002',
-        product_name: 'Office Chair Executive',
-        quantity_to_produce: 100,
-        quantity_produced: 100,
-        warehouse_id: 'wh-001',
-        warehouse_name: 'Main Warehouse',
-        start_date: '2025-01-05',
-        due_date: '2025-01-20',
-        completion_date: '2025-01-18',
-        status: 'completed',
-        priority: 'normal',
-        notes: 'Standard production run',
-        created_by: 'system',
-        created_at: '2025-01-03T08:00:00Z'
-      },
-      {
-        id: 'wo-003',
-        wo_number: 'WO-2025-003',
-        product_id: 'prod-003',
-        product_name: 'Printer HP LaserJet',
-        quantity_to_produce: 30,
-        quantity_produced: 0,
-        warehouse_id: 'wh-002',
-        warehouse_name: 'Secondary Warehouse',
-        start_date: '2025-02-01',
-        due_date: '2025-02-15',
-        status: 'draft',
-        priority: 'low',
-        notes: 'Pending materials',
-        created_by: 'system',
-        created_at: '2025-01-20T08:00:00Z'
-      }
-    ];
+    const status = c.req.query('status');
+    
+    let query = `
+      SELECT wo.*, p.product_name, bom.bom_name
+      FROM work_orders wo
+      LEFT JOIN products p ON wo.product_id = p.id
+      LEFT JOIN bill_of_materials bom ON wo.bom_id = bom.id
+      WHERE wo.company_id = ?
+    `;
+    const params: any[] = [companyId];
+    
+    if (status) {
+      query += ' AND wo.status = ?';
+      params.push(status);
+    }
+    
+    query += ' ORDER BY wo.created_at DESC';
+    
+    const result = await c.env.DB.prepare(query).bind(...params).all();
+    
+    const workOrders = (result.results || []).map((wo: any) => ({
+      id: wo.id,
+      wo_number: wo.work_order_number,
+      product_id: wo.product_id,
+      product_name: wo.product_name || 'Unknown Product',
+      quantity_to_produce: wo.planned_quantity,
+      quantity_produced: wo.completed_quantity,
+      start_date: wo.planned_start_date,
+      due_date: wo.planned_end_date,
+      status: wo.status,
+      priority: wo.priority,
+      notes: wo.notes,
+      created_at: wo.created_at
+    }));
 
     return c.json(workOrders);
   } catch (error) {
@@ -81,34 +86,55 @@ manufacturing.get('/work-orders', async (c) => {
 
 // Get single work order
 manufacturing.get('/work-orders/:id', async (c) => {
-  const id = c.req.param('id');
-  
-  return c.json({
-    id,
-    wo_number: 'WO-2025-001',
-    product_id: 'prod-001',
-    product_name: 'Laptop Dell XPS 15',
-    quantity_to_produce: 50,
-    quantity_produced: 25,
-    status: 'in_progress',
-    priority: 'high'
-  });
+  try {
+    const companyId = await getAuthenticatedCompanyId(c);
+    const id = c.req.param('id');
+    
+    const wo = await c.env.DB.prepare(`
+      SELECT wo.*, p.product_name
+      FROM work_orders wo
+      LEFT JOIN products p ON wo.product_id = p.id
+      WHERE wo.id = ? AND wo.company_id = ?
+    `).bind(id, companyId).first();
+    
+    if (!wo) {
+      return c.json({ error: 'Work order not found' }, 404);
+    }
+    
+    return c.json({
+      id: wo.id,
+      wo_number: wo.work_order_number,
+      product_id: wo.product_id,
+      product_name: wo.product_name,
+      quantity_to_produce: wo.planned_quantity,
+      quantity_produced: wo.completed_quantity,
+      status: wo.status,
+      priority: wo.priority
+    });
+  } catch (error) {
+    return c.json({ error: 'Failed to fetch work order' }, 500);
+  }
 });
 
 // Create work order
 manufacturing.post('/work-orders', async (c) => {
   try {
+    const companyId = await getAuthenticatedCompanyId(c);
+    if (!companyId) {
+      return c.json({ error: 'Company ID required' }, 400);
+    }
+    
     const body = await c.req.json();
     const id = crypto.randomUUID();
+    const woNumber = `WO-${Date.now()}`;
+    const now = new Date().toISOString();
     
-    return c.json({
-      id,
-      wo_number: `WO-${Date.now()}`,
-      ...body,
-      status: 'draft',
-      quantity_produced: 0,
-      created_at: new Date().toISOString()
-    }, 201);
+    await c.env.DB.prepare(`
+      INSERT INTO work_orders (id, company_id, work_order_number, product_id, planned_quantity, status, priority, notes, created_at, updated_at)
+      VALUES (?, ?, ?, ?, ?, 'planned', ?, ?, ?, ?)
+    `).bind(id, companyId, woNumber, body.product_id, body.planned_quantity || 1, body.priority || 'normal', body.notes || null, now, now).run();
+    
+    return c.json({ id, wo_number: woNumber, status: 'planned' }, 201);
   } catch (error) {
     return c.json({ error: 'Failed to create work order' }, 500);
   }
@@ -116,68 +142,130 @@ manufacturing.post('/work-orders', async (c) => {
 
 // Release work order
 manufacturing.post('/work-orders/:id/release', async (c) => {
-  const id = c.req.param('id');
-  return c.json({ id, status: 'released', message: 'Work order released' });
+  try {
+    const companyId = await getAuthenticatedCompanyId(c);
+    const id = c.req.param('id');
+    await c.env.DB.prepare('UPDATE work_orders SET status = ?, updated_at = ? WHERE id = ? AND company_id = ?')
+      .bind('released', new Date().toISOString(), id, companyId).run();
+    return c.json({ id, status: 'released', message: 'Work order released' });
+  } catch (error) {
+    return c.json({ error: 'Failed to release work order' }, 500);
+  }
 });
 
 // Start work order
 manufacturing.post('/work-orders/:id/start', async (c) => {
-  const id = c.req.param('id');
-  return c.json({ id, status: 'in_progress', message: 'Work order started' });
+  try {
+    const companyId = await getAuthenticatedCompanyId(c);
+    const id = c.req.param('id');
+    const now = new Date().toISOString();
+    await c.env.DB.prepare('UPDATE work_orders SET status = ?, actual_start_date = ?, updated_at = ? WHERE id = ? AND company_id = ?')
+      .bind('in_progress', now, now, id, companyId).run();
+    return c.json({ id, status: 'in_progress', message: 'Work order started' });
+  } catch (error) {
+    return c.json({ error: 'Failed to start work order' }, 500);
+  }
 });
 
 // Complete work order
 manufacturing.post('/work-orders/:id/complete', async (c) => {
-  const id = c.req.param('id');
-  return c.json({ id, status: 'completed', message: 'Work order completed' });
+  try {
+    const companyId = await getAuthenticatedCompanyId(c);
+    const id = c.req.param('id');
+    const now = new Date().toISOString();
+    await c.env.DB.prepare('UPDATE work_orders SET status = ?, actual_end_date = ?, updated_at = ? WHERE id = ? AND company_id = ?')
+      .bind('completed', now, now, id, companyId).run();
+    return c.json({ id, status: 'completed', message: 'Work order completed' });
+  } catch (error) {
+    return c.json({ error: 'Failed to complete work order' }, 500);
+  }
 });
 
-// Get BOMs (Bill of Materials)
+// ==================== BILL OF MATERIALS ====================
+
 manufacturing.get('/boms', async (c) => {
-  return c.json([
-    {
-      id: 'bom-001',
-      product_id: 'prod-001',
-      product_name: 'Laptop Dell XPS 15',
-      version: '1.0',
-      status: 'active',
-      components: [
-        { item_id: 'comp-001', item_name: 'CPU Intel i7', quantity: 1, unit: 'pcs' },
-        { item_id: 'comp-002', item_name: 'RAM 16GB', quantity: 2, unit: 'pcs' },
-        { item_id: 'comp-003', item_name: 'SSD 512GB', quantity: 1, unit: 'pcs' }
-      ]
+  try {
+    const companyId = await getAuthenticatedCompanyId(c);
+    if (!companyId) {
+      return c.json({ error: 'Company ID required' }, 400);
     }
-  ]);
+    
+    const result = await c.env.DB.prepare(`
+      SELECT bom.*, p.product_name
+      FROM bill_of_materials bom
+      LEFT JOIN products p ON bom.product_id = p.id
+      WHERE bom.company_id = ?
+      ORDER BY bom.created_at DESC
+    `).bind(companyId).all();
+    
+    return c.json(result.results || []);
+  } catch (error) {
+    return c.json({ error: 'Failed to fetch BOMs' }, 500);
+  }
 });
 
-// Get production runs
+// ==================== PRODUCTION RUNS ====================
+
 manufacturing.get('/production', async (c) => {
-  return c.json([
-    {
-      id: 'prod-run-001',
-      work_order_id: 'wo-001',
-      wo_number: 'WO-2025-001',
-      quantity_planned: 50,
-      quantity_completed: 25,
-      start_time: '2025-01-15T08:00:00Z',
-      status: 'in_progress'
+  try {
+    const companyId = await getAuthenticatedCompanyId(c);
+    if (!companyId) {
+      return c.json({ error: 'Company ID required' }, 400);
     }
-  ]);
+    
+    const result = await c.env.DB.prepare(`
+      SELECT pr.*, wo.work_order_number as wo_number
+      FROM production_runs pr
+      LEFT JOIN work_orders wo ON pr.work_order_id = wo.id
+      WHERE pr.company_id = ?
+      ORDER BY pr.run_date DESC
+    `).bind(companyId).all();
+    
+    return c.json(result.results || []);
+  } catch (error) {
+    return c.json({ error: 'Failed to fetch production runs' }, 500);
+  }
 });
 
-// Get quality checks
+// ==================== QUALITY CHECKS ====================
+
 manufacturing.get('/quality', async (c) => {
-  return c.json([
-    {
-      id: 'qc-001',
-      work_order_id: 'wo-002',
-      wo_number: 'WO-2025-002',
-      inspection_date: '2025-01-18',
-      result: 'passed',
-      inspector: 'John Smith',
-      notes: 'All units passed quality inspection'
+  try {
+    const companyId = await getAuthenticatedCompanyId(c);
+    if (!companyId) {
+      return c.json({ error: 'Company ID required' }, 400);
     }
-  ]);
+    
+    const result = await c.env.DB.prepare(`
+      SELECT qc.*, e.first_name || ' ' || e.last_name as inspector_name
+      FROM quality_checks qc
+      LEFT JOIN employees e ON qc.inspector_id = e.id
+      WHERE qc.company_id = ?
+      ORDER BY qc.check_date DESC
+    `).bind(companyId).all();
+    
+    return c.json(result.results || []);
+  } catch (error) {
+    return c.json({ error: 'Failed to fetch quality checks' }, 500);
+  }
+});
+
+// ==================== MACHINES ====================
+
+manufacturing.get('/machines', async (c) => {
+  try {
+    const companyId = await getAuthenticatedCompanyId(c);
+    if (!companyId) {
+      return c.json({ error: 'Company ID required' }, 400);
+    }
+    
+    const result = await c.env.DB.prepare('SELECT * FROM machines WHERE company_id = ? ORDER BY machine_code')
+      .bind(companyId).all();
+    
+    return c.json(result.results || []);
+  } catch (error) {
+    return c.json({ error: 'Failed to fetch machines' }, 500);
+  }
 });
 
 export default manufacturing;
