@@ -147,10 +147,27 @@ const config: DocumentDetailConfig = {
         }
       },
       {
+        label: 'Create Invoice',
+        icon: FileText,
+        color: '#f59e0b',
+        condition: (doc) => doc.status === 'approved' || doc.status === 'delivered' || doc.status === 'confirmed',
+        onClick: async (doc, reload) => {
+          if (!confirm(`Create invoice for order ${doc.order_number}?`)) return;
+          
+          try {
+            const response = await api.post(`/erp/order-to-cash/sales-orders/${doc.id}/invoice`);
+            alert(`Invoice ${response.data.invoice_number} created successfully!`);
+            reload();
+          } catch (err: any) {
+            alert(err.response?.data?.detail || err.response?.data?.error || 'Failed to create invoice');
+          }
+        }
+      },
+      {
         label: 'Cancel',
         icon: XCircle,
         color: '#ef4444',
-        condition: (doc) => doc.status === 'draft' || doc.status === 'approved',
+        condition: (doc) => doc.status === 'draft' || doc.status === 'approved' || doc.status === 'pending',
         onClick: async (doc, reload) => {
           const reason = prompt('Enter cancellation reason (optional):');
           if (reason === null) return;
@@ -162,7 +179,7 @@ const config: DocumentDetailConfig = {
             alert(`Sales order ${doc.order_number} cancelled successfully`);
             reload();
           } catch (err: any) {
-            alert(err.response?.data?.detail || 'Failed to cancel sales order');
+            alert(err.response?.data?.detail || err.response?.data?.error || 'Failed to cancel sales order');
           }
         }
       }

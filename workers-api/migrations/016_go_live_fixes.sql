@@ -1,5 +1,9 @@
 -- Go-Live Fixes Migration
 -- Adds pending_invoice_lines table for timesheet→invoice workflow
+-- Adds line_number column to journal_entry_lines for GL posting
+
+-- Fix GL posting: add line_number column to journal_entry_lines
+ALTER TABLE journal_entry_lines ADD COLUMN line_number INTEGER DEFAULT 0;
 
 CREATE TABLE IF NOT EXISTS pending_invoice_lines (
     id TEXT PRIMARY KEY,
