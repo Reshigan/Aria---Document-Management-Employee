@@ -36,6 +36,7 @@ import banking from './routes/banking';
 import botObservability from './routes/bot-observability';
 import payments from './routes/payments';
 import onboardingWizard from './routes/onboarding-wizard';
+import manufacturing from './routes/manufacturing';
 
 // Types
 interface Env {
@@ -303,6 +304,10 @@ app.route('/payments', payments);
 // Enhanced Onboarding Wizard
 app.route('/api/onboarding-wizard', onboardingWizard);
 app.route('/onboarding-wizard', onboardingWizard);
+
+// Manufacturing routes (Work Orders, BOMs, Production, Quality)
+app.route('/api/erp/manufacturing', manufacturing);
+app.route('/erp/manufacturing', manufacturing);
 
 // Simple password hashing(for demo - use proper bcrypt in production)
 async function hashPassword(password: string): Promise<string> {
