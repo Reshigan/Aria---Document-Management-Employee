@@ -106,6 +106,11 @@ import ServiceTimesheets from './pages/ServiceFulfillment/Timesheets';
 import HelpdeskTeams from './pages/Helpdesk/HelpdeskTeams';
 import HelpdeskTickets from './pages/Helpdesk/HelpdeskTickets';
 import FieldServiceWorkOrders from './pages/FieldService/WorkOrders';
+import ServiceLocations from './pages/FieldService/ServiceLocations';
+import Milestones from './pages/ServiceFulfillment/Milestones';
+import Deliverables from './pages/ServiceFulfillment/Deliverables';
+import MigrationJobs from './pages/Migration/MigrationJobs';
+import MigrationValidation from './pages/Migration/MigrationValidation';
 import './styles/design-system.css';
 
 function App() {
@@ -238,10 +243,22 @@ function App() {
                     <Route path="/services/projects" element={<ServiceProjects />} />
                     <Route path="/services/timesheets" element={<ServiceTimesheets />} />
           
-                    {/* Helpdesk (Odoo Parity) */}
-                    <Route path="/helpdesk" element={<HelpdeskTickets />} />
-                    <Route path="/helpdesk/teams" element={<HelpdeskTeams />} />
-                    <Route path="/helpdesk/tickets" element={<HelpdeskTickets />} />
+                                        {/* Helpdesk (Odoo Parity) */}
+                                        <Route path="/helpdesk" element={<HelpdeskTickets />} />
+                                        <Route path="/helpdesk/teams" element={<HelpdeskTeams />} />
+                                        <Route path="/helpdesk/tickets" element={<HelpdeskTickets />} />
+          
+                                        {/* Service Fulfillment Extended (Odoo Parity) */}
+                                        <Route path="/services/milestones" element={<Milestones />} />
+                                        <Route path="/services/deliverables" element={<Deliverables />} />
+          
+                                        {/* Field Service Extended (Odoo Parity) */}
+                                        <Route path="/field-service/locations" element={<ServiceLocations />} />
+          
+                                        {/* Migration (Odoo Parity) */}
+                                        <Route path="/migration" element={<MigrationJobs />} />
+                                        <Route path="/migration/jobs" element={<MigrationJobs />} />
+                                        <Route path="/migration/validation" element={<MigrationValidation />} />
           
           {/* Projects */}
           <Route path="/projects" element={<ProjectsDashboard />} />
