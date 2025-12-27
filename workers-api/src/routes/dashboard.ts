@@ -72,31 +72,45 @@ dashboard.get('/executive', async (c) => {
     const netProfit = revenue - expenses;
     const profitMargin = revenue > 0 ? (netProfit / revenue) * 100 : 0;
 
-    // Get real bot telemetry from bot_runs table
+    // Get real bot telemetry from bot_runs table (with fallback if table doesn't exist)
     const today = new Date().toISOString().split('T')[0];
-    const botTelemetry = await c.env.DB.prepare(`
-      SELECT 
-        COUNT(*) as total_runs,
-        SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) as successful_runs,
-        SUM(CASE WHEN status = 'failed' THEN 1 ELSE 0 END) as failed_runs
-      FROM bot_runs 
-      WHERE company_id = ? AND DATE(executed_at) = ?
-    `).bind(companyId, today).first<{ total_runs: number; successful_runs: number; failed_runs: number }>();
+    let totalRuns = 0;
+    let successfulRuns = 0;
+    let invoicesProcessedToday = 0;
+    let pendingPayments = 0;
 
-    // Get invoice reconciliation count for today
-    const invoiceReconciliation = await c.env.DB.prepare(`
-      SELECT COUNT(*) as count FROM bot_runs 
-      WHERE company_id = ? AND bot_id = 'invoice_reconciliation' AND DATE(executed_at) = ?
-    `).bind(companyId, today).first<{ count: number }>();
+    try {
+      const botTelemetry = await c.env.DB.prepare(`
+        SELECT 
+          COUNT(*) as total_runs,
+          SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) as successful_runs,
+          SUM(CASE WHEN status = 'failed' THEN 1 ELSE 0 END) as failed_runs
+        FROM bot_runs 
+        WHERE company_id = ? AND DATE(executed_at) = ?
+      `).bind(companyId, today).first<{ total_runs: number; successful_runs: number; failed_runs: number }>();
+      totalRuns = botTelemetry?.total_runs || 0;
+      successfulRuns = botTelemetry?.successful_runs || 0;
 
-    // Get payment prediction count
-    const paymentPrediction = await c.env.DB.prepare(`
-      SELECT COUNT(*) as count FROM customer_invoices 
-      WHERE company_id = ? AND status IN ('posted', 'sent') AND balance_due > 0
-    `).bind(companyId).first<{ count: number }>();
+      const invoiceReconciliation = await c.env.DB.prepare(`
+        SELECT COUNT(*) as count FROM bot_runs 
+        WHERE company_id = ? AND bot_id = 'invoice_reconciliation' AND DATE(executed_at) = ?
+      `).bind(companyId, today).first<{ count: number }>();
+      invoicesProcessedToday = invoiceReconciliation?.count || 0;
+    } catch (e) {
+      // bot_runs table may not exist - use defaults
+      console.log('Bot telemetry query failed, using defaults:', e);
+    }
 
-    const totalRuns = botTelemetry?.total_runs || 0;
-    const successfulRuns = botTelemetry?.successful_runs || 0;
+    try {
+      const paymentPrediction = await c.env.DB.prepare(`
+        SELECT COUNT(*) as count FROM customer_invoices 
+        WHERE company_id = ? AND status IN ('posted', 'sent') AND balance_due > 0
+      `).bind(companyId).first<{ count: number }>();
+      pendingPayments = paymentPrediction?.count || 0;
+    } catch (e) {
+      console.log('Payment prediction query failed:', e);
+    }
+
     const successRate = totalRuns > 0 ? (successfulRuns / totalRuns) * 100 : 100;
 
     return c.json({
@@ -124,8 +138,8 @@ dashboard.get('/executive', async (c) => {
         active_agents: 58,
         transactions_today: totalRuns,
         success_rate: parseFloat(successRate.toFixed(1)),
-        invoices_processed_today: invoiceReconciliation?.count || 0,
-        pending_payments: paymentPrediction?.count || 0,
+        invoices_processed_today: invoicesProcessedToday,
+        pending_payments: pendingPayments,
       },
     });
   } catch (error) {
