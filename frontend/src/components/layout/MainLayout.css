@@ -1,7 +1,7 @@
 .main-layout {
   display: flex;
   min-height: 100vh;
-  background-color: var(--gray-50);
+  background-color: var(--navy-dark);
 }
 
 .main-content {
@@ -16,12 +16,13 @@
   flex: 1;
   padding: 1.5rem;
   overflow-y: auto;
+  background-color: var(--navy-dark);
 }
 
 /* Mega Menu Layout */
 .main-layout-mega {
   min-height: 100vh;
-  background-color: #f9fafb;
+  background-color: var(--navy-dark);
 }
 
 .main-content-mega {

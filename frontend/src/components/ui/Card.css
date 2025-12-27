@@ -1,8 +1,8 @@
 .card {
-  background-color: white;
+  background-color: var(--navy-light);
   border-radius: 0.5rem;
-  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
-  border: 1px solid var(--gray-200);
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.3);
+  border: 1px solid var(--border-color);
   overflow: hidden;
 }
 
@@ -28,7 +28,7 @@
   justify-content: space-between;
   margin-bottom: 1rem;
   padding-bottom: 1rem;
-  border-bottom: 1px solid var(--gray-200);
+  border-bottom: 1px solid var(--border-color);
 }
 
 .card-header-content {
@@ -44,18 +44,18 @@
 .card-title {
   font-size: 1.125rem;
   font-weight: 600;
-  color: var(--gray-900);
+  color: var(--text-primary);
   margin: 0;
 }
 
 .card-body {
-  color: var(--gray-700);
+  color: var(--text-secondary);
 }
 
 .card-footer {
   margin-top: 1rem;
   padding-top: 1rem;
-  border-top: 1px solid var(--gray-200);
+  border-top: 1px solid var(--border-color);
   display: flex;
   justify-content: flex-end;
   gap: 0.75rem;
