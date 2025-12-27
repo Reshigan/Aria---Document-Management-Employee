@@ -37,18 +37,18 @@ dashboard.get('/executive', async (c) => {
       WHERE company_id = ? AND status IN ('approved', 'paid', 'partial')
     `).bind(companyId).first<{ total_expenses: number; invoice_count: number }>();
 
-    // Get AR balance
+    // Get AR balance - include all unpaid invoice statuses
     const arResult = await c.env.DB.prepare(`
       SELECT COALESCE(SUM(balance_due), 0) as ar_balance
       FROM customer_invoices 
-      WHERE company_id = ? AND status IN ('posted', 'partial') AND balance_due > 0
+      WHERE company_id = ? AND status IN ('posted', 'sent', 'partial', 'overdue') AND balance_due > 0
     `).bind(companyId).first<{ ar_balance: number }>();
 
-    // Get AP balance
+    // Get AP balance - include all unpaid invoice statuses
     const apResult = await c.env.DB.prepare(`
       SELECT COALESCE(SUM(balance_due), 0) as ap_balance
       FROM supplier_invoices 
-      WHERE company_id = ? AND status IN ('approved', 'partial') AND balance_due > 0
+      WHERE company_id = ? AND status IN ('approved', 'pending', 'partial', 'overdue') AND balance_due > 0
     `).bind(companyId).first<{ ap_balance: number }>();
 
     // Get order counts
@@ -72,6 +72,47 @@ dashboard.get('/executive', async (c) => {
     const netProfit = revenue - expenses;
     const profitMargin = revenue > 0 ? (netProfit / revenue) * 100 : 0;
 
+    // Get real bot telemetry from bot_runs table (with fallback if table doesn't exist)
+    const today = new Date().toISOString().split('T')[0];
+    let totalRuns = 0;
+    let successfulRuns = 0;
+    let invoicesProcessedToday = 0;
+    let pendingPayments = 0;
+
+    try {
+      const botTelemetry = await c.env.DB.prepare(`
+        SELECT 
+          COUNT(*) as total_runs,
+          SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) as successful_runs,
+          SUM(CASE WHEN status = 'failed' THEN 1 ELSE 0 END) as failed_runs
+        FROM bot_runs 
+        WHERE company_id = ? AND DATE(executed_at) = ?
+      `).bind(companyId, today).first<{ total_runs: number; successful_runs: number; failed_runs: number }>();
+      totalRuns = botTelemetry?.total_runs || 0;
+      successfulRuns = botTelemetry?.successful_runs || 0;
+
+      const invoiceReconciliation = await c.env.DB.prepare(`
+        SELECT COUNT(*) as count FROM bot_runs 
+        WHERE company_id = ? AND bot_id = 'invoice_reconciliation' AND DATE(executed_at) = ?
+      `).bind(companyId, today).first<{ count: number }>();
+      invoicesProcessedToday = invoiceReconciliation?.count || 0;
+    } catch (e) {
+      // bot_runs table may not exist - use defaults
+      console.log('Bot telemetry query failed, using defaults:', e);
+    }
+
+    try {
+      const paymentPrediction = await c.env.DB.prepare(`
+        SELECT COUNT(*) as count FROM customer_invoices 
+        WHERE company_id = ? AND status IN ('posted', 'sent') AND balance_due > 0
+      `).bind(companyId).first<{ count: number }>();
+      pendingPayments = paymentPrediction?.count || 0;
+    } catch (e) {
+      console.log('Payment prediction query failed:', e);
+    }
+
+    const successRate = totalRuns > 0 ? (successfulRuns / totalRuns) * 100 : 100;
+
     return c.json({
       financial: {
         revenue: revenue,
@@ -81,6 +122,7 @@ dashboard.get('/executive', async (c) => {
         ar_balance: arResult?.ar_balance || 0,
         ap_balance: apResult?.ap_balance || 0,
         cash_position: (arResult?.ar_balance || 0) - (apResult?.ap_balance || 0),
+        is_loss: netProfit < 0,
       },
       orders: {
         pending_sales_orders: ordersResult?.pending_sales_orders || 0,
@@ -93,9 +135,11 @@ dashboard.get('/executive', async (c) => {
         active_products: countsResult?.active_products || 0,
       },
       automation: {
-        active_agents: 15,
-        transactions_today: 1247,
-        success_rate: 96.2,
+        active_agents: 58,
+        transactions_today: totalRuns,
+        success_rate: parseFloat(successRate.toFixed(1)),
+        invoices_processed_today: invoicesProcessedToday,
+        pending_payments: pendingPayments,
       },
     });
   } catch (error) {

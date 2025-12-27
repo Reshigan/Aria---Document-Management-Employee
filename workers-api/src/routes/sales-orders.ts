@@ -387,6 +387,76 @@ salesOrders.post('/:id/invoice', async (c) => {
   }
 });
 
+// Cancel sales order
+salesOrders.post('/:id/cancel', async (c) => {
+  try {
+    const orderId = c.req.param('id');
+    const companyId = await getSecureCompanyId(c);
+
+    const order = await c.env.DB.prepare(
+      'SELECT * FROM sales_orders WHERE id = ? AND company_id = ?'
+    ).bind(orderId, companyId).first<SalesOrder>();
+
+    if (!order) {
+      return c.json({ error: 'Sales order not found' }, 404);
+    }
+
+    if (order.status === 'cancelled') {
+      return c.json({ error: 'Sales order is already cancelled' }, 400);
+    }
+
+    if (order.status === 'completed' || order.status === 'invoiced') {
+      return c.json({ error: 'Cannot cancel a completed or invoiced order' }, 400);
+    }
+
+    const now = new Date().toISOString();
+    await c.env.DB.prepare(
+      'UPDATE sales_orders SET status = ?, updated_at = ? WHERE id = ? AND company_id = ?'
+    ).bind('cancelled', now, orderId, companyId).run();
+
+    return c.json({ 
+      message: 'Sales order cancelled successfully',
+      order_number: order.order_number
+    });
+  } catch (error) {
+    console.error('Cancel sales order error:', error);
+    return c.json({ error: 'Internal server error' }, 500);
+  }
+});
+
+// Approve sales order
+salesOrders.post('/:id/approve', async (c) => {
+  try {
+    const orderId = c.req.param('id');
+    const companyId = await getSecureCompanyId(c);
+
+    const order = await c.env.DB.prepare(
+      'SELECT * FROM sales_orders WHERE id = ? AND company_id = ?'
+    ).bind(orderId, companyId).first<SalesOrder>();
+
+    if (!order) {
+      return c.json({ error: 'Sales order not found' }, 404);
+    }
+
+    if (order.status !== 'pending' && order.status !== 'draft') {
+      return c.json({ error: 'Only draft/pending orders can be approved' }, 400);
+    }
+
+    const now = new Date().toISOString();
+    await c.env.DB.prepare(
+      'UPDATE sales_orders SET status = ?, updated_at = ? WHERE id = ? AND company_id = ?'
+    ).bind('approved', now, orderId, companyId).run();
+
+    return c.json({ 
+      message: 'Sales order approved successfully',
+      order_number: order.order_number
+    });
+  } catch (error) {
+    console.error('Approve sales order error:', error);
+    return c.json({ error: 'Internal server error' }, 500);
+  }
+});
+
 // Delete sales order
 salesOrders.delete('/:id', async (c) => {
   try {

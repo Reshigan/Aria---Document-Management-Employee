@@ -40,6 +40,7 @@ import manufacturing from './routes/manufacturing';
 import enterprise from './routes/enterprise';
 import marketing from './routes/marketing';
 import criticalFeatures from './routes/critical-features';
+import odooParity from './routes/odoo-parity';
 import { executeScheduledBots as runScheduledBots } from './services/bot-executor';
 import { processPendingDeliveries } from './services/webhook-service';
 import { processDueScheduledReports } from './services/report-builder-service';
@@ -327,6 +328,10 @@ app.route('/marketing', marketing);
 // Critical Features routes (Token Vault, Connectors, Bank, Tax, SSO, Accounting Sync, E-Commerce, Shipping, Fixed Assets, Payroll, E-Invoicing, MRP, Monitoring, Admin, Backup)
 app.route('/api/critical', criticalFeatures);
 app.route('/critical', criticalFeatures);
+
+// Odoo Parity routes (Product Hierarchy, Pricing, Service Fulfillment, Helpdesk, Field Service, Migration)
+app.route('/api/odoo', odooParity);
+app.route('/odoo', odooParity);
 
 // Simple password hashing(for demo - use proper bcrypt in production)
 async function hashPassword(password: string): Promise<string> {

@@ -27,20 +27,20 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-6">
+    <div className="min-h-screen flex items-center justify-center p-6" style={{ background: 'linear-gradient(135deg, #1a2332 0%, #0f1419 100%)' }}>
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <div className="inline-flex items-center space-x-3 mb-4">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
-              <span className="text-2xl font-bold text-white">A</span>
+            <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ backgroundColor: '#FFB800' }}>
+              <span className="text-2xl font-bold" style={{ color: '#1a2332' }}>A</span>
             </div>
-            <span className="text-3xl font-bold text-white">Aria</span>
+            <span className="text-3xl font-bold" style={{ color: '#FFB800' }}>Aria</span>
           </div>
           <h1 className="text-3xl font-bold text-white mb-2">Login</h1>
           <p className="text-gray-300">Welcome Back - Login to your AI orchestrator</p>
         </div>
 
-        <div className="bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 p-8">
+        <div className="backdrop-blur-xl rounded-2xl p-8" style={{ backgroundColor: 'rgba(35, 45, 63, 0.7)', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
           <form onSubmit={handleSubmit} className="space-y-6">
             {error && (
               <div data-testid="error-message" className="p-4 bg-red-500/20 border border-red-500/50 rounded-lg text-red-200 text-sm">
@@ -60,7 +60,8 @@ const Login: React.FC = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="w-full pl-11 pr-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full pl-11 pr-4 py-3 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2"
+                  style={{ backgroundColor: 'rgba(15, 20, 25, 0.6)', border: '1px solid rgba(255, 255, 255, 0.15)' }}
                   placeholder="you@company.com"
                 />
               </div>
@@ -78,7 +79,8 @@ const Login: React.FC = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="w-full pl-11 pr-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full pl-11 pr-4 py-3 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2"
+                  style={{ backgroundColor: 'rgba(15, 20, 25, 0.6)', border: '1px solid rgba(255, 255, 255, 0.15)' }}
                   placeholder="••••••••"
                 />
               </div>
@@ -87,7 +89,8 @@ const Login: React.FC = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-600/50 text-white rounded-lg font-semibold transition flex items-center justify-center space-x-2"
+              className="w-full py-3 rounded-lg font-semibold transition flex items-center justify-center space-x-2"
+              style={{ backgroundColor: '#FFB800', color: '#1a2332' }}
             >
               {loading ? (
                 <span>Logging in...</span>
@@ -103,7 +106,7 @@ const Login: React.FC = () => {
           <div className="mt-6 text-center">
             <p className="text-gray-300">
               Don't have an account?{' '}
-              <Link to="/signup" className="text-indigo-400 hover:text-indigo-300 font-medium">
+              <Link to="/signup" className="font-medium" style={{ color: '#FFB800' }}>
                 Sign up
               </Link>
             </p>

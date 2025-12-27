@@ -584,4 +584,247 @@ invoices.post('/supplier/:id/payment', async (c) => {
   }
 });
 
+// ========================================
+// CREDIT NOTES
+// ========================================
+
+// Create credit note from sales order
+invoices.post('/credit-notes', async (c) => {
+  try {
+    const companyId = await getSecureCompanyId(c);
+    const body = await c.req.json<{
+      sales_order_id?: string;
+      invoice_id?: string;
+      customer_id?: string;
+      reason?: string;
+      lines?: Array<{
+        product_id?: string;
+        description?: string;
+        quantity: number;
+        unit_price: number;
+        tax_rate?: number;
+      }>;
+    }>();
+
+    // Generate credit note number
+    const lastCreditNote = await c.env.DB.prepare(
+      'SELECT invoice_number FROM customer_invoices WHERE company_id = ? AND invoice_number LIKE ? ORDER BY created_at DESC LIMIT 1'
+    ).bind(companyId, 'CN-%').first<{ invoice_number: string }>();
+    
+    const lastNum = lastCreditNote ? parseInt(lastCreditNote.invoice_number.split('-')[1]) : 0;
+    const creditNoteNumber = `CN-${String(lastNum + 1).padStart(5, '0')}`;
+
+    const creditNoteId = crypto.randomUUID();
+    const now = new Date().toISOString();
+
+    // Get customer from sales order or invoice if provided
+    let customerId = body.customer_id;
+    let sourceOrderId = body.sales_order_id;
+    let sourceInvoiceId = body.invoice_id;
+
+    if (body.sales_order_id && !customerId) {
+      const order = await c.env.DB.prepare(
+        'SELECT customer_id FROM sales_orders WHERE id = ? AND company_id = ?'
+      ).bind(body.sales_order_id, companyId).first<{ customer_id: string }>();
+      if (order) {
+        customerId = order.customer_id;
+      }
+    }
+
+    if (body.invoice_id && !customerId) {
+      const invoice = await c.env.DB.prepare(
+        'SELECT customer_id, sales_order_id FROM customer_invoices WHERE id = ? AND company_id = ?'
+      ).bind(body.invoice_id, companyId).first<{ customer_id: string; sales_order_id: string }>();
+      if (invoice) {
+        customerId = invoice.customer_id;
+        sourceOrderId = invoice.sales_order_id;
+      }
+    }
+
+    if (!customerId) {
+      return c.json({ error: 'Customer ID is required' }, 400);
+    }
+
+    // Calculate totals from lines
+    let subtotal = 0;
+    let taxAmount = 0;
+    const lines = body.lines || [];
+    
+    for (const line of lines) {
+      const lineTotal = line.quantity * line.unit_price;
+      const lineTax = lineTotal * ((line.tax_rate || 15) / 100);
+      subtotal += lineTotal;
+      taxAmount += lineTax;
+    }
+
+    const totalAmount = subtotal + taxAmount;
+
+    // Create credit note as a negative invoice
+    await c.env.DB.prepare(`
+      INSERT INTO customer_invoices (id, company_id, invoice_number, customer_id, sales_order_id, invoice_date, due_date, status, subtotal, tax_amount, discount_amount, total_amount, amount_paid, balance_due, notes, created_at, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `).bind(
+      creditNoteId,
+      companyId,
+      creditNoteNumber,
+      customerId,
+      sourceOrderId || null,
+      now.split('T')[0],
+      now.split('T')[0],
+      'posted',
+      -subtotal,
+      -taxAmount,
+      0,
+      -totalAmount,
+      0,
+      -totalAmount,
+      body.reason || 'Credit note',
+      now,
+      now
+    ).run();
+
+    // Insert line items
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      const lineTotal = line.quantity * line.unit_price;
+      
+      await c.env.DB.prepare(`
+        INSERT INTO customer_invoice_items (id, invoice_id, product_id, description, quantity, unit_price, discount_percent, tax_rate, line_total, sort_order, created_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `).bind(
+        crypto.randomUUID(),
+        creditNoteId,
+        line.product_id || null,
+        line.description || 'Credit note line',
+        -line.quantity,
+        line.unit_price,
+        0,
+        line.tax_rate || 15,
+        -lineTotal,
+        i,
+        now
+      ).run();
+    }
+
+    return c.json({
+      id: creditNoteId,
+      credit_note_number: creditNoteNumber,
+      total_amount: totalAmount,
+      message: 'Credit note created successfully'
+    }, 201);
+  } catch (error) {
+    console.error('Create credit note error:', error);
+    return c.json({ error: 'Internal server error' }, 500);
+  }
+});
+
+// ========================================
+// INVOICE LINES (for timesheet integration)
+// ========================================
+
+// Create invoice line item (for timesheet→invoice workflow)
+invoices.post('/invoice-lines', async (c) => {
+  try {
+    const companyId = await getSecureCompanyId(c);
+    const body = await c.req.json<{
+      invoice_id?: string;
+      description: string;
+      quantity: number;
+      unit_price: number;
+      amount?: number;
+      source_type?: string;
+      source_id?: string;
+      project_id?: string;
+      date?: string;
+      tax_rate?: number;
+    }>();
+
+    if (!body.description || !body.quantity || !body.unit_price) {
+      return c.json({ error: 'Description, quantity, and unit_price are required' }, 400);
+    }
+
+    const lineId = crypto.randomUUID();
+    const now = new Date().toISOString();
+    const lineTotal = body.quantity * body.unit_price;
+    const taxRate = body.tax_rate || 15;
+
+    // If invoice_id is provided, add to existing invoice
+    if (body.invoice_id) {
+      // Verify invoice exists and belongs to company
+      const invoice = await c.env.DB.prepare(
+        'SELECT id FROM customer_invoices WHERE id = ? AND company_id = ?'
+      ).bind(body.invoice_id, companyId).first();
+
+      if (!invoice) {
+        return c.json({ error: 'Invoice not found' }, 404);
+      }
+
+      // Get max sort order
+      const maxSort = await c.env.DB.prepare(
+        'SELECT MAX(sort_order) as max_sort FROM customer_invoice_items WHERE invoice_id = ?'
+      ).bind(body.invoice_id).first<{ max_sort: number }>();
+
+      await c.env.DB.prepare(`
+        INSERT INTO customer_invoice_items (id, invoice_id, product_id, description, quantity, unit_price, discount_percent, tax_rate, line_total, sort_order, created_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `).bind(
+        lineId,
+        body.invoice_id,
+        null,
+        body.description,
+        body.quantity,
+        body.unit_price,
+        0,
+        taxRate,
+        lineTotal,
+        (maxSort?.max_sort || 0) + 1,
+        now
+      ).run();
+
+      // Update invoice totals
+      const taxAmount = lineTotal * (taxRate / 100);
+      await c.env.DB.prepare(`
+        UPDATE customer_invoices 
+        SET subtotal = subtotal + ?, tax_amount = tax_amount + ?, total_amount = total_amount + ?, balance_due = balance_due + ?, updated_at = ?
+        WHERE id = ?
+      `).bind(lineTotal, taxAmount, lineTotal + taxAmount, lineTotal + taxAmount, now, body.invoice_id).run();
+
+      return c.json({
+        id: lineId,
+        invoice_id: body.invoice_id,
+        line_total: lineTotal,
+        message: 'Invoice line added successfully'
+      }, 201);
+    }
+
+    // If no invoice_id, store as pending invoice line for later batching
+    await c.env.DB.prepare(`
+      INSERT INTO pending_invoice_lines (id, company_id, description, quantity, unit_price, tax_rate, line_total, source_type, source_id, project_id, date, created_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `).bind(
+      lineId,
+      companyId,
+      body.description,
+      body.quantity,
+      body.unit_price,
+      taxRate,
+      lineTotal,
+      body.source_type || null,
+      body.source_id || null,
+      body.project_id || null,
+      body.date || now.split('T')[0],
+      now
+    ).run();
+
+    return c.json({
+      id: lineId,
+      line_total: lineTotal,
+      message: 'Invoice line created (pending invoice assignment)'
+    }, 201);
+  } catch (error) {
+    console.error('Create invoice line error:', error);
+    return c.json({ error: 'Internal server error' }, 500);
+  }
+});
+
 export default invoices;

@@ -31,9 +31,24 @@ interface Product {
   unit_of_measure: string;
 }
 
+interface Customer {
+  id: string;
+  name: string;
+  email: string;
+  pricelist_id?: string;
+}
+
+interface Pricelist {
+  id: string;
+  name: string;
+  currency: string;
+}
+
 export default function SalesOrders() {
   const [orders, setOrders] = useState<SalesOrder[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
+  const [customers, setCustomers] = useState<Customer[]>([]);
+  const [pricelists, setPricelists] = useState<Pricelist[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
@@ -41,6 +56,8 @@ export default function SalesOrders() {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<SalesOrder | null>(null);
+  const [selectedCustomerId, setSelectedCustomerId] = useState<string>('');
+  const [selectedPricelistId, setSelectedPricelistId] = useState<string>('');
   const [formData, setFormData] = useState<Partial<SalesOrder>>({
     customer_name: '',
     customer_email: '',
@@ -51,10 +68,12 @@ export default function SalesOrders() {
   const [lineItems, setLineItems] = useState<LineItem[]>([]);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    loadOrders();
-    loadProducts();
-  }, [searchTerm, statusFilter]);
+    useEffect(() => {
+      loadOrders();
+      loadProducts();
+      loadCustomers();
+      loadPricelists();
+    }, [searchTerm, statusFilter]);
 
   const loadOrders = async () => {
     try {
@@ -75,27 +94,65 @@ export default function SalesOrders() {
     }
   };
 
-  const loadProducts = async () => {
-    try {
-      const response = await api.get('/erp/order-to-cash/products');
-      const data = response.data?.data || response.data || [];
-      setProducts(Array.isArray(data) ? data : []);
-    } catch (err) {
-      console.error('Error loading products:', err);
-    }
-  };
+    const loadProducts = async () => {
+      try {
+        const response = await api.get('/erp/order-to-cash/products');
+        const data = response.data?.data || response.data || [];
+        setProducts(Array.isArray(data) ? data : []);
+      } catch (err) {
+        console.error('Error loading products:', err);
+      }
+    };
 
-  const handleCreate = () => {
-    setFormData({
-      customer_name: '',
-      customer_email: '',
-      order_date: new Date().toISOString().split('T')[0],
-      required_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-      notes: ''
-    });
-    setLineItems([]);
-    setShowCreateModal(true);
-  };
+    const loadCustomers = async () => {
+      try {
+        const response = await api.get('/erp/order-to-cash/customers');
+        const data = response.data?.data || response.data || [];
+        setCustomers(Array.isArray(data) ? data : []);
+      } catch (err) {
+        console.error('Error loading customers:', err);
+      }
+    };
+
+    const loadPricelists = async () => {
+      try {
+        const response = await api.get('/odoo/pricing/pricelists');
+        const data = response.data?.data || response.data || [];
+        setPricelists(Array.isArray(data) ? data : []);
+      } catch (err) {
+        console.error('Error loading pricelists:', err);
+      }
+    };
+
+    const handleCustomerChange = (customerId: string) => {
+      setSelectedCustomerId(customerId);
+      const customer = customers.find(c => c.id === customerId);
+      if (customer) {
+        setFormData({
+          ...formData,
+          customer_id: customerId,
+          customer_name: customer.name,
+          customer_email: customer.email
+        });
+        if (customer.pricelist_id) {
+          setSelectedPricelistId(customer.pricelist_id);
+        }
+      }
+    };
+
+    const handleCreate = () => {
+      setFormData({
+        customer_name: '',
+        customer_email: '',
+        order_date: new Date().toISOString().split('T')[0],
+        required_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        notes: ''
+      });
+      setSelectedCustomerId('');
+      setSelectedPricelistId('');
+      setLineItems([]);
+      setShowCreateModal(true);
+    };
 
   const handleEdit = (order: SalesOrder) => {
     setSelectedOrder(order);
@@ -184,20 +241,80 @@ export default function SalesOrders() {
     }
   };
 
-  const handleCreateDelivery = async (order: SalesOrder) => {
-    try {
-      const response = await api.post('/erp/order-to-cash/deliveries', {
-        sales_order_id: order.id
-      });
-      alert(`Delivery ${response.data.delivery_number} created successfully!`);
-      loadOrders();
-    } catch (err: any) {
-      console.error('Error creating delivery:', err);
-      setError(err.response?.data?.detail || 'Failed to create delivery');
-    }
-  };
+    const handleCreateDelivery = async (order: SalesOrder) => {
+      try {
+        const response = await api.post('/erp/order-to-cash/deliveries', {
+          sales_order_id: order.id
+        });
+        alert(`Delivery ${response.data.delivery_number} created successfully!`);
+        loadOrders();
+      } catch (err: any) {
+        console.error('Error creating delivery:', err);
+        setError(err.response?.data?.detail || 'Failed to create delivery');
+      }
+    };
 
-  const getStatusColor = (status: string) => {
+    const handleCancel = async (order: SalesOrder) => {
+      if (!confirm(`Are you sure you want to cancel order ${order.order_number}? This action cannot be undone.`)) {
+        return;
+      }
+      try {
+        await api.post(`/erp/order-to-cash/sales-orders/${order.id}/cancel`);
+        alert(`Order ${order.order_number} has been cancelled`);
+        loadOrders();
+      } catch (err: any) {
+        console.error('Error cancelling order:', err);
+        setError(err.response?.data?.detail || 'Failed to cancel order');
+      }
+    };
+
+    const handleCreateCreditNote = async (order: SalesOrder) => {
+      if (!confirm(`Create a credit note for order ${order.order_number}?`)) {
+        return;
+      }
+      try {
+        const response = await api.post('/erp/order-to-cash/credit-notes', {
+          sales_order_id: order.id,
+          reason: 'Customer request',
+          lines: order.lines?.map(line => ({
+            product_id: line.product_id,
+            description: line.description,
+            quantity: line.quantity,
+            unit_price: line.unit_price,
+            tax_rate: line.tax_rate
+          }))
+        });
+        alert(`Credit note ${response.data.credit_note_number || 'CN-' + Date.now()} created successfully!`);
+        loadOrders();
+      } catch (err: any) {
+        console.error('Error creating credit note:', err);
+        setError(err.response?.data?.detail || 'Failed to create credit note');
+      }
+    };
+
+    const handlePartialDelivery = async (order: SalesOrder) => {
+      const quantityStr = prompt('Enter the percentage of order to deliver (1-100):');
+      if (!quantityStr) return;
+      const percentage = parseInt(quantityStr, 10);
+      if (isNaN(percentage) || percentage < 1 || percentage > 100) {
+        alert('Please enter a valid percentage between 1 and 100');
+        return;
+      }
+      try {
+        const response = await api.post('/erp/order-to-cash/deliveries', {
+          sales_order_id: order.id,
+          partial_percentage: percentage,
+          is_partial: true
+        });
+        alert(`Partial delivery (${percentage}%) created: ${response.data.delivery_number}`);
+        loadOrders();
+      } catch (err: any) {
+        console.error('Error creating partial delivery:', err);
+        setError(err.response?.data?.detail || 'Failed to create partial delivery');
+      }
+    };
+
+    const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
       draft: '#6b7280',
       approved: '#3b82f6',
@@ -287,43 +404,55 @@ export default function SalesOrders() {
                 </div>
               )}
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>
-                    Customer Name *
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.customer_name || ''}
-                    onChange={(e) => setFormData({ ...formData, customer_name: e.target.value })}
-                    required
-                    style={{
-                      width: '100%',
-                      padding: '0.5rem',
-                      border: '1px solid #d1d5db',
-                      borderRadius: '0.375rem',
-                      fontSize: '0.875rem'
-                    }}
-                  />
-                </div>
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
+                              <div>
+                                <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>
+                                  Customer *
+                                </label>
+                                <select
+                                  value={selectedCustomerId}
+                                  onChange={(e) => handleCustomerChange(e.target.value)}
+                                  required
+                                  style={{
+                                    width: '100%',
+                                    padding: '0.5rem',
+                                    border: '1px solid #d1d5db',
+                                    borderRadius: '0.375rem',
+                                    fontSize: '0.875rem'
+                                  }}
+                                >
+                                  <option value="">Select a customer...</option>
+                                  {customers.map(customer => (
+                                    <option key={customer.id} value={customer.id}>
+                                      {customer.name} ({customer.email})
+                                    </option>
+                                  ))}
+                                </select>
+                              </div>
 
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>
-                    Customer Email
-                  </label>
-                  <input
-                    type="email"
-                    value={formData.customer_email || ''}
-                    onChange={(e) => setFormData({ ...formData, customer_email: e.target.value })}
-                    style={{
-                      width: '100%',
-                      padding: '0.5rem',
-                      border: '1px solid #d1d5db',
-                      borderRadius: '0.375rem',
-                      fontSize: '0.875rem'
-                    }}
-                  />
-                </div>
+                              <div>
+                                <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>
+                                  Pricelist
+                                </label>
+                                <select
+                                  value={selectedPricelistId}
+                                  onChange={(e) => setSelectedPricelistId(e.target.value)}
+                                  style={{
+                                    width: '100%',
+                                    padding: '0.5rem',
+                                    border: '1px solid #d1d5db',
+                                    borderRadius: '0.375rem',
+                                    fontSize: '0.875rem'
+                                  }}
+                                >
+                                  <option value="">Default pricing</option>
+                                  {pricelists.map(pricelist => (
+                                    <option key={pricelist.id} value={pricelist.id}>
+                                      {pricelist.name} ({pricelist.currency})
+                                    </option>
+                                  ))}
+                                </select>
+                              </div>
 
                 <div>
                   <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>
@@ -382,11 +511,16 @@ export default function SalesOrders() {
                 />
               </div>
 
-              <LineItemsTable
-                items={lineItems}
-                onChange={setLineItems}
-                products={products}
-              />
+                            <LineItemsTable
+                              items={lineItems}
+                              onChange={setLineItems}
+                              products={products}
+                              pricingContext={{
+                                customer_id: selectedCustomerId || undefined,
+                                pricelist_id: selectedPricelistId || undefined,
+                                date: formData.order_date
+                              }}
+                            />
             </div>
 
             <div style={{
@@ -564,24 +698,110 @@ export default function SalesOrders() {
                       {order.status}
                     </span>
                   </td>
-                  <td style={{ padding: '1rem', textAlign: 'right' }}>
-                    {order.status === 'draft' && (
-                      <button
-                        onClick={() => approveOrder(order.id)}
-                        style={{
-                          padding: '0.25rem 0.75rem',
-                          background: '#10b981',
-                          color: 'white',
-                          border: 'none',
-                          borderRadius: '0.25rem',
-                          fontSize: '0.75rem',
-                          cursor: 'pointer'
-                        }}
-                      >
-                        Approve
-                      </button>
-                    )}
-                  </td>
+                                    <td style={{ padding: '1rem', textAlign: 'right' }}>
+                                      <div style={{ display: 'flex', gap: '0.25rem', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
+                                        {order.status === 'draft' && (
+                                          <button
+                                            onClick={() => handleApprove(order)}
+                                            style={{
+                                              padding: '0.25rem 0.5rem',
+                                              background: '#10b981',
+                                              color: 'white',
+                                              border: 'none',
+                                              borderRadius: '0.25rem',
+                                              fontSize: '0.7rem',
+                                              cursor: 'pointer'
+                                            }}
+                                            title="Approve Order"
+                                          >
+                                            <Check size={12} />
+                                          </button>
+                                        )}
+                                        {order.status === 'approved' && (
+                                          <>
+                                            <button
+                                              onClick={() => handleCreateDelivery(order)}
+                                              style={{
+                                                padding: '0.25rem 0.5rem',
+                                                background: '#3b82f6',
+                                                color: 'white',
+                                                border: 'none',
+                                                borderRadius: '0.25rem',
+                                                fontSize: '0.7rem',
+                                                cursor: 'pointer'
+                                              }}
+                                              title="Create Full Delivery"
+                                            >
+                                              <Truck size={12} />
+                                            </button>
+                                            <button
+                                              onClick={() => handlePartialDelivery(order)}
+                                              style={{
+                                                padding: '0.25rem 0.5rem',
+                                                background: '#8b5cf6',
+                                                color: 'white',
+                                                border: 'none',
+                                                borderRadius: '0.25rem',
+                                                fontSize: '0.7rem',
+                                                cursor: 'pointer'
+                                              }}
+                                              title="Partial Delivery"
+                                            >
+                                              %
+                                            </button>
+                                          </>
+                                        )}
+                                        {(order.status === 'completed' || order.status === 'in_progress') && (
+                                          <button
+                                            onClick={() => handleCreateCreditNote(order)}
+                                            style={{
+                                              padding: '0.25rem 0.5rem',
+                                              background: '#f59e0b',
+                                              color: 'white',
+                                              border: 'none',
+                                              borderRadius: '0.25rem',
+                                              fontSize: '0.7rem',
+                                              cursor: 'pointer'
+                                            }}
+                                            title="Create Credit Note"
+                                          >
+                                            <FileText size={12} />
+                                          </button>
+                                        )}
+                                        {order.status !== 'cancelled' && order.status !== 'completed' && (
+                                          <button
+                                            onClick={() => handleCancel(order)}
+                                            style={{
+                                              padding: '0.25rem 0.5rem',
+                                              background: '#ef4444',
+                                              color: 'white',
+                                              border: 'none',
+                                              borderRadius: '0.25rem',
+                                              fontSize: '0.7rem',
+                                              cursor: 'pointer'
+                                            }}
+                                            title="Cancel Order"
+                                          >
+                                            <X size={12} />
+                                          </button>
+                                        )}
+                                        <button
+                                          onClick={() => handleEdit(order)}
+                                          style={{
+                                            padding: '0.25rem 0.5rem',
+                                            background: '#6b7280',
+                                            color: 'white',
+                                            border: 'none',
+                                            borderRadius: '0.25rem',
+                                            fontSize: '0.7rem',
+                                            cursor: 'pointer'
+                                          }}
+                                          title="Edit Order"
+                                        >
+                                          <Edit size={12} />
+                                        </button>
+                                      </div>
+                                    </td>
                 </tr>
               ))}
             </tbody>
