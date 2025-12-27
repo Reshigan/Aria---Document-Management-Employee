@@ -222,6 +222,90 @@ body {
     color: var(--text-gray);
 }
 
+/* How It Works Section */
+.how-it-works-section {
+    padding: 80px 0;
+    background: white;
+}
+
+.steps-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 30px;
+}
+
+.step-card {
+    text-align: center;
+    padding: 30px;
+}
+
+.step-number {
+    width: 60px;
+    height: 60px;
+    background: var(--gold);
+    color: var(--navy);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: 800;
+    margin: 0 auto 20px;
+}
+
+.step-card h3 {
+    color: var(--navy);
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+.step-card p {
+    color: var(--text-gray);
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+/* Modules Section */
+.modules-section {
+    padding: 80px 0;
+    background: white;
+}
+
+.modules-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 25px;
+}
+
+.module-card {
+    background: var(--light-gray);
+    padding: 25px;
+    border-radius: 10px;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.module-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.module-icon {
+    font-size: 36px;
+    margin-bottom: 15px;
+}
+
+.module-card h3 {
+    color: var(--navy);
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.module-card p {
+    color: var(--text-gray);
+    font-size: 13px;
+    line-height: 1.5;
+}
+
 /* Problem Section */
 .problem-section {
     padding: 80px 0;
@@ -416,6 +500,149 @@ body {
     color: var(--text-gray);
 }
 
+/* Pricing Page Specific Styles */
+.pricing-hero {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--dark-bg) 100%);
+    color: white;
+    padding: 80px 0;
+    text-align: center;
+}
+
+.pricing-hero h1 {
+    font-size: 48px;
+    font-weight: 800;
+    margin-bottom: 15px;
+    color: white;
+}
+
+.pricing-hero p {
+    font-size: 18px;
+    color: #ccc;
+}
+
+.plan-description {
+    color: var(--text-gray);
+    margin-bottom: 20px;
+}
+
+.price-note {
+    font-size: 14px;
+    color: var(--text-gray);
+    margin-bottom: 20px;
+}
+
+.plan-features {
+    list-style: none;
+    text-align: left;
+    margin: 30px 0;
+}
+
+.plan-features li {
+    padding: 8px 0;
+    color: var(--text-gray);
+    position: relative;
+    padding-left: 25px;
+}
+
+.plan-features li::before {
+    content: "✓";
+    color: var(--gold);
+    font-weight: bold;
+    position: absolute;
+    left: 0;
+}
+
+.currency {
+    font-size: 24px;
+    vertical-align: top;
+}
+
+/* Add-ons Section */
+.addons-section {
+    padding: 80px 0;
+    background: white;
+}
+
+.addons-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 25px;
+}
+
+.addon-card {
+    background: var(--light-gray);
+    padding: 25px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.addon-card h4 {
+    color: var(--navy);
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.addon-card p {
+    color: var(--text-gray);
+    font-size: 14px;
+    margin-bottom: 15px;
+}
+
+.addon-price {
+    color: var(--gold);
+    font-size: 18px;
+    font-weight: 700;
+}
+
+/* FAQ Section */
+.faq-section {
+    padding: 80px 0;
+    background: var(--light-gray);
+}
+
+.faq-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px;
+}
+
+.faq-item {
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+}
+
+.faq-item h4 {
+    color: var(--navy);
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.faq-item p {
+    color: var(--text-gray);
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+/* Active nav link */
+.nav-menu a.active {
+    color: var(--gold);
+}
+
+@media (max-width: 768px) {
+    .addons-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .faq-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .pricing-hero h1 {
+        font-size: 32px;
+    }
+}
+
 /* CTA Section */
 .cta-section {
     padding: 80px 0;
@@ -507,12 +734,18 @@ body {
 /* Responsive */
 @media (max-width: 768px) {
     .problems-grid,
-    .features-grid {
+    .features-grid,
+    .steps-grid,
+    .modules-grid {
         grid-template-columns: 1fr;
     }
     
     .pricing-grid {
         grid-template-columns: 1fr;
+    }
+    
+    .pricing-card.featured-plan {
+        transform: none;
     }
     
     .sa-grid {
@@ -530,6 +763,10 @@ body {
     
     .nav-menu {
         display: none;
+    }
+    
+    .feature-card.featured {
+        grid-column: span 1;
     }
 }
 
