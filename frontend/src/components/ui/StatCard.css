@@ -1,14 +1,15 @@
 .stat-card {
-  background-color: white;
+  background-color: var(--navy-light);
   border-radius: 0.5rem;
   padding: 1.5rem;
-  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
-  border: 1px solid var(--gray-200);
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.3);
+  border: 1px solid var(--border-color);
   transition: box-shadow 0.15s ease;
 }
 
 .stat-card:hover {
-  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.3);
+  border-color: var(--gold);
 }
 
 .stat-card-header {
@@ -20,7 +21,7 @@
 
 .stat-card-title {
   font-size: 0.875rem;
-  color: var(--gray-600);
+  color: var(--text-secondary);
   font-weight: 500;
 }
 
@@ -30,14 +31,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--gray-50);
+  background-color: var(--gold-light);
   border-radius: 0.5rem;
+  color: var(--gold);
 }
 
 .stat-card-value {
   font-size: 1.875rem;
   font-weight: 700;
-  color: var(--gray-900);
+  color: var(--text-primary);
   margin-bottom: 0.5rem;
 }
 
