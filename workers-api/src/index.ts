@@ -41,6 +41,8 @@ import enterprise from './routes/enterprise';
 import marketing from './routes/marketing';
 import criticalFeatures from './routes/critical-features';
 import odooParity from './routes/odoo-parity';
+import registration from './routes/registration';
+import reseller from './routes/reseller';
 import { executeScheduledBots as runScheduledBots } from './services/bot-executor';
 import { processPendingDeliveries } from './services/webhook-service';
 import { processDueScheduledReports } from './services/report-builder-service';
@@ -332,6 +334,14 @@ app.route('/critical', criticalFeatures);
 // Odoo Parity routes (Product Hierarchy, Pricing, Service Fulfillment, Helpdesk, Field Service, Migration)
 app.route('/api/odoo', odooParity);
 app.route('/odoo', odooParity);
+
+// Self-Registration routes (public - no auth required for signup flow)
+app.route('/api/registration', registration);
+app.route('/registration', registration);
+
+// Reseller routes (application, portal, admin management)
+app.route('/api/reseller', reseller);
+app.route('/reseller', reseller);
 
 // Simple password hashing(for demo - use proper bcrypt in production)
 async function hashPassword(password: string): Promise<string> {

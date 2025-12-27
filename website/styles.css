@@ -416,6 +416,169 @@ body {
     color: var(--text-gray);
 }
 
+.pricing-card.featured {
+    border-color: var(--gold);
+    border-width: 3px;
+    transform: scale(1.05);
+    position: relative;
+}
+
+.pricing-badge {
+    background: var(--gold);
+    color: var(--navy);
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.pricing-header h3 {
+    font-size: 24px;
+    color: var(--navy);
+    margin-bottom: 10px;
+}
+
+.price-annual {
+    font-size: 14px;
+    color: var(--gold);
+    margin-top: -20px;
+    margin-bottom: 20px;
+}
+
+.pricing-features {
+    list-style: none;
+    text-align: left;
+    margin: 20px 0 30px;
+}
+
+.pricing-features li {
+    padding: 8px 0;
+    color: var(--text-gray);
+    position: relative;
+    padding-left: 25px;
+}
+
+.pricing-features li::before {
+    content: "✓";
+    color: var(--gold);
+    font-weight: bold;
+    position: absolute;
+    left: 0;
+}
+
+.pricing-enterprise {
+    text-align: center;
+    margin-top: 40px;
+    padding: 30px;
+    background: white;
+    border-radius: 10px;
+}
+
+.pricing-enterprise h3 {
+    color: var(--navy);
+    margin-bottom: 10px;
+}
+
+.pricing-enterprise p {
+    color: var(--text-gray);
+}
+
+.pricing-enterprise a {
+    color: var(--gold);
+    font-weight: 600;
+}
+
+.pricing-promo {
+    text-align: center;
+    margin-top: 30px;
+    padding: 20px;
+    background: var(--gold);
+    border-radius: 10px;
+}
+
+.pricing-promo p {
+    color: var(--navy);
+    font-size: 18px;
+    margin: 0;
+}
+
+.pricing-promo strong {
+    font-size: 20px;
+}
+
+/* Reseller Section */
+.reseller-section {
+    padding: 80px 0;
+    background: white;
+}
+
+.reseller-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 30px;
+}
+
+.reseller-card {
+    background: var(--light-gray);
+    padding: 30px;
+    border-radius: 10px;
+    text-align: center;
+    transition: transform 0.3s;
+}
+
+.reseller-card:hover {
+    transform: translateY(-5px);
+}
+
+.reseller-icon {
+    font-size: 48px;
+    margin-bottom: 15px;
+}
+
+.reseller-card h3 {
+    color: var(--navy);
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.reseller-card p {
+    color: var(--text-gray);
+    font-size: 14px;
+}
+
+.reseller-cta {
+    text-align: center;
+    margin-top: 50px;
+    padding: 40px;
+    background: linear-gradient(135deg, var(--navy) 0%, var(--dark-bg) 100%);
+    border-radius: 10px;
+    color: white;
+}
+
+.reseller-cta h3 {
+    font-size: 28px;
+    margin-bottom: 10px;
+}
+
+.reseller-cta p {
+    color: #ccc;
+    margin-bottom: 20px;
+}
+
+@media (max-width: 768px) {
+    .reseller-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .pricing-card.featured {
+        transform: none;
+    }
+}
+
 /* CTA Section */
 .cta-section {
     padding: 80px 0;
