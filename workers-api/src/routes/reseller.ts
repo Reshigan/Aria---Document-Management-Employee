@@ -170,7 +170,7 @@ app.post('/application/:applicationId/documents', async (c) => {
     }
 
     const formData = await c.req.formData();
-    const file = formData.get('file') as File;
+    const file = formData.get('file') as unknown as File;
     const documentType = formData.get('document_type') as string;
 
     if (!file || !documentType) {
