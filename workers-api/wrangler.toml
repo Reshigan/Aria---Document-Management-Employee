@@ -40,5 +40,6 @@ local_protocol = "http"
 
 # Scheduled triggers for autonomous bot execution
 # Runs every hour to process pending bot tasks
-[triggers]
-crons = ["0 * * * *"]
+# Note: Disabled due to Cloudflare free tier limit of 5 cron triggers
+# [triggers]
+# crons = ["0 * * * *"]

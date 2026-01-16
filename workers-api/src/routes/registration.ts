@@ -167,9 +167,7 @@ app.post('/start', async (c) => {
     }
 
     // Create Stripe checkout session
-    const stripe = new Stripe(c.env.STRIPE_SECRET_KEY, {
-      apiVersion: '2023-10-16',
-    });
+    const stripe = new Stripe(c.env.STRIPE_SECRET_KEY);
 
     const appUrl = c.env.APP_URL || 'https://aria-erp.pages.dev';
     const successUrl = `${appUrl}/registration/success?session_id={CHECKOUT_SESSION_ID}`;
@@ -242,9 +240,7 @@ app.post('/webhook/stripe', async (c) => {
       return c.json({ error: 'Stripe not configured' }, 500);
     }
 
-    const stripe = new Stripe(c.env.STRIPE_SECRET_KEY, {
-      apiVersion: '2023-10-16',
-    });
+    const stripe = new Stripe(c.env.STRIPE_SECRET_KEY);
 
     let event: Stripe.Event;
     try {
@@ -368,7 +364,7 @@ async function handleCheckoutCompleted(db: D1Database, session: Stripe.Checkout.
   console.log(`Registration completed: company=${result.company_id}, user=${result.user_id}`);
 }
 
-async function handleInvoicePaid(db: D1Database, invoice: Stripe.Invoice, eventId: string) {
+async function handleInvoicePaid(db: D1Database, invoice: any, eventId: string) {
   if (!invoice.subscription) return;
 
   // Get subscription to find company and reseller
@@ -412,7 +408,7 @@ async function handleInvoicePaid(db: D1Database, invoice: Stripe.Invoice, eventI
   console.log(`Commission recorded for reseller ${resellerId}: $${grossAmount * 0.15}`);
 }
 
-async function handleSubscriptionUpdated(db: D1Database, subscription: Stripe.Subscription) {
+async function handleSubscriptionUpdated(db: D1Database, subscription: any) {
   const now = new Date().toISOString();
   
   // Map Stripe status to our status
@@ -446,7 +442,7 @@ async function handleSubscriptionUpdated(db: D1Database, subscription: Stripe.Su
   console.log(`Subscription ${subscription.id} updated to status: ${status}`);
 }
 
-async function handleSubscriptionDeleted(db: D1Database, subscription: Stripe.Subscription) {
+async function handleSubscriptionDeleted(db: D1Database, subscription: any) {
   const now = new Date().toISOString();
 
   await db.prepare(`
@@ -458,7 +454,7 @@ async function handleSubscriptionDeleted(db: D1Database, subscription: Stripe.Su
   console.log(`Subscription ${subscription.id} cancelled`);
 }
 
-async function handlePaymentFailed(db: D1Database, invoice: Stripe.Invoice) {
+async function handlePaymentFailed(db: D1Database, invoice: any) {
   if (!invoice.subscription) return;
 
   await db.prepare(`
