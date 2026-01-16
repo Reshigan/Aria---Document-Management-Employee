@@ -159,7 +159,7 @@ const METRICS_REGISTRY: Record<string, {
     sql: 'COUNT(*)',
     table: 'purchase_orders',
     aggregation: 'count',
-    dimensions: ['supplier_id', 'order_date', 'status'],
+    dimensions: ['supplier_id', 'po_date', 'status'],
     category: 'procurement'
   },
   po_value: {
@@ -168,7 +168,7 @@ const METRICS_REGISTRY: Record<string, {
     sql: 'COALESCE(SUM(total_amount), 0)',
     table: 'purchase_orders',
     aggregation: 'sum',
-    dimensions: ['supplier_id', 'order_date', 'status'],
+    dimensions: ['supplier_id', 'po_date', 'status'],
     category: 'procurement'
   },
   
@@ -474,7 +474,7 @@ app.get('/dashboard/executive', async (c) => {
       db.prepare(`
         SELECT COUNT(*) as count, COALESCE(SUM(total_amount), 0) as value 
         FROM purchase_orders 
-        WHERE company_id = ? AND order_date >= ?
+        WHERE company_id = ? AND po_date >= ?
       `).bind(companyId, monthStart).first(),
       
       // Invoices this month
@@ -486,23 +486,23 @@ app.get('/dashboard/executive', async (c) => {
       
       // Top 5 customers by revenue
       db.prepare(`
-        SELECT c.name, COALESCE(SUM(ci.total_amount), 0) as revenue
+        SELECT c.customer_name as name, COALESCE(SUM(ci.total_amount), 0) as revenue
         FROM customers c
         LEFT JOIN customer_invoices ci ON ci.customer_id = c.id AND ci.status = 'paid'
         WHERE c.company_id = ?
-        GROUP BY c.id, c.name
+        GROUP BY c.id, c.customer_name
         ORDER BY revenue DESC
         LIMIT 5
       `).bind(companyId).all(),
       
       // Top 5 products by sales
       db.prepare(`
-        SELECT p.name, COALESCE(SUM(soi.quantity * soi.unit_price), 0) as sales
+        SELECT p.product_name as name, COALESCE(SUM(soi.quantity * soi.unit_price), 0) as sales
         FROM products p
         LEFT JOIN sales_order_items soi ON soi.product_id = p.id
         LEFT JOIN sales_orders so ON so.id = soi.sales_order_id AND so.status IN ('confirmed', 'shipped', 'delivered')
         WHERE p.company_id = ?
-        GROUP BY p.id, p.name
+        GROUP BY p.id, p.product_name
         ORDER BY sales DESC
         LIMIT 5
       `).bind(companyId).all()
@@ -858,7 +858,7 @@ app.get('/reports/ar-aging', async (c) => {
     const result = await db.prepare(`
       SELECT 
         c.id as customer_id,
-        c.name as customer_name,
+        c.customer_name as customer_name,
         ci.invoice_number,
         ci.invoice_date,
         ci.due_date,
@@ -919,7 +919,7 @@ app.get('/reports/ap-aging', async (c) => {
     const result = await db.prepare(`
       SELECT 
         s.id as supplier_id,
-        s.name as supplier_name,
+        s.supplier_name as supplier_name,
         si.invoice_number,
         si.invoice_date,
         si.due_date,
@@ -994,13 +994,13 @@ app.get('/reports/sales-analytics', async (c) => {
     // Sales by customer
     const salesByCustomer = await db.prepare(`
       SELECT 
-        c.name as customer_name,
+        c.customer_name as customer_name,
         COUNT(ci.id) as invoice_count,
         COALESCE(SUM(ci.total_amount), 0) as revenue
       FROM customers c
       LEFT JOIN customer_invoices ci ON ci.customer_id = c.id AND ci.invoice_date BETWEEN ? AND ?
       WHERE c.company_id = ?
-      GROUP BY c.id, c.name
+      GROUP BY c.id, c.customer_name
       HAVING revenue > 0
       ORDER BY revenue DESC
       LIMIT 10
@@ -1009,14 +1009,14 @@ app.get('/reports/sales-analytics', async (c) => {
     // Sales by product
     const salesByProduct = await db.prepare(`
       SELECT 
-        p.name as product_name,
+        p.product_name as product_name,
         COALESCE(SUM(soi.quantity), 0) as quantity_sold,
         COALESCE(SUM(soi.quantity * soi.unit_price), 0) as revenue
       FROM products p
       LEFT JOIN sales_order_items soi ON soi.product_id = p.id
       LEFT JOIN sales_orders so ON so.id = soi.sales_order_id AND so.order_date BETWEEN ? AND ?
       WHERE p.company_id = ?
-      GROUP BY p.id, p.name
+      GROUP BY p.id, p.product_name
       HAVING revenue > 0
       ORDER BY revenue DESC
       LIMIT 10
@@ -1083,13 +1083,13 @@ app.get('/reports/procurement-analytics', async (c) => {
     // Spend by supplier
     const spendBySupplier = await db.prepare(`
       SELECT 
-        s.name as supplier_name,
+        s.supplier_name as supplier_name,
         COUNT(si.id) as invoice_count,
         COALESCE(SUM(si.total_amount), 0) as spend
       FROM suppliers s
       LEFT JOIN supplier_invoices si ON si.supplier_id = s.id AND si.invoice_date BETWEEN ? AND ?
       WHERE s.company_id = ?
-      GROUP BY s.id, s.name
+      GROUP BY s.id, s.supplier_name
       HAVING spend > 0
       ORDER BY spend DESC
       LIMIT 10
@@ -1103,7 +1103,7 @@ app.get('/reports/procurement-analytics', async (c) => {
         SUM(CASE WHEN status = 'invoiced' THEN 1 ELSE 0 END) as invoiced_pos,
         COALESCE(SUM(total_amount), 0) as total_po_value
       FROM purchase_orders
-      WHERE company_id = ? AND order_date BETWEEN ? AND ?
+      WHERE company_id = ? AND po_date BETWEEN ? AND ?
     `).bind(companyId, startDate, endDate).first();
     
     return c.json({
@@ -1352,7 +1352,7 @@ app.get('/export/csv/:report', async (c) => {
       case 'invoices':
         headers = ['Invoice Number', 'Customer', 'Date', 'Due Date', 'Total', 'Paid', 'Status'];
         const invoices = await db.prepare(`
-          SELECT ci.invoice_number, c.name as customer, ci.invoice_date, ci.due_date, 
+          SELECT ci.invoice_number, c.customer_name as customer, ci.invoice_date, ci.due_date, 
             ci.total_amount, COALESCE(ci.amount_paid, 0) as paid, ci.status
           FROM customer_invoices ci
           JOIN customers c ON c.id = ci.customer_id
