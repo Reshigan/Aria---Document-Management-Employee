@@ -673,6 +673,43 @@ app.post('/api/auth/register', async (c) => {
   }
 });
 
+// Legacy auth routes (without /api prefix) for frontend compatibility
+app.post('/auth/login', async (c) => {
+  // Forward to the /api/auth/login handler
+  const url = new URL(c.req.url);
+  url.pathname = '/api/auth/login';
+  const newReq = new Request(url.toString(), c.req.raw);
+  return app.fetch(newReq, c.env);
+});
+
+app.get('/auth/me', async (c) => {
+  const url = new URL(c.req.url);
+  url.pathname = '/api/auth/me';
+  const newReq = new Request(url.toString(), c.req.raw);
+  return app.fetch(newReq, c.env);
+});
+
+app.post('/auth/refresh', async (c) => {
+  const url = new URL(c.req.url);
+  url.pathname = '/api/auth/refresh';
+  const newReq = new Request(url.toString(), c.req.raw);
+  return app.fetch(newReq, c.env);
+});
+
+app.post('/auth/logout', async (c) => {
+  const url = new URL(c.req.url);
+  url.pathname = '/api/auth/logout';
+  const newReq = new Request(url.toString(), c.req.raw);
+  return app.fetch(newReq, c.env);
+});
+
+app.post('/auth/register', async (c) => {
+  const url = new URL(c.req.url);
+  url.pathname = '/api/auth/register';
+  const newReq = new Request(url.toString(), c.req.raw);
+  return app.fetch(newReq, c.env);
+});
+
 // 404 handler
 app.notFound((c) => {
   return c.json({ error: 'Not found' }, 404);
