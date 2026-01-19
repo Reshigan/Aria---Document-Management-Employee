@@ -3230,15 +3230,18 @@ app.get('/runs/:runId', async (c) => {
 
 // List all bots (alternative endpoint for frontend)
 app.get('/', async (c) => {
+  const agents = botRegistry.map((bot) => ({
+    id: bot.id,
+    name: bot.name,
+    category: bot.category,
+    description: bot.description,
+    capabilities: bot.capabilities,
+    status: 'active',
+  }));
+  
   return c.json({
-    bots: botRegistry.map((bot) => ({
-      id: bot.id,
-      name: bot.name,
-      category: bot.category,
-      description: bot.description,
-      capabilities: bot.capabilities,
-      status: 'active',
-    })),
+    agents,
+    bots: agents,
     total: botRegistry.length,
   });
 });
