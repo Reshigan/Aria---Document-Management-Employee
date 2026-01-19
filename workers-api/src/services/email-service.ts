@@ -10,11 +10,15 @@
  */
 
 interface EmailConfig {
-  provider: 'sendgrid' | 'mailgun' | 'resend' | 'smtp';
+  provider: 'sendgrid' | 'mailgun' | 'resend' | 'smtp' | 'graph';
   apiKey?: string;
   domain?: string;
   fromEmail: string;
   fromName: string;
+  // Microsoft Graph API specific
+  azureClientId?: string;
+  azureTenantId?: string;
+  azureClientSecret?: string;
 }
 
 interface EmailMessage {
@@ -151,6 +155,137 @@ async function sendViaMailgun(
 }
 
 /**
+ * Send email via Microsoft Graph API (Azure AD)
+ * Uses OAuth2 client credentials flow to send email as the configured user
+ */
+async function sendViaMicrosoftGraph(
+  clientId: string,
+  tenantId: string,
+  clientSecret: string,
+  from: { email: string; name: string },
+  message: EmailMessage
+): Promise<EmailResult> {
+  try {
+    // Step 1: Get access token using client credentials flow
+    const tokenUrl = `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/token`;
+    const tokenBody = new URLSearchParams({
+      client_id: clientId,
+      client_secret: clientSecret,
+      scope: 'https://graph.microsoft.com/.default',
+      grant_type: 'client_credentials'
+    });
+
+    const tokenResponse = await fetch(tokenUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: tokenBody.toString()
+    });
+
+    if (!tokenResponse.ok) {
+      const errorText = await tokenResponse.text();
+      return { success: false, error: `Azure AD token error: ${tokenResponse.status} - ${errorText}`, provider: 'graph' };
+    }
+
+    const tokenData = await tokenResponse.json() as { access_token: string };
+    const accessToken = tokenData.access_token;
+
+    // Step 2: Send email using Microsoft Graph API
+    const emailPayload: any = {
+      message: {
+        subject: message.subject,
+        body: {
+          contentType: message.html ? 'HTML' : 'Text',
+          content: message.html || message.text || ''
+        },
+        toRecipients: [
+          {
+            emailAddress: {
+              address: message.to
+            }
+          }
+        ],
+        from: {
+          emailAddress: {
+            address: from.email,
+            name: from.name
+          }
+        }
+      },
+      saveToSentItems: true
+    };
+
+    // Add CC recipients
+    if (message.cc) {
+      emailPayload.message.ccRecipients = [
+        {
+          emailAddress: {
+            address: message.cc
+          }
+        }
+      ];
+    }
+
+    // Add BCC recipients
+    if (message.bcc) {
+      emailPayload.message.bccRecipients = [
+        {
+          emailAddress: {
+            address: message.bcc
+          }
+        }
+      ];
+    }
+
+    // Add reply-to
+    if (message.replyTo) {
+      emailPayload.message.replyTo = [
+        {
+          emailAddress: {
+            address: message.replyTo
+          }
+        }
+      ];
+    }
+
+    // Add attachments
+    if (message.attachments && message.attachments.length > 0) {
+      emailPayload.message.attachments = message.attachments.map(att => ({
+        '@odata.type': '#microsoft.graph.fileAttachment',
+        name: att.filename,
+        contentType: att.contentType,
+        contentBytes: att.content // Already base64 encoded
+      }));
+    }
+
+    // Send email via Graph API
+    const sendUrl = `https://graph.microsoft.com/v1.0/users/${from.email}/sendMail`;
+    const sendResponse = await fetch(sendUrl, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(emailPayload)
+    });
+
+    if (sendResponse.ok || sendResponse.status === 202) {
+      return { 
+        success: true, 
+        messageId: `graph-${crypto.randomUUID()}`, 
+        provider: 'graph' 
+      };
+    }
+
+    const errorText = await sendResponse.text();
+    return { success: false, error: `Microsoft Graph error: ${sendResponse.status} - ${errorText}`, provider: 'graph' };
+  } catch (error) {
+    return { success: false, error: `Microsoft Graph error: ${error instanceof Error ? error.message : 'Unknown error'}`, provider: 'graph' };
+  }
+}
+
+/**
  * Send email via Resend
  */
 async function sendViaResend(
@@ -209,6 +344,20 @@ export async function sendEmail(
 ): Promise<EmailResult> {
   const from = { email: config.fromEmail, name: config.fromName };
 
+  // Microsoft Graph API uses Azure AD credentials instead of API key
+  if (config.provider === 'graph') {
+    if (!config.azureClientId || !config.azureTenantId || !config.azureClientSecret) {
+      return { success: false, error: 'Microsoft Graph requires Azure AD credentials (clientId, tenantId, clientSecret)' };
+    }
+    return sendViaMicrosoftGraph(
+      config.azureClientId,
+      config.azureTenantId,
+      config.azureClientSecret,
+      from,
+      message
+    );
+  }
+
   if (!config.apiKey) {
     // Development mode - log email instead of sending
     console.log('Email would be sent:', {
@@ -249,7 +398,8 @@ export async function sendEmail(
  */
 export async function getEmailConfig(db: D1Database, companyId: string): Promise<EmailConfig | null> {
   const settings = await db.prepare(`
-    SELECT email_provider, email_api_key, email_domain, email_from_address, email_from_name
+    SELECT email_provider, email_api_key, email_domain, email_from_address, email_from_name,
+           azure_client_id, azure_tenant_id, azure_client_secret
     FROM company_settings
     WHERE company_id = ?
   `).bind(companyId).first<any>();
@@ -268,7 +418,11 @@ export async function getEmailConfig(db: D1Database, companyId: string): Promise
     apiKey: settings.email_api_key,
     domain: settings.email_domain,
     fromEmail: settings.email_from_address || 'noreply@aria-erp.com',
-    fromName: settings.email_from_name || 'ARIA ERP'
+    fromName: settings.email_from_name || 'ARIA ERP',
+    // Microsoft Graph API credentials
+    azureClientId: settings.azure_client_id,
+    azureTenantId: settings.azure_tenant_id,
+    azureClientSecret: settings.azure_client_secret
   };
 }
 
