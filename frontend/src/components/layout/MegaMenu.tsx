@@ -7,6 +7,9 @@ import {
   FolderOpen, TrendingUp, ChevronDown, LogOut, Search, BarChart3, Command
 } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
+import { NotificationsBell } from '../NotificationsBell/NotificationsBell';
+import { RecentItems } from '../RecentItems/RecentItems';
+import { QuickActions } from '../QuickActions/QuickActions';
 import './MegaMenu.css';
 
 const API_BASE_URL = '/api';
@@ -52,6 +55,8 @@ const fallbackMenuData: Record<string, MegaMenuCategory[]> = {
         { label: 'Trial Balance', path: '/reports/financial/trial-balance' },
         { label: 'Balance Sheet', path: '/reports/financial/balance-sheet' },
         { label: 'Income Statement', path: '/reports/financial/income-statement' },
+        { label: 'Budget Management', path: '/gl/budgets' },
+        { label: 'Cost Centers', path: '/gl/cost-centers' },
       ]
     },
     {
@@ -63,7 +68,9 @@ const fallbackMenuData: Record<string, MegaMenuCategory[]> = {
         { label: 'Vendor Bills', path: '/ap/bills' },
         { label: 'Purchase Orders', path: '/procurement/purchase-orders' },
         { label: 'Payments', path: '/ap/payments' },
+        { label: 'Payment Batches', path: '/ap/payment-batches' },
         { label: 'AP Aging', path: '/reports/ar-ap/ap-aging' },
+        { label: 'Expense Claims', path: '/ap/expense-claims' },
       ]
     },
     {
@@ -75,7 +82,9 @@ const fallbackMenuData: Record<string, MegaMenuCategory[]> = {
         { label: 'Customer Invoices', path: '/ar/invoices' },
         { label: 'Sales Orders', path: '/sales-orders' },
         { label: 'Receipts', path: '/ar/receipts' },
+        { label: 'Credit Notes', path: '/ar/credit-notes' },
         { label: 'AR Aging', path: '/reports/ar-ap/ar-aging' },
+        { label: 'Collections', path: '/ar/collections' },
       ]
     },
     {
@@ -87,6 +96,8 @@ const fallbackMenuData: Record<string, MegaMenuCategory[]> = {
         { label: 'Bank Accounts', path: '/banking/accounts' },
         { label: 'Reconciliation', path: '/banking/reconciliation' },
         { label: 'Cash Flow', path: '/reports/ar-ap/cash-flow' },
+        { label: 'Cash Forecast', path: '/banking/cash-forecast' },
+        { label: 'Bank Transfers', path: '/banking/transfers' },
       ]
     },
   ],
@@ -98,9 +109,15 @@ const fallbackMenuData: Record<string, MegaMenuCategory[]> = {
       items: [
         { label: 'CRM Dashboard', path: '/crm' },
         { label: 'Customers', path: '/crm/customers' },
+        { label: 'Leads', path: '/crm/leads' },
+        { label: 'Opportunities', path: '/crm/opportunities' },
         { label: 'Quotes', path: '/quotes' },
         { label: 'Sales Orders', path: '/sales-orders' },
         { label: 'Deliveries', path: '/deliveries' },
+        { label: 'Price Lists', path: '/sales/price-lists' },
+        { label: 'Discounts', path: '/sales/discounts' },
+        { label: 'Sales Targets', path: '/sales/targets' },
+        { label: 'Commissions', path: '/sales/commissions' },
         { label: 'Sales KPIs', path: '/reports/sales-purchase/sales-kpis' },
       ]
     },
@@ -111,9 +128,14 @@ const fallbackMenuData: Record<string, MegaMenuCategory[]> = {
       items: [
         { label: 'Inventory Dashboard', path: '/inventory' },
         { label: 'Items', path: '/inventory/items' },
+        { label: 'Categories', path: '/inventory/categories' },
         { label: 'Warehouses', path: '/inventory/warehouses' },
         { label: 'Stock Movements', path: '/inventory/stock-movements' },
+        { label: 'Stock Adjustments', path: '/inventory/adjustments' },
+        { label: 'Stock Transfers', path: '/inventory/transfers' },
+        { label: 'Reorder Points', path: '/inventory/reorder-points' },
         { label: 'Valuation', path: '/reports/inventory/valuation' },
+        { label: 'Barcode Scanner', path: '/inventory/barcode' },
       ]
     },
     {
@@ -123,8 +145,12 @@ const fallbackMenuData: Record<string, MegaMenuCategory[]> = {
       items: [
         { label: 'Procurement', path: '/procurement' },
         { label: 'Suppliers', path: '/procurement/suppliers' },
+        { label: 'Requisitions', path: '/procurement/requisitions' },
+        { label: 'RFQs', path: '/procurement/rfqs' },
         { label: 'Purchase Orders', path: '/procurement/purchase-orders' },
         { label: 'Goods Receipts', path: '/procurement/goods-receipts' },
+        { label: 'Contracts', path: '/procurement/contracts' },
+        { label: 'Supplier Portal', path: '/procurement/supplier-portal' },
         { label: 'Purchase KPIs', path: '/reports/sales-purchase/purchase-kpis' },
       ]
     },
@@ -137,7 +163,10 @@ const fallbackMenuData: Record<string, MegaMenuCategory[]> = {
         { label: 'Work Orders', path: '/manufacturing/work-orders' },
         { label: 'BOMs', path: '/manufacturing/boms' },
         { label: 'Production', path: '/manufacturing/production' },
+        { label: 'Production Planning', path: '/manufacturing/planning' },
+        { label: 'Machine Maintenance', path: '/manufacturing/maintenance' },
         { label: 'Quality', path: '/quality' },
+        { label: 'Quality Inspections', path: '/quality/inspections' },
       ]
     },
   ],
@@ -150,8 +179,11 @@ const fallbackMenuData: Record<string, MegaMenuCategory[]> = {
         { label: 'HR Dashboard', path: '/hr' },
         { label: 'Employees', path: '/hr/employees' },
         { label: 'Departments', path: '/hr/departments' },
+        { label: 'Positions', path: '/hr/positions' },
+        { label: 'Org Chart', path: '/hr/org-chart' },
         { label: 'Attendance', path: '/hr/attendance' },
         { label: 'Leave Management', path: '/hr/leave' },
+        { label: 'Leave Calendar', path: '/hr/leave-calendar' },
       ]
     },
     {
@@ -162,7 +194,25 @@ const fallbackMenuData: Record<string, MegaMenuCategory[]> = {
         { label: 'Payroll Dashboard', path: '/payroll' },
         { label: 'Payroll Runs', path: '/payroll/runs' },
         { label: 'Payslips', path: '/payroll/payslips' },
+        { label: 'Salary Structures', path: '/payroll/salary-structures' },
+        { label: 'Deductions', path: '/payroll/deductions' },
         { label: 'Tax Filings', path: '/payroll/tax' },
+        { label: 'PAYE Returns', path: '/payroll/paye' },
+        { label: 'UIF Returns', path: '/payroll/uif' },
+      ]
+    },
+    {
+      title: 'Talent',
+      icon: <Briefcase size={18} />,
+      color: '#8b5cf6',
+      items: [
+        { label: 'Recruitment', path: '/hr/recruitment' },
+        { label: 'Job Postings', path: '/hr/job-postings' },
+        { label: 'Applicants', path: '/hr/applicants' },
+        { label: 'Onboarding', path: '/hr/onboarding' },
+        { label: 'Performance Reviews', path: '/hr/performance' },
+        { label: 'Training', path: '/hr/training' },
+        { label: 'Skills Matrix', path: '/hr/skills' },
       ]
     },
   ],
@@ -176,6 +226,9 @@ const fallbackMenuData: Record<string, MegaMenuCategory[]> = {
         { label: 'Service Orders', path: '/field-service/orders' },
         { label: 'Technicians', path: '/field-service/technicians' },
         { label: 'Scheduling', path: '/field-service/scheduling' },
+        { label: 'Route Planning', path: '/field-service/routes' },
+        { label: 'Service Contracts', path: '/field-service/contracts' },
+        { label: 'Equipment', path: '/field-service/equipment' },
       ]
     },
     {
@@ -185,8 +238,23 @@ const fallbackMenuData: Record<string, MegaMenuCategory[]> = {
       items: [
         { label: 'Projects', path: '/projects' },
         { label: 'Tasks', path: '/projects/tasks' },
+        { label: 'Milestones', path: '/projects/milestones' },
         { label: 'Timesheets', path: '/projects/timesheets' },
+        { label: 'Resource Planning', path: '/projects/resources' },
+        { label: 'Gantt Chart', path: '/projects/gantt' },
         { label: 'Project Reports', path: '/projects/reports' },
+      ]
+    },
+    {
+      title: 'Support',
+      icon: <MessageSquare size={18} />,
+      color: '#ec4899',
+      items: [
+        { label: 'Support Tickets', path: '/support/tickets' },
+        { label: 'Knowledge Base', path: '/support/knowledge-base' },
+        { label: 'Customer Portal', path: '/support/customer-portal' },
+        { label: 'SLA Management', path: '/support/sla' },
+        { label: 'Escalations', path: '/support/escalations' },
       ]
     },
   ],
@@ -197,9 +265,25 @@ const fallbackMenuData: Record<string, MegaMenuCategory[]> = {
       color: '#dc2626',
       items: [
         { label: 'Tax Management', path: '/tax' },
+        { label: 'VAT Returns', path: '/tax/vat' },
         { label: 'Legal', path: '/legal' },
+        { label: 'Contracts', path: '/legal/contracts' },
         { label: 'Fixed Assets', path: '/fixed-assets' },
+        { label: 'Asset Register', path: '/fixed-assets/register' },
+        { label: 'Depreciation', path: '/fixed-assets/depreciation' },
+      ]
+    },
+    {
+      title: 'Governance',
+      icon: <Shield size={18} />,
+      color: '#7c3aed',
+      items: [
         { label: 'Compliance', path: '/admin/compliance' },
+        { label: 'B-BBEE', path: '/compliance/b-bbee' },
+        { label: 'Audit Trail', path: '/admin/audit-trail' },
+        { label: 'Document Control', path: '/compliance/documents' },
+        { label: 'Risk Register', path: '/compliance/risks' },
+        { label: 'Policies', path: '/compliance/policies' },
       ]
     },
   ],
@@ -372,6 +456,9 @@ export const MegaMenu: React.FC<MegaMenuProps> = ({ onSearchClick }) => {
         </nav>
 
         <div className="mega-menu-user" data-testid="user-menu">
+          <QuickActions variant="dropdown" />
+          <RecentItems variant="dropdown" />
+          <NotificationsBell />
           <div className="mega-menu-user-info">
             <span className="mega-menu-user-name" data-testid="user-name">{user?.full_name || 'User'}</span>
             <span className="mega-menu-user-role">{user?.email}</span>
