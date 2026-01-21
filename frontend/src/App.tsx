@@ -111,6 +111,53 @@ import Milestones from './pages/ServiceFulfillment/Milestones';
 import Deliverables from './pages/ServiceFulfillment/Deliverables';
 import MigrationJobs from './pages/Migration/MigrationJobs';
 import MigrationValidation from './pages/Migration/MigrationValidation';
+// Financial Module Pages
+import BudgetManagement from './pages/Financial/BudgetManagement';
+import CostCenters from './pages/Financial/CostCenters';
+import PaymentBatches from './pages/Financial/PaymentBatches';
+import ExpenseClaims from './pages/Financial/ExpenseClaims';
+import CreditNotes from './pages/Financial/CreditNotes';
+import Collections from './pages/Financial/Collections';
+import CashForecast from './pages/Financial/CashForecast';
+import BankTransfers from './pages/Financial/BankTransfers';
+// Operations Module Pages
+import PriceLists from './pages/Operations/PriceLists';
+import Discounts from './pages/Operations/Discounts';
+import SalesTargets from './pages/Operations/SalesTargets';
+import Commissions from './pages/Operations/Commissions';
+import StockAdjustments from './pages/Operations/StockAdjustments';
+import StockTransfers from './pages/Operations/StockTransfers';
+import ReorderPoints from './pages/Operations/ReorderPoints';
+import Requisitions from './pages/Operations/Requisitions';
+import RFQs from './pages/Operations/RFQs';
+import ProductionPlanning from './pages/Operations/ProductionPlanning';
+import MachineMaintenance from './pages/Operations/MachineMaintenance';
+// People Module Pages
+import Positions from './pages/People/Positions';
+import SalaryStructures from './pages/People/SalaryStructures';
+import Deductions from './pages/People/Deductions';
+import PAYEReturns from './pages/People/PAYEReturns';
+import UIFReturns from './pages/People/UIFReturns';
+import JobPostings from './pages/People/JobPostings';
+import Applicants from './pages/People/Applicants';
+import OnboardingTasks from './pages/People/OnboardingTasks';
+import PerformanceReviews from './pages/People/PerformanceReviews';
+import TrainingCourses from './pages/People/TrainingCourses';
+import EmployeeSkills from './pages/People/EmployeeSkills';
+// Services Module Pages
+import RoutePlanning from './pages/Services/RoutePlanning';
+import ServiceContracts from './pages/Services/ServiceContracts';
+import SupportTickets from './pages/Services/SupportTickets';
+import KnowledgeBase from './pages/Services/KnowledgeBase';
+import ProjectMilestones from './pages/Services/ProjectMilestones';
+// Compliance Module Pages
+import VATReturns from './pages/Compliance/VATReturns';
+import AssetRegister from './pages/Compliance/AssetRegister';
+import BBBEE from './pages/Compliance/BBBEE';
+import AuditTrail from './pages/Compliance/AuditTrail';
+import RiskRegister from './pages/Compliance/RiskRegister';
+import DocumentControl from './pages/Compliance/DocumentControl';
+import Policies from './pages/Compliance/Policies';
 import './styles/design-system.css';
 
 function App() {
@@ -267,13 +314,100 @@ function App() {
           <Route path="/projects/timesheets" element={<Timesheets />} />
           <Route path="/projects/reports" element={<ProjectReports />} />
           
-          {/* Compliance */}
-          <Route path="/compliance" element={<ComplianceDashboard />} />
-          <Route path="/tax" element={<TaxCompliance />} />
-          <Route path="/legal" element={<LegalCompliance />} />
-          <Route path="/fixed-assets" element={<FixedAssets />} />
+                    {/* Compliance */}
+                    <Route path="/compliance" element={<ComplianceDashboard />} />
+                    <Route path="/compliance/vat-returns" element={<VATReturns />} />
+                    <Route path="/compliance/asset-register" element={<AssetRegister />} />
+                    <Route path="/compliance/bbbee" element={<BBBEE />} />
+                    <Route path="/compliance/audit-trail" element={<AuditTrail />} />
+                    <Route path="/compliance/risk-register" element={<RiskRegister />} />
+                    <Route path="/compliance/document-control" element={<DocumentControl />} />
+                    <Route path="/compliance/policies" element={<Policies />} />
+                    <Route path="/tax" element={<TaxCompliance />} />
+                    <Route path="/tax/vat-returns" element={<VATReturns />} />
+                    <Route path="/legal" element={<LegalCompliance />} />
+                    <Route path="/fixed-assets" element={<FixedAssets />} />
+                    <Route path="/fixed-assets/register" element={<AssetRegister />} />
           
-          {/* Quality */}
+                    {/* Financial Module - New Pages */}
+                    <Route path="/financial/budgets" element={<BudgetManagement />} />
+                    <Route path="/financial/cost-centers" element={<CostCenters />} />
+                    <Route path="/financial/payment-batches" element={<PaymentBatches />} />
+                    <Route path="/financial/expense-claims" element={<ExpenseClaims />} />
+                    <Route path="/financial/credit-notes" element={<CreditNotes />} />
+                    <Route path="/financial/collections" element={<Collections />} />
+                    <Route path="/financial/cash-forecast" element={<CashForecast />} />
+                    <Route path="/financial/bank-transfers" element={<BankTransfers />} />
+                    <Route path="/gl/budgets" element={<BudgetManagement />} />
+                    <Route path="/gl/cost-centers" element={<CostCenters />} />
+                    <Route path="/ap/payment-batches" element={<PaymentBatches />} />
+                    <Route path="/ap/expense-claims" element={<ExpenseClaims />} />
+                    <Route path="/ar/credit-notes" element={<CreditNotes />} />
+                    <Route path="/ar/collections" element={<Collections />} />
+                    <Route path="/banking/cash-forecast" element={<CashForecast />} />
+                    <Route path="/banking/transfers" element={<BankTransfers />} />
+          
+                    {/* Operations Module - New Pages */}
+                    <Route path="/operations/price-lists" element={<PriceLists />} />
+                    <Route path="/operations/discounts" element={<Discounts />} />
+                    <Route path="/operations/sales-targets" element={<SalesTargets />} />
+                    <Route path="/operations/commissions" element={<Commissions />} />
+                    <Route path="/operations/stock-adjustments" element={<StockAdjustments />} />
+                    <Route path="/operations/stock-transfers" element={<StockTransfers />} />
+                    <Route path="/operations/reorder-points" element={<ReorderPoints />} />
+                    <Route path="/operations/requisitions" element={<Requisitions />} />
+                    <Route path="/operations/rfqs" element={<RFQs />} />
+                    <Route path="/operations/production-planning" element={<ProductionPlanning />} />
+                    <Route path="/operations/machine-maintenance" element={<MachineMaintenance />} />
+                    <Route path="/sales/price-lists" element={<PriceLists />} />
+                    <Route path="/sales/discounts" element={<Discounts />} />
+                    <Route path="/sales/targets" element={<SalesTargets />} />
+                    <Route path="/sales/commissions" element={<Commissions />} />
+                    <Route path="/inventory/stock-adjustments" element={<StockAdjustments />} />
+                    <Route path="/inventory/stock-transfers" element={<StockTransfers />} />
+                    <Route path="/inventory/reorder-points" element={<ReorderPoints />} />
+                    <Route path="/procurement/requisitions" element={<Requisitions />} />
+                    <Route path="/procurement/rfqs" element={<RFQs />} />
+                    <Route path="/manufacturing/planning" element={<ProductionPlanning />} />
+                    <Route path="/manufacturing/maintenance" element={<MachineMaintenance />} />
+          
+                    {/* People Module - New Pages */}
+                    <Route path="/people/positions" element={<Positions />} />
+                    <Route path="/people/salary-structures" element={<SalaryStructures />} />
+                    <Route path="/people/deductions" element={<Deductions />} />
+                    <Route path="/people/paye-returns" element={<PAYEReturns />} />
+                    <Route path="/people/uif-returns" element={<UIFReturns />} />
+                    <Route path="/people/job-postings" element={<JobPostings />} />
+                    <Route path="/people/applicants" element={<Applicants />} />
+                    <Route path="/people/onboarding" element={<OnboardingTasks />} />
+                    <Route path="/people/performance-reviews" element={<PerformanceReviews />} />
+                    <Route path="/people/training-courses" element={<TrainingCourses />} />
+                    <Route path="/people/employee-skills" element={<EmployeeSkills />} />
+                    <Route path="/hr/positions" element={<Positions />} />
+                    <Route path="/hr/performance-reviews" element={<PerformanceReviews />} />
+                    <Route path="/hr/training" element={<TrainingCourses />} />
+                    <Route path="/hr/skills-matrix" element={<EmployeeSkills />} />
+                    <Route path="/payroll/salary-structures" element={<SalaryStructures />} />
+                    <Route path="/payroll/deductions" element={<Deductions />} />
+                    <Route path="/payroll/paye-returns" element={<PAYEReturns />} />
+                    <Route path="/payroll/uif-returns" element={<UIFReturns />} />
+                    <Route path="/recruitment/job-postings" element={<JobPostings />} />
+                    <Route path="/recruitment/applicants" element={<Applicants />} />
+                    <Route path="/recruitment/onboarding" element={<OnboardingTasks />} />
+          
+                    {/* Services Module - New Pages */}
+                    <Route path="/services/route-planning" element={<RoutePlanning />} />
+                    <Route path="/services/service-contracts" element={<ServiceContracts />} />
+                    <Route path="/services/support-tickets" element={<SupportTickets />} />
+                    <Route path="/services/knowledge-base" element={<KnowledgeBase />} />
+                    <Route path="/services/project-milestones" element={<ProjectMilestones />} />
+                    <Route path="/field-service/route-planning" element={<RoutePlanning />} />
+                    <Route path="/field-service/service-contracts" element={<ServiceContracts />} />
+                    <Route path="/support/tickets" element={<SupportTickets />} />
+                    <Route path="/support/knowledge-base" element={<KnowledgeBase />} />
+                    <Route path="/projects/milestones" element={<ProjectMilestones />} />
+          
+                    {/* Quality */}
           <Route path="/quality" element={<QualityDashboard />} />
           
           {/* Agents */}
