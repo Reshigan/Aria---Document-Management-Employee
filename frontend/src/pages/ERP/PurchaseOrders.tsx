@@ -57,6 +57,14 @@ export default function PurchaseOrders() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<PurchaseOrder | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [formData, setFormData] = useState({
+    supplier_id: '',
+    po_date: new Date().toISOString().split('T')[0],
+    expected_delivery_date: '',
+    notes: '',
+    lines: [{ product_id: '', description: '', quantity: '1', unit_price: '0' }]
+  });
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     loadOrders();
@@ -119,6 +127,92 @@ export default function PurchaseOrders() {
       cancelled: 'bg-red-100 text-red-800',
     };
     return colors[status] || 'bg-gray-100 text-gray-800';
+  };
+
+  const resetForm = () => {
+    setFormData({
+      supplier_id: '',
+      po_date: new Date().toISOString().split('T')[0],
+      expected_delivery_date: '',
+      notes: '',
+      lines: [{ product_id: '', description: '', quantity: '1', unit_price: '0' }]
+    });
+  };
+
+  const handleCreatePO = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formData.supplier_id) {
+      setError('Please select a supplier');
+      return;
+    }
+    if (formData.lines.every(line => !line.product_id && !line.description)) {
+      setError('Please add at least one line item');
+      return;
+    }
+
+    try {
+      setSubmitting(true);
+      setError(null);
+      const payload = {
+        supplier_id: formData.supplier_id,
+        po_date: formData.po_date,
+        expected_delivery_date: formData.expected_delivery_date || null,
+        notes: formData.notes,
+        lines: formData.lines.filter(line => line.product_id || line.description).map(line => ({
+          product_id: line.product_id || null,
+          description: line.description || products.find(p => p.id === line.product_id)?.name || '',
+          quantity: parseFloat(line.quantity) || 1,
+          unit_price: parseFloat(line.unit_price) || 0
+        }))
+      };
+
+      await api.post('/erp/procure-to-pay/purchase-orders', payload);
+      setShowCreateModal(false);
+      resetForm();
+      loadOrders();
+    } catch (err: any) {
+      console.error('Error creating purchase order:', err);
+      setError(err.response?.data?.detail || err.response?.data?.message || 'Failed to create purchase order');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const addLine = () => {
+    setFormData({
+      ...formData,
+      lines: [...formData.lines, { product_id: '', description: '', quantity: '1', unit_price: '0' }]
+    });
+  };
+
+  const removeLine = (index: number) => {
+    if (formData.lines.length > 1) {
+      setFormData({
+        ...formData,
+        lines: formData.lines.filter((_, i) => i !== index)
+      });
+    }
+  };
+
+  const updateLine = (index: number, field: string, value: string) => {
+    const newLines = [...formData.lines];
+    newLines[index] = { ...newLines[index], [field]: value };
+    if (field === 'product_id' && value) {
+      const product = products.find(p => p.id === value);
+      if (product) {
+        newLines[index].unit_price = String(product.standard_cost || 0);
+        newLines[index].description = product.name;
+      }
+    }
+    setFormData({ ...formData, lines: newLines });
+  };
+
+  const calculateLineTotal = (line: typeof formData.lines[0]) => {
+    return (parseFloat(line.quantity) || 0) * (parseFloat(line.unit_price) || 0);
+  };
+
+  const calculateTotal = () => {
+    return formData.lines.reduce((sum, line) => sum + calculateLineTotal(line), 0);
   };
 
   const filteredOrders = orders.filter(order => {
@@ -349,6 +443,287 @@ export default function PurchaseOrders() {
           );
         })}
       </div>
+
+      {/* Create PO Modal */}
+      {showCreateModal && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'rgba(0,0,0,0.5)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000
+        }}>
+          <div style={{
+            background: 'white',
+            borderRadius: '0.5rem',
+            padding: '2rem',
+            width: '90%',
+            maxWidth: '800px',
+            maxHeight: '90vh',
+            overflow: 'auto'
+          }}>
+            <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1.5rem' }}>
+              New Purchase Order
+            </h2>
+            <form onSubmit={handleCreatePO}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>
+                    Supplier *
+                  </label>
+                  <select
+                    value={formData.supplier_id}
+                    onChange={(e) => setFormData({ ...formData, supplier_id: e.target.value })}
+                    required
+                    style={{
+                      width: '100%',
+                      padding: '0.5rem',
+                      border: '1px solid #d1d5db',
+                      borderRadius: '0.375rem',
+                      fontSize: '0.875rem'
+                    }}
+                  >
+                    <option value="">Select Supplier</option>
+                    {suppliers.map(supplier => (
+                      <option key={supplier.id} value={supplier.id}>{supplier.name}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>
+                    PO Date *
+                  </label>
+                  <input
+                    type="date"
+                    value={formData.po_date}
+                    onChange={(e) => setFormData({ ...formData, po_date: e.target.value })}
+                    required
+                    style={{
+                      width: '100%',
+                      padding: '0.5rem',
+                      border: '1px solid #d1d5db',
+                      borderRadius: '0.375rem',
+                      fontSize: '0.875rem'
+                    }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>
+                    Expected Delivery Date
+                  </label>
+                  <input
+                    type="date"
+                    value={formData.expected_delivery_date}
+                    onChange={(e) => setFormData({ ...formData, expected_delivery_date: e.target.value })}
+                    style={{
+                      width: '100%',
+                      padding: '0.5rem',
+                      border: '1px solid #d1d5db',
+                      borderRadius: '0.375rem',
+                      fontSize: '0.875rem'
+                    }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>
+                    Notes
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.notes}
+                    onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                    placeholder="Optional notes"
+                    style={{
+                      width: '100%',
+                      padding: '0.5rem',
+                      border: '1px solid #d1d5db',
+                      borderRadius: '0.375rem',
+                      fontSize: '0.875rem'
+                    }}
+                  />
+                </div>
+              </div>
+
+              <div style={{ marginBottom: '1.5rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+                  <label style={{ fontSize: '0.875rem', fontWeight: '500' }}>Line Items *</label>
+                  <button
+                    type="button"
+                    onClick={addLine}
+                    style={{
+                      padding: '0.25rem 0.75rem',
+                      background: '#2563eb',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '0.25rem',
+                      fontSize: '0.75rem',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    + Add Line
+                  </button>
+                </div>
+                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.875rem' }}>
+                  <thead>
+                    <tr style={{ background: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
+                      <th style={{ padding: '0.5rem', textAlign: 'left' }}>Product</th>
+                      <th style={{ padding: '0.5rem', textAlign: 'left' }}>Description</th>
+                      <th style={{ padding: '0.5rem', textAlign: 'right', width: '100px' }}>Qty</th>
+                      <th style={{ padding: '0.5rem', textAlign: 'right', width: '120px' }}>Unit Price</th>
+                      <th style={{ padding: '0.5rem', textAlign: 'right', width: '120px' }}>Total</th>
+                      <th style={{ padding: '0.5rem', width: '50px' }}></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {formData.lines.map((line, index) => (
+                      <tr key={index} style={{ borderBottom: '1px solid #e5e7eb' }}>
+                        <td style={{ padding: '0.5rem' }}>
+                          <select
+                            value={line.product_id}
+                            onChange={(e) => updateLine(index, 'product_id', e.target.value)}
+                            style={{
+                              width: '100%',
+                              padding: '0.25rem',
+                              border: '1px solid #d1d5db',
+                              borderRadius: '0.25rem',
+                              fontSize: '0.875rem'
+                            }}
+                          >
+                            <option value="">Select Product</option>
+                            {products.map(product => (
+                              <option key={product.id} value={product.id}>{product.name}</option>
+                            ))}
+                          </select>
+                        </td>
+                        <td style={{ padding: '0.5rem' }}>
+                          <input
+                            type="text"
+                            value={line.description}
+                            onChange={(e) => updateLine(index, 'description', e.target.value)}
+                            placeholder="Description"
+                            style={{
+                              width: '100%',
+                              padding: '0.25rem',
+                              border: '1px solid #d1d5db',
+                              borderRadius: '0.25rem',
+                              fontSize: '0.875rem'
+                            }}
+                          />
+                        </td>
+                        <td style={{ padding: '0.5rem' }}>
+                          <input
+                            type="number"
+                            value={line.quantity}
+                            onChange={(e) => updateLine(index, 'quantity', e.target.value)}
+                            min="1"
+                            style={{
+                              width: '100%',
+                              padding: '0.25rem',
+                              border: '1px solid #d1d5db',
+                              borderRadius: '0.25rem',
+                              fontSize: '0.875rem',
+                              textAlign: 'right'
+                            }}
+                          />
+                        </td>
+                        <td style={{ padding: '0.5rem' }}>
+                          <input
+                            type="number"
+                            value={line.unit_price}
+                            onChange={(e) => updateLine(index, 'unit_price', e.target.value)}
+                            min="0"
+                            step="0.01"
+                            style={{
+                              width: '100%',
+                              padding: '0.25rem',
+                              border: '1px solid #d1d5db',
+                              borderRadius: '0.25rem',
+                              fontSize: '0.875rem',
+                              textAlign: 'right'
+                            }}
+                          />
+                        </td>
+                        <td style={{ padding: '0.5rem', textAlign: 'right', fontWeight: '500' }}>
+                          R {calculateLineTotal(line).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        </td>
+                        <td style={{ padding: '0.5rem', textAlign: 'center' }}>
+                          {formData.lines.length > 1 && (
+                            <button
+                              type="button"
+                              onClick={() => removeLine(index)}
+                              style={{
+                                padding: '0.25rem',
+                                background: '#ef4444',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '0.25rem',
+                                cursor: 'pointer',
+                                fontSize: '0.75rem'
+                              }}
+                            >
+                              X
+                            </button>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                  <tfoot>
+                    <tr style={{ background: '#f9fafb' }}>
+                      <td colSpan={4} style={{ padding: '0.75rem', textAlign: 'right', fontWeight: '600' }}>
+                        Total:
+                      </td>
+                      <td style={{ padding: '0.75rem', textAlign: 'right', fontWeight: '600' }}>
+                        R {calculateTotal().toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      </td>
+                      <td></td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+
+              <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
+                <button
+                  type="button"
+                  onClick={() => { setShowCreateModal(false); resetForm(); }}
+                  style={{
+                    padding: '0.5rem 1.5rem',
+                    background: '#f3f4f6',
+                    color: '#374151',
+                    border: '1px solid #d1d5db',
+                    borderRadius: '0.375rem',
+                    fontSize: '0.875rem',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  style={{
+                    padding: '0.5rem 1.5rem',
+                    background: submitting ? '#9ca3af' : '#2563eb',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '0.375rem',
+                    fontSize: '0.875rem',
+                    fontWeight: '500',
+                    cursor: submitting ? 'not-allowed' : 'pointer'
+                  }}
+                >
+                  {submitting ? 'Creating...' : 'Create Purchase Order'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
