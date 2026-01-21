@@ -1657,15 +1657,16 @@ async function recordBotAudit(
   db: D1Database
 ): Promise<void> {
   try {
+    // Use existing audit_log schema: entity_type, entity_id, action, old_values_json, new_values_json
     await db.prepare(`
-      INSERT INTO audit_log (id, company_id, entity_type, entity_id, action, actor_type, actor_id, details, created_at)
-      VALUES (?, ?, 'bot', ?, ?, 'bot', ?, ?, datetime('now'))
+      INSERT INTO audit_log (id, company_id, entity_type, entity_id, entity_name, action, new_values_json, created_at)
+      VALUES (?, ?, 'bot_execution', ?, ?, ?, ?, datetime('now'))
     `).bind(
       crypto.randomUUID(),
       companyId,
       botId,
+      `Bot: ${botId}`,
       action,
-      botId,
       JSON.stringify({ run_id: runId, ...details })
     ).run();
   } catch (e) {
