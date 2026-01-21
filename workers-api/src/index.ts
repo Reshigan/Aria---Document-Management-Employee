@@ -44,6 +44,7 @@ import odooParity from './routes/odoo-parity';
 import registration from './routes/registration';
 import reseller from './routes/reseller';
 import microfeatures from './routes/microfeatures';
+import newPages from './routes/new-pages';
 import { executeScheduledBots as runScheduledBots } from './services/bot-executor';
 import { processPendingDeliveries } from './services/webhook-service';
 import { processDueScheduledReports } from './services/report-builder-service';
@@ -524,6 +525,10 @@ app.route('/reseller', reseller);
 // Microfeatures routes (notifications, recent items, favorites, comments, tags, attachments, activity)
 app.route('/api/microfeatures', microfeatures);
 app.route('/microfeatures', microfeatures);
+
+// New Pages routes (Financial, Operations, People, Services, Compliance modules)
+app.route('/api/new-pages', newPages);
+app.route('/new-pages', newPages);
 
 // Simple password hashing(for demo - use proper bcrypt in production)
 async function hashPassword(password: string): Promise<string> {

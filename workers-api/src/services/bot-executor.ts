@@ -4282,4 +4282,1422 @@ export async function executeAutoApprovalBot(
   }
 }
 
-export { TIER1_BOTS, SYSTEM_USER_ID };
+// ============================================
+// NEW PAGES MODULE BOTS
+// ============================================
+
+// --- FINANCIAL MODULE BOTS ---
+
+export async function executeBudgetMonitoringBot(
+  companyId: string,
+  config: Record<string, any>,
+  db: D1Database,
+  userId: string,
+  timestamp: string
+): Promise<BotExecutionResult> {
+  const runId = crypto.randomUUID();
+  
+  try {
+    // Check budgets that are over threshold
+    const overBudget = await db.prepare(`
+      SELECT id, budget_name, total_amount, spent_amount,
+             ROUND((spent_amount / total_amount) * 100, 2) as utilization_percent
+      FROM budgets 
+      WHERE company_id = ? AND status = 'active' 
+        AND spent_amount > total_amount * 0.9
+      LIMIT 10
+    `).bind(companyId).all();
+    
+    if (!overBudget.results?.length) {
+      return {
+        success: true,
+        run_id: runId,
+        bot_id: 'budget_monitoring',
+        company_id: companyId,
+        state_changed: false,
+        message: 'All budgets are within acceptable limits.',
+        executed_at: timestamp,
+      };
+    }
+    
+    const alerts: string[] = [];
+    for (const budget of overBudget.results as any[]) {
+      await db.prepare(`
+        INSERT INTO tasks (id, type, reference_id, reference_type, company_id, status, description, priority, created_at)
+        VALUES (?, 'budget_alert', ?, 'budget', ?, 'pending', ?, 'high', datetime('now'))
+      `).bind(
+        crypto.randomUUID(),
+        budget.id,
+        companyId,
+        `Budget "${budget.budget_name}" is at ${budget.utilization_percent}% utilization`
+      ).run();
+      alerts.push(budget.budget_name);
+    }
+    
+    return {
+      success: true,
+      run_id: runId,
+      bot_id: 'budget_monitoring',
+      company_id: companyId,
+      state_changed: true,
+      message: `Created ${alerts.length} budget alert(s): ${alerts.join(', ')}`,
+      executed_at: timestamp,
+      details: { alerts_created: alerts }
+    };
+  } catch (error) {
+    return {
+      success: false,
+      run_id: runId,
+      bot_id: 'budget_monitoring',
+      company_id: companyId,
+      state_changed: false,
+      message: String(error),
+      executed_at: timestamp,
+      error: 'Failed to monitor budgets'
+    };
+  }
+}
+
+export async function executeExpenseClaimBot(
+  companyId: string,
+  config: Record<string, any>,
+  db: D1Database,
+  userId: string,
+  timestamp: string
+): Promise<BotExecutionResult> {
+  const runId = crypto.randomUUID();
+  const autoApproveLimit = config.auto_approve_limit || 1000;
+  
+  try {
+    // Auto-approve expense claims under threshold
+    const pendingClaims = await db.prepare(`
+      SELECT id, claim_number, total_amount, employee_id
+      FROM expense_claims 
+      WHERE company_id = ? AND status = 'submitted' AND total_amount <= ?
+      LIMIT 10
+    `).bind(companyId, autoApproveLimit).all();
+    
+    if (!pendingClaims.results?.length) {
+      return {
+        success: true,
+        run_id: runId,
+        bot_id: 'expense_claim',
+        company_id: companyId,
+        state_changed: false,
+        message: `No expense claims pending approval under ${autoApproveLimit}.`,
+        executed_at: timestamp,
+      };
+    }
+    
+    const approved: string[] = [];
+    for (const claim of pendingClaims.results as any[]) {
+      await db.prepare(`
+        UPDATE expense_claims SET status = 'approved', approved_by = ?, approved_at = datetime('now'), updated_at = datetime('now')
+        WHERE id = ?
+      `).bind('expense_claim_bot', claim.id).run();
+      approved.push(claim.claim_number);
+    }
+    
+    return {
+      success: true,
+      run_id: runId,
+      bot_id: 'expense_claim',
+      company_id: companyId,
+      state_changed: true,
+      message: `Auto-approved ${approved.length} expense claim(s): ${approved.join(', ')}`,
+      executed_at: timestamp,
+      details: { approved_claims: approved, limit: autoApproveLimit }
+    };
+  } catch (error) {
+    return {
+      success: false,
+      run_id: runId,
+      bot_id: 'expense_claim',
+      company_id: companyId,
+      state_changed: false,
+      message: String(error),
+      executed_at: timestamp,
+      error: 'Failed to process expense claims'
+    };
+  }
+}
+
+export async function executeCollectionsBot(
+  companyId: string,
+  config: Record<string, any>,
+  db: D1Database,
+  userId: string,
+  timestamp: string
+): Promise<BotExecutionResult> {
+  const runId = crypto.randomUUID();
+  
+  try {
+    // Find overdue invoices that need collection follow-up
+    const overdueInvoices = await db.prepare(`
+      SELECT i.id, i.invoice_number, i.customer_id, i.total_amount, i.due_date, c.customer_name
+      FROM invoices i
+      LEFT JOIN customers c ON i.customer_id = c.id
+      WHERE i.company_id = ? AND i.invoice_type = 'customer' AND i.status = 'sent' 
+        AND i.due_date < date('now', '-7 days')
+      LIMIT 10
+    `).bind(companyId).all();
+    
+    if (!overdueInvoices.results?.length) {
+      return {
+        success: true,
+        run_id: runId,
+        bot_id: 'collections',
+        company_id: companyId,
+        state_changed: false,
+        message: 'No overdue invoices requiring collection follow-up.',
+        executed_at: timestamp,
+      };
+    }
+    
+    const collectionsCreated: string[] = [];
+    for (const invoice of overdueInvoices.results as any[]) {
+      // Check if collection record already exists for this invoice
+      const existing = await db.prepare(`
+        SELECT id FROM collections WHERE invoice_id = ? AND contact_date > date('now', '-7 days')
+      `).bind(invoice.id).first();
+      
+      if (existing) continue;
+      
+      const collectionId = crypto.randomUUID();
+      const collectionNumber = `COL-${Date.now()}-${invoice.id.substring(0, 4)}`;
+      
+      await db.prepare(`
+        INSERT INTO collections (id, company_id, collection_number, customer_id, invoice_id, contact_date, contact_method, amount_outstanding, outcome, follow_up_date, notes, created_by)
+        VALUES (?, ?, ?, ?, ?, date('now'), 'system', ?, 'pending', date('now', '+3 days'), ?, ?)
+      `).bind(
+        collectionId, companyId, collectionNumber, invoice.customer_id, invoice.id,
+        invoice.total_amount, `Auto-generated collection for overdue invoice ${invoice.invoice_number}`,
+        'collections_bot'
+      ).run();
+      
+      collectionsCreated.push(collectionNumber);
+    }
+    
+    return {
+      success: true,
+      run_id: runId,
+      bot_id: 'collections',
+      company_id: companyId,
+      state_changed: collectionsCreated.length > 0,
+      message: collectionsCreated.length > 0
+        ? `Created ${collectionsCreated.length} collection record(s): ${collectionsCreated.join(', ')}`
+        : 'All overdue invoices already have recent collection records.',
+      executed_at: timestamp,
+      details: { collections_created: collectionsCreated }
+    };
+  } catch (error) {
+    return {
+      success: false,
+      run_id: runId,
+      bot_id: 'collections',
+      company_id: companyId,
+      state_changed: false,
+      message: String(error),
+      executed_at: timestamp,
+      error: 'Failed to process collections'
+    };
+  }
+}
+
+export async function executeCashForecastBot(
+  companyId: string,
+  config: Record<string, any>,
+  db: D1Database,
+  userId: string,
+  timestamp: string
+): Promise<BotExecutionResult> {
+  const runId = crypto.randomUUID();
+  
+  try {
+    // Check if forecast already exists for this week
+    const existingForecast = await db.prepare(`
+      SELECT id FROM cash_forecasts 
+      WHERE company_id = ? AND date(forecast_date) >= date('now', '-7 days')
+    `).bind(companyId).first();
+    
+    if (existingForecast) {
+      return {
+        success: true,
+        run_id: runId,
+        bot_id: 'cash_forecast',
+        company_id: companyId,
+        state_changed: false,
+        message: 'Cash forecast already exists for this week.',
+        executed_at: timestamp,
+      };
+    }
+    
+    // Calculate projected inflows (AR)
+    const arResult = await db.prepare(`
+      SELECT COALESCE(SUM(total_amount), 0) as total
+      FROM invoices 
+      WHERE company_id = ? AND invoice_type = 'customer' AND status IN ('sent', 'pending_payment')
+        AND due_date BETWEEN date('now') AND date('now', '+30 days')
+    `).bind(companyId).first() as any;
+    
+    // Calculate projected outflows (AP)
+    const apResult = await db.prepare(`
+      SELECT COALESCE(SUM(total_amount), 0) as total
+      FROM invoices 
+      WHERE company_id = ? AND invoice_type = 'supplier' AND status IN ('received', 'pending_payment')
+        AND due_date BETWEEN date('now') AND date('now', '+30 days')
+    `).bind(companyId).first() as any;
+    
+    // Get current bank balance
+    const bankResult = await db.prepare(`
+      SELECT COALESCE(SUM(current_balance), 0) as total
+      FROM bank_accounts WHERE company_id = ?
+    `).bind(companyId).first() as any;
+    
+    const openingBalance = bankResult?.total || 0;
+    const projectedInflows = arResult?.total || 0;
+    const projectedOutflows = apResult?.total || 0;
+    const closingBalance = openingBalance + projectedInflows - projectedOutflows;
+    
+    const forecastId = crypto.randomUUID();
+    await db.prepare(`
+      INSERT INTO cash_forecasts (id, company_id, forecast_name, forecast_date, period_start, period_end, opening_balance, projected_inflows, projected_outflows, closing_balance, status, created_by)
+      VALUES (?, ?, ?, date('now'), date('now'), date('now', '+30 days'), ?, ?, ?, ?, 'draft', ?)
+    `).bind(
+      forecastId, companyId, `30-Day Forecast - ${new Date().toISOString().split('T')[0]}`,
+      openingBalance, projectedInflows, projectedOutflows, closingBalance, 'cash_forecast_bot'
+    ).run();
+    
+    return {
+      success: true,
+      run_id: runId,
+      bot_id: 'cash_forecast',
+      company_id: companyId,
+      state_changed: true,
+      message: `Created 30-day cash forecast. Opening: ${openingBalance}, Inflows: ${projectedInflows}, Outflows: ${projectedOutflows}, Closing: ${closingBalance}`,
+      executed_at: timestamp,
+      details: { forecast_id: forecastId, opening_balance: openingBalance, projected_inflows: projectedInflows, projected_outflows: projectedOutflows, closing_balance: closingBalance }
+    };
+  } catch (error) {
+    return {
+      success: false,
+      run_id: runId,
+      bot_id: 'cash_forecast',
+      company_id: companyId,
+      state_changed: false,
+      message: String(error),
+      executed_at: timestamp,
+      error: 'Failed to generate cash forecast'
+    };
+  }
+}
+
+export async function executePaymentBatchBot(
+  companyId: string,
+  config: Record<string, any>,
+  db: D1Database,
+  userId: string,
+  timestamp: string
+): Promise<BotExecutionResult> {
+  const runId = crypto.randomUUID();
+  
+  try {
+    // Find approved supplier invoices due for payment
+    const dueInvoices = await db.prepare(`
+      SELECT i.id, i.invoice_number, i.supplier_id, i.total_amount, s.supplier_name
+      FROM invoices i
+      LEFT JOIN suppliers s ON i.supplier_id = s.id
+      WHERE i.company_id = ? AND i.invoice_type = 'supplier' AND i.status = 'approved'
+        AND i.due_date <= date('now', '+7 days')
+      LIMIT 20
+    `).bind(companyId).all();
+    
+    if (!dueInvoices.results?.length) {
+      return {
+        success: true,
+        run_id: runId,
+        bot_id: 'payment_batch',
+        company_id: companyId,
+        state_changed: false,
+        message: 'No supplier invoices due for payment.',
+        executed_at: timestamp,
+      };
+    }
+    
+    // Create payment batch
+    const batchId = crypto.randomUUID();
+    const batchNumber = `PB-${Date.now()}`;
+    const totalAmount = (dueInvoices.results as any[]).reduce((sum, inv) => sum + (inv.total_amount || 0), 0);
+    
+    await db.prepare(`
+      INSERT INTO payment_batches (id, company_id, batch_number, batch_date, payment_method, total_amount, payment_count, status, notes, created_by)
+      VALUES (?, ?, ?, date('now'), 'eft', ?, ?, 'draft', 'Auto-generated payment batch', ?)
+    `).bind(batchId, companyId, batchNumber, totalAmount, dueInvoices.results.length, 'payment_batch_bot').run();
+    
+    // Add items to batch
+    for (const invoice of dueInvoices.results as any[]) {
+      await db.prepare(`
+        INSERT INTO payment_batch_items (id, batch_id, supplier_id, invoice_id, amount, reference, status)
+        VALUES (?, ?, ?, ?, ?, ?, 'pending')
+      `).bind(crypto.randomUUID(), batchId, invoice.supplier_id, invoice.id, invoice.total_amount, invoice.invoice_number).run();
+    }
+    
+    return {
+      success: true,
+      run_id: runId,
+      bot_id: 'payment_batch',
+      company_id: companyId,
+      state_changed: true,
+      message: `Created payment batch ${batchNumber} with ${dueInvoices.results.length} payment(s) totaling ${totalAmount}`,
+      executed_at: timestamp,
+      details: { batch_number: batchNumber, payment_count: dueInvoices.results.length, total_amount: totalAmount }
+    };
+  } catch (error) {
+    return {
+      success: false,
+      run_id: runId,
+      bot_id: 'payment_batch',
+      company_id: companyId,
+      state_changed: false,
+      message: String(error),
+      executed_at: timestamp,
+      error: 'Failed to create payment batch'
+    };
+  }
+}
+
+// --- OPERATIONS MODULE BOTS ---
+
+export async function executeRequisitionBot(
+  companyId: string,
+  config: Record<string, any>,
+  db: D1Database,
+  userId: string,
+  timestamp: string
+): Promise<BotExecutionResult> {
+  const runId = crypto.randomUUID();
+  const autoApproveLimit = config.auto_approve_limit || 2000;
+  
+  try {
+    // Auto-approve requisitions under threshold
+    const pendingReqs = await db.prepare(`
+      SELECT r.id, r.requisition_number, 
+             COALESCE(SUM(rl.estimated_total), 0) as total_amount
+      FROM requisitions r
+      LEFT JOIN requisition_lines rl ON r.id = rl.requisition_id
+      WHERE r.company_id = ? AND r.status = 'submitted'
+      GROUP BY r.id
+      HAVING total_amount <= ?
+      LIMIT 10
+    `).bind(companyId, autoApproveLimit).all();
+    
+    if (!pendingReqs.results?.length) {
+      return {
+        success: true,
+        run_id: runId,
+        bot_id: 'requisition',
+        company_id: companyId,
+        state_changed: false,
+        message: `No requisitions pending approval under ${autoApproveLimit}.`,
+        executed_at: timestamp,
+      };
+    }
+    
+    const approved: string[] = [];
+    for (const req of pendingReqs.results as any[]) {
+      await db.prepare(`
+        UPDATE requisitions SET status = 'approved', approved_by = ?, approved_at = datetime('now'), updated_at = datetime('now')
+        WHERE id = ?
+      `).bind('requisition_bot', req.id).run();
+      approved.push(req.requisition_number);
+    }
+    
+    return {
+      success: true,
+      run_id: runId,
+      bot_id: 'requisition',
+      company_id: companyId,
+      state_changed: true,
+      message: `Auto-approved ${approved.length} requisition(s): ${approved.join(', ')}`,
+      executed_at: timestamp,
+      details: { approved_requisitions: approved, limit: autoApproveLimit }
+    };
+  } catch (error) {
+    return {
+      success: false,
+      run_id: runId,
+      bot_id: 'requisition',
+      company_id: companyId,
+      state_changed: false,
+      message: String(error),
+      executed_at: timestamp,
+      error: 'Failed to process requisitions'
+    };
+  }
+}
+
+export async function executeReorderPointAlertBot(
+  companyId: string,
+  config: Record<string, any>,
+  db: D1Database,
+  userId: string,
+  timestamp: string
+): Promise<BotExecutionResult> {
+  const runId = crypto.randomUUID();
+  
+  try {
+    // Find products below reorder point
+    const lowStock = await db.prepare(`
+      SELECT rp.id, rp.product_id, rp.reorder_level, rp.reorder_quantity, 
+             p.product_name, p.sku,
+             COALESCE(sl.quantity_available, 0) as current_stock
+      FROM reorder_points rp
+      LEFT JOIN products p ON rp.product_id = p.id
+      LEFT JOIN stock_levels sl ON rp.product_id = sl.product_id AND rp.warehouse_id = sl.warehouse_id
+      WHERE rp.company_id = ? AND rp.is_active = 1
+        AND COALESCE(sl.quantity_available, 0) <= rp.reorder_level
+      LIMIT 10
+    `).bind(companyId).all();
+    
+    if (!lowStock.results?.length) {
+      return {
+        success: true,
+        run_id: runId,
+        bot_id: 'reorder_point_alert',
+        company_id: companyId,
+        state_changed: false,
+        message: 'All products are above reorder points.',
+        executed_at: timestamp,
+      };
+    }
+    
+    const alerts: string[] = [];
+    for (const item of lowStock.results as any[]) {
+      // Create reorder task
+      await db.prepare(`
+        INSERT INTO tasks (id, type, reference_id, reference_type, company_id, status, description, priority, created_at)
+        VALUES (?, 'reorder_alert', ?, 'product', ?, 'pending', ?, 'high', datetime('now'))
+      `).bind(
+        crypto.randomUUID(),
+        item.product_id,
+        companyId,
+        `Reorder needed: ${item.product_name} (${item.sku}) - Current: ${item.current_stock}, Reorder Level: ${item.reorder_level}, Suggested Qty: ${item.reorder_quantity}`
+      ).run();
+      
+      // Update last reorder date
+      await db.prepare(`
+        UPDATE reorder_points SET last_reorder_date = date('now'), updated_at = datetime('now')
+        WHERE id = ?
+      `).bind(item.id).run();
+      
+      alerts.push(item.product_name);
+    }
+    
+    return {
+      success: true,
+      run_id: runId,
+      bot_id: 'reorder_point_alert',
+      company_id: companyId,
+      state_changed: true,
+      message: `Created ${alerts.length} reorder alert(s): ${alerts.join(', ')}`,
+      executed_at: timestamp,
+      details: { reorder_alerts: alerts }
+    };
+  } catch (error) {
+    return {
+      success: false,
+      run_id: runId,
+      bot_id: 'reorder_point_alert',
+      company_id: companyId,
+      state_changed: false,
+      message: String(error),
+      executed_at: timestamp,
+      error: 'Failed to check reorder points'
+    };
+  }
+}
+
+export async function executeStockTransferBot(
+  companyId: string,
+  config: Record<string, any>,
+  db: D1Database,
+  userId: string,
+  timestamp: string
+): Promise<BotExecutionResult> {
+  const runId = crypto.randomUUID();
+  
+  try {
+    // Process pending stock transfers
+    const pendingTransfers = await db.prepare(`
+      SELECT id, transfer_number, from_warehouse_id, to_warehouse_id
+      FROM stock_transfers 
+      WHERE company_id = ? AND status = 'in_transit'
+        AND shipped_at < datetime('now', '-1 day')
+      LIMIT 10
+    `).bind(companyId).all();
+    
+    if (!pendingTransfers.results?.length) {
+      return {
+        success: true,
+        run_id: runId,
+        bot_id: 'stock_transfer',
+        company_id: companyId,
+        state_changed: false,
+        message: 'No stock transfers ready for auto-receipt.',
+        executed_at: timestamp,
+      };
+    }
+    
+    const received: string[] = [];
+    for (const transfer of pendingTransfers.results as any[]) {
+      // Auto-receive transfers that have been in transit for more than 1 day
+      await db.prepare(`
+        UPDATE stock_transfers SET status = 'received', received_at = datetime('now'), received_by = ?
+        WHERE id = ?
+      `).bind('stock_transfer_bot', transfer.id).run();
+      
+      // Update transfer lines
+      await db.prepare(`
+        UPDATE stock_transfer_lines SET quantity_received = quantity_shipped
+        WHERE transfer_id = ?
+      `).bind(transfer.id).run();
+      
+      received.push(transfer.transfer_number);
+    }
+    
+    return {
+      success: true,
+      run_id: runId,
+      bot_id: 'stock_transfer',
+      company_id: companyId,
+      state_changed: true,
+      message: `Auto-received ${received.length} stock transfer(s): ${received.join(', ')}`,
+      executed_at: timestamp,
+      details: { transfers_received: received }
+    };
+  } catch (error) {
+    return {
+      success: false,
+      run_id: runId,
+      bot_id: 'stock_transfer',
+      company_id: companyId,
+      state_changed: false,
+      message: String(error),
+      executed_at: timestamp,
+      error: 'Failed to process stock transfers'
+    };
+  }
+}
+
+export async function executeSalesTargetBot(
+  companyId: string,
+  config: Record<string, any>,
+  db: D1Database,
+  userId: string,
+  timestamp: string
+): Promise<BotExecutionResult> {
+  const runId = crypto.randomUUID();
+  
+  try {
+    // Update sales target achievements
+    const currentPeriod = new Date().toISOString().substring(0, 7); // YYYY-MM
+    
+    const targets = await db.prepare(`
+      SELECT id, employee_id, target_amount, target_type
+      FROM sales_targets 
+      WHERE company_id = ? AND target_period = ? AND status = 'active'
+    `).bind(companyId, currentPeriod).all();
+    
+    if (!targets.results?.length) {
+      return {
+        success: true,
+        run_id: runId,
+        bot_id: 'sales_target',
+        company_id: companyId,
+        state_changed: false,
+        message: 'No active sales targets for current period.',
+        executed_at: timestamp,
+      };
+    }
+    
+    let updated = 0;
+    for (const target of targets.results as any[]) {
+      // Calculate achieved amount from sales orders
+      const salesResult = await db.prepare(`
+        SELECT COALESCE(SUM(total_amount), 0) as total
+        FROM sales_orders 
+        WHERE company_id = ? AND created_by = ? 
+          AND strftime('%Y-%m', order_date) = ?
+          AND status NOT IN ('cancelled', 'draft')
+      `).bind(companyId, target.employee_id, currentPeriod).first() as any;
+      
+      const achievedAmount = salesResult?.total || 0;
+      const achievementPercent = target.target_amount > 0 
+        ? Math.round((achievedAmount / target.target_amount) * 100) 
+        : 0;
+      const newStatus = achievementPercent >= 100 ? 'achieved' : 'active';
+      
+      await db.prepare(`
+        UPDATE sales_targets SET achieved_amount = ?, achievement_percent = ?, status = ?, updated_at = datetime('now')
+        WHERE id = ?
+      `).bind(achievedAmount, achievementPercent, newStatus, target.id).run();
+      
+      updated++;
+    }
+    
+    return {
+      success: true,
+      run_id: runId,
+      bot_id: 'sales_target',
+      company_id: companyId,
+      state_changed: updated > 0,
+      message: `Updated ${updated} sales target(s) for period ${currentPeriod}`,
+      executed_at: timestamp,
+      details: { targets_updated: updated, period: currentPeriod }
+    };
+  } catch (error) {
+    return {
+      success: false,
+      run_id: runId,
+      bot_id: 'sales_target',
+      company_id: companyId,
+      state_changed: false,
+      message: String(error),
+      executed_at: timestamp,
+      error: 'Failed to update sales targets'
+    };
+  }
+}
+
+export async function executeCommissionBot(
+  companyId: string,
+  config: Record<string, any>,
+  db: D1Database,
+  userId: string,
+  timestamp: string
+): Promise<BotExecutionResult> {
+  const runId = crypto.randomUUID();
+  const defaultRate = config.default_commission_rate || 5;
+  
+  try {
+    const currentPeriod = new Date().toISOString().substring(0, 7); // YYYY-MM
+    
+    // Get sales employees with sales this period
+    const salesByEmployee = await db.prepare(`
+      SELECT created_by as employee_id, SUM(total_amount) as total_sales
+      FROM sales_orders 
+      WHERE company_id = ? AND strftime('%Y-%m', order_date) = ?
+        AND status NOT IN ('cancelled', 'draft')
+      GROUP BY created_by
+    `).bind(companyId, currentPeriod).all();
+    
+    if (!salesByEmployee.results?.length) {
+      return {
+        success: true,
+        run_id: runId,
+        bot_id: 'commission',
+        company_id: companyId,
+        state_changed: false,
+        message: 'No sales to calculate commissions for.',
+        executed_at: timestamp,
+      };
+    }
+    
+    const commissionsCreated: string[] = [];
+    for (const sale of salesByEmployee.results as any[]) {
+      // Check if commission already exists for this period
+      const existing = await db.prepare(`
+        SELECT id FROM commissions WHERE company_id = ? AND employee_id = ? AND period = ?
+      `).bind(companyId, sale.employee_id, currentPeriod).first();
+      
+      if (existing) continue;
+      
+      const commissionAmount = (sale.total_sales || 0) * (defaultRate / 100);
+      
+      await db.prepare(`
+        INSERT INTO commissions (id, company_id, employee_id, period, sales_amount, commission_rate, commission_amount, final_amount, status)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'calculated')
+      `).bind(
+        crypto.randomUUID(), companyId, sale.employee_id, currentPeriod,
+        sale.total_sales, defaultRate, commissionAmount, commissionAmount
+      ).run();
+      
+      commissionsCreated.push(sale.employee_id);
+    }
+    
+    return {
+      success: true,
+      run_id: runId,
+      bot_id: 'commission',
+      company_id: companyId,
+      state_changed: commissionsCreated.length > 0,
+      message: commissionsCreated.length > 0
+        ? `Calculated commissions for ${commissionsCreated.length} employee(s)`
+        : 'All commissions already calculated for this period.',
+      executed_at: timestamp,
+      details: { commissions_created: commissionsCreated.length, period: currentPeriod, rate: defaultRate }
+    };
+  } catch (error) {
+    return {
+      success: false,
+      run_id: runId,
+      bot_id: 'commission',
+      company_id: companyId,
+      state_changed: false,
+      message: String(error),
+      executed_at: timestamp,
+      error: 'Failed to calculate commissions'
+    };
+  }
+}
+
+export async function executeMaintenanceScheduleBot(
+  companyId: string,
+  config: Record<string, any>,
+  db: D1Database,
+  userId: string,
+  timestamp: string
+): Promise<BotExecutionResult> {
+  const runId = crypto.randomUUID();
+  
+  try {
+    // Find machines due for maintenance
+    const dueMaintenance = await db.prepare(`
+      SELECT m.id as machine_id, m.machine_name, mm.next_maintenance_date
+      FROM machines m
+      LEFT JOIN machine_maintenance mm ON m.id = mm.machine_id AND mm.status = 'completed'
+      WHERE m.company_id = ? AND m.status = 'active'
+        AND (mm.next_maintenance_date IS NULL OR mm.next_maintenance_date <= date('now', '+7 days'))
+      GROUP BY m.id
+      LIMIT 10
+    `).bind(companyId).all();
+    
+    if (!dueMaintenance.results?.length) {
+      return {
+        success: true,
+        run_id: runId,
+        bot_id: 'maintenance_schedule',
+        company_id: companyId,
+        state_changed: false,
+        message: 'No machines due for maintenance.',
+        executed_at: timestamp,
+      };
+    }
+    
+    const scheduled: string[] = [];
+    for (const machine of dueMaintenance.results as any[]) {
+      // Check if maintenance already scheduled
+      const existing = await db.prepare(`
+        SELECT id FROM machine_maintenance 
+        WHERE machine_id = ? AND status = 'scheduled' AND scheduled_date >= date('now')
+      `).bind(machine.machine_id).first();
+      
+      if (existing) continue;
+      
+      const maintenanceNumber = `MNT-${Date.now()}-${machine.machine_id.substring(0, 4)}`;
+      
+      await db.prepare(`
+        INSERT INTO machine_maintenance (id, company_id, maintenance_number, machine_id, maintenance_type, scheduled_date, description, status, created_by)
+        VALUES (?, ?, ?, ?, 'preventive', date('now', '+3 days'), ?, 'scheduled', ?)
+      `).bind(
+        crypto.randomUUID(), companyId, maintenanceNumber, machine.machine_id,
+        `Scheduled preventive maintenance for ${machine.machine_name}`,
+        'maintenance_schedule_bot'
+      ).run();
+      
+      scheduled.push(machine.machine_name);
+    }
+    
+    return {
+      success: true,
+      run_id: runId,
+      bot_id: 'maintenance_schedule',
+      company_id: companyId,
+      state_changed: scheduled.length > 0,
+      message: scheduled.length > 0
+        ? `Scheduled maintenance for ${scheduled.length} machine(s): ${scheduled.join(', ')}`
+        : 'All machines already have scheduled maintenance.',
+      executed_at: timestamp,
+      details: { machines_scheduled: scheduled }
+    };
+  } catch (error) {
+    return {
+      success: false,
+      run_id: runId,
+      bot_id: 'maintenance_schedule',
+      company_id: companyId,
+      state_changed: false,
+      message: String(error),
+      executed_at: timestamp,
+      error: 'Failed to schedule maintenance'
+    };
+  }
+}
+
+// --- PEOPLE MODULE BOTS ---
+
+export async function executePerformanceReviewBot(
+  companyId: string,
+  config: Record<string, any>,
+  db: D1Database,
+  userId: string,
+  timestamp: string
+): Promise<BotExecutionResult> {
+  const runId = crypto.randomUUID();
+  
+  try {
+    const currentQuarter = `${new Date().getFullYear()}-Q${Math.ceil((new Date().getMonth() + 1) / 3)}`;
+    
+    // Find employees without reviews this quarter
+    const employeesWithoutReview = await db.prepare(`
+      SELECT e.id, e.first_name, e.last_name, e.manager_id
+      FROM employees e
+      LEFT JOIN performance_reviews pr ON e.id = pr.employee_id AND pr.review_period = ?
+      WHERE e.company_id = ? AND e.status = 'active' AND pr.id IS NULL
+      LIMIT 10
+    `).bind(currentQuarter, companyId).all();
+    
+    if (!employeesWithoutReview.results?.length) {
+      return {
+        success: true,
+        run_id: runId,
+        bot_id: 'performance_review',
+        company_id: companyId,
+        state_changed: false,
+        message: `All employees have performance reviews for ${currentQuarter}.`,
+        executed_at: timestamp,
+      };
+    }
+    
+    const reviewsCreated: string[] = [];
+    for (const emp of employeesWithoutReview.results as any[]) {
+      await db.prepare(`
+        INSERT INTO performance_reviews (id, company_id, employee_id, review_period, reviewer_id, status)
+        VALUES (?, ?, ?, ?, ?, 'draft')
+      `).bind(crypto.randomUUID(), companyId, emp.id, currentQuarter, emp.manager_id).run();
+      
+      reviewsCreated.push(`${emp.first_name} ${emp.last_name}`);
+    }
+    
+    return {
+      success: true,
+      run_id: runId,
+      bot_id: 'performance_review',
+      company_id: companyId,
+      state_changed: true,
+      message: `Created ${reviewsCreated.length} performance review(s) for ${currentQuarter}`,
+      executed_at: timestamp,
+      details: { reviews_created: reviewsCreated, period: currentQuarter }
+    };
+  } catch (error) {
+    return {
+      success: false,
+      run_id: runId,
+      bot_id: 'performance_review',
+      company_id: companyId,
+      state_changed: false,
+      message: String(error),
+      executed_at: timestamp,
+      error: 'Failed to create performance reviews'
+    };
+  }
+}
+
+export async function executeNewEmployeeOnboardingBot(
+  companyId: string,
+  config: Record<string, any>,
+  db: D1Database,
+  userId: string,
+  timestamp: string
+): Promise<BotExecutionResult> {
+  const runId = crypto.randomUUID();
+  
+  try {
+    // Find new employees without onboarding tasks
+    const newEmployees = await db.prepare(`
+      SELECT e.id, e.first_name, e.last_name, e.hire_date
+      FROM employees e
+      LEFT JOIN onboarding_tasks ot ON e.id = ot.employee_id
+      WHERE e.company_id = ? AND e.status = 'active'
+        AND e.hire_date >= date('now', '-30 days')
+        AND ot.id IS NULL
+      LIMIT 5
+    `).bind(companyId).all();
+    
+    if (!newEmployees.results?.length) {
+      return {
+        success: true,
+        run_id: runId,
+        bot_id: 'new_employee_onboarding',
+        company_id: companyId,
+        state_changed: false,
+        message: 'No new employees requiring onboarding tasks.',
+        executed_at: timestamp,
+      };
+    }
+    
+    const defaultTasks = [
+      { name: 'Complete employee documentation', category: 'documentation', days: 3 },
+      { name: 'IT equipment setup', category: 'equipment', days: 1 },
+      { name: 'System access provisioning', category: 'access', days: 2 },
+      { name: 'Team introduction meeting', category: 'introduction', days: 5 },
+      { name: 'Company policies review', category: 'training', days: 7 },
+    ];
+    
+    let tasksCreated = 0;
+    for (const emp of newEmployees.results as any[]) {
+      for (const task of defaultTasks) {
+        await db.prepare(`
+          INSERT INTO onboarding_tasks (id, company_id, employee_id, task_name, task_category, due_date, status)
+          VALUES (?, ?, ?, ?, ?, date('now', '+' || ? || ' days'), 'pending')
+        `).bind(crypto.randomUUID(), companyId, emp.id, task.name, task.category, task.days).run();
+        tasksCreated++;
+      }
+    }
+    
+    return {
+      success: true,
+      run_id: runId,
+      bot_id: 'new_employee_onboarding',
+      company_id: companyId,
+      state_changed: true,
+      message: `Created ${tasksCreated} onboarding task(s) for ${newEmployees.results.length} new employee(s)`,
+      executed_at: timestamp,
+      details: { tasks_created: tasksCreated, employees: newEmployees.results.length }
+    };
+  } catch (error) {
+    return {
+      success: false,
+      run_id: runId,
+      bot_id: 'new_employee_onboarding',
+      company_id: companyId,
+      state_changed: false,
+      message: String(error),
+      executed_at: timestamp,
+      error: 'Failed to create onboarding tasks'
+    };
+  }
+}
+
+export async function executeTrainingReminderBot(
+  companyId: string,
+  config: Record<string, any>,
+  db: D1Database,
+  userId: string,
+  timestamp: string
+): Promise<BotExecutionResult> {
+  const runId = crypto.randomUUID();
+  
+  try {
+    // Find upcoming training sessions
+    const upcomingSessions = await db.prepare(`
+      SELECT ts.id, ts.session_date, tc.course_name, ts.enrolled_count
+      FROM training_sessions ts
+      LEFT JOIN training_courses tc ON ts.course_id = tc.id
+      WHERE tc.company_id = ? AND ts.status = 'scheduled'
+        AND ts.session_date BETWEEN date('now') AND date('now', '+7 days')
+    `).bind(companyId).all();
+    
+    if (!upcomingSessions.results?.length) {
+      return {
+        success: true,
+        run_id: runId,
+        bot_id: 'training_reminder',
+        company_id: companyId,
+        state_changed: false,
+        message: 'No upcoming training sessions in the next 7 days.',
+        executed_at: timestamp,
+      };
+    }
+    
+    const reminders: string[] = [];
+    for (const session of upcomingSessions.results as any[]) {
+      await db.prepare(`
+        INSERT INTO tasks (id, type, reference_id, reference_type, company_id, status, description, priority, created_at)
+        VALUES (?, 'training_reminder', ?, 'training_session', ?, 'pending', ?, 'medium', datetime('now'))
+      `).bind(
+        crypto.randomUUID(),
+        session.id,
+        companyId,
+        `Training reminder: ${session.course_name} on ${session.session_date} (${session.enrolled_count} enrolled)`
+      ).run();
+      reminders.push(session.course_name);
+    }
+    
+    return {
+      success: true,
+      run_id: runId,
+      bot_id: 'training_reminder',
+      company_id: companyId,
+      state_changed: true,
+      message: `Created ${reminders.length} training reminder(s): ${reminders.join(', ')}`,
+      executed_at: timestamp,
+      details: { reminders_created: reminders }
+    };
+  } catch (error) {
+    return {
+      success: false,
+      run_id: runId,
+      bot_id: 'training_reminder',
+      company_id: companyId,
+      state_changed: false,
+      message: String(error),
+      executed_at: timestamp,
+      error: 'Failed to create training reminders'
+    };
+  }
+}
+
+// --- SERVICES MODULE BOTS ---
+
+export async function executeRouteOptimizationBot(
+  companyId: string,
+  config: Record<string, any>,
+  db: D1Database,
+  userId: string,
+  timestamp: string
+): Promise<BotExecutionResult> {
+  const runId = crypto.randomUUID();
+  
+  try {
+    // Find service orders without route assignments for tomorrow
+    const unassignedOrders = await db.prepare(`
+      SELECT so.id, so.order_number, so.customer_id, c.customer_name
+      FROM service_orders so
+      LEFT JOIN customers c ON so.customer_id = c.id
+      LEFT JOIN route_stops rs ON so.id = rs.service_order_id
+      WHERE so.company_id = ? AND so.status = 'scheduled'
+        AND so.scheduled_date = date('now', '+1 day')
+        AND rs.id IS NULL
+      LIMIT 20
+    `).bind(companyId).all();
+    
+    if (!unassignedOrders.results?.length) {
+      return {
+        success: true,
+        run_id: runId,
+        bot_id: 'route_optimization',
+        company_id: companyId,
+        state_changed: false,
+        message: 'No unassigned service orders for tomorrow.',
+        executed_at: timestamp,
+      };
+    }
+    
+    // Get available technicians
+    const technicians = await db.prepare(`
+      SELECT id, first_name, last_name FROM employees 
+      WHERE company_id = ? AND department_id IN (
+        SELECT id FROM departments WHERE department_name LIKE '%service%' OR department_name LIKE '%field%'
+      ) AND status = 'active'
+      LIMIT 5
+    `).bind(companyId).all();
+    
+    if (!technicians.results?.length) {
+      return {
+        success: true,
+        run_id: runId,
+        bot_id: 'route_optimization',
+        company_id: companyId,
+        state_changed: false,
+        message: 'No available technicians for route assignment.',
+        executed_at: timestamp,
+      };
+    }
+    
+    // Create route plan and assign orders
+    const routeId = crypto.randomUUID();
+    const routeNumber = `RTE-${Date.now()}`;
+    const technician = technicians.results[0] as any;
+    
+    await db.prepare(`
+      INSERT INTO route_plans (id, company_id, route_number, route_date, technician_id, total_stops, status, created_by)
+      VALUES (?, ?, ?, date('now', '+1 day'), ?, ?, 'planned', ?)
+    `).bind(routeId, companyId, routeNumber, technician.id, unassignedOrders.results.length, 'route_optimization_bot').run();
+    
+    let stopOrder = 1;
+    for (const order of unassignedOrders.results as any[]) {
+      await db.prepare(`
+        INSERT INTO route_stops (id, route_id, stop_order, service_order_id, customer_id, address, status)
+        VALUES (?, ?, ?, ?, ?, 'TBD', 'pending')
+      `).bind(crypto.randomUUID(), routeId, stopOrder++, order.id, order.customer_id).run();
+    }
+    
+    return {
+      success: true,
+      run_id: runId,
+      bot_id: 'route_optimization',
+      company_id: companyId,
+      state_changed: true,
+      message: `Created route ${routeNumber} with ${unassignedOrders.results.length} stop(s) for ${technician.first_name} ${technician.last_name}`,
+      executed_at: timestamp,
+      details: { route_number: routeNumber, stops: unassignedOrders.results.length, technician: `${technician.first_name} ${technician.last_name}` }
+    };
+  } catch (error) {
+    return {
+      success: false,
+      run_id: runId,
+      bot_id: 'route_optimization',
+      company_id: companyId,
+      state_changed: false,
+      message: String(error),
+      executed_at: timestamp,
+      error: 'Failed to optimize routes'
+    };
+  }
+}
+
+export async function executeServiceContractRenewalBot(
+  companyId: string,
+  config: Record<string, any>,
+  db: D1Database,
+  userId: string,
+  timestamp: string
+): Promise<BotExecutionResult> {
+  const runId = crypto.randomUUID();
+  
+  try {
+    // Find contracts expiring soon
+    const expiringContracts = await db.prepare(`
+      SELECT sc.id, sc.contract_number, sc.contract_name, sc.end_date, sc.auto_renew, c.customer_name
+      FROM service_contracts sc
+      LEFT JOIN customers c ON sc.customer_id = c.id
+      WHERE sc.company_id = ? AND sc.status = 'active'
+        AND sc.end_date BETWEEN date('now') AND date('now', '+30 days')
+      LIMIT 10
+    `).bind(companyId).all();
+    
+    if (!expiringContracts.results?.length) {
+      return {
+        success: true,
+        run_id: runId,
+        bot_id: 'service_contract_renewal',
+        company_id: companyId,
+        state_changed: false,
+        message: 'No service contracts expiring in the next 30 days.',
+        executed_at: timestamp,
+      };
+    }
+    
+    const alerts: string[] = [];
+    for (const contract of expiringContracts.results as any[]) {
+      const taskType = contract.auto_renew ? 'contract_auto_renewal' : 'contract_renewal_required';
+      const priority = contract.auto_renew ? 'low' : 'high';
+      
+      await db.prepare(`
+        INSERT INTO tasks (id, type, reference_id, reference_type, company_id, status, description, priority, created_at)
+        VALUES (?, ?, ?, 'service_contract', ?, 'pending', ?, ?, datetime('now'))
+      `).bind(
+        crypto.randomUUID(),
+        taskType,
+        contract.id,
+        companyId,
+        `Contract "${contract.contract_name}" for ${contract.customer_name} expires on ${contract.end_date}${contract.auto_renew ? ' (auto-renew enabled)' : ''}`,
+        priority
+      ).run();
+      alerts.push(contract.contract_number);
+    }
+    
+    return {
+      success: true,
+      run_id: runId,
+      bot_id: 'service_contract_renewal',
+      company_id: companyId,
+      state_changed: true,
+      message: `Created ${alerts.length} contract renewal alert(s): ${alerts.join(', ')}`,
+      executed_at: timestamp,
+      details: { alerts_created: alerts }
+    };
+  } catch (error) {
+    return {
+      success: false,
+      run_id: runId,
+      bot_id: 'service_contract_renewal',
+      company_id: companyId,
+      state_changed: false,
+      message: String(error),
+      executed_at: timestamp,
+      error: 'Failed to check contract renewals'
+    };
+  }
+}
+
+// --- COMPLIANCE MODULE BOTS ---
+
+export async function executeVATReturnBot(
+  companyId: string,
+  config: Record<string, any>,
+  db: D1Database,
+  userId: string,
+  timestamp: string
+): Promise<BotExecutionResult> {
+  const runId = crypto.randomUUID();
+  
+  try {
+    const lastMonth = new Date();
+    lastMonth.setMonth(lastMonth.getMonth() - 1);
+    const returnPeriod = lastMonth.toISOString().substring(0, 7);
+    
+    // Check if VAT return already exists
+    const existing = await db.prepare(`
+      SELECT id FROM vat_returns WHERE company_id = ? AND return_period = ?
+    `).bind(companyId, returnPeriod).first();
+    
+    if (existing) {
+      return {
+        success: true,
+        run_id: runId,
+        bot_id: 'vat_return',
+        company_id: companyId,
+        state_changed: false,
+        message: `VAT return already exists for ${returnPeriod}.`,
+        executed_at: timestamp,
+      };
+    }
+    
+    // Calculate output VAT (sales)
+    const outputVat = await db.prepare(`
+      SELECT COALESCE(SUM(tax_amount), 0) as total
+      FROM invoices 
+      WHERE company_id = ? AND invoice_type = 'customer'
+        AND strftime('%Y-%m', invoice_date) = ?
+    `).bind(companyId, returnPeriod).first() as any;
+    
+    // Calculate input VAT (purchases)
+    const inputVat = await db.prepare(`
+      SELECT COALESCE(SUM(tax_amount), 0) as total
+      FROM invoices 
+      WHERE company_id = ? AND invoice_type = 'supplier'
+        AND strftime('%Y-%m', invoice_date) = ?
+    `).bind(companyId, returnPeriod).first() as any;
+    
+    const outputVatAmount = outputVat?.total || 0;
+    const inputVatAmount = inputVat?.total || 0;
+    const netVat = outputVatAmount - inputVatAmount;
+    
+    await db.prepare(`
+      INSERT INTO vat_returns (id, company_id, return_period, output_vat_standard, input_vat, net_vat, amount_payable, amount_refundable, status)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'draft')
+    `).bind(
+      crypto.randomUUID(), companyId, returnPeriod,
+      outputVatAmount, inputVatAmount, netVat,
+      netVat > 0 ? netVat : 0,
+      netVat < 0 ? Math.abs(netVat) : 0
+    ).run();
+    
+    return {
+      success: true,
+      run_id: runId,
+      bot_id: 'vat_return',
+      company_id: companyId,
+      state_changed: true,
+      message: `Created VAT return for ${returnPeriod}. Output VAT: ${outputVatAmount}, Input VAT: ${inputVatAmount}, Net: ${netVat}`,
+      executed_at: timestamp,
+      details: { period: returnPeriod, output_vat: outputVatAmount, input_vat: inputVatAmount, net_vat: netVat }
+    };
+  } catch (error) {
+    return {
+      success: false,
+      run_id: runId,
+      bot_id: 'vat_return',
+      company_id: companyId,
+      state_changed: false,
+      message: String(error),
+      executed_at: timestamp,
+      error: 'Failed to create VAT return'
+    };
+  }
+}
+
+export async function executeDocumentControlBot(
+  companyId: string,
+  config: Record<string, any>,
+  db: D1Database,
+  userId: string,
+  timestamp: string
+): Promise<BotExecutionResult> {
+  const runId = crypto.randomUUID();
+  
+  try {
+    // Find documents due for review
+    const dueForReview = await db.prepare(`
+      SELECT id, document_number, title, review_date
+      FROM controlled_documents 
+      WHERE company_id = ? AND status = 'approved'
+        AND review_date <= date('now', '+30 days')
+      LIMIT 10
+    `).bind(companyId).all();
+    
+    if (!dueForReview.results?.length) {
+      return {
+        success: true,
+        run_id: runId,
+        bot_id: 'document_control',
+        company_id: companyId,
+        state_changed: false,
+        message: 'No documents due for review in the next 30 days.',
+        executed_at: timestamp,
+      };
+    }
+    
+    const alerts: string[] = [];
+    for (const doc of dueForReview.results as any[]) {
+      await db.prepare(`
+        INSERT INTO tasks (id, type, reference_id, reference_type, company_id, status, description, priority, created_at)
+        VALUES (?, 'document_review', ?, 'controlled_document', ?, 'pending', ?, 'medium', datetime('now'))
+      `).bind(
+        crypto.randomUUID(),
+        doc.id,
+        companyId,
+        `Document "${doc.title}" (${doc.document_number}) is due for review on ${doc.review_date}`
+      ).run();
+      alerts.push(doc.document_number);
+    }
+    
+    return {
+      success: true,
+      run_id: runId,
+      bot_id: 'document_control',
+      company_id: companyId,
+      state_changed: true,
+      message: `Created ${alerts.length} document review alert(s): ${alerts.join(', ')}`,
+      executed_at: timestamp,
+      details: { alerts_created: alerts }
+    };
+  } catch (error) {
+    return {
+      success: false,
+      run_id: runId,
+      bot_id: 'document_control',
+      company_id: companyId,
+      state_changed: false,
+      message: String(error),
+      executed_at: timestamp,
+      error: 'Failed to check document reviews'
+    };
+  }
+}
+
+// Add new bots to TIER1_BOTS list
+const NEW_PAGE_BOTS = [
+  'budget_monitoring',
+  'expense_claim',
+  'collections',
+  'cash_forecast',
+  'payment_batch',
+  'requisition',
+  'reorder_point',
+  'stock_transfer',
+  'sales_target',
+  'commission',
+  'maintenance_schedule',
+  'performance_review',
+  'onboarding',
+  'training_reminder',
+  'route_optimization',
+  'service_contract_renewal',
+  'vat_return',
+  'document_control',
+];
+
+export { TIER1_BOTS, SYSTEM_USER_ID, NEW_PAGE_BOTS };
