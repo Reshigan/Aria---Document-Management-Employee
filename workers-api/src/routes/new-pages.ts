@@ -1451,4 +1451,207 @@ app.post('/controlled-documents', async (c) => {
   return c.json({ id, message: 'Controlled document created successfully' }, 201);
 });
 
+// --- Support Tickets ---
+app.get('/support-tickets', async (c) => {
+  const companyId = getCompanyId(c);
+  if (!companyId) { return c.json({ support_tickets: [], message: 'No company_id provided' }); }
+  
+  const result = await c.env.DB.prepare(`
+    SELECT st.*, c.customer_name, e.first_name || ' ' || e.last_name as assigned_to_name
+    FROM support_tickets st
+    LEFT JOIN customers c ON st.customer_id = c.id
+    LEFT JOIN employees e ON st.assigned_to = e.id
+    WHERE st.company_id = ?
+    ORDER BY st.created_at DESC
+  `).bind(companyId).all();
+  
+  return c.json({ support_tickets: result.results || [] });
+});
+
+app.post('/support-tickets', async (c) => {
+  const user = c.get('user');
+  const body = await c.req.json();
+  const id = generateUUID();
+  const ticketNumber = `TKT-${Date.now()}`;
+  
+  await c.env.DB.prepare(`
+    INSERT INTO support_tickets (id, company_id, ticket_number, customer_id, subject, description, category, priority, assigned_to, status, created_by)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `).bind(id, user.company_id, ticketNumber, body.customer_id, body.subject, body.description, body.category || 'general', body.priority || 'medium', body.assigned_to, 'open', user.sub).run();
+  
+  return c.json({ id, ticket_number: ticketNumber, message: 'Support ticket created successfully' }, 201);
+});
+
+app.put('/support-tickets/:id/assign', async (c) => {
+  const id = c.req.param('id');
+  const body = await c.req.json();
+  
+  await c.env.DB.prepare(`
+    UPDATE support_tickets SET assigned_to = ?, status = 'in_progress', updated_at = datetime('now')
+    WHERE id = ?
+  `).bind(body.assigned_to, id).run();
+  
+  return c.json({ message: 'Support ticket assigned successfully' });
+});
+
+app.put('/support-tickets/:id/resolve', async (c) => {
+  const id = c.req.param('id');
+  
+  await c.env.DB.prepare(`
+    UPDATE support_tickets SET status = 'resolved', resolved_at = datetime('now'), updated_at = datetime('now')
+    WHERE id = ?
+  `).bind(id).run();
+  
+  return c.json({ message: 'Support ticket resolved successfully' });
+});
+
+app.put('/support-tickets/:id/close', async (c) => {
+  const id = c.req.param('id');
+  
+  await c.env.DB.prepare(`
+    UPDATE support_tickets SET status = 'closed', closed_at = datetime('now'), updated_at = datetime('now')
+    WHERE id = ?
+  `).bind(id).run();
+  
+  return c.json({ message: 'Support ticket closed successfully' });
+});
+
+// --- Assets (Asset Register) ---
+app.get('/assets', async (c) => {
+  const companyId = getCompanyId(c);
+  if (!companyId) { return c.json({ assets: [], message: 'No company_id provided' }); }
+  
+  const result = await c.env.DB.prepare(`
+    SELECT * FROM fixed_assets WHERE company_id = ? ORDER BY asset_code
+  `).bind(companyId).all();
+  
+  return c.json({ assets: result.results || [] });
+});
+
+app.post('/assets', async (c) => {
+  const user = c.get('user');
+  const body = await c.req.json();
+  const id = generateUUID();
+  
+  await c.env.DB.prepare(`
+    INSERT INTO fixed_assets (id, company_id, asset_code, asset_name, category, purchase_date, purchase_price, current_value, depreciation_method, useful_life_years, location, status, notes)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `).bind(id, user.company_id, body.asset_code, body.asset_name, body.category, body.purchase_date, body.purchase_price || 0, body.current_value || body.purchase_price || 0, body.depreciation_method || 'straight_line', body.useful_life_years || 5, body.location, 'active', body.notes).run();
+  
+  return c.json({ id, message: 'Asset created successfully' }, 201);
+});
+
+// --- Audit Trail ---
+app.get('/audit-trail', async (c) => {
+  const companyId = getCompanyId(c);
+  if (!companyId) { return c.json({ audit_logs: [], message: 'No company_id provided' }); }
+  
+  const result = await c.env.DB.prepare(`
+    SELECT al.*, u.email as user_email
+    FROM audit_logs al
+    LEFT JOIN users u ON al.user_id = u.id
+    WHERE al.company_id = ?
+    ORDER BY al.created_at DESC
+    LIMIT 100
+  `).bind(companyId).all();
+  
+  return c.json({ audit_logs: result.results || [] });
+});
+
+// --- Risks (Risk Register) ---
+app.get('/risks', async (c) => {
+  const companyId = getCompanyId(c);
+  if (!companyId) { return c.json({ risks: [], message: 'No company_id provided' }); }
+  
+  const result = await c.env.DB.prepare(`
+    SELECT * FROM risks WHERE company_id = ? ORDER BY created_at DESC
+  `).bind(companyId).all();
+  
+  return c.json({ risks: result.results || [] });
+});
+
+app.post('/risks', async (c) => {
+  const user = c.get('user');
+  const body = await c.req.json();
+  const id = generateUUID();
+  const riskNumber = `RSK-${Date.now()}`;
+  
+  await c.env.DB.prepare(`
+    INSERT INTO risks (id, company_id, risk_number, title, description, category, likelihood, impact, risk_score, owner_id, mitigation_plan, review_date, status)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `).bind(id, user.company_id, riskNumber, body.title, body.description, body.category, body.likelihood || 3, body.impact || 3, (body.likelihood || 3) * (body.impact || 3), body.owner_id, body.mitigation_plan, body.review_date, 'identified').run();
+  
+  return c.json({ id, risk_number: riskNumber, message: 'Risk created successfully' }, 201);
+});
+
+app.put('/risks/:id/mitigate', async (c) => {
+  const id = c.req.param('id');
+  
+  await c.env.DB.prepare(`
+    UPDATE risks SET status = 'mitigated', updated_at = datetime('now')
+    WHERE id = ?
+  `).bind(id).run();
+  
+  return c.json({ message: 'Risk marked as mitigated' });
+});
+
+app.put('/risks/:id/close', async (c) => {
+  const id = c.req.param('id');
+  
+  await c.env.DB.prepare(`
+    UPDATE risks SET status = 'closed', updated_at = datetime('now')
+    WHERE id = ?
+  `).bind(id).run();
+  
+  return c.json({ message: 'Risk closed successfully' });
+});
+
+// --- Policies ---
+app.get('/policies', async (c) => {
+  const companyId = getCompanyId(c);
+  if (!companyId) { return c.json({ policies: [], message: 'No company_id provided' }); }
+  
+  const result = await c.env.DB.prepare(`
+    SELECT * FROM policies WHERE company_id = ? ORDER BY created_at DESC
+  `).bind(companyId).all();
+  
+  return c.json({ policies: result.results || [] });
+});
+
+app.post('/policies', async (c) => {
+  const user = c.get('user');
+  const body = await c.req.json();
+  const id = generateUUID();
+  const policyNumber = `POL-${Date.now()}`;
+  
+  await c.env.DB.prepare(`
+    INSERT INTO policies (id, company_id, policy_number, name, category, version, description, content, owner_id, effective_date, review_date, status)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `).bind(id, user.company_id, policyNumber, body.name, body.category, body.version || '1.0', body.description, body.content, body.owner_id, body.effective_date, body.review_date, 'draft').run();
+  
+  return c.json({ id, policy_number: policyNumber, message: 'Policy created successfully' }, 201);
+});
+
+app.put('/policies/:id/publish', async (c) => {
+  const id = c.req.param('id');
+  
+  await c.env.DB.prepare(`
+    UPDATE policies SET status = 'published', updated_at = datetime('now')
+    WHERE id = ?
+  `).bind(id).run();
+  
+  return c.json({ message: 'Policy published successfully' });
+});
+
+app.put('/policies/:id/archive', async (c) => {
+  const id = c.req.param('id');
+  
+  await c.env.DB.prepare(`
+    UPDATE policies SET status = 'archived', updated_at = datetime('now')
+    WHERE id = ?
+  `).bind(id).run();
+  
+  return c.json({ message: 'Policy archived successfully' });
+});
+
 export default app;
