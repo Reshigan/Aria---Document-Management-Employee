@@ -24,6 +24,12 @@ function generateUUID(): string {
   return crypto.randomUUID();
 }
 
+// Helper to get company ID with validation
+function getCompanyId(c: any): string | null {
+  const user = c.get('user');
+  return user?.company_id || c.req.query('company_id') || null;
+}
+
 // ============================================
 // FINANCIAL MODULE
 // ============================================
@@ -31,7 +37,12 @@ function generateUUID(): string {
 // --- Budgets ---
 app.get('/budgets', async (c) => {
   const user = c.get('user');
-  const companyId = user?.company_id || c.req.query('company_id');
+  const companyId = getCompanyId(c);
+  if (!companyId) { return c.json({ data: [], message: 'No company_id provided' }); }
+  
+  if (!companyId) {
+    return c.json({ budgets: [], message: 'No company_id provided' });
+  }
   
   const result = await c.env.DB.prepare(`
     SELECT b.*, d.department_name 
@@ -94,7 +105,8 @@ app.delete('/budgets/:id', async (c) => {
 // --- Cost Centers ---
 app.get('/cost-centers', async (c) => {
   const user = c.get('user');
-  const companyId = user?.company_id || c.req.query('company_id');
+  const companyId = getCompanyId(c);
+  if (!companyId) { return c.json({ data: [], message: 'No company_id provided' }); }
   
   const result = await c.env.DB.prepare(`
     SELECT cc.*, d.department_name, e.first_name || ' ' || e.last_name as manager_name
@@ -142,7 +154,8 @@ app.delete('/cost-centers/:id', async (c) => {
 // --- Payment Batches ---
 app.get('/payment-batches', async (c) => {
   const user = c.get('user');
-  const companyId = user?.company_id || c.req.query('company_id');
+  const companyId = getCompanyId(c);
+  if (!companyId) { return c.json({ data: [], message: 'No company_id provided' }); }
   
   const result = await c.env.DB.prepare(`
     SELECT pb.*, ba.account_name as bank_account_name
@@ -211,7 +224,8 @@ app.put('/payment-batches/:id/process', async (c) => {
 // --- Expense Claims ---
 app.get('/expense-claims', async (c) => {
   const user = c.get('user');
-  const companyId = user?.company_id || c.req.query('company_id');
+  const companyId = getCompanyId(c);
+  if (!companyId) { return c.json({ data: [], message: 'No company_id provided' }); }
   
   const result = await c.env.DB.prepare(`
     SELECT ec.*, e.first_name || ' ' || e.last_name as employee_name
@@ -286,7 +300,8 @@ app.put('/expense-claims/:id/reject', async (c) => {
 // --- Credit Notes ---
 app.get('/credit-notes', async (c) => {
   const user = c.get('user');
-  const companyId = user?.company_id || c.req.query('company_id');
+  const companyId = getCompanyId(c);
+  if (!companyId) { return c.json({ data: [], message: 'No company_id provided' }); }
   
   const result = await c.env.DB.prepare(`
     SELECT cn.*, c.customer_name
@@ -327,7 +342,8 @@ app.put('/credit-notes/:id/issue', async (c) => {
 // --- Collections ---
 app.get('/collections', async (c) => {
   const user = c.get('user');
-  const companyId = user?.company_id || c.req.query('company_id');
+  const companyId = getCompanyId(c);
+  if (!companyId) { return c.json({ data: [], message: 'No company_id provided' }); }
   
   const result = await c.env.DB.prepare(`
     SELECT col.*, c.customer_name, e.first_name || ' ' || e.last_name as assigned_to_name
@@ -358,7 +374,8 @@ app.post('/collections', async (c) => {
 // --- Cash Forecasts ---
 app.get('/cash-forecasts', async (c) => {
   const user = c.get('user');
-  const companyId = user?.company_id || c.req.query('company_id');
+  const companyId = getCompanyId(c);
+  if (!companyId) { return c.json({ data: [], message: 'No company_id provided' }); }
   
   const result = await c.env.DB.prepare(`
     SELECT * FROM cash_forecasts WHERE company_id = ? ORDER BY forecast_date DESC
@@ -393,7 +410,8 @@ app.post('/cash-forecasts', async (c) => {
 // --- Bank Transfers ---
 app.get('/bank-transfers', async (c) => {
   const user = c.get('user');
-  const companyId = user?.company_id || c.req.query('company_id');
+  const companyId = getCompanyId(c);
+  if (!companyId) { return c.json({ data: [], message: 'No company_id provided' }); }
   
   const result = await c.env.DB.prepare(`
     SELECT bt.*, 
@@ -441,7 +459,8 @@ app.put('/bank-transfers/:id/complete', async (c) => {
 // --- Price Lists ---
 app.get('/price-lists', async (c) => {
   const user = c.get('user');
-  const companyId = user?.company_id || c.req.query('company_id');
+  const companyId = getCompanyId(c);
+  if (!companyId) { return c.json({ data: [], message: 'No company_id provided' }); }
   
   const result = await c.env.DB.prepare(`
     SELECT * FROM price_lists WHERE company_id = ? ORDER BY price_list_name
@@ -481,7 +500,8 @@ app.post('/price-lists', async (c) => {
 // --- Discounts ---
 app.get('/discounts', async (c) => {
   const user = c.get('user');
-  const companyId = user?.company_id || c.req.query('company_id');
+  const companyId = getCompanyId(c);
+  if (!companyId) { return c.json({ data: [], message: 'No company_id provided' }); }
   
   const result = await c.env.DB.prepare(`
     SELECT * FROM discounts WHERE company_id = ? ORDER BY discount_name
@@ -506,7 +526,8 @@ app.post('/discounts', async (c) => {
 // --- Sales Targets ---
 app.get('/sales-targets', async (c) => {
   const user = c.get('user');
-  const companyId = user?.company_id || c.req.query('company_id');
+  const companyId = getCompanyId(c);
+  if (!companyId) { return c.json({ data: [], message: 'No company_id provided' }); }
   
   const result = await c.env.DB.prepare(`
     SELECT st.*, e.first_name || ' ' || e.last_name as employee_name
@@ -535,7 +556,8 @@ app.post('/sales-targets', async (c) => {
 // --- Commissions ---
 app.get('/commissions', async (c) => {
   const user = c.get('user');
-  const companyId = user?.company_id || c.req.query('company_id');
+  const companyId = getCompanyId(c);
+  if (!companyId) { return c.json({ data: [], message: 'No company_id provided' }); }
   
   const result = await c.env.DB.prepare(`
     SELECT com.*, e.first_name || ' ' || e.last_name as employee_name
@@ -567,7 +589,8 @@ app.post('/commissions', async (c) => {
 // --- Stock Adjustments ---
 app.get('/stock-adjustments', async (c) => {
   const user = c.get('user');
-  const companyId = user?.company_id || c.req.query('company_id');
+  const companyId = getCompanyId(c);
+  if (!companyId) { return c.json({ data: [], message: 'No company_id provided' }); }
   
   const result = await c.env.DB.prepare(`
     SELECT sa.*, w.warehouse_name
@@ -612,7 +635,8 @@ app.post('/stock-adjustments', async (c) => {
 // --- Stock Transfers ---
 app.get('/stock-transfers', async (c) => {
   const user = c.get('user');
-  const companyId = user?.company_id || c.req.query('company_id');
+  const companyId = getCompanyId(c);
+  if (!companyId) { return c.json({ data: [], message: 'No company_id provided' }); }
   
   const result = await c.env.DB.prepare(`
     SELECT st.*, 
@@ -645,7 +669,8 @@ app.post('/stock-transfers', async (c) => {
 // --- Reorder Points ---
 app.get('/reorder-points', async (c) => {
   const user = c.get('user');
-  const companyId = user?.company_id || c.req.query('company_id');
+  const companyId = getCompanyId(c);
+  if (!companyId) { return c.json({ data: [], message: 'No company_id provided' }); }
   
   const result = await c.env.DB.prepare(`
     SELECT rp.*, p.product_name, p.sku, w.warehouse_name,
@@ -677,7 +702,8 @@ app.post('/reorder-points', async (c) => {
 // --- Requisitions ---
 app.get('/requisitions', async (c) => {
   const user = c.get('user');
-  const companyId = user?.company_id || c.req.query('company_id');
+  const companyId = getCompanyId(c);
+  if (!companyId) { return c.json({ data: [], message: 'No company_id provided' }); }
   
   const result = await c.env.DB.prepare(`
     SELECT r.*, e.first_name || ' ' || e.last_name as requested_by_name, d.department_name
@@ -736,7 +762,8 @@ app.put('/requisitions/:id/approve', async (c) => {
 // --- RFQs ---
 app.get('/rfqs', async (c) => {
   const user = c.get('user');
-  const companyId = user?.company_id || c.req.query('company_id');
+  const companyId = getCompanyId(c);
+  if (!companyId) { return c.json({ data: [], message: 'No company_id provided' }); }
   
   const result = await c.env.DB.prepare(`
     SELECT r.*, s.supplier_name as awarded_supplier_name
@@ -766,7 +793,8 @@ app.post('/rfqs', async (c) => {
 // --- Production Plans ---
 app.get('/production-plans', async (c) => {
   const user = c.get('user');
-  const companyId = user?.company_id || c.req.query('company_id');
+  const companyId = getCompanyId(c);
+  if (!companyId) { return c.json({ data: [], message: 'No company_id provided' }); }
   
   const result = await c.env.DB.prepare(`
     SELECT * FROM production_plans WHERE company_id = ? ORDER BY plan_period DESC
@@ -792,7 +820,8 @@ app.post('/production-plans', async (c) => {
 // --- Machine Maintenance ---
 app.get('/machine-maintenance', async (c) => {
   const user = c.get('user');
-  const companyId = user?.company_id || c.req.query('company_id');
+  const companyId = getCompanyId(c);
+  if (!companyId) { return c.json({ data: [], message: 'No company_id provided' }); }
   
   const result = await c.env.DB.prepare(`
     SELECT mm.*, m.machine_name, e.first_name || ' ' || e.last_name as technician_name
@@ -827,7 +856,8 @@ app.post('/machine-maintenance', async (c) => {
 // --- Positions ---
 app.get('/positions', async (c) => {
   const user = c.get('user');
-  const companyId = user?.company_id || c.req.query('company_id');
+  const companyId = getCompanyId(c);
+  if (!companyId) { return c.json({ data: [], message: 'No company_id provided' }); }
   
   const result = await c.env.DB.prepare(`
     SELECT p.*, d.department_name
@@ -856,7 +886,8 @@ app.post('/positions', async (c) => {
 // --- Salary Structures ---
 app.get('/salary-structures', async (c) => {
   const user = c.get('user');
-  const companyId = user?.company_id || c.req.query('company_id');
+  const companyId = getCompanyId(c);
+  if (!companyId) { return c.json({ data: [], message: 'No company_id provided' }); }
   
   const result = await c.env.DB.prepare(`
     SELECT * FROM salary_structures WHERE company_id = ? ORDER BY structure_name
@@ -883,7 +914,8 @@ app.post('/salary-structures', async (c) => {
 // --- Deductions ---
 app.get('/deductions', async (c) => {
   const user = c.get('user');
-  const companyId = user?.company_id || c.req.query('company_id');
+  const companyId = getCompanyId(c);
+  if (!companyId) { return c.json({ data: [], message: 'No company_id provided' }); }
   
   const result = await c.env.DB.prepare(`
     SELECT * FROM deductions WHERE company_id = ? ORDER BY deduction_name
@@ -908,7 +940,8 @@ app.post('/deductions', async (c) => {
 // --- PAYE Returns ---
 app.get('/paye-returns', async (c) => {
   const user = c.get('user');
-  const companyId = user?.company_id || c.req.query('company_id');
+  const companyId = getCompanyId(c);
+  if (!companyId) { return c.json({ data: [], message: 'No company_id provided' }); }
   
   const result = await c.env.DB.prepare(`
     SELECT * FROM paye_returns WHERE company_id = ? ORDER BY return_period DESC
@@ -933,7 +966,8 @@ app.post('/paye-returns', async (c) => {
 // --- UIF Returns ---
 app.get('/uif-returns', async (c) => {
   const user = c.get('user');
-  const companyId = user?.company_id || c.req.query('company_id');
+  const companyId = getCompanyId(c);
+  if (!companyId) { return c.json({ data: [], message: 'No company_id provided' }); }
   
   const result = await c.env.DB.prepare(`
     SELECT * FROM uif_returns WHERE company_id = ? ORDER BY return_period DESC
@@ -960,7 +994,8 @@ app.post('/uif-returns', async (c) => {
 // --- Job Postings ---
 app.get('/job-postings', async (c) => {
   const user = c.get('user');
-  const companyId = user?.company_id || c.req.query('company_id');
+  const companyId = getCompanyId(c);
+  if (!companyId) { return c.json({ data: [], message: 'No company_id provided' }); }
   
   const result = await c.env.DB.prepare(`
     SELECT jp.*, d.department_name, p.position_title
@@ -991,7 +1026,8 @@ app.post('/job-postings', async (c) => {
 // --- Applicants ---
 app.get('/applicants', async (c) => {
   const user = c.get('user');
-  const companyId = user?.company_id || c.req.query('company_id');
+  const companyId = getCompanyId(c);
+  if (!companyId) { return c.json({ data: [], message: 'No company_id provided' }); }
   
   const result = await c.env.DB.prepare(`
     SELECT a.*, jp.job_title
@@ -1029,7 +1065,8 @@ app.post('/applicants', async (c) => {
 // --- Onboarding Tasks ---
 app.get('/onboarding-tasks', async (c) => {
   const user = c.get('user');
-  const companyId = user?.company_id || c.req.query('company_id');
+  const companyId = getCompanyId(c);
+  if (!companyId) { return c.json({ data: [], message: 'No company_id provided' }); }
   const employeeId = c.req.query('employee_id');
   
   let query = `
@@ -1068,7 +1105,8 @@ app.post('/onboarding-tasks', async (c) => {
 // --- Performance Reviews ---
 app.get('/performance-reviews', async (c) => {
   const user = c.get('user');
-  const companyId = user?.company_id || c.req.query('company_id');
+  const companyId = getCompanyId(c);
+  if (!companyId) { return c.json({ data: [], message: 'No company_id provided' }); }
   
   const result = await c.env.DB.prepare(`
     SELECT pr.*, 
@@ -1100,7 +1138,8 @@ app.post('/performance-reviews', async (c) => {
 // --- Training Courses ---
 app.get('/training-courses', async (c) => {
   const user = c.get('user');
-  const companyId = user?.company_id || c.req.query('company_id');
+  const companyId = getCompanyId(c);
+  if (!companyId) { return c.json({ data: [], message: 'No company_id provided' }); }
   
   const result = await c.env.DB.prepare(`
     SELECT * FROM training_courses WHERE company_id = ? ORDER BY course_name
@@ -1125,7 +1164,8 @@ app.post('/training-courses', async (c) => {
 // --- Employee Skills ---
 app.get('/employee-skills', async (c) => {
   const user = c.get('user');
-  const companyId = user?.company_id || c.req.query('company_id');
+  const companyId = getCompanyId(c);
+  if (!companyId) { return c.json({ data: [], message: 'No company_id provided' }); }
   const employeeId = c.req.query('employee_id');
   
   let query = `
@@ -1168,7 +1208,8 @@ app.post('/employee-skills', async (c) => {
 // --- Route Plans ---
 app.get('/route-plans', async (c) => {
   const user = c.get('user');
-  const companyId = user?.company_id || c.req.query('company_id');
+  const companyId = getCompanyId(c);
+  if (!companyId) { return c.json({ data: [], message: 'No company_id provided' }); }
   
   const result = await c.env.DB.prepare(`
     SELECT rp.*, e.first_name || ' ' || e.last_name as technician_name
@@ -1214,7 +1255,8 @@ app.post('/route-plans', async (c) => {
 // --- Service Contracts ---
 app.get('/service-contracts', async (c) => {
   const user = c.get('user');
-  const companyId = user?.company_id || c.req.query('company_id');
+  const companyId = getCompanyId(c);
+  if (!companyId) { return c.json({ data: [], message: 'No company_id provided' }); }
   
   const result = await c.env.DB.prepare(`
     SELECT sc.*, c.customer_name
@@ -1244,7 +1286,8 @@ app.post('/service-contracts', async (c) => {
 // --- Knowledge Base ---
 app.get('/knowledge-base', async (c) => {
   const user = c.get('user');
-  const companyId = user?.company_id || c.req.query('company_id');
+  const companyId = getCompanyId(c);
+  if (!companyId) { return c.json({ data: [], message: 'No company_id provided' }); }
   const isPublic = c.req.query('public');
   
   let query = `SELECT * FROM knowledge_base_articles WHERE company_id = ?`;
@@ -1278,7 +1321,8 @@ app.post('/knowledge-base', async (c) => {
 // --- Project Milestones ---
 app.get('/project-milestones', async (c) => {
   const user = c.get('user');
-  const companyId = user?.company_id || c.req.query('company_id');
+  const companyId = getCompanyId(c);
+  if (!companyId) { return c.json({ data: [], message: 'No company_id provided' }); }
   const projectId = c.req.query('project_id');
   
   let query = `
@@ -1322,7 +1366,8 @@ app.post('/project-milestones', async (c) => {
 // --- VAT Returns ---
 app.get('/vat-returns', async (c) => {
   const user = c.get('user');
-  const companyId = user?.company_id || c.req.query('company_id');
+  const companyId = getCompanyId(c);
+  if (!companyId) { return c.json({ data: [], message: 'No company_id provided' }); }
   
   const result = await c.env.DB.prepare(`
     SELECT * FROM vat_returns WHERE company_id = ? ORDER BY return_period DESC
@@ -1351,7 +1396,8 @@ app.post('/vat-returns', async (c) => {
 // --- B-BBEE Scorecards ---
 app.get('/bbbee-scorecards', async (c) => {
   const user = c.get('user');
-  const companyId = user?.company_id || c.req.query('company_id');
+  const companyId = getCompanyId(c);
+  if (!companyId) { return c.json({ data: [], message: 'No company_id provided' }); }
   
   const result = await c.env.DB.prepare(`
     SELECT * FROM bbbee_scorecards WHERE company_id = ? ORDER BY scorecard_year DESC
@@ -1378,7 +1424,8 @@ app.post('/bbbee-scorecards', async (c) => {
 // --- Controlled Documents ---
 app.get('/controlled-documents', async (c) => {
   const user = c.get('user');
-  const companyId = user?.company_id || c.req.query('company_id');
+  const companyId = getCompanyId(c);
+  if (!companyId) { return c.json({ data: [], message: 'No company_id provided' }); }
   
   const result = await c.env.DB.prepare(`
     SELECT cd.*, e.first_name || ' ' || e.last_name as owner_name
