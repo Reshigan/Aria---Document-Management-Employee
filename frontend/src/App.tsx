@@ -111,6 +111,71 @@ import Milestones from './pages/ServiceFulfillment/Milestones';
 import Deliverables from './pages/ServiceFulfillment/Deliverables';
 import MigrationJobs from './pages/Migration/MigrationJobs';
 import MigrationValidation from './pages/Migration/MigrationValidation';
+// Financial Module Pages
+import BudgetManagement from './pages/Financial/BudgetManagement';
+import CostCenters from './pages/Financial/CostCenters';
+import PaymentBatches from './pages/Financial/PaymentBatches';
+import ExpenseClaims from './pages/Financial/ExpenseClaims';
+import CreditNotes from './pages/Financial/CreditNotes';
+import Collections from './pages/Financial/Collections';
+import CashForecast from './pages/Financial/CashForecast';
+import BankTransfers from './pages/Financial/BankTransfers';
+// Operations Module Pages
+import Leads from './pages/CRM/Leads';
+import Opportunities from './pages/CRM/Opportunities';
+import PriceLists from './pages/Sales/PriceLists';
+import Discounts from './pages/Sales/Discounts';
+import SalesTargets from './pages/Sales/SalesTargets';
+import Commissions from './pages/Sales/Commissions';
+import StockAdjustments from './pages/Inventory/StockAdjustments';
+import StockTransfers from './pages/Inventory/StockTransfers';
+import ReorderPoints from './pages/Inventory/ReorderPoints';
+import BarcodeScanner from './pages/Inventory/BarcodeScanner';
+import Requisitions from './pages/Procurement/Requisitions';
+import RFQs from './pages/Procurement/RFQs';
+import ProcurementContracts from './pages/Procurement/Contracts';
+import SupplierPortal from './pages/Procurement/SupplierPortal';
+import ProductionPlanning from './pages/Manufacturing/ProductionPlanning';
+import MachineMaintenance from './pages/Manufacturing/MachineMaintenance';
+// People Module Pages
+import Positions from './pages/HR/Positions';
+import OrgChart from './pages/HR/OrgChart';
+import LeaveCalendar from './pages/HR/LeaveCalendar';
+import PerformanceReviews from './pages/HR/PerformanceReviews';
+import SkillsMatrix from './pages/HR/SkillsMatrix';
+import HRTraining from './pages/HR/Training';
+import SalaryStructures from './pages/Payroll/SalaryStructures';
+import Deductions from './pages/Payroll/Deductions';
+import PAYEReturns from './pages/Payroll/PAYEReturns';
+import UIFReturns from './pages/Payroll/UIFReturns';
+import JobPostings from './pages/Recruitment/JobPostings';
+import Applicants from './pages/Recruitment/Applicants';
+import Onboarding from './pages/Recruitment/Onboarding';
+// Services Module Pages
+import RoutePlanning from './pages/FieldService/RoutePlanning';
+import ServiceContracts from './pages/FieldService/ServiceContracts';
+import SupportTickets from './pages/Support/SupportTickets';
+import KnowledgeBase from './pages/Support/KnowledgeBase';
+import ProjectMilestones from './pages/Projects/Milestones';
+// Compliance Module Pages
+import VATReturns from './pages/Compliance/VATReturns';
+import AssetRegister from './pages/Compliance/AssetRegister';
+import BBBEE from './pages/Compliance/BBBEE';
+import AuditTrail from './pages/Compliance/AuditTrail';
+import RiskRegister from './pages/Compliance/RiskRegister';
+import DocumentControl from './pages/Compliance/DocumentControl';
+import Policies from './pages/Compliance/Policies';
+// Help & Training Pages
+import FinancialHelp from './pages/Help/FinancialHelp';
+import OperationsHelp from './pages/Help/OperationsHelp';
+import PeopleHelp from './pages/Help/PeopleHelp';
+import ServicesHelp from './pages/Help/ServicesHelp';
+import ComplianceHelp from './pages/Help/ComplianceHelp';
+import FinancialTraining from './pages/Training/FinancialTraining';
+import OperationsTraining from './pages/Training/OperationsTraining';
+import PeopleTraining from './pages/Training/PeopleTraining';
+import ServicesTraining from './pages/Training/ServicesTraining';
+import ComplianceTraining from './pages/Training/ComplianceTraining';
 import './styles/design-system.css';
 
 function App() {
@@ -139,57 +204,81 @@ function App() {
           <Route path="/deliveries/:id" element={<DeliveryDetail />} />
           <Route path="/wms-stock" element={<WMSStock />} />
           
-          {/* General Ledger */}
-          <Route path="/gl" element={<GeneralLedger />} />
-          <Route path="/general-ledger" element={<GeneralLedger />} />
-          <Route path="/gl/journal-entries" element={<GeneralLedger />} />
-          <Route path="/gl/chart-of-accounts" element={<GeneralLedger />} />
+                    {/* General Ledger */}
+                    <Route path="/gl" element={<GeneralLedger />} />
+                    <Route path="/general-ledger" element={<GeneralLedger />} />
+                    <Route path="/gl/journal-entries" element={<GeneralLedger />} />
+                    <Route path="/gl/chart-of-accounts" element={<GeneralLedger />} />
+                    <Route path="/gl/budgets" element={<BudgetManagement />} />
+                    <Route path="/gl/cost-centers" element={<CostCenters />} />
           
-          {/* Accounts Payable */}
-          <Route path="/ap" element={<InvoiceList />} />
-          <Route path="/ap/invoices" element={<InvoiceList />} />
-          <Route path="/ap/invoices/new" element={<InvoiceForm />} />
-          <Route path="/ap/bills" element={<Bills />} />
-          <Route path="/ap/payments" element={<Payments />} />
-          <Route path="/ap/suppliers" element={<Suppliers />} />
+                    {/* Accounts Payable */}
+                    <Route path="/ap" element={<InvoiceList />} />
+                    <Route path="/ap/invoices" element={<InvoiceList />} />
+                    <Route path="/ap/invoices/new" element={<InvoiceForm />} />
+                    <Route path="/ap/bills" element={<Bills />} />
+                    <Route path="/ap/payments" element={<Payments />} />
+                    <Route path="/ap/payment-batches" element={<PaymentBatches />} />
+                    <Route path="/ap/expense-claims" element={<ExpenseClaims />} />
+                    <Route path="/ap/suppliers" element={<Suppliers />} />
           
-          {/* Accounts Receivable */}
-          <Route path="/ar" element={<AccountsReceivable />} />
-          <Route path="/ar/customers" element={<Customers />} />
-          <Route path="/ar/invoices" element={<InvoiceList />} />
-          <Route path="/ar/receipts" element={<Receipts />} />
+                    {/* Accounts Receivable */}
+                    <Route path="/ar" element={<AccountsReceivable />} />
+                    <Route path="/ar/customers" element={<Customers />} />
+                    <Route path="/ar/invoices" element={<InvoiceList />} />
+                    <Route path="/ar/receipts" element={<Receipts />} />
+                    <Route path="/ar/credit-notes" element={<CreditNotes />} />
+                    <Route path="/ar/collections" element={<Collections />} />
           
-          {/* Banking */}
-          <Route path="/banking" element={<BankingDashboard />} />
-          <Route path="/banking/accounts" element={<BankAccounts />} />
-          <Route path="/banking/reconciliation" element={<Reconciliation />} />
+                    {/* Banking */}
+                    <Route path="/banking" element={<BankingDashboard />} />
+                    <Route path="/banking/accounts" element={<BankAccounts />} />
+                    <Route path="/banking/reconciliation" element={<Reconciliation />} />
+                    <Route path="/banking/cash-forecast" element={<CashForecast />} />
+                    <Route path="/banking/transfers" element={<BankTransfers />} />
           
-          {/* HR */}
-          <Route path="/hr" element={<HRDashboard />} />
-          <Route path="/hr/dashboard" element={<HRDashboard />} />
-          <Route path="/hr/employees" element={<HREmployees />} />
-          <Route path="/hr/departments" element={<Departments />} />
-          <Route path="/hr/attendance" element={<Attendance />} />
-          <Route path="/hr/leave" element={<LeaveManagement />} />
+                    {/* HR */}
+                    <Route path="/hr" element={<HRDashboard />} />
+                    <Route path="/hr/dashboard" element={<HRDashboard />} />
+                    <Route path="/hr/employees" element={<HREmployees />} />
+                    <Route path="/hr/departments" element={<Departments />} />
+                    <Route path="/hr/attendance" element={<Attendance />} />
+                    <Route path="/hr/leave" element={<LeaveManagement />} />
+                    <Route path="/hr/positions" element={<Positions />} />
+                    <Route path="/hr/org-chart" element={<OrgChart />} />
+                    <Route path="/hr/leave-calendar" element={<LeaveCalendar />} />
+                    <Route path="/hr/performance-reviews" element={<PerformanceReviews />} />
+                    <Route path="/hr/training" element={<HRTraining />} />
+                    <Route path="/hr/skills-matrix" element={<SkillsMatrix />} />
           
-          {/* Payroll */}
-          <Route path="/payroll" element={<PayrollDashboard />} />
-          <Route path="/payroll/employees" element={<Employees />} />
-          <Route path="/payroll/payslips" element={<PayrollDashboard />} />
-          <Route path="/payroll/runs" element={<PayrollRuns />} />
-          <Route path="/payroll/tax" element={<TaxFilings />} />
+                    {/* Payroll */}
+                    <Route path="/payroll" element={<PayrollDashboard />} />
+                    <Route path="/payroll/employees" element={<Employees />} />
+                    <Route path="/payroll/payslips" element={<PayrollDashboard />} />
+                    <Route path="/payroll/runs" element={<PayrollRuns />} />
+                    <Route path="/payroll/tax" element={<TaxFilings />} />
+                    <Route path="/payroll/salary-structures" element={<SalaryStructures />} />
+                    <Route path="/payroll/deductions" element={<Deductions />} />
+                    <Route path="/payroll/paye-returns" element={<PAYEReturns />} />
+                    <Route path="/payroll/uif-returns" element={<UIFReturns />} />
           
-          {/* CRM */}
-          <Route path="/crm" element={<CRMDashboard />} />
-          <Route path="/crm/customers" element={<Customers />} />
+                    {/* CRM */}
+                    <Route path="/crm" element={<CRMDashboard />} />
+                    <Route path="/crm/customers" element={<Customers />} />
+                    <Route path="/crm/leads" element={<Leads />} />
+                    <Route path="/crm/opportunities" element={<Opportunities />} />
           
-          {/* Inventory */}
-          <Route path="/inventory" element={<WMSStock />} />
-          <Route path="/inventory/products" element={<Products />} />
-          <Route path="/inventory/stock" element={<WMSStock />} />
-          <Route path="/inventory/items" element={<ProductCatalog />} />
-          <Route path="/inventory/warehouses" element={<Warehouses />} />
-          <Route path="/inventory/stock-movements" element={<StockMovements />} />
+                    {/* Inventory */}
+                    <Route path="/inventory" element={<WMSStock />} />
+                    <Route path="/inventory/products" element={<Products />} />
+                    <Route path="/inventory/stock" element={<WMSStock />} />
+                    <Route path="/inventory/items" element={<ProductCatalog />} />
+                    <Route path="/inventory/warehouses" element={<Warehouses />} />
+                    <Route path="/inventory/stock-movements" element={<StockMovements />} />
+                    <Route path="/inventory/adjustments" element={<StockAdjustments />} />
+                    <Route path="/inventory/transfers" element={<StockTransfers />} />
+                    <Route path="/inventory/reorder-points" element={<ReorderPoints />} />
+                    <Route path="/inventory/barcode" element={<BarcodeScanner />} />
           
           {/* Master Data */}
           <Route path="/master-data" element={<ProductCatalog />} />
@@ -199,31 +288,39 @@ function App() {
           <Route path="/customers" element={<Customers />} />
           <Route path="/suppliers" element={<Suppliers />} />
           
-          {/* Procurement */}
-          <Route path="/procurement" element={<PurchaseOrders />} />
-          <Route path="/procurement/purchase-orders" element={<PurchaseOrders />} />
-          <Route path="/procurement/purchase-orders/:id" element={<PurchaseOrderDetail />} />
-          <Route path="/procurement/goods-receipts" element={<GoodsReceipts />} />
-          <Route path="/procurement/goods-receipts/:id" element={<GoodsReceiptDetail />} />
-          <Route path="/procurement/suppliers" element={<ProcurementDashboard />} />
-          <Route path="/procurement/rfq" element={<ProcurementDashboard />} />
-          <Route path="/procurement/products" element={<ProductCatalog />} />
+                    {/* Procurement */}
+                    <Route path="/procurement" element={<PurchaseOrders />} />
+                    <Route path="/procurement/purchase-orders" element={<PurchaseOrders />} />
+                    <Route path="/procurement/purchase-orders/:id" element={<PurchaseOrderDetail />} />
+                    <Route path="/procurement/goods-receipts" element={<GoodsReceipts />} />
+                    <Route path="/procurement/goods-receipts/:id" element={<GoodsReceiptDetail />} />
+                    <Route path="/procurement/suppliers" element={<ProcurementDashboard />} />
+                    <Route path="/procurement/rfq" element={<ProcurementDashboard />} />
+                    <Route path="/procurement/products" element={<ProductCatalog />} />
+                    <Route path="/procurement/requisitions" element={<Requisitions />} />
+                    <Route path="/procurement/rfqs" element={<RFQs />} />
+                    <Route path="/procurement/contracts" element={<Contracts />} />
+                    <Route path="/procurement/supplier-portal" element={<SupplierPortal />} />
           
-          {/* Manufacturing */}
-          <Route path="/manufacturing" element={<WorkOrdersERP />} />
-          <Route path="/manufacturing/work-orders" element={<WorkOrdersERP />} />
-          <Route path="/manufacturing/bom" element={<BOMManagement />} />
-          <Route path="/manufacturing/boms" element={<BOMs />} />
-          <Route path="/manufacturing/production" element={<Production />} />
-          <Route path="/manufacturing/dashboard" element={<ManufacturingDashboard />} />
+                    {/* Manufacturing */}
+                    <Route path="/manufacturing" element={<WorkOrdersERP />} />
+                    <Route path="/manufacturing/work-orders" element={<WorkOrdersERP />} />
+                    <Route path="/manufacturing/bom" element={<BOMManagement />} />
+                    <Route path="/manufacturing/boms" element={<BOMs />} />
+                    <Route path="/manufacturing/production" element={<Production />} />
+                    <Route path="/manufacturing/dashboard" element={<ManufacturingDashboard />} />
+                    <Route path="/manufacturing/planning" element={<ProductionPlanning />} />
+                    <Route path="/manufacturing/maintenance" element={<MachineMaintenance />} />
           
-                    {/* Field Service */}
-                    <Route path="/field-service" element={<FieldService />} />
-                    <Route path="/field-service/requests" element={<FieldService />} />
-                    <Route path="/field-service/work-orders" element={<FieldServiceWorkOrders />} />
-                    <Route path="/field-service/orders" element={<ServiceOrders />} />
-                    <Route path="/field-service/technicians" element={<Technicians />} />
-                    <Route path="/field-service/scheduling" element={<Scheduling />} />
+                                        {/* Field Service */}
+                                        <Route path="/field-service" element={<FieldService />} />
+                                        <Route path="/field-service/requests" element={<FieldService />} />
+                                        <Route path="/field-service/work-orders" element={<FieldServiceWorkOrders />} />
+                                        <Route path="/field-service/orders" element={<ServiceOrders />} />
+                                        <Route path="/field-service/technicians" element={<Technicians />} />
+                                        <Route path="/field-service/scheduling" element={<Scheduling />} />
+                                        <Route path="/field-service/route-planning" element={<RoutePlanning />} />
+                                        <Route path="/field-service/service-contracts" element={<ServiceContracts />} />
           
                     {/* Product Hierarchy (Odoo Parity) */}
                     <Route path="/products/categories" element={<ProductCategories />} />
@@ -260,18 +357,55 @@ function App() {
                                         <Route path="/migration/jobs" element={<MigrationJobs />} />
                                         <Route path="/migration/validation" element={<MigrationValidation />} />
           
-          {/* Projects */}
-          <Route path="/projects" element={<ProjectsDashboard />} />
-          <Route path="/projects/dashboard" element={<ProjectsDashboard />} />
-          <Route path="/projects/tasks" element={<Tasks />} />
-          <Route path="/projects/timesheets" element={<Timesheets />} />
-          <Route path="/projects/reports" element={<ProjectReports />} />
+                    {/* Projects */}
+                    <Route path="/projects" element={<ProjectsDashboard />} />
+                    <Route path="/projects/dashboard" element={<ProjectsDashboard />} />
+                    <Route path="/projects/tasks" element={<Tasks />} />
+                    <Route path="/projects/timesheets" element={<Timesheets />} />
+                    <Route path="/projects/reports" element={<ProjectReports />} />
+                    <Route path="/projects/milestones" element={<Milestones />} />
           
-          {/* Compliance */}
-          <Route path="/compliance" element={<ComplianceDashboard />} />
-          <Route path="/tax" element={<TaxCompliance />} />
-          <Route path="/legal" element={<LegalCompliance />} />
-          <Route path="/fixed-assets" element={<FixedAssets />} />
+                    {/* Recruitment */}
+                    <Route path="/recruitment/job-postings" element={<JobPostings />} />
+                    <Route path="/recruitment/applicants" element={<Applicants />} />
+                    <Route path="/recruitment/onboarding" element={<Onboarding />} />
+          
+                    {/* Sales */}
+                    <Route path="/sales/price-lists" element={<PriceLists />} />
+                    <Route path="/sales/discounts" element={<Discounts />} />
+                    <Route path="/sales/targets" element={<SalesTargets />} />
+                    <Route path="/sales/commissions" element={<Commissions />} />
+          
+                    {/* Support */}
+                    <Route path="/support/tickets" element={<SupportTickets />} />
+                    <Route path="/support/knowledge-base" element={<KnowledgeBase />} />
+          
+                    {/* Help & Training */}
+                    <Route path="/help/financial" element={<FinancialHelp />} />
+                    <Route path="/help/operations" element={<OperationsHelp />} />
+                    <Route path="/help/people" element={<PeopleHelp />} />
+                    <Route path="/help/services" element={<ServicesHelp />} />
+                    <Route path="/help/compliance" element={<ComplianceHelp />} />
+                    <Route path="/training/financial" element={<FinancialTraining />} />
+                    <Route path="/training/operations" element={<OperationsTraining />} />
+                    <Route path="/training/people" element={<PeopleTraining />} />
+                    <Route path="/training/services" element={<ServicesTraining />} />
+                    <Route path="/training/compliance" element={<ComplianceTraining />} />
+          
+                    {/* Compliance */}
+                    <Route path="/compliance" element={<ComplianceDashboard />} />
+                    <Route path="/compliance/vat-returns" element={<VATReturns />} />
+                    <Route path="/compliance/asset-register" element={<AssetRegister />} />
+                    <Route path="/compliance/bbbee" element={<BBBEE />} />
+                    <Route path="/compliance/audit-trail" element={<AuditTrail />} />
+                    <Route path="/compliance/risk-register" element={<RiskRegister />} />
+                    <Route path="/compliance/document-control" element={<DocumentControl />} />
+                    <Route path="/compliance/policies" element={<Policies />} />
+                    <Route path="/tax" element={<TaxCompliance />} />
+                    <Route path="/tax/vat-returns" element={<VATReturns />} />
+                    <Route path="/legal" element={<LegalCompliance />} />
+                    <Route path="/fixed-assets" element={<FixedAssets />} />
+                    <Route path="/fixed-assets/register" element={<AssetRegister />} />
           
           {/* Quality */}
           <Route path="/quality" element={<QualityDashboard />} />
