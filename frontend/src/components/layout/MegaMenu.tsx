@@ -4,9 +4,13 @@ import {
   LayoutDashboard, BookOpen, FileDown, FileUp, Building2, Wallet, Users, Package,
   Bot, FileText, Settings, MessageSquare, FileSpreadsheet, ShoppingCart, Truck,
   ShoppingBag, Factory, Shield, Wrench, ClipboardList, Scale, Briefcase, 
-  FolderOpen, TrendingUp, ChevronDown, LogOut, Search, BarChart3, Command
+  FolderOpen, TrendingUp, ChevronDown, LogOut, Search, BarChart3, Command,
+  HelpCircle, GraduationCap, Video, FileQuestion, BookMarked
 } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
+import { NotificationsBell } from '../NotificationsBell/NotificationsBell';
+import { RecentItems } from '../RecentItems/RecentItems';
+import { QuickActions } from '../QuickActions/QuickActions';
 import './MegaMenu.css';
 
 const API_BASE_URL = '/api';
@@ -37,6 +41,10 @@ const iconMap: Record<string, React.ReactNode> = {
   'Wrench': <Wrench size={18} />,
   'Briefcase': <Briefcase size={18} />,
   'Scale': <Scale size={18} />,
+  'HelpCircle': <HelpCircle size={18} />,
+  'GraduationCap': <GraduationCap size={18} />,
+  'MessageSquare': <MessageSquare size={18} />,
+  'Shield': <Shield size={18} />,
 };
 
 const fallbackMenuData: Record<string, MegaMenuCategory[]> = {
@@ -52,6 +60,8 @@ const fallbackMenuData: Record<string, MegaMenuCategory[]> = {
         { label: 'Trial Balance', path: '/reports/financial/trial-balance' },
         { label: 'Balance Sheet', path: '/reports/financial/balance-sheet' },
         { label: 'Income Statement', path: '/reports/financial/income-statement' },
+        { label: 'Budget Management', path: '/gl/budgets' },
+        { label: 'Cost Centers', path: '/gl/cost-centers' },
       ]
     },
     {
@@ -63,7 +73,9 @@ const fallbackMenuData: Record<string, MegaMenuCategory[]> = {
         { label: 'Vendor Bills', path: '/ap/bills' },
         { label: 'Purchase Orders', path: '/procurement/purchase-orders' },
         { label: 'Payments', path: '/ap/payments' },
+        { label: 'Payment Batches', path: '/ap/payment-batches' },
         { label: 'AP Aging', path: '/reports/ar-ap/ap-aging' },
+        { label: 'Expense Claims', path: '/ap/expense-claims' },
       ]
     },
     {
@@ -75,22 +87,40 @@ const fallbackMenuData: Record<string, MegaMenuCategory[]> = {
         { label: 'Customer Invoices', path: '/ar/invoices' },
         { label: 'Sales Orders', path: '/sales-orders' },
         { label: 'Receipts', path: '/ar/receipts' },
+        { label: 'Credit Notes', path: '/ar/credit-notes' },
         { label: 'AR Aging', path: '/reports/ar-ap/ar-aging' },
+        { label: 'Collections', path: '/ar/collections' },
       ]
     },
-    {
-      title: 'Banking & Cash',
-      icon: <Building2 size={18} />,
-      color: '#06b6d4',
-      items: [
-        { label: 'Banking', path: '/banking' },
-        { label: 'Bank Accounts', path: '/banking/accounts' },
-        { label: 'Reconciliation', path: '/banking/reconciliation' },
-        { label: 'Cash Flow', path: '/reports/ar-ap/cash-flow' },
-      ]
-    },
-  ],
-  'Operations': [
+      {
+        title: 'Banking & Cash',
+        icon: <Building2 size={18} />,
+        color: '#06b6d4',
+        items: [
+          { label: 'Banking', path: '/banking' },
+          { label: 'Bank Accounts', path: '/banking/accounts' },
+          { label: 'Reconciliation', path: '/banking/reconciliation' },
+          { label: 'Cash Flow', path: '/reports/ar-ap/cash-flow' },
+          { label: 'Cash Forecast', path: '/banking/cash-forecast' },
+          { label: 'Bank Transfers', path: '/banking/transfers' },
+        ]
+      },
+      {
+        title: 'Help & Training',
+        icon: <HelpCircle size={18} />,
+        color: '#3b82f6',
+        items: [
+          { label: 'Financial Overview', path: '/help/financial' },
+          { label: 'GL Training Guide', path: '/training/financial/gl' },
+          { label: 'AP/AR Best Practices', path: '/training/financial/ap-ar' },
+          { label: 'Bank Reconciliation Tutorial', path: '/training/financial/reconciliation' },
+          { label: 'Month-End Close Checklist', path: '/help/financial/month-end' },
+          { label: 'Video Tutorials', path: '/training/financial/videos' },
+          { label: 'FAQs', path: '/help/financial/faqs' },
+        ]
+      },
+    ],
+    'Operations': [
     {
       title: 'Sales & CRM',
       icon: <Users size={18} />,
@@ -98,9 +128,15 @@ const fallbackMenuData: Record<string, MegaMenuCategory[]> = {
       items: [
         { label: 'CRM Dashboard', path: '/crm' },
         { label: 'Customers', path: '/crm/customers' },
+        { label: 'Leads', path: '/crm/leads' },
+        { label: 'Opportunities', path: '/crm/opportunities' },
         { label: 'Quotes', path: '/quotes' },
         { label: 'Sales Orders', path: '/sales-orders' },
         { label: 'Deliveries', path: '/deliveries' },
+        { label: 'Price Lists', path: '/sales/price-lists' },
+        { label: 'Discounts', path: '/sales/discounts' },
+        { label: 'Sales Targets', path: '/sales/targets' },
+        { label: 'Commissions', path: '/sales/commissions' },
         { label: 'Sales KPIs', path: '/reports/sales-purchase/sales-kpis' },
       ]
     },
@@ -111,9 +147,14 @@ const fallbackMenuData: Record<string, MegaMenuCategory[]> = {
       items: [
         { label: 'Inventory Dashboard', path: '/inventory' },
         { label: 'Items', path: '/inventory/items' },
+        { label: 'Categories', path: '/inventory/categories' },
         { label: 'Warehouses', path: '/inventory/warehouses' },
         { label: 'Stock Movements', path: '/inventory/stock-movements' },
+        { label: 'Stock Adjustments', path: '/inventory/adjustments' },
+        { label: 'Stock Transfers', path: '/inventory/transfers' },
+        { label: 'Reorder Points', path: '/inventory/reorder-points' },
         { label: 'Valuation', path: '/reports/inventory/valuation' },
+        { label: 'Barcode Scanner', path: '/inventory/barcode' },
       ]
     },
     {
@@ -123,25 +164,46 @@ const fallbackMenuData: Record<string, MegaMenuCategory[]> = {
       items: [
         { label: 'Procurement', path: '/procurement' },
         { label: 'Suppliers', path: '/procurement/suppliers' },
+        { label: 'Requisitions', path: '/procurement/requisitions' },
+        { label: 'RFQs', path: '/procurement/rfqs' },
         { label: 'Purchase Orders', path: '/procurement/purchase-orders' },
         { label: 'Goods Receipts', path: '/procurement/goods-receipts' },
+        { label: 'Contracts', path: '/procurement/contracts' },
+        { label: 'Supplier Portal', path: '/procurement/supplier-portal' },
         { label: 'Purchase KPIs', path: '/reports/sales-purchase/purchase-kpis' },
       ]
     },
-    {
-      title: 'Manufacturing',
-      icon: <Factory size={18} />,
-      color: '#ef4444',
-      items: [
-        { label: 'Manufacturing', path: '/manufacturing' },
-        { label: 'Work Orders', path: '/manufacturing/work-orders' },
-        { label: 'BOMs', path: '/manufacturing/boms' },
-        { label: 'Production', path: '/manufacturing/production' },
-        { label: 'Quality', path: '/quality' },
-      ]
-    },
-  ],
-  'People': [
+      {
+        title: 'Manufacturing',
+        icon: <Factory size={18} />,
+        color: '#ef4444',
+        items: [
+          { label: 'Manufacturing', path: '/manufacturing' },
+          { label: 'Work Orders', path: '/manufacturing/work-orders' },
+          { label: 'BOMs', path: '/manufacturing/boms' },
+          { label: 'Production', path: '/manufacturing/production' },
+          { label: 'Production Planning', path: '/manufacturing/planning' },
+          { label: 'Machine Maintenance', path: '/manufacturing/maintenance' },
+          { label: 'Quality', path: '/quality' },
+          { label: 'Quality Inspections', path: '/quality/inspections' },
+        ]
+      },
+      {
+        title: 'Help & Training',
+        icon: <HelpCircle size={18} />,
+        color: '#3b82f6',
+        items: [
+          { label: 'Operations Overview', path: '/help/operations' },
+          { label: 'Sales Process Guide', path: '/training/operations/sales' },
+          { label: 'Inventory Management', path: '/training/operations/inventory' },
+          { label: 'Procurement Workflow', path: '/training/operations/procurement' },
+          { label: 'Manufacturing Setup', path: '/training/operations/manufacturing' },
+          { label: 'Video Tutorials', path: '/training/operations/videos' },
+          { label: 'FAQs', path: '/help/operations/faqs' },
+        ]
+      },
+    ],
+    'People': [
     {
       title: 'Human Resources',
       icon: <Users size={18} />,
@@ -150,8 +212,11 @@ const fallbackMenuData: Record<string, MegaMenuCategory[]> = {
         { label: 'HR Dashboard', path: '/hr' },
         { label: 'Employees', path: '/hr/employees' },
         { label: 'Departments', path: '/hr/departments' },
+        { label: 'Positions', path: '/hr/positions' },
+        { label: 'Org Chart', path: '/hr/org-chart' },
         { label: 'Attendance', path: '/hr/attendance' },
         { label: 'Leave Management', path: '/hr/leave' },
+        { label: 'Leave Calendar', path: '/hr/leave-calendar' },
       ]
     },
     {
@@ -162,11 +227,43 @@ const fallbackMenuData: Record<string, MegaMenuCategory[]> = {
         { label: 'Payroll Dashboard', path: '/payroll' },
         { label: 'Payroll Runs', path: '/payroll/runs' },
         { label: 'Payslips', path: '/payroll/payslips' },
+        { label: 'Salary Structures', path: '/payroll/salary-structures' },
+        { label: 'Deductions', path: '/payroll/deductions' },
         { label: 'Tax Filings', path: '/payroll/tax' },
+        { label: 'PAYE Returns', path: '/payroll/paye' },
+        { label: 'UIF Returns', path: '/payroll/uif' },
       ]
     },
-  ],
-  'Services': [
+      {
+        title: 'Talent',
+        icon: <Briefcase size={18} />,
+        color: '#8b5cf6',
+        items: [
+          { label: 'Recruitment', path: '/hr/recruitment' },
+          { label: 'Job Postings', path: '/hr/job-postings' },
+          { label: 'Applicants', path: '/hr/applicants' },
+          { label: 'Onboarding', path: '/hr/onboarding' },
+          { label: 'Performance Reviews', path: '/hr/performance' },
+          { label: 'Training', path: '/hr/training' },
+          { label: 'Skills Matrix', path: '/hr/skills' },
+        ]
+      },
+      {
+        title: 'Help & Training',
+        icon: <HelpCircle size={18} />,
+        color: '#3b82f6',
+        items: [
+          { label: 'HR Overview', path: '/help/people' },
+          { label: 'Employee Management Guide', path: '/training/people/employees' },
+          { label: 'Payroll Processing', path: '/training/people/payroll' },
+          { label: 'Leave Management', path: '/training/people/leave' },
+          { label: 'SA Labour Law Compliance', path: '/training/people/labour-law' },
+          { label: 'Video Tutorials', path: '/training/people/videos' },
+          { label: 'FAQs', path: '/help/people/faqs' },
+        ]
+      },
+    ],
+    'Services': [
     {
       title: 'Field Service',
       icon: <Wrench size={18} />,
@@ -176,6 +273,9 @@ const fallbackMenuData: Record<string, MegaMenuCategory[]> = {
         { label: 'Service Orders', path: '/field-service/orders' },
         { label: 'Technicians', path: '/field-service/technicians' },
         { label: 'Scheduling', path: '/field-service/scheduling' },
+        { label: 'Route Planning', path: '/field-service/routes' },
+        { label: 'Service Contracts', path: '/field-service/contracts' },
+        { label: 'Equipment', path: '/field-service/equipment' },
       ]
     },
     {
@@ -185,21 +285,80 @@ const fallbackMenuData: Record<string, MegaMenuCategory[]> = {
       items: [
         { label: 'Projects', path: '/projects' },
         { label: 'Tasks', path: '/projects/tasks' },
+        { label: 'Milestones', path: '/projects/milestones' },
         { label: 'Timesheets', path: '/projects/timesheets' },
+        { label: 'Resource Planning', path: '/projects/resources' },
+        { label: 'Gantt Chart', path: '/projects/gantt' },
         { label: 'Project Reports', path: '/projects/reports' },
       ]
     },
-  ],
-  'Compliance': [
+      {
+        title: 'Support',
+        icon: <MessageSquare size={18} />,
+        color: '#ec4899',
+        items: [
+          { label: 'Support Tickets', path: '/support/tickets' },
+          { label: 'Knowledge Base', path: '/support/knowledge-base' },
+          { label: 'Customer Portal', path: '/support/customer-portal' },
+          { label: 'SLA Management', path: '/support/sla' },
+          { label: 'Escalations', path: '/support/escalations' },
+        ]
+      },
+      {
+        title: 'Help & Training',
+        icon: <HelpCircle size={18} />,
+        color: '#3b82f6',
+        items: [
+          { label: 'Services Overview', path: '/help/services' },
+          { label: 'Field Service Guide', path: '/training/services/field-service' },
+          { label: 'Project Management', path: '/training/services/projects' },
+          { label: 'Timesheet Entry', path: '/training/services/timesheets' },
+          { label: 'Support Ticket Handling', path: '/training/services/support' },
+          { label: 'Video Tutorials', path: '/training/services/videos' },
+          { label: 'FAQs', path: '/help/services/faqs' },
+        ]
+      },
+    ],
+    'Compliance': [
     {
       title: 'Tax & Legal',
       icon: <Scale size={18} />,
       color: '#dc2626',
       items: [
         { label: 'Tax Management', path: '/tax' },
+        { label: 'VAT Returns', path: '/tax/vat' },
         { label: 'Legal', path: '/legal' },
+        { label: 'Contracts', path: '/legal/contracts' },
         { label: 'Fixed Assets', path: '/fixed-assets' },
+        { label: 'Asset Register', path: '/fixed-assets/register' },
+        { label: 'Depreciation', path: '/fixed-assets/depreciation' },
+      ]
+    },
+    {
+      title: 'Governance',
+      icon: <Shield size={18} />,
+      color: '#7c3aed',
+      items: [
         { label: 'Compliance', path: '/admin/compliance' },
+        { label: 'B-BBEE', path: '/compliance/b-bbee' },
+        { label: 'Audit Trail', path: '/admin/audit-trail' },
+        { label: 'Document Control', path: '/compliance/documents' },
+        { label: 'Risk Register', path: '/compliance/risks' },
+        { label: 'Policies', path: '/compliance/policies' },
+      ]
+    },
+    {
+      title: 'Help & Training',
+      icon: <HelpCircle size={18} />,
+      color: '#3b82f6',
+      items: [
+        { label: 'Compliance Overview', path: '/help/compliance' },
+        { label: 'SA Tax Guide (VAT/PAYE)', path: '/training/compliance/tax' },
+        { label: 'B-BBEE Compliance', path: '/training/compliance/b-bbee' },
+        { label: 'Fixed Assets Management', path: '/training/compliance/assets' },
+        { label: 'Audit Preparation', path: '/training/compliance/audit' },
+        { label: 'Video Tutorials', path: '/training/compliance/videos' },
+        { label: 'FAQs', path: '/help/compliance/faqs' },
       ]
     },
   ],
@@ -372,6 +531,9 @@ export const MegaMenu: React.FC<MegaMenuProps> = ({ onSearchClick }) => {
         </nav>
 
         <div className="mega-menu-user" data-testid="user-menu">
+          <QuickActions variant="dropdown" />
+          <RecentItems variant="dropdown" />
+          <NotificationsBell />
           <div className="mega-menu-user-info">
             <span className="mega-menu-user-name" data-testid="user-name">{user?.full_name || 'User'}</span>
             <span className="mega-menu-user-role">{user?.email}</span>
