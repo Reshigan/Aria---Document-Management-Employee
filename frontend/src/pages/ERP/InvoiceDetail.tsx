@@ -5,7 +5,7 @@ import { TransactionLayout, TransactionCard, TransactionField } from '../../comp
 import { LineItemsTable, LineItem } from '../../components/LineItemsTable';
 import { PostingStatus } from '../../components/PostingStatus';
 import { AutomationPanel } from '../../components/AutomationPanel';
-import { DollarSign, Printer } from 'lucide-react';
+import { DollarSign, Printer, Mail, X } from 'lucide-react';
 
 interface Invoice {
   id: string;
@@ -58,14 +58,19 @@ export default function InvoiceDetail() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const [customerId, setCustomerId] = useState('');
-  const [invoiceDate, setInvoiceDate] = useState(new Date().toISOString().split('T')[0]);
-  const [dueDate, setDueDate] = useState(
-    new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
-  );
-  const [notes, setNotes] = useState('');
-  const [termsAndConditions, setTermsAndConditions] = useState('');
-  const [lineItems, setLineItems] = useState<LineItem[]>([]);
+    const [customerId, setCustomerId] = useState('');
+    const [invoiceDate, setInvoiceDate] = useState(new Date().toISOString().split('T')[0]);
+    const [dueDate, setDueDate] = useState(
+      new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+    );
+    const [notes, setNotes] = useState('');
+    const [termsAndConditions, setTermsAndConditions] = useState('');
+    const [lineItems, setLineItems] = useState<LineItem[]>([]);
+    const [showEmailModal, setShowEmailModal] = useState(false);
+    const [emailTo, setEmailTo] = useState('');
+    const [emailSubject, setEmailSubject] = useState('');
+    const [emailBody, setEmailBody] = useState('');
+    const [sendingEmail, setSendingEmail] = useState(false);
 
   useEffect(() => {
     loadMasterData();
@@ -213,27 +218,184 @@ export default function InvoiceDetail() {
     }
   };
 
-  const calculateTotals = () => {
-    let subtotal = 0;
-    let taxAmount = 0;
+    const calculateTotals = () => {
+      let subtotal = 0;
+      let taxAmount = 0;
 
-    lineItems.forEach((item) => {
-      const lineSubtotal = item.quantity * item.unit_price * (1 - (item.discount_percent || 0) / 100);
-      const lineTax = lineSubtotal * ((item.tax_rate || 15) / 100);
-      subtotal += lineSubtotal;
-      taxAmount += lineTax;
-    });
+      lineItems.forEach((item) => {
+        const lineSubtotal = item.quantity * item.unit_price * (1 - (item.discount_percent || 0) / 100);
+        const lineTax = lineSubtotal * ((item.tax_rate || 15) / 100);
+        subtotal += lineSubtotal;
+        taxAmount += lineTax;
+      });
 
-    return {
-      subtotal,
-      taxAmount,
-      total: subtotal + taxAmount
+      return {
+        subtotal,
+        taxAmount,
+        total: subtotal + taxAmount
+      };
     };
-  };
 
-  const totals = calculateTotals();
+    const handlePrint = () => {
+      if (!invoice) return;
+    
+      const printWindow = window.open('', '_blank');
+      if (!printWindow) {
+        alert('Please allow popups to print the invoice');
+        return;
+      }
+    
+      const customer = customers.find(c => c.id === invoice.customer_id);
+    
+      printWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>Invoice ${invoice.invoice_number}</title>
+          <style>
+            body { font-family: Arial, sans-serif; padding: 40px; max-width: 800px; margin: 0 auto; }
+            .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #333; padding-bottom: 20px; }
+            .header h1 { margin: 0; font-size: 28px; }
+            .header p { margin: 5px 0; color: #666; }
+            .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px; }
+            .info-box { background: #f5f5f5; padding: 15px; border-radius: 5px; }
+            .info-box h3 { margin: 0 0 10px 0; font-size: 14px; color: #666; text-transform: uppercase; }
+            .info-box p { margin: 5px 0; }
+            table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+            th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+            th { background: #333; color: white; }
+            .totals { text-align: right; }
+            .totals .row { display: flex; justify-content: flex-end; gap: 50px; margin: 5px 0; }
+            .totals .total { font-size: 18px; font-weight: bold; border-top: 2px solid #333; padding-top: 10px; margin-top: 10px; }
+            .footer { margin-top: 50px; text-align: center; color: #666; font-size: 12px; }
+            @media print { body { padding: 20px; } }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <h1>TAX INVOICE</h1>
+            <p>Invoice #: ${invoice.invoice_number}</p>
+          </div>
+        
+          <div class="info-grid">
+            <div class="info-box">
+              <h3>Bill To</h3>
+              <p><strong>${customer?.name || 'Customer'}</strong></p>
+              <p>Customer Code: ${customer?.code || 'N/A'}</p>
+            </div>
+            <div class="info-box">
+              <h3>Invoice Details</h3>
+              <p><strong>Invoice Date:</strong> ${new Date(invoice.invoice_date).toLocaleDateString()}</p>
+              <p><strong>Due Date:</strong> ${new Date(invoice.due_date).toLocaleDateString()}</p>
+              <p><strong>Status:</strong> ${invoice.status.toUpperCase()}</p>
+            </div>
+          </div>
+        
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Description</th>
+                <th>Qty</th>
+                <th>Unit Price</th>
+                <th>Tax</th>
+                <th>Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${invoice.lines.map((line, idx) => {
+                const lineTotal = line.quantity * line.unit_price * (1 - (line.discount_percent || 0) / 100);
+                return `
+                  <tr>
+                    <td>${idx + 1}</td>
+                    <td>${line.description}</td>
+                    <td>${line.quantity}</td>
+                    <td>R ${line.unit_price.toFixed(2)}</td>
+                    <td>${line.tax_rate || 15}%</td>
+                    <td>R ${lineTotal.toFixed(2)}</td>
+                  </tr>
+                `;
+              }).join('')}
+            </tbody>
+          </table>
+        
+          <div class="totals">
+            <div class="row"><span>Subtotal:</span><span>R ${invoice.subtotal.toFixed(2)}</span></div>
+            <div class="row"><span>VAT (15%):</span><span>R ${invoice.tax_amount.toFixed(2)}</span></div>
+            <div class="row total"><span>Total:</span><span>R ${invoice.total_amount.toFixed(2)}</span></div>
+          </div>
+        
+          ${invoice.notes ? `<div style="margin-top: 30px;"><strong>Notes:</strong><p>${invoice.notes}</p></div>` : ''}
+          ${invoice.terms_and_conditions ? `<div style="margin-top: 20px;"><strong>Terms & Conditions:</strong><p>${invoice.terms_and_conditions}</p></div>` : ''}
+        
+          <div class="footer">
+            <p>Thank you for your business!</p>
+            <p>Generated on ${new Date().toLocaleString()}</p>
+          </div>
+        </body>
+        </html>
+      `);
+    
+      printWindow.document.close();
+      printWindow.focus();
+      setTimeout(() => {
+        printWindow.print();
+      }, 250);
+    };
 
-  return (
+    const handleOpenEmailModal = () => {
+      if (!invoice) return;
+    
+      const customer = customers.find(c => c.id === invoice.customer_id);
+      setEmailTo('');
+      setEmailSubject(`Invoice ${invoice.invoice_number} from ARIA ERP`);
+      setEmailBody(`Dear ${customer?.name || 'Customer'},
+
+  Please find attached Invoice ${invoice.invoice_number} dated ${new Date(invoice.invoice_date).toLocaleDateString()}.
+
+  Invoice Details:
+  - Invoice Number: ${invoice.invoice_number}
+  - Invoice Date: ${new Date(invoice.invoice_date).toLocaleDateString()}
+  - Due Date: ${new Date(invoice.due_date).toLocaleDateString()}
+  - Total Amount: R ${invoice.total_amount.toFixed(2)}
+
+  Payment is due by ${new Date(invoice.due_date).toLocaleDateString()}.
+
+  Thank you for your business.
+
+  Best regards,
+  ARIA ERP System`);
+      setShowEmailModal(true);
+    };
+
+    const handleSendEmail = async () => {
+      if (!invoice || !emailTo) {
+        alert('Please enter a recipient email address');
+        return;
+      }
+    
+      setSendingEmail(true);
+      try {
+        await api.post('/api/email/send', {
+          to: emailTo,
+          subject: emailSubject,
+          body: emailBody,
+          document_type: 'invoice',
+          document_id: invoice.id,
+        });
+        alert('Email sent successfully!');
+        setShowEmailModal(false);
+      } catch (err: any) {
+        console.error('Error sending email:', err);
+        alert(err.response?.data?.detail || 'Failed to send email. Please try again.');
+      } finally {
+        setSendingEmail(false);
+      }
+    };
+
+    const totals = calculateTotals();
+
+    return (
     <TransactionLayout
       title={isNew ? 'New Invoice' : 'Invoice'}
       documentNumber={invoice?.invoice_number}
@@ -243,8 +405,8 @@ export default function InvoiceDetail() {
       onApprove={invoice?.status === 'draft' && !isNew ? handleApprove : undefined}
       onPost={(invoice?.status === 'approved' || invoice?.status === 'draft') && !isNew ? handlePost : undefined}
       onCancel={invoice?.status === 'draft' && !isNew ? handleCancel : undefined}
-      onPrint={invoice?.status === 'posted' ? () => alert('Print functionality coming soon') : undefined}
-      onEmail={invoice?.status === 'posted' ? () => alert('Email functionality coming soon') : undefined}
+            onPrint={invoice?.status === 'posted' ? handlePrint : undefined}
+            onEmail={invoice?.status === 'posted' ? handleOpenEmailModal : undefined}
       loading={loading}
     >
       {error && (
@@ -458,6 +620,102 @@ export default function InvoiceDetail() {
           )}
         </div>
       </div>
+
+      {/* Email Modal */}
+      {showEmailModal && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000,
+        }}>
+          <div style={{
+            backgroundColor: 'white',
+            borderRadius: '0.5rem',
+            padding: '1.5rem',
+            width: '100%',
+            maxWidth: '600px',
+            maxHeight: '90vh',
+            overflow: 'auto',
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+              <h2 style={{ fontSize: '1.25rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <Mail size={20} />
+                Send Invoice via Email
+              </h2>
+              <button onClick={() => setShowEmailModal(false)} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
+                <X size={20} />
+              </button>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <div>
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500 }}>To *</label>
+                <input
+                  type="email"
+                  value={emailTo}
+                  onChange={(e) => setEmailTo(e.target.value)}
+                  style={{ width: '100%', padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.375rem' }}
+                  placeholder="customer@example.com"
+                />
+              </div>
+              <div>
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500 }}>Subject</label>
+                <input
+                  type="text"
+                  value={emailSubject}
+                  onChange={(e) => setEmailSubject(e.target.value)}
+                  style={{ width: '100%', padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.375rem' }}
+                />
+              </div>
+              <div>
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500 }}>Message</label>
+                <textarea
+                  value={emailBody}
+                  onChange={(e) => setEmailBody(e.target.value)}
+                  rows={10}
+                  style={{ width: '100%', padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', resize: 'vertical' }}
+                />
+              </div>
+              <div style={{ backgroundColor: '#f3f4f6', padding: '0.75rem', borderRadius: '0.375rem', fontSize: '0.875rem', color: '#6b7280' }}>
+                <strong>Note:</strong> The invoice PDF will be automatically attached to this email.
+              </div>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginTop: '1.5rem' }}>
+              <button
+                onClick={() => setShowEmailModal(false)}
+                style={{ padding: '0.5rem 1rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', cursor: 'pointer', backgroundColor: 'white' }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSendEmail}
+                disabled={sendingEmail || !emailTo}
+                style={{
+                  padding: '0.5rem 1rem',
+                  backgroundColor: '#2563eb',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '0.375rem',
+                  cursor: sendingEmail ? 'not-allowed' : 'pointer',
+                  opacity: sendingEmail || !emailTo ? 0.5 : 1,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                }}
+              >
+                <Mail size={16} />
+                {sendingEmail ? 'Sending...' : 'Send Email'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </TransactionLayout>
   );
 }
