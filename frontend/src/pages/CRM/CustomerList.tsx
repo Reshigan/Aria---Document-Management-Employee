@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Plus, Search, Users, Building2 } from 'lucide-react';
+import { Plus, Search, Users, Building2, X, Edit, Trash2 } from 'lucide-react';
 import { formatCurrency, formatPhoneNumber } from '../../utils/formatters';
 
 interface Customer {
@@ -15,19 +15,112 @@ interface Customer {
   is_active: boolean;
 }
 
+interface FormData {
+  customer_name: string;
+  contact_person: string;
+  email: string;
+  phone: string;
+  bbbee_level: number;
+  credit_limit: number;
+}
+
 const CustomerList: React.FC = () => {
   const [customers, setCustomers] = useState<Customer[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [showModal, setShowModal] = useState(false);
+  const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null);
+  const [formData, setFormData] = useState<FormData>({
+    customer_name: '',
+    contact_person: '',
+    email: '',
+    phone: '',
+    bbbee_level: 4,
+    credit_limit: 50000
+  });
+  const [error, setError] = useState<string | null>(null);
 
-  // Mock data for demonstration
   useEffect(() => {
-    setCustomers([
-      { id: 1, customer_code: 'CUST-00001', customer_name: 'ABC Manufacturing', contact_person: 'John Smith', email: 'john@abc.co.za', phone: '0114567890', bbbee_level: 2, credit_limit: 100000, is_active: true },
-      { id: 2, customer_code: 'CUST-00002', customer_name: 'XYZ Trading', contact_person: 'Jane Doe', email: 'jane@xyz.co.za', phone: '0213334455', bbbee_level: 4, credit_limit: 50000, is_active: true },
-      { id: 3, customer_code: 'CUST-00003', customer_name: 'Mega Corp', contact_person: 'Bob Wilson', email: 'bob@mega.co.za', phone: '0312223344', bbbee_level: 1, credit_limit: 250000, is_active: true }
-    ]);
+    fetchCustomers();
   }, []);
+
+  const fetchCustomers = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch('https://aria.vantax.co.za/api/customers');
+      const data = await response.json();
+      setCustomers(data.customers || []);
+    } catch (error) {
+      console.error('Error:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const resetForm = () => {
+    setFormData({
+      customer_name: '',
+      contact_person: '',
+      email: '',
+      phone: '',
+      bbbee_level: 4,
+      credit_limit: 50000
+    });
+    setEditingCustomer(null);
+    setError(null);
+  };
+
+  const handleCreate = () => {
+    resetForm();
+    setShowModal(true);
+  };
+
+  const handleEdit = (customer: Customer) => {
+    setEditingCustomer(customer);
+    setFormData({
+      customer_name: customer.customer_name,
+      contact_person: customer.contact_person || '',
+      email: customer.email || '',
+      phone: customer.phone || '',
+      bbbee_level: customer.bbbee_level || 4,
+      credit_limit: customer.credit_limit
+    });
+    setShowModal(true);
+  };
+
+  const handleDelete = async (customerId: number) => {
+    if (!confirm('Are you sure you want to delete this customer?')) return;
+    try {
+      await fetch(`https://aria.vantax.co.za/api/customers/${customerId}`, {
+        method: 'DELETE'
+      });
+      fetchCustomers();
+    } catch (error) {
+      setError('Failed to delete customer');
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const url = editingCustomer 
+        ? `https://aria.vantax.co.za/api/customers/${editingCustomer.id}`
+        : 'https://aria.vantax.co.za/api/customers';
+      const method = editingCustomer ? 'PUT' : 'POST';
+      
+      await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+      
+      setShowModal(false);
+      resetForm();
+      fetchCustomers();
+    } catch (error) {
+      setError('Failed to save customer');
+    }
+  };
 
   const filteredCustomers = customers.filter(c =>
     c.customer_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -48,10 +141,10 @@ const CustomerList: React.FC = () => {
           <h1 className="text-3xl font-bold text-gray-900">Customers</h1>
           <p className="text-gray-500 mt-1">Manage your customer database</p>
         </div>
-        <Link to="/crm/customers/new" className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center">
+        <button onClick={handleCreate} className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center">
           <Plus className="w-4 h-4 mr-2" />
           New Customer
-        </Link>
+        </button>
       </div>
 
       {/* Summary Cards */}
@@ -130,9 +223,17 @@ const CustomerList: React.FC = () => {
                 <td className="px-6 py-4">{getBBBEEBadge(customer.bbbee_level)}</td>
                 <td className="px-6 py-4 text-sm font-medium">{formatCurrency(customer.credit_limit)}</td>
                 <td className="px-6 py-4">
-                  <Link to={`/crm/customers/${customer.id}`} className="text-blue-600 hover:text-blue-800 text-sm">
-                    View
-                  </Link>
+                  <div className="flex items-center space-x-2">
+                    <Link to={`/crm/customers/${customer.id}`} className="text-blue-600 hover:text-blue-800 text-sm">
+                      View
+                    </Link>
+                    <button onClick={() => handleEdit(customer)} className="text-gray-600 hover:text-blue-600">
+                      <Edit className="w-4 h-4" />
+                    </button>
+                    <button onClick={() => handleDelete(customer.id)} className="text-gray-600 hover:text-red-600">
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}
@@ -144,6 +245,111 @@ const CustomerList: React.FC = () => {
         <div className="text-center py-12">
           <Users className="mx-auto h-12 w-12 text-gray-400" />
           <p className="mt-2 text-sm text-gray-500">No customers found</p>
+        </div>
+      )}
+
+      {error && (
+        <div className="fixed bottom-4 right-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+          {error}
+        </div>
+      )}
+
+      {showModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-lg mx-4">
+            <div className="flex items-center justify-between p-4 border-b">
+              <h2 className="text-xl font-semibold">
+                {editingCustomer ? 'Edit Customer' : 'New Customer'}
+              </h2>
+              <button onClick={() => setShowModal(false)} className="text-gray-500 hover:text-gray-700">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <form onSubmit={handleSubmit} className="p-4 space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Customer Name *</label>
+                <input
+                  type="text"
+                  required
+                  value={formData.customer_name}
+                  onChange={(e) => setFormData({ ...formData, customer_name: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Contact Person</label>
+                <input
+                  type="text"
+                  value={formData.contact_person}
+                  onChange={(e) => setFormData({ ...formData, contact_person: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                  <input
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+                  <input
+                    type="text"
+                    value={formData.phone}
+                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">BBBEE Level</label>
+                  <select
+                    value={formData.bbbee_level}
+                    onChange={(e) => setFormData({ ...formData, bbbee_level: parseInt(e.target.value) })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value={1}>Level 1</option>
+                    <option value={2}>Level 2</option>
+                    <option value={3}>Level 3</option>
+                    <option value={4}>Level 4</option>
+                    <option value={5}>Level 5</option>
+                    <option value={6}>Level 6</option>
+                    <option value={7}>Level 7</option>
+                    <option value={8}>Level 8</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Credit Limit</label>
+                  <input
+                    type="number"
+                    value={formData.credit_limit}
+                    onChange={(e) => setFormData({ ...formData, credit_limit: parseFloat(e.target.value) })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
+              <div className="flex justify-end space-x-3 pt-4">
+                <button
+                  type="button"
+                  onClick={() => setShowModal(false)}
+                  className="px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                >
+                  {editingCustomer ? 'Update' : 'Create'}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
     </div>
