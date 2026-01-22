@@ -200,11 +200,12 @@ function App() {
           <Route path="/ap/payments" element={<Payments />} />
           <Route path="/ap/suppliers" element={<Suppliers />} />
           
-          {/* Accounts Receivable */}
-          <Route path="/ar" element={<AccountsReceivable />} />
-          <Route path="/ar/customers" element={<Customers />} />
-          <Route path="/ar/invoices" element={<InvoiceList />} />
-          <Route path="/ar/receipts" element={<Receipts />} />
+                    {/* Accounts Receivable */}
+                    <Route path="/ar" element={<AccountsReceivable />} />
+                    <Route path="/ar/customers" element={<Customers />} />
+                    <Route path="/ar/invoices" element={<InvoiceList />} />
+                    <Route path="/ar/invoices/new" element={<InvoiceForm />} />
+                    <Route path="/ar/receipts" element={<Receipts />} />
           
           {/* Banking */}
           <Route path="/banking" element={<BankingDashboard />} />
@@ -246,15 +247,23 @@ function App() {
           <Route path="/customers" element={<Customers />} />
           <Route path="/suppliers" element={<Suppliers />} />
           
-          {/* Procurement */}
-          <Route path="/procurement" element={<PurchaseOrders />} />
-          <Route path="/procurement/purchase-orders" element={<PurchaseOrders />} />
-          <Route path="/procurement/purchase-orders/:id" element={<PurchaseOrderDetail />} />
-          <Route path="/procurement/goods-receipts" element={<GoodsReceipts />} />
-          <Route path="/procurement/goods-receipts/:id" element={<GoodsReceiptDetail />} />
-          <Route path="/procurement/suppliers" element={<ProcurementDashboard />} />
-          <Route path="/procurement/rfq" element={<ProcurementDashboard />} />
-          <Route path="/procurement/products" element={<ProductCatalog />} />
+                    {/* Procurement */}
+                    <Route path="/procurement" element={<PurchaseOrders />} />
+                    <Route path="/procurement/purchase-orders" element={<PurchaseOrders />} />
+                    <Route path="/procurement/purchase-orders/:id" element={<PurchaseOrderDetail />} />
+                    <Route path="/procurement/goods-receipts" element={<GoodsReceipts />} />
+                    <Route path="/procurement/goods-receipts/:id" element={<GoodsReceiptDetail />} />
+                    <Route path="/procurement/suppliers" element={<ProcurementDashboard />} />
+                    <Route path="/procurement/rfq" element={<ProcurementDashboard />} />
+                    <Route path="/procurement/products" element={<ProductCatalog />} />
+          
+                    {/* ERP Procure-to-Pay Routes (alias for menu links) */}
+                    <Route path="/erp/procure-to-pay/purchase-orders" element={<PurchaseOrders />} />
+                    <Route path="/erp/procure-to-pay/purchase-orders/:id" element={<PurchaseOrderDetail />} />
+                    <Route path="/erp/procure-to-pay/goods-receipts" element={<GoodsReceipts />} />
+                    <Route path="/erp/procure-to-pay/goods-receipts/:id" element={<GoodsReceiptDetail />} />
+                    <Route path="/erp/procure-to-pay/suppliers" element={<Suppliers />} />
+                    <Route path="/erp/procure-to-pay/rfqs" element={<RFQs />} />
           
           {/* Manufacturing */}
           <Route path="/manufacturing" element={<WorkOrdersERP />} />

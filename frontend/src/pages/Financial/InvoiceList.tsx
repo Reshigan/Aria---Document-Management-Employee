@@ -52,10 +52,10 @@ const InvoiceList: React.FC = () => {
           <h1 className="text-3xl font-bold text-gray-900">Invoices</h1>
           <p className="text-gray-500 mt-1">Manage your sales invoices</p>
         </div>
-        <Link to="/financial/invoices/new" className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center">
-          <Plus className="w-4 h-4 mr-2" />
-          New Invoice
-        </Link>
+                <Link to="/ar/invoices/new" className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center">
+                  <Plus className="w-4 h-4 mr-2" />
+                  New Invoice
+                </Link>
       </div>
 
       {/* Summary Cards */}
