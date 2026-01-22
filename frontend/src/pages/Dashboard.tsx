@@ -3,20 +3,24 @@ import api from '../services/api'
 import { DashboardStats, RecentActivity } from '../types'
 import { 
   TrendingUp, TrendingDown, DollarSign, 
-  AlertCircle, FileText, CreditCard 
+  AlertCircle, FileText, CreditCard, ArrowUpRight, ArrowDownRight,
+  Activity, Wallet, PieChart, BarChart3, RefreshCw, Calendar,
+  Users, ShoppingCart, Package, Clock
 } from 'lucide-react'
 
 export default function Dashboard() {
   const [stats, setStats] = useState<DashboardStats | null>(null)
   const [activity, setActivity] = useState<RecentActivity | null>(null)
   const [loading, setLoading] = useState(true)
+  const [refreshing, setRefreshing] = useState(false)
 
   useEffect(() => {
     loadDashboard()
   }, [])
 
-  const loadDashboard = async () => {
+  const loadDashboard = async (isRefresh = false) => {
     try {
+      if (isRefresh) setRefreshing(true)
       const [statsRes, activityRes] = await Promise.all([
         api.get('/dashboard/stats'),
         api.get('/dashboard/recent-activity'),
@@ -25,7 +29,6 @@ export default function Dashboard() {
       setActivity(activityRes.data)
     } catch (error) {
       console.error('Failed to load dashboard:', error)
-      // Set empty data so UI still renders
       setStats({
         total_receivables: 0,
         overdue_receivables: 0,
@@ -41,6 +44,7 @@ export default function Dashboard() {
       setActivity({ recent_invoices: [], recent_payments: [] })
     } finally {
       setLoading(false)
+      setRefreshing(false)
     }
   }
 
@@ -59,141 +63,251 @@ export default function Dashboard() {
     })
   }
 
+  const getGreeting = () => {
+    const hour = new Date().getHours()
+    if (hour < 12) return 'Good morning'
+    if (hour < 18) return 'Good afternoon'
+    return 'Good evening'
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-slate-800 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-gray-600 dark:text-gray-300">Loading dashboard...</p>
+        </div>
+      </div>
+    )
+  }
+
   return (
-    <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-        <p className="text-gray-600 mt-1">Overview of your business finances</p>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <StatCard
-          title="Total Receivables"
-          value={formatCurrency(stats?.total_receivables || 0)}
-          icon={DollarSign}
-          color="blue"
-          subtitle={`Overdue: ${formatCurrency(stats?.overdue_receivables || 0)}`}
-          testId="metric-cost-saved"
-        />
-        <StatCard
-          title="Total Payables"
-          value={formatCurrency(stats?.total_payables || 0)}
-          icon={AlertCircle}
-          color="orange"
-          subtitle={`Overdue: ${formatCurrency(stats?.overdue_payables || 0)}`}
-          testId="metric-expenses"
-        />
-        <StatCard
-          title="Revenue (MTD)"
-          value={formatCurrency(stats?.total_revenue || 0)}
-          icon={TrendingUp}
-          color="green"
-          subtitle={`Growth: ${stats?.revenue_growth?.toFixed(1) || 0}%`}
-          testId="metric-revenue"
-        />
-        <StatCard
-          title="Profit (MTD)"
-          value={formatCurrency(stats?.profit || 0)}
-          icon={DollarSign}
-          color="purple"
-          subtitle="Net profit this month"
-          testId="metric-profit"
-        />
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900 flex items-center">
-              <FileText className="h-5 w-5 mr-2 text-blue-600" />
-              Recent Invoices
-            </h2>
-          </div>
-          <div className="space-y-3">
-            {activity?.recent_invoices?.slice(0, 5).map((invoice) => (
-              <div key={invoice.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                <div>
-                  <p className="font-medium text-gray-900">{invoice.invoice_number}</p>
-                  <p className="text-sm text-gray-600">{formatDate(invoice.invoice_date)}</p>
-                </div>
-                <div className="text-right">
-                  <p className="font-semibold text-gray-900">{formatCurrency(invoice.total_amount)}</p>
-                  <p className={`text-xs ${
-                    invoice.status === 'paid' ? 'text-green-600' :
-                    invoice.status === 'overdue' ? 'text-red-600' :
-                    'text-yellow-600'
-                  }`}>
-                    {invoice.status}
-                  </p>
-                </div>
-              </div>
-            ))}
-            {!activity?.recent_invoices?.length && (
-              <p className="text-gray-500 text-center py-4">No recent invoices</p>
-            )}
-          </div>
-        </div>
-
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900 flex items-center">
-              <CreditCard className="h-5 w-5 mr-2 text-green-600" />
-              Recent Payments
-            </h2>
-          </div>
-          <div className="space-y-3">
-            {activity?.recent_payments?.slice(0, 5).map((payment) => (
-              <div key={payment.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                <div>
-                  <p className="font-medium text-gray-900">{payment.payment_number}</p>
-                  <p className="text-sm text-gray-600">{formatDate(payment.payment_date)}</p>
-                </div>
-                <div className="text-right">
-                  <p className="font-semibold text-gray-900">{formatCurrency(payment.amount)}</p>
-                  <p className="text-xs text-gray-600">{payment.payment_method}</p>
-                </div>
-              </div>
-            ))}
-            {!activity?.recent_payments?.length && (
-              <p className="text-gray-500 text-center py-4">No recent payments</p>
-            )}
-          </div>
-        </div>
-      </div>
-
-      <div className="bg-white rounded-lg shadow p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Cash Flow Summary</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-slate-800 p-6">
+      <div className="max-w-7xl mx-auto space-y-6">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
-            <p className="text-sm text-gray-600 mb-1">Cash In</p>
-            <p className="text-2xl font-bold text-green-600">{formatCurrency(stats?.cash_in || 0)}</p>
-          </div>
-          <div>
-            <p className="text-sm text-gray-600 mb-1">Cash Out</p>
-            <p className="text-2xl font-bold text-red-600">{formatCurrency(stats?.cash_out || 0)}</p>
-          </div>
-          <div>
-            <p className="text-sm text-gray-600 mb-1">Net Cash Flow</p>
-            <p className={`text-2xl font-bold ${
-              (stats?.net_cash_flow || 0) >= 0 ? 'text-green-600' : 'text-red-600'
-            }`}>
-              {formatCurrency(stats?.net_cash_flow || 0)}
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
+              {getGreeting()}
+            </h1>
+            <p className="text-gray-600 dark:text-gray-400 mt-1 flex items-center gap-2">
+              <Calendar className="w-4 h-4" />
+              {new Date().toLocaleDateString('en-ZA', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
             </p>
           </div>
+          <button
+            onClick={() => loadDashboard(true)}
+            disabled={refreshing}
+            className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 border border-gray-200 dark:border-slate-700 text-gray-700 dark:text-gray-300"
+          >
+            <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
+            Refresh
+          </button>
         </div>
-      </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white rounded-lg shadow p-6" data-testid="revenue-chart">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Revenue Chart</h2>
-          <div className="h-64 flex items-center justify-center text-gray-400">
-            Revenue chart placeholder
+        {/* Modern Stat Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="group relative overflow-hidden bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-slate-700" data-testid="metric-cost-saved">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-500/10 to-transparent rounded-full -mr-16 -mt-16" />
+            <div className="relative">
+              <div className="flex items-center justify-between mb-4">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/30">
+                  <DollarSign className="w-6 h-6 text-white" />
+                </div>
+                <ArrowUpRight className="w-5 h-5 text-emerald-500" />
+              </div>
+              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Receivables</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">{formatCurrency(stats?.total_receivables || 0)}</p>
+              <p className="text-xs text-orange-500 mt-2">Overdue: {formatCurrency(stats?.overdue_receivables || 0)}</p>
+            </div>
+          </div>
+
+          <div className="group relative overflow-hidden bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-slate-700" data-testid="metric-expenses">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-orange-500/10 to-transparent rounded-full -mr-16 -mt-16" />
+            <div className="relative">
+              <div className="flex items-center justify-between mb-4">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center shadow-lg shadow-orange-500/30">
+                  <AlertCircle className="w-6 h-6 text-white" />
+                </div>
+                <ArrowDownRight className="w-5 h-5 text-red-500" />
+              </div>
+              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Payables</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">{formatCurrency(stats?.total_payables || 0)}</p>
+              <p className="text-xs text-red-500 mt-2">Overdue: {formatCurrency(stats?.overdue_payables || 0)}</p>
+            </div>
+          </div>
+
+          <div className="group relative overflow-hidden bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-slate-700" data-testid="metric-revenue">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-emerald-500/10 to-transparent rounded-full -mr-16 -mt-16" />
+            <div className="relative">
+              <div className="flex items-center justify-between mb-4">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center shadow-lg shadow-emerald-500/30">
+                  <TrendingUp className="w-6 h-6 text-white" />
+                </div>
+                <span className="flex items-center text-emerald-500 text-sm font-medium">
+                  <ArrowUpRight className="w-4 h-4 mr-1" />
+                  {stats?.revenue_growth?.toFixed(1) || 0}%
+                </span>
+              </div>
+              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Revenue (MTD)</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">{formatCurrency(stats?.total_revenue || 0)}</p>
+              <p className="text-xs text-emerald-500 mt-2">Growth this month</p>
+            </div>
+          </div>
+
+          <div className="group relative overflow-hidden bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-slate-700" data-testid="metric-profit">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-purple-500/10 to-transparent rounded-full -mr-16 -mt-16" />
+            <div className="relative">
+              <div className="flex items-center justify-between mb-4">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center shadow-lg shadow-purple-500/30">
+                  <Wallet className="w-6 h-6 text-white" />
+                </div>
+                <Activity className="w-5 h-5 text-purple-500" />
+              </div>
+              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Profit (MTD)</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">{formatCurrency(stats?.profit || 0)}</p>
+              <p className="text-xs text-purple-500 mt-2">Net profit this month</p>
+            </div>
           </div>
         </div>
-        <div className="bg-white rounded-lg shadow p-6" data-testid="expense-chart">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Expense Chart</h2>
-          <div className="h-64 flex items-center justify-center text-gray-400">
-            Expense chart placeholder
+
+        {/* Cash Flow Summary - Modern Card */}
+        <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-slate-700">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+              <BarChart3 className="w-5 h-5 text-blue-500" />
+              Cash Flow Summary
+            </h2>
+            <span className="text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-slate-700 px-3 py-1 rounded-full">This Month</span>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="text-center p-4 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-800">
+              <ArrowUpRight className="w-8 h-8 text-emerald-500 mx-auto mb-2" />
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Cash In</p>
+              <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">{formatCurrency(stats?.cash_in || 0)}</p>
+            </div>
+            <div className="text-center p-4 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800">
+              <ArrowDownRight className="w-8 h-8 text-red-500 mx-auto mb-2" />
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Cash Out</p>
+              <p className="text-2xl font-bold text-red-600 dark:text-red-400">{formatCurrency(stats?.cash_out || 0)}</p>
+            </div>
+            <div className={`text-center p-4 rounded-xl border ${(stats?.net_cash_flow || 0) >= 0 ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-100 dark:border-blue-800' : 'bg-orange-50 dark:bg-orange-900/20 border-orange-100 dark:border-orange-800'}`}>
+              <Activity className={`w-8 h-8 mx-auto mb-2 ${(stats?.net_cash_flow || 0) >= 0 ? 'text-blue-500' : 'text-orange-500'}`} />
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Net Cash Flow</p>
+              <p className={`text-2xl font-bold ${(stats?.net_cash_flow || 0) >= 0 ? 'text-blue-600 dark:text-blue-400' : 'text-orange-600 dark:text-orange-400'}`}>
+                {formatCurrency(stats?.net_cash_flow || 0)}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Recent Activity Cards */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-slate-700">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                <FileText className="w-5 h-5 text-blue-500" />
+                Recent Invoices
+              </h2>
+              <a href="/ar/invoices" className="text-sm text-blue-500 hover:text-blue-600 font-medium">View All</a>
+            </div>
+            <div className="space-y-3">
+              {activity?.recent_invoices?.slice(0, 5).map((invoice) => (
+                <div key={invoice.id} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-slate-700/50 rounded-xl hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors cursor-pointer">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
+                      <FileText className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                    </div>
+                    <div>
+                      <p className="font-medium text-gray-900 dark:text-white">{invoice.invoice_number}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">{formatDate(invoice.invoice_date)}</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-semibold text-gray-900 dark:text-white">{formatCurrency(invoice.total_amount)}</p>
+                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
+                      invoice.status === 'paid' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' :
+                      invoice.status === 'overdue' ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' :
+                      'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
+                    }`}>
+                      {invoice.status}
+                    </span>
+                  </div>
+                </div>
+              ))}
+              {!activity?.recent_invoices?.length && (
+                <div className="text-center py-8">
+                  <FileText className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-2" />
+                  <p className="text-gray-500 dark:text-gray-400">No recent invoices</p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-slate-700">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                <CreditCard className="w-5 h-5 text-emerald-500" />
+                Recent Payments
+              </h2>
+              <a href="/payments" className="text-sm text-blue-500 hover:text-blue-600 font-medium">View All</a>
+            </div>
+            <div className="space-y-3">
+              {activity?.recent_payments?.slice(0, 5).map((payment) => (
+                <div key={payment.id} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-slate-700/50 rounded-xl hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors cursor-pointer">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
+                      <CreditCard className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                    </div>
+                    <div>
+                      <p className="font-medium text-gray-900 dark:text-white">{payment.payment_number}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">{formatDate(payment.payment_date)}</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-semibold text-emerald-600 dark:text-emerald-400">{formatCurrency(payment.amount)}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">{payment.payment_method}</p>
+                  </div>
+                </div>
+              ))}
+              {!activity?.recent_payments?.length && (
+                <div className="text-center py-8">
+                  <CreditCard className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-2" />
+                  <p className="text-gray-500 dark:text-gray-400">No recent payments</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Quick Actions */}
+        <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-slate-700">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Quick Actions</h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <a href="/quotes/new" className="flex flex-col items-center p-4 rounded-xl bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors group">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                <FileText className="w-6 h-6 text-white" />
+              </div>
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">New Quote</span>
+            </a>
+            <a href="/ar/invoices/new" className="flex flex-col items-center p-4 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 transition-colors group">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                <DollarSign className="w-6 h-6 text-white" />
+              </div>
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">New Invoice</span>
+            </a>
+            <a href="/erp/purchase-orders" className="flex flex-col items-center p-4 rounded-xl bg-purple-50 dark:bg-purple-900/20 hover:bg-purple-100 dark:hover:bg-purple-900/30 transition-colors group">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                <ShoppingCart className="w-6 h-6 text-white" />
+              </div>
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">New PO</span>
+            </a>
+            <a href="/erp/customers" className="flex flex-col items-center p-4 rounded-xl bg-orange-50 dark:bg-orange-900/20 hover:bg-orange-100 dark:hover:bg-orange-900/30 transition-colors group">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                <Users className="w-6 h-6 text-white" />
+              </div>
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Customers</span>
+            </a>
           </div>
         </div>
       </div>
