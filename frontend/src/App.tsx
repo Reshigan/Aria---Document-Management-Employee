@@ -200,11 +200,12 @@ function App() {
           <Route path="/ap/payments" element={<Payments />} />
           <Route path="/ap/suppliers" element={<Suppliers />} />
           
-          {/* Accounts Receivable */}
-          <Route path="/ar" element={<AccountsReceivable />} />
-          <Route path="/ar/customers" element={<Customers />} />
-          <Route path="/ar/invoices" element={<InvoiceList />} />
-          <Route path="/ar/receipts" element={<Receipts />} />
+                    {/* Accounts Receivable */}
+                    <Route path="/ar" element={<AccountsReceivable />} />
+                    <Route path="/ar/customers" element={<Customers />} />
+                    <Route path="/ar/invoices" element={<InvoiceList />} />
+                    <Route path="/ar/invoices/new" element={<InvoiceForm />} />
+                    <Route path="/ar/receipts" element={<Receipts />} />
           
           {/* Banking */}
           <Route path="/banking" element={<BankingDashboard />} />
