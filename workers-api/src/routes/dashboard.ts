@@ -385,4 +385,249 @@ dashboard.get('/inventory-summary', async (c) => {
   }
 });
 
+// Get pending approvals for dashboard widget
+dashboard.get('/pending-approvals', async (c) => {
+  try {
+    const companyId = await getSecureCompanyId(c);
+    const approvals: Array<{
+      id: string;
+      type: string;
+      title: string;
+      description: string;
+      priority: 'high' | 'medium' | 'low';
+      link: string;
+      created_at: string;
+    }> = [];
+
+    // Get draft purchase orders awaiting approval
+    const draftPOs = await c.env.DB.prepare(`
+      SELECT po.id, po.po_number, po.total_amount, s.supplier_name, po.created_at
+      FROM purchase_orders po
+      LEFT JOIN suppliers s ON po.supplier_id = s.id
+      WHERE po.company_id = ? AND po.status = 'draft'
+      ORDER BY po.created_at DESC
+      LIMIT 5
+    `).bind(companyId).all();
+
+    for (const po of draftPOs.results as any[]) {
+      const amount = po.total_amount || 0;
+      approvals.push({
+        id: po.id,
+        type: 'PO',
+        title: po.po_number || 'New PO',
+        description: `Purchase order for ${po.supplier_name || 'Unknown'} - R ${amount.toLocaleString()}`,
+        priority: amount > 50000 ? 'high' : amount > 10000 ? 'medium' : 'low',
+        link: '/erp/purchase-orders',
+        created_at: po.created_at
+      });
+    }
+
+    // Get draft sales orders awaiting approval
+    const draftSOs = await c.env.DB.prepare(`
+      SELECT so.id, so.order_number, so.total_amount, c.customer_name, so.created_at
+      FROM sales_orders so
+      LEFT JOIN customers c ON so.customer_id = c.id
+      WHERE so.company_id = ? AND so.status = 'draft'
+      ORDER BY so.created_at DESC
+      LIMIT 5
+    `).bind(companyId).all();
+
+    for (const so of draftSOs.results as any[]) {
+      const amount = so.total_amount || 0;
+      approvals.push({
+        id: so.id,
+        type: 'SO',
+        title: so.order_number || 'New SO',
+        description: `Sales order for ${so.customer_name || 'Unknown'} - R ${amount.toLocaleString()}`,
+        priority: amount > 100000 ? 'high' : amount > 25000 ? 'medium' : 'low',
+        link: '/erp/sales-orders',
+        created_at: so.created_at
+      });
+    }
+
+    // Get pending expense claims
+    try {
+      const pendingExpenses = await c.env.DB.prepare(`
+        SELECT id, claim_number, total_amount, description, created_at
+        FROM expense_claims
+        WHERE company_id = ? AND status = 'pending'
+        ORDER BY created_at DESC
+        LIMIT 5
+      `).bind(companyId).all();
+
+      for (const exp of pendingExpenses.results as any[]) {
+        const amount = exp.total_amount || 0;
+        approvals.push({
+          id: exp.id,
+          type: 'Expense',
+          title: exp.claim_number || 'Expense Claim',
+          description: `${exp.description || 'Expense claim'} - R ${amount.toLocaleString()}`,
+          priority: amount > 5000 ? 'high' : amount > 1000 ? 'medium' : 'low',
+          link: '/financial/expense-claims',
+          created_at: exp.created_at
+        });
+      }
+    } catch (e) {
+      // expense_claims table may not exist
+    }
+
+    // Get pending quotes
+    const pendingQuotes = await c.env.DB.prepare(`
+      SELECT q.id, q.quote_number, q.total_amount, c.customer_name, q.created_at
+      FROM quotes q
+      LEFT JOIN customers c ON q.customer_id = c.id
+      WHERE q.company_id = ? AND q.status = 'draft'
+      ORDER BY q.created_at DESC
+      LIMIT 3
+    `).bind(companyId).all();
+
+    for (const quote of pendingQuotes.results as any[]) {
+      const amount = quote.total_amount || 0;
+      approvals.push({
+        id: quote.id,
+        type: 'Quote',
+        title: quote.quote_number || 'New Quote',
+        description: `Quote for ${quote.customer_name || 'Unknown'} - R ${amount.toLocaleString()}`,
+        priority: amount > 50000 ? 'high' : amount > 10000 ? 'medium' : 'low',
+        link: '/quotes',
+        created_at: quote.created_at
+      });
+    }
+
+    // Sort by priority (high first) then by date
+    const priorityOrder = { high: 0, medium: 1, low: 2 };
+    approvals.sort((a, b) => {
+      if (priorityOrder[a.priority] !== priorityOrder[b.priority]) {
+        return priorityOrder[a.priority] - priorityOrder[b.priority];
+      }
+      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+    });
+
+    return c.json({ approvals: approvals.slice(0, 10) });
+  } catch (error) {
+    console.error('Pending approvals error:', error);
+    return c.json({ error: 'Internal server error' }, 500);
+  }
+});
+
+// Get alerts for dashboard widget
+dashboard.get('/alerts', async (c) => {
+  try {
+    const companyId = await getSecureCompanyId(c);
+    const alerts: Array<{
+      id: string;
+      type: string;
+      message: string;
+      severity: 'critical' | 'warning' | 'info';
+      link: string;
+    }> = [];
+
+    // Check for overdue customer invoices
+    const overdueInvoices = await c.env.DB.prepare(`
+      SELECT COUNT(*) as count, COALESCE(SUM(balance_due), 0) as total
+      FROM customer_invoices
+      WHERE company_id = ? AND status IN ('posted', 'sent', 'overdue') 
+        AND due_date < date('now') AND balance_due > 0
+    `).bind(companyId).first<{ count: number; total: number }>();
+
+    if (overdueInvoices && overdueInvoices.count > 0) {
+      alerts.push({
+        id: 'overdue-invoices',
+        type: 'overdue',
+        message: `${overdueInvoices.count} invoice${overdueInvoices.count > 1 ? 's are' : ' is'} overdue totaling R ${(overdueInvoices.total || 0).toLocaleString()}`,
+        severity: overdueInvoices.count > 5 ? 'critical' : 'warning',
+        link: '/ar/invoices?status=overdue'
+      });
+    }
+
+    // Check for low stock products
+    const lowStockProducts = await c.env.DB.prepare(`
+      SELECT COUNT(*) as count
+      FROM products
+      WHERE company_id = ? AND is_active = 1 AND is_service = 0 
+        AND quantity_on_hand <= reorder_level AND reorder_level > 0
+    `).bind(companyId).first<{ count: number }>();
+
+    if (lowStockProducts && lowStockProducts.count > 0) {
+      alerts.push({
+        id: 'low-stock',
+        type: 'low_stock',
+        message: `${lowStockProducts.count} product${lowStockProducts.count > 1 ? 's' : ''} below reorder level`,
+        severity: lowStockProducts.count > 10 ? 'critical' : 'warning',
+        link: '/erp/products?filter=low_stock'
+      });
+    }
+
+    // Check for unreconciled bank transactions
+    try {
+      const unreconciledTx = await c.env.DB.prepare(`
+        SELECT COUNT(*) as count
+        FROM bank_transactions
+        WHERE company_id = ? AND is_reconciled = 0
+      `).bind(companyId).first<{ count: number }>();
+
+      if (unreconciledTx && unreconciledTx.count > 0) {
+        alerts.push({
+          id: 'bank-reconciliation',
+          type: 'pending',
+          message: `${unreconciledTx.count} bank transaction${unreconciledTx.count > 1 ? 's need' : ' needs'} reconciliation`,
+          severity: unreconciledTx.count > 20 ? 'warning' : 'info',
+          link: '/financial/bank-reconciliation'
+        });
+      }
+    } catch (e) {
+      // bank_transactions table may not exist
+    }
+
+    // Check for pending supplier invoices due soon
+    const dueSoonInvoices = await c.env.DB.prepare(`
+      SELECT COUNT(*) as count, COALESCE(SUM(balance_due), 0) as total
+      FROM supplier_invoices
+      WHERE company_id = ? AND status IN ('approved', 'pending') 
+        AND due_date BETWEEN date('now') AND date('now', '+7 days') AND balance_due > 0
+    `).bind(companyId).first<{ count: number; total: number }>();
+
+    if (dueSoonInvoices && dueSoonInvoices.count > 0) {
+      alerts.push({
+        id: 'due-soon',
+        type: 'due_soon',
+        message: `${dueSoonInvoices.count} supplier invoice${dueSoonInvoices.count > 1 ? 's' : ''} due within 7 days (R ${(dueSoonInvoices.total || 0).toLocaleString()})`,
+        severity: 'info',
+        link: '/ap/invoices'
+      });
+    }
+
+    // Check for failed bot runs today
+    try {
+      const today = new Date().toISOString().split('T')[0];
+      const failedBots = await c.env.DB.prepare(`
+        SELECT COUNT(*) as count
+        FROM bot_runs
+        WHERE company_id = ? AND status = 'failed' AND DATE(executed_at) = ?
+      `).bind(companyId, today).first<{ count: number }>();
+
+      if (failedBots && failedBots.count > 0) {
+        alerts.push({
+          id: 'failed-bots',
+          type: 'bot_failure',
+          message: `${failedBots.count} automation bot${failedBots.count > 1 ? 's' : ''} failed today`,
+          severity: failedBots.count > 3 ? 'critical' : 'warning',
+          link: '/automation/bots'
+        });
+      }
+    } catch (e) {
+      // bot_runs table may not exist
+    }
+
+    // Sort by severity (critical first)
+    const severityOrder = { critical: 0, warning: 1, info: 2 };
+    alerts.sort((a, b) => severityOrder[a.severity] - severityOrder[b.severity]);
+
+    return c.json({ alerts });
+  } catch (error) {
+    console.error('Alerts error:', error);
+    return c.json({ error: 'Internal server error' }, 500);
+  }
+});
+
 export default dashboard;

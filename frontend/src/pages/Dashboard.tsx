@@ -47,19 +47,23 @@ export default function Dashboard() {
       setStats(statsRes.data)
       setActivity(activityRes.data)
       
-      // Load pending approvals (mock data for now - would come from API)
-      setPendingApprovals([
-        { id: '1', type: 'PO', title: 'PO-2024-001', description: 'Purchase order for office supplies - R 15,000', priority: 'high', link: '/erp/purchase-orders' },
-        { id: '2', type: 'SO', title: 'SO-2024-003', description: 'Sales order for ABC Corp - R 45,000', priority: 'medium', link: '/erp/sales-orders' },
-        { id: '3', type: 'Expense', title: 'EXP-2024-012', description: 'Travel expense claim - R 3,500', priority: 'low', link: '/financial/expense-claims' },
-      ])
+      // Load pending approvals from API
+      try {
+        const approvalsRes = await api.get('/dashboard/pending-approvals')
+        setPendingApprovals(approvalsRes.data.approvals || [])
+      } catch (e) {
+        console.error('Failed to load pending approvals:', e)
+        setPendingApprovals([])
+      }
       
-      // Load alerts (mock data for now - would come from API)
-      setAlerts([
-        { id: '1', type: 'overdue', message: '5 invoices are overdue totaling R 125,000', severity: 'critical', link: '/ar/invoices?status=overdue' },
-        { id: '2', type: 'low_stock', message: '3 products below reorder level', severity: 'warning', link: '/erp/products?filter=low_stock' },
-        { id: '3', type: 'pending', message: '2 bank transactions need reconciliation', severity: 'info', link: '/financial/bank-reconciliation' },
-      ])
+      // Load alerts from API
+      try {
+        const alertsRes = await api.get('/dashboard/alerts')
+        setAlerts(alertsRes.data.alerts || [])
+      } catch (e) {
+        console.error('Failed to load alerts:', e)
+        setAlerts([])
+      }
     } catch (error) {
       console.error('Failed to load dashboard:', error)
       setStats({
