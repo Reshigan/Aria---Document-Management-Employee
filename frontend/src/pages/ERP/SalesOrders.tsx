@@ -839,6 +839,19 @@ export default function SalesOrders() {
           );
         })}
       </div>
+
+      {/* Create/Edit Modal */}
+      {renderFormModal(false)}
+      {renderFormModal(true)}
+
+      {/* Delete Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={showDeleteDialog}
+        onClose={() => setShowDeleteDialog(false)}
+        onConfirm={confirmDelete}
+        title="Delete Sales Order"
+        message={`Are you sure you want to delete order ${selectedOrder?.order_number}? This action cannot be undone.`}
+      />
     </div>
   );
 }

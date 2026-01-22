@@ -1,7 +1,12 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../../lib/api';
-import { Plus, Search, Eye, Check, Package } from 'lucide-react';
+import { Plus, Search, Eye, Check, Package, X } from 'lucide-react';
+
+interface Supplier {
+  id: string;
+  name: string;
+}
 
 interface GoodsReceipt {
   id: string;
@@ -27,14 +32,32 @@ interface GRLine {
 
 export default function GoodsReceipts() {
   const [receipts, setReceipts] = useState<GoodsReceipt[]>([]);
+  const [suppliers, setSuppliers] = useState<Supplier[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [formData, setFormData] = useState({
+    supplier_id: '',
+    receipt_date: new Date().toISOString().split('T')[0],
+    notes: ''
+  });
 
   useEffect(() => {
     loadReceipts();
+    loadSuppliers();
   }, [searchTerm, statusFilter]);
+
+  const loadSuppliers = async () => {
+    try {
+      const response = await api.get('/erp/procure-to-pay/suppliers');
+      const data = response.data?.data || response.data || [];
+      setSuppliers(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error('Error loading suppliers:', err);
+    }
+  };
 
   const loadReceipts = async () => {
     try {
@@ -57,6 +80,32 @@ export default function GoodsReceipts() {
     } catch (err: any) {
       console.error('Error posting receipt:', err);
       setError(err.response?.data?.detail || 'Failed to post goods receipt');
+    }
+  };
+
+  const handleCreate = () => {
+    setFormData({
+      supplier_id: '',
+      receipt_date: new Date().toISOString().split('T')[0],
+      notes: ''
+    });
+    setShowCreateModal(true);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formData.supplier_id) {
+      setError('Please select a supplier');
+      return;
+    }
+    try {
+      await api.post('/erp/procure-to-pay/goods-receipts', formData);
+      setShowCreateModal(false);
+      loadReceipts();
+      setError(null);
+    } catch (err: any) {
+      console.error('Error creating goods receipt:', err);
+      setError(err.response?.data?.detail || 'Failed to create goods receipt');
     }
   };
 
@@ -137,7 +186,7 @@ export default function GoodsReceipts() {
           <option value="cancelled">Cancelled</option>
         </select>
         <button
-          onClick={() => {/* TODO: Open create modal */}}
+          onClick={handleCreate}
           style={{
             padding: '0.5rem 1.5rem',
             background: '#2563eb',
@@ -281,6 +330,105 @@ export default function GoodsReceipts() {
           );
         })}
       </div>
+
+      {/* Create Goods Receipt Modal */}
+      {showCreateModal && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'rgba(0, 0, 0, 0.5)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000
+          }}
+          onClick={() => setShowCreateModal(false)}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              background: 'white',
+              borderRadius: '0.5rem',
+              boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)',
+              maxWidth: '500px',
+              width: '95%',
+              maxHeight: '90vh',
+              overflow: 'auto'
+            }}
+          >
+            <div style={{
+              padding: '1.5rem',
+              borderBottom: '1px solid #e5e7eb',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between'
+            }}>
+              <h2 style={{ fontSize: '1.25rem', fontWeight: '600', margin: 0 }}>Create Goods Receipt</h2>
+              <button
+                onClick={() => setShowCreateModal(false)}
+                style={{ padding: '0.25rem', background: 'transparent', border: 'none', color: '#6b7280', cursor: 'pointer' }}
+              >
+                <X size={24} />
+              </button>
+            </div>
+            <form onSubmit={handleSubmit}>
+              <div style={{ padding: '1.5rem' }}>
+                <div style={{ marginBottom: '1rem' }}>
+                  <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>Supplier *</label>
+                  <select
+                    value={formData.supplier_id}
+                    onChange={(e) => setFormData({ ...formData, supplier_id: e.target.value })}
+                    required
+                    style={{ width: '100%', padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', fontSize: '0.875rem' }}
+                  >
+                    <option value="">Select a supplier...</option>
+                    {suppliers.map(s => (
+                      <option key={s.id} value={s.id}>{s.name}</option>
+                    ))}
+                  </select>
+                </div>
+                <div style={{ marginBottom: '1rem' }}>
+                  <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>Receipt Date</label>
+                  <input
+                    type="date"
+                    value={formData.receipt_date}
+                    onChange={(e) => setFormData({ ...formData, receipt_date: e.target.value })}
+                    style={{ width: '100%', padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', fontSize: '0.875rem' }}
+                  />
+                </div>
+                <div style={{ marginBottom: '1rem' }}>
+                  <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>Notes</label>
+                  <textarea
+                    value={formData.notes}
+                    onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                    rows={3}
+                    style={{ width: '100%', padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', fontSize: '0.875rem', resize: 'vertical' }}
+                  />
+                </div>
+              </div>
+              <div style={{ padding: '1.5rem', borderTop: '1px solid #e5e7eb', display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
+                <button
+                  type="button"
+                  onClick={() => setShowCreateModal(false)}
+                  style={{ padding: '0.5rem 1rem', background: 'white', border: '1px solid #d1d5db', borderRadius: '0.375rem', fontSize: '0.875rem', fontWeight: '500', color: '#374151', cursor: 'pointer' }}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  style={{ padding: '0.5rem 1rem', background: '#2563eb', border: 'none', borderRadius: '0.375rem', fontSize: '0.875rem', fontWeight: '500', color: 'white', cursor: 'pointer' }}
+                >
+                  Create Receipt
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

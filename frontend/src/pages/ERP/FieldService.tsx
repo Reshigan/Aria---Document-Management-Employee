@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import api from '../../lib/api';
-import { Plus, Search, Eye, Send, CheckCircle, Wrench } from 'lucide-react';
+import { Plus, Search, Eye, Send, CheckCircle, Wrench, X } from 'lucide-react';
 
 interface ServiceRequest {
   id: number;
@@ -36,6 +36,16 @@ export default function FieldService() {
   const [statusFilter, setStatusFilter] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'requests' | 'workorders'>('requests');
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<ServiceRequest | WorkOrder | null>(null);
+  const [formData, setFormData] = useState({
+    customer_name: '',
+    request_type: 'repair',
+    work_type: 'installation',
+    priority: 'medium',
+    description: '',
+    scheduled_date: new Date().toISOString().split('T')[0]
+  });
 
   useEffect(() => {
     loadData();
@@ -81,6 +91,47 @@ export default function FieldService() {
     } catch (err: any) {
       console.error('Error completing work order:', err);
       setError(err.response?.data?.detail || 'Failed to complete work order');
+    }
+  };
+
+  const handleCreate = () => {
+    setFormData({
+      customer_name: '',
+      request_type: 'repair',
+      work_type: 'installation',
+      priority: 'medium',
+      description: '',
+      scheduled_date: new Date().toISOString().split('T')[0]
+    });
+    setSelectedItem(null);
+    setShowCreateModal(true);
+  };
+
+  const handleViewDetails = (item: ServiceRequest | WorkOrder) => {
+    setSelectedItem(item);
+    setShowCreateModal(true);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formData.customer_name) {
+      setError('Please enter a customer name');
+      return;
+    }
+    try {
+      const endpoint = activeTab === 'requests' 
+        ? '/field-service/service-requests'
+        : '/field-service/work-orders';
+      const payload = activeTab === 'requests'
+        ? { company_id: '00000000-0000-0000-0000-000000000001', customer_name: formData.customer_name, request_type: formData.request_type, priority: formData.priority, description: formData.description }
+        : { company_id: '00000000-0000-0000-0000-000000000001', customer_name: formData.customer_name, work_type: formData.work_type, priority: formData.priority, scheduled_date: formData.scheduled_date };
+      await api.post(endpoint, payload);
+      setShowCreateModal(false);
+      loadData();
+      setError(null);
+    } catch (err: any) {
+      console.error('Error creating:', err);
+      setError(err.response?.data?.detail || 'Failed to create');
     }
   };
 
@@ -234,7 +285,7 @@ export default function FieldService() {
           )}
         </select>
         <button
-          onClick={() => {/* TODO: Open create modal */}}
+          onClick={handleCreate}
           style={{
             padding: '0.5rem 1.5rem',
             background: '#2563eb',
@@ -318,7 +369,7 @@ export default function FieldService() {
                     </td>
                     <td style={{ padding: '1rem', textAlign: 'right' }}>
                       <button
-                        onClick={() => {/* TODO: View details */}}
+                        onClick={() => handleViewDetails(sr)}
                         style={{
                           padding: '0.25rem 0.75rem',
                           background: '#3b82f6',
@@ -500,6 +551,174 @@ export default function FieldService() {
           })
         )}
       </div>
+
+      {/* Create/View Modal */}
+      {showCreateModal && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'rgba(0, 0, 0, 0.5)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000
+          }}
+          onClick={() => setShowCreateModal(false)}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              background: 'white',
+              borderRadius: '0.5rem',
+              boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)',
+              maxWidth: '500px',
+              width: '95%',
+              maxHeight: '90vh',
+              overflow: 'auto'
+            }}
+          >
+            <div style={{
+              padding: '1.5rem',
+              borderBottom: '1px solid #e5e7eb',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between'
+            }}>
+              <h2 style={{ fontSize: '1.25rem', fontWeight: '600', margin: 0 }}>
+                {selectedItem ? 'View Details' : `Create ${activeTab === 'requests' ? 'Service Request' : 'Work Order'}`}
+              </h2>
+              <button
+                onClick={() => setShowCreateModal(false)}
+                style={{ padding: '0.25rem', background: 'transparent', border: 'none', color: '#6b7280', cursor: 'pointer' }}
+              >
+                <X size={24} />
+              </button>
+            </div>
+            {selectedItem ? (
+              <div style={{ padding: '1.5rem' }}>
+                {'request_number' in selectedItem ? (
+                  <>
+                    <p><strong>Request #:</strong> {selectedItem.request_number}</p>
+                    <p><strong>Customer:</strong> {selectedItem.customer_name}</p>
+                    <p><strong>Type:</strong> {selectedItem.request_type}</p>
+                    <p><strong>Priority:</strong> {selectedItem.priority}</p>
+                    <p><strong>Status:</strong> {selectedItem.status}</p>
+                    <p><strong>Description:</strong> {selectedItem.description}</p>
+                    <p><strong>Reported:</strong> {new Date(selectedItem.reported_date).toLocaleDateString()}</p>
+                  </>
+                ) : (
+                  <>
+                    <p><strong>WO #:</strong> {selectedItem.work_order_number}</p>
+                    <p><strong>Customer:</strong> {selectedItem.customer_name}</p>
+                    <p><strong>Work Type:</strong> {selectedItem.work_type}</p>
+                    <p><strong>Priority:</strong> {selectedItem.priority}</p>
+                    <p><strong>Status:</strong> {selectedItem.status}</p>
+                    <p><strong>Scheduled:</strong> {selectedItem.scheduled_date ? new Date(selectedItem.scheduled_date).toLocaleDateString() : '-'}</p>
+                  </>
+                )}
+              </div>
+            ) : (
+              <form onSubmit={handleSubmit}>
+                <div style={{ padding: '1.5rem' }}>
+                  <div style={{ marginBottom: '1rem' }}>
+                    <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>Customer Name *</label>
+                    <input
+                      type="text"
+                      value={formData.customer_name}
+                      onChange={(e) => setFormData({ ...formData, customer_name: e.target.value })}
+                      required
+                      style={{ width: '100%', padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', fontSize: '0.875rem' }}
+                    />
+                  </div>
+                  {activeTab === 'requests' ? (
+                    <>
+                      <div style={{ marginBottom: '1rem' }}>
+                        <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>Request Type</label>
+                        <select
+                          value={formData.request_type}
+                          onChange={(e) => setFormData({ ...formData, request_type: e.target.value })}
+                          style={{ width: '100%', padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', fontSize: '0.875rem' }}
+                        >
+                          <option value="repair">Repair</option>
+                          <option value="maintenance">Maintenance</option>
+                          <option value="installation">Installation</option>
+                          <option value="inspection">Inspection</option>
+                        </select>
+                      </div>
+                      <div style={{ marginBottom: '1rem' }}>
+                        <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>Description</label>
+                        <textarea
+                          value={formData.description}
+                          onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                          rows={3}
+                          style={{ width: '100%', padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', fontSize: '0.875rem', resize: 'vertical' }}
+                        />
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div style={{ marginBottom: '1rem' }}>
+                        <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>Work Type</label>
+                        <select
+                          value={formData.work_type}
+                          onChange={(e) => setFormData({ ...formData, work_type: e.target.value })}
+                          style={{ width: '100%', padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', fontSize: '0.875rem' }}
+                        >
+                          <option value="installation">Installation</option>
+                          <option value="repair">Repair</option>
+                          <option value="maintenance">Maintenance</option>
+                          <option value="inspection">Inspection</option>
+                        </select>
+                      </div>
+                      <div style={{ marginBottom: '1rem' }}>
+                        <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>Scheduled Date</label>
+                        <input
+                          type="date"
+                          value={formData.scheduled_date}
+                          onChange={(e) => setFormData({ ...formData, scheduled_date: e.target.value })}
+                          style={{ width: '100%', padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', fontSize: '0.875rem' }}
+                        />
+                      </div>
+                    </>
+                  )}
+                  <div style={{ marginBottom: '1rem' }}>
+                    <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>Priority</label>
+                    <select
+                      value={formData.priority}
+                      onChange={(e) => setFormData({ ...formData, priority: e.target.value })}
+                      style={{ width: '100%', padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', fontSize: '0.875rem' }}
+                    >
+                      <option value="low">Low</option>
+                      <option value="medium">Medium</option>
+                      <option value="high">High</option>
+                      <option value="urgent">Urgent</option>
+                    </select>
+                  </div>
+                </div>
+                <div style={{ padding: '1.5rem', borderTop: '1px solid #e5e7eb', display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
+                  <button
+                    type="button"
+                    onClick={() => setShowCreateModal(false)}
+                    style={{ padding: '0.5rem 1rem', background: 'white', border: '1px solid #d1d5db', borderRadius: '0.375rem', fontSize: '0.875rem', fontWeight: '500', color: '#374151', cursor: 'pointer' }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    style={{ padding: '0.5rem 1rem', background: '#2563eb', border: 'none', borderRadius: '0.375rem', fontSize: '0.875rem', fontWeight: '500', color: 'white', cursor: 'pointer' }}
+                  >
+                    Create
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
