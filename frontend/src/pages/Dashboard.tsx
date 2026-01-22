@@ -5,12 +5,31 @@ import {
   TrendingUp, TrendingDown, DollarSign, 
   AlertCircle, FileText, CreditCard, ArrowUpRight, ArrowDownRight,
   Activity, Wallet, PieChart, BarChart3, RefreshCw, Calendar,
-  Users, ShoppingCart, Package, Clock
+  Users, ShoppingCart, Package, Clock, CheckCircle, XCircle, AlertTriangle
 } from 'lucide-react'
+
+interface ActionableItem {
+  id: string;
+  type: string;
+  title: string;
+  description: string;
+  priority: 'high' | 'medium' | 'low';
+  link: string;
+}
+
+interface AlertItem {
+  id: string;
+  type: string;
+  message: string;
+  severity: 'critical' | 'warning' | 'info';
+  link: string;
+}
 
 export default function Dashboard() {
   const [stats, setStats] = useState<DashboardStats | null>(null)
   const [activity, setActivity] = useState<RecentActivity | null>(null)
+  const [pendingApprovals, setPendingApprovals] = useState<ActionableItem[]>([])
+  const [alerts, setAlerts] = useState<AlertItem[]>([])
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
 
@@ -27,6 +46,20 @@ export default function Dashboard() {
       ])
       setStats(statsRes.data)
       setActivity(activityRes.data)
+      
+      // Load pending approvals (mock data for now - would come from API)
+      setPendingApprovals([
+        { id: '1', type: 'PO', title: 'PO-2024-001', description: 'Purchase order for office supplies - R 15,000', priority: 'high', link: '/erp/purchase-orders' },
+        { id: '2', type: 'SO', title: 'SO-2024-003', description: 'Sales order for ABC Corp - R 45,000', priority: 'medium', link: '/erp/sales-orders' },
+        { id: '3', type: 'Expense', title: 'EXP-2024-012', description: 'Travel expense claim - R 3,500', priority: 'low', link: '/financial/expense-claims' },
+      ])
+      
+      // Load alerts (mock data for now - would come from API)
+      setAlerts([
+        { id: '1', type: 'overdue', message: '5 invoices are overdue totaling R 125,000', severity: 'critical', link: '/ar/invoices?status=overdue' },
+        { id: '2', type: 'low_stock', message: '3 products below reorder level', severity: 'warning', link: '/erp/products?filter=low_stock' },
+        { id: '3', type: 'pending', message: '2 bank transactions need reconciliation', severity: 'info', link: '/financial/bank-reconciliation' },
+      ])
     } catch (error) {
       console.error('Failed to load dashboard:', error)
       setStats({
@@ -42,6 +75,8 @@ export default function Dashboard() {
         net_cash_flow: 0
       })
       setActivity({ recent_invoices: [], recent_payments: [] })
+      setPendingApprovals([])
+      setAlerts([])
     } finally {
       setLoading(false)
       setRefreshing(false)
@@ -197,6 +232,109 @@ export default function Dashboard() {
               <p className={`text-2xl font-bold ${(stats?.net_cash_flow || 0) >= 0 ? 'text-blue-600 dark:text-blue-400' : 'text-orange-600 dark:text-orange-400'}`}>
                 {formatCurrency(stats?.net_cash_flow || 0)}
               </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Actionable Widgets - Pending Approvals & Alerts */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Pending Approvals */}
+          <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-slate-700">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                <Clock className="w-5 h-5 text-amber-500" />
+                Pending Approvals
+              </h2>
+              <span className="bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-xs font-medium px-2 py-1 rounded-full">
+                {pendingApprovals.length} items
+              </span>
+            </div>
+            <div className="space-y-3">
+              {pendingApprovals.map((item) => (
+                <a key={item.id} href={item.link} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-slate-700/50 rounded-xl hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors cursor-pointer">
+                  <div className="flex items-center gap-3">
+                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                      item.priority === 'high' ? 'bg-red-100 dark:bg-red-900/30' :
+                      item.priority === 'medium' ? 'bg-amber-100 dark:bg-amber-900/30' :
+                      'bg-blue-100 dark:bg-blue-900/30'
+                    }`}>
+                      <Clock className={`w-5 h-5 ${
+                        item.priority === 'high' ? 'text-red-600 dark:text-red-400' :
+                        item.priority === 'medium' ? 'text-amber-600 dark:text-amber-400' :
+                        'text-blue-600 dark:text-blue-400'
+                      }`} />
+                    </div>
+                    <div>
+                      <p className="font-medium text-gray-900 dark:text-white">{item.title}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">{item.description}</p>
+                    </div>
+                  </div>
+                  <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
+                    item.priority === 'high' ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' :
+                    item.priority === 'medium' ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400' :
+                    'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
+                  }`}>
+                    {item.priority}
+                  </span>
+                </a>
+              ))}
+              {pendingApprovals.length === 0 && (
+                <div className="text-center py-8">
+                  <CheckCircle className="w-12 h-12 text-emerald-300 dark:text-emerald-600 mx-auto mb-2" />
+                  <p className="text-gray-500 dark:text-gray-400">No pending approvals</p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* System Alerts */}
+          <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-slate-700">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                <AlertTriangle className="w-5 h-5 text-red-500" />
+                Alerts & Notifications
+              </h2>
+              <span className="bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 text-xs font-medium px-2 py-1 rounded-full">
+                {alerts.filter(a => a.severity === 'critical').length} critical
+              </span>
+            </div>
+            <div className="space-y-3">
+              {alerts.map((alert) => (
+                <a key={alert.id} href={alert.link} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-slate-700/50 rounded-xl hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors cursor-pointer">
+                  <div className="flex items-center gap-3">
+                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                      alert.severity === 'critical' ? 'bg-red-100 dark:bg-red-900/30' :
+                      alert.severity === 'warning' ? 'bg-amber-100 dark:bg-amber-900/30' :
+                      'bg-blue-100 dark:bg-blue-900/30'
+                    }`}>
+                      {alert.severity === 'critical' ? (
+                        <XCircle className="w-5 h-5 text-red-600 dark:text-red-400" />
+                      ) : alert.severity === 'warning' ? (
+                        <AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+                      ) : (
+                        <AlertCircle className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                      )}
+                    </div>
+                    <div>
+                      <p className="font-medium text-gray-900 dark:text-white capitalize">{alert.type.replace('_', ' ')}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">{alert.message}</p>
+                    </div>
+                  </div>
+                  <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
+                    alert.severity === 'critical' ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' :
+                    alert.severity === 'warning' ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400' :
+                    'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
+                  }`}>
+                    {alert.severity}
+                  </span>
+                </a>
+              ))}
+              {alerts.length === 0 && (
+                <div className="text-center py-8">
+                  <CheckCircle className="w-12 h-12 text-emerald-300 dark:text-emerald-600 mx-auto mb-2" />
+                  <p className="text-gray-500 dark:text-gray-400">No alerts</p>
+                </div>
+              )}
             </div>
           </div>
         </div>
