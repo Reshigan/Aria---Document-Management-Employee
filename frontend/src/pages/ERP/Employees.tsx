@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import api from '../../lib/api';
-import { Plus, Search, Eye, Edit, UserCheck, UserX } from 'lucide-react';
+import { Plus, Search, Eye, Edit, UserCheck, UserX, X } from 'lucide-react';
 
 interface Employee {
   id: string;
@@ -24,6 +24,17 @@ export default function Employees() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('ACTIVE');
   const [error, setError] = useState<string | null>(null);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [formData, setFormData] = useState({
+    first_name: '',
+    last_name: '',
+    email: '',
+    phone: '',
+    department: '',
+    position: '',
+    hire_date: new Date().toISOString().split('T')[0],
+    basic_salary: 0
+  });
 
   useEffect(() => {
     loadEmployees();
@@ -44,6 +55,37 @@ export default function Employees() {
       setError(err.response?.data?.detail || 'Failed to load employees');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleCreate = () => {
+    setFormData({
+      first_name: '',
+      last_name: '',
+      email: '',
+      phone: '',
+      department: '',
+      position: '',
+      hire_date: new Date().toISOString().split('T')[0],
+      basic_salary: 0
+    });
+    setShowCreateModal(true);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formData.first_name || !formData.last_name) {
+      setError('Please enter first and last name');
+      return;
+    }
+    try {
+      await api.post('/erp/payroll/employees', formData);
+      setShowCreateModal(false);
+      loadEmployees();
+      setError(null);
+    } catch (err: any) {
+      console.error('Error creating employee:', err);
+      setError(err.response?.data?.detail || 'Failed to create employee');
     }
   };
 
@@ -127,7 +169,7 @@ export default function Employees() {
           <option value="TERMINATED">Terminated</option>
         </select>
         <button
-          onClick={() => {/* TODO: Open create modal */}}
+          onClick={handleCreate}
           style={{
             padding: '0.5rem 1.5rem',
             background: '#2563eb',
@@ -270,6 +312,156 @@ export default function Employees() {
           );
         })}
       </div>
+
+      {/* Create Employee Modal */}
+      {showCreateModal && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'rgba(0, 0, 0, 0.5)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000
+          }}
+          onClick={() => setShowCreateModal(false)}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              background: 'white',
+              borderRadius: '0.5rem',
+              boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)',
+              maxWidth: '600px',
+              width: '95%',
+              maxHeight: '90vh',
+              overflow: 'auto'
+            }}
+          >
+            <div style={{
+              padding: '1.5rem',
+              borderBottom: '1px solid #e5e7eb',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between'
+            }}>
+              <h2 style={{ fontSize: '1.25rem', fontWeight: '600', margin: 0 }}>Add Employee</h2>
+              <button
+                onClick={() => setShowCreateModal(false)}
+                style={{ padding: '0.25rem', background: 'transparent', border: 'none', color: '#6b7280', cursor: 'pointer' }}
+              >
+                <X size={24} />
+              </button>
+            </div>
+            <form onSubmit={handleSubmit}>
+              <div style={{ padding: '1.5rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>First Name *</label>
+                    <input
+                      type="text"
+                      value={formData.first_name}
+                      onChange={(e) => setFormData({ ...formData, first_name: e.target.value })}
+                      required
+                      style={{ width: '100%', padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', fontSize: '0.875rem' }}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>Last Name *</label>
+                    <input
+                      type="text"
+                      value={formData.last_name}
+                      onChange={(e) => setFormData({ ...formData, last_name: e.target.value })}
+                      required
+                      style={{ width: '100%', padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', fontSize: '0.875rem' }}
+                    />
+                  </div>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>Email</label>
+                    <input
+                      type="email"
+                      value={formData.email}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      style={{ width: '100%', padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', fontSize: '0.875rem' }}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>Phone</label>
+                    <input
+                      type="tel"
+                      value={formData.phone}
+                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                      style={{ width: '100%', padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', fontSize: '0.875rem' }}
+                    />
+                  </div>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>Department</label>
+                    <input
+                      type="text"
+                      value={formData.department}
+                      onChange={(e) => setFormData({ ...formData, department: e.target.value })}
+                      style={{ width: '100%', padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', fontSize: '0.875rem' }}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>Position</label>
+                    <input
+                      type="text"
+                      value={formData.position}
+                      onChange={(e) => setFormData({ ...formData, position: e.target.value })}
+                      style={{ width: '100%', padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', fontSize: '0.875rem' }}
+                    />
+                  </div>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>Hire Date</label>
+                    <input
+                      type="date"
+                      value={formData.hire_date}
+                      onChange={(e) => setFormData({ ...formData, hire_date: e.target.value })}
+                      style={{ width: '100%', padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', fontSize: '0.875rem' }}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>Basic Salary (R)</label>
+                    <input
+                      type="number"
+                      min="0"
+                      value={formData.basic_salary}
+                      onChange={(e) => setFormData({ ...formData, basic_salary: parseFloat(e.target.value) || 0 })}
+                      style={{ width: '100%', padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', fontSize: '0.875rem' }}
+                    />
+                  </div>
+                </div>
+              </div>
+              <div style={{ padding: '1.5rem', borderTop: '1px solid #e5e7eb', display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
+                <button
+                  type="button"
+                  onClick={() => setShowCreateModal(false)}
+                  style={{ padding: '0.5rem 1rem', background: 'white', border: '1px solid #d1d5db', borderRadius: '0.375rem', fontSize: '0.875rem', fontWeight: '500', color: '#374151', cursor: 'pointer' }}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  style={{ padding: '0.5rem 1rem', background: '#2563eb', border: 'none', borderRadius: '0.375rem', fontSize: '0.875rem', fontWeight: '500', color: 'white', cursor: 'pointer' }}
+                >
+                  Add Employee
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
