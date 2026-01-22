@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Save, X, Plus, Trash2 } from 'lucide-react';
 import { formatCurrency } from '../../utils/formatters';
+import api from '../../lib/api';
 
 interface InvoiceLine {
   id: string;
@@ -24,6 +25,9 @@ const InvoiceForm: React.FC = () => {
   const [lines, setLines] = useState<InvoiceLine[]>([
     { id: '1', description: '', quantity: 1, unit_price: 0, vat_rate: 15 }
   ]);
+
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleAddLine = () => {
     setLines([...lines, {
@@ -80,12 +84,17 @@ const InvoiceForm: React.FC = () => {
       total_amount: totals.total
     };
 
-    console.log('Saving invoice:', invoiceData);
-    // TODO: Call API to save invoice
-    // await api.post('/financial/invoices', invoiceData);
+    setSaving(true);
+    setError(null);
     
-    // Navigate back to invoice list
-    navigate('/financial/invoices');
+    try {
+      await api.post('/financial/invoices', invoiceData);
+      navigate('/financial/invoices');
+    } catch (err: any) {
+      console.error('Error saving invoice:', err);
+      setError(err.response?.data?.detail || 'Failed to save invoice. Please try again.');
+      setSaving(false);
+    }
   };
 
   return (
@@ -102,6 +111,12 @@ const InvoiceForm: React.FC = () => {
           <X className="w-5 h-5" />
         </button>
       </div>
+
+      {error && (
+        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
+          {error}
+        </div>
+      )}
 
       <form onSubmit={handleSubmit}>
         <div className="bg-white rounded-lg shadow p-6 mb-6">
@@ -303,10 +318,11 @@ const InvoiceForm: React.FC = () => {
           </button>
           <button
             type="submit"
-            className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center"
+            disabled={saving}
+            className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Save className="w-4 h-4 mr-2" />
-            Save Invoice
+            {saving ? 'Saving...' : 'Save Invoice'}
           </button>
         </div>
       </form>
