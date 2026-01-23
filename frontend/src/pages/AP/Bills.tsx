@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Edit2, Trash2, FileText, DollarSign, Clock, CheckCircle, AlertCircle } from 'lucide-react';
+import { Plus, Edit2, Trash2, FileText, DollarSign, Clock, CheckCircle, AlertCircle, Search } from 'lucide-react';
 
 interface Bill {
   id: number;
@@ -22,6 +22,7 @@ export default function Bills() {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editingBill, setEditingBill] = useState<Bill | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
   const [formData, setFormData] = useState({
     supplier_id: '',
     bill_date: new Date().toISOString().split('T')[0],
@@ -116,219 +117,208 @@ export default function Bills() {
   const totalDue = bills.reduce((sum, bill) => sum + bill.amount_due, 0);
   const overdueCount = bills.filter(b => new Date(b.due_date) < new Date() && b.status !== 'PAID').length;
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'PAID': return { bg: '#d1fae5', color: '#059669' };
-      case 'DRAFT': return { bg: '#e5e7eb', color: '#6b7280' };
-      case 'APPROVED': return { bg: '#dbeafe', color: '#2563eb' };
-      case 'OVERDUE': return { bg: '#fee2e2', color: '#dc2626' };
-      default: return { bg: '#fef3c7', color: '#d97706' };
-    }
+  const getStatusBadge = (status: string) => {
+    const styles: Record<string, string> = {
+      PAID: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
+      DRAFT: 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300',
+      APPROVED: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
+      OVERDUE: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
+      PENDING: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
+    };
+    return styles[status] || styles.PENDING;
   };
 
+  const filteredBills = bills.filter(bill =>
+    bill.bill_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (bill.supplier_name && bill.supplier_name.toLowerCase().includes(searchTerm.toLowerCase()))
+  );
+
   if (loading) {
-    return <div style={{ padding: '2rem' }}>Loading...</div>;
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-orange-50 dark:from-gray-900 dark:to-gray-800 p-8">
+        <div className="flex items-center justify-center h-64">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500"></div>
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div style={{ padding: '2rem' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-orange-50 dark:from-gray-900 dark:to-gray-800 p-8">
+      {/* Header */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
         <div>
-          <h1 style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>Bills</h1>
-          <p style={{ color: '#6b7280' }}>Manage supplier bills and payments</p>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl shadow-lg shadow-orange-500/30">
+              <FileText className="h-7 w-7 text-white" />
+            </div>
+            Bills
+          </h1>
+          <p className="text-gray-500 dark:text-gray-400 mt-1">Manage supplier bills and payments</p>
         </div>
         <button
           onClick={() => navigate('/ap/bills/new')}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-            padding: '0.75rem 1.5rem',
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            color: 'white',
-            border: 'none',
-            borderRadius: '8px',
-            fontSize: '0.875rem',
-            fontWeight: '600',
-            cursor: 'pointer'
-          }}
+          className="px-6 py-2.5 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-xl hover:from-orange-600 hover:to-red-600 transition-all shadow-lg shadow-orange-500/30 flex items-center gap-2 font-medium"
         >
-          <Plus size={20} />
+          <Plus className="h-5 w-5" />
           New Bill
         </button>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1.5rem', marginBottom: '2rem' }}>
-        <div style={{ background: 'white', padding: '1.5rem', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <div style={{ padding: '0.75rem', background: '#dbeafe', borderRadius: '8px' }}>
-              <FileText size={24} style={{ color: '#2563eb' }} />
+      {/* Search Bar */}
+      <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-gray-700 mb-6">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+          <input
+            type="text"
+            placeholder="Search bills..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full pl-10 pr-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+          />
+        </div>
+      </div>
+
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl shadow-lg shadow-blue-500/30">
+              <FileText className="h-6 w-6 text-white" />
             </div>
             <div>
-              <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>Total Bills</div>
-              <div style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">
                 R {totalBills.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
-              </div>
+              </p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Total Bills</p>
             </div>
           </div>
         </div>
 
-        <div style={{ background: 'white', padding: '1.5rem', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <div style={{ padding: '0.75rem', background: '#d1fae5', borderRadius: '8px' }}>
-              <CheckCircle size={24} style={{ color: '#059669' }} />
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg shadow-green-500/30">
+              <CheckCircle className="h-6 w-6 text-white" />
             </div>
             <div>
-              <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>Paid</div>
-              <div style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">
                 R {totalPaid.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
-              </div>
+              </p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Paid</p>
             </div>
           </div>
         </div>
 
-        <div style={{ background: 'white', padding: '1.5rem', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <div style={{ padding: '0.75rem', background: '#fef3c7', borderRadius: '8px' }}>
-              <Clock size={24} style={{ color: '#d97706' }} />
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl shadow-lg shadow-amber-500/30">
+              <Clock className="h-6 w-6 text-white" />
             </div>
             <div>
-              <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>Outstanding</div>
-              <div style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">
                 R {totalDue.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
-              </div>
+              </p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Outstanding</p>
             </div>
           </div>
         </div>
 
-        <div style={{ background: 'white', padding: '1.5rem', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <div style={{ padding: '0.75rem', background: '#fee2e2', borderRadius: '8px' }}>
-              <AlertCircle size={24} style={{ color: '#dc2626' }} />
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-gradient-to-br from-red-500 to-rose-500 rounded-xl shadow-lg shadow-red-500/30">
+              <AlertCircle className="h-6 w-6 text-white" />
             </div>
             <div>
-              <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>Overdue</div>
-              <div style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">
                 {overdueCount} {overdueCount === 1 ? 'Bill' : 'Bills'}
-              </div>
+              </p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Overdue</p>
             </div>
           </div>
         </div>
       </div>
 
-      <div style={{ background: 'white', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', overflow: 'hidden' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-          <thead style={{ background: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
+      {/* Bills Table */}
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+        <table className="w-full">
+          <thead className="bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-600">
             <tr>
-              <th style={{ padding: '1rem', textAlign: 'left', fontSize: '0.875rem', fontWeight: '600', color: '#374151' }}>Bill Number</th>
-              <th style={{ padding: '1rem', textAlign: 'left', fontSize: '0.875rem', fontWeight: '600', color: '#374151' }}>Supplier</th>
-              <th style={{ padding: '1rem', textAlign: 'left', fontSize: '0.875rem', fontWeight: '600', color: '#374151' }}>Bill Date</th>
-              <th style={{ padding: '1rem', textAlign: 'left', fontSize: '0.875rem', fontWeight: '600', color: '#374151' }}>Due Date</th>
-              <th style={{ padding: '1rem', textAlign: 'right', fontSize: '0.875rem', fontWeight: '600', color: '#374151' }}>Amount</th>
-              <th style={{ padding: '1rem', textAlign: 'right', fontSize: '0.875rem', fontWeight: '600', color: '#374151' }}>Amount Due</th>
-              <th style={{ padding: '1rem', textAlign: 'center', fontSize: '0.875rem', fontWeight: '600', color: '#374151' }}>Status</th>
-              <th style={{ padding: '1rem', textAlign: 'center', fontSize: '0.875rem', fontWeight: '600', color: '#374151' }}>Actions</th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Bill Number</th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Supplier</th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Bill Date</th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Due Date</th>
+              <th className="px-6 py-4 text-right text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Amount</th>
+              <th className="px-6 py-4 text-right text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Amount Due</th>
+              <th className="px-6 py-4 text-center text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Status</th>
+              <th className="px-6 py-4 text-center text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Actions</th>
             </tr>
           </thead>
-          <tbody>
-            {bills.length === 0 ? (
+          <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+            {filteredBills.length === 0 ? (
               <tr>
-                <td colSpan={8} style={{ padding: '3rem', textAlign: 'center', color: '#6b7280' }}>
-                  <FileText size={48} style={{ margin: '0 auto 1rem', opacity: 0.3 }} />
-                  <div>No bills found</div>
-                  <div style={{ fontSize: '0.875rem', marginTop: '0.5rem' }}>Create your first bill to get started</div>
+                <td colSpan={8} className="px-6 py-12 text-center">
+                  <FileText className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
+                  <p className="text-gray-500 dark:text-gray-400">No bills found</p>
+                  <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">Create your first bill to get started</p>
                 </td>
               </tr>
             ) : (
-              bills.map((bill) => {
-                const statusStyle = getStatusColor(bill.status);
-                return (
-                  <tr 
-                    key={bill.id} 
-                    style={{ borderBottom: '1px solid #e5e7eb', cursor: 'pointer' }}
-                    onClick={() => navigate(`/ap/bills/${bill.id}`)}
-                  >
-                    <td style={{ padding: '1rem', fontWeight: '500' }}>{bill.bill_number}</td>
-                    <td style={{ padding: '1rem' }}>{bill.supplier_name || `Supplier ${bill.supplier_id}`}</td>
-                    <td style={{ padding: '1rem', color: '#6b7280' }}>
-                      {new Date(bill.bill_date).toLocaleDateString('en-ZA')}
-                    </td>
-                    <td style={{ padding: '1rem', color: '#6b7280' }}>
-                      {new Date(bill.due_date).toLocaleDateString('en-ZA')}
-                    </td>
-                    <td style={{ padding: '1rem', textAlign: 'right', fontWeight: '500' }}>
-                      R {bill.total_amount.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
-                    </td>
-                    <td style={{ padding: '1rem', textAlign: 'right', color: '#6b7280' }}>
-                      R {bill.amount_due.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
-                    </td>
-                    <td style={{ padding: '1rem', textAlign: 'center' }}>
-                      <span style={{
-                        padding: '0.25rem 0.75rem',
-                        background: statusStyle.bg,
-                        color: statusStyle.color,
-                        borderRadius: '9999px',
-                        fontSize: '0.75rem',
-                        fontWeight: '500'
-                      }}>
-                        {bill.status}
-                      </span>
-                    </td>
-                    <td style={{ padding: '1rem' }} onClick={(e) => e.stopPropagation()}>
-                      <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'center' }}>
-                        <button
-                          onClick={() => handleDelete(bill.id)}
-                          style={{
-                            padding: '0.5rem',
-                            background: '#fee2e2',
-                            border: 'none',
-                            borderRadius: '6px',
-                            cursor: 'pointer',
-                            color: '#dc2626'
-                          }}
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })
+              filteredBills.map((bill) => (
+                <tr 
+                  key={bill.id} 
+                  className="hover:bg-gray-50 dark:hover:bg-gray-700/50 cursor-pointer transition-colors"
+                  onClick={() => navigate(`/ap/bills/${bill.id}`)}
+                >
+                  <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">{bill.bill_number}</td>
+                  <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{bill.supplier_name || `Supplier ${bill.supplier_id}`}</td>
+                  <td className="px-6 py-4 text-gray-500 dark:text-gray-400">
+                    {new Date(bill.bill_date).toLocaleDateString('en-ZA')}
+                  </td>
+                  <td className="px-6 py-4 text-gray-500 dark:text-gray-400">
+                    {new Date(bill.due_date).toLocaleDateString('en-ZA')}
+                  </td>
+                  <td className="px-6 py-4 text-right font-medium text-gray-900 dark:text-white">
+                    R {bill.total_amount.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
+                  </td>
+                  <td className="px-6 py-4 text-right text-gray-500 dark:text-gray-400">
+                    R {bill.amount_due.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
+                  </td>
+                  <td className="px-6 py-4 text-center">
+                    <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${getStatusBadge(bill.status)}`}>
+                      {bill.status}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
+                    <div className="flex gap-2 justify-center">
+                      <button
+                        onClick={() => handleDelete(bill.id)}
+                        className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))
             )}
           </tbody>
         </table>
       </div>
 
+      {/* Modal */}
       {showModal && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background: 'rgba(0,0,0,0.5)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 1000
-        }} onClick={() => setShowModal(false)}>
-          <div style={{
-            background: 'white',
-            borderRadius: '12px',
-            padding: '2rem',
-            width: '90%',
-            maxWidth: '600px',
-            maxHeight: '90vh',
-            overflow: 'auto'
-          }} onClick={(e) => e.stopPropagation()}>
-            <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1.5rem' }}>
-              {editingBill ? 'Edit Bill' : 'New Bill'}
-            </h2>
-
-            <form onSubmit={handleSubmit}>
-              <div style={{ display: 'grid', gap: '1rem' }}>
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowModal(false)}>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl w-[600px] max-h-[90vh] overflow-hidden shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            <div className="bg-gradient-to-r from-orange-500 to-red-500 px-6 py-4">
+              <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                <FileText className="h-5 w-5" />
+                {editingBill ? 'Edit Bill' : 'New Bill'}
+              </h2>
+            </div>
+            <form onSubmit={handleSubmit} className="p-6 overflow-y-auto max-h-[calc(90vh-140px)]">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Supplier ID *
                   </label>
                   <input
@@ -336,145 +326,105 @@ export default function Bills() {
                     required
                     value={formData.supplier_id}
                     onChange={(e) => setFormData({ ...formData, supplier_id: e.target.value })}
-                    style={{
-                      width: '100%',
-                      padding: '0.75rem',
-                      border: '1px solid #d1d5db',
-                      borderRadius: '6px',
-                      fontSize: '0.875rem'
-                    }}
+                    className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                   />
                 </div>
-
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                  <div>
-                    <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>
-                      Bill Date *
-                    </label>
-                    <input
-                      type="date"
-                      required
-                      value={formData.bill_date}
-                      onChange={(e) => setFormData({ ...formData, bill_date: e.target.value })}
-                      style={{
-                        width: '100%',
-                        padding: '0.75rem',
-                        border: '1px solid #d1d5db',
-                        borderRadius: '6px',
-                        fontSize: '0.875rem'
-                      }}
-                    />
-                  </div>
-
-                  <div>
-                    <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>
-                      Due Date *
-                    </label>
-                    <input
-                      type="date"
-                      required
-                      value={formData.due_date}
-                      onChange={(e) => setFormData({ ...formData, due_date: e.target.value })}
-                      style={{
-                        width: '100%',
-                        padding: '0.75rem',
-                        border: '1px solid #d1d5db',
-                        borderRadius: '6px',
-                        fontSize: '0.875rem'
-                      }}
-                    />
-                  </div>
-                </div>
-
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>
-                    Reference
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Currency
+                  </label>
+                  <select
+                    value={formData.currency}
+                    onChange={(e) => setFormData({ ...formData, currency: e.target.value })}
+                    className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  >
+                    <option value="ZAR">ZAR</option>
+                    <option value="USD">USD</option>
+                    <option value="EUR">EUR</option>
+                    <option value="GBP">GBP</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Bill Date *
                   </label>
                   <input
-                    type="text"
-                    value={formData.reference}
-                    onChange={(e) => setFormData({ ...formData, reference: e.target.value })}
-                    style={{
-                      width: '100%',
-                      padding: '0.75rem',
-                      border: '1px solid #d1d5db',
-                      borderRadius: '6px',
-                      fontSize: '0.875rem'
-                    }}
-                  />
-                </div>
-
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>
-                    Description
-                  </label>
-                  <textarea
-                    value={formData.description}
-                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    rows={3}
-                    style={{
-                      width: '100%',
-                      padding: '0.75rem',
-                      border: '1px solid #d1d5db',
-                      borderRadius: '6px',
-                      fontSize: '0.875rem',
-                      resize: 'vertical'
-                    }}
-                  />
-                </div>
-
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>
-                    Total Amount *
-                  </label>
-                  <input
-                    type="number"
-                    step="0.01"
+                    type="date"
                     required
-                    value={formData.total_amount}
-                    onChange={(e) => setFormData({ ...formData, total_amount: parseFloat(e.target.value) })}
-                    style={{
-                      width: '100%',
-                      padding: '0.75rem',
-                      border: '1px solid #d1d5db',
-                      borderRadius: '6px',
-                      fontSize: '0.875rem'
-                    }}
+                    value={formData.bill_date}
+                    onChange={(e) => setFormData({ ...formData, bill_date: e.target.value })}
+                    className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Due Date *
+                  </label>
+                  <input
+                    type="date"
+                    required
+                    value={formData.due_date}
+                    onChange={(e) => setFormData({ ...formData, due_date: e.target.value })}
+                    className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                   />
                 </div>
               </div>
 
-              <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem', justifyContent: 'flex-end' }}>
+              <div className="mb-5">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Reference
+                </label>
+                <input
+                  type="text"
+                  value={formData.reference}
+                  onChange={(e) => setFormData({ ...formData, reference: e.target.value })}
+                  className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                />
+              </div>
+
+              <div className="mb-5">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Description
+                </label>
+                <textarea
+                  value={formData.description}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  rows={3}
+                  className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent resize-y"
+                />
+              </div>
+
+              <div className="mb-5">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Total Amount *
+                </label>
+                <input
+                  type="number"
+                  step="0.01"
+                  required
+                  value={formData.total_amount}
+                  onChange={(e) => setFormData({ ...formData, total_amount: parseFloat(e.target.value) })}
+                  className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                />
+              </div>
+
+              <div className="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-600">
                 <button
                   type="button"
                   onClick={() => {
                     setShowModal(false);
                     setEditingBill(null);
                   }}
-                  style={{
-                    padding: '0.75rem 1.5rem',
-                    background: '#f3f4f6',
-                    border: 'none',
-                    borderRadius: '6px',
-                    fontSize: '0.875rem',
-                    fontWeight: '600',
-                    cursor: 'pointer'
-                  }}
+                  className="px-5 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  style={{
-                    padding: '0.75rem 1.5rem',
-                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '6px',
-                    fontSize: '0.875rem',
-                    fontWeight: '600',
-                    cursor: 'pointer'
-                  }}
+                  className="px-5 py-2.5 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-xl font-medium hover:from-orange-600 hover:to-red-600 transition-all shadow-lg shadow-orange-500/30"
                 >
                   {editingBill ? 'Update' : 'Create'} Bill
                 </button>
