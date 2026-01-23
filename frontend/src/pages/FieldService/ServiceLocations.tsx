@@ -177,43 +177,80 @@ export default function ServiceLocations() {
     return parts.join(', ');
   };
 
+  if (loading && locations.length === 0) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-500 dark:text-gray-400">Loading locations...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="p-6">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
-          <MapPin size={28} className="text-orange-500" />
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-6 lg:p-8">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3 mb-2">
+          <div className="p-2 bg-gradient-to-br from-orange-500 to-amber-500 rounded-xl shadow-lg shadow-orange-500/30">
+            <MapPin size={28} className="text-white" />
+          </div>
           Service Locations
         </h1>
-        <p className="text-gray-600 mt-1">Manage customer service locations for field service dispatch</p>
+        <p className="text-gray-500 dark:text-gray-400 ml-14">Manage customer service locations for field service dispatch</p>
       </div>
 
-      <div className="grid grid-cols-4 gap-4 mb-6">
-        <div className="bg-white rounded-lg shadow p-4">
-          <div className="text-sm text-gray-500">Total Locations</div>
-          <div className="text-2xl font-bold text-orange-600">{locations.length}</div>
-        </div>
-        <div className="bg-white rounded-lg shadow p-4">
-          <div className="text-sm text-gray-500">Active</div>
-          <div className="text-2xl font-bold text-green-600">
-            {locations.filter(l => l.is_active).length}
+      {/* Stats Cards */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-gradient-to-br from-orange-500 to-amber-500 rounded-xl shadow-lg shadow-orange-500/30">
+              <MapPin size={24} className="text-white" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{locations.length}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Total Locations</p>
+            </div>
           </div>
         </div>
-        <div className="bg-white rounded-lg shadow p-4">
-          <div className="text-sm text-gray-500">Unique Customers</div>
-          <div className="text-2xl font-bold text-blue-600">
-            {new Set(locations.map(l => l.customer_id).filter(Boolean)).size}
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-gradient-to-br from-emerald-500 to-green-500 rounded-xl shadow-lg shadow-emerald-500/30">
+              <MapPin size={24} className="text-white" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{locations.filter(l => l.is_active).length}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Active</p>
+            </div>
           </div>
         </div>
-        <div className="bg-white rounded-lg shadow p-4">
-          <div className="text-sm text-gray-500">Total Work Orders</div>
-          <div className="text-2xl font-bold text-purple-600">
-            {locations.reduce((sum, l) => sum + (l.work_order_count || 0), 0)}
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl shadow-lg shadow-blue-500/30">
+              <Building size={24} className="text-white" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{new Set(locations.map(l => l.customer_id).filter(Boolean)).size}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Unique Customers</p>
+            </div>
+          </div>
+        </div>
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-gradient-to-br from-purple-500 to-violet-500 rounded-xl shadow-lg shadow-purple-500/30">
+              <Globe size={24} className="text-white" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{locations.reduce((sum, l) => sum + (l.work_order_count || 0), 0)}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Total Work Orders</p>
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow">
-        <div className="p-4 border-b flex gap-4 flex-wrap">
+      {/* Search and Filter */}
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 mb-6">
+        <div className="p-4 flex gap-4 flex-wrap">
           <div className="flex-1 min-w-[200px] relative">
             <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
             <input
@@ -221,13 +258,13 @@ export default function ServiceLocations() {
               placeholder="Search locations..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500"
+              className="w-full pl-10 pr-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
             />
           </div>
           <select
             value={filterCustomer}
             onChange={(e) => setFilterCustomer(e.target.value)}
-            className="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500"
+            className="px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
           >
             <option value="">All Customers</option>
             {customers.map(c => (
@@ -236,107 +273,115 @@ export default function ServiceLocations() {
           </select>
           <button
             onClick={() => { setEditingLocation(null); resetForm(); setShowForm(true); }}
-            className="px-4 py-2 bg-orange-600 text-white rounded-lg flex items-center gap-2 hover:bg-orange-700"
+            className="flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-orange-500 to-amber-500 text-white rounded-xl font-semibold shadow-lg shadow-orange-500/30 hover:shadow-xl hover:shadow-orange-500/40 transition-all duration-200"
           >
             <Plus size={16} />
             Add Location
           </button>
         </div>
+      </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
-          {filteredLocations.map((location) => (
-            <div key={location.id} className={`border rounded-lg p-4 hover:shadow-md transition-shadow ${!location.is_active ? 'opacity-60' : ''}`}>
-              <div className="flex justify-between items-start mb-3">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
-                    <MapPin size={20} className="text-orange-600" />
-                  </div>
-                  <div>
-                    <div className="font-medium text-gray-900">{location.name}</div>
-                    {location.customer_name && (
-                      <div className="text-sm text-gray-500 flex items-center gap-1">
-                        <Building size={12} />
-                        {location.customer_name}
-                      </div>
-                    )}
-                  </div>
+      {/* Location Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {filteredLocations.map((location) => (
+          <div key={location.id} className={`bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all duration-200 ${!location.is_active ? 'opacity-60' : ''}`}>
+            <div className="flex justify-between items-start mb-4">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-gradient-to-br from-orange-500 to-amber-500 rounded-xl shadow-lg shadow-orange-500/30">
+                  <MapPin size={20} className="text-white" />
                 </div>
-                <div className="flex gap-1">
-                  <button
-                    onClick={() => handleEdit(location)}
-                    className="text-blue-600 hover:text-blue-900 p-1"
-                  >
-                    <Edit size={16} />
-                  </button>
-                  <button
-                    onClick={() => handleDelete(location.id)}
-                    className="text-red-600 hover:text-red-900 p-1"
-                  >
-                    <Trash2 size={16} />
-                  </button>
+                <div>
+                  <div className="font-semibold text-gray-900 dark:text-white">{location.name}</div>
+                  {location.customer_name && (
+                    <div className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                      <Building size={12} />
+                      {location.customer_name}
+                    </div>
+                  )}
                 </div>
               </div>
-              
-              <div className="space-y-2 text-sm">
-                {(location.address_line1 || location.city) && (
-                  <div className="flex items-start gap-2 text-gray-600">
-                    <Globe size={14} className="text-gray-400 mt-0.5" />
-                    <span className="line-clamp-2">{getFullAddress(location)}</span>
-                  </div>
-                )}
-                {location.contact_phone && (
-                  <div className="flex items-center gap-2 text-gray-600">
-                    <Phone size={14} className="text-gray-400" />
-                    {location.contact_phone}
-                  </div>
-                )}
-              </div>
-
-              <div className="mt-3 pt-3 border-t flex justify-between items-center">
-                <span className={`px-2 py-0.5 text-xs rounded-full ${location.is_active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
-                  {location.is_active ? 'Active' : 'Inactive'}
-                </span>
-                <span className="text-sm text-gray-600">
-                  {location.work_order_count || 0} work orders
-                </span>
+              <div className="flex gap-1">
+                <button
+                  onClick={() => handleEdit(location)}
+                  className="p-2 text-orange-600 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/20 rounded-lg transition-colors"
+                >
+                  <Edit size={16} />
+                </button>
+                <button
+                  onClick={() => handleDelete(location.id)}
+                  className="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                >
+                  <Trash2 size={16} />
+                </button>
               </div>
             </div>
-          ))}
-        </div>
-        {filteredLocations.length === 0 && (
-          <div className="p-8 text-center text-gray-500">
+            
+            <div className="space-y-2 text-sm">
+              {(location.address_line1 || location.city) && (
+                <div className="flex items-start gap-2 text-gray-600 dark:text-gray-300">
+                  <Globe size={14} className="text-gray-400 mt-0.5" />
+                  <span className="line-clamp-2">{getFullAddress(location)}</span>
+                </div>
+              )}
+              {location.contact_phone && (
+                <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300">
+                  <Phone size={14} className="text-gray-400" />
+                  {location.contact_phone}
+                </div>
+              )}
+            </div>
+
+            <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700 flex justify-between items-center">
+              <span className={`px-2.5 py-1 text-xs font-semibold rounded-full ${location.is_active ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-400'}`}>
+                {location.is_active ? 'Active' : 'Inactive'}
+              </span>
+              <span className="text-sm text-gray-500 dark:text-gray-400">
+                {location.work_order_count || 0} work orders
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
+      {filteredLocations.length === 0 && (
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-12 text-center shadow-sm border border-gray-100 dark:border-gray-700">
+          <MapPin className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
+          <p className="text-gray-500 dark:text-gray-400">
             {searchTerm || filterCustomer 
               ? 'No locations found matching your criteria' 
               : 'No locations yet. Add your first one!'}
-          </div>
-        )}
-      </div>
+          </p>
+        </div>
+      )}
 
+      {/* Modal */}
       {showForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-lg p-6 max-h-[90vh] overflow-y-auto">
-            <h2 className="text-xl font-bold mb-4">
-              {editingLocation ? 'Edit Location' : 'Add Location'}
-            </h2>
-            <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl w-full max-w-lg max-h-[90vh] overflow-auto shadow-2xl">
+            <div className="p-6 border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-gradient-to-r from-orange-500 to-amber-500 rounded-t-2xl">
+              <h2 className="text-xl font-bold text-white flex items-center gap-3">
+                <MapPin size={24} />
+                {editingLocation ? 'Edit Location' : 'Add Location'}
+              </h2>
+            </div>
+            <form onSubmit={handleSubmit} className="p-6 space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Location Name *</label>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Location Name *</label>
                   <input
                     type="text"
                     required
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     placeholder="e.g., Main Office, Warehouse A"
-                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500"
+                    className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
                   />
                 </div>
                 <div className="col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Customer</label>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Customer</label>
                   <select
                     value={formData.customer_id}
                     onChange={(e) => setFormData({ ...formData, customer_id: e.target.value })}
-                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500"
+                    className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
                   >
                     <option value="">Select Customer</option>
                     {customers.map(c => (
@@ -346,22 +391,22 @@ export default function ServiceLocations() {
                 </div>
               </div>
               
-              <div className="border-t pt-4">
-                <h3 className="text-sm font-medium text-gray-700 mb-3">Address</h3>
+              <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
+                <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Address</h3>
                 <div className="space-y-3">
                   <input
                     type="text"
                     value={formData.address_line1}
                     onChange={(e) => setFormData({ ...formData, address_line1: e.target.value })}
                     placeholder="Address Line 1"
-                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500"
+                    className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
                   />
                   <input
                     type="text"
                     value={formData.address_line2}
                     onChange={(e) => setFormData({ ...formData, address_line2: e.target.value })}
                     placeholder="Address Line 2"
-                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500"
+                    className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
                   />
                   <div className="grid grid-cols-2 gap-3">
                     <input
@@ -369,14 +414,14 @@ export default function ServiceLocations() {
                       value={formData.city}
                       onChange={(e) => setFormData({ ...formData, city: e.target.value })}
                       placeholder="City"
-                      className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500"
+                      className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
                     />
                     <input
                       type="text"
                       value={formData.state}
                       onChange={(e) => setFormData({ ...formData, state: e.target.value })}
                       placeholder="Province/State"
-                      className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500"
+                      className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
                     />
                   </div>
                   <div className="grid grid-cols-2 gap-3">
@@ -385,35 +430,35 @@ export default function ServiceLocations() {
                       value={formData.postal_code}
                       onChange={(e) => setFormData({ ...formData, postal_code: e.target.value })}
                       placeholder="Postal Code"
-                      className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500"
+                      className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
                     />
                     <input
                       type="text"
                       value={formData.country}
                       onChange={(e) => setFormData({ ...formData, country: e.target.value })}
                       placeholder="Country"
-                      className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500"
+                      className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
                     />
                   </div>
                 </div>
               </div>
 
-              <div className="border-t pt-4">
-                <h3 className="text-sm font-medium text-gray-700 mb-3">Contact</h3>
+              <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
+                <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Contact</h3>
                 <div className="grid grid-cols-2 gap-3">
                   <input
                     type="text"
                     value={formData.contact_name}
                     onChange={(e) => setFormData({ ...formData, contact_name: e.target.value })}
                     placeholder="Contact Name"
-                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500"
+                    className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
                   />
                   <input
                     type="tel"
                     value={formData.contact_phone}
                     onChange={(e) => setFormData({ ...formData, contact_phone: e.target.value })}
                     placeholder="Phone"
-                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500"
+                    className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
                   />
                   <div className="col-span-2">
                     <input
@@ -421,20 +466,20 @@ export default function ServiceLocations() {
                       value={formData.contact_email}
                       onChange={(e) => setFormData({ ...formData, contact_email: e.target.value })}
                       placeholder="Email"
-                      className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500"
+                      className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
                     />
                   </div>
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Notes</label>
                 <textarea
                   value={formData.notes}
                   onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                   rows={2}
                   placeholder="Access instructions, parking info, etc."
-                  className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500"
+                  className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
                 />
               </div>
 
@@ -445,20 +490,20 @@ export default function ServiceLocations() {
                   onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
                   className="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300 rounded"
                 />
-                <label className="ml-2 text-sm text-gray-900">Active</label>
+                <label className="ml-2 text-sm text-gray-900 dark:text-gray-300">Active</label>
               </div>
 
-              <div className="flex justify-end gap-3 pt-4">
+              <div className="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
                 <button
                   type="button"
                   onClick={() => { setShowForm(false); setEditingLocation(null); resetForm(); }}
-                  className="px-4 py-2 border rounded-lg hover:bg-gray-50"
+                  className="px-5 py-2.5 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-semibold hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700"
+                  className="px-5 py-2.5 bg-gradient-to-r from-orange-500 to-amber-500 text-white rounded-xl font-semibold shadow-lg shadow-orange-500/30 hover:shadow-xl hover:shadow-orange-500/40 transition-all"
                 >
                   Save
                 </button>
