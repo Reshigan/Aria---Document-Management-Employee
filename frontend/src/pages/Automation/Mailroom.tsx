@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import api from '../../lib/api';
-import { Mail, Inbox, Send, CheckCircle, Clock, AlertCircle } from 'lucide-react';
+import { Mail, Inbox, Send, CheckCircle, Clock, AlertCircle, RefreshCw, Zap, MessageSquare } from 'lucide-react';
 
 interface EmailMessage {
   id: string;
@@ -99,128 +99,112 @@ export default function Mailroom() {
   };
 
   return (
-    <div style={{ padding: '2rem' }}>
-      <div style={{ marginBottom: '2rem' }}>
-        <h1 style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          <Mail size={32} style={{ color: '#2563eb' }} />
-          Aria Mailroom
-        </h1>
-        <p style={{ color: '#6b7280' }}>Monitor email-driven automation at aria@vantax.co.za</p>
-      </div>
-
-      {/* Mailbox Status */}
-      <div style={{ 
-        display: 'grid', 
-        gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', 
-        gap: '1rem',
-        marginBottom: '2rem'
-      }}>
-        <div style={{ 
-          padding: '1.5rem', 
-          background: mailboxStatus.connected ? '#d1fae5' : '#fee2e2', 
-          borderRadius: '0.5rem',
-          border: `2px solid ${mailboxStatus.connected ? '#10b981' : '#ef4444'}`
-        }}>
-          <div style={{ fontSize: '0.875rem', color: '#374151', marginBottom: '0.5rem', fontWeight: '500' }}>
-            Mailbox Status
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 p-6">
+      <div className="mb-8">
+        <div className="flex items-center gap-3 mb-2">
+          <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl shadow-lg shadow-blue-500/30">
+            <Mail className="h-8 w-8 text-white" />
           </div>
-          <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: mailboxStatus.connected ? '#065f46' : '#991b1b' }}>
-            {mailboxStatus.connected ? 'Connected' : 'Disconnected'}
-          </div>
-        </div>
-        <div style={{ padding: '1.5rem', background: 'white', borderRadius: '0.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-          <div style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.5rem' }}>Last Poll</div>
-          <div style={{ fontSize: '1.25rem', fontWeight: '600' }}>
-            {new Date(mailboxStatus.last_poll).toLocaleTimeString()}
-          </div>
-        </div>
-        <div style={{ padding: '1.5rem', background: 'white', borderRadius: '0.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-          <div style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.5rem' }}>Unread Messages</div>
-          <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#f59e0b' }}>
-            {mailboxStatus.unread_count}
-          </div>
-        </div>
-        <div style={{ padding: '1.5rem', background: 'white', borderRadius: '0.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-          <div style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.5rem' }}>Processed Today</div>
-          <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#10b981' }}>
-            {mailboxStatus.processed_today}
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Aria Mailroom</h1>
+            <p className="text-gray-600 dark:text-gray-400">Monitor email-driven automation at aria@vantax.co.za</p>
           </div>
         </div>
       </div>
 
-      {/* Recent Messages */}
-      <div style={{ 
-        background: 'white',
-        borderRadius: '0.5rem',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-        overflow: 'hidden'
-      }}>
-        <div style={{ padding: '1.5rem', borderBottom: '1px solid #e5e7eb' }}>
-          <h2 style={{ fontSize: '1.25rem', fontWeight: '600', margin: 0 }}>Recent Messages</h2>
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div className={`rounded-2xl p-5 shadow-sm border-2 ${mailboxStatus.connected ? 'bg-green-50 dark:bg-green-900/30 border-green-500' : 'bg-red-50 dark:bg-red-900/30 border-red-500'}`}>
+          <div className="flex items-center gap-4">
+            <div className={`p-3 rounded-xl shadow-lg ${mailboxStatus.connected ? 'bg-gradient-to-br from-green-500 to-emerald-500 shadow-green-500/30' : 'bg-gradient-to-br from-red-500 to-rose-500 shadow-red-500/30'}`}>
+              <Zap className="h-6 w-6 text-white" />
+            </div>
+            <div>
+              <p className={`text-xl font-bold ${mailboxStatus.connected ? 'text-green-700 dark:text-green-300' : 'text-red-700 dark:text-red-300'}`}>
+                {mailboxStatus.connected ? 'Connected' : 'Disconnected'}
+              </p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Mailbox Status</p>
+            </div>
+          </div>
+        </div>
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl shadow-lg shadow-blue-500/30">
+              <Clock className="h-6 w-6 text-white" />
+            </div>
+            <div>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{new Date(mailboxStatus.last_poll).toLocaleTimeString()}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Last Poll</p>
+            </div>
+          </div>
+        </div>
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl shadow-lg shadow-amber-500/30">
+              <Inbox className="h-6 w-6 text-white" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{mailboxStatus.unread_count}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Unread Messages</p>
+            </div>
+          </div>
+        </div>
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg shadow-green-500/30">
+              <CheckCircle className="h-6 w-6 text-white" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{mailboxStatus.processed_today}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Processed Today</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+        <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Recent Messages</h2>
         </div>
 
         {loading ? (
-          <div style={{ padding: '3rem', textAlign: 'center', color: '#6b7280' }}>
-            Loading messages...
+          <div className="p-12 text-center">
+            <RefreshCw className="h-8 w-8 text-gray-400 animate-spin mx-auto mb-2" />
+            <p className="text-gray-500 dark:text-gray-400">Loading messages...</p>
           </div>
         ) : messages.length === 0 ? (
-          <div style={{ padding: '3rem', textAlign: 'center' }}>
-            <Inbox size={48} style={{ margin: '0 auto 1rem', color: '#d1d5db' }} />
-            <h3 style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '0.5rem' }}>No messages yet</h3>
-            <p style={{ color: '#6b7280' }}>
-              Emails sent to aria@vantax.co.za will appear here
-            </p>
+          <div className="p-12 text-center">
+            <Inbox className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">No messages yet</h3>
+            <p className="text-gray-500 dark:text-gray-400">Emails sent to aria@vantax.co.za will appear here</p>
           </div>
         ) : (
-          <div>
+          <div className="divide-y divide-gray-200 dark:divide-gray-700">
             {messages.map((message) => (
               <div 
                 key={message.id}
-                style={{ 
-                  padding: '1.5rem',
-                  borderBottom: '1px solid #e5e7eb',
-                  transition: 'background 0.2s'
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.background = '#f9fafb'}
-                onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
+                className="p-5 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
               >
-                <div style={{ display: 'flex', alignItems: 'start', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
-                      <h3 style={{ fontSize: '1rem', fontWeight: '600', margin: 0 }}>{message.subject}</h3>
+                <div className="flex items-start justify-between mb-2">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <h3 className="font-semibold text-gray-900 dark:text-white">{message.subject}</h3>
                       {getStatusIcon(message.status)}
                     </div>
-                    <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>
-                      From: {message.from}
-                    </div>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">From: {message.from}</p>
                   </div>
-                  <div style={{ textAlign: 'right' }}>
-                    <div style={{ fontSize: '0.75rem', color: '#6b7280', marginBottom: '0.25rem' }}>
+                  <div className="text-right">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
                       {new Date(message.received_at).toLocaleString()}
-                    </div>
+                    </p>
                     {message.processed && (
-                      <span style={{
-                        padding: '0.25rem 0.5rem',
-                        borderRadius: '0.25rem',
-                        fontSize: '0.75rem',
-                        fontWeight: '500',
-                        background: '#d1fae5',
-                        color: '#065f46'
-                      }}>
+                      <span className="inline-flex items-center px-2 py-1 rounded-lg text-xs font-medium bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300">
                         Processed
                       </span>
                     )}
                   </div>
                 </div>
                 {message.bot_triggered && (
-                  <div style={{ 
-                    marginTop: '0.75rem',
-                    padding: '0.75rem',
-                    background: '#eff6ff',
-                    borderRadius: '0.375rem',
-                    fontSize: '0.875rem',
-                    color: '#1e40af'
-                  }}>
+                  <div className="mt-3 p-3 bg-blue-50 dark:bg-blue-900/30 rounded-xl text-sm text-blue-700 dark:text-blue-300">
                     <strong>Agent Triggered:</strong> {message.bot_triggered}
                   </div>
                 )}
@@ -230,23 +214,17 @@ export default function Mailroom() {
         )}
       </div>
 
-      {/* Configuration Info */}
-      <div style={{ 
-        marginTop: '2rem',
-        padding: '1.5rem',
-        background: '#eff6ff',
-        border: '1px solid #bfdbfe',
-        borderRadius: '0.5rem'
-      }}>
-        <h3 style={{ fontSize: '1rem', fontWeight: '600', marginBottom: '0.5rem', color: '#1e40af' }}>
-          How It Works
-        </h3>
-        <ul style={{ margin: 0, paddingLeft: '1.5rem', color: '#1e40af', fontSize: '0.875rem', lineHeight: '1.75' }}>
-          <li>Aria polls aria@vantax.co.za every 5 minutes for new emails</li>
-          <li>Natural language processing identifies the intent (invoice, quote, delivery, etc.)</li>
-          <li>The appropriate agent is triggered automatically to process the request</li>
-          <li>Aria sends a confirmation email with the results</li>
-          <li>All activity is logged and can be audited here</li>
+      <div className="mt-6 p-6 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-2xl">
+        <div className="flex items-center gap-2 mb-3">
+          <MessageSquare className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+          <h3 className="font-semibold text-blue-900 dark:text-blue-100">How It Works</h3>
+        </div>
+        <ul className="space-y-2 text-sm text-blue-700 dark:text-blue-300">
+          <li className="flex items-start gap-2"><span className="text-blue-500">•</span>Aria polls aria@vantax.co.za every 5 minutes for new emails</li>
+          <li className="flex items-start gap-2"><span className="text-blue-500">•</span>Natural language processing identifies the intent (invoice, quote, delivery, etc.)</li>
+          <li className="flex items-start gap-2"><span className="text-blue-500">•</span>The appropriate agent is triggered automatically to process the request</li>
+          <li className="flex items-start gap-2"><span className="text-blue-500">•</span>Aria sends a confirmation email with the results</li>
+          <li className="flex items-start gap-2"><span className="text-blue-500">•</span>All activity is logged and can be audited here</li>
         </ul>
       </div>
     </div>
