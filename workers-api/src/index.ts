@@ -45,6 +45,7 @@ import registration from './routes/registration';
 import reseller from './routes/reseller';
 import microfeatures from './routes/microfeatures';
 import newPages from './routes/new-pages';
+import xeroParity from './routes/xero-parity';
 import { executeScheduledBots as runScheduledBots } from './services/bot-executor';
 import { processPendingDeliveries } from './services/webhook-service';
 import { processDueScheduledReports } from './services/report-builder-service';
@@ -529,6 +530,10 @@ app.route('/microfeatures', microfeatures);
 // New Pages routes (Financial, Operations, People, Services, Compliance modules)
 app.route('/api/new-pages', newPages);
 app.route('/new-pages', newPages);
+
+// Xero Parity routes (Recurring Invoices, Reminders, Statements, Portal, Budgets, Bank Feeds)
+app.route('/api/xero', xeroParity);
+app.route('/xero', xeroParity);
 
 // Simple password hashing(for demo - use proper bcrypt in production)
 async function hashPassword(password: string): Promise<string> {
