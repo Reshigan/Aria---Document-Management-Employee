@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../../lib/api';
-import { Plus, Search, Eye, Check, Package, X } from 'lucide-react';
+import { Plus, Search, Eye, Check, Package, X, RefreshCw, AlertCircle, Truck, CheckCircle, Clock } from 'lucide-react';
 
 interface Supplier {
   id: string;
@@ -63,11 +63,12 @@ export default function GoodsReceipts() {
     try {
       setLoading(true);
       const response = await api.get('/erp/procure-to-pay/goods-receipts');
-      setReceipts(response.data);
+      setReceipts(response.data || []);
       setError(null);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error loading goods receipts:', err);
-      setError(err.response?.data?.detail || 'Failed to load goods receipts');
+      const error = err as { response?: { data?: { detail?: string } } };
+      setError(error.response?.data?.detail || 'Failed to load goods receipts');
     } finally {
       setLoading(false);
     }
@@ -77,9 +78,10 @@ export default function GoodsReceipts() {
     try {
       await api.post(`/erp/procure-to-pay/goods-receipts/${receiptId}/post`);
       loadReceipts();
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error posting receipt:', err);
-      setError(err.response?.data?.detail || 'Failed to post goods receipt');
+      const error = err as { response?: { data?: { detail?: string } } };
+      setError(error.response?.data?.detail || 'Failed to post goods receipt');
     }
   };
 
@@ -103,19 +105,20 @@ export default function GoodsReceipts() {
       setShowCreateModal(false);
       loadReceipts();
       setError(null);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error creating goods receipt:', err);
-      setError(err.response?.data?.detail || 'Failed to create goods receipt');
+      const error = err as { response?: { data?: { detail?: string } } };
+      setError(error.response?.data?.detail || 'Failed to create goods receipt');
     }
   };
 
-  const getStatusColor = (status: string) => {
-    const colors: Record<string, string> = {
-      draft: 'bg-gray-100 text-gray-800',
-      posted: 'bg-green-100 text-green-800',
-      cancelled: 'bg-red-100 text-red-800',
+  const getStatusBadge = (status: string) => {
+    const styles: Record<string, string> = {
+      draft: 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600',
+      posted: 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800',
+      cancelled: 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 border-red-200 dark:border-red-800',
     };
-    return colors[status] || 'bg-gray-100 text-gray-800';
+    return styles[status] || styles.draft;
   };
 
   const filteredReceipts = receipts.filter(receipt => {
@@ -126,309 +129,196 @@ export default function GoodsReceipts() {
     return matchesSearch && matchesStatus;
   });
 
+  const stats = {
+    total: receipts.length,
+    draft: receipts.filter(r => r.status === 'draft').length,
+    posted: receipts.filter(r => r.status === 'posted').length,
+    cancelled: receipts.filter(r => r.status === 'cancelled').length
+  };
+
+  const renderCreateModal = () => {
+    if (!showCreateModal) return null;
+
+    return (
+      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setShowCreateModal(false)}>
+        <div onClick={(e) => e.stopPropagation()} className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden">
+          <div className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white p-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-white/20 rounded-lg"><Package className="h-6 w-6" /></div>
+                <div>
+                  <h2 className="text-xl font-semibold">Create Goods Receipt</h2>
+                  <p className="text-white/80 text-sm">Record incoming goods</p>
+                </div>
+              </div>
+              <button onClick={() => setShowCreateModal(false)} className="p-2 hover:bg-white/20 rounded-lg transition-colors"><X className="h-5 w-5" /></button>
+            </div>
+          </div>
+
+          <form onSubmit={handleSubmit}>
+            <div className="p-6 space-y-4">
+              {error && (
+                <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl flex items-center gap-3">
+                  <AlertCircle className="h-5 w-5 text-red-500 flex-shrink-0" />
+                  <p className="text-red-700 dark:text-red-300">{error}</p>
+                </div>
+              )}
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Supplier *</label>
+                <select value={formData.supplier_id} onChange={(e) => setFormData({ ...formData, supplier_id: e.target.value })} required className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all">
+                  <option value="">Select a supplier...</option>
+                  {suppliers.map(s => (<option key={s.id} value={s.id}>{s.name}</option>))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Receipt Date</label>
+                <input type="date" value={formData.receipt_date} onChange={(e) => setFormData({ ...formData, receipt_date: e.target.value })} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all" />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Notes</label>
+                <textarea value={formData.notes} onChange={(e) => setFormData({ ...formData, notes: e.target.value })} rows={3} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all resize-none" placeholder="Add any notes..." />
+              </div>
+            </div>
+
+            <div className="p-6 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 flex justify-end gap-3">
+              <button type="button" onClick={() => setShowCreateModal(false)} className="px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">Cancel</button>
+              <button type="submit" className="px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-medium hover:from-indigo-700 hover:to-purple-700 transition-all shadow-lg shadow-indigo-500/30">Create Receipt</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    );
+  };
+
   return (
-    <div style={{ padding: '2rem' }}>
-      <div style={{ marginBottom: '2rem' }}>
-        <h1 style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>Goods Receipts</h1>
-        <p style={{ color: '#6b7280' }}>Manage incoming goods and inventory receipts</p>
-      </div>
-
-      {error && (
-        <div style={{
-          padding: '1rem',
-          marginBottom: '1rem',
-          background: '#fee2e2',
-          border: '1px solid #fecaca',
-          borderRadius: '0.5rem',
-          color: '#991b1b'
-        }}>
-          {error}
-        </div>
-      )}
-
-      {/* Search and Filters */}
-      <div style={{ 
-        display: 'flex', 
-        gap: '1rem', 
-        marginBottom: '2rem',
-        padding: '1.5rem',
-        background: 'white',
-        borderRadius: '0.5rem',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-      }}>
-        <input
-          type="text"
-          placeholder="Search by receipt number or supplier..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          style={{
-            flex: 1,
-            padding: '0.5rem 1rem',
-            border: '1px solid #d1d5db',
-            borderRadius: '0.375rem',
-            fontSize: '0.875rem'
-          }}
-        />
-        <select
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-          style={{
-            padding: '0.5rem 1rem',
-            border: '1px solid #d1d5db',
-            borderRadius: '0.375rem',
-            fontSize: '0.875rem',
-            minWidth: '150px'
-          }}
-        >
-          <option value="">All Statuses</option>
-          <option value="draft">Draft</option>
-          <option value="posted">Posted</option>
-          <option value="cancelled">Cancelled</option>
-        </select>
-        <button
-          onClick={handleCreate}
-          style={{
-            padding: '0.5rem 1.5rem',
-            background: '#2563eb',
-            color: 'white',
-            border: 'none',
-            borderRadius: '0.375rem',
-            fontSize: '0.875rem',
-            fontWeight: '500',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem'
-          }}
-        >
-          <Plus size={16} />
-          Create Receipt
-        </button>
-      </div>
-
-      {/* Goods Receipts Table */}
-      {loading ? (
-        <div style={{ textAlign: 'center', padding: '3rem' }}>Loading goods receipts...</div>
-      ) : filteredReceipts.length === 0 ? (
-        <div style={{ 
-          textAlign: 'center', 
-          padding: '3rem',
-          background: 'white',
-          borderRadius: '0.5rem',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-        }}>
-          <p style={{ color: '#6b7280' }}>No goods receipts found</p>
-        </div>
-      ) : (
-        <div style={{ 
-          background: 'white', 
-          borderRadius: '0.5rem',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-          overflow: 'hidden'
-        }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <thead style={{ background: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
-              <tr>
-                <th style={{ padding: '0.75rem 1rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Receipt #</th>
-                <th style={{ padding: '0.75rem 1rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Supplier</th>
-                <th style={{ padding: '0.75rem 1rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Receipt Date</th>
-                <th style={{ padding: '0.75rem 1rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Status</th>
-                <th style={{ padding: '0.75rem 1rem', textAlign: 'right', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredReceipts.map((receipt) => (
-                <tr key={receipt.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
-                  <td style={{ padding: '1rem', fontSize: '0.875rem', fontWeight: '500' }}>
-                    <Link to={`/procurement/goods-receipts/${receipt.id}`} style={{ color: '#2563eb', textDecoration: 'none' }}>
-                      {receipt.receipt_number}
-                    </Link>
-                  </td>
-                  <td style={{ padding: '1rem', fontSize: '0.875rem' }}>{receipt.supplier_name}</td>
-                  <td style={{ padding: '1rem', fontSize: '0.875rem' }}>{new Date(receipt.receipt_date).toLocaleDateString()}</td>
-                  <td style={{ padding: '1rem' }}>
-                    <span style={{
-                      padding: '0.25rem 0.75rem',
-                      borderRadius: '9999px',
-                      fontSize: '0.75rem',
-                      fontWeight: '500'
-                    }} className={getStatusColor(receipt.status)}>
-                      {receipt.status}
-                    </span>
-                  </td>
-                  <td style={{ padding: '1rem', textAlign: 'right' }}>
-                    <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
-                      {receipt.status === 'draft' && (
-                        <button
-                          onClick={() => postReceipt(receipt.id)}
-                          style={{
-                            padding: '0.25rem 0.75rem',
-                            background: '#10b981',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '0.25rem',
-                            fontSize: '0.75rem',
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '0.25rem'
-                          }}
-                        >
-                          <Check size={12} />
-                          Post
-                        </button>
-                      )}
-                      <button
-                        style={{
-                          padding: '0.25rem 0.75rem',
-                          background: '#6b7280',
-                          color: 'white',
-                          border: 'none',
-                          borderRadius: '0.25rem',
-                          fontSize: '0.75rem',
-                          cursor: 'pointer',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '0.25rem'
-                        }}
-                      >
-                        <Eye size={12} />
-                        View
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-
-      {/* Summary Stats */}
-      <div style={{ 
-        display: 'grid', 
-        gridTemplateColumns: 'repeat(3, 1fr)', 
-        gap: '1rem',
-        marginTop: '2rem'
-      }}>
-        {['draft', 'posted', 'cancelled'].map((status) => {
-          const count = receipts.filter(r => r.status === status).length;
-          return (
-            <div key={status} style={{
-              padding: '1.5rem',
-              background: 'white',
-              borderRadius: '0.5rem',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-            }}>
-              <div style={{ fontSize: '0.875rem', color: '#6b7280', textTransform: 'capitalize', marginBottom: '0.5rem' }}>
-                {status} Receipts
-              </div>
-              <div style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>
-                {count}
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Create Goods Receipt Modal */}
-      {showCreateModal && (
-        <div
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            background: 'rgba(0, 0, 0, 0.5)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 1000
-          }}
-          onClick={() => setShowCreateModal(false)}
-        >
-          <div
-            onClick={(e) => e.stopPropagation()}
-            style={{
-              background: 'white',
-              borderRadius: '0.5rem',
-              boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)',
-              maxWidth: '500px',
-              width: '95%',
-              maxHeight: '90vh',
-              overflow: 'auto'
-            }}
-          >
-            <div style={{
-              padding: '1.5rem',
-              borderBottom: '1px solid #e5e7eb',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between'
-            }}>
-              <h2 style={{ fontSize: '1.25rem', fontWeight: '600', margin: 0 }}>Create Goods Receipt</h2>
-              <button
-                onClick={() => setShowCreateModal(false)}
-                style={{ padding: '0.25rem', background: 'transparent', border: 'none', color: '#6b7280', cursor: 'pointer' }}
-              >
-                <X size={24} />
-              </button>
-            </div>
-            <form onSubmit={handleSubmit}>
-              <div style={{ padding: '1.5rem' }}>
-                <div style={{ marginBottom: '1rem' }}>
-                  <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>Supplier *</label>
-                  <select
-                    value={formData.supplier_id}
-                    onChange={(e) => setFormData({ ...formData, supplier_id: e.target.value })}
-                    required
-                    style={{ width: '100%', padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', fontSize: '0.875rem' }}
-                  >
-                    <option value="">Select a supplier...</option>
-                    {suppliers.map(s => (
-                      <option key={s.id} value={s.id}>{s.name}</option>
-                    ))}
-                  </select>
-                </div>
-                <div style={{ marginBottom: '1rem' }}>
-                  <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>Receipt Date</label>
-                  <input
-                    type="date"
-                    value={formData.receipt_date}
-                    onChange={(e) => setFormData({ ...formData, receipt_date: e.target.value })}
-                    style={{ width: '100%', padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', fontSize: '0.875rem' }}
-                  />
-                </div>
-                <div style={{ marginBottom: '1rem' }}>
-                  <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>Notes</label>
-                  <textarea
-                    value={formData.notes}
-                    onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                    rows={3}
-                    style={{ width: '100%', padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', fontSize: '0.875rem', resize: 'vertical' }}
-                  />
-                </div>
-              </div>
-              <div style={{ padding: '1.5rem', borderTop: '1px solid #e5e7eb', display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
-                <button
-                  type="button"
-                  onClick={() => setShowCreateModal(false)}
-                  style={{ padding: '0.5rem 1rem', background: 'white', border: '1px solid #d1d5db', borderRadius: '0.375rem', fontSize: '0.875rem', fontWeight: '500', color: '#374151', cursor: 'pointer' }}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  style={{ padding: '0.5rem 1rem', background: '#2563eb', border: 'none', borderRadius: '0.375rem', fontSize: '0.875rem', fontWeight: '500', color: 'white', cursor: 'pointer' }}
-                >
-                  Create Receipt
-                </button>
-              </div>
-            </form>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6">
+      <div className="max-w-7xl mx-auto space-y-6">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Goods Receipts</h1>
+            <p className="text-gray-500 dark:text-gray-400 mt-1">Manage incoming goods and inventory receipts</p>
+          </div>
+          <div className="flex items-center gap-3">
+            <button onClick={() => loadReceipts()} className="p-3 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-200 dark:border-gray-700">
+              <RefreshCw className={`h-5 w-5 text-gray-600 dark:text-gray-400 ${loading ? 'animate-spin' : ''}`} />
+            </button>
+            <button onClick={handleCreate} className="flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-medium hover:from-indigo-700 hover:to-purple-700 transition-all shadow-lg shadow-indigo-500/30">
+              <Plus className="h-5 w-5" />Create Receipt
+            </button>
           </div>
         </div>
-      )}
+
+        {error && !showCreateModal && (
+          <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl flex items-center gap-3">
+            <AlertCircle className="h-5 w-5 text-red-500 flex-shrink-0" />
+            <p className="text-red-700 dark:text-red-300">{error}</p>
+            <button onClick={() => setError(null)} className="ml-auto p-1 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg"><X className="h-4 w-4 text-red-500" /></button>
+          </div>
+        )}
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl shadow-lg shadow-indigo-500/30"><Package className="h-6 w-6 text-white" /></div>
+              <div><p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.total}</p><p className="text-sm text-gray-500 dark:text-gray-400">Total Receipts</p></div>
+            </div>
+          </div>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-gradient-to-br from-gray-500 to-gray-600 rounded-xl shadow-lg shadow-gray-500/30"><Clock className="h-6 w-6 text-white" /></div>
+              <div><p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.draft}</p><p className="text-sm text-gray-500 dark:text-gray-400">Draft</p></div>
+            </div>
+          </div>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg shadow-green-500/30"><CheckCircle className="h-6 w-6 text-white" /></div>
+              <div><p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.posted}</p><p className="text-sm text-gray-500 dark:text-gray-400">Posted</p></div>
+            </div>
+          </div>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-gradient-to-br from-red-500 to-rose-500 rounded-xl shadow-lg shadow-red-500/30"><X className="h-6 w-6 text-white" /></div>
+              <div><p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.cancelled}</p><p className="text-sm text-gray-500 dark:text-gray-400">Cancelled</p></div>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+          <div className="p-5 border-b border-gray-100 dark:border-gray-700">
+            <div className="flex flex-col md:flex-row gap-4">
+              <div className="flex-1 relative">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <input type="text" placeholder="Search by receipt number or supplier..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-12 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all" />
+              </div>
+              <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all min-w-[150px]">
+                <option value="">All Statuses</option>
+                <option value="draft">Draft</option>
+                <option value="posted">Posted</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+            </div>
+          </div>
+
+          {loading ? (
+            <div className="p-12 text-center">
+              <RefreshCw className="h-8 w-8 animate-spin text-indigo-500 mx-auto mb-4" />
+              <p className="text-gray-500 dark:text-gray-400">Loading goods receipts...</p>
+            </div>
+          ) : filteredReceipts.length === 0 ? (
+            <div className="p-12 text-center">
+              <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-2xl flex items-center justify-center mx-auto mb-4"><Package className="h-8 w-8 text-gray-400" /></div>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No goods receipts found</h3>
+              <p className="text-gray-500 dark:text-gray-400 mb-6">{searchTerm || statusFilter ? 'Try adjusting your filters' : 'Get started by creating your first goods receipt'}</p>
+              {!searchTerm && !statusFilter && (
+                <button onClick={handleCreate} className="px-5 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-medium hover:from-indigo-700 hover:to-purple-700 transition-all">Create First Receipt</button>
+              )}
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-50 dark:bg-gray-900/50">
+                  <tr>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Receipt #</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Supplier</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Receipt Date</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
+                    <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
+                  {filteredReceipts.map((receipt) => (
+                    <tr key={receipt.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                      <td className="px-6 py-4">
+                        <Link to={`/procurement/goods-receipts/${receipt.id}`} className="font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300">{receipt.receipt_number}</Link>
+                      </td>
+                      <td className="px-6 py-4 text-gray-900 dark:text-white">{receipt.supplier_name}</td>
+                      <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{new Date(receipt.receipt_date).toLocaleDateString()}</td>
+                      <td className="px-6 py-4">
+                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${getStatusBadge(receipt.status)}`}>{receipt.status}</span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center justify-end gap-2">
+                          {receipt.status === 'draft' && (
+                            <button onClick={() => postReceipt(receipt.id)} className="flex items-center gap-1 px-3 py-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg text-xs font-medium hover:from-green-700 hover:to-emerald-700 transition-all shadow-sm">
+                              <Check className="h-3 w-3" />Post
+                            </button>
+                          )}
+                          <Link to={`/procurement/goods-receipts/${receipt.id}`} className="p-2 hover:bg-indigo-100 dark:hover:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-lg transition-colors"><Eye className="h-4 w-4" /></Link>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {renderCreateModal()}
     </div>
   );
 }

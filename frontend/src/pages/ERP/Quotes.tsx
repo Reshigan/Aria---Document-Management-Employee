@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import api from '../../lib/api';
 import { LineItemsTable, LineItem } from '../../components/LineItemsTable';
 import { ConfirmDialog } from '../../components/ConfirmDialog';
-import { Plus, Search, Filter, Eye, Edit, Trash2, Check, Send, X, FileText } from 'lucide-react';
+import { Plus, Search, Eye, Edit, Trash2, Check, Send, X, FileText, RefreshCw, FileCheck, Clock, CheckCircle, AlertCircle, TrendingUp } from 'lucide-react';
 
 interface Quote {
   id: string;
@@ -52,9 +52,6 @@ export default function Quotes() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [showDetailModal, setShowDetailModal] = useState(false);
   const [selectedQuote, setSelectedQuote] = useState<Quote | null>(null);
   const [selectedCustomerId, setSelectedCustomerId] = useState<string>('');
   const [selectedPricelistId, setSelectedPricelistId] = useState<string>('');
@@ -69,17 +66,17 @@ export default function Quotes() {
   const [lineItems, setLineItems] = useState<LineItem[]>([]);
   const [error, setError] = useState<string | null>(null);
 
-    useEffect(() => {
-      loadQuotes();
-      loadProducts();
-      loadCustomers();
-      loadPricelists();
-    }, [searchTerm, statusFilter]);
+  useEffect(() => {
+    loadQuotes();
+    loadProducts();
+    loadCustomers();
+    loadPricelists();
+  }, [searchTerm, statusFilter]);
 
   const loadQuotes = async () => {
     try {
       setLoading(true);
-      const params: any = {};
+      const params: Record<string, string> = {};
       if (searchTerm) params.search = searchTerm;
       if (statusFilter) params.status = statusFilter;
       
@@ -87,9 +84,10 @@ export default function Quotes() {
       const data = response.data?.data || response.data || [];
       setQuotes(Array.isArray(data) ? data : []);
       setError(null);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error loading quotes:', err);
-      setError(err.response?.data?.detail || 'Failed to load quotes');
+      const error = err as { response?: { data?: { detail?: string } } };
+      setError(error.response?.data?.detail || 'Failed to load quotes');
     } finally {
       setLoading(false);
     }
@@ -105,101 +103,103 @@ export default function Quotes() {
     }
   };
 
-    const loadCustomers = async () => {
-      try {
-        const response = await api.get('/erp/order-to-cash/customers');
-        const data = response.data?.data || response.data || [];
-        setCustomers(Array.isArray(data) ? data : []);
-      } catch (err) {
-        console.error('Error loading customers:', err);
-      }
-    };
+  const loadCustomers = async () => {
+    try {
+      const response = await api.get('/erp/order-to-cash/customers');
+      const data = response.data?.data || response.data || [];
+      setCustomers(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error('Error loading customers:', err);
+    }
+  };
 
-    const loadPricelists = async () => {
-      try {
-        const response = await api.get('/pricing/pricelists');
-        const data = response.data?.data || response.data || [];
-        setPricelists(Array.isArray(data) ? data : []);
-      } catch (err) {
-        console.error('Error loading pricelists:', err);
-      }
-    };
+  const loadPricelists = async () => {
+    try {
+      const response = await api.get('/pricing/pricelists');
+      const data = response.data?.data || response.data || [];
+      setPricelists(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error('Error loading pricelists:', err);
+    }
+  };
 
-    const handleCustomerChange = (customerId: string) => {
-      setSelectedCustomerId(customerId);
-      const customer = customers.find(c => c.id === customerId);
-      if (customer) {
-        setFormData({
-          ...formData,
-          customer_id: customerId,
-          customer_name: customer.name,
-          customer_email: customer.email
-        });
-        if (customer.pricelist_id) {
-          setSelectedPricelistId(customer.pricelist_id);
-        }
-      }
-    };
-
-    const handleCreate = () => {
+  const handleCustomerChange = (customerId: string) => {
+    setSelectedCustomerId(customerId);
+    const customer = customers.find(c => c.id === customerId);
+    if (customer) {
       setFormData({
-        customer_name: '',
-        customer_email: '',
-        quote_date: new Date().toISOString().split('T')[0],
-        valid_until: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        notes: '',
-        status: 'draft'
+        ...formData,
+        customer_id: customerId,
+        customer_name: customer.name,
+        customer_email: customer.email
       });
-      setSelectedCustomerId('');
-      setSelectedPricelistId('');
-      setLineItems([]);
-      setShowCreateModal(true);
-    };
-
-    const handleSubmit = async (e: React.FormEvent) => {
-      e.preventDefault();
-    
-      if (lineItems.length === 0) {
-        setError('Please add at least one line item');
-        return;
+      if (customer.pricelist_id) {
+        setSelectedPricelistId(customer.pricelist_id);
       }
+    }
+  };
 
-      if (!formData.customer_name) {
-        setError('Please select a customer');
-        return;
-      }
+  const handleCreate = () => {
+    setFormData({
+      customer_name: '',
+      customer_email: '',
+      quote_date: new Date().toISOString().split('T')[0],
+      valid_until: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+      notes: '',
+      status: 'draft'
+    });
+    setSelectedCustomerId('');
+    setSelectedPricelistId('');
+    setLineItems([]);
+    setShowCreateModal(true);
+  };
 
-      try {
-        const payload = {
-          ...formData,
-          lines: lineItems.map((item, index) => ({
-            line_number: index + 1,
-            product_id: item.product_id,
-            description: item.description,
-            quantity: item.quantity,
-            unit_price: item.unit_price,
-            discount_percent: item.discount_percent,
-            tax_rate: item.tax_rate
-          }))
-        };
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+  
+    if (lineItems.length === 0) {
+      setError('Please add at least one line item');
+      return;
+    }
 
-        await api.post('/erp/order-to-cash/quotes', payload);
-        loadQuotes();
-        setShowCreateModal(false);
-        setError(null);
-      } catch (err: any) {
-        console.error('Error creating quote:', err);
-        setError(err.response?.data?.detail || 'Failed to create quote');
-      }
-    };
+    if (!formData.customer_name) {
+      setError('Please select a customer');
+      return;
+    }
 
-    const approveQuote = async (quoteId: string) => {
+    try {
+      const payload = {
+        ...formData,
+        lines: lineItems.map((item, index) => ({
+          line_number: index + 1,
+          product_id: item.product_id,
+          description: item.description,
+          quantity: item.quantity,
+          unit_price: item.unit_price,
+          discount_percent: item.discount_percent,
+          tax_rate: item.tax_rate
+        }))
+      };
+
+      await api.post('/erp/order-to-cash/quotes', payload);
+      loadQuotes();
+      setShowCreateModal(false);
+      setError(null);
+    } catch (err: unknown) {
+      console.error('Error creating quote:', err);
+      const error = err as { response?: { data?: { detail?: string } } };
+      setError(error.response?.data?.detail || 'Failed to create quote');
+    }
+  };
+
+  const approveQuote = async (quoteId: string) => {
     try {
       await api.post(`/erp/order-to-cash/quotes/${quoteId}/approve`);
       loadQuotes();
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error approving quote:', err);
-      setError(err.response?.data?.detail || 'Failed to approve quote');
+      const error = err as { response?: { data?: { detail?: string } } };
+      setError(error.response?.data?.detail || 'Failed to approve quote');
     }
   };
 
@@ -207,9 +207,10 @@ export default function Quotes() {
     try {
       await api.post(`/erp/order-to-cash/quotes/${quoteId}/send`);
       loadQuotes();
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error sending quote:', err);
-      setError(err.response?.data?.detail || 'Failed to send quote');
+      const error = err as { response?: { data?: { detail?: string } } };
+      setError(error.response?.data?.detail || 'Failed to send quote');
     }
   };
 
@@ -218,448 +219,254 @@ export default function Quotes() {
       const response = await api.post(`/erp/order-to-cash/quotes/${quoteId}/accept`);
       alert(`Quote accepted! Sales Order ${response.data.sales_order_number} created.`);
       loadQuotes();
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error accepting quote:', err);
-      setError(err.response?.data?.detail || 'Failed to accept quote');
+      const error = err as { response?: { data?: { detail?: string } } };
+      setError(error.response?.data?.detail || 'Failed to accept quote');
     }
   };
 
-  const getStatusColor = (status: string) => {
-    const colors: Record<string, string> = {
-      draft: 'bg-gray-100 text-gray-800',
-      approved: 'bg-blue-100 text-blue-800',
-      sent: 'bg-yellow-100 text-yellow-800',
-      accepted: 'bg-green-100 text-green-800',
-      rejected: 'bg-red-100 text-red-800',
-      expired: 'bg-gray-100 text-gray-600',
+  const getStatusConfig = (status: string) => {
+    const configs: Record<string, { bg: string; text: string; border: string }> = {
+      draft: { bg: 'bg-gray-100 dark:bg-gray-800', text: 'text-gray-700 dark:text-gray-300', border: 'border-gray-200 dark:border-gray-700' },
+      approved: { bg: 'bg-blue-100 dark:bg-blue-900/30', text: 'text-blue-700 dark:text-blue-300', border: 'border-blue-200 dark:border-blue-800' },
+      sent: { bg: 'bg-amber-100 dark:bg-amber-900/30', text: 'text-amber-700 dark:text-amber-300', border: 'border-amber-200 dark:border-amber-800' },
+      accepted: { bg: 'bg-green-100 dark:bg-green-900/30', text: 'text-green-700 dark:text-green-300', border: 'border-green-200 dark:border-green-800' },
+      rejected: { bg: 'bg-red-100 dark:bg-red-900/30', text: 'text-red-700 dark:text-red-300', border: 'border-red-200 dark:border-red-800' },
+      expired: { bg: 'bg-gray-100 dark:bg-gray-800', text: 'text-gray-500 dark:text-gray-400', border: 'border-gray-200 dark:border-gray-700' }
     };
-    return colors[status] || 'bg-gray-100 text-gray-800';
+    return configs[status] || configs.draft;
+  };
+
+  const stats = {
+    total: quotes.length,
+    draft: quotes.filter(q => q.status === 'draft').length,
+    sent: quotes.filter(q => q.status === 'sent').length,
+    accepted: quotes.filter(q => q.status === 'accepted').length,
+    totalValue: quotes.reduce((sum, q) => sum + q.total_amount, 0)
   };
 
   return (
-    <div style={{ padding: '2rem' }}>
-      <div style={{ marginBottom: '2rem' }}>
-        <h1 style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>Quotes</h1>
-        <p style={{ color: '#6b7280' }}>Manage customer quotes and convert to sales orders</p>
-      </div>
-
-      {/* Search and Filters */}
-      <div style={{ 
-        display: 'flex', 
-        gap: '1rem', 
-        marginBottom: '2rem',
-        padding: '1.5rem',
-        background: 'white',
-        borderRadius: '0.5rem',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-      }}>
-        <input
-          type="text"
-          placeholder="Search by email, customer name, or content..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          style={{
-            flex: 1,
-            padding: '0.5rem 1rem',
-            border: '1px solid #d1d5db',
-            borderRadius: '0.375rem',
-            fontSize: '0.875rem'
-          }}
-        />
-        <select
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-          style={{
-            padding: '0.5rem 1rem',
-            border: '1px solid #d1d5db',
-            borderRadius: '0.375rem',
-            fontSize: '0.875rem',
-            minWidth: '150px'
-          }}
-        >
-          <option value="">All Statuses</option>
-          <option value="draft">Draft</option>
-          <option value="approved">Approved</option>
-          <option value="sent">Sent</option>
-          <option value="accepted">Accepted</option>
-          <option value="rejected">Rejected</option>
-          <option value="expired">Expired</option>
-        </select>
-              <button
-                onClick={loadQuotes}
-                style={{
-                  padding: '0.5rem 1.5rem',
-                  background: '#2563eb',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '0.375rem',
-                  fontSize: '0.875rem',
-                  fontWeight: '500',
-                  cursor: 'pointer'
-                }}
-              >
-                Search
-              </button>
-              <button
-                onClick={handleCreate}
-                style={{
-                  padding: '0.5rem 1.5rem',
-                  background: '#10b981',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '0.375rem',
-                  fontSize: '0.875rem',
-                  fontWeight: '500',
-                  cursor: 'pointer'
-                }}
-              >
-                + New Quote
-              </button>
-            </div>
-
-      {/* Quotes Table */}
-      {loading ? (
-        <div style={{ textAlign: 'center', padding: '3rem' }}>Loading quotes...</div>
-      ) : quotes.length === 0 ? (
-        <div style={{ 
-          textAlign: 'center', 
-          padding: '3rem',
-          background: 'white',
-          borderRadius: '0.5rem',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-        }}>
-          <p style={{ color: '#6b7280' }}>No quotes found</p>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-violet-50 dark:from-gray-900 dark:to-gray-800 p-6">
+      <div className="max-w-7xl mx-auto space-y-6">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-violet-600 to-purple-600 bg-clip-text text-transparent">Quotes</h1>
+            <p className="text-gray-500 dark:text-gray-400 mt-1">Manage customer quotes and convert to sales orders</p>
+          </div>
+          <div className="flex items-center gap-3">
+            <button onClick={() => loadQuotes()} className="p-3 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-200 dark:border-gray-700">
+              <RefreshCw className={`h-5 w-5 text-gray-600 dark:text-gray-400 ${loading ? 'animate-spin' : ''}`} />
+            </button>
+            <button onClick={handleCreate} className="flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-xl font-medium hover:from-violet-700 hover:to-purple-700 transition-all shadow-lg shadow-violet-500/30">
+              <Plus className="h-5 w-5" />New Quote
+            </button>
+          </div>
         </div>
-      ) : (
-        <div style={{ 
-          background: 'white', 
-          borderRadius: '0.5rem',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-          overflow: 'hidden'
-        }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <thead style={{ background: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
-              <tr>
-                <th style={{ padding: '0.75rem 1rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Quote #</th>
-                <th style={{ padding: '0.75rem 1rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Customer</th>
-                <th style={{ padding: '0.75rem 1rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Email</th>
-                <th style={{ padding: '0.75rem 1rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Date</th>
-                <th style={{ padding: '0.75rem 1rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Valid Until</th>
-                <th style={{ padding: '0.75rem 1rem', textAlign: 'right', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Total</th>
-                <th style={{ padding: '0.75rem 1rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Status</th>
-                <th style={{ padding: '0.75rem 1rem', textAlign: 'right', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {quotes.map((quote) => (
-                <tr key={quote.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
-                  <td style={{ padding: '1rem', fontSize: '0.875rem', fontWeight: '500' }}>
-                    <Link to={`/quotes/${quote.id}`} style={{ color: '#2563eb', textDecoration: 'none' }}>
-                      {quote.quote_number}
-                    </Link>
-                  </td>
-                  <td style={{ padding: '1rem', fontSize: '0.875rem' }}>{quote.customer_name || '-'}</td>
-                  <td style={{ padding: '1rem', fontSize: '0.875rem', color: '#6b7280' }}>{quote.customer_email || '-'}</td>
-                  <td style={{ padding: '1rem', fontSize: '0.875rem' }}>{new Date(quote.quote_date).toLocaleDateString()}</td>
-                  <td style={{ padding: '1rem', fontSize: '0.875rem' }}>{quote.valid_until ? new Date(quote.valid_until).toLocaleDateString() : '-'}</td>
-                  <td style={{ padding: '1rem', fontSize: '0.875rem', textAlign: 'right', fontWeight: '500' }}>
-                    R {quote.total_amount.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                  </td>
-                  <td style={{ padding: '1rem' }}>
-                    <span style={{
-                      padding: '0.25rem 0.75rem',
-                      borderRadius: '9999px',
-                      fontSize: '0.75rem',
-                      fontWeight: '500'
-                    }} className={getStatusColor(quote.status)}>
-                      {quote.status}
-                    </span>
-                  </td>
-                  <td style={{ padding: '1rem', textAlign: 'right' }}>
-                    <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
-                      {quote.status === 'draft' && (
-                        <button
-                          onClick={() => approveQuote(quote.id)}
-                          style={{
-                            padding: '0.25rem 0.75rem',
-                            background: '#3b82f6',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '0.25rem',
-                            fontSize: '0.75rem',
-                            cursor: 'pointer'
-                          }}
-                        >
-                          Approve
-                        </button>
-                      )}
-                      {quote.status === 'approved' && (
-                        <button
-                          onClick={() => sendQuote(quote.id)}
-                          style={{
-                            padding: '0.25rem 0.75rem',
-                            background: '#10b981',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '0.25rem',
-                            fontSize: '0.75rem',
-                            cursor: 'pointer'
-                          }}
-                        >
-                          Send
-                        </button>
-                      )}
-                      {quote.status === 'sent' && (
-                        <button
-                          onClick={() => acceptQuote(quote.id)}
-                          style={{
-                            padding: '0.25rem 0.75rem',
-                            background: '#059669',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '0.25rem',
-                            fontSize: '0.75rem',
-                            cursor: 'pointer'
-                          }}
-                        >
-                          Accept → SO
-                        </button>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
 
-      {/* Summary Stats */}
-      <div style={{ 
-        display: 'grid', 
-        gridTemplateColumns: 'repeat(4, 1fr)', 
-        gap: '1rem',
-        marginTop: '2rem'
-      }}>
-        {['draft', 'sent', 'accepted', 'expired'].map((status) => {
-          const count = quotes.filter(q => q.status === status).length;
-          const total = quotes.filter(q => q.status === status).reduce((sum, q) => sum + q.total_amount, 0);
-          return (
-            <div key={status} style={{
-              padding: '1.5rem',
-              background: 'white',
-              borderRadius: '0.5rem',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-            }}>
-              <div style={{ fontSize: '0.875rem', color: '#6b7280', textTransform: 'capitalize', marginBottom: '0.5rem' }}>
-                {status} Quotes
-              </div>
-              <div style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.25rem' }}>
-                {count}
-              </div>
-              <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>
-                R {total.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-              </div>
+        {error && (
+          <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl flex items-center gap-3">
+            <AlertCircle className="h-5 w-5 text-red-500 flex-shrink-0" />
+            <p className="text-red-700 dark:text-red-300">{error}</p>
+            <button onClick={() => setError(null)} className="ml-auto p-1 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg"><X className="h-4 w-4 text-red-500" /></button>
+          </div>
+        )}
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-gradient-to-br from-violet-500 to-purple-500 rounded-xl shadow-lg shadow-violet-500/30"><FileCheck className="h-6 w-6 text-white" /></div>
+              <div><p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.total}</p><p className="text-sm text-gray-500 dark:text-gray-400">Total Quotes</p></div>
             </div>
-          );
-        })}
+          </div>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-gradient-to-br from-gray-500 to-gray-600 rounded-xl shadow-lg shadow-gray-500/30"><Clock className="h-6 w-6 text-white" /></div>
+              <div><p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.draft}</p><p className="text-sm text-gray-500 dark:text-gray-400">Draft</p></div>
+            </div>
+          </div>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl shadow-lg shadow-amber-500/30"><Send className="h-6 w-6 text-white" /></div>
+              <div><p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.sent}</p><p className="text-sm text-gray-500 dark:text-gray-400">Sent</p></div>
+            </div>
+          </div>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg shadow-green-500/30"><TrendingUp className="h-6 w-6 text-white" /></div>
+              <div><p className="text-2xl font-bold text-gray-900 dark:text-white">R {stats.totalValue.toLocaleString()}</p><p className="text-sm text-gray-500 dark:text-gray-400">Total Value</p></div>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+          <div className="p-5 border-b border-gray-100 dark:border-gray-700">
+            <div className="flex flex-col md:flex-row gap-4">
+              <div className="flex-1 relative">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <input type="text" placeholder="Search by customer, quote number..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-12 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all" />
+              </div>
+              <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all min-w-[180px]">
+                <option value="">All Statuses</option>
+                <option value="draft">Draft</option>
+                <option value="approved">Approved</option>
+                <option value="sent">Sent</option>
+                <option value="accepted">Accepted</option>
+                <option value="rejected">Rejected</option>
+                <option value="expired">Expired</option>
+              </select>
+            </div>
+          </div>
+
+          {loading ? (
+            <div className="p-12 text-center">
+              <RefreshCw className="h-8 w-8 animate-spin text-violet-500 mx-auto mb-4" />
+              <p className="text-gray-500 dark:text-gray-400">Loading quotes...</p>
+            </div>
+          ) : quotes.length === 0 ? (
+            <div className="p-12 text-center">
+              <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-2xl flex items-center justify-center mx-auto mb-4"><FileCheck className="h-8 w-8 text-gray-400" /></div>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No quotes found</h3>
+              <p className="text-gray-500 dark:text-gray-400 mb-6">{searchTerm || statusFilter ? 'Try adjusting your filters' : 'Get started by creating your first quote'}</p>
+              {!searchTerm && !statusFilter && (
+                <button onClick={handleCreate} className="px-5 py-3 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-xl font-medium hover:from-violet-700 hover:to-purple-700 transition-all">Create First Quote</button>
+              )}
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-50 dark:bg-gray-900/50">
+                  <tr>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Quote #</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Customer</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Date</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Valid Until</th>
+                    <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Total</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
+                    <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
+                  {quotes.map((quote) => {
+                    const statusConfig = getStatusConfig(quote.status);
+                    return (
+                      <tr key={quote.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                        <td className="px-6 py-4">
+                          <Link to={`/quotes/${quote.id}`} className="font-semibold text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300">{quote.quote_number}</Link>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div><p className="font-medium text-gray-900 dark:text-white">{quote.customer_name || '-'}</p>{quote.customer_email && (<p className="text-sm text-gray-500 dark:text-gray-400">{quote.customer_email}</p>)}</div>
+                        </td>
+                        <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{new Date(quote.quote_date).toLocaleDateString()}</td>
+                        <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{quote.valid_until ? new Date(quote.valid_until).toLocaleDateString() : '-'}</td>
+                        <td className="px-6 py-4 text-right font-semibold text-gray-900 dark:text-white">R {quote.total_amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
+                        <td className="px-6 py-4">
+                          <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${statusConfig.bg} ${statusConfig.text} border ${statusConfig.border} capitalize`}>{quote.status}</span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center justify-end gap-2">
+                            {quote.status === 'draft' && (
+                              <button onClick={() => approveQuote(quote.id)} className="flex items-center gap-1 px-3 py-2 bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-lg text-xs font-medium hover:from-blue-600 hover:to-indigo-600 transition-all"><Check className="h-3.5 w-3.5" />Approve</button>
+                            )}
+                            {quote.status === 'approved' && (
+                              <button onClick={() => sendQuote(quote.id)} className="flex items-center gap-1 px-3 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-lg text-xs font-medium hover:from-amber-600 hover:to-orange-600 transition-all"><Send className="h-3.5 w-3.5" />Send</button>
+                            )}
+                            {quote.status === 'sent' && (
+                              <button onClick={() => acceptQuote(quote.id)} className="flex items-center gap-1 px-3 py-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-lg text-xs font-medium hover:from-green-600 hover:to-emerald-600 transition-all"><CheckCircle className="h-3.5 w-3.5" />Accept</button>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
       </div>
 
       {showCreateModal && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background: 'rgba(0,0,0,0.5)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 1000
-        }}>
-          <div style={{
-            background: 'white',
-            borderRadius: '0.5rem',
-            width: '90%',
-            maxWidth: '900px',
-            maxHeight: '90vh',
-            overflow: 'auto',
-            padding: '2rem'
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-              <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>Create New Quote</h2>
-              <button
-                onClick={() => setShowCreateModal(false)}
-                style={{ background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer' }}
-              >
-                &times;
-              </button>
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setShowCreateModal(false)}>
+          <div onClick={(e) => e.stopPropagation()} className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden">
+            <div className="bg-gradient-to-r from-violet-600 to-purple-600 text-white p-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-white/20 rounded-lg"><FileCheck className="h-6 w-6" /></div>
+                  <div>
+                    <h2 className="text-xl font-semibold">Create Quote</h2>
+                    <p className="text-white/80 text-sm">Fill in the details below</p>
+                  </div>
+                </div>
+                <button onClick={() => setShowCreateModal(false)} className="p-2 hover:bg-white/20 rounded-lg transition-colors"><X className="h-5 w-5" /></button>
+              </div>
             </div>
 
-            {error && (
-              <div style={{
-                padding: '1rem',
-                background: '#fee2e2',
-                color: '#dc2626',
-                borderRadius: '0.375rem',
-                marginBottom: '1rem'
-              }}>
-                {error}
-              </div>
-            )}
+            <form onSubmit={handleSubmit} className="overflow-y-auto max-h-[calc(90vh-180px)]">
+              <div className="p-6 space-y-6">
+                {error && (
+                  <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl flex items-center gap-3">
+                    <AlertCircle className="h-5 w-5 text-red-500 flex-shrink-0" />
+                    <p className="text-red-700 dark:text-red-300">{error}</p>
+                  </div>
+                )}
 
-            <form onSubmit={handleSubmit}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>
-                    Customer *
-                  </label>
-                  <select
-                    value={selectedCustomerId}
-                    onChange={(e) => handleCustomerChange(e.target.value)}
-                    required
-                    style={{
-                      width: '100%',
-                      padding: '0.5rem',
-                      border: '1px solid #d1d5db',
-                      borderRadius: '0.375rem',
-                      fontSize: '0.875rem'
-                    }}
-                  >
-                    <option value="">Select a customer...</option>
-                    {customers.map(customer => (
-                      <option key={customer.id} value={customer.id}>
-                        {customer.name} ({customer.email})
-                      </option>
-                    ))}
-                  </select>
+                <div className="bg-gray-50 dark:bg-gray-900/50 rounded-xl p-5">
+                  <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4 flex items-center gap-2">
+                    <span className="w-6 h-6 rounded-full bg-violet-100 dark:bg-violet-900/50 text-violet-600 dark:text-violet-400 flex items-center justify-center text-xs">1</span>
+                    Customer Information
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Customer *</label>
+                      <select value={selectedCustomerId} onChange={(e) => handleCustomerChange(e.target.value)} required className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all">
+                        <option value="">Select a customer...</option>
+                        {customers.map(customer => (<option key={customer.id} value={customer.id}>{customer.name} ({customer.email})</option>))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Pricelist</label>
+                      <select value={selectedPricelistId} onChange={(e) => setSelectedPricelistId(e.target.value)} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all">
+                        <option value="">Default pricing</option>
+                        {pricelists.map(pricelist => (<option key={pricelist.id} value={pricelist.id}>{pricelist.name} ({pricelist.currency})</option>))}
+                      </select>
+                    </div>
+                  </div>
                 </div>
 
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>
-                    Pricelist
-                  </label>
-                  <select
-                    value={selectedPricelistId}
-                    onChange={(e) => setSelectedPricelistId(e.target.value)}
-                    style={{
-                      width: '100%',
-                      padding: '0.5rem',
-                      border: '1px solid #d1d5db',
-                      borderRadius: '0.375rem',
-                      fontSize: '0.875rem'
-                    }}
-                  >
-                    <option value="">Default pricing</option>
-                    {pricelists.map(pricelist => (
-                      <option key={pricelist.id} value={pricelist.id}>
-                        {pricelist.name} ({pricelist.currency})
-                      </option>
-                    ))}
-                  </select>
+                <div className="bg-gray-50 dark:bg-gray-900/50 rounded-xl p-5">
+                  <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4 flex items-center gap-2">
+                    <span className="w-6 h-6 rounded-full bg-violet-100 dark:bg-violet-900/50 text-violet-600 dark:text-violet-400 flex items-center justify-center text-xs">2</span>
+                    Quote Details
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Quote Date *</label>
+                      <input type="date" value={formData.quote_date || ''} onChange={(e) => setFormData({ ...formData, quote_date: e.target.value })} required className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Valid Until</label>
+                      <input type="date" value={formData.valid_until || ''} onChange={(e) => setFormData({ ...formData, valid_until: e.target.value })} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all" />
+                    </div>
+                  </div>
+                  <div className="mt-4">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Notes</label>
+                    <textarea value={formData.notes || ''} onChange={(e) => setFormData({ ...formData, notes: e.target.value })} rows={3} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all resize-none" placeholder="Add any notes..." />
+                  </div>
                 </div>
 
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>
-                    Quote Date
-                  </label>
-                  <input
-                    type="date"
-                    value={formData.quote_date || ''}
-                    onChange={(e) => setFormData({ ...formData, quote_date: e.target.value })}
-                    style={{
-                      width: '100%',
-                      padding: '0.5rem',
-                      border: '1px solid #d1d5db',
-                      borderRadius: '0.375rem',
-                      fontSize: '0.875rem'
-                    }}
-                  />
-                </div>
-
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>
-                    Valid Until
-                  </label>
-                  <input
-                    type="date"
-                    value={formData.valid_until || ''}
-                    onChange={(e) => setFormData({ ...formData, valid_until: e.target.value })}
-                    style={{
-                      width: '100%',
-                      padding: '0.5rem',
-                      border: '1px solid #d1d5db',
-                      borderRadius: '0.375rem',
-                      fontSize: '0.875rem'
-                    }}
-                  />
+                <div className="bg-gray-50 dark:bg-gray-900/50 rounded-xl p-5">
+                  <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4 flex items-center gap-2">
+                    <span className="w-6 h-6 rounded-full bg-violet-100 dark:bg-violet-900/50 text-violet-600 dark:text-violet-400 flex items-center justify-center text-xs">3</span>
+                    Line Items
+                  </h3>
+                  <LineItemsTable items={lineItems} onChange={setLineItems} products={products} pricingContext={{ customer_id: selectedCustomerId || undefined, pricelist_id: selectedPricelistId || undefined, date: formData.quote_date }} />
                 </div>
               </div>
 
-              <div style={{ marginBottom: '1.5rem' }}>
-                <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>
-                  Notes
-                </label>
-                <textarea
-                  value={formData.notes || ''}
-                  onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                  rows={3}
-                  style={{
-                    width: '100%',
-                    padding: '0.5rem',
-                    border: '1px solid #d1d5db',
-                    borderRadius: '0.375rem',
-                    fontSize: '0.875rem'
-                  }}
-                />
-              </div>
-
-              <div style={{ marginBottom: '1.5rem' }}>
-                <h3 style={{ fontSize: '1rem', fontWeight: '600', marginBottom: '1rem' }}>Line Items</h3>
-                <LineItemsTable
-                  items={lineItems}
-                  onChange={setLineItems}
-                  products={products}
-                  pricingContext={{
-                    customer_id: selectedCustomerId || undefined,
-                    pricelist_id: selectedPricelistId || undefined,
-                    date: formData.quote_date
-                  }}
-                />
-              </div>
-
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>
-                <button
-                  type="button"
-                  onClick={() => setShowCreateModal(false)}
-                  style={{
-                    padding: '0.5rem 1.5rem',
-                    background: '#f3f4f6',
-                    color: '#374151',
-                    border: '1px solid #d1d5db',
-                    borderRadius: '0.375rem',
-                    fontSize: '0.875rem',
-                    cursor: 'pointer'
-                  }}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  style={{
-                    padding: '0.5rem 1.5rem',
-                    background: '#2563eb',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '0.375rem',
-                    fontSize: '0.875rem',
-                    fontWeight: '500',
-                    cursor: 'pointer'
-                  }}
-                >
-                  Create Quote
-                </button>
+              <div className="p-6 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 flex justify-end gap-3">
+                <button type="button" onClick={() => setShowCreateModal(false)} className="px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">Cancel</button>
+                <button type="submit" className="px-6 py-3 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-xl font-medium hover:from-violet-700 hover:to-purple-700 transition-all shadow-lg shadow-violet-500/30">Create Quote</button>
               </div>
             </form>
           </div>

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '../../lib/api';
 import { ConfirmDialog } from '../../components/ConfirmDialog';
-import { Plus, Search, Edit, Trash2, FileText, X, DollarSign } from 'lucide-react';
+import { Plus, Search, Edit, Trash2, FileText, X, DollarSign, RefreshCw, AlertCircle, Users, Clock, CheckCircle, TrendingUp } from 'lucide-react';
 
 interface Customer {
   id: string;
@@ -71,72 +71,49 @@ export default function AccountsReceivable() {
   const [showCreatePaymentModal, setShowCreatePaymentModal] = useState(false);
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
   const [customerFormData, setCustomerFormData] = useState<Partial<Customer>>({
-    customer_code: '',
-    customer_name: '',
-    contact_person: '',
-    email: '',
-    phone: '',
-    address: '',
-    payment_terms: 'Net 30',
-    credit_limit: 0,
-    is_active: true
+    customer_code: '', customer_name: '', contact_person: '', email: '', phone: '', address: '', payment_terms: 'Net 30', credit_limit: 0, is_active: true
   });
-  const [paymentFormData, setPaymentFormData] = useState<Partial<Payment>>({
-    customer_id: '',
-    payment_date: new Date().toISOString().split('T')[0],
-    payment_method: 'EFT',
-    amount: 0,
-    reference: ''
+  const [paymentFormData, setPaymentFormData] = useState({
+    customer_id: '', payment_date: new Date().toISOString().split('T')[0], payment_method: 'EFT', amount: 0, reference: ''
   });
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (activeTab === 'customers') {
-      loadCustomers();
-    } else if (activeTab === 'invoices') {
-      loadInvoices();
-      loadCustomers();
-    } else if (activeTab === 'payments') {
-      loadPayments();
-      loadCustomers();
-    } else if (activeTab === 'aging') {
-      loadAging();
-    }
+    if (activeTab === 'customers') loadCustomers();
+    else if (activeTab === 'invoices') { loadInvoices(); loadCustomers(); }
+    else if (activeTab === 'payments') { loadPayments(); loadCustomers(); }
+    else if (activeTab === 'aging') loadAging();
   }, [activeTab, searchTerm, statusFilter]);
 
   const loadCustomers = async () => {
     try {
       setLoading(true);
-      const params: any = {};
+      const params: Record<string, string> = {};
       if (searchTerm) params.search = searchTerm;
-      
       const response = await api.get('/erp/ar/customers', { params });
       setCustomers(response.data.customers || response.data || []);
       setError(null);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error loading customers:', err);
-      setError(err.response?.data?.detail || 'Failed to load customers');
-    } finally {
-      setLoading(false);
-    }
+      const error = err as { response?: { data?: { detail?: string } } };
+      setError(error.response?.data?.detail || 'Failed to load customers');
+    } finally { setLoading(false); }
   };
 
   const loadInvoices = async () => {
     try {
       setLoading(true);
-      const params: any = {};
+      const params: Record<string, string> = {};
       if (searchTerm) params.search = searchTerm;
       if (statusFilter) params.status = statusFilter;
-      
       const response = await api.get('/erp/ar/invoices', { params });
       setInvoices(response.data.invoices || response.data || []);
       setError(null);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error loading invoices:', err);
-      setError(err.response?.data?.detail || 'Failed to load invoices');
-    } finally {
-      setLoading(false);
-    }
+      const error = err as { response?: { data?: { detail?: string } } };
+      setError(error.response?.data?.detail || 'Failed to load invoices');
+    } finally { setLoading(false); }
   };
 
   const loadPayments = async () => {
@@ -145,12 +122,11 @@ export default function AccountsReceivable() {
       const response = await api.get('/erp/ar/payments');
       setPayments(response.data.payments || response.data || []);
       setError(null);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error loading payments:', err);
-      setError(err.response?.data?.detail || 'Failed to load payments');
-    } finally {
-      setLoading(false);
-    }
+      const error = err as { response?: { data?: { detail?: string } } };
+      setError(error.response?.data?.detail || 'Failed to load payments');
+    } finally { setLoading(false); }
   };
 
   const loadAging = async () => {
@@ -159,42 +135,21 @@ export default function AccountsReceivable() {
       const response = await api.get('/erp/reports/ar-aging');
       setAging(response.data.aging || response.data || []);
       setError(null);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error loading aging report:', err);
-      setError(err.response?.data?.detail || 'Failed to load aging report');
-    } finally {
-      setLoading(false);
-    }
+      const error = err as { response?: { data?: { detail?: string } } };
+      setError(error.response?.data?.detail || 'Failed to load aging report');
+    } finally { setLoading(false); }
   };
 
   const handleCreateCustomer = () => {
-    setCustomerFormData({
-      customer_code: '',
-      customer_name: '',
-      contact_person: '',
-      email: '',
-      phone: '',
-      address: '',
-      payment_terms: 'Net 30',
-      credit_limit: 0,
-      is_active: true
-    });
+    setCustomerFormData({ customer_code: '', customer_name: '', contact_person: '', email: '', phone: '', address: '', payment_terms: 'Net 30', credit_limit: 0, is_active: true });
     setShowCreateCustomerModal(true);
   };
 
   const handleEditCustomer = (customer: Customer) => {
     setSelectedCustomer(customer);
-    setCustomerFormData({
-      customer_code: customer.customer_code,
-      customer_name: customer.customer_name,
-      contact_person: customer.contact_person,
-      email: customer.email,
-      phone: customer.phone,
-      address: customer.address,
-      payment_terms: customer.payment_terms,
-      credit_limit: customer.credit_limit,
-      is_active: customer.is_active
-    });
+    setCustomerFormData({ ...customer });
     setShowEditCustomerModal(true);
   };
 
@@ -205,380 +160,113 @@ export default function AccountsReceivable() {
 
   const confirmDeleteCustomer = async () => {
     if (!selectedCustomer) return;
-    
     try {
       await api.delete(`/erp/ar/customers/${selectedCustomer.id}`);
       loadCustomers();
       setSelectedCustomer(null);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error deleting customer:', err);
-      setError(err.response?.data?.detail || 'Failed to delete customer');
+      const error = err as { response?: { data?: { detail?: string } } };
+      setError(error.response?.data?.detail || 'Failed to delete customer');
     }
   };
 
   const handleSubmitCustomer = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!customerFormData.customer_code || !customerFormData.customer_name) {
-      setError('Please fill in all required fields');
-      return;
-    }
-
+    if (!customerFormData.customer_code || !customerFormData.customer_name) { setError('Please fill in all required fields'); return; }
     try {
-      if (showEditCustomerModal && selectedCustomer) {
-        await api.put(`/erp/ar/customers/${selectedCustomer.id}`, customerFormData);
-      } else {
-        await api.post('/erp/ar/customers', customerFormData);
-      }
-
+      if (showEditCustomerModal && selectedCustomer) await api.put(`/erp/ar/customers/${selectedCustomer.id}`, customerFormData);
+      else await api.post('/erp/ar/customers', customerFormData);
       loadCustomers();
       setShowCreateCustomerModal(false);
       setShowEditCustomerModal(false);
       setSelectedCustomer(null);
       setError(null);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error saving customer:', err);
-      setError(err.response?.data?.detail || 'Failed to save customer');
+      const error = err as { response?: { data?: { detail?: string } } };
+      setError(error.response?.data?.detail || 'Failed to save customer');
     }
   };
 
   const handleCreatePayment = () => {
-    setPaymentFormData({
-      customer_id: '',
-      payment_date: new Date().toISOString().split('T')[0],
-      payment_method: 'EFT',
-      amount: 0,
-      reference: ''
-    });
+    setPaymentFormData({ customer_id: '', payment_date: new Date().toISOString().split('T')[0], payment_method: 'EFT', amount: 0, reference: '' });
     setShowCreatePaymentModal(true);
   };
 
   const handleSubmitPayment = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!paymentFormData.customer_id || !paymentFormData.amount) {
-      setError('Please fill in all required fields');
-      return;
-    }
-
+    if (!paymentFormData.customer_id || !paymentFormData.amount) { setError('Please fill in all required fields'); return; }
     try {
       await api.post('/erp/ar/payments', paymentFormData);
       loadPayments();
       setShowCreatePaymentModal(false);
       setError(null);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error saving payment:', err);
-      setError(err.response?.data?.detail || 'Failed to save payment');
+      const error = err as { response?: { data?: { detail?: string } } };
+      setError(error.response?.data?.detail || 'Failed to save payment');
     }
   };
 
-  const formatCurrency = (amount: number) => {
-    return `R ${amount.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-  };
-
-  const getStatusColor = (status: string) => {
-    const colors: Record<string, { bg: string; text: string }> = {
-      draft: { bg: '#f3f4f6', text: '#6b7280' },
-      pending: { bg: '#fef3c7', text: '#92400e' },
-      sent: { bg: '#dbeafe', text: '#1e40af' },
-      paid: { bg: '#d1fae5', text: '#065f46' },
-      overdue: { bg: '#fee2e2', text: '#991b1b' },
-      partial: { bg: '#fef3c7', text: '#92400e' }
+  const getStatusBadge = (status: string) => {
+    const styles: Record<string, string> = {
+      draft: 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600',
+      pending: 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800',
+      sent: 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800',
+      paid: 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800',
+      overdue: 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 border-red-200 dark:border-red-800',
+      partial: 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800',
     };
-    return colors[status] || colors.draft;
+    return styles[status] || styles.draft;
   };
 
-  const renderCustomerFormModal = (isEdit: boolean) => {
+  const stats = {
+    totalCustomers: customers.length,
+    activeCustomers: customers.filter(c => c.is_active).length,
+    totalInvoices: invoices.length,
+    totalReceivable: invoices.reduce((sum, inv) => sum + inv.balance, 0),
+    overdueInvoices: invoices.filter(inv => inv.status === 'overdue').length,
+    totalPayments: payments.reduce((sum, p) => sum + p.amount, 0)
+  };
+
+  const renderCustomerModal = (isEdit: boolean) => {
     const isOpen = isEdit ? showEditCustomerModal : showCreateCustomerModal;
     const onClose = () => isEdit ? setShowEditCustomerModal(false) : setShowCreateCustomerModal(false);
-
     if (!isOpen) return null;
 
     return (
-      <div
-        style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background: 'rgba(0, 0, 0, 0.5)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 1000,
-          overflow: 'auto'
-        }}
-        onClick={onClose}
-      >
-        <div
-          onClick={(e) => e.stopPropagation()}
-          style={{
-            background: 'white',
-            borderRadius: '0.5rem',
-            boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)',
-            maxWidth: '600px',
-            width: '95%',
-            maxHeight: '95vh',
-            overflow: 'auto',
-            margin: '2rem'
-          }}
-        >
-          <div style={{
-            padding: '1.5rem',
-            borderBottom: '1px solid #e5e7eb',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            position: 'sticky',
-            top: 0,
-            background: 'white',
-            zIndex: 10
-          }}>
-            <h2 style={{ fontSize: '1.25rem', fontWeight: '600', margin: 0 }}>
-              {isEdit ? 'Edit Customer' : 'Create Customer'}
-            </h2>
-            <button
-              onClick={onClose}
-              style={{
-                padding: '0.25rem',
-                background: 'transparent',
-                border: 'none',
-                color: '#6b7280',
-                cursor: 'pointer'
-              }}
-            >
-              <X size={24} />
-            </button>
-          </div>
-
-          <form onSubmit={handleSubmitCustomer}>
-            <div style={{ padding: '1.5rem' }}>
-              {error && (
-                <div style={{
-                  padding: '1rem',
-                  background: '#fee2e2',
-                  border: '1px solid #fecaca',
-                  borderRadius: '0.375rem',
-                  color: '#991b1b',
-                  marginBottom: '1rem'
-                }}>
-                  {error}
-                </div>
-              )}
-
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>
-                    Customer Code *
-                  </label>
-                  <input
-                    type="text"
-                    value={customerFormData.customer_code || ''}
-                    onChange={(e) => setCustomerFormData({ ...customerFormData, customer_code: e.target.value })}
-                    required
-                    style={{
-                      width: '100%',
-                      padding: '0.5rem',
-                      border: '1px solid #d1d5db',
-                      borderRadius: '0.375rem',
-                      fontSize: '0.875rem'
-                    }}
-                  />
-                </div>
-
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>
-                    Payment Terms
-                  </label>
-                  <select
-                    value={customerFormData.payment_terms || 'Net 30'}
-                    onChange={(e) => setCustomerFormData({ ...customerFormData, payment_terms: e.target.value })}
-                    style={{
-                      width: '100%',
-                      padding: '0.5rem',
-                      border: '1px solid #d1d5db',
-                      borderRadius: '0.375rem',
-                      fontSize: '0.875rem'
-                    }}
-                  >
-                    <option value="Net 30">Net 30</option>
-                    <option value="Net 60">Net 60</option>
-                    <option value="Net 90">Net 90</option>
-                    <option value="COD">Cash on Delivery</option>
-                    <option value="2/10 Net 30">2/10 Net 30</option>
-                  </select>
-                </div>
+      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
+        <div onClick={(e) => e.stopPropagation()} className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden max-h-[90vh] overflow-y-auto">
+          <div className="bg-gradient-to-r from-green-600 to-emerald-600 text-white p-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-white/20 rounded-lg"><Users className="h-6 w-6" /></div>
+                <div><h2 className="text-xl font-semibold">{isEdit ? 'Edit Customer' : 'Create Customer'}</h2><p className="text-white/80 text-sm">Customer details</p></div>
               </div>
-
-              <div style={{ marginBottom: '1rem' }}>
-                <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>
-                  Customer Name *
-                </label>
-                <input
-                  type="text"
-                  value={customerFormData.customer_name || ''}
-                  onChange={(e) => setCustomerFormData({ ...customerFormData, customer_name: e.target.value })}
-                  required
-                  style={{
-                    width: '100%',
-                    padding: '0.5rem',
-                    border: '1px solid #d1d5db',
-                    borderRadius: '0.375rem',
-                    fontSize: '0.875rem'
-                  }}
-                />
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>
-                    Contact Person
-                  </label>
-                  <input
-                    type="text"
-                    value={customerFormData.contact_person || ''}
-                    onChange={(e) => setCustomerFormData({ ...customerFormData, contact_person: e.target.value })}
-                    style={{
-                      width: '100%',
-                      padding: '0.5rem',
-                      border: '1px solid #d1d5db',
-                      borderRadius: '0.375rem',
-                      fontSize: '0.875rem'
-                    }}
-                  />
-                </div>
-
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>
-                    Phone
-                  </label>
-                  <input
-                    type="tel"
-                    value={customerFormData.phone || ''}
-                    onChange={(e) => setCustomerFormData({ ...customerFormData, phone: e.target.value })}
-                    style={{
-                      width: '100%',
-                      padding: '0.5rem',
-                      border: '1px solid #d1d5db',
-                      borderRadius: '0.375rem',
-                      fontSize: '0.875rem'
-                    }}
-                  />
-                </div>
-              </div>
-
-              <div style={{ marginBottom: '1rem' }}>
-                <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>
-                  Email
-                </label>
-                <input
-                  type="email"
-                  value={customerFormData.email || ''}
-                  onChange={(e) => setCustomerFormData({ ...customerFormData, email: e.target.value })}
-                  style={{
-                    width: '100%',
-                    padding: '0.5rem',
-                    border: '1px solid #d1d5db',
-                    borderRadius: '0.375rem',
-                    fontSize: '0.875rem'
-                  }}
-                />
-              </div>
-
-              <div style={{ marginBottom: '1rem' }}>
-                <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>
-                  Address
-                </label>
-                <textarea
-                  value={customerFormData.address || ''}
-                  onChange={(e) => setCustomerFormData({ ...customerFormData, address: e.target.value })}
-                  rows={3}
-                  style={{
-                    width: '100%',
-                    padding: '0.5rem',
-                    border: '1px solid #d1d5db',
-                    borderRadius: '0.375rem',
-                    fontSize: '0.875rem',
-                    resize: 'vertical'
-                  }}
-                />
-              </div>
-
-              <div style={{ marginBottom: '1rem' }}>
-                <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>
-                  Credit Limit
-                </label>
-                <input
-                  type="number"
-                  value={customerFormData.credit_limit || 0}
-                  onChange={(e) => setCustomerFormData({ ...customerFormData, credit_limit: parseFloat(e.target.value) || 0 })}
-                  min="0"
-                  step="0.01"
-                  style={{
-                    width: '100%',
-                    padding: '0.5rem',
-                    border: '1px solid #d1d5db',
-                    borderRadius: '0.375rem',
-                    fontSize: '0.875rem'
-                  }}
-                />
-              </div>
-
-              <div style={{ marginBottom: '1rem' }}>
-                <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
-                  <input
-                    type="checkbox"
-                    checked={customerFormData.is_active || false}
-                    onChange={(e) => setCustomerFormData({ ...customerFormData, is_active: e.target.checked })}
-                    style={{ width: '1rem', height: '1rem' }}
-                  />
-                  <span style={{ fontSize: '0.875rem', fontWeight: '500' }}>Active</span>
-                </label>
-              </div>
+              <button onClick={onClose} className="p-2 hover:bg-white/20 rounded-lg transition-colors"><X className="h-5 w-5" /></button>
             </div>
-
-            <div style={{
-              padding: '1.5rem',
-              borderTop: '1px solid #e5e7eb',
-              display: 'flex',
-              gap: '0.75rem',
-              justifyContent: 'flex-end',
-              position: 'sticky',
-              bottom: 0,
-              background: 'white'
-            }}>
-              <button
-                type="button"
-                onClick={onClose}
-                style={{
-                  padding: '0.5rem 1rem',
-                  background: 'white',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '0.375rem',
-                  fontSize: '0.875rem',
-                  fontWeight: '500',
-                  color: '#374151',
-                  cursor: 'pointer'
-                }}
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                style={{
-                  padding: '0.5rem 1rem',
-                  background: '#2563eb',
-                  border: 'none',
-                  borderRadius: '0.375rem',
-                  fontSize: '0.875rem',
-                  fontWeight: '500',
-                  color: 'white',
-                  cursor: 'pointer'
-                }}
-              >
-                {isEdit ? 'Update Customer' : 'Create Customer'}
-              </button>
+          </div>
+          <form onSubmit={handleSubmitCustomer}>
+            <div className="p-6 space-y-4">
+              {error && (<div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl flex items-center gap-3"><AlertCircle className="h-5 w-5 text-red-500" /><p className="text-red-700 dark:text-red-300">{error}</p></div>)}
+              <div className="grid grid-cols-2 gap-4">
+                <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Customer Code *</label><input type="text" value={customerFormData.customer_code || ''} onChange={(e) => setCustomerFormData({ ...customerFormData, customer_code: e.target.value })} required className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all" /></div>
+                <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Payment Terms</label><select value={customerFormData.payment_terms || 'Net 30'} onChange={(e) => setCustomerFormData({ ...customerFormData, payment_terms: e.target.value })} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"><option value="Net 30">Net 30</option><option value="Net 60">Net 60</option><option value="Net 90">Net 90</option><option value="COD">Cash on Delivery</option></select></div>
+              </div>
+              <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Customer Name *</label><input type="text" value={customerFormData.customer_name || ''} onChange={(e) => setCustomerFormData({ ...customerFormData, customer_name: e.target.value })} required className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all" /></div>
+              <div className="grid grid-cols-2 gap-4">
+                <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Contact Person</label><input type="text" value={customerFormData.contact_person || ''} onChange={(e) => setCustomerFormData({ ...customerFormData, contact_person: e.target.value })} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all" /></div>
+                <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Phone</label><input type="tel" value={customerFormData.phone || ''} onChange={(e) => setCustomerFormData({ ...customerFormData, phone: e.target.value })} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all" /></div>
+              </div>
+              <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Email</label><input type="email" value={customerFormData.email || ''} onChange={(e) => setCustomerFormData({ ...customerFormData, email: e.target.value })} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all" /></div>
+              <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Address</label><textarea value={customerFormData.address || ''} onChange={(e) => setCustomerFormData({ ...customerFormData, address: e.target.value })} rows={2} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all resize-none" /></div>
+              <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Credit Limit (R)</label><input type="number" min="0" step="0.01" value={customerFormData.credit_limit || 0} onChange={(e) => setCustomerFormData({ ...customerFormData, credit_limit: parseFloat(e.target.value) || 0 })} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all" /></div>
+              <label className="flex items-center gap-2 cursor-pointer"><input type="checkbox" checked={customerFormData.is_active || false} onChange={(e) => setCustomerFormData({ ...customerFormData, is_active: e.target.checked })} className="w-5 h-5 rounded border-gray-300 text-green-600 focus:ring-green-500" /><span className="text-sm font-medium text-gray-700 dark:text-gray-300">Active</span></label>
+            </div>
+            <div className="p-6 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 flex justify-end gap-3">
+              <button type="button" onClick={onClose} className="px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">Cancel</button>
+              <button type="submit" className="px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl font-medium hover:from-green-700 hover:to-emerald-700 transition-all shadow-lg shadow-green-500/30">{isEdit ? 'Update' : 'Create'}</button>
             </div>
           </form>
         </div>
@@ -586,827 +274,185 @@ export default function AccountsReceivable() {
     );
   };
 
-  const renderPaymentFormModal = () => {
+  const renderPaymentModal = () => {
     if (!showCreatePaymentModal) return null;
-
     return (
-      <div
-        style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background: 'rgba(0, 0, 0, 0.5)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 1000,
-          overflow: 'auto'
-        }}
-        onClick={() => setShowCreatePaymentModal(false)}
-      >
-        <div
-          onClick={(e) => e.stopPropagation()}
-          style={{
-            background: 'white',
-            borderRadius: '0.5rem',
-            boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)',
-            maxWidth: '600px',
-            width: '95%',
-            maxHeight: '95vh',
-            overflow: 'auto',
-            margin: '2rem'
-          }}
-        >
-          <div style={{
-            padding: '1.5rem',
-            borderBottom: '1px solid #e5e7eb',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            position: 'sticky',
-            top: 0,
-            background: 'white',
-            zIndex: 10
-          }}>
-            <h2 style={{ fontSize: '1.25rem', fontWeight: '600', margin: 0 }}>
-              Record Customer Payment
-            </h2>
-            <button
-              onClick={() => setShowCreatePaymentModal(false)}
-              style={{
-                padding: '0.25rem',
-                background: 'transparent',
-                border: 'none',
-                color: '#6b7280',
-                cursor: 'pointer'
-              }}
-            >
-              <X size={24} />
-            </button>
+      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setShowCreatePaymentModal(false)}>
+        <div onClick={(e) => e.stopPropagation()} className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden">
+          <div className="bg-gradient-to-r from-green-600 to-emerald-600 text-white p-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3"><div className="p-2 bg-white/20 rounded-lg"><DollarSign className="h-6 w-6" /></div><div><h2 className="text-xl font-semibold">Record Payment</h2><p className="text-white/80 text-sm">Receive customer payment</p></div></div>
+              <button onClick={() => setShowCreatePaymentModal(false)} className="p-2 hover:bg-white/20 rounded-lg transition-colors"><X className="h-5 w-5" /></button>
+            </div>
           </div>
-
           <form onSubmit={handleSubmitPayment}>
-            <div style={{ padding: '1.5rem' }}>
-              {error && (
-                <div style={{
-                  padding: '1rem',
-                  background: '#fee2e2',
-                  border: '1px solid #fecaca',
-                  borderRadius: '0.375rem',
-                  color: '#991b1b',
-                  marginBottom: '1rem'
-                }}>
-                  {error}
-                </div>
-              )}
-
-              <div style={{ marginBottom: '1rem' }}>
-                <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>
-                  Customer *
-                </label>
-                <select
-                  value={paymentFormData.customer_id || ''}
-                  onChange={(e) => setPaymentFormData({ ...paymentFormData, customer_id: e.target.value })}
-                  required
-                  style={{
-                    width: '100%',
-                    padding: '0.5rem',
-                    border: '1px solid #d1d5db',
-                    borderRadius: '0.375rem',
-                    fontSize: '0.875rem'
-                  }}
-                >
-                  <option value="">Select customer...</option>
-                  {customers.filter(c => c.is_active).map(customer => (
-                    <option key={customer.id} value={customer.id}>
-                      {customer.customer_code} - {customer.customer_name}
-                    </option>
-                  ))}
-                </select>
+            <div className="p-6 space-y-4">
+              {error && (<div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl flex items-center gap-3"><AlertCircle className="h-5 w-5 text-red-500" /><p className="text-red-700 dark:text-red-300">{error}</p></div>)}
+              <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Customer *</label><select value={paymentFormData.customer_id} onChange={(e) => setPaymentFormData({ ...paymentFormData, customer_id: e.target.value })} required className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"><option value="">Select customer...</option>{customers.map(c => <option key={c.id} value={c.id}>{c.customer_name}</option>)}</select></div>
+              <div className="grid grid-cols-2 gap-4">
+                <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Amount *</label><input type="number" min="0" step="0.01" value={paymentFormData.amount} onChange={(e) => setPaymentFormData({ ...paymentFormData, amount: parseFloat(e.target.value) || 0 })} required className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all" /></div>
+                <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Payment Method</label><select value={paymentFormData.payment_method} onChange={(e) => setPaymentFormData({ ...paymentFormData, payment_method: e.target.value })} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"><option value="EFT">EFT</option><option value="Cheque">Cheque</option><option value="Cash">Cash</option><option value="Card">Card</option></select></div>
               </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>
-                    Payment Date *
-                  </label>
-                  <input
-                    type="date"
-                    value={paymentFormData.payment_date || ''}
-                    onChange={(e) => setPaymentFormData({ ...paymentFormData, payment_date: e.target.value })}
-                    required
-                    style={{
-                      width: '100%',
-                      padding: '0.5rem',
-                      border: '1px solid #d1d5db',
-                      borderRadius: '0.375rem',
-                      fontSize: '0.875rem'
-                    }}
-                  />
-                </div>
-
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>
-                    Payment Method *
-                  </label>
-                  <select
-                    value={paymentFormData.payment_method || 'EFT'}
-                    onChange={(e) => setPaymentFormData({ ...paymentFormData, payment_method: e.target.value })}
-                    required
-                    style={{
-                      width: '100%',
-                      padding: '0.5rem',
-                      border: '1px solid #d1d5db',
-                      borderRadius: '0.375rem',
-                      fontSize: '0.875rem'
-                    }}
-                  >
-                    <option value="EFT">EFT</option>
-                    <option value="Cash">Cash</option>
-                    <option value="Cheque">Cheque</option>
-                    <option value="Credit Card">Credit Card</option>
-                  </select>
-                </div>
-              </div>
-
-              <div style={{ marginBottom: '1rem' }}>
-                <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>
-                  Amount *
-                </label>
-                <input
-                  type="number"
-                  value={paymentFormData.amount || 0}
-                  onChange={(e) => setPaymentFormData({ ...paymentFormData, amount: parseFloat(e.target.value) || 0 })}
-                  min="0"
-                  step="0.01"
-                  required
-                  style={{
-                    width: '100%',
-                    padding: '0.5rem',
-                    border: '1px solid #d1d5db',
-                    borderRadius: '0.375rem',
-                    fontSize: '0.875rem'
-                  }}
-                />
-              </div>
-
-              <div style={{ marginBottom: '1rem' }}>
-                <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>
-                  Reference
-                </label>
-                <input
-                  type="text"
-                  value={paymentFormData.reference || ''}
-                  onChange={(e) => setPaymentFormData({ ...paymentFormData, reference: e.target.value })}
-                  style={{
-                    width: '100%',
-                    padding: '0.5rem',
-                    border: '1px solid #d1d5db',
-                    borderRadius: '0.375rem',
-                    fontSize: '0.875rem'
-                  }}
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Payment Date</label><input type="date" value={paymentFormData.payment_date} onChange={(e) => setPaymentFormData({ ...paymentFormData, payment_date: e.target.value })} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all" /></div>
+                <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Reference</label><input type="text" value={paymentFormData.reference} onChange={(e) => setPaymentFormData({ ...paymentFormData, reference: e.target.value })} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all" /></div>
               </div>
             </div>
-
-            <div style={{
-              padding: '1.5rem',
-              borderTop: '1px solid #e5e7eb',
-              display: 'flex',
-              gap: '0.75rem',
-              justifyContent: 'flex-end',
-              position: 'sticky',
-              bottom: 0,
-              background: 'white'
-            }}>
-              <button
-                type="button"
-                onClick={() => setShowCreatePaymentModal(false)}
-                style={{
-                  padding: '0.5rem 1rem',
-                  background: 'white',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '0.375rem',
-                  fontSize: '0.875rem',
-                  fontWeight: '500',
-                  color: '#374151',
-                  cursor: 'pointer'
-                }}
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                style={{
-                  padding: '0.5rem 1rem',
-                  background: '#2563eb',
-                  border: 'none',
-                  borderRadius: '0.375rem',
-                  fontSize: '0.875rem',
-                  fontWeight: '500',
-                  color: 'white',
-                  cursor: 'pointer'
-                }}
-              >
-                Record Payment
-              </button>
+            <div className="p-6 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 flex justify-end gap-3">
+              <button type="button" onClick={() => setShowCreatePaymentModal(false)} className="px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">Cancel</button>
+              <button type="submit" className="px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl font-medium hover:from-green-700 hover:to-emerald-700 transition-all shadow-lg shadow-green-500/30">Record Payment</button>
             </div>
           </form>
         </div>
       </div>
     );
+  };
+
+  const getCreateButton = () => {
+    if (activeTab === 'customers') return <button onClick={handleCreateCustomer} className="flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl font-medium hover:from-green-700 hover:to-emerald-700 transition-all shadow-lg shadow-green-500/30"><Plus className="h-5 w-5" />Add Customer</button>;
+    if (activeTab === 'payments') return <button onClick={handleCreatePayment} className="flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl font-medium hover:from-green-700 hover:to-emerald-700 transition-all shadow-lg shadow-green-500/30"><Plus className="h-5 w-5" />Record Payment</button>;
+    return null;
   };
 
   return (
-    <div style={{ padding: '2rem' }}>
-      <div style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div>
-          <h1 style={{ fontSize: '1.875rem', fontWeight: '700', marginBottom: '0.5rem' }}>Accounts Receivable</h1>
-          <p style={{ color: '#6b7280' }}>Manage customers, invoices, payments, and aging reports</p>
-        </div>
-        {activeTab === 'customers' && (
-          <button
-            onClick={handleCreateCustomer}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.5rem',
-              padding: '0.75rem 1.5rem',
-              background: '#2563eb',
-              color: 'white',
-              border: 'none',
-              borderRadius: '0.5rem',
-              fontSize: '0.875rem',
-              fontWeight: '600',
-              cursor: 'pointer'
-            }}
-          >
-            <Plus size={20} />
-            New Customer
-          </button>
-        )}
-        {activeTab === 'payments' && (
-          <button
-            onClick={handleCreatePayment}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.5rem',
-              padding: '0.75rem 1.5rem',
-              background: '#2563eb',
-              color: 'white',
-              border: 'none',
-              borderRadius: '0.5rem',
-              fontSize: '0.875rem',
-              fontWeight: '600',
-              cursor: 'pointer'
-            }}
-          >
-            <Plus size={20} />
-            Record Payment
-          </button>
-        )}
-      </div>
-
-      <div style={{ marginBottom: '2rem' }}>
-        <div style={{ borderBottom: '1px solid #e5e7eb' }}>
-          <div style={{ display: 'flex', gap: '2rem' }}>
-            <button
-              onClick={() => setActiveTab('customers')}
-              style={{
-                padding: '1rem 0',
-                background: 'transparent',
-                border: 'none',
-                borderBottom: activeTab === 'customers' ? '2px solid #2563eb' : '2px solid transparent',
-                color: activeTab === 'customers' ? '#2563eb' : '#6b7280',
-                fontSize: '0.875rem',
-                fontWeight: '600',
-                cursor: 'pointer'
-              }}
-            >
-              Customers
-            </button>
-            <button
-              onClick={() => setActiveTab('invoices')}
-              style={{
-                padding: '1rem 0',
-                background: 'transparent',
-                border: 'none',
-                borderBottom: activeTab === 'invoices' ? '2px solid #2563eb' : '2px solid transparent',
-                color: activeTab === 'invoices' ? '#2563eb' : '#6b7280',
-                fontSize: '0.875rem',
-                fontWeight: '600',
-                cursor: 'pointer'
-              }}
-            >
-              Invoices
-            </button>
-            <button
-              onClick={() => setActiveTab('payments')}
-              style={{
-                padding: '1rem 0',
-                background: 'transparent',
-                border: 'none',
-                borderBottom: activeTab === 'payments' ? '2px solid #2563eb' : '2px solid transparent',
-                color: activeTab === 'payments' ? '#2563eb' : '#6b7280',
-                fontSize: '0.875rem',
-                fontWeight: '600',
-                cursor: 'pointer'
-              }}
-            >
-              Payments
-            </button>
-            <button
-              onClick={() => setActiveTab('aging')}
-              style={{
-                padding: '1rem 0',
-                background: 'transparent',
-                border: 'none',
-                borderBottom: activeTab === 'aging' ? '2px solid #2563eb' : '2px solid transparent',
-                color: activeTab === 'aging' ? '#2563eb' : '#6b7280',
-                fontSize: '0.875rem',
-                fontWeight: '600',
-                cursor: 'pointer'
-              }}
-            >
-              Aging Report
-            </button>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-green-50 dark:from-gray-900 dark:to-gray-800 p-6">
+      <div className="max-w-7xl mx-auto space-y-6">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">Accounts Receivable</h1>
+            <p className="text-gray-500 dark:text-gray-400 mt-1">Manage customers, invoices, and payments</p>
+          </div>
+          <div className="flex items-center gap-3">
+            <button onClick={() => { if (activeTab === 'customers') loadCustomers(); else if (activeTab === 'invoices') loadInvoices(); else if (activeTab === 'payments') loadPayments(); else loadAging(); }} className="p-3 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-200 dark:border-gray-700"><RefreshCw className={`h-5 w-5 text-gray-600 dark:text-gray-400 ${loading ? 'animate-spin' : ''}`} /></button>
+            {getCreateButton()}
           </div>
         </div>
-      </div>
 
-      {activeTab === 'customers' && (
-        <>
-          <div style={{
-            background: 'white',
-            borderRadius: '0.5rem',
-            boxShadow: '0 1px 3px 0 rgba(0,0,0,0.1)',
-            overflow: 'hidden'
-          }}>
-            <div style={{ padding: '1.5rem', borderBottom: '1px solid #e5e7eb' }}>
-              <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-                <div style={{ flex: '1', minWidth: '250px', position: 'relative' }}>
-                  <Search
-                    size={20}
-                    style={{
-                      position: 'absolute',
-                      left: '0.75rem',
-                      top: '50%',
-                      transform: 'translateY(-50%)',
-                      color: '#9ca3af'
-                    }}
-                  />
-                  <input
-                    type="text"
-                    placeholder="Search by code or name..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    style={{
-                      width: '100%',
-                      padding: '0.5rem 0.75rem 0.5rem 2.5rem',
-                      border: '1px solid #d1d5db',
-                      borderRadius: '0.375rem',
-                      fontSize: '0.875rem'
-                    }}
-                  />
-                </div>
+        {error && (<div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl flex items-center gap-3"><AlertCircle className="h-5 w-5 text-red-500" /><p className="text-red-700 dark:text-red-300">{error}</p><button onClick={() => setError(null)} className="ml-auto p-1 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg"><X className="h-4 w-4 text-red-500" /></button></div>)}
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
+            <div className="flex items-center gap-4"><div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg shadow-green-500/30"><Users className="h-6 w-6 text-white" /></div><div><p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.totalCustomers}</p><p className="text-sm text-gray-500 dark:text-gray-400">Total Customers</p></div></div>
+          </div>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
+            <div className="flex items-center gap-4"><div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl shadow-lg shadow-blue-500/30"><FileText className="h-6 w-6 text-white" /></div><div><p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.totalInvoices}</p><p className="text-sm text-gray-500 dark:text-gray-400">Open Invoices</p></div></div>
+          </div>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
+            <div className="flex items-center gap-4"><div className="p-3 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl shadow-lg shadow-emerald-500/30"><DollarSign className="h-6 w-6 text-white" /></div><div><p className="text-2xl font-bold text-gray-900 dark:text-white">R {stats.totalReceivable.toLocaleString('en-ZA', { minimumFractionDigits: 0 })}</p><p className="text-sm text-gray-500 dark:text-gray-400">Total Receivable</p></div></div>
+          </div>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
+            <div className="flex items-center gap-4"><div className="p-3 bg-gradient-to-br from-red-500 to-rose-500 rounded-xl shadow-lg shadow-red-500/30"><Clock className="h-6 w-6 text-white" /></div><div><p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.overdueInvoices}</p><p className="text-sm text-gray-500 dark:text-gray-400">Overdue</p></div></div>
+          </div>
+        </div>
+
+        <div className="flex gap-2 border-b border-gray-200 dark:border-gray-700">
+          {(['customers', 'invoices', 'payments', 'aging'] as const).map(tab => (
+            <button key={tab} onClick={() => setActiveTab(tab)} className={`px-6 py-3 font-medium capitalize transition-all ${activeTab === tab ? 'text-green-600 dark:text-green-400 border-b-2 border-green-600 dark:border-green-400' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'}`}>{tab}</button>
+          ))}
+        </div>
+
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+          {activeTab !== 'aging' && (
+            <div className="p-5 border-b border-gray-100 dark:border-gray-700">
+              <div className="flex flex-col md:flex-row gap-4">
+                <div className="flex-1 relative"><Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" /><input type="text" placeholder="Search..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-12 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all" /></div>
+                {activeTab === 'invoices' && (<select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all min-w-[150px]"><option value="">All Statuses</option><option value="draft">Draft</option><option value="sent">Sent</option><option value="paid">Paid</option><option value="overdue">Overdue</option><option value="partial">Partial</option></select>)}
               </div>
             </div>
+          )}
 
-            {loading ? (
-              <div style={{ padding: '3rem', textAlign: 'center', color: '#6b7280' }}>
-                Loading customers...
-              </div>
-            ) : customers.length === 0 ? (
-              <div style={{ padding: '3rem', textAlign: 'center' }}>
-                <FileText size={48} style={{ margin: '0 auto 1rem', color: '#d1d5db' }} />
-                <h3 style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '0.5rem' }}>No customers found</h3>
-                <p style={{ color: '#6b7280', marginBottom: '1.5rem' }}>
-                  {searchTerm ? 'Try adjusting your search' : 'Get started by creating your first customer'}
-                </p>
-                {!searchTerm && (
-                  <button
-                    onClick={handleCreateCustomer}
-                    style={{
-                      padding: '0.5rem 1rem',
-                      background: '#2563eb',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '0.375rem',
-                      fontSize: '0.875rem',
-                      fontWeight: '500',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    Create Customer
-                  </button>
-                )}
-              </div>
-            ) : (
-              <div style={{ overflowX: 'auto' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                  <thead style={{ background: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
-                    <tr>
-                      <th style={{ padding: '0.75rem 1rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Code</th>
-                      <th style={{ padding: '0.75rem 1rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Name</th>
-                      <th style={{ padding: '0.75rem 1rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Contact</th>
-                      <th style={{ padding: '0.75rem 1rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Email</th>
-                      <th style={{ padding: '0.75rem 1rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Payment Terms</th>
-                      <th style={{ padding: '0.75rem 1rem', textAlign: 'right', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Credit Limit</th>
-                      <th style={{ padding: '0.75rem 1rem', textAlign: 'center', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Status</th>
-                      <th style={{ padding: '0.75rem 1rem', textAlign: 'right', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {customers.map((customer) => (
-                      <tr key={customer.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
-                        <td style={{ padding: '1rem', fontSize: '0.875rem', fontWeight: '500' }}>{customer.customer_code}</td>
-                        <td style={{ padding: '1rem', fontSize: '0.875rem' }}>{customer.customer_name}</td>
-                        <td style={{ padding: '1rem', fontSize: '0.875rem', color: '#6b7280' }}>{customer.contact_person || '-'}</td>
-                        <td style={{ padding: '1rem', fontSize: '0.875rem', color: '#6b7280' }}>{customer.email || '-'}</td>
-                        <td style={{ padding: '1rem', fontSize: '0.875rem' }}>{customer.payment_terms || '-'}</td>
-                        <td style={{ padding: '1rem', fontSize: '0.875rem', textAlign: 'right', fontWeight: '500' }}>
-                          {formatCurrency(customer.credit_limit || 0)}
-                        </td>
-                        <td style={{ padding: '1rem', textAlign: 'center' }}>
-                          <span style={{
-                            padding: '0.25rem 0.75rem',
-                            borderRadius: '9999px',
-                            fontSize: '0.75rem',
-                            fontWeight: '500',
-                            background: customer.is_active ? '#d1fae5' : '#f3f4f6',
-                            color: customer.is_active ? '#065f46' : '#6b7280'
-                          }}>
-                            {customer.is_active ? 'Active' : 'Inactive'}
-                          </span>
-                        </td>
-                        <td style={{ padding: '1rem' }}>
-                          <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
-                            <button
-                              onClick={() => handleEditCustomer(customer)}
-                              style={{
-                                padding: '0.25rem 0.5rem',
-                                background: 'transparent',
-                                border: '1px solid #d1d5db',
-                                borderRadius: '0.25rem',
-                                color: '#6b7280',
-                                cursor: 'pointer',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '0.25rem'
-                              }}
-                            >
-                              <Edit size={14} />
-                            </button>
-                            <button
-                              onClick={() => handleDeleteCustomer(customer)}
-                              style={{
-                                padding: '0.25rem 0.5rem',
-                                background: 'transparent',
-                                border: '1px solid #fecaca',
-                                borderRadius: '0.25rem',
-                                color: '#ef4444',
-                                cursor: 'pointer',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '0.25rem'
-                              }}
-                            >
-                              <Trash2 size={14} />
-                            </button>
-                          </div>
-                        </td>
+          {loading ? (
+            <div className="p-12 text-center"><RefreshCw className="h-8 w-8 animate-spin text-green-500 mx-auto mb-4" /><p className="text-gray-500 dark:text-gray-400">Loading...</p></div>
+          ) : activeTab === 'customers' ? (
+            customers.length === 0 ? (<div className="p-12 text-center"><div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-2xl flex items-center justify-center mx-auto mb-4"><Users className="h-8 w-8 text-gray-400" /></div><h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No customers found</h3><p className="text-gray-500 dark:text-gray-400 mb-6">Get started by adding your first customer</p><button onClick={handleCreateCustomer} className="px-5 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl font-medium hover:from-green-700 hover:to-emerald-700 transition-all">Add First Customer</button></div>) : (
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-gray-50 dark:bg-gray-900/50"><tr><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Code</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Name</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Contact</th><th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Credit Limit</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th><th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th></tr></thead>
+                  <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
+                    {customers.map(customer => (
+                      <tr key={customer.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                        <td className="px-6 py-4 font-semibold text-green-600 dark:text-green-400">{customer.customer_code}</td>
+                        <td className="px-6 py-4 text-gray-900 dark:text-white">{customer.customer_name}</td>
+                        <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{customer.contact_person || '-'}</td>
+                        <td className="px-6 py-4 text-right text-gray-600 dark:text-gray-300">R {(customer.credit_limit || 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</td>
+                        <td className="px-6 py-4"><span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${customer.is_active ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600'}`}>{customer.is_active ? 'Active' : 'Inactive'}</span></td>
+                        <td className="px-6 py-4"><div className="flex items-center justify-end gap-2"><button onClick={() => handleEditCustomer(customer)} className="p-2 hover:bg-green-100 dark:hover:bg-green-900/30 text-green-600 dark:text-green-400 rounded-lg transition-colors"><Edit className="h-4 w-4" /></button><button onClick={() => handleDeleteCustomer(customer)} className="p-2 hover:bg-red-100 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg transition-colors"><Trash2 className="h-4 w-4" /></button></div></td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
               </div>
-            )}
-          </div>
-        </>
-      )}
-
-      {activeTab === 'invoices' && (
-        <>
-          <div style={{
-            background: 'white',
-            borderRadius: '0.5rem',
-            boxShadow: '0 1px 3px 0 rgba(0,0,0,0.1)',
-            overflow: 'hidden'
-          }}>
-            <div style={{ padding: '1.5rem', borderBottom: '1px solid #e5e7eb' }}>
-              <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-                <div style={{ flex: '1', minWidth: '250px', position: 'relative' }}>
-                  <Search
-                    size={20}
-                    style={{
-                      position: 'absolute',
-                      left: '0.75rem',
-                      top: '50%',
-                      transform: 'translateY(-50%)',
-                      color: '#9ca3af'
-                    }}
-                  />
-                  <input
-                    type="text"
-                    placeholder="Search invoices..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    style={{
-                      width: '100%',
-                      padding: '0.5rem 0.75rem 0.5rem 2.5rem',
-                      border: '1px solid #d1d5db',
-                      borderRadius: '0.375rem',
-                      fontSize: '0.875rem'
-                    }}
-                  />
-                </div>
-
-                <div style={{ minWidth: '200px' }}>
-                  <select
-                    value={statusFilter}
-                    onChange={(e) => setStatusFilter(e.target.value)}
-                    style={{
-                      width: '100%',
-                      padding: '0.5rem 0.75rem',
-                      border: '1px solid #d1d5db',
-                      borderRadius: '0.375rem',
-                      fontSize: '0.875rem',
-                      background: 'white'
-                    }}
-                  >
-                    <option value="">All Statuses</option>
-                    <option value="draft">Draft</option>
-                    <option value="sent">Sent</option>
-                    <option value="partial">Partial</option>
-                    <option value="paid">Paid</option>
-                    <option value="overdue">Overdue</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-
-            {loading ? (
-              <div style={{ padding: '3rem', textAlign: 'center', color: '#6b7280' }}>
-                Loading invoices...
-              </div>
-            ) : invoices.length === 0 ? (
-              <div style={{ padding: '3rem', textAlign: 'center' }}>
-                <FileText size={48} style={{ margin: '0 auto 1rem', color: '#d1d5db' }} />
-                <h3 style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '0.5rem' }}>No invoices found</h3>
-                <p style={{ color: '#6b7280' }}>
-                  {searchTerm || statusFilter ? 'Try adjusting your filters' : 'Invoices are created from deliveries in the Order-to-Cash flow'}
-                </p>
-              </div>
-            ) : (
-              <div style={{ overflowX: 'auto' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                  <thead style={{ background: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
-                    <tr>
-                      <th style={{ padding: '0.75rem 1rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Invoice #</th>
-                      <th style={{ padding: '0.75rem 1rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Customer</th>
-                      <th style={{ padding: '0.75rem 1rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Invoice Date</th>
-                      <th style={{ padding: '0.75rem 1rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Due Date</th>
-                      <th style={{ padding: '0.75rem 1rem', textAlign: 'right', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Total</th>
-                      <th style={{ padding: '0.75rem 1rem', textAlign: 'right', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Balance</th>
-                      <th style={{ padding: '0.75rem 1rem', textAlign: 'center', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Status</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {invoices.map((invoice) => {
-                      const statusColors = getStatusColor(invoice.status);
-                      return (
-                        <tr key={invoice.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
-                          <td style={{ padding: '1rem', fontSize: '0.875rem', fontWeight: '500' }}>{invoice.invoice_number}</td>
-                          <td style={{ padding: '1rem', fontSize: '0.875rem' }}>{invoice.customer_name}</td>
-                          <td style={{ padding: '1rem', fontSize: '0.875rem', color: '#6b7280' }}>
-                            {new Date(invoice.invoice_date).toLocaleDateString()}
-                          </td>
-                          <td style={{ padding: '1rem', fontSize: '0.875rem', color: '#6b7280' }}>
-                            {new Date(invoice.due_date).toLocaleDateString()}
-                          </td>
-                          <td style={{ padding: '1rem', fontSize: '0.875rem', textAlign: 'right', fontWeight: '500' }}>
-                            {formatCurrency(invoice.total_amount)}
-                          </td>
-                          <td style={{ padding: '1rem', fontSize: '0.875rem', textAlign: 'right', fontWeight: '500' }}>
-                            {formatCurrency(invoice.balance)}
-                          </td>
-                          <td style={{ padding: '1rem', textAlign: 'center' }}>
-                            <span style={{
-                              padding: '0.25rem 0.75rem',
-                              borderRadius: '9999px',
-                              fontSize: '0.75rem',
-                              fontWeight: '500',
-                              background: statusColors.bg,
-                              color: statusColors.text
-                            }}>
-                              {invoice.status}
-                            </span>
-                          </td>
-                        </tr>
-                      );
-                    })}
+            )
+          ) : activeTab === 'invoices' ? (
+            invoices.length === 0 ? (<div className="p-12 text-center"><div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-2xl flex items-center justify-center mx-auto mb-4"><FileText className="h-8 w-8 text-gray-400" /></div><h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No invoices found</h3><p className="text-gray-500 dark:text-gray-400">No AR invoices to display</p></div>) : (
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-gray-50 dark:bg-gray-900/50"><tr><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Invoice #</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Customer</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Date</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Due Date</th><th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Amount</th><th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Balance</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th></tr></thead>
+                  <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
+                    {invoices.map(inv => (
+                      <tr key={inv.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                        <td className="px-6 py-4 font-semibold text-green-600 dark:text-green-400">{inv.invoice_number}</td>
+                        <td className="px-6 py-4 text-gray-900 dark:text-white">{inv.customer_name}</td>
+                        <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{new Date(inv.invoice_date).toLocaleDateString()}</td>
+                        <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{new Date(inv.due_date).toLocaleDateString()}</td>
+                        <td className="px-6 py-4 text-right text-gray-900 dark:text-white">R {inv.total_amount.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</td>
+                        <td className="px-6 py-4 text-right font-semibold text-gray-900 dark:text-white">R {inv.balance.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</td>
+                        <td className="px-6 py-4"><span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${getStatusBadge(inv.status)}`}>{inv.status}</span></td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               </div>
-            )}
-          </div>
-        </>
-      )}
-
-      {activeTab === 'payments' && (
-        <>
-          <div style={{
-            background: 'white',
-            borderRadius: '0.5rem',
-            boxShadow: '0 1px 3px 0 rgba(0,0,0,0.1)',
-            overflow: 'hidden'
-          }}>
-            {loading ? (
-              <div style={{ padding: '3rem', textAlign: 'center', color: '#6b7280' }}>
-                Loading payments...
-              </div>
-            ) : payments.length === 0 ? (
-              <div style={{ padding: '3rem', textAlign: 'center' }}>
-                <DollarSign size={48} style={{ margin: '0 auto 1rem', color: '#d1d5db' }} />
-                <h3 style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '0.5rem' }}>No payments found</h3>
-                <p style={{ color: '#6b7280', marginBottom: '1.5rem' }}>Get started by recording your first customer payment</p>
-                <button
-                  onClick={handleCreatePayment}
-                  style={{
-                    padding: '0.5rem 1rem',
-                    background: '#2563eb',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '0.375rem',
-                    fontSize: '0.875rem',
-                    fontWeight: '500',
-                    cursor: 'pointer'
-                  }}
-                >
-                  Record Payment
-                </button>
-              </div>
-            ) : (
-              <div style={{ overflowX: 'auto' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                  <thead style={{ background: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
-                    <tr>
-                      <th style={{ padding: '0.75rem 1rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Payment #</th>
-                      <th style={{ padding: '0.75rem 1rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Customer</th>
-                      <th style={{ padding: '0.75rem 1rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Date</th>
-                      <th style={{ padding: '0.75rem 1rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Method</th>
-                      <th style={{ padding: '0.75rem 1rem', textAlign: 'right', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Amount</th>
-                      <th style={{ padding: '0.75rem 1rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Reference</th>
-                      <th style={{ padding: '0.75rem 1rem', textAlign: 'center', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Status</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {payments.map((payment) => {
-                      const statusColors = getStatusColor(payment.status);
-                      return (
-                        <tr key={payment.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
-                          <td style={{ padding: '1rem', fontSize: '0.875rem', fontWeight: '500' }}>{payment.payment_number}</td>
-                          <td style={{ padding: '1rem', fontSize: '0.875rem' }}>{payment.customer_name}</td>
-                          <td style={{ padding: '1rem', fontSize: '0.875rem', color: '#6b7280' }}>
-                            {new Date(payment.payment_date).toLocaleDateString()}
-                          </td>
-                          <td style={{ padding: '1rem', fontSize: '0.875rem' }}>{payment.payment_method}</td>
-                          <td style={{ padding: '1rem', fontSize: '0.875rem', textAlign: 'right', fontWeight: '500' }}>
-                            {formatCurrency(payment.amount)}
-                          </td>
-                          <td style={{ padding: '1rem', fontSize: '0.875rem', color: '#6b7280' }}>{payment.reference || '-'}</td>
-                          <td style={{ padding: '1rem', textAlign: 'center' }}>
-                            <span style={{
-                              padding: '0.25rem 0.75rem',
-                              borderRadius: '9999px',
-                              fontSize: '0.75rem',
-                              fontWeight: '500',
-                              background: statusColors.bg,
-                              color: statusColors.text
-                            }}>
-                              {payment.status}
-                            </span>
-                          </td>
-                        </tr>
-                      );
-                    })}
+            )
+          ) : activeTab === 'payments' ? (
+            payments.length === 0 ? (<div className="p-12 text-center"><div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-2xl flex items-center justify-center mx-auto mb-4"><DollarSign className="h-8 w-8 text-gray-400" /></div><h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No payments found</h3><p className="text-gray-500 dark:text-gray-400 mb-6">Get started by recording your first payment</p><button onClick={handleCreatePayment} className="px-5 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl font-medium hover:from-green-700 hover:to-emerald-700 transition-all">Record First Payment</button></div>) : (
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-gray-50 dark:bg-gray-900/50"><tr><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Payment #</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Customer</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Date</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Method</th><th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Amount</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Reference</th></tr></thead>
+                  <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
+                    {payments.map(pmt => (
+                      <tr key={pmt.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                        <td className="px-6 py-4 font-semibold text-green-600 dark:text-green-400">{pmt.payment_number}</td>
+                        <td className="px-6 py-4 text-gray-900 dark:text-white">{pmt.customer_name}</td>
+                        <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{new Date(pmt.payment_date).toLocaleDateString()}</td>
+                        <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{pmt.payment_method}</td>
+                        <td className="px-6 py-4 text-right font-semibold text-gray-900 dark:text-white">R {pmt.amount.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</td>
+                        <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{pmt.reference || '-'}</td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               </div>
-            )}
-          </div>
-        </>
-      )}
-
-      {activeTab === 'aging' && (
-        <>
-          <div style={{
-            background: 'white',
-            borderRadius: '0.5rem',
-            boxShadow: '0 1px 3px 0 rgba(0,0,0,0.1)',
-            overflow: 'hidden'
-          }}>
-            {loading ? (
-              <div style={{ padding: '3rem', textAlign: 'center', color: '#6b7280' }}>
-                Loading aging report...
-              </div>
-            ) : aging.length === 0 ? (
-              <div style={{ padding: '3rem', textAlign: 'center' }}>
-                <FileText size={48} style={{ margin: '0 auto 1rem', color: '#d1d5db' }} />
-                <h3 style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '0.5rem' }}>No aging data</h3>
-                <p style={{ color: '#6b7280' }}>Aging report will be available once you have outstanding invoices</p>
-              </div>
-            ) : (
-              <>
-                <div style={{ padding: '1.5rem', borderBottom: '1px solid #e5e7eb' }}>
-                  <h2 style={{ fontSize: '1.25rem', fontWeight: '600' }}>
-                    AR Aging Report - As of {new Date().toLocaleDateString()}
-                  </h2>
-                </div>
-                <div style={{ overflowX: 'auto' }}>
-                  <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                    <thead style={{ background: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
-                      <tr>
-                        <th style={{ padding: '0.75rem 1rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Customer</th>
-                        <th style={{ padding: '0.75rem 1rem', textAlign: 'right', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Current</th>
-                        <th style={{ padding: '0.75rem 1rem', textAlign: 'right', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>1-30 Days</th>
-                        <th style={{ padding: '0.75rem 1rem', textAlign: 'right', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>31-60 Days</th>
-                        <th style={{ padding: '0.75rem 1rem', textAlign: 'right', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>61-90 Days</th>
-                        <th style={{ padding: '0.75rem 1rem', textAlign: 'right', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Over 90 Days</th>
-                        <th style={{ padding: '0.75rem 1rem', textAlign: 'right', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Total</th>
+            )
+          ) : (
+            aging.length === 0 ? (<div className="p-12 text-center"><div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-2xl flex items-center justify-center mx-auto mb-4"><TrendingUp className="h-8 w-8 text-gray-400" /></div><h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No aging data</h3><p className="text-gray-500 dark:text-gray-400">No outstanding receivables to display</p></div>) : (
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-gray-50 dark:bg-gray-900/50"><tr><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Customer</th><th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Current</th><th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">1-30 Days</th><th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">31-60 Days</th><th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">61-90 Days</th><th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">90+ Days</th><th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Total</th></tr></thead>
+                  <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
+                    {aging.map(row => (
+                      <tr key={row.customer_id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                        <td className="px-6 py-4 font-semibold text-gray-900 dark:text-white">{row.customer_name}</td>
+                        <td className="px-6 py-4 text-right text-gray-600 dark:text-gray-300">R {row.current.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</td>
+                        <td className="px-6 py-4 text-right text-gray-600 dark:text-gray-300">R {row.days_30.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</td>
+                        <td className="px-6 py-4 text-right text-amber-600 dark:text-amber-400">R {row.days_60.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</td>
+                        <td className="px-6 py-4 text-right text-orange-600 dark:text-orange-400">R {row.days_90.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</td>
+                        <td className="px-6 py-4 text-right text-red-600 dark:text-red-400">R {row.over_90.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</td>
+                        <td className="px-6 py-4 text-right font-bold text-gray-900 dark:text-white">R {row.total.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</td>
                       </tr>
-                    </thead>
-                    <tbody>
-                      {aging.map((bucket, idx) => (
-                        <tr key={idx} style={{ borderBottom: '1px solid #e5e7eb' }}>
-                          <td style={{ padding: '1rem', fontSize: '0.875rem' }}>{bucket.customer_name}</td>
-                          <td style={{ padding: '1rem', fontSize: '0.875rem', textAlign: 'right' }}>
-                            {formatCurrency(bucket.current)}
-                          </td>
-                          <td style={{ padding: '1rem', fontSize: '0.875rem', textAlign: 'right' }}>
-                            {formatCurrency(bucket.days_30)}
-                          </td>
-                          <td style={{ padding: '1rem', fontSize: '0.875rem', textAlign: 'right' }}>
-                            {formatCurrency(bucket.days_60)}
-                          </td>
-                          <td style={{ padding: '1rem', fontSize: '0.875rem', textAlign: 'right' }}>
-                            {formatCurrency(bucket.days_90)}
-                          </td>
-                          <td style={{ padding: '1rem', fontSize: '0.875rem', textAlign: 'right', color: bucket.over_90 > 0 ? '#ef4444' : 'inherit' }}>
-                            {formatCurrency(bucket.over_90)}
-                          </td>
-                          <td style={{ padding: '1rem', fontSize: '0.875rem', textAlign: 'right', fontWeight: '500' }}>
-                            {formatCurrency(bucket.total)}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                    <tfoot style={{ background: '#f9fafb', borderTop: '2px solid #d1d5db' }}>
-                      <tr>
-                        <td style={{ padding: '1rem', fontSize: '0.875rem', fontWeight: '700' }}>Total</td>
-                        <td style={{ padding: '1rem', fontSize: '0.875rem', fontWeight: '700', textAlign: 'right' }}>
-                          {formatCurrency(aging.reduce((sum, b) => sum + b.current, 0))}
-                        </td>
-                        <td style={{ padding: '1rem', fontSize: '0.875rem', fontWeight: '700', textAlign: 'right' }}>
-                          {formatCurrency(aging.reduce((sum, b) => sum + b.days_30, 0))}
-                        </td>
-                        <td style={{ padding: '1rem', fontSize: '0.875rem', fontWeight: '700', textAlign: 'right' }}>
-                          {formatCurrency(aging.reduce((sum, b) => sum + b.days_60, 0))}
-                        </td>
-                        <td style={{ padding: '1rem', fontSize: '0.875rem', fontWeight: '700', textAlign: 'right' }}>
-                          {formatCurrency(aging.reduce((sum, b) => sum + b.days_90, 0))}
-                        </td>
-                        <td style={{ padding: '1rem', fontSize: '0.875rem', fontWeight: '700', textAlign: 'right' }}>
-                          {formatCurrency(aging.reduce((sum, b) => sum + b.over_90, 0))}
-                        </td>
-                        <td style={{ padding: '1rem', fontSize: '0.875rem', fontWeight: '700', textAlign: 'right' }}>
-                          {formatCurrency(aging.reduce((sum, b) => sum + b.total, 0))}
-                        </td>
-                      </tr>
-                    </tfoot>
-                  </table>
-                </div>
-              </>
-            )}
-          </div>
-        </>
-      )}
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )
+          )}
+        </div>
+      </div>
 
-      {renderCustomerFormModal(false)}
-      {renderCustomerFormModal(true)}
-      {renderPaymentFormModal()}
-
-      <ConfirmDialog
-        isOpen={showDeleteCustomerDialog}
-        onClose={() => setShowDeleteCustomerDialog(false)}
-        onConfirm={confirmDeleteCustomer}
-        title="Delete Customer"
-        message={`Are you sure you want to delete customer "${selectedCustomer?.customer_name}"? This action cannot be undone.`}
-        variant="danger"
-      />
+      {renderCustomerModal(false)}
+      {renderCustomerModal(true)}
+      {renderPaymentModal()}
+      <ConfirmDialog isOpen={showDeleteCustomerDialog} onClose={() => setShowDeleteCustomerDialog(false)} onConfirm={confirmDeleteCustomer} title="Delete Customer" message={`Are you sure you want to delete ${selectedCustomer?.customer_name}? This action cannot be undone.`} confirmText="Delete" confirmVariant="danger" />
     </div>
   );
 }

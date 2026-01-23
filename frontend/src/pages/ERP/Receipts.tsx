@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import { Plus, Search, Eye, DollarSign, TrendingUp, Clock, CheckCircle } from 'lucide-react';
+import api from '../../lib/api';
+import { Plus, Search, Eye, DollarSign, TrendingUp, Clock, CheckCircle, RefreshCw, AlertCircle, X, CreditCard } from 'lucide-react';
 
 interface Receipt {
   id: string;
@@ -44,21 +44,22 @@ export default function Receipts() {
   const loadReceipts = async () => {
     try {
       setLoading(true);
-      const params: any = {};
+      const params: Record<string, string> = {};
       if (searchTerm) params.search = searchTerm;
       if (statusFilter !== 'all') params.status = statusFilter;
 
       const response = await api.get('/ar/receipts', { params });
-      setReceipts(response.data);
+      const data = response.data || [];
+      setReceipts(data);
       
-      const totalAmount = response.data.reduce((sum: number, r: Receipt) => sum + r.amount, 0);
-      const postedReceipts = response.data.filter((r: Receipt) => r.status === 'posted');
+      const totalAmount = data.reduce((sum: number, r: Receipt) => sum + r.amount, 0);
+      const postedReceipts = data.filter((r: Receipt) => r.status === 'posted');
       const postedAmount = postedReceipts.reduce((sum: number, r: Receipt) => sum + r.amount, 0);
-      const draftReceipts = response.data.filter((r: Receipt) => r.status === 'draft');
+      const draftReceipts = data.filter((r: Receipt) => r.status === 'draft');
       const draftAmount = draftReceipts.reduce((sum: number, r: Receipt) => sum + r.amount, 0);
 
       setStats({
-        total_receipts: response.data.length,
+        total_receipts: data.length,
         total_amount: totalAmount,
         posted_count: postedReceipts.length,
         posted_amount: postedAmount,
@@ -67,8 +68,9 @@ export default function Receipts() {
       });
 
       setError(null);
-    } catch (error: any) {
-      console.error('Error fetching receipts:', error);
+    } catch (err: unknown) {
+      console.error('Error fetching receipts:', err);
+      const error = err as { response?: { data?: { detail?: string } } };
       setError(error.response?.data?.detail || 'Failed to load receipts');
     } finally {
       setLoading(false);
@@ -83,13 +85,13 @@ export default function Receipts() {
     navigate('/ar/receipts/new');
   };
 
-  const getStatusColor = (status: string) => {
-    const colors: Record<string, string> = {
-      draft: 'bg-gray-100 text-gray-800',
-      posted: 'bg-green-100 text-green-800',
-      void: 'bg-red-100 text-red-800',
+  const getStatusBadge = (status: string) => {
+    const styles: Record<string, string> = {
+      draft: 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600',
+      posted: 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800',
+      void: 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 border-red-200 dark:border-red-800',
     };
-    return colors[status] || 'bg-gray-100 text-gray-800';
+    return styles[status] || styles.draft;
   };
 
   const getPaymentMethodLabel = (method: string) => {
@@ -114,261 +116,145 @@ export default function Receipts() {
   });
 
   return (
-    <div style={{ padding: '2rem' }}>
-      <div style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div>
-          <h1 style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>Customer Receipts</h1>
-          <p style={{ color: '#6b7280' }}>Manage customer payments and allocations</p>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-green-50 dark:from-gray-900 dark:to-gray-800 p-6">
+      <div className="max-w-7xl mx-auto space-y-6">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">Customer Receipts</h1>
+            <p className="text-gray-500 dark:text-gray-400 mt-1">Manage customer payments and allocations</p>
+          </div>
+          <div className="flex items-center gap-3">
+            <button onClick={() => loadReceipts()} className="p-3 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-200 dark:border-gray-700">
+              <RefreshCw className={`h-5 w-5 text-gray-600 dark:text-gray-400 ${loading ? 'animate-spin' : ''}`} />
+            </button>
+            <button onClick={handleCreateNew} className="flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl font-medium hover:from-green-700 hover:to-emerald-700 transition-all shadow-lg shadow-green-500/30">
+              <Plus className="h-5 w-5" />New Receipt
+            </button>
+          </div>
         </div>
-        <button
-          onClick={handleCreateNew}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-            padding: '0.75rem 1.5rem',
-            background: '#2563eb',
-            color: 'white',
-            border: 'none',
-            borderRadius: '0.5rem',
-            fontSize: '0.875rem',
-            fontWeight: '500',
-            cursor: 'pointer'
-          }}
-        >
-          <Plus size={20} />
-          New Receipt
-        </button>
+
+        {error && (
+          <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl flex items-center gap-3">
+            <AlertCircle className="h-5 w-5 text-red-500 flex-shrink-0" />
+            <p className="text-red-700 dark:text-red-300">{error}</p>
+            <button onClick={() => setError(null)} className="ml-auto p-1 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg"><X className="h-4 w-4 text-red-500" /></button>
+          </div>
+        )}
+
+        {stats && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg shadow-green-500/30"><DollarSign className="h-6 w-6 text-white" /></div>
+                <div>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.total_receipts}</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Total Receipts</p>
+                  <p className="text-xs text-gray-400 dark:text-gray-500">R {stats.total_amount.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</p>
+                </div>
+              </div>
+            </div>
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl shadow-lg shadow-emerald-500/30"><CheckCircle className="h-6 w-6 text-white" /></div>
+                <div>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.posted_count}</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Posted</p>
+                  <p className="text-xs text-gray-400 dark:text-gray-500">R {stats.posted_amount.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</p>
+                </div>
+              </div>
+            </div>
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-gradient-to-br from-gray-500 to-gray-600 rounded-xl shadow-lg shadow-gray-500/30"><Clock className="h-6 w-6 text-white" /></div>
+                <div>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.draft_count}</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Draft</p>
+                  <p className="text-xs text-gray-400 dark:text-gray-500">R {stats.draft_amount.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</p>
+                </div>
+              </div>
+            </div>
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl shadow-lg shadow-amber-500/30"><TrendingUp className="h-6 w-6 text-white" /></div>
+                <div>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">R {stats.total_receipts > 0 ? (stats.total_amount / stats.total_receipts).toLocaleString('en-ZA', { minimumFractionDigits: 2 }) : '0.00'}</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Avg Receipt</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+          <div className="p-5 border-b border-gray-100 dark:border-gray-700">
+            <div className="flex flex-col md:flex-row gap-4">
+              <div className="flex-1 relative">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <input type="text" placeholder="Search by receipt number, customer, or reference..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-12 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all" />
+              </div>
+              <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all min-w-[150px]">
+                <option value="all">All Statuses</option>
+                <option value="draft">Draft</option>
+                <option value="posted">Posted</option>
+                <option value="void">Void</option>
+              </select>
+            </div>
+          </div>
+
+          {loading ? (
+            <div className="p-12 text-center">
+              <RefreshCw className="h-8 w-8 animate-spin text-green-500 mx-auto mb-4" />
+              <p className="text-gray-500 dark:text-gray-400">Loading receipts...</p>
+            </div>
+          ) : filteredReceipts.length === 0 ? (
+            <div className="p-12 text-center">
+              <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-2xl flex items-center justify-center mx-auto mb-4"><CreditCard className="h-8 w-8 text-gray-400" /></div>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No receipts found</h3>
+              <p className="text-gray-500 dark:text-gray-400 mb-6">{searchTerm || statusFilter !== 'all' ? 'Try adjusting your filters' : 'Get started by creating your first receipt'}</p>
+              {!searchTerm && statusFilter === 'all' && (
+                <button onClick={handleCreateNew} className="px-5 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl font-medium hover:from-green-700 hover:to-emerald-700 transition-all">Create First Receipt</button>
+              )}
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-50 dark:bg-gray-900/50">
+                  <tr>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Receipt #</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Customer</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Payment Date</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Method</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Reference</th>
+                    <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Amount</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
+                    <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
+                  {filteredReceipts.map((receipt) => (
+                    <tr key={receipt.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                      <td className="px-6 py-4 font-semibold text-green-600 dark:text-green-400">{receipt.receipt_number}</td>
+                      <td className="px-6 py-4 text-gray-900 dark:text-white">{receipt.customer_name || `Customer ${receipt.customer_id}`}</td>
+                      <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{new Date(receipt.payment_date).toLocaleDateString()}</td>
+                      <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{getPaymentMethodLabel(receipt.payment_method)}</td>
+                      <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{receipt.reference || '-'}</td>
+                      <td className="px-6 py-4 text-right font-semibold text-gray-900 dark:text-white">R {receipt.amount.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</td>
+                      <td className="px-6 py-4">
+                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${getStatusBadge(receipt.status)}`}>{receipt.status}</span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center justify-end">
+                          <button onClick={() => handleViewDetail(receipt)} className="p-2 hover:bg-green-100 dark:hover:bg-green-900/30 text-green-600 dark:text-green-400 rounded-lg transition-colors"><Eye className="h-4 w-4" /></button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
       </div>
-
-      {error && (
-        <div style={{
-          padding: '1rem',
-          marginBottom: '1rem',
-          background: '#fee2e2',
-          border: '1px solid #ef4444',
-          borderRadius: '0.5rem',
-          color: '#dc2626'
-        }}>
-          {error}
-        </div>
-      )}
-
-      {/* Summary Stats */}
-      {stats && (
-        <div style={{ 
-          display: 'grid', 
-          gridTemplateColumns: 'repeat(4, 1fr)', 
-          gap: '1rem',
-          marginBottom: '2rem'
-        }}>
-          <div style={{
-            padding: '1.5rem',
-            background: 'white',
-            borderRadius: '0.5rem',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '0.5rem' }}>
-              <div style={{ padding: '0.75rem', background: '#dbeafe', borderRadius: '0.5rem' }}>
-                <DollarSign size={24} style={{ color: '#2563eb' }} />
-              </div>
-              <div>
-                <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>Total Receipts</div>
-                <div style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>
-                  {stats.total_receipts}
-                </div>
-              </div>
-            </div>
-            <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>
-              R {stats.total_amount.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-            </div>
-          </div>
-
-          <div style={{
-            padding: '1.5rem',
-            background: 'white',
-            borderRadius: '0.5rem',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '0.5rem' }}>
-              <div style={{ padding: '0.75rem', background: '#d1fae5', borderRadius: '0.5rem' }}>
-                <CheckCircle size={24} style={{ color: '#059669' }} />
-              </div>
-              <div>
-                <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>Posted</div>
-                <div style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>
-                  {stats.posted_count}
-                </div>
-              </div>
-            </div>
-            <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>
-              R {stats.posted_amount.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-            </div>
-          </div>
-
-          <div style={{
-            padding: '1.5rem',
-            background: 'white',
-            borderRadius: '0.5rem',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '0.5rem' }}>
-              <div style={{ padding: '0.75rem', background: '#e5e7eb', borderRadius: '0.5rem' }}>
-                <Clock size={24} style={{ color: '#6b7280' }} />
-              </div>
-              <div>
-                <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>Draft</div>
-                <div style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>
-                  {stats.draft_count}
-                </div>
-              </div>
-            </div>
-            <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>
-              R {stats.draft_amount.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-            </div>
-          </div>
-
-          <div style={{
-            padding: '1.5rem',
-            background: 'white',
-            borderRadius: '0.5rem',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '0.5rem' }}>
-              <div style={{ padding: '0.75rem', background: '#fef3c7', borderRadius: '0.5rem' }}>
-                <TrendingUp size={24} style={{ color: '#d97706' }} />
-              </div>
-              <div>
-                <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>Avg Receipt</div>
-                <div style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>
-                  R {stats.total_receipts > 0 ? (stats.total_amount / stats.total_receipts).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0.00'}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Search and Filters */}
-      <div style={{ 
-        display: 'flex', 
-        gap: '1rem', 
-        marginBottom: '2rem',
-        padding: '1.5rem',
-        background: 'white',
-        borderRadius: '0.5rem',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-      }}>
-        <div style={{ flex: 1, position: 'relative' }}>
-          <Search size={20} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: '#6b7280' }} />
-          <input
-            type="text"
-            placeholder="Search by receipt number, customer, or reference..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            style={{
-              width: '100%',
-              padding: '0.5rem 1rem 0.5rem 2.5rem',
-              border: '1px solid #d1d5db',
-              borderRadius: '0.375rem',
-              fontSize: '0.875rem'
-            }}
-          />
-        </div>
-        <select
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-          style={{
-            padding: '0.5rem 1rem',
-            border: '1px solid #d1d5db',
-            borderRadius: '0.375rem',
-            fontSize: '0.875rem',
-            minWidth: '150px'
-          }}
-        >
-          <option value="all">All Statuses</option>
-          <option value="draft">Draft</option>
-          <option value="posted">Posted</option>
-          <option value="void">Void</option>
-        </select>
-      </div>
-
-      {/* Receipts Table */}
-      {loading ? (
-        <div style={{ textAlign: 'center', padding: '3rem' }}>Loading receipts...</div>
-      ) : filteredReceipts.length === 0 ? (
-        <div style={{ 
-          textAlign: 'center', 
-          padding: '3rem',
-          background: 'white',
-          borderRadius: '0.5rem',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-        }}>
-          <p style={{ color: '#6b7280' }}>No receipts found</p>
-        </div>
-      ) : (
-        <div style={{ 
-          background: 'white', 
-          borderRadius: '0.5rem',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-          overflow: 'hidden'
-        }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <thead style={{ background: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
-              <tr>
-                <th style={{ padding: '0.75rem 1rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Receipt #</th>
-                <th style={{ padding: '0.75rem 1rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Customer</th>
-                <th style={{ padding: '0.75rem 1rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Payment Date</th>
-                <th style={{ padding: '0.75rem 1rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Method</th>
-                <th style={{ padding: '0.75rem 1rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Reference</th>
-                <th style={{ padding: '0.75rem 1rem', textAlign: 'right', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Amount</th>
-                <th style={{ padding: '0.75rem 1rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Status</th>
-                <th style={{ padding: '0.75rem 1rem', textAlign: 'right', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredReceipts.map((receipt) => (
-                <tr key={receipt.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
-                  <td style={{ padding: '1rem', fontSize: '0.875rem', fontWeight: '500' }}>{receipt.receipt_number}</td>
-                  <td style={{ padding: '1rem', fontSize: '0.875rem' }}>{receipt.customer_name || `Customer ${receipt.customer_id}`}</td>
-                  <td style={{ padding: '1rem', fontSize: '0.875rem' }}>{new Date(receipt.payment_date).toLocaleDateString()}</td>
-                  <td style={{ padding: '1rem', fontSize: '0.875rem' }}>{getPaymentMethodLabel(receipt.payment_method)}</td>
-                  <td style={{ padding: '1rem', fontSize: '0.875rem', color: '#6b7280' }}>{receipt.reference || '-'}</td>
-                  <td style={{ padding: '1rem', fontSize: '0.875rem', textAlign: 'right', fontWeight: '500' }}>
-                    R {receipt.amount.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                  </td>
-                  <td style={{ padding: '1rem' }}>
-                    <span style={{
-                      padding: '0.25rem 0.75rem',
-                      borderRadius: '9999px',
-                      fontSize: '0.75rem',
-                      fontWeight: '500'
-                    }} className={getStatusColor(receipt.status)}>
-                      {receipt.status}
-                    </span>
-                  </td>
-                  <td style={{ padding: '1rem', textAlign: 'right' }}>
-                    <button
-                      onClick={() => handleViewDetail(receipt)}
-                      style={{
-                        padding: '0.5rem',
-                        background: '#dbeafe',
-                        border: 'none',
-                        borderRadius: '0.375rem',
-                        cursor: 'pointer',
-                        color: '#2563eb'
-                      }}
-                      title="View Details"
-                    >
-                      <Eye size={16} />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
     </div>
   );
 }
