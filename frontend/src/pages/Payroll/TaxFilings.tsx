@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
+import { FileText, Plus, RefreshCw, AlertCircle, X, DollarSign, CheckCircle, Clock, Calendar, Edit2, Trash2 } from 'lucide-react';
 import api from '../../lib/api';
 import { ConfirmDialog } from '../../components/ConfirmDialog';
 
@@ -14,12 +15,12 @@ interface TaxFiling {
   created_at: string;
 }
 
-const TaxFilings: React.FC = () => {
+export default function TaxFilings() {
   const [filings, setFilings] = useState<TaxFiling[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [showModal, setShowModal] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [showForm, setShowForm] = useState(false);
   const [editingFiling, setEditingFiling] = useState<TaxFiling | null>(null);
-  const [form, setForm] = useState({
+  const [formData, setFormData] = useState({
     filing_code: '',
     tax_type: 'PAYE' as 'PAYE' | 'UIF' | 'SDL' | 'VAT',
     period_start: '',
@@ -33,70 +34,47 @@ const TaxFilings: React.FC = () => {
     id: 0,
     code: ''
   });
-  const [error, setError] = useState('');
+  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    loadFilings();
-  }, []);
+  useEffect(() => { loadFilings(); }, []);
 
   const loadFilings = async () => {
-    setLoading(true);
-    setError('');
     try {
+      setLoading(true);
       const response = await api.get('/erp/payroll/tax-filings');
       setFilings(response.data.filings || []);
-    } catch (err: any) {
-      setError(err.response?.data?.detail || 'Failed to load tax filings');
-    } finally {
-      setLoading(false);
-    }
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { detail?: string } } };
+      setError(error.response?.data?.detail || 'Failed to load tax filings');
+    } finally { setLoading(false); }
   };
 
   const handleCreate = () => {
     setEditingFiling(null);
-    setForm({
-      filing_code: '',
-      tax_type: 'PAYE',
-      period_start: '',
-      period_end: '',
-      amount: '',
-      due_date: '',
-      status: 'PENDING'
-    });
-    setShowModal(true);
+    setFormData({ filing_code: '', tax_type: 'PAYE', period_start: '', period_end: '', amount: '', due_date: '', status: 'PENDING' });
+    setShowForm(true);
   };
 
   const handleEdit = (filing: TaxFiling) => {
     setEditingFiling(filing);
-    setForm({
-      filing_code: filing.filing_code,
-      tax_type: filing.tax_type,
-      period_start: filing.period_start,
-      period_end: filing.period_end,
-      amount: filing.amount.toString(),
-      due_date: filing.due_date,
-      status: filing.status
-    });
-    setShowModal(true);
+    setFormData({ filing_code: filing.filing_code, tax_type: filing.tax_type, period_start: filing.period_start, period_end: filing.period_end, amount: filing.amount.toString(), due_date: filing.due_date, status: filing.status });
+    setShowForm(true);
   };
 
-  const handleSave = async () => {
-    setError('');
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     try {
-      const payload = {
-        ...form,
-        amount: parseFloat(form.amount) || 0
-      };
-      
+      const payload = { ...formData, amount: parseFloat(formData.amount) || 0 };
       if (editingFiling) {
         await api.put(`/erp/payroll/tax-filings/${editingFiling.id}`, payload);
       } else {
         await api.post('/erp/payroll/tax-filings', payload);
       }
-      setShowModal(false);
+      setShowForm(false);
       loadFilings();
-    } catch (err: any) {
-      setError(err.response?.data?.detail || 'Failed to save tax filing');
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { detail?: string } } };
+      setError(error.response?.data?.detail || 'Failed to save tax filing');
     }
   };
 
@@ -105,248 +83,61 @@ const TaxFilings: React.FC = () => {
       await api.delete(`/erp/payroll/tax-filings/${id}`);
       loadFilings();
       setDeleteConfirm({ show: false, id: 0, code: '' });
-    } catch (err: any) {
-      setError(err.response?.data?.detail || 'Failed to delete tax filing');
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { detail?: string } } };
+      setError(error.response?.data?.detail || 'Failed to delete tax filing');
     }
   };
 
+  const formatCurrency = (amount: number) => new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR' }).format(amount);
+  const formatDate = (dateString: string) => new Date(dateString).toLocaleDateString('en-ZA');
+
   const getStatusBadge = (status: string) => {
-    const colors: Record<string, { bg: string; text: string }> = {
-      PENDING: { bg: '#fef3c7', text: '#92400e' },
-      SUBMITTED: { bg: '#dbeafe', text: '#1e40af' },
-      PAID: { bg: '#dcfce7', text: '#166534' }
+    const styles: Record<string, string> = {
+      PAID: 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800',
+      SUBMITTED: 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800',
+      PENDING: 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800',
     };
-    const color = colors[status] || { bg: '#f3f4f6', text: '#374151' };
-    return <span style={{ padding: '4px 8px', fontSize: '12px', fontWeight: 600, borderRadius: '9999px', backgroundColor: color.bg, color: color.text }}>{status}</span>;
+    return styles[status] || styles.PENDING;
   };
 
   const getTypeBadge = (type: string) => {
-    const colors: Record<string, { bg: string; text: string }> = {
-      PAYE: { bg: '#dbeafe', text: '#1e40af' },
-      UIF: { bg: '#dcfce7', text: '#166534' },
-      SDL: { bg: '#fef3c7', text: '#92400e' },
-      VAT: { bg: '#e0e7ff', text: '#4338ca' }
+    const styles: Record<string, string> = {
+      PAYE: 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300',
+      UIF: 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300',
+      SDL: 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300',
+      VAT: 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300',
     };
-    const color = colors[type] || { bg: '#f3f4f6', text: '#374151' };
-    return <span style={{ padding: '4px 8px', fontSize: '12px', fontWeight: 600, borderRadius: '9999px', backgroundColor: color.bg, color: color.text }}>{type}</span>;
+    return styles[type] || 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300';
   };
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR' }).format(amount);
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-ZA');
-  };
+  const stats = { paye: filings.filter(f => f.tax_type === 'PAYE').reduce((sum, f) => sum + f.amount, 0), uif: filings.filter(f => f.tax_type === 'UIF').reduce((sum, f) => sum + f.amount, 0), sdl: filings.filter(f => f.tax_type === 'SDL').reduce((sum, f) => sum + f.amount, 0), pending: filings.filter(f => f.status === 'PENDING').length };
 
   return (
-    <div style={{ padding: '24px' }} data-testid="payroll-tax">
-      <div style={{ marginBottom: '24px' }}>
-        <h1 style={{ fontSize: '30px', fontWeight: 'bold', color: '#111827', marginBottom: '8px' }}>Tax Filings</h1>
-        <p style={{ color: '#6b7280' }}>Manage PAYE, UIF, SDL, and VAT tax filings</p>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6" data-testid="payroll-tax">
+      <div className="max-w-7xl mx-auto space-y-6">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div><h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Tax Filings</h1><p className="text-gray-500 dark:text-gray-400 mt-1">Manage PAYE, UIF, SDL, and VAT tax filings</p></div>
+          <div className="flex items-center gap-3">
+            <button onClick={loadFilings} className="p-3 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-200 dark:border-gray-700"><RefreshCw className={`h-5 w-5 text-gray-600 dark:text-gray-400 ${loading ? 'animate-spin' : ''}`} /></button>
+            <button onClick={handleCreate} data-testid="create-button" className="flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-medium hover:from-indigo-700 hover:to-purple-700 transition-all shadow-lg shadow-indigo-500/30"><Plus className="h-5 w-5" />New Tax Filing</button>
+          </div>
+        </div>
+        {error && (<div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl flex items-center gap-3"><AlertCircle className="h-5 w-5 text-red-500" /><p className="text-red-700 dark:text-red-300">{error}</p><button onClick={() => setError(null)} className="ml-auto"><X className="h-4 w-4 text-red-500" /></button></div>)}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700"><div className="flex items-center gap-4"><div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl shadow-lg shadow-blue-500/30"><FileText className="h-6 w-6 text-white" /></div><div><p className="text-2xl font-bold text-blue-600 dark:text-blue-400">{formatCurrency(stats.paye)}</p><p className="text-sm text-gray-500 dark:text-gray-400">PAYE</p></div></div></div>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700"><div className="flex items-center gap-4"><div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg shadow-green-500/30"><DollarSign className="h-6 w-6 text-white" /></div><div><p className="text-2xl font-bold text-green-600 dark:text-green-400">{formatCurrency(stats.uif)}</p><p className="text-sm text-gray-500 dark:text-gray-400">UIF</p></div></div></div>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700"><div className="flex items-center gap-4"><div className="p-3 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl shadow-lg shadow-amber-500/30"><DollarSign className="h-6 w-6 text-white" /></div><div><p className="text-2xl font-bold text-amber-600 dark:text-amber-400">{formatCurrency(stats.sdl)}</p><p className="text-sm text-gray-500 dark:text-gray-400">SDL</p></div></div></div>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700"><div className="flex items-center gap-4"><div className="p-3 bg-gradient-to-br from-purple-500 to-violet-500 rounded-xl shadow-lg shadow-purple-500/30"><Clock className="h-6 w-6 text-white" /></div><div><p className="text-2xl font-bold text-purple-600 dark:text-purple-400">{stats.pending}</p><p className="text-sm text-gray-500 dark:text-gray-400">Pending</p></div></div></div>
+        </div>
+        {showForm && (<div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setShowForm(false)}><div onClick={(e) => e.stopPropagation()} className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden max-h-[90vh] overflow-y-auto"><div className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white p-6 sticky top-0"><div className="flex items-center justify-between"><div className="flex items-center gap-3"><div className="p-2 bg-white/20 rounded-lg"><FileText className="h-6 w-6" /></div><div><h2 className="text-xl font-semibold">{editingFiling ? 'Edit Tax Filing' : 'New Tax Filing'}</h2></div></div><button onClick={() => setShowForm(false)} className="p-2 hover:bg-white/20 rounded-lg"><X className="h-5 w-5" /></button></div></div><form onSubmit={handleSubmit} className="p-6 space-y-4"><div className="grid grid-cols-2 gap-4"><div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Filing Code *</label><input type="text" required value={formData.filing_code} onChange={(e) => setFormData({ ...formData, filing_code: e.target.value })} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500" /></div><div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Tax Type *</label><select required value={formData.tax_type} onChange={(e) => setFormData({ ...formData, tax_type: e.target.value as 'PAYE' | 'UIF' | 'SDL' | 'VAT' })} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500"><option value="PAYE">PAYE</option><option value="UIF">UIF</option><option value="SDL">SDL</option><option value="VAT">VAT</option></select></div></div><div className="grid grid-cols-2 gap-4"><div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Period Start *</label><input type="date" required value={formData.period_start} onChange={(e) => setFormData({ ...formData, period_start: e.target.value })} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500" /></div><div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Period End *</label><input type="date" required value={formData.period_end} onChange={(e) => setFormData({ ...formData, period_end: e.target.value })} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500" /></div></div><div className="grid grid-cols-2 gap-4"><div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Amount *</label><input type="number" step="0.01" required value={formData.amount} onChange={(e) => setFormData({ ...formData, amount: e.target.value })} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500" /></div><div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Due Date *</label><input type="date" required value={formData.due_date} onChange={(e) => setFormData({ ...formData, due_date: e.target.value })} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500" /></div></div><div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Status *</label><select required value={formData.status} onChange={(e) => setFormData({ ...formData, status: e.target.value as 'PENDING' | 'SUBMITTED' | 'PAID' })} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500"><option value="PENDING">Pending</option><option value="SUBMITTED">Submitted</option><option value="PAID">Paid</option></select></div><div className="flex justify-end gap-3 pt-4"><button type="button" onClick={() => setShowForm(false)} className="px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-medium hover:bg-gray-100 dark:hover:bg-gray-700">Cancel</button><button type="submit" className="px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-medium hover:from-indigo-700 hover:to-purple-700 shadow-lg shadow-indigo-500/30">Save</button></div></form></div></div>)}
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+          {loading ? (<div className="p-12 text-center"><RefreshCw className="h-8 w-8 animate-spin text-indigo-500 mx-auto mb-4" /><p className="text-gray-500 dark:text-gray-400">Loading...</p></div>) : filings.length === 0 ? (<div className="p-12 text-center"><FileText className="h-8 w-8 text-gray-400 mx-auto mb-4" /><h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No tax filings</h3><button onClick={handleCreate} className="px-5 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-medium">New Tax Filing</button></div>) : (
+            <div className="overflow-x-auto"><table className="w-full" data-testid="filings-table"><thead className="bg-gray-50 dark:bg-gray-900/50"><tr><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Filing Code</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Tax Type</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Period</th><th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Amount</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Due Date</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Status</th><th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Actions</th></tr></thead><tbody className="divide-y divide-gray-100 dark:divide-gray-700">{filings.map((filing) => (<tr key={filing.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50"><td className="px-6 py-4 font-semibold text-gray-900 dark:text-white">{filing.filing_code}</td><td className="px-6 py-4"><span className={`px-3 py-1 rounded-lg text-xs font-medium ${getTypeBadge(filing.tax_type)}`}>{filing.tax_type}</span></td><td className="px-6 py-4"><div className="flex items-center gap-2"><Calendar className="h-4 w-4 text-gray-400" /><span className="text-gray-600 dark:text-gray-300">{formatDate(filing.period_start)} - {formatDate(filing.period_end)}</span></div></td><td className="px-6 py-4 text-right font-semibold text-indigo-600 dark:text-indigo-400">{formatCurrency(filing.amount)}</td><td className="px-6 py-4 text-gray-600 dark:text-gray-300">{formatDate(filing.due_date)}</td><td className="px-6 py-4"><span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium border capitalize ${getStatusBadge(filing.status)}`}>{filing.status === 'PAID' ? <CheckCircle className="h-3.5 w-3.5" /> : <Clock className="h-3.5 w-3.5" />}{filing.status.toLowerCase()}</span></td><td className="px-6 py-4 text-right flex items-center justify-end gap-1"><button onClick={() => handleEdit(filing)} className="p-2 hover:bg-blue-100 dark:hover:bg-blue-900/30 rounded-lg"><Edit2 className="h-4 w-4 text-blue-600 dark:text-blue-400" /></button><button onClick={() => setDeleteConfirm({ show: true, id: filing.id, code: filing.filing_code })} className="p-2 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg"><Trash2 className="h-4 w-4 text-red-600 dark:text-red-400" /></button></td></tr>))}</tbody></table></div>
+          )}
+        </div>
+        <ConfirmDialog isOpen={deleteConfirm.show} title="Delete Tax Filing" message={`Are you sure you want to delete tax filing ${deleteConfirm.code}? This action cannot be undone.`} onConfirm={() => handleDelete(deleteConfirm.id)} onCancel={() => setDeleteConfirm({ show: false, id: 0, code: '' })} />
       </div>
-
-      {error && (
-        <div style={{ padding: '12px 16px', marginBottom: '16px', backgroundColor: '#fee2e2', border: '1px solid #fecaca', borderRadius: '6px', color: '#991b1b' }}>
-          {error}
-        </div>
-      )}
-
-      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '16px' }}>
-        <button
-          onClick={handleCreate}
-          style={{ padding: '8px 16px', backgroundColor: '#2563eb', color: 'white', border: 'none', borderRadius: '6px', fontWeight: 600, cursor: 'pointer' }}
-          data-testid="create-button"
-        >
-          + New Tax Filing
-        </button>
-      </div>
-
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '16px' }}>
-        <div style={{ backgroundColor: 'white', padding: '16px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-          <div style={{ fontSize: '14px', color: '#6b7280', marginBottom: '4px' }}>PAYE</div>
-          <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#111827' }}>
-            {formatCurrency(filings.filter(f => f.tax_type === 'PAYE').reduce((sum, f) => sum + f.amount, 0))}
-          </div>
-        </div>
-        <div style={{ backgroundColor: 'white', padding: '16px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-          <div style={{ fontSize: '14px', color: '#6b7280', marginBottom: '4px' }}>UIF</div>
-          <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#111827' }}>
-            {formatCurrency(filings.filter(f => f.tax_type === 'UIF').reduce((sum, f) => sum + f.amount, 0))}
-          </div>
-        </div>
-        <div style={{ backgroundColor: 'white', padding: '16px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-          <div style={{ fontSize: '14px', color: '#6b7280', marginBottom: '4px' }}>SDL</div>
-          <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#111827' }}>
-            {formatCurrency(filings.filter(f => f.tax_type === 'SDL').reduce((sum, f) => sum + f.amount, 0))}
-          </div>
-        </div>
-        <div style={{ backgroundColor: 'white', padding: '16px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-          <div style={{ fontSize: '14px', color: '#6b7280', marginBottom: '4px' }}>Pending</div>
-          <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#f59e0b' }}>
-            {filings.filter(f => f.status === 'PENDING').length}
-          </div>
-        </div>
-      </div>
-
-      <div style={{ backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', overflow: 'hidden' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }} data-testid="filings-table">
-          <thead style={{ backgroundColor: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
-            <tr>
-              <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Filing Code</th>
-              <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Tax Type</th>
-              <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Period</th>
-              <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Amount</th>
-              <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Due Date</th>
-              <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Status</th>
-              <th style={{ padding: '12px 16px', textAlign: 'right', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {loading ? (
-              <tr><td colSpan={7} style={{ padding: '40px', textAlign: 'center', color: '#6b7280' }}>Loading...</td></tr>
-            ) : filings.length === 0 ? (
-              <tr><td colSpan={7} style={{ padding: '40px', textAlign: 'center', color: '#6b7280' }}>No tax filings found</td></tr>
-            ) : (
-              filings.map((filing) => (
-                <tr key={filing.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
-                  <td style={{ padding: '12px 16px', fontSize: '14px', color: '#111827', fontWeight: 600 }}>{filing.filing_code}</td>
-                  <td style={{ padding: '12px 16px' }}>{getTypeBadge(filing.tax_type)}</td>
-                  <td style={{ padding: '12px 16px', fontSize: '14px', color: '#6b7280' }}>
-                    {formatDate(filing.period_start)} - {formatDate(filing.period_end)}
-                  </td>
-                  <td style={{ padding: '12px 16px', fontSize: '14px', color: '#6b7280' }}>{formatCurrency(filing.amount)}</td>
-                  <td style={{ padding: '12px 16px', fontSize: '14px', color: '#6b7280' }}>{formatDate(filing.due_date)}</td>
-                  <td style={{ padding: '12px 16px' }}>{getStatusBadge(filing.status)}</td>
-                  <td style={{ padding: '12px 16px', textAlign: 'right' }}>
-                    <button
-                      onClick={() => handleEdit(filing)}
-                      style={{ padding: '4px 8px', marginRight: '8px', fontSize: '12px', color: '#2563eb', background: 'none', border: 'none', cursor: 'pointer' }}
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => setDeleteConfirm({ show: true, id: filing.id, code: filing.filing_code })}
-                      style={{ padding: '4px 8px', fontSize: '12px', color: '#dc2626', background: 'none', border: 'none', cursor: 'pointer' }}
-                    >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
-
-      {showModal && (
-        <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}>
-          <div style={{ backgroundColor: 'white', borderRadius: '8px', padding: '24px', width: '500px', maxHeight: '90vh', overflow: 'auto' }}>
-            <h2 style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '16px' }}>
-              {editingFiling ? 'Edit Tax Filing' : 'New Tax Filing'}
-            </h2>
-            <div style={{ marginBottom: '16px' }}>
-              <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Filing Code *</label>
-              <input
-                type="text"
-                value={form.filing_code}
-                onChange={(e) => setForm({ ...form, filing_code: e.target.value })}
-                style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
-              />
-            </div>
-            <div style={{ marginBottom: '16px' }}>
-              <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Tax Type *</label>
-              <select
-                value={form.tax_type}
-                onChange={(e) => setForm({ ...form, tax_type: e.target.value as any })}
-                style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
-              >
-                <option value="PAYE">PAYE</option>
-                <option value="UIF">UIF</option>
-                <option value="SDL">SDL</option>
-                <option value="VAT">VAT</option>
-              </select>
-            </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
-              <div>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Period Start *</label>
-                <input
-                  type="date"
-                  value={form.period_start}
-                  onChange={(e) => setForm({ ...form, period_start: e.target.value })}
-                  style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
-                />
-              </div>
-              <div>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Period End *</label>
-                <input
-                  type="date"
-                  value={form.period_end}
-                  onChange={(e) => setForm({ ...form, period_end: e.target.value })}
-                  style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
-                />
-              </div>
-            </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
-              <div>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Amount *</label>
-                <input
-                  type="number"
-                  step="0.01"
-                  value={form.amount}
-                  onChange={(e) => setForm({ ...form, amount: e.target.value })}
-                  style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
-                />
-              </div>
-              <div>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Due Date *</label>
-                <input
-                  type="date"
-                  value={form.due_date}
-                  onChange={(e) => setForm({ ...form, due_date: e.target.value })}
-                  style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
-                />
-              </div>
-            </div>
-            <div style={{ marginBottom: '16px' }}>
-              <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Status *</label>
-              <select
-                value={form.status}
-                onChange={(e) => setForm({ ...form, status: e.target.value as any })}
-                style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
-              >
-                <option value="PENDING">Pending</option>
-                <option value="SUBMITTED">Submitted</option>
-                <option value="PAID">Paid</option>
-              </select>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
-              <button
-                onClick={() => setShowModal(false)}
-                style={{ padding: '8px 16px', border: '1px solid #d1d5db', borderRadius: '6px', fontWeight: 600, cursor: 'pointer', background: 'white' }}
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleSave}
-                style={{ padding: '8px 16px', backgroundColor: '#2563eb', color: 'white', border: 'none', borderRadius: '6px', fontWeight: 600, cursor: 'pointer' }}
-              >
-                Save
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      <ConfirmDialog
-        isOpen={deleteConfirm.show}
-        title="Delete Tax Filing"
-        message={`Are you sure you want to delete tax filing ${deleteConfirm.code}? This action cannot be undone.`}
-        onConfirm={() => handleDelete(deleteConfirm.id)}
-        onCancel={() => setDeleteConfirm({ show: false, id: 0, code: '' })}
-      />
     </div>
   );
-};
-
-export default TaxFilings;
+}

@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
+import { DollarSign, Plus, RefreshCw, AlertCircle, X, Users, CheckCircle, Clock, Calendar, Edit2, Trash2, Play } from 'lucide-react';
 import api from '../../lib/api';
 import { ConfirmDialog } from '../../components/ConfirmDialog';
 
@@ -15,276 +16,107 @@ interface PayrollRun {
   created_at: string;
 }
 
-const PayrollRuns: React.FC = () => {
+export default function PayrollRuns() {
   const [runs, setRuns] = useState<PayrollRun[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [showModal, setShowModal] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [showForm, setShowForm] = useState(false);
   const [editingRun, setEditingRun] = useState<PayrollRun | null>(null);
-  const [form, setForm] = useState({
-    run_code: '',
-    period_start: '',
-    period_end: '',
-    status: 'DRAFT' as 'DRAFT' | 'PROCESSING' | 'COMPLETED' | 'PAID'
-  });
-  const [deleteConfirm, setDeleteConfirm] = useState<{ show: boolean; id: number; code: string }>({
-    show: false,
-    id: 0,
-    code: ''
-  });
-  const [error, setError] = useState('');
+  const [formData, setFormData] = useState({ run_code: '', period_start: '', period_end: '', status: 'DRAFT' as const });
+  const [deleteConfirm, setDeleteConfirm] = useState<{ show: boolean; id: number; code: string }>({ show: false, id: 0, code: '' });
 
-  useEffect(() => {
-    loadRuns();
-  }, []);
+  useEffect(() => { fetchRuns(); }, []);
 
-  const loadRuns = async () => {
-    setLoading(true);
-    setError('');
+  const fetchRuns = async () => {
     try {
+      setLoading(true);
       const response = await api.get('/erp/payroll/runs');
       setRuns(response.data.runs || []);
-    } catch (err: any) {
-      setError(err.response?.data?.detail || 'Failed to load payroll runs');
-    } finally {
-      setLoading(false);
-    }
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { detail?: string } } };
+      setError(error.response?.data?.detail || 'Failed to load payroll runs');
+    } finally { setLoading(false); }
   };
 
   const handleCreate = () => {
     setEditingRun(null);
-    setForm({
-      run_code: '',
-      period_start: '',
-      period_end: '',
-      status: 'DRAFT'
-    });
-    setShowModal(true);
+    setFormData({ run_code: '', period_start: '', period_end: '', status: 'DRAFT' });
+    setShowForm(true);
   };
 
   const handleEdit = (run: PayrollRun) => {
     setEditingRun(run);
-    setForm({
-      run_code: run.run_code,
-      period_start: run.period_start,
-      period_end: run.period_end,
-      status: run.status
-    });
-    setShowModal(true);
+    setFormData({ run_code: run.run_code, period_start: run.period_start, period_end: run.period_end, status: run.status });
+    setShowForm(true);
   };
 
-  const handleSave = async () => {
-    setError('');
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     try {
       if (editingRun) {
-        await api.put(`/erp/payroll/runs/${editingRun.id}`, form);
+        await api.put(`/erp/payroll/runs/${editingRun.id}`, formData);
       } else {
-        await api.post('/erp/payroll/runs', form);
+        await api.post('/erp/payroll/runs', formData);
       }
-      setShowModal(false);
-      loadRuns();
-    } catch (err: any) {
-      setError(err.response?.data?.detail || 'Failed to save payroll run');
+      setShowForm(false);
+      fetchRuns();
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { detail?: string } } };
+      setError(error.response?.data?.detail || 'Failed to save payroll run');
     }
   };
 
   const handleDelete = async (id: number) => {
     try {
       await api.delete(`/erp/payroll/runs/${id}`);
-      loadRuns();
+      fetchRuns();
       setDeleteConfirm({ show: false, id: 0, code: '' });
-    } catch (err: any) {
-      setError(err.response?.data?.detail || 'Failed to delete payroll run');
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { detail?: string } } };
+      setError(error.response?.data?.detail || 'Failed to delete payroll run');
     }
   };
 
+  const formatCurrency = (amount: number) => new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR' }).format(amount);
+  const formatDate = (dateString: string) => new Date(dateString).toLocaleDateString('en-ZA');
+
   const getStatusBadge = (status: string) => {
-    const colors: Record<string, { bg: string; text: string }> = {
-      DRAFT: { bg: '#f3f4f6', text: '#374151' },
-      PROCESSING: { bg: '#fef3c7', text: '#92400e' },
-      COMPLETED: { bg: '#dbeafe', text: '#1e40af' },
-      PAID: { bg: '#dcfce7', text: '#166534' }
+    const styles: Record<string, string> = {
+      PAID: 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800',
+      COMPLETED: 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800',
+      PROCESSING: 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800',
+      DRAFT: 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600',
     };
-    const color = colors[status] || { bg: '#f3f4f6', text: '#374151' };
-    return <span style={{ padding: '4px 8px', fontSize: '12px', fontWeight: 600, borderRadius: '9999px', backgroundColor: color.bg, color: color.text }}>{status}</span>;
+    return styles[status] || styles.DRAFT;
   };
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR' }).format(amount);
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-ZA');
-  };
+  const stats = { total: runs.length, completed: runs.filter(r => r.status === 'COMPLETED' || r.status === 'PAID').length, totalPaid: runs.filter(r => r.status === 'PAID').reduce((sum, r) => sum + r.total_net, 0), processing: runs.filter(r => r.status === 'PROCESSING').length };
 
   return (
-    <div style={{ padding: '24px' }} data-testid="payroll-runs">
-      <div style={{ marginBottom: '24px' }}>
-        <h1 style={{ fontSize: '30px', fontWeight: 'bold', color: '#111827', marginBottom: '8px' }}>Payroll Runs</h1>
-        <p style={{ color: '#6b7280' }}>View and manage payroll processing runs</p>
-      </div>
-
-      {error && (
-        <div style={{ padding: '12px 16px', marginBottom: '16px', backgroundColor: '#fee2e2', border: '1px solid #fecaca', borderRadius: '6px', color: '#991b1b' }}>
-          {error}
-        </div>
-      )}
-
-      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '16px' }}>
-        <button
-          onClick={handleCreate}
-          style={{ padding: '8px 16px', backgroundColor: '#2563eb', color: 'white', border: 'none', borderRadius: '6px', fontWeight: 600, cursor: 'pointer' }}
-          data-testid="create-button"
-        >
-          + New Payroll Run
-        </button>
-      </div>
-
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginBottom: '16px' }}>
-        <div style={{ backgroundColor: 'white', padding: '16px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-          <div style={{ fontSize: '14px', color: '#6b7280', marginBottom: '4px' }}>Total Runs</div>
-          <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#111827' }}>{runs.length}</div>
-        </div>
-        <div style={{ backgroundColor: 'white', padding: '16px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-          <div style={{ fontSize: '14px', color: '#6b7280', marginBottom: '4px' }}>Completed</div>
-          <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#059669' }}>
-            {runs.filter(r => r.status === 'COMPLETED' || r.status === 'PAID').length}
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-emerald-50 dark:from-gray-900 dark:to-gray-800 p-6" data-testid="payroll-runs">
+      <div className="max-w-7xl mx-auto space-y-6">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div><h1 className="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">Payroll Runs</h1><p className="text-gray-500 dark:text-gray-400 mt-1">View and manage payroll processing runs</p></div>
+          <div className="flex items-center gap-3">
+            <button onClick={fetchRuns} className="p-3 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-200 dark:border-gray-700"><RefreshCw className={`h-5 w-5 text-gray-600 dark:text-gray-400 ${loading ? 'animate-spin' : ''}`} /></button>
+            <button onClick={handleCreate} data-testid="create-button" className="flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-xl font-medium hover:from-emerald-700 hover:to-teal-700 transition-all shadow-lg shadow-emerald-500/30"><Plus className="h-5 w-5" />New Payroll Run</button>
           </div>
         </div>
-        <div style={{ backgroundColor: 'white', padding: '16px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-          <div style={{ fontSize: '14px', color: '#6b7280', marginBottom: '4px' }}>Total Paid</div>
-          <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#111827' }}>
-            {formatCurrency(runs.filter(r => r.status === 'PAID').reduce((sum, r) => sum + r.total_net, 0))}
-          </div>
+        {error && (<div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl flex items-center gap-3"><AlertCircle className="h-5 w-5 text-red-500" /><p className="text-red-700 dark:text-red-300">{error}</p><button onClick={() => setError(null)} className="ml-auto"><X className="h-4 w-4 text-red-500" /></button></div>)}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700"><div className="flex items-center gap-4"><div className="p-3 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl shadow-lg shadow-emerald-500/30"><DollarSign className="h-6 w-6 text-white" /></div><div><p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.total}</p><p className="text-sm text-gray-500 dark:text-gray-400">Total Runs</p></div></div></div>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700"><div className="flex items-center gap-4"><div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg shadow-green-500/30"><CheckCircle className="h-6 w-6 text-white" /></div><div><p className="text-2xl font-bold text-green-600 dark:text-green-400">{stats.completed}</p><p className="text-sm text-gray-500 dark:text-gray-400">Completed</p></div></div></div>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700"><div className="flex items-center gap-4"><div className="p-3 bg-gradient-to-br from-purple-500 to-violet-500 rounded-xl shadow-lg shadow-purple-500/30"><Users className="h-6 w-6 text-white" /></div><div><p className="text-2xl font-bold text-purple-600 dark:text-purple-400">{formatCurrency(stats.totalPaid)}</p><p className="text-sm text-gray-500 dark:text-gray-400">Total Paid</p></div></div></div>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700"><div className="flex items-center gap-4"><div className="p-3 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl shadow-lg shadow-amber-500/30"><Clock className="h-6 w-6 text-white" /></div><div><p className="text-2xl font-bold text-amber-600 dark:text-amber-400">{stats.processing}</p><p className="text-sm text-gray-500 dark:text-gray-400">Processing</p></div></div></div>
         </div>
-      </div>
-
-      <div style={{ backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', overflow: 'hidden' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }} data-testid="runs-table">
-          <thead style={{ backgroundColor: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
-            <tr>
-              <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Run Code</th>
-              <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Period</th>
-              <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Employees</th>
-              <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Gross</th>
-              <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Deductions</th>
-              <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Net</th>
-              <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Status</th>
-              <th style={{ padding: '12px 16px', textAlign: 'right', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {loading ? (
-              <tr><td colSpan={8} style={{ padding: '40px', textAlign: 'center', color: '#6b7280' }}>Loading...</td></tr>
-            ) : runs.length === 0 ? (
-              <tr><td colSpan={8} style={{ padding: '40px', textAlign: 'center', color: '#6b7280' }}>No payroll runs found</td></tr>
-            ) : (
-              runs.map((run) => (
-                <tr key={run.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
-                  <td style={{ padding: '12px 16px', fontSize: '14px', color: '#111827', fontWeight: 600 }}>{run.run_code}</td>
-                  <td style={{ padding: '12px 16px', fontSize: '14px', color: '#6b7280' }}>
-                    {formatDate(run.period_start)} - {formatDate(run.period_end)}
-                  </td>
-                  <td style={{ padding: '12px 16px', fontSize: '14px', color: '#6b7280' }}>{run.employee_count}</td>
-                  <td style={{ padding: '12px 16px', fontSize: '14px', color: '#6b7280' }}>{formatCurrency(run.total_gross)}</td>
-                  <td style={{ padding: '12px 16px', fontSize: '14px', color: '#6b7280' }}>{formatCurrency(run.total_deductions)}</td>
-                  <td style={{ padding: '12px 16px', fontSize: '14px', color: '#6b7280' }}>{formatCurrency(run.total_net)}</td>
-                  <td style={{ padding: '12px 16px' }}>{getStatusBadge(run.status)}</td>
-                  <td style={{ padding: '12px 16px', textAlign: 'right' }}>
-                    <button
-                      onClick={() => handleEdit(run)}
-                      style={{ padding: '4px 8px', marginRight: '8px', fontSize: '12px', color: '#2563eb', background: 'none', border: 'none', cursor: 'pointer' }}
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => setDeleteConfirm({ show: true, id: run.id, code: run.run_code })}
-                      style={{ padding: '4px 8px', fontSize: '12px', color: '#dc2626', background: 'none', border: 'none', cursor: 'pointer' }}
-                    >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
-
-      {showModal && (
-        <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}>
-          <div style={{ backgroundColor: 'white', borderRadius: '8px', padding: '24px', width: '500px', maxHeight: '90vh', overflow: 'auto' }}>
-            <h2 style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '16px' }}>
-              {editingRun ? 'Edit Payroll Run' : 'New Payroll Run'}
-            </h2>
-            <div style={{ marginBottom: '16px' }}>
-              <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Run Code *</label>
-              <input
-                type="text"
-                value={form.run_code}
-                onChange={(e) => setForm({ ...form, run_code: e.target.value })}
-                style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
-              />
-            </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
-              <div>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Period Start *</label>
-                <input
-                  type="date"
-                  value={form.period_start}
-                  onChange={(e) => setForm({ ...form, period_start: e.target.value })}
-                  style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
-                />
-              </div>
-              <div>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Period End *</label>
-                <input
-                  type="date"
-                  value={form.period_end}
-                  onChange={(e) => setForm({ ...form, period_end: e.target.value })}
-                  style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
-                />
-              </div>
-            </div>
-            <div style={{ marginBottom: '16px' }}>
-              <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Status *</label>
-              <select
-                value={form.status}
-                onChange={(e) => setForm({ ...form, status: e.target.value as any })}
-                style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
-              >
-                <option value="DRAFT">Draft</option>
-                <option value="PROCESSING">Processing</option>
-                <option value="COMPLETED">Completed</option>
-                <option value="PAID">Paid</option>
-              </select>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
-              <button
-                onClick={() => setShowModal(false)}
-                style={{ padding: '8px 16px', border: '1px solid #d1d5db', borderRadius: '6px', fontWeight: 600, cursor: 'pointer', background: 'white' }}
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleSave}
-                style={{ padding: '8px 16px', backgroundColor: '#2563eb', color: 'white', border: 'none', borderRadius: '6px', fontWeight: 600, cursor: 'pointer' }}
-              >
-                Save
-              </button>
-            </div>
-          </div>
+        {showForm && (<div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setShowForm(false)}><div onClick={(e) => e.stopPropagation()} className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden"><div className="bg-gradient-to-r from-emerald-600 to-teal-600 text-white p-6"><div className="flex items-center justify-between"><div className="flex items-center gap-3"><div className="p-2 bg-white/20 rounded-lg"><DollarSign className="h-6 w-6" /></div><div><h2 className="text-xl font-semibold">{editingRun ? 'Edit Payroll Run' : 'New Payroll Run'}</h2></div></div><button onClick={() => setShowForm(false)} className="p-2 hover:bg-white/20 rounded-lg"><X className="h-5 w-5" /></button></div></div><form onSubmit={handleSubmit} className="p-6 space-y-4"><div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Run Code *</label><input type="text" required value={formData.run_code} onChange={(e) => setFormData({ ...formData, run_code: e.target.value })} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500" /></div><div className="grid grid-cols-2 gap-4"><div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Period Start *</label><input type="date" required value={formData.period_start} onChange={(e) => setFormData({ ...formData, period_start: e.target.value })} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500" /></div><div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Period End *</label><input type="date" required value={formData.period_end} onChange={(e) => setFormData({ ...formData, period_end: e.target.value })} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500" /></div></div><div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Status *</label><select required value={formData.status} onChange={(e) => setFormData({ ...formData, status: e.target.value as 'DRAFT' | 'PROCESSING' | 'COMPLETED' | 'PAID' })} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500"><option value="DRAFT">Draft</option><option value="PROCESSING">Processing</option><option value="COMPLETED">Completed</option><option value="PAID">Paid</option></select></div><div className="flex justify-end gap-3 pt-4"><button type="button" onClick={() => setShowForm(false)} className="px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-medium hover:bg-gray-100 dark:hover:bg-gray-700">Cancel</button><button type="submit" className="px-6 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-xl font-medium hover:from-emerald-700 hover:to-teal-700 shadow-lg shadow-emerald-500/30">Save</button></div></form></div></div>)}
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+          {loading ? (<div className="p-12 text-center"><RefreshCw className="h-8 w-8 animate-spin text-emerald-500 mx-auto mb-4" /><p className="text-gray-500 dark:text-gray-400">Loading...</p></div>) : runs.length === 0 ? (<div className="p-12 text-center"><DollarSign className="h-8 w-8 text-gray-400 mx-auto mb-4" /><h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No payroll runs</h3><button onClick={handleCreate} className="px-5 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-xl font-medium">New Payroll Run</button></div>) : (
+            <div className="overflow-x-auto"><table className="w-full" data-testid="runs-table"><thead className="bg-gray-50 dark:bg-gray-900/50"><tr><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Run Code</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Period</th><th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Employees</th><th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Gross</th><th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Deductions</th><th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Net</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Status</th><th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Actions</th></tr></thead><tbody className="divide-y divide-gray-100 dark:divide-gray-700">{runs.map((run) => (<tr key={run.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50"><td className="px-6 py-4 font-semibold text-gray-900 dark:text-white">{run.run_code}</td><td className="px-6 py-4"><div className="flex items-center gap-2"><Calendar className="h-4 w-4 text-gray-400" /><span className="text-gray-600 dark:text-gray-300">{formatDate(run.period_start)} - {formatDate(run.period_end)}</span></div></td><td className="px-6 py-4 text-right text-gray-600 dark:text-gray-300">{run.employee_count}</td><td className="px-6 py-4 text-right text-gray-600 dark:text-gray-300">{formatCurrency(run.total_gross)}</td><td className="px-6 py-4 text-right text-gray-600 dark:text-gray-300">{formatCurrency(run.total_deductions)}</td><td className="px-6 py-4 text-right font-semibold text-emerald-600 dark:text-emerald-400">{formatCurrency(run.total_net)}</td><td className="px-6 py-4"><span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium border capitalize ${getStatusBadge(run.status)}`}>{run.status === 'PAID' ? <CheckCircle className="h-3.5 w-3.5" /> : run.status === 'PROCESSING' ? <Play className="h-3.5 w-3.5" /> : <Clock className="h-3.5 w-3.5" />}{run.status.toLowerCase()}</span></td><td className="px-6 py-4 text-right flex items-center justify-end gap-1"><button onClick={() => handleEdit(run)} className="p-2 hover:bg-blue-100 dark:hover:bg-blue-900/30 rounded-lg"><Edit2 className="h-4 w-4 text-blue-600 dark:text-blue-400" /></button><button onClick={() => setDeleteConfirm({ show: true, id: run.id, code: run.run_code })} className="p-2 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg"><Trash2 className="h-4 w-4 text-red-600 dark:text-red-400" /></button></td></tr>))}</tbody></table></div>
+          )}
         </div>
-      )}
-
-      <ConfirmDialog
-        isOpen={deleteConfirm.show}
-        title="Delete Payroll Run"
-        message={`Are you sure you want to delete payroll run ${deleteConfirm.code}? This action cannot be undone.`}
-        onConfirm={() => handleDelete(deleteConfirm.id)}
-        onCancel={() => setDeleteConfirm({ show: false, id: 0, code: '' })}
-      />
+        <ConfirmDialog isOpen={deleteConfirm.show} title="Delete Payroll Run" message={`Are you sure you want to delete payroll run ${deleteConfirm.code}? This action cannot be undone.`} onConfirm={() => handleDelete(deleteConfirm.id)} onCancel={() => setDeleteConfirm({ show: false, id: 0, code: '' })} />
+      </div>
     </div>
   );
-};
-
-export default PayrollRuns;
+}
