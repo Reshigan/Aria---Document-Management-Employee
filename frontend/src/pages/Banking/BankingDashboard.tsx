@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../lib/api';
 import { ConfirmDialog } from '../../components/ConfirmDialog';
+import { Landmark, Plus, CreditCard, ArrowUpDown, CheckCircle, Search, Edit2, Trash2, RefreshCw, DollarSign, TrendingUp, TrendingDown, Clock, Globe } from 'lucide-react';
 
 interface BankAccount {
   id: number;
@@ -350,23 +351,23 @@ const BankingDashboard: React.FC = () => {
   );
 
   const getStatusBadge = (status: string) => {
-    const colors: Record<string, { bg: string; text: string }> = {
-      DRAFT: { bg: '#f3f4f6', text: '#374151' },
-      IN_PROGRESS: { bg: '#fef3c7', text: '#92400e' },
-      COMPLETED: { bg: '#dcfce7', text: '#166534' }
+    const styles: Record<string, string> = {
+      DRAFT: 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300',
+      IN_PROGRESS: 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400',
+      COMPLETED: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
     };
-    const color = colors[status] || { bg: '#f3f4f6', text: '#374151' };
-    return <span style={{ padding: '4px 8px', fontSize: '12px', fontWeight: 600, borderRadius: '9999px', backgroundColor: color.bg, color: color.text }}>{status.replace('_', ' ')}</span>;
+    const style = styles[status] || 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300';
+    return <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${style}`}>{status.replace('_', ' ')}</span>;
   };
 
   const getAccountTypeBadge = (type: string) => {
-    const colors: Record<string, { bg: string; text: string }> = {
-      CURRENT: { bg: '#dbeafe', text: '#1e40af' },
-      SAVINGS: { bg: '#dcfce7', text: '#166534' },
-      FOREIGN_CURRENCY: { bg: '#fef3c7', text: '#92400e' }
+    const styles: Record<string, string> = {
+      CURRENT: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400',
+      SAVINGS: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
+      FOREIGN_CURRENCY: 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400'
     };
-    const color = colors[type] || { bg: '#f3f4f6', text: '#374151' };
-    return <span style={{ padding: '4px 8px', fontSize: '12px', fontWeight: 600, borderRadius: '9999px', backgroundColor: color.bg, color: color.text }}>{type.replace('_', ' ')}</span>;
+    const style = styles[type] || 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300';
+    return <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${style}`}>{type.replace('_', ' ')}</span>;
   };
 
   const formatCurrency = (amount: number, currency: string = 'ZAR') => {
@@ -378,66 +379,61 @@ const BankingDashboard: React.FC = () => {
   };
 
   return (
-    <div style={{ padding: '24px' }}>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-teal-50 dark:from-gray-900 dark:to-gray-800 p-6">
       {/* Header */}
-      <div style={{ marginBottom: '24px' }}>
-        <h1 style={{ fontSize: '30px', fontWeight: 'bold', color: '#111827', marginBottom: '8px' }}>Banking & Cash Management</h1>
-        <p style={{ color: '#6b7280' }}>Manage bank accounts, transactions, and reconciliations</p>
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+        <div className="flex items-center gap-3">
+          <div className="p-3 bg-gradient-to-br from-teal-500 to-cyan-500 rounded-xl shadow-lg shadow-teal-500/30">
+            <Landmark className="h-8 w-8 text-white" />
+          </div>
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Banking & Cash Management</h1>
+            <p className="text-gray-600 dark:text-gray-400">Manage bank accounts, transactions, and reconciliations</p>
+          </div>
+        </div>
       </div>
 
       {/* Error Display */}
       {error && (
-        <div style={{ padding: '12px 16px', marginBottom: '16px', backgroundColor: '#fee2e2', border: '1px solid #fecaca', borderRadius: '6px', color: '#991b1b' }}>
+        <div className="p-4 mb-6 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl text-red-700 dark:text-red-400">
           {error}
         </div>
       )}
 
       {/* Tabs */}
-      <div style={{ borderBottom: '1px solid #e5e7eb', marginBottom: '24px' }}>
-        <div style={{ display: 'flex', gap: '16px' }}>
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 mb-6">
+        <div className="flex gap-2 p-2">
           <button
             onClick={() => setActiveTab('accounts')}
-            style={{
-              padding: '12px 16px',
-              fontSize: '14px',
-              fontWeight: 600,
-              color: activeTab === 'accounts' ? '#2563eb' : '#6b7280',
-              borderBottom: activeTab === 'accounts' ? '2px solid #2563eb' : '2px solid transparent',
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer'
-            }}
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium transition-all ${
+              activeTab === 'accounts'
+                ? 'bg-gradient-to-r from-teal-500 to-cyan-500 text-white shadow-lg shadow-teal-500/30'
+                : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
+            }`}
           >
+            <CreditCard className="h-4 w-4" />
             Bank Accounts ({accounts.length})
           </button>
           <button
             onClick={() => setActiveTab('transactions')}
-            style={{
-              padding: '12px 16px',
-              fontSize: '14px',
-              fontWeight: 600,
-              color: activeTab === 'transactions' ? '#2563eb' : '#6b7280',
-              borderBottom: activeTab === 'transactions' ? '2px solid #2563eb' : '2px solid transparent',
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer'
-            }}
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium transition-all ${
+              activeTab === 'transactions'
+                ? 'bg-gradient-to-r from-teal-500 to-cyan-500 text-white shadow-lg shadow-teal-500/30'
+                : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
+            }`}
           >
+            <ArrowUpDown className="h-4 w-4" />
             Transactions ({transactions.length})
           </button>
           <button
             onClick={() => setActiveTab('reconciliation')}
-            style={{
-              padding: '12px 16px',
-              fontSize: '14px',
-              fontWeight: 600,
-              color: activeTab === 'reconciliation' ? '#2563eb' : '#6b7280',
-              borderBottom: activeTab === 'reconciliation' ? '2px solid #2563eb' : '2px solid transparent',
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer'
-            }}
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium transition-all ${
+              activeTab === 'reconciliation'
+                ? 'bg-gradient-to-r from-teal-500 to-cyan-500 text-white shadow-lg shadow-teal-500/30'
+                : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
+            }`}
           >
+            <CheckCircle className="h-4 w-4" />
             Reconciliation ({reconciliations.length})
           </button>
         </div>
@@ -447,85 +443,121 @@ const BankingDashboard: React.FC = () => {
       {activeTab === 'accounts' && (
         <div>
           {/* Actions Bar */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-            <input
-              type="text"
-              placeholder="Search bank accounts..."
-              value={accountsSearch}
-              onChange={(e) => setAccountsSearch(e.target.value)}
-              style={{ padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px', width: '300px' }}
-            />
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search bank accounts..."
+                value={accountsSearch}
+                onChange={(e) => setAccountsSearch(e.target.value)}
+                className="pl-10 pr-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-teal-500 focus:border-transparent w-80"
+              />
+            </div>
             <button
               onClick={handleCreateAccount}
-              style={{ padding: '8px 16px', backgroundColor: '#2563eb', color: 'white', border: 'none', borderRadius: '6px', fontWeight: 600, cursor: 'pointer' }}
+              className="px-6 py-2.5 bg-gradient-to-r from-teal-500 to-cyan-500 text-white rounded-xl hover:from-teal-600 hover:to-cyan-600 transition-all shadow-lg shadow-teal-500/30 flex items-center gap-2 font-medium"
             >
-              + New Bank Account
+              <Plus className="h-5 w-5" />
+              New Bank Account
             </button>
           </div>
 
           {/* Summary Cards */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '16px' }}>
-            <div style={{ backgroundColor: 'white', padding: '16px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-              <div style={{ fontSize: '14px', color: '#6b7280', marginBottom: '4px' }}>Total Accounts</div>
-              <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#111827' }}>{accounts.length}</div>
-            </div>
-            <div style={{ backgroundColor: 'white', padding: '16px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-              <div style={{ fontSize: '14px', color: '#6b7280', marginBottom: '4px' }}>Active Accounts</div>
-              <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#059669' }}>
-                {accounts.filter(a => a.is_active).length}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-gradient-to-br from-teal-500 to-cyan-500 rounded-xl shadow-lg shadow-teal-500/30">
+                  <CreditCard className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">{accounts.length}</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Total Accounts</p>
+                </div>
               </div>
             </div>
-            <div style={{ backgroundColor: 'white', padding: '16px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-              <div style={{ fontSize: '14px', color: '#6b7280', marginBottom: '4px' }}>Total Balance (ZAR)</div>
-              <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#111827' }}>
-                {formatCurrency(accounts.filter(a => a.currency === 'ZAR').reduce((sum, a) => sum + a.balance, 0))}
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg shadow-green-500/30">
+                  <CheckCircle className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">{accounts.filter(a => a.is_active).length}</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Active Accounts</p>
+                </div>
               </div>
             </div>
-            <div style={{ backgroundColor: 'white', padding: '16px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-              <div style={{ fontSize: '14px', color: '#6b7280', marginBottom: '4px' }}>Foreign Currency</div>
-              <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#2563eb' }}>
-                {accounts.filter(a => a.currency !== 'ZAR').length}
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl shadow-lg shadow-blue-500/30">
+                  <DollarSign className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                    {formatCurrency(accounts.filter(a => a.currency === 'ZAR').reduce((sum, a) => sum + a.balance, 0))}
+                  </p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Total Balance (ZAR)</p>
+                </div>
+              </div>
+            </div>
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl shadow-lg shadow-amber-500/30">
+                  <Globe className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">{accounts.filter(a => a.currency !== 'ZAR').length}</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Foreign Currency</p>
+                </div>
               </div>
             </div>
           </div>
 
           {/* Bank Accounts Table */}
-          <div style={{ backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', overflow: 'hidden' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-              <thead style={{ backgroundColor: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+            <table className="w-full">
+              <thead className="bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-600">
                 <tr>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Account Number</th>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Account Name</th>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Bank</th>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Type</th>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Currency</th>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Balance</th>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Actions</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Account Number</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Account Name</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Bank</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Type</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Currency</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Balance</th>
+                  <th className="px-6 py-4 text-right text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
                 {accountsLoading ? (
                   <tr>
-                    <td colSpan={7} style={{ padding: '24px', textAlign: 'center', color: '#6b7280' }}>Loading bank accounts...</td>
+                    <td colSpan={7} className="px-6 py-12 text-center text-gray-500 dark:text-gray-400">Loading bank accounts...</td>
                   </tr>
                 ) : filteredAccounts.length === 0 ? (
                   <tr>
-                    <td colSpan={7} style={{ padding: '24px', textAlign: 'center', color: '#6b7280' }}>No bank accounts found</td>
+                    <td colSpan={7} className="px-6 py-12 text-center text-gray-500 dark:text-gray-400">No bank accounts found</td>
                   </tr>
                 ) : (
                   filteredAccounts.map((account) => (
-                    <tr key={account.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
-                      <td style={{ padding: '12px 16px', fontSize: '14px', fontWeight: 600, color: '#2563eb' }}>{account.account_number}</td>
-                      <td style={{ padding: '12px 16px', fontSize: '14px' }}>{account.account_name}</td>
-                      <td style={{ padding: '12px 16px', fontSize: '14px' }}>{account.bank_name}</td>
-                      <td style={{ padding: '12px 16px' }}>{getAccountTypeBadge(account.account_type)}</td>
-                      <td style={{ padding: '12px 16px', fontSize: '14px' }}>{account.currency}</td>
-                      <td style={{ padding: '12px 16px', fontSize: '14px', fontWeight: 600 }}>{formatCurrency(account.balance, account.currency)}</td>
-                      <td style={{ padding: '12px 16px' }}>
-                        <div style={{ display: 'flex', gap: '8px' }}>
-                          <button onClick={() => handleEditAccount(account)} style={{ padding: '4px 8px', fontSize: '12px', color: '#2563eb', background: 'none', border: 'none', cursor: 'pointer' }}>Edit</button>
-                          <button onClick={() => setDeleteConfirm({ show: true, type: 'account', id: account.id, name: account.account_name })} style={{ padding: '4px 8px', fontSize: '12px', color: '#dc2626', background: 'none', border: 'none', cursor: 'pointer' }}>Delete</button>
-                        </div>
+                    <tr key={account.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors">
+                      <td className="px-6 py-4 text-sm font-semibold text-teal-600 dark:text-teal-400">{account.account_number}</td>
+                      <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{account.account_name}</td>
+                      <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{account.bank_name}</td>
+                      <td className="px-6 py-4">{getAccountTypeBadge(account.account_type)}</td>
+                      <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{account.currency}</td>
+                      <td className="px-6 py-4 text-sm font-semibold text-gray-900 dark:text-white">{formatCurrency(account.balance, account.currency)}</td>
+                      <td className="px-6 py-4 text-right">
+                        <button
+                          onClick={() => handleEditAccount(account)}
+                          className="p-2 text-teal-600 dark:text-teal-400 hover:bg-teal-50 dark:hover:bg-teal-900/30 rounded-lg transition-colors mr-2"
+                        >
+                          <Edit2 className="h-4 w-4" />
+                        </button>
+                        <button
+                          onClick={() => setDeleteConfirm({ show: true, type: 'account', id: account.id, name: account.account_name })}
+                          className="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
                       </td>
                     </tr>
                   ))
@@ -540,96 +572,143 @@ const BankingDashboard: React.FC = () => {
       {activeTab === 'transactions' && (
         <div>
           {/* Actions Bar */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-            <input
-              type="text"
-              placeholder="Search transactions..."
-              value={transactionsSearch}
-              onChange={(e) => setTransactionsSearch(e.target.value)}
-              style={{ padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px', width: '300px' }}
-            />
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search transactions..."
+                value={transactionsSearch}
+                onChange={(e) => setTransactionsSearch(e.target.value)}
+                className="pl-10 pr-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-teal-500 focus:border-transparent w-80"
+              />
+            </div>
             <button
               onClick={handleCreateTransaction}
-              style={{ padding: '8px 16px', backgroundColor: '#2563eb', color: 'white', border: 'none', borderRadius: '6px', fontWeight: 600, cursor: 'pointer' }}
+              className="px-6 py-2.5 bg-gradient-to-r from-teal-500 to-cyan-500 text-white rounded-xl hover:from-teal-600 hover:to-cyan-600 transition-all shadow-lg shadow-teal-500/30 flex items-center gap-2 font-medium"
             >
-              + New Transaction
+              <Plus className="h-5 w-5" />
+              New Transaction
             </button>
           </div>
 
           {/* Summary Cards */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '16px' }}>
-            <div style={{ backgroundColor: 'white', padding: '16px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-              <div style={{ fontSize: '14px', color: '#6b7280', marginBottom: '4px' }}>Total Transactions</div>
-              <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#111827' }}>{transactions.length}</div>
-            </div>
-            <div style={{ backgroundColor: 'white', padding: '16px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-              <div style={{ fontSize: '14px', color: '#6b7280', marginBottom: '4px' }}>Total Debits</div>
-              <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#dc2626' }}>
-                {formatCurrency(transactions.reduce((sum, t) => sum + t.debit, 0))}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-gradient-to-br from-teal-500 to-cyan-500 rounded-xl shadow-lg shadow-teal-500/30">
+                  <ArrowUpDown className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">{transactions.length}</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Total Transactions</p>
+                </div>
               </div>
             </div>
-            <div style={{ backgroundColor: 'white', padding: '16px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-              <div style={{ fontSize: '14px', color: '#6b7280', marginBottom: '4px' }}>Total Credits</div>
-              <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#059669' }}>
-                {formatCurrency(transactions.reduce((sum, t) => sum + t.credit, 0))}
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-gradient-to-br from-red-500 to-rose-500 rounded-xl shadow-lg shadow-red-500/30">
+                  <TrendingDown className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                    {formatCurrency(transactions.reduce((sum, t) => sum + t.debit, 0))}
+                  </p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Total Debits</p>
+                </div>
               </div>
             </div>
-            <div style={{ backgroundColor: 'white', padding: '16px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-              <div style={{ fontSize: '14px', color: '#6b7280', marginBottom: '4px' }}>Unreconciled</div>
-              <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#f59e0b' }}>
-                {transactions.filter(t => !t.reconciled).length}
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg shadow-green-500/30">
+                  <TrendingUp className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                    {formatCurrency(transactions.reduce((sum, t) => sum + t.credit, 0))}
+                  </p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Total Credits</p>
+                </div>
+              </div>
+            </div>
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl shadow-lg shadow-amber-500/30">
+                  <Clock className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">{transactions.filter(t => !t.reconciled).length}</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Unreconciled</p>
+                </div>
               </div>
             </div>
           </div>
 
           {/* Transactions Table */}
-          <div style={{ backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', overflow: 'hidden' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-              <thead style={{ backgroundColor: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+            <table className="w-full">
+              <thead className="bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-600">
                 <tr>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Transaction #</th>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Date</th>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Description</th>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Reference</th>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Debit</th>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Credit</th>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Balance</th>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Status</th>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Actions</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Transaction #</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Date</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Description</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Reference</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Debit</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Credit</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Balance</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Status</th>
+                  <th className="px-6 py-4 text-right text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
                 {transactionsLoading ? (
                   <tr>
-                    <td colSpan={9} style={{ padding: '24px', textAlign: 'center', color: '#6b7280' }}>Loading transactions...</td>
+                    <td colSpan={9} className="px-6 py-12 text-center text-gray-500 dark:text-gray-400">Loading transactions...</td>
                   </tr>
                 ) : filteredTransactions.length === 0 ? (
                   <tr>
-                    <td colSpan={9} style={{ padding: '24px', textAlign: 'center', color: '#6b7280' }}>No transactions found</td>
+                    <td colSpan={9} className="px-6 py-12 text-center text-gray-500 dark:text-gray-400">No transactions found</td>
                   </tr>
                 ) : (
                   filteredTransactions.map((transaction) => (
-                    <tr key={transaction.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
-                      <td style={{ padding: '12px 16px', fontSize: '14px', fontWeight: 600, color: '#2563eb' }}>{transaction.transaction_number}</td>
-                      <td style={{ padding: '12px 16px', fontSize: '14px' }}>{formatDate(transaction.transaction_date)}</td>
-                      <td style={{ padding: '12px 16px', fontSize: '14px' }}>{transaction.description}</td>
-                      <td style={{ padding: '12px 16px', fontSize: '14px' }}>{transaction.reference}</td>
-                      <td style={{ padding: '12px 16px', fontSize: '14px', color: '#dc2626' }}>{transaction.debit > 0 ? formatCurrency(transaction.debit) : '-'}</td>
-                      <td style={{ padding: '12px 16px', fontSize: '14px', color: '#059669' }}>{transaction.credit > 0 ? formatCurrency(transaction.credit) : '-'}</td>
-                      <td style={{ padding: '12px 16px', fontSize: '14px', fontWeight: 600 }}>{formatCurrency(transaction.balance)}</td>
-                      <td style={{ padding: '12px 16px' }}>
-                        <span style={{ padding: '4px 8px', fontSize: '12px', fontWeight: 600, borderRadius: '9999px', backgroundColor: transaction.reconciled ? '#dcfce7' : '#fef3c7', color: transaction.reconciled ? '#166534' : '#92400e' }}>
+                    <tr key={transaction.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors">
+                      <td className="px-6 py-4 text-sm font-semibold text-teal-600 dark:text-teal-400">{transaction.transaction_number}</td>
+                      <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{formatDate(transaction.transaction_date)}</td>
+                      <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{transaction.description}</td>
+                      <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{transaction.reference}</td>
+                      <td className="px-6 py-4 text-sm text-red-600 dark:text-red-400">{transaction.debit > 0 ? formatCurrency(transaction.debit) : '-'}</td>
+                      <td className="px-6 py-4 text-sm text-green-600 dark:text-green-400">{transaction.credit > 0 ? formatCurrency(transaction.credit) : '-'}</td>
+                      <td className="px-6 py-4 text-sm font-semibold text-gray-900 dark:text-white">{formatCurrency(transaction.balance)}</td>
+                      <td className="px-6 py-4">
+                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${
+                          transaction.reconciled 
+                            ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' 
+                            : 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400'
+                        }`}>
                           {transaction.reconciled ? 'Reconciled' : 'Unreconciled'}
                         </span>
                       </td>
-                      <td style={{ padding: '12px 16px' }}>
-                        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                          <button onClick={() => handleEditTransaction(transaction)} style={{ padding: '4px 8px', fontSize: '12px', color: '#2563eb', background: 'none', border: 'none', cursor: 'pointer' }}>Edit</button>
-                          {!transaction.reconciled && (
-                            <button onClick={() => handleReconcileTransaction(transaction.id)} style={{ padding: '4px 8px', fontSize: '12px', color: '#059669', background: 'none', border: 'none', cursor: 'pointer' }}>Reconcile</button>
-                          )}
-                          <button onClick={() => setDeleteConfirm({ show: true, type: 'transaction', id: transaction.id, name: transaction.transaction_number })} style={{ padding: '4px 8px', fontSize: '12px', color: '#dc2626', background: 'none', border: 'none', cursor: 'pointer' }}>Delete</button>
-                        </div>
+                      <td className="px-6 py-4 text-right">
+                        <button
+                          onClick={() => handleEditTransaction(transaction)}
+                          className="p-2 text-teal-600 dark:text-teal-400 hover:bg-teal-50 dark:hover:bg-teal-900/30 rounded-lg transition-colors mr-1"
+                        >
+                          <Edit2 className="h-4 w-4" />
+                        </button>
+                        {!transaction.reconciled && (
+                          <button
+                            onClick={() => handleReconcileTransaction(transaction.id)}
+                            className="p-2 text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/30 rounded-lg transition-colors mr-1"
+                          >
+                            <RefreshCw className="h-4 w-4" />
+                          </button>
+                        )}
+                        <button
+                          onClick={() => setDeleteConfirm({ show: true, type: 'transaction', id: transaction.id, name: transaction.transaction_number })}
+                          className="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
                       </td>
                     </tr>
                   ))
@@ -644,86 +723,120 @@ const BankingDashboard: React.FC = () => {
       {activeTab === 'reconciliation' && (
         <div>
           {/* Actions Bar */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-            <input
-              type="text"
-              placeholder="Search reconciliations..."
-              value={reconciliationsSearch}
-              onChange={(e) => setReconciliationsSearch(e.target.value)}
-              style={{ padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px', width: '300px' }}
-            />
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search reconciliations..."
+                value={reconciliationsSearch}
+                onChange={(e) => setReconciliationsSearch(e.target.value)}
+                className="pl-10 pr-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-teal-500 focus:border-transparent w-80"
+              />
+            </div>
             <button
               onClick={handleCreateReconciliation}
-              style={{ padding: '8px 16px', backgroundColor: '#2563eb', color: 'white', border: 'none', borderRadius: '6px', fontWeight: 600, cursor: 'pointer' }}
+              className="px-6 py-2.5 bg-gradient-to-r from-teal-500 to-cyan-500 text-white rounded-xl hover:from-teal-600 hover:to-cyan-600 transition-all shadow-lg shadow-teal-500/30 flex items-center gap-2 font-medium"
             >
-              + New Reconciliation
+              <Plus className="h-5 w-5" />
+              New Reconciliation
             </button>
           </div>
 
           {/* Summary Cards */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginBottom: '16px' }}>
-            <div style={{ backgroundColor: 'white', padding: '16px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-              <div style={{ fontSize: '14px', color: '#6b7280', marginBottom: '4px' }}>Total Reconciliations</div>
-              <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#111827' }}>{reconciliations.length}</div>
-            </div>
-            <div style={{ backgroundColor: 'white', padding: '16px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-              <div style={{ fontSize: '14px', color: '#6b7280', marginBottom: '4px' }}>In Progress</div>
-              <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#f59e0b' }}>
-                {reconciliations.filter(r => r.status === 'IN_PROGRESS').length}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-gradient-to-br from-teal-500 to-cyan-500 rounded-xl shadow-lg shadow-teal-500/30">
+                  <CheckCircle className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">{reconciliations.length}</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Total Reconciliations</p>
+                </div>
               </div>
             </div>
-            <div style={{ backgroundColor: 'white', padding: '16px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-              <div style={{ fontSize: '14px', color: '#6b7280', marginBottom: '4px' }}>Completed</div>
-              <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#059669' }}>
-                {reconciliations.filter(r => r.status === 'COMPLETED').length}
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl shadow-lg shadow-amber-500/30">
+                  <Clock className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">{reconciliations.filter(r => r.status === 'IN_PROGRESS').length}</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">In Progress</p>
+                </div>
+              </div>
+            </div>
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg shadow-green-500/30">
+                  <CheckCircle className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">{reconciliations.filter(r => r.status === 'COMPLETED').length}</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Completed</p>
+                </div>
               </div>
             </div>
           </div>
 
           {/* Reconciliations Table */}
-          <div style={{ backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', overflow: 'hidden' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-              <thead style={{ backgroundColor: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+            <table className="w-full">
+              <thead className="bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-600">
                 <tr>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Reconciliation #</th>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Account</th>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Statement Date</th>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Statement Balance</th>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>GL Balance</th>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Difference</th>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Status</th>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Actions</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Reconciliation #</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Account</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Statement Date</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Statement Balance</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">GL Balance</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Difference</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Status</th>
+                  <th className="px-6 py-4 text-right text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
                 {reconciliationsLoading ? (
                   <tr>
-                    <td colSpan={8} style={{ padding: '24px', textAlign: 'center', color: '#6b7280' }}>Loading reconciliations...</td>
+                    <td colSpan={8} className="px-6 py-12 text-center text-gray-500 dark:text-gray-400">Loading reconciliations...</td>
                   </tr>
                 ) : filteredReconciliations.length === 0 ? (
                   <tr>
-                    <td colSpan={8} style={{ padding: '24px', textAlign: 'center', color: '#6b7280' }}>No reconciliations found</td>
+                    <td colSpan={8} className="px-6 py-12 text-center text-gray-500 dark:text-gray-400">No reconciliations found</td>
                   </tr>
                 ) : (
                   filteredReconciliations.map((reconciliation) => (
-                    <tr key={reconciliation.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
-                      <td style={{ padding: '12px 16px', fontSize: '14px', fontWeight: 600, color: '#2563eb' }}>{reconciliation.reconciliation_number}</td>
-                      <td style={{ padding: '12px 16px', fontSize: '14px' }}>{reconciliation.account_name || `Account #${reconciliation.account_id}`}</td>
-                      <td style={{ padding: '12px 16px', fontSize: '14px' }}>{formatDate(reconciliation.statement_date)}</td>
-                      <td style={{ padding: '12px 16px', fontSize: '14px' }}>{formatCurrency(reconciliation.statement_balance)}</td>
-                      <td style={{ padding: '12px 16px', fontSize: '14px' }}>{formatCurrency(reconciliation.gl_balance)}</td>
-                      <td style={{ padding: '12px 16px', fontSize: '14px', fontWeight: 600, color: reconciliation.difference === 0 ? '#059669' : '#dc2626' }}>
+                    <tr key={reconciliation.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors">
+                      <td className="px-6 py-4 text-sm font-semibold text-teal-600 dark:text-teal-400">{reconciliation.reconciliation_number}</td>
+                      <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{reconciliation.account_name || `Account #${reconciliation.account_id}`}</td>
+                      <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{formatDate(reconciliation.statement_date)}</td>
+                      <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{formatCurrency(reconciliation.statement_balance)}</td>
+                      <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{formatCurrency(reconciliation.gl_balance)}</td>
+                      <td className={`px-6 py-4 text-sm font-semibold ${reconciliation.difference === 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
                         {formatCurrency(reconciliation.difference)}
                       </td>
-                      <td style={{ padding: '12px 16px' }}>{getStatusBadge(reconciliation.status)}</td>
-                      <td style={{ padding: '12px 16px' }}>
-                        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                          <button onClick={() => handleEditReconciliation(reconciliation)} style={{ padding: '4px 8px', fontSize: '12px', color: '#2563eb', background: 'none', border: 'none', cursor: 'pointer' }}>Edit</button>
-                          {reconciliation.status !== 'COMPLETED' && (
-                            <button onClick={() => handleCompleteReconciliation(reconciliation.id)} style={{ padding: '4px 8px', fontSize: '12px', color: '#059669', background: 'none', border: 'none', cursor: 'pointer' }}>Complete</button>
-                          )}
-                          <button onClick={() => setDeleteConfirm({ show: true, type: 'reconciliation', id: reconciliation.id, name: reconciliation.reconciliation_number })} style={{ padding: '4px 8px', fontSize: '12px', color: '#dc2626', background: 'none', border: 'none', cursor: 'pointer' }}>Delete</button>
-                        </div>
+                      <td className="px-6 py-4">{getStatusBadge(reconciliation.status)}</td>
+                      <td className="px-6 py-4 text-right">
+                        <button
+                          onClick={() => handleEditReconciliation(reconciliation)}
+                          className="p-2 text-teal-600 dark:text-teal-400 hover:bg-teal-50 dark:hover:bg-teal-900/30 rounded-lg transition-colors mr-1"
+                        >
+                          <Edit2 className="h-4 w-4" />
+                        </button>
+                        {reconciliation.status !== 'COMPLETED' && (
+                          <button
+                            onClick={() => handleCompleteReconciliation(reconciliation.id)}
+                            className="p-2 text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/30 rounded-lg transition-colors mr-1"
+                          >
+                            <CheckCircle className="h-4 w-4" />
+                          </button>
+                        )}
+                        <button
+                          onClick={() => setDeleteConfirm({ show: true, type: 'reconciliation', id: reconciliation.id, name: reconciliation.reconciliation_number })}
+                          className="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
                       </td>
                     </tr>
                   ))
@@ -736,48 +849,51 @@ const BankingDashboard: React.FC = () => {
 
       {/* BANK ACCOUNT MODAL */}
       {showAccountModal && (
-        <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}>
-          <div style={{ backgroundColor: 'white', borderRadius: '8px', width: '600px', maxHeight: '90vh', overflow: 'auto' }}>
-            <div style={{ padding: '20px', borderBottom: '1px solid #e5e7eb', position: 'sticky', top: 0, backgroundColor: 'white', zIndex: 10 }}>
-              <h2 style={{ fontSize: '20px', fontWeight: 'bold' }}>{editingAccount ? 'Edit Bank Account' : 'New Bank Account'}</h2>
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl w-[600px] max-h-[90vh] overflow-hidden shadow-2xl">
+            <div className="bg-gradient-to-r from-teal-500 to-cyan-500 px-6 py-4">
+              <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                <CreditCard className="h-5 w-5" />
+                {editingAccount ? 'Edit Bank Account' : 'New Bank Account'}
+              </h2>
             </div>
-            <div style={{ padding: '20px' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+            <div className="p-6 overflow-y-auto max-h-[calc(90vh-140px)]">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
                 <div>
-                  <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Account Number *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Account Number *</label>
                   <input
                     type="text"
                     value={accountForm.account_number}
                     onChange={(e) => setAccountForm({ ...accountForm, account_number: e.target.value })}
-                    style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                    className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                   />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Bank Name *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Bank Name *</label>
                   <input
                     type="text"
                     value={accountForm.bank_name}
                     onChange={(e) => setAccountForm({ ...accountForm, bank_name: e.target.value })}
-                    style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                    className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                   />
                 </div>
               </div>
-              <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Account Name *</label>
+              <div className="mb-5">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Account Name *</label>
                 <input
                   type="text"
                   value={accountForm.account_name}
                   onChange={(e) => setAccountForm({ ...accountForm, account_name: e.target.value })}
-                  style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                  className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                 />
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-5">
                 <div>
-                  <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Account Type *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Account Type *</label>
                   <select
                     value={accountForm.account_type}
                     onChange={(e) => setAccountForm({ ...accountForm, account_type: e.target.value as 'CURRENT' | 'SAVINGS' | 'FOREIGN_CURRENCY' })}
-                    style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                    className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                   >
                     <option value="CURRENT">Current</option>
                     <option value="SAVINGS">Savings</option>
@@ -785,11 +901,11 @@ const BankingDashboard: React.FC = () => {
                   </select>
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Currency *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Currency *</label>
                   <select
                     value={accountForm.currency}
                     onChange={(e) => setAccountForm({ ...accountForm, currency: e.target.value })}
-                    style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                    className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                   >
                     <option value="ZAR">ZAR</option>
                     <option value="USD">USD</option>
@@ -798,37 +914,38 @@ const BankingDashboard: React.FC = () => {
                   </select>
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Opening Balance *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Opening Balance *</label>
                   <input
                     type="number"
                     step="0.01"
                     value={accountForm.balance}
                     onChange={(e) => setAccountForm({ ...accountForm, balance: e.target.value })}
-                    style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                    className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                   />
                 </div>
               </div>
-              <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+              <div className="mb-5">
+                <label className="flex items-center gap-3 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={accountForm.is_active}
                     onChange={(e) => setAccountForm({ ...accountForm, is_active: e.target.checked })}
+                    className="w-5 h-5 rounded border-gray-300 text-teal-500 focus:ring-teal-500"
                   />
-                  <span style={{ fontSize: '14px', fontWeight: 600 }}>Active</span>
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Active</span>
                 </label>
               </div>
             </div>
-            <div style={{ padding: '20px', borderTop: '1px solid #e5e7eb', display: 'flex', justifyContent: 'flex-end', gap: '12px', position: 'sticky', bottom: 0, backgroundColor: 'white' }}>
+            <div className="px-6 py-4 bg-gray-50 dark:bg-gray-700/50 border-t border-gray-200 dark:border-gray-600 flex justify-end gap-3">
               <button
                 onClick={() => setShowAccountModal(false)}
-                style={{ padding: '8px 16px', border: '1px solid #d1d5db', borderRadius: '6px', fontWeight: 600, cursor: 'pointer', background: 'white' }}
+                className="px-5 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSaveAccount}
-                style={{ padding: '8px 16px', backgroundColor: '#2563eb', color: 'white', border: 'none', borderRadius: '6px', fontWeight: 600, cursor: 'pointer' }}
+                className="px-5 py-2.5 bg-gradient-to-r from-teal-500 to-cyan-500 text-white rounded-xl font-medium hover:from-teal-600 hover:to-cyan-600 transition-all shadow-lg shadow-teal-500/30"
               >
                 {editingAccount ? 'Update' : 'Create'}
               </button>
@@ -839,92 +956,97 @@ const BankingDashboard: React.FC = () => {
 
       {/* TRANSACTION MODAL */}
       {showTransactionModal && (
-        <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}>
-          <div style={{ backgroundColor: 'white', borderRadius: '8px', width: '600px', maxHeight: '90vh', overflow: 'auto' }}>
-            <div style={{ padding: '20px', borderBottom: '1px solid #e5e7eb', position: 'sticky', top: 0, backgroundColor: 'white', zIndex: 10 }}>
-              <h2 style={{ fontSize: '20px', fontWeight: 'bold' }}>{editingTransaction ? 'Edit Transaction' : 'New Transaction'}</h2>
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl w-[600px] max-h-[90vh] overflow-hidden shadow-2xl">
+            <div className="bg-gradient-to-r from-teal-500 to-cyan-500 px-6 py-4">
+              <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                <ArrowUpDown className="h-5 w-5" />
+                {editingTransaction ? 'Edit Transaction' : 'New Transaction'}
+              </h2>
             </div>
-            <div style={{ padding: '20px' }}>
-              <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Account ID *</label>
-                <input
-                  type="number"
-                  value={transactionForm.account_id}
-                  onChange={(e) => setTransactionForm({ ...transactionForm, account_id: e.target.value })}
-                  style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
-                />
+            <div className="p-6 overflow-y-auto max-h-[calc(90vh-140px)]">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Account ID *</label>
+                  <input
+                    type="number"
+                    value={transactionForm.account_id}
+                    onChange={(e) => setTransactionForm({ ...transactionForm, account_id: e.target.value })}
+                    className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Transaction Date *</label>
+                  <input
+                    type="date"
+                    value={transactionForm.transaction_date}
+                    onChange={(e) => setTransactionForm({ ...transactionForm, transaction_date: e.target.value })}
+                    className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  />
+                </div>
               </div>
-              <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Transaction Date *</label>
-                <input
-                  type="date"
-                  value={transactionForm.transaction_date}
-                  onChange={(e) => setTransactionForm({ ...transactionForm, transaction_date: e.target.value })}
-                  style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
-                />
-              </div>
-              <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Description *</label>
+              <div className="mb-5">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Description *</label>
                 <input
                   type="text"
                   value={transactionForm.description}
                   onChange={(e) => setTransactionForm({ ...transactionForm, description: e.target.value })}
-                  style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                  className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                 />
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
                 <div>
-                  <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Reference</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Reference</label>
                   <input
                     type="text"
                     value={transactionForm.reference}
                     onChange={(e) => setTransactionForm({ ...transactionForm, reference: e.target.value })}
-                    style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                    className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                   />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Category</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Category</label>
                   <input
                     type="text"
                     value={transactionForm.category}
                     onChange={(e) => setTransactionForm({ ...transactionForm, category: e.target.value })}
-                    style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                    className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                   />
                 </div>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
                 <div>
-                  <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Debit Amount</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Debit Amount</label>
                   <input
                     type="number"
                     step="0.01"
                     value={transactionForm.debit}
                     onChange={(e) => setTransactionForm({ ...transactionForm, debit: e.target.value })}
-                    style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                    className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                   />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Credit Amount</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Credit Amount</label>
                   <input
                     type="number"
                     step="0.01"
                     value={transactionForm.credit}
                     onChange={(e) => setTransactionForm({ ...transactionForm, credit: e.target.value })}
-                    style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                    className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                   />
                 </div>
               </div>
             </div>
-            <div style={{ padding: '20px', borderTop: '1px solid #e5e7eb', display: 'flex', justifyContent: 'flex-end', gap: '12px', position: 'sticky', bottom: 0, backgroundColor: 'white' }}>
+            <div className="px-6 py-4 bg-gray-50 dark:bg-gray-700/50 border-t border-gray-200 dark:border-gray-600 flex justify-end gap-3">
               <button
                 onClick={() => setShowTransactionModal(false)}
-                style={{ padding: '8px 16px', border: '1px solid #d1d5db', borderRadius: '6px', fontWeight: 600, cursor: 'pointer', background: 'white' }}
+                className="px-5 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSaveTransaction}
-                style={{ padding: '8px 16px', backgroundColor: '#2563eb', color: 'white', border: 'none', borderRadius: '6px', fontWeight: 600, cursor: 'pointer' }}
+                className="px-5 py-2.5 bg-gradient-to-r from-teal-500 to-cyan-500 text-white rounded-xl font-medium hover:from-teal-600 hover:to-cyan-600 transition-all shadow-lg shadow-teal-500/30"
               >
                 {editingTransaction ? 'Update' : 'Create'}
               </button>
@@ -935,63 +1057,68 @@ const BankingDashboard: React.FC = () => {
 
       {/* RECONCILIATION MODAL */}
       {showReconciliationModal && (
-        <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}>
-          <div style={{ backgroundColor: 'white', borderRadius: '8px', width: '600px', maxHeight: '90vh', overflow: 'auto' }}>
-            <div style={{ padding: '20px', borderBottom: '1px solid #e5e7eb', position: 'sticky', top: 0, backgroundColor: 'white', zIndex: 10 }}>
-              <h2 style={{ fontSize: '20px', fontWeight: 'bold' }}>{editingReconciliation ? 'Edit Reconciliation' : 'New Reconciliation'}</h2>
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl w-[600px] max-h-[90vh] overflow-hidden shadow-2xl">
+            <div className="bg-gradient-to-r from-teal-500 to-cyan-500 px-6 py-4">
+              <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                <CheckCircle className="h-5 w-5" />
+                {editingReconciliation ? 'Edit Reconciliation' : 'New Reconciliation'}
+              </h2>
             </div>
-            <div style={{ padding: '20px' }}>
-              <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Account ID *</label>
-                <input
-                  type="number"
-                  value={reconciliationForm.account_id}
-                  onChange={(e) => setReconciliationForm({ ...reconciliationForm, account_id: e.target.value })}
-                  style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
-                />
-              </div>
-              <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Statement Date *</label>
-                <input
-                  type="date"
-                  value={reconciliationForm.statement_date}
-                  onChange={(e) => setReconciliationForm({ ...reconciliationForm, statement_date: e.target.value })}
-                  style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
-                />
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+            <div className="p-6 overflow-y-auto max-h-[calc(90vh-140px)]">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
                 <div>
-                  <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Statement Balance (ZAR) *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Account ID *</label>
+                  <input
+                    type="number"
+                    value={reconciliationForm.account_id}
+                    onChange={(e) => setReconciliationForm({ ...reconciliationForm, account_id: e.target.value })}
+                    className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Statement Date *</label>
+                  <input
+                    type="date"
+                    value={reconciliationForm.statement_date}
+                    onChange={(e) => setReconciliationForm({ ...reconciliationForm, statement_date: e.target.value })}
+                    className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Statement Balance (ZAR) *</label>
                   <input
                     type="number"
                     step="0.01"
                     value={reconciliationForm.statement_balance}
                     onChange={(e) => setReconciliationForm({ ...reconciliationForm, statement_balance: e.target.value })}
-                    style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                    className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                   />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>GL Balance (ZAR) *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">GL Balance (ZAR) *</label>
                   <input
                     type="number"
                     step="0.01"
                     value={reconciliationForm.gl_balance}
                     onChange={(e) => setReconciliationForm({ ...reconciliationForm, gl_balance: e.target.value })}
-                    style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                    className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                   />
                 </div>
               </div>
             </div>
-            <div style={{ padding: '20px', borderTop: '1px solid #e5e7eb', display: 'flex', justifyContent: 'flex-end', gap: '12px', position: 'sticky', bottom: 0, backgroundColor: 'white' }}>
+            <div className="px-6 py-4 bg-gray-50 dark:bg-gray-700/50 border-t border-gray-200 dark:border-gray-600 flex justify-end gap-3">
               <button
                 onClick={() => setShowReconciliationModal(false)}
-                style={{ padding: '8px 16px', border: '1px solid #d1d5db', borderRadius: '6px', fontWeight: 600, cursor: 'pointer', background: 'white' }}
+                className="px-5 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSaveReconciliation}
-                style={{ padding: '8px 16px', backgroundColor: '#2563eb', color: 'white', border: 'none', borderRadius: '6px', fontWeight: 600, cursor: 'pointer' }}
+                className="px-5 py-2.5 bg-gradient-to-r from-teal-500 to-cyan-500 text-white rounded-xl font-medium hover:from-teal-600 hover:to-cyan-600 transition-all shadow-lg shadow-teal-500/30"
               >
                 {editingReconciliation ? 'Update' : 'Create'}
               </button>
