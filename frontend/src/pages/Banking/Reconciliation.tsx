@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../lib/api';
 import { ConfirmDialog } from '../../components/ConfirmDialog';
+import { Scale, Plus, Clock, CheckCircle, ShieldCheck, Edit2, Trash2 } from 'lucide-react';
 
 interface Reconciliation {
   id: number;
@@ -113,13 +114,13 @@ const Reconciliation: React.FC = () => {
   };
 
   const getStatusBadge = (status: string) => {
-    const colors: Record<string, { bg: string; text: string }> = {
-      IN_PROGRESS: { bg: '#fef3c7', text: '#92400e' },
-      COMPLETED: { bg: '#dbeafe', text: '#1e40af' },
-      APPROVED: { bg: '#dcfce7', text: '#166534' }
+    const styles: Record<string, string> = {
+      IN_PROGRESS: 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400',
+      COMPLETED: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400',
+      APPROVED: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
     };
-    const color = colors[status] || { bg: '#f3f4f6', text: '#374151' };
-    return <span style={{ padding: '4px 8px', fontSize: '12px', fontWeight: 600, borderRadius: '9999px', backgroundColor: color.bg, color: color.text }}>{status.replace('_', ' ')}</span>;
+    const style = styles[status] || 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300';
+    return <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${style}`}>{status.replace('_', ' ')}</span>;
   };
 
   const formatCurrency = (amount: number) => {
@@ -131,189 +132,226 @@ const Reconciliation: React.FC = () => {
   };
 
   return (
-    <div style={{ padding: '24px' }} data-testid="banking-reconciliation">
-      <div style={{ marginBottom: '24px' }}>
-        <h1 style={{ fontSize: '30px', fontWeight: 'bold', color: '#111827', marginBottom: '8px' }}>Bank Reconciliation</h1>
-        <p style={{ color: '#6b7280' }}>Reconcile bank statements with accounting records</p>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-teal-50 dark:from-gray-900 dark:to-gray-800 p-6" data-testid="banking-reconciliation">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+        <div className="flex items-center gap-3">
+          <div className="p-3 bg-gradient-to-br from-teal-500 to-cyan-500 rounded-xl shadow-lg shadow-teal-500/30">
+            <Scale className="h-8 w-8 text-white" />
+          </div>
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Bank Reconciliation</h1>
+            <p className="text-gray-600 dark:text-gray-400">Reconcile bank statements with accounting records</p>
+          </div>
+        </div>
+        <button
+          onClick={handleCreate}
+          className="px-6 py-2.5 bg-gradient-to-r from-teal-500 to-cyan-500 text-white rounded-xl hover:from-teal-600 hover:to-cyan-600 transition-all shadow-lg shadow-teal-500/30 flex items-center gap-2 font-medium"
+          data-testid="create-button"
+        >
+          <Plus className="h-5 w-5" />
+          New Reconciliation
+        </button>
       </div>
 
       {error && (
-        <div style={{ padding: '12px 16px', marginBottom: '16px', backgroundColor: '#fee2e2', border: '1px solid #fecaca', borderRadius: '6px', color: '#991b1b' }}>
+        <div className="p-4 mb-6 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl text-red-700 dark:text-red-400">
           {error}
         </div>
       )}
 
-      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '16px' }}>
-        <button
-          onClick={handleCreate}
-          style={{ padding: '8px 16px', backgroundColor: '#2563eb', color: 'white', border: 'none', borderRadius: '6px', fontWeight: 600, cursor: 'pointer' }}
-          data-testid="create-button"
-        >
-          + New Reconciliation
-        </button>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl shadow-lg shadow-amber-500/30">
+              <Clock className="h-6 w-6 text-white" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{reconciliations.filter(r => r.status === 'IN_PROGRESS').length}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">In Progress</p>
+            </div>
+          </div>
+        </div>
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl shadow-lg shadow-blue-500/30">
+              <CheckCircle className="h-6 w-6 text-white" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{reconciliations.filter(r => r.status === 'COMPLETED').length}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Completed</p>
+            </div>
+          </div>
+        </div>
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg shadow-green-500/30">
+              <ShieldCheck className="h-6 w-6 text-white" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{reconciliations.filter(r => r.status === 'APPROVED').length}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Approved</p>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginBottom: '16px' }}>
-        <div style={{ backgroundColor: 'white', padding: '16px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-          <div style={{ fontSize: '14px', color: '#6b7280', marginBottom: '4px' }}>In Progress</div>
-          <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#f59e0b' }}>{reconciliations.filter(r => r.status === 'IN_PROGRESS').length}</div>
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full" data-testid="reconciliations-table">
+            <thead className="bg-gray-50 dark:bg-gray-700/50">
+              <tr>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Account</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Period</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Opening</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Closing</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Statement</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Difference</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Status</th>
+                <th className="px-6 py-4 text-right text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+              {loading ? (
+                <tr><td colSpan={8} className="px-6 py-12 text-center text-gray-500 dark:text-gray-400">Loading...</td></tr>
+              ) : reconciliations.length === 0 ? (
+                <tr><td colSpan={8} className="px-6 py-12 text-center text-gray-500 dark:text-gray-400">No reconciliations found</td></tr>
+              ) : (
+                reconciliations.map((recon) => (
+                  <tr key={recon.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                    <td className="px-6 py-4 text-sm font-semibold text-gray-900 dark:text-white">{recon.account_name}</td>
+                    <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
+                      {formatDate(recon.period_start)} - {formatDate(recon.period_end)}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{formatCurrency(recon.opening_balance)}</td>
+                    <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{formatCurrency(recon.closing_balance)}</td>
+                    <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{formatCurrency(recon.statement_balance)}</td>
+                    <td className={`px-6 py-4 text-sm font-medium ${recon.difference !== 0 ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'}`}>
+                      {formatCurrency(recon.difference)}
+                    </td>
+                    <td className="px-6 py-4">{getStatusBadge(recon.status)}</td>
+                    <td className="px-6 py-4">
+                      <div className="flex gap-2 justify-end">
+                        <button
+                          onClick={() => handleEdit(recon)}
+                          className="p-2 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                          title="Edit"
+                        >
+                          <Edit2 className="h-4 w-4" />
+                        </button>
+                        <button
+                          onClick={() => setDeleteConfirm({ show: true, id: recon.id, account: recon.account_name })}
+                          className="p-2 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors"
+                          title="Delete"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
         </div>
-        <div style={{ backgroundColor: 'white', padding: '16px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-          <div style={{ fontSize: '14px', color: '#6b7280', marginBottom: '4px' }}>Completed</div>
-          <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#2563eb' }}>{reconciliations.filter(r => r.status === 'COMPLETED').length}</div>
-        </div>
-        <div style={{ backgroundColor: 'white', padding: '16px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-          <div style={{ fontSize: '14px', color: '#6b7280', marginBottom: '4px' }}>Approved</div>
-          <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#059669' }}>{reconciliations.filter(r => r.status === 'APPROVED').length}</div>
-        </div>
-      </div>
-
-      <div style={{ backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', overflow: 'hidden' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }} data-testid="reconciliations-table">
-          <thead style={{ backgroundColor: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
-            <tr>
-              <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Account</th>
-              <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Period</th>
-              <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Opening</th>
-              <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Closing</th>
-              <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Statement</th>
-              <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Difference</th>
-              <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Status</th>
-              <th style={{ padding: '12px 16px', textAlign: 'right', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {loading ? (
-              <tr><td colSpan={8} style={{ padding: '40px', textAlign: 'center', color: '#6b7280' }}>Loading...</td></tr>
-            ) : reconciliations.length === 0 ? (
-              <tr><td colSpan={8} style={{ padding: '40px', textAlign: 'center', color: '#6b7280' }}>No reconciliations found</td></tr>
-            ) : (
-              reconciliations.map((recon) => (
-                <tr key={recon.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
-                  <td style={{ padding: '12px 16px', fontSize: '14px', color: '#111827', fontWeight: 600 }}>{recon.account_name}</td>
-                  <td style={{ padding: '12px 16px', fontSize: '14px', color: '#6b7280' }}>
-                    {formatDate(recon.period_start)} - {formatDate(recon.period_end)}
-                  </td>
-                  <td style={{ padding: '12px 16px', fontSize: '14px', color: '#6b7280' }}>{formatCurrency(recon.opening_balance)}</td>
-                  <td style={{ padding: '12px 16px', fontSize: '14px', color: '#6b7280' }}>{formatCurrency(recon.closing_balance)}</td>
-                  <td style={{ padding: '12px 16px', fontSize: '14px', color: '#6b7280' }}>{formatCurrency(recon.statement_balance)}</td>
-                  <td style={{ padding: '12px 16px', fontSize: '14px', color: recon.difference !== 0 ? '#dc2626' : '#059669' }}>
-                    {formatCurrency(recon.difference)}
-                  </td>
-                  <td style={{ padding: '12px 16px' }}>{getStatusBadge(recon.status)}</td>
-                  <td style={{ padding: '12px 16px', textAlign: 'right' }}>
-                    <button
-                      onClick={() => handleEdit(recon)}
-                      style={{ padding: '4px 8px', marginRight: '8px', fontSize: '12px', color: '#2563eb', background: 'none', border: 'none', cursor: 'pointer' }}
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => setDeleteConfirm({ show: true, id: recon.id, account: recon.account_name })}
-                      style={{ padding: '4px 8px', fontSize: '12px', color: '#dc2626', background: 'none', border: 'none', cursor: 'pointer' }}
-                    >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
       </div>
 
       {showModal && (
-        <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}>
-          <div style={{ backgroundColor: 'white', borderRadius: '8px', padding: '24px', width: '500px', maxHeight: '90vh', overflow: 'auto' }}>
-            <h2 style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '16px' }}>
-              {editingRecon ? 'Edit Reconciliation' : 'New Reconciliation'}
-            </h2>
-            <div style={{ marginBottom: '16px' }}>
-              <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Account Name *</label>
-              <input
-                type="text"
-                value={form.account_name}
-                onChange={(e) => setForm({ ...form, account_name: e.target.value })}
-                style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
-              />
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowModal(false)}>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden" onClick={(e) => e.stopPropagation()}>
+            <div className="bg-gradient-to-r from-teal-500 to-cyan-500 px-6 py-4">
+              <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                <Scale className="h-5 w-5" />
+                {editingRecon ? 'Edit Reconciliation' : 'New Reconciliation'}
+              </h2>
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
-              <div>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Period Start *</label>
+            <div className="p-6 overflow-y-auto max-h-[calc(90vh-80px)]">
+              <div className="mb-5">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Account Name *</label>
                 <input
-                  type="date"
-                  value={form.period_start}
-                  onChange={(e) => setForm({ ...form, period_start: e.target.value })}
-                  style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                  type="text"
+                  value={form.account_name}
+                  onChange={(e) => setForm({ ...form, account_name: e.target.value })}
+                  className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                 />
               </div>
-              <div>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Period End *</label>
-                <input
-                  type="date"
-                  value={form.period_end}
-                  onChange={(e) => setForm({ ...form, period_end: e.target.value })}
-                  style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
-                />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Period Start *</label>
+                  <input
+                    type="date"
+                    value={form.period_start}
+                    onChange={(e) => setForm({ ...form, period_start: e.target.value })}
+                    className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Period End *</label>
+                  <input
+                    type="date"
+                    value={form.period_end}
+                    onChange={(e) => setForm({ ...form, period_end: e.target.value })}
+                    className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  />
+                </div>
               </div>
-            </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px', marginBottom: '16px' }}>
-              <div>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Opening Balance *</label>
-                <input
-                  type="number"
-                  step="0.01"
-                  value={form.opening_balance}
-                  onChange={(e) => setForm({ ...form, opening_balance: e.target.value })}
-                  style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
-                />
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-5">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Opening Balance *</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={form.opening_balance}
+                    onChange={(e) => setForm({ ...form, opening_balance: e.target.value })}
+                    className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Closing Balance *</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={form.closing_balance}
+                    onChange={(e) => setForm({ ...form, closing_balance: e.target.value })}
+                    className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Statement Balance *</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={form.statement_balance}
+                    onChange={(e) => setForm({ ...form, statement_balance: e.target.value })}
+                    className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  />
+                </div>
               </div>
-              <div>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Closing Balance *</label>
-                <input
-                  type="number"
-                  step="0.01"
-                  value={form.closing_balance}
-                  onChange={(e) => setForm({ ...form, closing_balance: e.target.value })}
-                  style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
-                />
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Status *</label>
+                <select
+                  value={form.status}
+                  onChange={(e) => setForm({ ...form, status: e.target.value as any })}
+                  className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                >
+                  <option value="IN_PROGRESS">In Progress</option>
+                  <option value="COMPLETED">Completed</option>
+                  <option value="APPROVED">Approved</option>
+                </select>
               </div>
-              <div>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Statement Balance *</label>
-                <input
-                  type="number"
-                  step="0.01"
-                  value={form.statement_balance}
-                  onChange={(e) => setForm({ ...form, statement_balance: e.target.value })}
-                  style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
-                />
+              <div className="flex gap-3 justify-end pt-4 border-t border-gray-200 dark:border-gray-700">
+                <button
+                  onClick={() => setShowModal(false)}
+                  className="px-6 py-2.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors font-medium"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSave}
+                  className="px-6 py-2.5 bg-gradient-to-r from-teal-500 to-cyan-500 text-white rounded-xl hover:from-teal-600 hover:to-cyan-600 transition-all shadow-lg shadow-teal-500/30 font-medium"
+                >
+                  Save
+                </button>
               </div>
-            </div>
-            <div style={{ marginBottom: '16px' }}>
-              <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Status *</label>
-              <select
-                value={form.status}
-                onChange={(e) => setForm({ ...form, status: e.target.value as any })}
-                style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
-              >
-                <option value="IN_PROGRESS">In Progress</option>
-                <option value="COMPLETED">Completed</option>
-                <option value="APPROVED">Approved</option>
-              </select>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
-              <button
-                onClick={() => setShowModal(false)}
-                style={{ padding: '8px 16px', border: '1px solid #d1d5db', borderRadius: '6px', fontWeight: 600, cursor: 'pointer', background: 'white' }}
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleSave}
-                style={{ padding: '8px 16px', backgroundColor: '#2563eb', color: 'white', border: 'none', borderRadius: '6px', fontWeight: 600, cursor: 'pointer' }}
-              >
-                Save
-              </button>
             </div>
           </div>
         </div>
