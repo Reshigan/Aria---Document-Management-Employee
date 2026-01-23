@@ -121,6 +121,11 @@ import CreditNotes from './pages/Financial/CreditNotes';
 import Collections from './pages/Financial/Collections';
 import CashForecast from './pages/Financial/CashForecast';
 import BankTransfers from './pages/Financial/BankTransfers';
+// Xero Parity Pages
+import RecurringInvoices from './pages/Financial/RecurringInvoices';
+import CustomerStatements from './pages/Financial/CustomerStatements';
+import BudgetVsActual from './pages/Financial/BudgetVsActual';
+import BankFeeds from './pages/Financial/BankFeeds';
 // Operations Module Pages
 import PriceLists from './pages/Operations/PriceLists';
 import Discounts from './pages/Operations/Discounts';
@@ -356,10 +361,20 @@ function App() {
                     <Route path="/ap/expense-claims" element={<ExpenseClaims />} />
                     <Route path="/ar/credit-notes" element={<CreditNotes />} />
                     <Route path="/ar/collections" element={<Collections />} />
-                    <Route path="/banking/cash-forecast" element={<CashForecast />} />
-                    <Route path="/banking/transfers" element={<BankTransfers />} />
+                                        <Route path="/banking/cash-forecast" element={<CashForecast />} />
+                                        <Route path="/banking/transfers" element={<BankTransfers />} />
+                    
+                                        {/* Xero Parity Features */}
+                                        <Route path="/financial/recurring-invoices" element={<RecurringInvoices />} />
+                                        <Route path="/financial/customer-statements" element={<CustomerStatements />} />
+                                        <Route path="/financial/budget-vs-actual" element={<BudgetVsActual />} />
+                                        <Route path="/financial/bank-feeds" element={<BankFeeds />} />
+                                        <Route path="/ar/recurring-invoices" element={<RecurringInvoices />} />
+                                        <Route path="/ar/statements" element={<CustomerStatements />} />
+                                        <Route path="/banking/feeds" element={<BankFeeds />} />
+                                        <Route path="/reports/budget-vs-actual" element={<BudgetVsActual />} />
           
-                    {/* Operations Module - New Pages */}
+                                        {/* Operations Module - New Pages */}
                     <Route path="/operations/price-lists" element={<PriceLists />} />
                     <Route path="/operations/discounts" element={<Discounts />} />
                     <Route path="/operations/sales-targets" element={<SalesTargets />} />
