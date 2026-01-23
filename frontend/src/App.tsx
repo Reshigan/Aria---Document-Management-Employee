@@ -164,6 +164,14 @@ import AuditTrail from './pages/Compliance/AuditTrail';
 import RiskRegister from './pages/Compliance/RiskRegister';
 import DocumentControl from './pages/Compliance/DocumentControl';
 import Policies from './pages/Compliance/Policies';
+// Admin Configuration Pages (Xero Parity)
+import ChartOfAccounts from './pages/admin/ChartOfAccounts';
+import InvoiceTemplates from './pages/admin/InvoiceTemplates';
+import LockDates from './pages/admin/LockDates';
+import PaymentTerms from './pages/admin/PaymentTerms';
+import TaxRates from './pages/admin/TaxRates';
+import EmailTemplates from './pages/admin/EmailTemplates';
+import TrackingCategories from './pages/admin/TrackingCategories';
 import './styles/design-system.css';
 import './styles/dark-mode.css';
 
@@ -495,9 +503,18 @@ function App() {
           <Route path="/admin/users" element={<UserManagement />} />
           <Route path="/admin/data-import" element={<DataImport />} />
           <Route path="/admin/dashboard" element={<RoleDashboard />} />
-          <Route path="/admin/rbac" element={<RBACManagement />} />
+                    <Route path="/admin/rbac" element={<RBACManagement />} />
           
-          {/* Mobile */}
+                    {/* Admin Configuration (Xero Parity) */}
+                    <Route path="/admin/chart-of-accounts" element={<ChartOfAccounts />} />
+                    <Route path="/admin/invoice-templates" element={<InvoiceTemplates />} />
+                    <Route path="/admin/lock-dates" element={<LockDates />} />
+                    <Route path="/admin/payment-terms" element={<PaymentTerms />} />
+                    <Route path="/admin/tax-rates" element={<TaxRates />} />
+                    <Route path="/admin/email-templates" element={<EmailTemplates />} />
+                    <Route path="/admin/tracking-categories" element={<TrackingCategories />} />
+          
+                    {/* Mobile */}
           <Route path="/mobile" element={<MobileManagement />} />
           
           {/* Catch-all: redirect to dashboard for 404 pages */}
