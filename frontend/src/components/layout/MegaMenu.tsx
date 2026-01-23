@@ -364,6 +364,52 @@ const fallbackMenuData: Record<string, MegaMenuCategory[]> = {
       ]
     },
   ],
+  'Admin': [
+    {
+      title: 'System Configuration',
+      icon: <Settings size={18} />,
+      color: '#6366f1',
+      items: [
+        { label: 'System Settings', path: '/admin/system' },
+        { label: 'Company Settings', path: '/admin/company' },
+        { label: 'User Management', path: '/admin/users' },
+        { label: 'Role Management', path: '/admin/rbac' },
+        { label: 'Data Import', path: '/admin/data-import' },
+        { label: 'Integrations', path: '/integrations' },
+      ]
+    },
+    {
+      title: 'Financial Configuration',
+      icon: <BookOpen size={18} />,
+      color: '#8b5cf6',
+      items: [
+        { label: 'Chart of Accounts', path: '/admin/chart-of-accounts' },
+        { label: 'Tax Rates', path: '/admin/tax-rates' },
+        { label: 'Payment Terms', path: '/admin/payment-terms' },
+        { label: 'Lock Dates', path: '/admin/lock-dates' },
+        { label: 'Tracking Categories', path: '/admin/tracking-categories' },
+      ]
+    },
+    {
+      title: 'Document Templates',
+      icon: <FileText size={18} />,
+      color: '#ec4899',
+      items: [
+        { label: 'Invoice Templates', path: '/admin/invoice-templates' },
+        { label: 'Email Templates', path: '/admin/email-templates' },
+        { label: 'Document Templates', path: '/documents/templates' },
+      ]
+    },
+    {
+      title: 'Automation',
+      icon: <Bot size={18} />,
+      color: '#10b981',
+      items: [
+        { label: 'Bot Configuration', path: '/admin/agents' },
+        { label: 'Agent Registry', path: '/agents' },
+      ]
+    },
+  ],
 };
 
 interface MegaMenuProps {
