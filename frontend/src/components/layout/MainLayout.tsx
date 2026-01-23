@@ -1,6 +1,8 @@
 import React from 'react';
 import MegaMenu from './MegaMenu';
 import CommandPalette, { useCommandPalette } from '../CommandPalette/CommandPalette';
+import OnboardingTour from '../Onboarding/OnboardingTour';
+import { useKeyboardShortcuts } from '../../hooks/useKeyboardShortcuts';
 import './MainLayout.css';
 
 interface MainLayoutProps {
@@ -10,9 +12,15 @@ interface MainLayoutProps {
 export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   const commandPalette = useCommandPalette();
   
+  // Initialize keyboard shortcuts
+  useKeyboardShortcuts({
+    onSearch: commandPalette.open,
+  });
+  
   return (
     <div className="main-layout-mega">
       <CommandPalette isOpen={commandPalette.isOpen} onClose={commandPalette.close} />
+      <OnboardingTour />
       <MegaMenu onSearchClick={commandPalette.open} />
       <main className="main-content-mega">
         {children}

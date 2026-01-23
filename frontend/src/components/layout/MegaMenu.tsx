@@ -11,6 +11,8 @@ import { useAuthStore } from '../../store/authStore';
 import { NotificationsBell } from '../NotificationsBell/NotificationsBell';
 import { RecentItems } from '../RecentItems/RecentItems';
 import { QuickActions } from '../QuickActions/QuickActions';
+import ThemeToggle from '../ThemeToggle/ThemeToggle';
+import LanguageSwitcher from '../LanguageSwitcher/LanguageSwitcher';
 import './MegaMenu.css';
 
 const API_BASE_URL = '/api';
@@ -530,18 +532,20 @@ export const MegaMenu: React.FC<MegaMenuProps> = ({ onSearchClick }) => {
           </Link>
         </nav>
 
-        <div className="mega-menu-user" data-testid="user-menu">
-          <QuickActions variant="dropdown" />
-          <RecentItems variant="dropdown" />
-          <NotificationsBell />
-          <div className="mega-menu-user-info">
-            <span className="mega-menu-user-name" data-testid="user-name">{user?.full_name || 'User'}</span>
-            <span className="mega-menu-user-role">{user?.email}</span>
-          </div>
-          <button onClick={logout} className="mega-menu-logout" title="Logout" data-testid="logout">
-            <LogOut size={18} />
-          </button>
-        </div>
+                <div className="mega-menu-user" data-testid="user-menu">
+                  <QuickActions variant="dropdown" />
+                  <RecentItems variant="dropdown" />
+                  <NotificationsBell />
+                  <ThemeToggle variant="icon" />
+                  <LanguageSwitcher variant="icon" />
+                  <div className="mega-menu-user-info">
+                    <span className="mega-menu-user-name" data-testid="user-name">{user?.full_name || 'User'}</span>
+                    <span className="mega-menu-user-role">{user?.email}</span>
+                  </div>
+                  <button onClick={logout} className="mega-menu-logout" title="Logout" data-testid="logout">
+                    <LogOut size={18} />
+                  </button>
+                </div>
       </div>
     </div>
   );

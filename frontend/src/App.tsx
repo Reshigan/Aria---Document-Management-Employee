@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { MainLayout } from './components/layout/MainLayout';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
+import { ThemeProvider } from './contexts/ThemeContext';
 import Login from './pages/auth/Login';
 import ExecutiveDashboard from './pages/Dashboard/ExecutiveDashboard';
 import Quotes from './pages/ERP/Quotes';
@@ -159,9 +160,11 @@ import RiskRegister from './pages/Compliance/RiskRegister';
 import DocumentControl from './pages/Compliance/DocumentControl';
 import Policies from './pages/Compliance/Policies';
 import './styles/design-system.css';
+import './styles/dark-mode.css';
 
 function App() {
   return (
+    <ThemeProvider>
     <BrowserRouter>
       <Routes>
         {/* Public routes */}
@@ -490,6 +493,7 @@ function App() {
         } />
       </Routes>
     </BrowserRouter>
+    </ThemeProvider>
   );
 }
 
