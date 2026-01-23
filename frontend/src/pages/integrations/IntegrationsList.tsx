@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plug, CheckCircle, XCircle, Settings } from 'lucide-react';
+import { Plug, CheckCircle, XCircle, Settings, RefreshCw, Link2 } from 'lucide-react';
 
 const INTEGRATIONS = [
   { id: 'xero', name: 'Xero', logo: '📊', connected: true, lastSync: '2 hours ago' },
@@ -21,53 +21,95 @@ export default function IntegrationsListPage() {
   };
 
   return (
-    <div className="container mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-6 flex items-center gap-3">
-        <Plug className="h-8 w-8" />
-        Integrations
-      </h1>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-6 lg:p-8">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3 mb-2">
+          <div className="p-2 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl shadow-lg shadow-indigo-500/30">
+            <Plug className="h-7 w-7 text-white" />
+          </div>
+          Integrations
+        </h1>
+        <p className="text-gray-500 dark:text-gray-400 ml-14">Connect and manage third-party services</p>
+      </div>
 
       {syncing && (
-        <div className="mb-6 bg-blue-50 border border-blue-200 rounded-lg p-4" data-testid="sync-progress">
+        <div className="mb-6 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4" data-testid="sync-progress">
           <div className="flex items-center gap-3">
-            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600"></div>
-            <span className="text-blue-900 font-medium">Syncing data...</span>
+            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600 dark:border-blue-400"></div>
+            <span className="text-blue-900 dark:text-blue-300 font-medium">Syncing data...</span>
           </div>
         </div>
       )}
 
-      <div className="grid grid-cols-3 gap-6">
+      {/* Stats Cards */}
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-gradient-to-br from-emerald-500 to-green-500 rounded-xl shadow-lg shadow-emerald-500/30">
+              <CheckCircle className="h-6 w-6 text-white" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{integrations.filter(i => i.connected).length}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Connected</p>
+            </div>
+          </div>
+        </div>
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-gradient-to-br from-gray-500 to-slate-500 rounded-xl shadow-lg shadow-gray-500/30">
+              <XCircle className="h-6 w-6 text-white" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{integrations.filter(i => !i.connected).length}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Not Connected</p>
+            </div>
+          </div>
+        </div>
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl shadow-lg shadow-indigo-500/30">
+              <Link2 className="h-6 w-6 text-white" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{integrations.length}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Total Integrations</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {integrations.map((integration) => (
           <div 
             key={integration.id} 
-            className="bg-white rounded-lg shadow p-6"
+            className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 hover:shadow-lg transition-shadow duration-200"
             data-testid={`integration-${integration.id}`}
           >
             <div className="flex items-start justify-between mb-4">
               <div className="flex items-center gap-3">
                 <div className="text-3xl">{integration.logo}</div>
                 <div>
-                  <h3 className="font-bold text-lg">{integration.name}</h3>
+                  <h3 className="font-bold text-lg text-gray-900 dark:text-white">{integration.name}</h3>
                   {integration.connected ? (
-                    <span className="flex items-center gap-1 text-green-600 text-sm">
+                    <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 text-sm">
                       <CheckCircle className="h-4 w-4" />
                       Connected
                     </span>
                   ) : (
-                    <span className="flex items-center gap-1 text-gray-600 text-sm">
+                    <span className="flex items-center gap-1 text-gray-500 dark:text-gray-400 text-sm">
                       <XCircle className="h-4 w-4" />
                       Not Connected
                     </span>
                   )}
                 </div>
               </div>
-              <button className="p-2 hover:bg-gray-100 rounded">
-                <Settings className="h-5 w-5 text-gray-600" />
+              <button className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
+                <Settings className="h-5 w-5 text-gray-500 dark:text-gray-400" />
               </button>
             </div>
 
             {integration.connected && (
-              <div className="text-sm text-gray-600 mb-4">
+              <div className="text-sm text-gray-500 dark:text-gray-400 mb-4">
                 Last synced: {integration.lastSync}
               </div>
             )}
@@ -75,22 +117,23 @@ export default function IntegrationsListPage() {
             {integration.connected ? (
               <div className="flex gap-2">
                 <button 
-                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                  className="flex-1 px-4 py-2.5 border border-gray-200 dark:border-gray-600 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 font-medium transition-colors"
                   data-testid={integration.id === 'xero' ? 'button-configure-xero' : undefined}
                   onClick={() => integration.id === 'xero' && setShowConfigModal(true)}
                 >
                   Configure
                 </button>
                 <button 
-                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                  className="flex-1 px-4 py-2.5 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-xl font-medium shadow-lg shadow-indigo-500/30 hover:shadow-xl hover:shadow-indigo-500/40 transition-all flex items-center justify-center gap-2"
                   data-testid={integration.id === 'xero' ? 'button-sync-xero' : undefined}
                   onClick={() => handleSync(integration.id)}
                 >
-                  Sync Now
+                  <RefreshCw className="h-4 w-4" />
+                  Sync
                 </button>
               </div>
             ) : (
-              <button className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+              <button className="w-full px-4 py-2.5 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-xl font-medium shadow-lg shadow-indigo-500/30 hover:shadow-xl hover:shadow-indigo-500/40 transition-all">
                 Connect
               </button>
             )}
@@ -100,33 +143,38 @@ export default function IntegrationsListPage() {
 
       {/* Xero Config Modal */}
       {showConfigModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6" data-testid="modal-xero-config">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Configure Xero Integration</h2>
-            <div className="space-y-4">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl w-full max-w-md max-h-[90vh] overflow-auto shadow-2xl" data-testid="modal-xero-config">
+            <div className="p-6 border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-t-2xl">
+              <h2 className="text-xl font-bold text-white flex items-center gap-3">
+                <Settings className="h-6 w-6" />
+                Configure Xero Integration
+              </h2>
+            </div>
+            <div className="p-6 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Client ID</label>
-                <input type="text" className="w-full px-4 py-2 border border-gray-300 rounded-md" />
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Client ID</label>
+                <input type="text" className="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-white" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Client Secret</label>
-                <input type="password" className="w-full px-4 py-2 border border-gray-300 rounded-md" />
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Client Secret</label>
+                <input type="password" className="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-white" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Tenant ID</label>
-                <input type="text" className="w-full px-4 py-2 border border-gray-300 rounded-md" />
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Tenant ID</label>
+                <input type="text" className="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-white" />
               </div>
             </div>
-            <div className="flex justify-end gap-3 mt-6">
+            <div className="p-6 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3">
               <button
                 onClick={() => setShowConfigModal(false)}
-                className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                className="px-4 py-2.5 border border-gray-200 dark:border-gray-600 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 font-medium transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={() => setShowConfigModal(false)}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                className="px-4 py-2.5 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-xl font-medium shadow-lg shadow-indigo-500/30 hover:shadow-xl hover:shadow-indigo-500/40 transition-all"
               >
                 Save
               </button>
