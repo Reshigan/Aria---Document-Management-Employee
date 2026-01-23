@@ -690,55 +690,60 @@ const CRMDashboard: React.FC = () => {
 
       {/* LEAD MODAL */}
       {showLeadModal && (
-        <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}>
-          <div style={{ backgroundColor: 'white', borderRadius: '8px', width: '600px', maxHeight: '90vh', overflow: 'auto' }}>
-            <div style={{ padding: '20px', borderBottom: '1px solid #e5e7eb', position: 'sticky', top: 0, backgroundColor: 'white', zIndex: 10 }}>
-              <h2 style={{ fontSize: '20px', fontWeight: 'bold' }}>{editingLead ? 'Edit Lead' : 'New Lead'}</h2>
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl w-full max-w-xl max-h-[90vh] overflow-auto shadow-2xl">
+            <div className="p-6 border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-gradient-to-r from-rose-500 to-pink-500 rounded-t-2xl">
+              <h2 className="text-xl font-bold text-white flex items-center gap-3">
+                <Target className="h-6 w-6" />
+                {editingLead ? 'Edit Lead' : 'New Lead'}
+              </h2>
             </div>
-            <div style={{ padding: '20px' }}>
-              <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Company Name *</label>
+            <div className="p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Company Name *</label>
                 <input
                   type="text"
                   value={leadForm.company_name}
                   onChange={(e) => setLeadForm({ ...leadForm, company_name: e.target.value })}
-                  style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                  className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-rose-500"
                 />
               </div>
-              <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Contact Person *</label>
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Contact Person *</label>
                 <input
                   type="text"
                   value={leadForm.contact_person}
                   onChange={(e) => setLeadForm({ ...leadForm, contact_person: e.target.value })}
-                  style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                  className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-rose-500"
                 />
               </div>
-              <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Email *</label>
-                <input
-                  type="email"
-                  value={leadForm.email}
-                  onChange={(e) => setLeadForm({ ...leadForm, email: e.target.value })}
-                  style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
-                />
-              </div>
-              <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Phone</label>
-                <input
-                  type="text"
-                  value={leadForm.phone}
-                  onChange={(e) => setLeadForm({ ...leadForm, phone: e.target.value })}
-                  style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
-                />
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Company Size</label>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Email *</label>
+                  <input
+                    type="email"
+                    value={leadForm.email}
+                    onChange={(e) => setLeadForm({ ...leadForm, email: e.target.value })}
+                    className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-rose-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Phone</label>
+                  <input
+                    type="text"
+                    value={leadForm.phone}
+                    onChange={(e) => setLeadForm({ ...leadForm, phone: e.target.value })}
+                    className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-rose-500"
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Company Size</label>
                   <select
                     value={leadForm.company_size}
                     onChange={(e) => setLeadForm({ ...leadForm, company_size: e.target.value as any })}
-                    style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                    className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-rose-500"
                   >
                     <option value="Small">Small</option>
                     <option value="Medium">Medium</option>
@@ -747,11 +752,11 @@ const CRMDashboard: React.FC = () => {
                   </select>
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Engagement Level</label>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Engagement Level</label>
                   <select
                     value={leadForm.engagement_level}
                     onChange={(e) => setLeadForm({ ...leadForm, engagement_level: e.target.value as any })}
-                    style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                    className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-rose-500"
                   >
                     <option value="Cold">Cold</option>
                     <option value="Warm">Warm</option>
@@ -760,13 +765,13 @@ const CRMDashboard: React.FC = () => {
                   </select>
                 </div>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Budget Range</label>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Budget Range</label>
                   <select
                     value={leadForm.budget_range}
                     onChange={(e) => setLeadForm({ ...leadForm, budget_range: e.target.value })}
-                    style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                    className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-rose-500"
                   >
                     <option value="<100k">&lt;100k</option>
                     <option value="100k-500k">100k-500k</option>
@@ -775,11 +780,11 @@ const CRMDashboard: React.FC = () => {
                   </select>
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Decision Timeframe</label>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Decision Timeframe</label>
                   <select
                     value={leadForm.decision_timeframe}
                     onChange={(e) => setLeadForm({ ...leadForm, decision_timeframe: e.target.value })}
-                    style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                    className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-rose-500"
                   >
                     <option value=">6 months">&gt;6 months</option>
                     <option value="3-6 months">3-6 months</option>
@@ -789,16 +794,16 @@ const CRMDashboard: React.FC = () => {
                 </div>
               </div>
             </div>
-            <div style={{ padding: '20px', borderTop: '1px solid #e5e7eb', display: 'flex', justifyContent: 'flex-end', gap: '12px', position: 'sticky', bottom: 0, backgroundColor: 'white' }}>
+            <div className="p-6 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3 sticky bottom-0 bg-white dark:bg-gray-800 rounded-b-2xl">
               <button
                 onClick={() => setShowLeadModal(false)}
-                style={{ padding: '8px 16px', border: '1px solid #d1d5db', borderRadius: '6px', fontWeight: 600, cursor: 'pointer', background: 'white' }}
+                className="px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-semibold hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSaveLead}
-                style={{ padding: '8px 16px', backgroundColor: '#2563eb', color: 'white', border: 'none', borderRadius: '6px', fontWeight: 600, cursor: 'pointer' }}
+                className="px-6 py-3 bg-gradient-to-r from-rose-500 to-pink-500 text-white rounded-xl font-semibold shadow-lg shadow-rose-500/30 hover:shadow-xl hover:shadow-rose-500/40 transition-all"
               >
                 {editingLead ? 'Update' : 'Create'}
               </button>
@@ -809,47 +814,52 @@ const CRMDashboard: React.FC = () => {
 
       {/* OPPORTUNITY MODAL */}
       {showOppModal && (
-        <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}>
-          <div style={{ backgroundColor: 'white', borderRadius: '8px', width: '600px', maxHeight: '90vh', overflow: 'auto' }}>
-            <div style={{ padding: '20px', borderBottom: '1px solid #e5e7eb', position: 'sticky', top: 0, backgroundColor: 'white', zIndex: 10 }}>
-              <h2 style={{ fontSize: '20px', fontWeight: 'bold' }}>{editingOpp ? 'Edit Opportunity' : 'New Opportunity'}</h2>
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl w-full max-w-xl max-h-[90vh] overflow-auto shadow-2xl">
+            <div className="p-6 border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-gradient-to-r from-rose-500 to-pink-500 rounded-t-2xl">
+              <h2 className="text-xl font-bold text-white flex items-center gap-3">
+                <DollarSign className="h-6 w-6" />
+                {editingOpp ? 'Edit Opportunity' : 'New Opportunity'}
+              </h2>
             </div>
-            <div style={{ padding: '20px' }}>
-              <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Title *</label>
+            <div className="p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Title *</label>
                 <input
                   type="text"
                   value={oppForm.title}
                   onChange={(e) => setOppForm({ ...oppForm, title: e.target.value })}
-                  style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                  className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-rose-500"
                 />
               </div>
-              <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Customer ID *</label>
-                <input
-                  type="number"
-                  value={oppForm.customer_id}
-                  onChange={(e) => setOppForm({ ...oppForm, customer_id: e.target.value })}
-                  style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
-                />
-              </div>
-              <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Amount (ZAR) *</label>
-                <input
-                  type="number"
-                  step="0.01"
-                  value={oppForm.amount}
-                  onChange={(e) => setOppForm({ ...oppForm, amount: e.target.value })}
-                  style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
-                />
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Stage</label>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Customer ID *</label>
+                  <input
+                    type="number"
+                    value={oppForm.customer_id}
+                    onChange={(e) => setOppForm({ ...oppForm, customer_id: e.target.value })}
+                    className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-rose-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Amount (ZAR) *</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={oppForm.amount}
+                    onChange={(e) => setOppForm({ ...oppForm, amount: e.target.value })}
+                    className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-rose-500"
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Stage</label>
                   <select
                     value={oppForm.stage}
                     onChange={(e) => setOppForm({ ...oppForm, stage: e.target.value as any })}
-                    style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                    className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-rose-500"
                   >
                     <option value="PROSPECTING">Prospecting</option>
                     <option value="QUALIFICATION">Qualification</option>
@@ -860,37 +870,37 @@ const CRMDashboard: React.FC = () => {
                   </select>
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Probability (%)</label>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Probability (%)</label>
                   <input
                     type="number"
                     min="0"
                     max="100"
                     value={oppForm.probability}
                     onChange={(e) => setOppForm({ ...oppForm, probability: e.target.value })}
-                    style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                    className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-rose-500"
                   />
                 </div>
               </div>
-              <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Expected Close Date *</label>
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Expected Close Date *</label>
                 <input
                   type="date"
                   value={oppForm.expected_close_date}
                   onChange={(e) => setOppForm({ ...oppForm, expected_close_date: e.target.value })}
-                  style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                  className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-rose-500"
                 />
               </div>
             </div>
-            <div style={{ padding: '20px', borderTop: '1px solid #e5e7eb', display: 'flex', justifyContent: 'flex-end', gap: '12px', position: 'sticky', bottom: 0, backgroundColor: 'white' }}>
+            <div className="p-6 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3 sticky bottom-0 bg-white dark:bg-gray-800 rounded-b-2xl">
               <button
                 onClick={() => setShowOppModal(false)}
-                style={{ padding: '8px 16px', border: '1px solid #d1d5db', borderRadius: '6px', fontWeight: 600, cursor: 'pointer', background: 'white' }}
+                className="px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-semibold hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSaveOpportunity}
-                style={{ padding: '8px 16px', backgroundColor: '#2563eb', color: 'white', border: 'none', borderRadius: '6px', fontWeight: 600, cursor: 'pointer' }}
+                className="px-6 py-3 bg-gradient-to-r from-rose-500 to-pink-500 text-white rounded-xl font-semibold shadow-lg shadow-rose-500/30 hover:shadow-xl hover:shadow-rose-500/40 transition-all"
               >
                 {editingOpp ? 'Update' : 'Create'}
               </button>
@@ -901,92 +911,98 @@ const CRMDashboard: React.FC = () => {
 
       {/* CUSTOMER MODAL */}
       {showCustomerModal && (
-        <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}>
-          <div style={{ backgroundColor: 'white', borderRadius: '8px', width: '600px', maxHeight: '90vh', overflow: 'auto' }}>
-            <div style={{ padding: '20px', borderBottom: '1px solid #e5e7eb', position: 'sticky', top: 0, backgroundColor: 'white', zIndex: 10 }}>
-              <h2 style={{ fontSize: '20px', fontWeight: 'bold' }}>{editingCustomer ? 'Edit Customer' : 'New Customer'}</h2>
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl w-full max-w-xl max-h-[90vh] overflow-auto shadow-2xl">
+            <div className="p-6 border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-gradient-to-r from-rose-500 to-pink-500 rounded-t-2xl">
+              <h2 className="text-xl font-bold text-white flex items-center gap-3">
+                <Building2 className="h-6 w-6" />
+                {editingCustomer ? 'Edit Customer' : 'New Customer'}
+              </h2>
             </div>
-            <div style={{ padding: '20px' }}>
-              <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Customer Name *</label>
+            <div className="p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Customer Name *</label>
                 <input
                   type="text"
                   value={customerForm.customer_name}
                   onChange={(e) => setCustomerForm({ ...customerForm, customer_name: e.target.value })}
-                  style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                  className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-rose-500"
                 />
               </div>
-              <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Contact Person *</label>
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Contact Person *</label>
                 <input
                   type="text"
                   value={customerForm.contact_person}
                   onChange={(e) => setCustomerForm({ ...customerForm, contact_person: e.target.value })}
-                  style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                  className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-rose-500"
                 />
               </div>
-              <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Email *</label>
-                <input
-                  type="email"
-                  value={customerForm.email}
-                  onChange={(e) => setCustomerForm({ ...customerForm, email: e.target.value })}
-                  style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
-                />
-              </div>
-              <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Phone</label>
-                <input
-                  type="text"
-                  value={customerForm.phone}
-                  onChange={(e) => setCustomerForm({ ...customerForm, phone: e.target.value })}
-                  style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
-                />
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>BBBEE Level</label>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Email *</label>
+                  <input
+                    type="email"
+                    value={customerForm.email}
+                    onChange={(e) => setCustomerForm({ ...customerForm, email: e.target.value })}
+                    className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-rose-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Phone</label>
+                  <input
+                    type="text"
+                    value={customerForm.phone}
+                    onChange={(e) => setCustomerForm({ ...customerForm, phone: e.target.value })}
+                    className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-rose-500"
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">BBBEE Level</label>
                   <input
                     type="number"
                     min="1"
                     max="8"
                     value={customerForm.bbbee_level}
                     onChange={(e) => setCustomerForm({ ...customerForm, bbbee_level: e.target.value })}
-                    style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                    className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-rose-500"
                   />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Credit Limit (ZAR) *</label>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Credit Limit (ZAR) *</label>
                   <input
                     type="number"
                     step="0.01"
                     value={customerForm.credit_limit}
                     onChange={(e) => setCustomerForm({ ...customerForm, credit_limit: e.target.value })}
-                    style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                    className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-rose-500"
                   />
                 </div>
               </div>
-              <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+              <div>
+                <label className="flex items-center gap-3 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={customerForm.is_active}
                     onChange={(e) => setCustomerForm({ ...customerForm, is_active: e.target.checked })}
+                    className="w-5 h-5 rounded border-gray-300 text-rose-500 focus:ring-rose-500"
                   />
-                  <span style={{ fontSize: '14px', fontWeight: 600 }}>Active</span>
+                  <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">Active</span>
                 </label>
               </div>
             </div>
-            <div style={{ padding: '20px', borderTop: '1px solid #e5e7eb', display: 'flex', justifyContent: 'flex-end', gap: '12px', position: 'sticky', bottom: 0, backgroundColor: 'white' }}>
+            <div className="p-6 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3 sticky bottom-0 bg-white dark:bg-gray-800 rounded-b-2xl">
               <button
                 onClick={() => setShowCustomerModal(false)}
-                style={{ padding: '8px 16px', border: '1px solid #d1d5db', borderRadius: '6px', fontWeight: 600, cursor: 'pointer', background: 'white' }}
+                className="px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-semibold hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSaveCustomer}
-                style={{ padding: '8px 16px', backgroundColor: '#2563eb', color: 'white', border: 'none', borderRadius: '6px', fontWeight: 600, cursor: 'pointer' }}
+                className="px-6 py-3 bg-gradient-to-r from-rose-500 to-pink-500 text-white rounded-xl font-semibold shadow-lg shadow-rose-500/30 hover:shadow-xl hover:shadow-rose-500/40 transition-all"
               >
                 {editingCustomer ? 'Update' : 'Create'}
               </button>
