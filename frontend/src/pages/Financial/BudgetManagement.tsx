@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { budgetsApi } from '../../services/newPagesApi';
+import { Wallet, Plus, RefreshCw, AlertCircle, X, TrendingUp, TrendingDown, DollarSign, Calendar, Edit, Trash2 } from 'lucide-react';
 
 interface Budget {
   id: string;
@@ -21,30 +22,21 @@ export default function BudgetManagement() {
   const [error, setError] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({
-    budget_code: '',
-    budget_name: '',
-    fiscal_year: new Date().getFullYear(),
-    department_id: '',
-    cost_center: '',
-    total_amount: 0,
-    notes: ''
+    budget_code: '', budget_name: '', fiscal_year: new Date().getFullYear(), department_id: '', cost_center: '', total_amount: 0, notes: ''
   });
 
-  useEffect(() => {
-    fetchBudgets();
-  }, []);
+  useEffect(() => { fetchBudgets(); }, []);
 
   const fetchBudgets = async () => {
     try {
       setLoading(true);
       const response = await budgetsApi.getAll();
       setBudgets(response.data.budgets || []);
+      setError(null);
     } catch (err) {
       setError('Failed to load budgets');
       console.error(err);
-    } finally {
-      setLoading(false);
-    }
+    } finally { setLoading(false); }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -52,15 +44,7 @@ export default function BudgetManagement() {
     try {
       await budgetsApi.create(formData);
       setShowForm(false);
-      setFormData({
-        budget_code: '',
-        budget_name: '',
-        fiscal_year: new Date().getFullYear(),
-        department_id: '',
-        cost_center: '',
-        total_amount: 0,
-        notes: ''
-      });
+      setFormData({ budget_code: '', budget_name: '', fiscal_year: new Date().getFullYear(), department_id: '', cost_center: '', total_amount: 0, notes: '' });
       fetchBudgets();
     } catch (err) {
       setError('Failed to create budget');
@@ -79,185 +63,115 @@ export default function BudgetManagement() {
     }
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'approved': return 'bg-green-100 text-green-800';
-      case 'draft': return 'bg-gray-100 text-gray-800';
-      case 'pending': return 'bg-yellow-100 text-yellow-800';
-      case 'rejected': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
+  const getStatusBadge = (status: string) => {
+    const styles: Record<string, string> = {
+      approved: 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800',
+      draft: 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600',
+      pending: 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800',
+      rejected: 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 border-red-200 dark:border-red-800',
+    };
+    return styles[status] || styles.draft;
   };
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR' }).format(amount);
-  };
+  const formatCurrency = (amount: number) => new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR' }).format(amount);
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-      </div>
-    );
-  }
+  const stats = {
+    total: budgets.length,
+    totalBudget: budgets.reduce((sum, b) => sum + b.total_amount, 0),
+    totalSpent: budgets.reduce((sum, b) => sum + b.spent_amount, 0),
+    totalRemaining: budgets.reduce((sum, b) => sum + b.remaining_amount, 0),
+  };
 
   return (
-    <div className="p-6">
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Budget Management</h1>
-          <p className="text-gray-600">Manage departmental and project budgets</p>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-emerald-50 dark:from-gray-900 dark:to-gray-800 p-6">
+      <div className="max-w-7xl mx-auto space-y-6">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">Budget Management</h1>
+            <p className="text-gray-500 dark:text-gray-400 mt-1">Manage departmental and project budgets</p>
+          </div>
+          <div className="flex items-center gap-3">
+            <button onClick={fetchBudgets} className="p-3 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-200 dark:border-gray-700"><RefreshCw className={`h-5 w-5 text-gray-600 dark:text-gray-400 ${loading ? 'animate-spin' : ''}`} /></button>
+            <button onClick={() => setShowForm(true)} className="flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-xl font-medium hover:from-emerald-700 hover:to-teal-700 transition-all shadow-lg shadow-emerald-500/30"><Plus className="h-5 w-5" />New Budget</button>
+          </div>
         </div>
-        <button
-          onClick={() => setShowForm(true)}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
-        >
-          + New Budget
-        </button>
-      </div>
 
-      {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
-          {error}
+        {error && (<div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl flex items-center gap-3"><AlertCircle className="h-5 w-5 text-red-500" /><p className="text-red-700 dark:text-red-300">{error}</p><button onClick={() => setError(null)} className="ml-auto p-1 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg"><X className="h-4 w-4 text-red-500" /></button></div>)}
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
+            <div className="flex items-center gap-4"><div className="p-3 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl shadow-lg shadow-emerald-500/30"><Wallet className="h-6 w-6 text-white" /></div><div><p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.total}</p><p className="text-sm text-gray-500 dark:text-gray-400">Total Budgets</p></div></div>
+          </div>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
+            <div className="flex items-center gap-4"><div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl shadow-lg shadow-blue-500/30"><DollarSign className="h-6 w-6 text-white" /></div><div><p className="text-2xl font-bold text-gray-900 dark:text-white">{formatCurrency(stats.totalBudget)}</p><p className="text-sm text-gray-500 dark:text-gray-400">Total Budget</p></div></div>
+          </div>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
+            <div className="flex items-center gap-4"><div className="p-3 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl shadow-lg shadow-amber-500/30"><TrendingDown className="h-6 w-6 text-white" /></div><div><p className="text-2xl font-bold text-gray-900 dark:text-white">{formatCurrency(stats.totalSpent)}</p><p className="text-sm text-gray-500 dark:text-gray-400">Total Spent</p></div></div>
+          </div>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
+            <div className="flex items-center gap-4"><div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg shadow-green-500/30"><TrendingUp className="h-6 w-6 text-white" /></div><div><p className="text-2xl font-bold text-gray-900 dark:text-white">{formatCurrency(stats.totalRemaining)}</p><p className="text-sm text-gray-500 dark:text-gray-400">Remaining</p></div></div>
+          </div>
         </div>
-      )}
 
-      {showForm && (
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <h2 className="text-lg font-semibold mb-4">Create New Budget</h2>
-          <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Budget Code</label>
-              <input
-                type="text"
-                value={formData.budget_code}
-                onChange={(e) => setFormData({ ...formData, budget_code: e.target.value })}
-                className="w-full border rounded-lg px-3 py-2"
-                required
-              />
+        {showForm && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setShowForm(false)}>
+            <div onClick={(e) => e.stopPropagation()} className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden">
+              <div className="bg-gradient-to-r from-emerald-600 to-teal-600 text-white p-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3"><div className="p-2 bg-white/20 rounded-lg"><Wallet className="h-6 w-6" /></div><div><h2 className="text-xl font-semibold">Create New Budget</h2><p className="text-white/80 text-sm">Budget details</p></div></div>
+                  <button onClick={() => setShowForm(false)} className="p-2 hover:bg-white/20 rounded-lg transition-colors"><X className="h-5 w-5" /></button>
+                </div>
+              </div>
+              <form onSubmit={handleSubmit} className="p-6 space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Budget Code *</label><input type="text" value={formData.budget_code} onChange={(e) => setFormData({ ...formData, budget_code: e.target.value })} required className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all" /></div>
+                  <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Budget Name *</label><input type="text" value={formData.budget_name} onChange={(e) => setFormData({ ...formData, budget_name: e.target.value })} required className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all" /></div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Fiscal Year *</label><input type="number" value={formData.fiscal_year} onChange={(e) => setFormData({ ...formData, fiscal_year: parseInt(e.target.value) })} required className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all" /></div>
+                  <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Total Amount *</label><input type="number" value={formData.total_amount} onChange={(e) => setFormData({ ...formData, total_amount: parseFloat(e.target.value) })} required className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all" /></div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Cost Center</label><input type="text" value={formData.cost_center} onChange={(e) => setFormData({ ...formData, cost_center: e.target.value })} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all" /></div>
+                  <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Notes</label><input type="text" value={formData.notes} onChange={(e) => setFormData({ ...formData, notes: e.target.value })} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all" /></div>
+                </div>
+                <div className="flex justify-end gap-3 pt-4">
+                  <button type="button" onClick={() => setShowForm(false)} className="px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">Cancel</button>
+                  <button type="submit" className="px-6 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-xl font-medium hover:from-emerald-700 hover:to-teal-700 transition-all shadow-lg shadow-emerald-500/30">Create Budget</button>
+                </div>
+              </form>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Budget Name</label>
-              <input
-                type="text"
-                value={formData.budget_name}
-                onChange={(e) => setFormData({ ...formData, budget_name: e.target.value })}
-                className="w-full border rounded-lg px-3 py-2"
-                required
-              />
+          </div>
+        )}
+
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+          {loading ? (
+            <div className="p-12 text-center"><RefreshCw className="h-8 w-8 animate-spin text-emerald-500 mx-auto mb-4" /><p className="text-gray-500 dark:text-gray-400">Loading budgets...</p></div>
+          ) : budgets.length === 0 ? (
+            <div className="p-12 text-center"><div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-2xl flex items-center justify-center mx-auto mb-4"><Wallet className="h-8 w-8 text-gray-400" /></div><h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No budgets found</h3><p className="text-gray-500 dark:text-gray-400 mb-6">Create your first budget to get started</p><button onClick={() => setShowForm(true)} className="px-5 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-xl font-medium hover:from-emerald-700 hover:to-teal-700 transition-all">Create Budget</button></div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-50 dark:bg-gray-900/50"><tr><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Code</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Name</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Year</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Department</th><th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Total</th><th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Spent</th><th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Remaining</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th><th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th></tr></thead>
+                <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
+                  {budgets.map((budget) => (
+                    <tr key={budget.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                      <td className="px-6 py-4 font-semibold text-emerald-600 dark:text-emerald-400">{budget.budget_code}</td>
+                      <td className="px-6 py-4 text-gray-900 dark:text-white">{budget.budget_name}</td>
+                      <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{budget.fiscal_year}</td>
+                      <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{budget.department_name || '-'}</td>
+                      <td className="px-6 py-4 text-right font-semibold text-gray-900 dark:text-white">{formatCurrency(budget.total_amount)}</td>
+                      <td className="px-6 py-4 text-right text-amber-600 dark:text-amber-400">{formatCurrency(budget.spent_amount)}</td>
+                      <td className="px-6 py-4 text-right text-green-600 dark:text-green-400">{formatCurrency(budget.remaining_amount)}</td>
+                      <td className="px-6 py-4"><span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border capitalize ${getStatusBadge(budget.status)}`}>{budget.status}</span></td>
+                      <td className="px-6 py-4"><div className="flex items-center justify-end gap-2"><button className="p-2 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-lg transition-colors"><Edit className="h-4 w-4" /></button><button onClick={() => handleDelete(budget.id)} className="p-2 hover:bg-red-100 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg transition-colors"><Trash2 className="h-4 w-4" /></button></div></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Fiscal Year</label>
-              <input
-                type="number"
-                value={formData.fiscal_year}
-                onChange={(e) => setFormData({ ...formData, fiscal_year: parseInt(e.target.value) })}
-                className="w-full border rounded-lg px-3 py-2"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Total Amount</label>
-              <input
-                type="number"
-                value={formData.total_amount}
-                onChange={(e) => setFormData({ ...formData, total_amount: parseFloat(e.target.value) })}
-                className="w-full border rounded-lg px-3 py-2"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Cost Center</label>
-              <input
-                type="text"
-                value={formData.cost_center}
-                onChange={(e) => setFormData({ ...formData, cost_center: e.target.value })}
-                className="w-full border rounded-lg px-3 py-2"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
-              <input
-                type="text"
-                value={formData.notes}
-                onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                className="w-full border rounded-lg px-3 py-2"
-              />
-            </div>
-            <div className="col-span-2 flex gap-2">
-              <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
-                Create Budget
-              </button>
-              <button
-                type="button"
-                onClick={() => setShowForm(false)}
-                className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300"
-              >
-                Cancel
-              </button>
-            </div>
-          </form>
+          )}
         </div>
-      )}
-
-      <div className="bg-white rounded-lg shadow-md overflow-hidden">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Code</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Year</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Department</th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Total</th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Spent</th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Remaining</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {budgets.length === 0 ? (
-              <tr>
-                <td colSpan={9} className="px-6 py-8 text-center text-gray-500">
-                  No budgets found. Create your first budget to get started.
-                </td>
-              </tr>
-            ) : (
-              budgets.map((budget) => (
-                <tr key={budget.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    {budget.budget_code}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{budget.budget_name}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{budget.fiscal_year}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{budget.department_name || '-'}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">
-                    {formatCurrency(budget.total_amount)}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">
-                    {formatCurrency(budget.spent_amount)}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">
-                    {formatCurrency(budget.remaining_amount)}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(budget.status)}`}>
-                      {budget.status}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
-                    <button
-                      onClick={() => handleDelete(budget.id)}
-                      className="text-red-600 hover:text-red-900"
-                    >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
       </div>
     </div>
   );
