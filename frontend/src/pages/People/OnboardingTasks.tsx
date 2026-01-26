@@ -23,12 +23,21 @@ export default function OnboardingTasks() {
   const fetchTasks = async () => {
     try {
       setLoading(true);
-      setTasks([
-        { id: '1', task_name: 'Complete IT Setup', employee_name: 'Sarah Johnson', category: 'IT', due_date: '2026-01-20', assigned_to: 'IT Support', status: 'in_progress' },
-        { id: '2', task_name: 'HR Orientation', employee_name: 'Sarah Johnson', category: 'HR', due_date: '2026-01-18', assigned_to: 'HR Manager', status: 'completed' },
-        { id: '3', task_name: 'Safety Training', employee_name: 'Michael Brown', category: 'Training', due_date: '2026-01-15', assigned_to: 'Safety Officer', status: 'overdue' },
-      ]);
-    } catch (err) { setError('Failed to load onboarding tasks'); } finally { setLoading(false); }
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
+      const response = await fetch(`${API_BASE}/api/onboarding-tasks`, {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setTasks(Array.isArray(data) ? data : data.data || []);
+      } else {
+        setTasks([]);
+      }
+    } catch (err) { 
+      console.error('Failed to load onboarding tasks:', err);
+      setError('Failed to load onboarding tasks'); 
+      setTasks([]);
+    } finally { setLoading(false); }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
