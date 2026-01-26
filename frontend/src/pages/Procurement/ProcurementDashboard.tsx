@@ -340,28 +340,26 @@ const ProcurementDashboard: React.FC = () => {
   );
 
   const getStatusBadge = (status: string) => {
-    const colors: Record<string, { bg: string; text: string }> = {
-      DRAFT: { bg: '#f3f4f6', text: '#374151' },
-      APPROVED: { bg: '#dbeafe', text: '#1e40af' },
-      SENT: { bg: '#fef3c7', text: '#92400e' },
-      RECEIVED: { bg: '#dcfce7', text: '#166534' },
-      CANCELLED: { bg: '#fee2e2', text: '#991b1b' },
-      ISSUED: { bg: '#dbeafe', text: '#1e40af' },
-      CLOSED: { bg: '#dcfce7', text: '#166534' }
+    const colors: Record<string, string> = {
+      DRAFT: 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300',
+      APPROVED: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
+      SENT: 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300',
+      RECEIVED: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
+      CANCELLED: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300',
+      ISSUED: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
+      CLOSED: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
     };
-    const color = colors[status] || { bg: '#f3f4f6', text: '#374151' };
-    return <span style={{ padding: '4px 8px', fontSize: '12px', fontWeight: 600, borderRadius: '9999px', backgroundColor: color.bg, color: color.text }}>{status}</span>;
+    return <span className={`px-2 py-1 text-xs font-semibold rounded-full ${colors[status] || colors.DRAFT}`}>{status}</span>;
   };
 
   const getBbbeeBadge = (level: number) => {
-    const colors: Record<number, { bg: string; text: string }> = {
-      1: { bg: '#dcfce7', text: '#166534' },
-      2: { bg: '#dbeafe', text: '#1e40af' },
-      3: { bg: '#fef3c7', text: '#92400e' },
-      4: { bg: '#fed7aa', text: '#9a3412' }
+    const colors: Record<number, string> = {
+      1: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
+      2: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
+      3: 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300',
+      4: 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300'
     };
-    const color = colors[Math.min(level, 4)] || { bg: '#f3f4f6', text: '#374151' };
-    return <span style={{ padding: '4px 8px', fontSize: '12px', fontWeight: 600, borderRadius: '9999px', backgroundColor: color.bg, color: color.text }}>Level {level}</span>;
+    return <span className={`px-2 py-1 text-xs font-semibold rounded-full ${colors[Math.min(level, 4)] || 'bg-gray-100 text-gray-700'}`}>Level {level}</span>;
   };
 
   const formatCurrency = (amount: number) => {
@@ -373,127 +371,113 @@ const ProcurementDashboard: React.FC = () => {
   };
 
   return (
-    <div style={{ padding: '24px' }}>
-      {/* Header */}
-      <div style={{ marginBottom: '24px' }}>
-        <h1 style={{ fontSize: '30px', fontWeight: 'bold', color: '#111827', marginBottom: '8px' }}>Procurement</h1>
-        <p style={{ color: '#6b7280' }}>Manage suppliers, purchase orders, and RFQs</p>
-      </div>
-
-      {/* Error Display */}
-      {error && (
-        <div style={{ padding: '12px 16px', marginBottom: '16px', backgroundColor: '#fee2e2', border: '1px solid #fecaca', borderRadius: '6px', color: '#991b1b' }}>
-          {error}
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 p-6">
+      <div className="max-w-7xl mx-auto space-y-6">
+        {/* Header */}
+        <div>
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Procurement</h1>
+          <p className="text-gray-500 dark:text-gray-400 mt-1">Manage suppliers, purchase orders, and RFQs</p>
         </div>
-      )}
 
-      {/* Tabs */}
-      <div style={{ borderBottom: '1px solid #e5e7eb', marginBottom: '24px' }}>
-        <div style={{ display: 'flex', gap: '16px' }}>
-          <button
-            onClick={() => setActiveTab('suppliers')}
-            style={{
-              padding: '12px 16px',
-              fontSize: '14px',
-              fontWeight: 600,
-              color: activeTab === 'suppliers' ? '#2563eb' : '#6b7280',
-              borderBottom: activeTab === 'suppliers' ? '2px solid #2563eb' : '2px solid transparent',
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer'
-            }}
-          >
-            Suppliers ({suppliers.length})
-          </button>
-          <button
-            onClick={() => setActiveTab('purchase_orders')}
-            style={{
-              padding: '12px 16px',
-              fontSize: '14px',
-              fontWeight: 600,
-              color: activeTab === 'purchase_orders' ? '#2563eb' : '#6b7280',
-              borderBottom: activeTab === 'purchase_orders' ? '2px solid #2563eb' : '2px solid transparent',
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer'
-            }}
-          >
-            Purchase Orders ({purchaseOrders.length})
-          </button>
-          <button
-            onClick={() => setActiveTab('rfqs')}
-            style={{
-              padding: '12px 16px',
-              fontSize: '14px',
-              fontWeight: 600,
-              color: activeTab === 'rfqs' ? '#2563eb' : '#6b7280',
-              borderBottom: activeTab === 'rfqs' ? '2px solid #2563eb' : '2px solid transparent',
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer'
-            }}
-          >
-            RFQs ({rfqs.length})
-          </button>
+        {/* Error Display */}
+        {error && (
+          <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl text-red-700 dark:text-red-300">
+            {error}
+          </div>
+        )}
+
+        {/* Tabs */}
+        <div className="border-b border-gray-200 dark:border-gray-700">
+          <div className="flex gap-4">
+            <button
+              onClick={() => setActiveTab('suppliers')}
+              className={`px-4 py-3 text-sm font-semibold border-b-2 transition-colors ${
+                activeTab === 'suppliers' 
+                  ? 'border-blue-600 text-blue-600 dark:text-blue-400' 
+                  : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+              }`}
+            >
+              Suppliers ({suppliers.length})
+            </button>
+            <button
+              onClick={() => setActiveTab('purchase_orders')}
+              className={`px-4 py-3 text-sm font-semibold border-b-2 transition-colors ${
+                activeTab === 'purchase_orders' 
+                  ? 'border-blue-600 text-blue-600 dark:text-blue-400' 
+                  : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+              }`}
+            >
+              Purchase Orders ({purchaseOrders.length})
+            </button>
+            <button
+              onClick={() => setActiveTab('rfqs')}
+              className={`px-4 py-3 text-sm font-semibold border-b-2 transition-colors ${
+                activeTab === 'rfqs' 
+                  ? 'border-blue-600 text-blue-600 dark:text-blue-400' 
+                  : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+              }`}
+            >
+              RFQs ({rfqs.length})
+            </button>
+          </div>
         </div>
-      </div>
 
       {/* SUPPLIERS TAB */}
       {activeTab === 'suppliers' && (
-        <div>
+        <div className="space-y-4">
           {/* Actions Bar */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+          <div className="flex justify-between items-center">
             <input
               type="text"
               placeholder="Search suppliers..."
               value={suppliersSearch}
               onChange={(e) => setSuppliersSearch(e.target.value)}
-              style={{ padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px', width: '300px' }}
+              className="px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 w-80 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
             />
             <button
               onClick={handleCreateSupplier}
-              style={{ padding: '8px 16px', backgroundColor: '#2563eb', color: 'white', border: 'none', borderRadius: '6px', fontWeight: 600, cursor: 'pointer' }}
+              className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-semibold hover:from-blue-600 hover:to-blue-700 shadow-lg shadow-blue-500/30 transition-all"
             >
               + New Supplier
             </button>
           </div>
 
           {/* Suppliers Table */}
-          <div style={{ backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', overflow: 'hidden' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-              <thead style={{ backgroundColor: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+            <table className="w-full">
+              <thead className="bg-gray-50 dark:bg-gray-900/50 border-b border-gray-100 dark:border-gray-700">
                 <tr>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Supplier Code</th>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Name</th>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Contact</th>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Email</th>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Payment Terms</th>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>BBBEE</th>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Actions</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Supplier Code</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Name</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Contact</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Email</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Payment Terms</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">BBBEE</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
                 {suppliersLoading ? (
                   <tr>
-                    <td colSpan={7} style={{ padding: '24px', textAlign: 'center', color: '#6b7280' }}>Loading suppliers...</td>
+                    <td colSpan={7} className="px-6 py-8 text-center text-gray-500 dark:text-gray-400">Loading suppliers...</td>
                   </tr>
                 ) : filteredSuppliers.length === 0 ? (
                   <tr>
-                    <td colSpan={7} style={{ padding: '24px', textAlign: 'center', color: '#6b7280' }}>No suppliers found</td>
+                    <td colSpan={7} className="px-6 py-8 text-center text-gray-500 dark:text-gray-400">No suppliers found</td>
                   </tr>
                 ) : (
                   filteredSuppliers.map((supplier) => (
-                    <tr key={supplier.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
-                      <td style={{ padding: '12px 16px', fontSize: '14px', fontWeight: 600, color: '#2563eb' }}>{supplier.supplier_code}</td>
-                      <td style={{ padding: '12px 16px', fontSize: '14px' }}>{supplier.supplier_name}</td>
-                      <td style={{ padding: '12px 16px', fontSize: '14px' }}>{supplier.contact_person}</td>
-                      <td style={{ padding: '12px 16px', fontSize: '14px' }}>{supplier.email}</td>
-                      <td style={{ padding: '12px 16px', fontSize: '14px' }}>{supplier.payment_terms} days</td>
-                      <td style={{ padding: '12px 16px' }}>{getBbbeeBadge(supplier.bbbee_level)}</td>
-                      <td style={{ padding: '12px 16px' }}>
-                        <div style={{ display: 'flex', gap: '8px' }}>
-                          <button onClick={() => handleEditSupplier(supplier)} style={{ padding: '4px 8px', fontSize: '12px', color: '#2563eb', background: 'none', border: 'none', cursor: 'pointer' }}>Edit</button>
-                          <button onClick={() => setDeleteConfirm({ show: true, type: 'supplier', id: supplier.id, name: supplier.supplier_name })} style={{ padding: '4px 8px', fontSize: '12px', color: '#dc2626', background: 'none', border: 'none', cursor: 'pointer' }}>Delete</button>
+                    <tr key={supplier.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                      <td className="px-6 py-4 text-sm font-semibold text-blue-600 dark:text-blue-400">{supplier.supplier_code}</td>
+                      <td className="px-6 py-4 text-sm text-gray-900 dark:text-white">{supplier.supplier_name}</td>
+                      <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">{supplier.contact_person}</td>
+                      <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">{supplier.email}</td>
+                      <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">{supplier.payment_terms} days</td>
+                      <td className="px-6 py-4">{getBbbeeBadge(supplier.bbbee_level)}</td>
+                      <td className="px-6 py-4">
+                        <div className="flex gap-2">
+                          <button onClick={() => handleEditSupplier(supplier)} className="px-3 py-1 text-xs text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors">Edit</button>
+                          <button onClick={() => setDeleteConfirm({ show: true, type: 'supplier', id: supplier.id, name: supplier.supplier_name })} className="px-3 py-1 text-xs text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors">Delete</button>
                         </div>
                       </td>
                     </tr>
@@ -507,92 +491,92 @@ const ProcurementDashboard: React.FC = () => {
 
       {/* PURCHASE ORDERS TAB */}
       {activeTab === 'purchase_orders' && (
-        <div>
+        <div className="space-y-4">
           {/* Actions Bar */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+          <div className="flex justify-between items-center">
             <input
               type="text"
               placeholder="Search purchase orders..."
               value={posSearch}
               onChange={(e) => setPosSearch(e.target.value)}
-              style={{ padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px', width: '300px' }}
+              className="px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 w-80 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
             />
             <button
               onClick={handleCreatePo}
-              style={{ padding: '8px 16px', backgroundColor: '#2563eb', color: 'white', border: 'none', borderRadius: '6px', fontWeight: 600, cursor: 'pointer' }}
+              className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-semibold hover:from-blue-600 hover:to-blue-700 shadow-lg shadow-blue-500/30 transition-all"
             >
               + New Purchase Order
             </button>
           </div>
 
           {/* Summary Cards */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '16px' }}>
-            <div style={{ backgroundColor: 'white', padding: '16px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-              <div style={{ fontSize: '14px', color: '#6b7280', marginBottom: '4px' }}>Total POs</div>
-              <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#111827' }}>{purchaseOrders.length}</div>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="bg-white dark:bg-gray-800 p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
+              <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">Total POs</div>
+              <div className="text-2xl font-bold text-gray-900 dark:text-white">{purchaseOrders.length}</div>
             </div>
-            <div style={{ backgroundColor: 'white', padding: '16px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-              <div style={{ fontSize: '14px', color: '#6b7280', marginBottom: '4px' }}>Draft</div>
-              <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#6b7280' }}>
+            <div className="bg-white dark:bg-gray-800 p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
+              <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">Draft</div>
+              <div className="text-2xl font-bold text-gray-500 dark:text-gray-400">
                 {purchaseOrders.filter(po => po.status === 'DRAFT').length}
               </div>
             </div>
-            <div style={{ backgroundColor: 'white', padding: '16px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-              <div style={{ fontSize: '14px', color: '#6b7280', marginBottom: '4px' }}>Sent</div>
-              <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#f59e0b' }}>
+            <div className="bg-white dark:bg-gray-800 p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
+              <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">Sent</div>
+              <div className="text-2xl font-bold text-amber-500">
                 {purchaseOrders.filter(po => po.status === 'SENT').length}
               </div>
             </div>
-            <div style={{ backgroundColor: 'white', padding: '16px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-              <div style={{ fontSize: '14px', color: '#6b7280', marginBottom: '4px' }}>Total Value</div>
-              <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#059669' }}>
+            <div className="bg-white dark:bg-gray-800 p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
+              <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">Total Value</div>
+              <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
                 {formatCurrency(purchaseOrders.reduce((sum, po) => sum + po.total_amount, 0))}
               </div>
             </div>
           </div>
 
           {/* Purchase Orders Table */}
-          <div style={{ backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', overflow: 'hidden' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-              <thead style={{ backgroundColor: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+            <table className="w-full">
+              <thead className="bg-gray-50 dark:bg-gray-900/50 border-b border-gray-100 dark:border-gray-700">
                 <tr>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>PO Number</th>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Supplier</th>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Order Date</th>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Delivery Date</th>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Amount</th>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Status</th>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Actions</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">PO Number</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Supplier</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Order Date</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Delivery Date</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Amount</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
                 {posLoading ? (
                   <tr>
-                    <td colSpan={7} style={{ padding: '24px', textAlign: 'center', color: '#6b7280' }}>Loading purchase orders...</td>
+                    <td colSpan={7} className="px-6 py-8 text-center text-gray-500 dark:text-gray-400">Loading purchase orders...</td>
                   </tr>
                 ) : filteredPos.length === 0 ? (
                   <tr>
-                    <td colSpan={7} style={{ padding: '24px', textAlign: 'center', color: '#6b7280' }}>No purchase orders found</td>
+                    <td colSpan={7} className="px-6 py-8 text-center text-gray-500 dark:text-gray-400">No purchase orders found</td>
                   </tr>
                 ) : (
                   filteredPos.map((po) => (
-                    <tr key={po.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
-                      <td style={{ padding: '12px 16px', fontSize: '14px', fontWeight: 600, color: '#2563eb' }}>{po.po_number}</td>
-                      <td style={{ padding: '12px 16px', fontSize: '14px' }}>{po.supplier_name || `Supplier #${po.supplier_id}`}</td>
-                      <td style={{ padding: '12px 16px', fontSize: '14px' }}>{formatDate(po.order_date)}</td>
-                      <td style={{ padding: '12px 16px', fontSize: '14px' }}>{formatDate(po.delivery_date)}</td>
-                      <td style={{ padding: '12px 16px', fontSize: '14px', fontWeight: 600 }}>{formatCurrency(po.total_amount)}</td>
-                      <td style={{ padding: '12px 16px' }}>{getStatusBadge(po.status)}</td>
-                      <td style={{ padding: '12px 16px' }}>
-                        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                          <button onClick={() => handleEditPo(po)} style={{ padding: '4px 8px', fontSize: '12px', color: '#2563eb', background: 'none', border: 'none', cursor: 'pointer' }}>Edit</button>
+                    <tr key={po.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                      <td className="px-6 py-4 text-sm font-semibold text-blue-600 dark:text-blue-400">{po.po_number}</td>
+                      <td className="px-6 py-4 text-sm text-gray-900 dark:text-white">{po.supplier_name || `Supplier #${po.supplier_id}`}</td>
+                      <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">{formatDate(po.order_date)}</td>
+                      <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">{formatDate(po.delivery_date)}</td>
+                      <td className="px-6 py-4 text-sm font-semibold text-gray-900 dark:text-white">{formatCurrency(po.total_amount)}</td>
+                      <td className="px-6 py-4">{getStatusBadge(po.status)}</td>
+                      <td className="px-6 py-4">
+                        <div className="flex gap-2 flex-wrap">
+                          <button onClick={() => handleEditPo(po)} className="px-3 py-1 text-xs text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors">Edit</button>
                           {po.status === 'DRAFT' && (
-                            <button onClick={() => handleApprovePo(po.id)} style={{ padding: '4px 8px', fontSize: '12px', color: '#059669', background: 'none', border: 'none', cursor: 'pointer' }}>Approve</button>
+                            <button onClick={() => handleApprovePo(po.id)} className="px-3 py-1 text-xs text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/30 rounded-lg transition-colors">Approve</button>
                           )}
                           {po.status === 'APPROVED' && (
-                            <button onClick={() => handleSendPo(po.id)} style={{ padding: '4px 8px', fontSize: '12px', color: '#f59e0b', background: 'none', border: 'none', cursor: 'pointer' }}>Send</button>
+                            <button onClick={() => handleSendPo(po.id)} className="px-3 py-1 text-xs text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/30 rounded-lg transition-colors">Send</button>
                           )}
-                          <button onClick={() => setDeleteConfirm({ show: true, type: 'po', id: po.id, name: po.po_number })} style={{ padding: '4px 8px', fontSize: '12px', color: '#dc2626', background: 'none', border: 'none', cursor: 'pointer' }}>Delete</button>
+                          <button onClick={() => setDeleteConfirm({ show: true, type: 'po', id: po.id, name: po.po_number })} className="px-3 py-1 text-xs text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors">Delete</button>
                         </div>
                       </td>
                     </tr>
@@ -606,61 +590,61 @@ const ProcurementDashboard: React.FC = () => {
 
       {/* RFQS TAB */}
       {activeTab === 'rfqs' && (
-        <div>
+        <div className="space-y-4">
           {/* Actions Bar */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+          <div className="flex justify-between items-center">
             <input
               type="text"
               placeholder="Search RFQs..."
               value={rfqsSearch}
               onChange={(e) => setRfqsSearch(e.target.value)}
-              style={{ padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px', width: '300px' }}
+              className="px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 w-80 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
             />
             <button
               onClick={handleCreateRfq}
-              style={{ padding: '8px 16px', backgroundColor: '#2563eb', color: 'white', border: 'none', borderRadius: '6px', fontWeight: 600, cursor: 'pointer' }}
+              className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-semibold hover:from-blue-600 hover:to-blue-700 shadow-lg shadow-blue-500/30 transition-all"
             >
               + New RFQ
             </button>
           </div>
 
           {/* RFQs Table */}
-          <div style={{ backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', overflow: 'hidden' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-              <thead style={{ backgroundColor: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+            <table className="w-full">
+              <thead className="bg-gray-50 dark:bg-gray-900/50 border-b border-gray-100 dark:border-gray-700">
                 <tr>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>RFQ Number</th>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Title</th>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Issue Date</th>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Closing Date</th>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Status</th>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Actions</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">RFQ Number</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Title</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Issue Date</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Closing Date</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
                 {rfqsLoading ? (
                   <tr>
-                    <td colSpan={6} style={{ padding: '24px', textAlign: 'center', color: '#6b7280' }}>Loading RFQs...</td>
+                    <td colSpan={6} className="px-6 py-8 text-center text-gray-500 dark:text-gray-400">Loading RFQs...</td>
                   </tr>
                 ) : filteredRfqs.length === 0 ? (
                   <tr>
-                    <td colSpan={6} style={{ padding: '24px', textAlign: 'center', color: '#6b7280' }}>No RFQs found</td>
+                    <td colSpan={6} className="px-6 py-8 text-center text-gray-500 dark:text-gray-400">No RFQs found</td>
                   </tr>
                 ) : (
                   filteredRfqs.map((rfq) => (
-                    <tr key={rfq.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
-                      <td style={{ padding: '12px 16px', fontSize: '14px', fontWeight: 600, color: '#2563eb' }}>{rfq.rfq_number}</td>
-                      <td style={{ padding: '12px 16px', fontSize: '14px' }}>{rfq.title}</td>
-                      <td style={{ padding: '12px 16px', fontSize: '14px' }}>{formatDate(rfq.issue_date)}</td>
-                      <td style={{ padding: '12px 16px', fontSize: '14px' }}>{formatDate(rfq.closing_date)}</td>
-                      <td style={{ padding: '12px 16px' }}>{getStatusBadge(rfq.status)}</td>
-                      <td style={{ padding: '12px 16px' }}>
-                        <div style={{ display: 'flex', gap: '8px' }}>
-                          <button onClick={() => handleEditRfq(rfq)} style={{ padding: '4px 8px', fontSize: '12px', color: '#2563eb', background: 'none', border: 'none', cursor: 'pointer' }}>Edit</button>
+                    <tr key={rfq.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                      <td className="px-6 py-4 text-sm font-semibold text-blue-600 dark:text-blue-400">{rfq.rfq_number}</td>
+                      <td className="px-6 py-4 text-sm text-gray-900 dark:text-white">{rfq.title}</td>
+                      <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">{formatDate(rfq.issue_date)}</td>
+                      <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">{formatDate(rfq.closing_date)}</td>
+                      <td className="px-6 py-4">{getStatusBadge(rfq.status)}</td>
+                      <td className="px-6 py-4">
+                        <div className="flex gap-2">
+                          <button onClick={() => handleEditRfq(rfq)} className="px-3 py-1 text-xs text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors">Edit</button>
                           {rfq.status === 'DRAFT' && (
-                            <button onClick={() => handleIssueRfq(rfq.id)} style={{ padding: '4px 8px', fontSize: '12px', color: '#059669', background: 'none', border: 'none', cursor: 'pointer' }}>Issue</button>
+                            <button onClick={() => handleIssueRfq(rfq.id)} className="px-3 py-1 text-xs text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/30 rounded-lg transition-colors">Issue</button>
                           )}
-                          <button onClick={() => setDeleteConfirm({ show: true, type: 'rfq', id: rfq.id, name: rfq.rfq_number })} style={{ padding: '4px 8px', fontSize: '12px', color: '#dc2626', background: 'none', border: 'none', cursor: 'pointer' }}>Delete</button>
+                          <button onClick={() => setDeleteConfirm({ show: true, type: 'rfq', id: rfq.id, name: rfq.rfq_number })} className="px-3 py-1 text-xs text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors">Delete</button>
                         </div>
                       </td>
                     </tr>
@@ -674,75 +658,75 @@ const ProcurementDashboard: React.FC = () => {
 
       {/* SUPPLIER MODAL */}
       {showSupplierModal && (
-        <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}>
-          <div style={{ backgroundColor: 'white', borderRadius: '8px', width: '600px', maxHeight: '90vh', overflow: 'auto' }}>
-            <div style={{ padding: '20px', borderBottom: '1px solid #e5e7eb', position: 'sticky', top: 0, backgroundColor: 'white', zIndex: 10 }}>
-              <h2 style={{ fontSize: '20px', fontWeight: 'bold' }}>{editingSupplier ? 'Edit Supplier' : 'New Supplier'}</h2>
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl w-[600px] max-h-[90vh] overflow-auto shadow-2xl">
+            <div className="p-5 border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-white dark:bg-gray-800 z-10">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white">{editingSupplier ? 'Edit Supplier' : 'New Supplier'}</h2>
             </div>
-            <div style={{ padding: '20px' }}>
-              <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Supplier Name *</label>
+            <div className="p-5 space-y-4">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Supplier Name *</label>
                 <input
                   type="text"
                   value={supplierForm.supplier_name}
                   onChange={(e) => setSupplierForm({ ...supplierForm, supplier_name: e.target.value })}
-                  style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                  className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Contact Person *</label>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Contact Person *</label>
                   <input
                     type="text"
                     value={supplierForm.contact_person}
                     onChange={(e) => setSupplierForm({ ...supplierForm, contact_person: e.target.value })}
-                    style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                    className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Phone *</label>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Phone *</label>
                   <input
                     type="text"
                     value={supplierForm.phone}
                     onChange={(e) => setSupplierForm({ ...supplierForm, phone: e.target.value })}
-                    style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                    className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
               </div>
-              <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Email *</label>
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Email *</label>
                 <input
                   type="email"
                   value={supplierForm.email}
                   onChange={(e) => setSupplierForm({ ...supplierForm, email: e.target.value })}
-                  style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                  className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
-              <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Address</label>
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Address</label>
                 <textarea
                   value={supplierForm.address}
                   onChange={(e) => setSupplierForm({ ...supplierForm, address: e.target.value })}
                   rows={3}
-                  style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                  className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Payment Terms (days)</label>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Payment Terms (days)</label>
                   <input
                     type="number"
                     value={supplierForm.payment_terms}
                     onChange={(e) => setSupplierForm({ ...supplierForm, payment_terms: e.target.value })}
-                    style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                    className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>BBBEE Level</label>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">BBBEE Level</label>
                   <select
                     value={supplierForm.bbbee_level}
                     onChange={(e) => setSupplierForm({ ...supplierForm, bbbee_level: e.target.value })}
-                    style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                    className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   >
                     <option value="1">Level 1</option>
                     <option value="2">Level 2</option>
@@ -755,27 +739,28 @@ const ProcurementDashboard: React.FC = () => {
                   </select>
                 </div>
               </div>
-              <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+              <div>
+                <label className="flex items-center gap-2 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={supplierForm.is_active}
                     onChange={(e) => setSupplierForm({ ...supplierForm, is_active: e.target.checked })}
+                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                   />
-                  <span style={{ fontSize: '14px', fontWeight: 600 }}>Active</span>
+                  <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">Active</span>
                 </label>
               </div>
             </div>
-            <div style={{ padding: '20px', borderTop: '1px solid #e5e7eb', display: 'flex', justifyContent: 'flex-end', gap: '12px', position: 'sticky', bottom: 0, backgroundColor: 'white' }}>
+            <div className="p-5 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3 sticky bottom-0 bg-white dark:bg-gray-800">
               <button
                 onClick={() => setShowSupplierModal(false)}
-                style={{ padding: '8px 16px', border: '1px solid #d1d5db', borderRadius: '6px', fontWeight: 600, cursor: 'pointer', background: 'white' }}
+                className="px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-xl font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSaveSupplier}
-                style={{ padding: '8px 16px', backgroundColor: '#2563eb', color: 'white', border: 'none', borderRadius: '6px', fontWeight: 600, cursor: 'pointer' }}
+                className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-semibold hover:from-blue-600 hover:to-blue-700 shadow-lg shadow-blue-500/30 transition-all"
               >
                 {editingSupplier ? 'Update' : 'Create'}
               </button>
@@ -786,62 +771,62 @@ const ProcurementDashboard: React.FC = () => {
 
       {/* PURCHASE ORDER MODAL */}
       {showPoModal && (
-        <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}>
-          <div style={{ backgroundColor: 'white', borderRadius: '8px', width: '600px', maxHeight: '90vh', overflow: 'auto' }}>
-            <div style={{ padding: '20px', borderBottom: '1px solid #e5e7eb', position: 'sticky', top: 0, backgroundColor: 'white', zIndex: 10 }}>
-              <h2 style={{ fontSize: '20px', fontWeight: 'bold' }}>{editingPo ? 'Edit Purchase Order' : 'New Purchase Order'}</h2>
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl w-[600px] max-h-[90vh] overflow-auto shadow-2xl">
+            <div className="p-5 border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-white dark:bg-gray-800 z-10">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white">{editingPo ? 'Edit Purchase Order' : 'New Purchase Order'}</h2>
             </div>
-            <div style={{ padding: '20px' }}>
-              <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Supplier ID *</label>
+            <div className="p-5 space-y-4">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Supplier ID *</label>
                 <input
                   type="number"
                   value={poForm.supplier_id}
                   onChange={(e) => setPoForm({ ...poForm, supplier_id: e.target.value })}
-                  style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                  className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Order Date *</label>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Order Date *</label>
                   <input
                     type="date"
                     value={poForm.order_date}
                     onChange={(e) => setPoForm({ ...poForm, order_date: e.target.value })}
-                    style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                    className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Delivery Date *</label>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Delivery Date *</label>
                   <input
                     type="date"
                     value={poForm.delivery_date}
                     onChange={(e) => setPoForm({ ...poForm, delivery_date: e.target.value })}
-                    style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                    className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
               </div>
-              <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Total Amount *</label>
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Total Amount *</label>
                 <input
                   type="number"
                   step="0.01"
                   value={poForm.total_amount}
                   onChange={(e) => setPoForm({ ...poForm, total_amount: e.target.value })}
-                  style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                  className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
             </div>
-            <div style={{ padding: '20px', borderTop: '1px solid #e5e7eb', display: 'flex', justifyContent: 'flex-end', gap: '12px', position: 'sticky', bottom: 0, backgroundColor: 'white' }}>
+            <div className="p-5 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3 sticky bottom-0 bg-white dark:bg-gray-800">
               <button
                 onClick={() => setShowPoModal(false)}
-                style={{ padding: '8px 16px', border: '1px solid #d1d5db', borderRadius: '6px', fontWeight: 600, cursor: 'pointer', background: 'white' }}
+                className="px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-xl font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSavePo}
-                style={{ padding: '8px 16px', backgroundColor: '#2563eb', color: 'white', border: 'none', borderRadius: '6px', fontWeight: 600, cursor: 'pointer' }}
+                className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-semibold hover:from-blue-600 hover:to-blue-700 shadow-lg shadow-blue-500/30 transition-all"
               >
                 {editingPo ? 'Update' : 'Create'}
               </button>
@@ -852,61 +837,61 @@ const ProcurementDashboard: React.FC = () => {
 
       {/* RFQ MODAL */}
       {showRfqModal && (
-        <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}>
-          <div style={{ backgroundColor: 'white', borderRadius: '8px', width: '600px', maxHeight: '90vh', overflow: 'auto' }}>
-            <div style={{ padding: '20px', borderBottom: '1px solid #e5e7eb', position: 'sticky', top: 0, backgroundColor: 'white', zIndex: 10 }}>
-              <h2 style={{ fontSize: '20px', fontWeight: 'bold' }}>{editingRfq ? 'Edit RFQ' : 'New RFQ'}</h2>
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl w-[600px] max-h-[90vh] overflow-auto shadow-2xl">
+            <div className="p-5 border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-white dark:bg-gray-800 z-10">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white">{editingRfq ? 'Edit RFQ' : 'New RFQ'}</h2>
             </div>
-            <div style={{ padding: '20px' }}>
-              <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Title *</label>
+            <div className="p-5 space-y-4">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Title *</label>
                 <input
                   type="text"
                   value={rfqForm.title}
                   onChange={(e) => setRfqForm({ ...rfqForm, title: e.target.value })}
-                  style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                  className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
-              <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Description</label>
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Description</label>
                 <textarea
                   value={rfqForm.description}
                   onChange={(e) => setRfqForm({ ...rfqForm, description: e.target.value })}
                   rows={4}
-                  style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                  className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Issue Date *</label>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Issue Date *</label>
                   <input
                     type="date"
                     value={rfqForm.issue_date}
                     onChange={(e) => setRfqForm({ ...rfqForm, issue_date: e.target.value })}
-                    style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                    className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Closing Date *</label>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Closing Date *</label>
                   <input
                     type="date"
                     value={rfqForm.closing_date}
                     onChange={(e) => setRfqForm({ ...rfqForm, closing_date: e.target.value })}
-                    style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                    className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
               </div>
             </div>
-            <div style={{ padding: '20px', borderTop: '1px solid #e5e7eb', display: 'flex', justifyContent: 'flex-end', gap: '12px', position: 'sticky', bottom: 0, backgroundColor: 'white' }}>
+            <div className="p-5 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3 sticky bottom-0 bg-white dark:bg-gray-800">
               <button
                 onClick={() => setShowRfqModal(false)}
-                style={{ padding: '8px 16px', border: '1px solid #d1d5db', borderRadius: '6px', fontWeight: 600, cursor: 'pointer', background: 'white' }}
+                className="px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-xl font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSaveRfq}
-                style={{ padding: '8px 16px', backgroundColor: '#2563eb', color: 'white', border: 'none', borderRadius: '6px', fontWeight: 600, cursor: 'pointer' }}
+                className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-semibold hover:from-blue-600 hover:to-blue-700 shadow-lg shadow-blue-500/30 transition-all"
               >
                 {editingRfq ? 'Update' : 'Create'}
               </button>
@@ -927,6 +912,7 @@ const ProcurementDashboard: React.FC = () => {
         }}
         onCancel={() => setDeleteConfirm({ show: false, type: 'supplier', id: 0, name: '' })}
       />
+      </div>
     </div>
   );
 };
