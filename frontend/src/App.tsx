@@ -195,20 +195,34 @@ function App() {
                 <Route path="/dashboard" element={<ExecutiveDashboard />} />
           <Route path="/erp-dashboard" element={<ERPDashboard />} />
           
-          {/* Order-to-Cash */}
-          <Route path="/quotes" element={<Quotes />} />
-          <Route path="/quotes/:id" element={<QuoteDetail />} />
-          <Route path="/sales-orders" element={<SalesOrders />} />
-          <Route path="/sales-orders/:id" element={<SalesOrderDetail />} />
-          <Route path="/deliveries" element={<Deliveries />} />
-          <Route path="/deliveries/:id" element={<DeliveryDetail />} />
-          <Route path="/wms-stock" element={<WMSStock />} />
+                    {/* Order-to-Cash */}
+                    <Route path="/quotes" element={<Quotes />} />
+                    <Route path="/quotes/:id" element={<QuoteDetail />} />
+                    <Route path="/sales-orders" element={<SalesOrders />} />
+                    <Route path="/sales-orders/:id" element={<SalesOrderDetail />} />
+                    <Route path="/deliveries" element={<Deliveries />} />
+                    <Route path="/deliveries/:id" element={<DeliveryDetail />} />
+                    <Route path="/wms-stock" element={<WMSStock />} />
           
-          {/* General Ledger */}
-          <Route path="/gl" element={<GeneralLedger />} />
-          <Route path="/general-ledger" element={<GeneralLedger />} />
-          <Route path="/gl/journal-entries" element={<GeneralLedger />} />
-          <Route path="/gl/chart-of-accounts" element={<GeneralLedger />} />
+                    {/* ERP Module Routes (aliases for navigation) */}
+                    <Route path="/erp/quotes" element={<Quotes />} />
+                    <Route path="/erp/quotes/:id" element={<QuoteDetail />} />
+                    <Route path="/erp/sales-orders" element={<SalesOrders />} />
+                    <Route path="/erp/sales-orders/:id" element={<SalesOrderDetail />} />
+                    <Route path="/erp/deliveries" element={<Deliveries />} />
+                    <Route path="/erp/deliveries/:id" element={<DeliveryDetail />} />
+                    <Route path="/erp/invoices" element={<InvoiceList />} />
+                    <Route path="/erp/invoices/:id" element={<InvoiceForm />} />
+                    <Route path="/erp/customers" element={<Customers />} />
+                    <Route path="/erp/customers/:id" element={<Customers />} />
+          
+                    {/* General Ledger */}
+                    <Route path="/gl" element={<GeneralLedger />} />
+                    <Route path="/general-ledger" element={<GeneralLedger />} />
+                    <Route path="/gl/journal-entries" element={<GeneralLedger />} />
+                    <Route path="/gl/chart-of-accounts" element={<GeneralLedger />} />
+                    <Route path="/financial/general-ledger" element={<GeneralLedger />} />
+                    <Route path="/financial/invoices" element={<InvoiceList />} />
           
                     {/* Accounts Payable */}
                     <Route path="/ap" element={<InvoiceList />} />
