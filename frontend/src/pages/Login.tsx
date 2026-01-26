@@ -27,16 +27,16 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4" style={{ background: 'linear-gradient(135deg, #1a2332 0%, #0f1419 100%)' }}>
-      <div className="max-w-md w-full bg-white rounded-2xl shadow-2xl p-8">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-gray-900 to-gray-950">
+      <div className="max-w-md w-full bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8">
         <div className="text-center mb-8">
           <div className="mb-4">
-            <h1 style={{ fontSize: '2.5rem', fontWeight: '700', color: '#1a2332', margin: 0 }}>ARIA</h1>
-            <p style={{ fontSize: '0.875rem', color: '#6b7280', marginTop: '0.25rem' }}>
-              by <span style={{ fontWeight: '600', color: '#1a2332' }}>Vanta<span style={{ color: '#FFB800' }}>X</span></span>
+            <h1 className="text-4xl font-bold text-gray-900 dark:text-white">ARIA</h1>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+              by <span className="font-semibold text-gray-900 dark:text-white">Vanta<span className="text-amber-500">X</span></span>
             </p>
           </div>
-          <p className="text-gray-600 mt-2">AI-Native ERP Platform</p>
+          <p className="text-gray-600 dark:text-gray-400 mt-2">AI-Native ERP Platform</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">

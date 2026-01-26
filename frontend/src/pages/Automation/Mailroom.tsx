@@ -88,13 +88,13 @@ export default function Mailroom() {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'completed':
-        return <CheckCircle size={16} style={{ color: '#10b981' }} />;
+        return <CheckCircle className="h-4 w-4 text-green-500" />;
       case 'processing':
-        return <Clock size={16} style={{ color: '#f59e0b' }} />;
+        return <Clock className="h-4 w-4 text-amber-500" />;
       case 'failed':
-        return <AlertCircle size={16} style={{ color: '#ef4444' }} />;
+        return <AlertCircle className="h-4 w-4 text-red-500" />;
       default:
-        return <Inbox size={16} style={{ color: '#6b7280' }} />;
+        return <Inbox className="h-4 w-4 text-gray-500" />;
     }
   };
 
