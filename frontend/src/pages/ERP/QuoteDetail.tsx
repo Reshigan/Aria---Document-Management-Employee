@@ -185,35 +185,21 @@ export default function QuoteDetail() {
 
   if (loading) {
     return (
-      <div style={{ padding: '2rem', textAlign: 'center' }}>
-        <div style={{ fontSize: '1.125rem', color: '#6b7280' }}>Loading quote details...</div>
+      <div className="p-8 text-center">
+        <div className="text-lg text-gray-500 dark:text-gray-400">Loading quote details...</div>
       </div>
     );
   }
 
   if (error || !quote) {
     return (
-      <div style={{ padding: '2rem' }}>
-        <div style={{
-          padding: '1rem',
-          background: '#fee2e2',
-          border: '1px solid #ef4444',
-          borderRadius: '0.5rem',
-          color: '#dc2626',
-          marginBottom: '1rem'
-        }}>
+      <div className="p-8">
+        <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl text-red-700 dark:text-red-300 mb-4">
           {error || 'Quote not found'}
         </div>
         <button
           onClick={() => navigate('/erp/quotes')}
-          style={{
-            padding: '0.5rem 1rem',
-            background: '#2563eb',
-            color: 'white',
-            border: 'none',
-            borderRadius: '0.375rem',
-            cursor: 'pointer'
-          }}
+          className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-medium hover:from-blue-600 hover:to-blue-700 shadow-lg shadow-blue-500/30 transition-all"
         >
           Back to Quotes
         </button>
@@ -224,102 +210,63 @@ export default function QuoteDetail() {
   const statusStyle = getStatusColor(quote.status);
 
   return (
-    <div style={{ padding: '2rem', maxWidth: '1400px', margin: '0 auto' }}>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 p-6">
+      <div className="max-w-7xl mx-auto">
       {/* Header */}
-      <div style={{ marginBottom: '2rem' }}>
-        <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
+      <div className="mb-8">
+        <div className="flex gap-2 mb-4">
           <button
             onClick={() => navigate('/erp/quotes')}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.5rem',
-              padding: '0.5rem 1rem',
-              background: 'white',
-              border: '1px solid #d1d5db',
-              borderRadius: '0.375rem',
-              cursor: 'pointer'
-            }}
+            className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
           >
             <ArrowLeft size={16} />
             Back to Quotes
           </button>
           <button
             onClick={() => window.print()}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.5rem',
-              padding: '0.5rem 1rem',
-              background: 'white',
-              border: '1px solid #d1d5db',
-              borderRadius: '0.375rem',
-              cursor: 'pointer'
-            }}
+            className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
           >
             <Printer size={16} />
             Print Quote
           </button>
         </div>
 
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <div className="flex justify-between items-start flex-wrap gap-4">
           <div>
-            <h1 style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
               Quote {quote.quote_number}
             </h1>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-              <span style={{
-                padding: '0.25rem 0.75rem',
-                borderRadius: '9999px',
-                fontSize: '0.875rem',
-                fontWeight: '500',
-                background: statusStyle.bg,
-                color: statusStyle.text
-              }}>
+            <div className="flex items-center gap-4">
+              <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                quote.status === 'draft' ? 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300' :
+                quote.status === 'approved' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300' :
+                quote.status === 'sent' ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300' :
+                quote.status === 'accepted' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300' :
+                quote.status === 'rejected' ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300' :
+                'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300'
+              }`}>
                 {quote.status.toUpperCase()}
               </span>
-              <span style={{ color: '#6b7280', fontSize: '0.875rem' }}>
+              <span className="text-sm text-gray-500 dark:text-gray-400">
                 Created {new Date(quote.created_at).toLocaleDateString()}
               </span>
             </div>
           </div>
 
           {/* Action Buttons */}
-          <div style={{ display: 'flex', gap: '0.5rem' }}>
+          <div className="flex gap-2 flex-wrap">
             {quote.status === 'draft' && (
               <>
                 <button
                   onClick={handleApprove}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.5rem',
-                    padding: '0.5rem 1rem',
-                    background: '#2563eb',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '0.375rem',
-                    cursor: 'pointer',
-                    fontSize: '0.875rem'
-                  }}
+                  className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl text-sm font-medium hover:from-blue-600 hover:to-blue-700 shadow-lg shadow-blue-500/30 transition-all"
                 >
                   <Check size={16} />
                   Approve
                 </button>
                 <button
                   onClick={handleDelete}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.5rem',
-                    padding: '0.5rem 1rem',
-                    background: '#ef4444',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '0.375rem',
-                    cursor: 'pointer',
-                    fontSize: '0.875rem'
-                  }}
+                  className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-xl text-sm font-medium hover:from-red-600 hover:to-red-700 shadow-lg shadow-red-500/30 transition-all"
                 >
                   <Trash2 size={16} />
                   Delete
@@ -329,18 +276,7 @@ export default function QuoteDetail() {
             {quote.status === 'approved' && (
               <button
                 onClick={handleSend}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                  padding: '0.5rem 1rem',
-                  background: '#10b981',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '0.375rem',
-                  cursor: 'pointer',
-                  fontSize: '0.875rem'
-                }}
+                className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-xl text-sm font-medium hover:from-emerald-600 hover:to-emerald-700 shadow-lg shadow-emerald-500/30 transition-all"
               >
                 <Mail size={16} />
                 Send to Customer
@@ -350,36 +286,14 @@ export default function QuoteDetail() {
               <>
                 <button
                   onClick={handleAccept}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.5rem',
-                    padding: '0.5rem 1rem',
-                    background: '#059669',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '0.375rem',
-                    cursor: 'pointer',
-                    fontSize: '0.875rem'
-                  }}
+                  className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-xl text-sm font-medium hover:from-emerald-600 hover:to-emerald-700 shadow-lg shadow-emerald-500/30 transition-all"
                 >
                   <Check size={16} />
                   Accept & Create SO
                 </button>
                 <button
                   onClick={handleReject}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.5rem',
-                    padding: '0.5rem 1rem',
-                    background: '#ef4444',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '0.375rem',
-                    cursor: 'pointer',
-                    fontSize: '0.875rem'
-                  }}
+                  className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-xl text-sm font-medium hover:from-red-600 hover:to-red-700 shadow-lg shadow-red-500/30 transition-all"
                 >
                   <X size={16} />
                   Reject
@@ -390,51 +304,51 @@ export default function QuoteDetail() {
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '1.5rem' }}>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main Content */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+        <div className="lg:col-span-2 flex flex-col gap-6">
           {/* Quote Details Card */}
-          <div style={{ background: 'white', borderRadius: '0.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', padding: '1.5rem' }}>
-            <h2 style={{ fontSize: '1.25rem', fontWeight: '600', marginBottom: '1rem' }}>Quote Details</h2>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Quote Details</h2>
             
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
               <div>
-                <div style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.25rem' }}>Customer</div>
-                <div style={{ fontWeight: '500', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <User size={16} style={{ color: '#6b7280' }} />
+                <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">Customer</div>
+                <div className="font-medium text-gray-900 dark:text-white flex items-center gap-2">
+                  <User size={16} className="text-gray-400" />
                   {quote.customer_name}
                 </div>
               </div>
               <div>
-                <div style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.25rem' }}>Email</div>
-                <div style={{ fontWeight: '500' }}>{quote.customer_email}</div>
+                <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">Email</div>
+                <div className="font-medium text-gray-900 dark:text-white">{quote.customer_email}</div>
               </div>
               <div>
-                <div style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.25rem' }}>Quote Date</div>
-                <div style={{ fontWeight: '500', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <Calendar size={16} style={{ color: '#6b7280' }} />
+                <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">Quote Date</div>
+                <div className="font-medium text-gray-900 dark:text-white flex items-center gap-2">
+                  <Calendar size={16} className="text-gray-400" />
                   {new Date(quote.quote_date).toLocaleDateString()}
                 </div>
               </div>
               <div>
-                <div style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.25rem' }}>Valid Until</div>
-                <div style={{ fontWeight: '500', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <Clock size={16} style={{ color: '#6b7280' }} />
+                <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">Valid Until</div>
+                <div className="font-medium text-gray-900 dark:text-white flex items-center gap-2">
+                  <Clock size={16} className="text-gray-400" />
                   {new Date(quote.valid_until).toLocaleDateString()}
                 </div>
               </div>
             </div>
 
             {quote.notes && (
-              <div style={{ marginTop: '1rem', padding: '1rem', background: '#f9fafb', borderRadius: '0.375rem' }}>
-                <div style={{ fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>Notes</div>
-                <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>{quote.notes}</div>
+              <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
+                <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Notes</div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">{quote.notes}</div>
               </div>
             )}
           </div>
 
           {/* Line Items */}
-          <div style={{ background: 'white', borderRadius: '0.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', padding: '1.5rem' }}>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
             <LineItemsTable
               items={quote.lines}
               onChange={() => {}}
@@ -444,25 +358,25 @@ export default function QuoteDetail() {
           </div>
 
           {/* Audit Trail */}
-          <div style={{ background: 'white', borderRadius: '0.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', padding: '1.5rem' }}>
-            <h2 style={{ fontSize: '1.25rem', fontWeight: '600', marginBottom: '1rem' }}>Audit Trail</h2>
-            <div style={{ display: 'grid', gap: '0.75rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.75rem', background: '#f9fafb', borderRadius: '0.375rem' }}>
-                <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>Created</span>
-                <span style={{ fontSize: '0.875rem', fontWeight: '500' }}>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Audit Trail</h2>
+            <div className="flex flex-col gap-3">
+              <div className="flex justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
+                <span className="text-sm text-gray-500 dark:text-gray-400">Created</span>
+                <span className="text-sm font-medium text-gray-900 dark:text-white">
                   {new Date(quote.created_at).toLocaleString()}
                 </span>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.75rem', background: '#f9fafb', borderRadius: '0.375rem' }}>
-                <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>Last Updated</span>
-                <span style={{ fontSize: '0.875rem', fontWeight: '500' }}>
+              <div className="flex justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
+                <span className="text-sm text-gray-500 dark:text-gray-400">Last Updated</span>
+                <span className="text-sm font-medium text-gray-900 dark:text-white">
                   {new Date(quote.updated_at).toLocaleString()}
                 </span>
               </div>
               {quote.created_by && (
-                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.75rem', background: '#f9fafb', borderRadius: '0.375rem' }}>
-                  <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>Created By</span>
-                  <span style={{ fontSize: '0.875rem', fontWeight: '500' }}>{quote.created_by}</span>
+                <div className="flex justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
+                  <span className="text-sm text-gray-500 dark:text-gray-400">Created By</span>
+                  <span className="text-sm font-medium text-gray-900 dark:text-white">{quote.created_by}</span>
                 </div>
               )}
             </div>
@@ -470,7 +384,7 @@ export default function QuoteDetail() {
         </div>
 
         {/* Sidebar */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+        <div className="flex flex-col gap-6">
           {/* Posting Status */}
           <PostingStatus
             status={quote.status}
@@ -491,41 +405,41 @@ export default function QuoteDetail() {
 
           {/* Customer Info */}
           {customer && (
-            <div style={{ background: 'white', borderRadius: '0.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', padding: '1.5rem' }}>
-              <h3 style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '1rem' }}>Customer Information</h3>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Customer Information</h3>
+              <div className="flex flex-col gap-3">
                 <div>
-                  <div style={{ fontSize: '0.75rem', color: '#6b7280', marginBottom: '0.25rem' }}>Name</div>
-                  <div style={{ fontSize: '0.875rem', fontWeight: '500' }}>{customer.customer_name}</div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Name</div>
+                  <div className="text-sm font-medium text-gray-900 dark:text-white">{customer.customer_name}</div>
                 </div>
                 <div>
-                  <div style={{ fontSize: '0.75rem', color: '#6b7280', marginBottom: '0.25rem' }}>Code</div>
-                  <div style={{ fontSize: '0.875rem', fontWeight: '500' }}>{customer.customer_code}</div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Code</div>
+                  <div className="text-sm font-medium text-gray-900 dark:text-white">{customer.customer_code}</div>
                 </div>
                 <div>
-                  <div style={{ fontSize: '0.75rem', color: '#6b7280', marginBottom: '0.25rem' }}>Email</div>
-                  <div style={{ fontSize: '0.875rem' }}>{customer.email}</div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Email</div>
+                  <div className="text-sm text-gray-900 dark:text-white">{customer.email}</div>
                 </div>
                 {customer.phone && (
                   <div>
-                    <div style={{ fontSize: '0.75rem', color: '#6b7280', marginBottom: '0.25rem' }}>Phone</div>
-                    <div style={{ fontSize: '0.875rem' }}>{customer.phone}</div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Phone</div>
+                    <div className="text-sm text-gray-900 dark:text-white">{customer.phone}</div>
                   </div>
                 )}
-                <div style={{ marginTop: '0.5rem', paddingTop: '0.75rem', borderTop: '1px solid #e5e7eb' }}>
-                  <div style={{ fontSize: '0.75rem', color: '#6b7280', marginBottom: '0.5rem' }}>Customer Stats</div>
-                  <div style={{ display: 'grid', gap: '0.5rem' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>Total Quotes</span>
-                      <span style={{ fontSize: '0.875rem', fontWeight: '500' }}>{customer.total_quotes}</span>
+                <div className="mt-2 pt-3 border-t border-gray-200 dark:border-gray-700">
+                  <div className="text-xs text-gray-500 dark:text-gray-400 mb-2">Customer Stats</div>
+                  <div className="flex flex-col gap-2">
+                    <div className="flex justify-between">
+                      <span className="text-sm text-gray-500 dark:text-gray-400">Total Quotes</span>
+                      <span className="text-sm font-medium text-gray-900 dark:text-white">{customer.total_quotes}</span>
                     </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>Total Orders</span>
-                      <span style={{ fontSize: '0.875rem', fontWeight: '500' }}>{customer.total_orders}</span>
+                    <div className="flex justify-between">
+                      <span className="text-sm text-gray-500 dark:text-gray-400">Total Orders</span>
+                      <span className="text-sm font-medium text-gray-900 dark:text-white">{customer.total_orders}</span>
                     </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>Total Revenue</span>
-                      <span style={{ fontSize: '0.875rem', fontWeight: '500' }}>
+                    <div className="flex justify-between">
+                      <span className="text-sm text-gray-500 dark:text-gray-400">Total Revenue</span>
+                      <span className="text-sm font-medium text-gray-900 dark:text-white">
                         R {customer.total_revenue.toFixed(2)}
                       </span>
                     </div>
@@ -533,17 +447,7 @@ export default function QuoteDetail() {
                 </div>
                 <button
                   onClick={() => navigate(`/erp/customers/${customer.id}`)}
-                  style={{
-                    marginTop: '0.5rem',
-                    padding: '0.5rem',
-                    background: '#f3f4f6',
-                    border: 'none',
-                    borderRadius: '0.375rem',
-                    fontSize: '0.875rem',
-                    fontWeight: '500',
-                    cursor: 'pointer',
-                    color: '#2563eb'
-                  }}
+                  className="mt-2 p-2 bg-gray-100 dark:bg-gray-700 rounded-xl text-sm font-medium text-blue-600 dark:text-blue-400 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
                 >
                   View Customer Details →
                 </button>
@@ -552,35 +456,27 @@ export default function QuoteDetail() {
           )}
 
           {/* Related Sales Orders */}
-          <div style={{ background: 'white', borderRadius: '0.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', padding: '1.5rem' }}>
-            <h3 style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '1rem' }}>Related Sales Orders</h3>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Related Sales Orders</h3>
             {relatedOrders.length === 0 ? (
-              <p style={{ fontSize: '0.875rem', color: '#6b7280' }}>No sales orders yet</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">No sales orders yet</p>
             ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              <div className="flex flex-col gap-3">
                 {relatedOrders.slice(0, 5).map((order) => (
                   <div
                     key={order.id}
                     onClick={() => navigate(`/erp/sales-orders/${order.id}`)}
-                    style={{
-                      padding: '0.75rem',
-                      background: '#f9fafb',
-                      borderRadius: '0.375rem',
-                      cursor: 'pointer',
-                      transition: 'background 0.2s'
-                    }}
-                    onMouseEnter={(e) => e.currentTarget.style.background = '#f3f4f6'}
-                    onMouseLeave={(e) => e.currentTarget.style.background = '#f9fafb'}
+                    className="p-3 bg-gray-50 dark:bg-gray-700/50 rounded-xl cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                   >
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.25rem' }}>
-                      <span style={{ fontSize: '0.875rem', fontWeight: '500' }}>{order.order_number}</span>
-                      <span style={{ fontSize: '0.75rem', color: '#6b7280' }}>{order.status}</span>
+                    <div className="flex justify-between mb-1">
+                      <span className="text-sm font-medium text-gray-900 dark:text-white">{order.order_number}</span>
+                      <span className="text-xs text-gray-500 dark:text-gray-400">{order.status}</span>
                     </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <span style={{ fontSize: '0.75rem', color: '#6b7280' }}>
+                    <div className="flex justify-between">
+                      <span className="text-xs text-gray-500 dark:text-gray-400">
                         {new Date(order.order_date).toLocaleDateString()}
                       </span>
-                      <span style={{ fontSize: '0.875rem', fontWeight: '500' }}>
+                      <span className="text-sm font-medium text-gray-900 dark:text-white">
                         R {order.total_amount.toFixed(2)}
                       </span>
                     </div>
@@ -589,15 +485,7 @@ export default function QuoteDetail() {
                 {relatedOrders.length > 5 && (
                   <button
                     onClick={() => navigate(`/erp/sales-orders?customer_id=${quote.customer_id}`)}
-                    style={{
-                      padding: '0.5rem',
-                      background: 'transparent',
-                      border: 'none',
-                      fontSize: '0.875rem',
-                      fontWeight: '500',
-                      color: '#2563eb',
-                      cursor: 'pointer'
-                    }}
+                    className="p-2 text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
                   >
                     View all {relatedOrders.length} orders →
                   </button>
@@ -606,6 +494,7 @@ export default function QuoteDetail() {
             )}
           </div>
         </div>
+      </div>
       </div>
     </div>
   );
