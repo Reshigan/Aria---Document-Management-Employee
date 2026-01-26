@@ -36,16 +36,29 @@ export default function CustomerStatements() {
   const fetchData = async () => {
     try {
       setLoading(true);
-      setCustomers([
-        { id: '1', name: 'ABC Manufacturing', email: 'accounts@abc.com', outstanding_balance: 45000, overdue_amount: 15000, last_statement_date: '2025-12-01' },
-        { id: '2', name: 'XYZ Trading', email: 'finance@xyz.com', outstanding_balance: 28500, overdue_amount: 0, last_statement_date: '2025-12-15' },
-        { id: '3', name: 'Mega Corp', email: 'ap@megacorp.com', outstanding_balance: 67000, overdue_amount: 32000, last_statement_date: null },
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
+      const [customersRes, statementsRes] = await Promise.all([
+        fetch(`${API_BASE}/api/customers`, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }),
+        fetch(`${API_BASE}/api/customer-statements`, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } })
       ]);
-      setStatements([
-        { id: '1', customer_id: '1', customer_name: 'ABC Manufacturing', statement_date: '2025-12-01', opening_balance: 30000, total_invoiced: 25000, total_payments: 10000, closing_balance: 45000, status: 'sent' },
-        { id: '2', customer_id: '2', customer_name: 'XYZ Trading', statement_date: '2025-12-15', opening_balance: 20000, total_invoiced: 15000, total_payments: 6500, closing_balance: 28500, status: 'viewed' },
-      ]);
-    } catch (err) { setError('Failed to load data'); } finally { setLoading(false); }
+      if (customersRes.ok) {
+        const data = await customersRes.json();
+        setCustomers(Array.isArray(data) ? data : data.data || []);
+      } else {
+        setCustomers([]);
+      }
+      if (statementsRes.ok) {
+        const data = await statementsRes.json();
+        setStatements(Array.isArray(data) ? data : data.data || []);
+      } else {
+        setStatements([]);
+      }
+    } catch (err) { 
+      console.error('Failed to load data:', err);
+      setError('Failed to load data'); 
+      setCustomers([]);
+      setStatements([]);
+    } finally { setLoading(false); }
   };
 
   const handleGenerateStatements = async () => {

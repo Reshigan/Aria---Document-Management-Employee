@@ -27,12 +27,21 @@ export default function RecurringInvoices() {
   const fetchInvoices = async () => {
     try {
       setLoading(true);
-      setInvoices([
-        { id: '1', customer_id: '1', customer_name: 'ABC Manufacturing', description: 'Monthly Maintenance Contract', amount: 5000, frequency: 'monthly', next_invoice_date: '2026-02-01', last_invoice_date: '2026-01-01', status: 'active', invoices_generated: 12, total_invoiced: 60000 },
-        { id: '2', customer_id: '2', customer_name: 'XYZ Trading', description: 'Quarterly Support Package', amount: 15000, frequency: 'quarterly', next_invoice_date: '2026-04-01', last_invoice_date: '2026-01-01', status: 'active', invoices_generated: 4, total_invoiced: 60000 },
-        { id: '3', customer_id: '3', customer_name: 'Mega Corp', description: 'Annual License Fee', amount: 120000, frequency: 'annually', next_invoice_date: '2027-01-01', last_invoice_date: '2026-01-01', status: 'paused', invoices_generated: 1, total_invoiced: 120000 },
-      ]);
-    } catch (err) { setError('Failed to load recurring invoices'); } finally { setLoading(false); }
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
+      const response = await fetch(`${API_BASE}/api/recurring-invoices`, {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setInvoices(Array.isArray(data) ? data : data.data || []);
+      } else {
+        setInvoices([]);
+      }
+    } catch (err) { 
+      console.error('Failed to load recurring invoices:', err);
+      setError('Failed to load recurring invoices'); 
+      setInvoices([]);
+    } finally { setLoading(false); }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
