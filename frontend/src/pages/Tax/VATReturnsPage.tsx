@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, FileText, DollarSign, TrendingUp, Calendar, Download } from 'lucide-react';
+import { Plus, FileText, DollarSign, TrendingUp, Calendar, Download, X } from 'lucide-react';
 
 interface VATReturn {
   id: number;
@@ -95,98 +95,89 @@ export default function VATReturnsPage() {
   const totalNet = returns.reduce((sum, r) => sum + r.net_vat, 0);
   const pendingCount = returns.filter(r => r.status === 'DRAFT').length;
 
-  const getStatusColor = (status: string) => {
+  const getStatusClasses = (status: string) => {
     switch (status) {
-      case 'FILED': return { bg: '#d1fae5', color: '#059669' };
-      case 'DRAFT': return { bg: '#e5e7eb', color: '#6b7280' };
-      case 'PAID': return { bg: '#dbeafe', color: '#2563eb' };
-      default: return { bg: '#fef3c7', color: '#d97706' };
+      case 'FILED': return 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400';
+      case 'DRAFT': return 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300';
+      case 'PAID': return 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400';
+      default: return 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400';
     }
   };
 
   if (loading) {
-    return <div style={{ padding: '2rem' }}>Loading...</div>;
+    return <div className="p-8 text-gray-600 dark:text-gray-400">Loading...</div>;
   }
 
   return (
-    <div style={{ padding: '2rem' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
         <div>
-          <h1 style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>VAT Returns</h1>
-          <p style={{ color: '#6b7280' }}>Manage VAT returns and submissions</p>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
+            <FileText className="h-8 w-8 text-purple-600" />
+            VAT Returns
+          </h1>
+          <p className="text-gray-600 dark:text-gray-400 mt-1">Manage VAT returns and submissions</p>
         </div>
         <button
           onClick={() => setShowModal(true)}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-            padding: '0.75rem 1.5rem',
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            color: 'white',
-            border: 'none',
-            borderRadius: '8px',
-            fontSize: '0.875rem',
-            fontWeight: '600',
-            cursor: 'pointer'
-          }}
+          className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
         >
-          <Plus size={20} />
+          <Plus className="h-5 w-5" />
           New VAT Return
         </button>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1.5rem', marginBottom: '2rem' }}>
-        <div style={{ background: 'white', padding: '1.5rem', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <div style={{ padding: '0.75rem', background: '#d1fae5', borderRadius: '8px' }}>
-              <TrendingUp size={24} style={{ color: '#059669' }} />
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-green-100 dark:bg-green-900/30 rounded-xl">
+              <TrendingUp className="h-6 w-6 text-green-600 dark:text-green-400" />
             </div>
             <div>
-              <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>Output Tax</div>
-              <div style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>
+              <div className="text-sm font-medium text-gray-500 dark:text-gray-400">Output Tax</div>
+              <div className="text-2xl font-bold text-gray-900 dark:text-white">
                 R {totalOutput.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
               </div>
             </div>
           </div>
         </div>
 
-        <div style={{ background: 'white', padding: '1.5rem', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <div style={{ padding: '0.75rem', background: '#dbeafe', borderRadius: '8px' }}>
-              <DollarSign size={24} style={{ color: '#2563eb' }} />
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-xl">
+              <DollarSign className="h-6 w-6 text-blue-600 dark:text-blue-400" />
             </div>
             <div>
-              <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>Input Tax</div>
-              <div style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>
+              <div className="text-sm font-medium text-gray-500 dark:text-gray-400">Input Tax</div>
+              <div className="text-2xl font-bold text-gray-900 dark:text-white">
                 R {totalInput.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
               </div>
             </div>
           </div>
         </div>
 
-        <div style={{ background: 'white', padding: '1.5rem', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <div style={{ padding: '0.75rem', background: totalNet >= 0 ? '#fee2e2' : '#d1fae5', borderRadius: '8px' }}>
-              <FileText size={24} style={{ color: totalNet >= 0 ? '#dc2626' : '#059669' }} />
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-4">
+            <div className={`p-3 rounded-xl ${totalNet >= 0 ? 'bg-red-100 dark:bg-red-900/30' : 'bg-green-100 dark:bg-green-900/30'}`}>
+              <FileText className={`h-6 w-6 ${totalNet >= 0 ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'}`} />
             </div>
             <div>
-              <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>Net VAT {totalNet >= 0 ? 'Payable' : 'Refund'}</div>
-              <div style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>
+              <div className="text-sm font-medium text-gray-500 dark:text-gray-400">Net VAT {totalNet >= 0 ? 'Payable' : 'Refund'}</div>
+              <div className="text-2xl font-bold text-gray-900 dark:text-white">
                 R {Math.abs(totalNet).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
               </div>
             </div>
           </div>
         </div>
 
-        <div style={{ background: 'white', padding: '1.5rem', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <div style={{ padding: '0.75rem', background: '#fef3c7', borderRadius: '8px' }}>
-              <Calendar size={24} style={{ color: '#d97706' }} />
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-amber-100 dark:bg-amber-900/30 rounded-xl">
+              <Calendar className="h-6 w-6 text-amber-600 dark:text-amber-400" />
             </div>
             <div>
-              <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>Pending Returns</div>
-              <div style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>
+              <div className="text-sm font-medium text-gray-500 dark:text-gray-400">Pending Returns</div>
+              <div className="text-2xl font-bold text-gray-900 dark:text-white">
                 {pendingCount}
               </div>
             </div>
@@ -194,212 +185,145 @@ export default function VATReturnsPage() {
         </div>
       </div>
 
-      <div style={{ background: 'white', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', overflow: 'hidden' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-          <thead style={{ background: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
-            <tr>
-              <th style={{ padding: '1rem', textAlign: 'left', fontSize: '0.875rem', fontWeight: '600', color: '#374151' }}>Return Number</th>
-              <th style={{ padding: '1rem', textAlign: 'left', fontSize: '0.875rem', fontWeight: '600', color: '#374151' }}>Period</th>
-              <th style={{ padding: '1rem', textAlign: 'right', fontSize: '0.875rem', fontWeight: '600', color: '#374151' }}>Output Tax</th>
-              <th style={{ padding: '1rem', textAlign: 'right', fontSize: '0.875rem', fontWeight: '600', color: '#374151' }}>Input Tax</th>
-              <th style={{ padding: '1rem', textAlign: 'right', fontSize: '0.875rem', fontWeight: '600', color: '#374151' }}>Net VAT</th>
-              <th style={{ padding: '1rem', textAlign: 'center', fontSize: '0.875rem', fontWeight: '600', color: '#374151' }}>Status</th>
-              <th style={{ padding: '1rem', textAlign: 'center', fontSize: '0.875rem', fontWeight: '600', color: '#374151' }}>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {returns.length === 0 ? (
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-600">
               <tr>
-                <td colSpan={7} style={{ padding: '3rem', textAlign: 'center', color: '#6b7280' }}>
-                  <FileText size={48} style={{ margin: '0 auto 1rem', opacity: 0.3 }} />
-                  <div>No VAT returns found</div>
-                  <div style={{ fontSize: '0.875rem', marginTop: '0.5rem' }}>Create your first VAT return to get started</div>
-                </td>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 dark:text-gray-300">Return Number</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 dark:text-gray-300">Period</th>
+                <th className="px-6 py-4 text-right text-sm font-semibold text-gray-700 dark:text-gray-300">Output Tax</th>
+                <th className="px-6 py-4 text-right text-sm font-semibold text-gray-700 dark:text-gray-300">Input Tax</th>
+                <th className="px-6 py-4 text-right text-sm font-semibold text-gray-700 dark:text-gray-300">Net VAT</th>
+                <th className="px-6 py-4 text-center text-sm font-semibold text-gray-700 dark:text-gray-300">Status</th>
+                <th className="px-6 py-4 text-center text-sm font-semibold text-gray-700 dark:text-gray-300">Actions</th>
               </tr>
-            ) : (
-              returns.map((vatReturn) => {
-                const statusStyle = getStatusColor(vatReturn.status);
-                return (
-                  <tr key={vatReturn.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
-                    <td style={{ padding: '1rem', fontWeight: '500' }}>{vatReturn.return_number}</td>
-                    <td style={{ padding: '1rem', color: '#6b7280' }}>
+            </thead>
+            <tbody className="divide-y divide-gray-200 dark:divide-gray-600">
+              {returns.length === 0 ? (
+                <tr>
+                  <td colSpan={7} className="px-6 py-12 text-center text-gray-500 dark:text-gray-400">
+                    <FileText className="h-12 w-12 mx-auto mb-4 opacity-30" />
+                    <div className="font-medium">No VAT returns found</div>
+                    <div className="text-sm mt-1">Create your first VAT return to get started</div>
+                  </td>
+                </tr>
+              ) : (
+                returns.map((vatReturn) => (
+                  <tr key={vatReturn.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                    <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">{vatReturn.return_number}</td>
+                    <td className="px-6 py-4 text-gray-600 dark:text-gray-400">
                       {new Date(vatReturn.period_start).toLocaleDateString('en-ZA')} - {new Date(vatReturn.period_end).toLocaleDateString('en-ZA')}
                     </td>
-                    <td style={{ padding: '1rem', textAlign: 'right', color: '#059669' }}>
+                    <td className="px-6 py-4 text-right text-green-600 dark:text-green-400">
                       R {vatReturn.output_tax.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
                     </td>
-                    <td style={{ padding: '1rem', textAlign: 'right', color: '#2563eb' }}>
+                    <td className="px-6 py-4 text-right text-blue-600 dark:text-blue-400">
                       R {vatReturn.input_tax.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
                     </td>
-                    <td style={{ padding: '1rem', textAlign: 'right', fontWeight: '500', color: vatReturn.net_vat >= 0 ? '#dc2626' : '#059669' }}>
+                    <td className={`px-6 py-4 text-right font-medium ${vatReturn.net_vat >= 0 ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'}`}>
                       R {vatReturn.net_vat.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
                     </td>
-                    <td style={{ padding: '1rem', textAlign: 'center' }}>
-                      <span style={{
-                        padding: '0.25rem 0.75rem',
-                        background: statusStyle.bg,
-                        color: statusStyle.color,
-                        borderRadius: '9999px',
-                        fontSize: '0.75rem',
-                        fontWeight: '500'
-                      }}>
+                    <td className="px-6 py-4 text-center">
+                      <span className={`inline-flex px-3 py-1 rounded-full text-xs font-medium ${getStatusClasses(vatReturn.status)}`}>
                         {vatReturn.status}
                       </span>
                     </td>
-                    <td style={{ padding: '1rem' }}>
-                      <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'center' }}>
+                    <td className="px-6 py-4">
+                      <div className="flex gap-2 justify-center">
                         {vatReturn.status === 'DRAFT' && (
                           <button
                             onClick={() => handleFileReturn(vatReturn.id)}
-                            style={{
-                              padding: '0.5rem 1rem',
-                              background: '#dbeafe',
-                              border: 'none',
-                              borderRadius: '6px',
-                              cursor: 'pointer',
-                              color: '#2563eb',
-                              fontSize: '0.75rem',
-                              fontWeight: '500'
-                            }}
+                            className="px-3 py-1.5 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded-lg text-xs font-medium hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors"
                           >
                             File Return
                           </button>
                         )}
-                        <button
-                          style={{
-                            padding: '0.5rem',
-                            background: '#f3f4f6',
-                            border: 'none',
-                            borderRadius: '6px',
-                            cursor: 'pointer',
-                            color: '#6b7280'
-                          }}
-                        >
-                          <Download size={16} />
+                        <button className="p-2 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+                          <Download className="h-4 w-4" />
                         </button>
                       </div>
                     </td>
                   </tr>
-                );
-              })
-            )}
-          </tbody>
-        </table>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {showModal && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background: 'rgba(0,0,0,0.5)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 1000
-        }} onClick={() => setShowModal(false)}>
-          <div style={{
-            background: 'white',
-            borderRadius: '12px',
-            padding: '2rem',
-            width: '90%',
-            maxWidth: '600px'
-          }} onClick={(e) => e.stopPropagation()}>
-            <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1.5rem' }}>
-              New VAT Return
-            </h2>
-
-            <form onSubmit={handleSubmit}>
-              <div style={{ display: 'grid', gap: '1rem' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                  <div>
-                    <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>
-                      Period Start *
-                    </label>
-                    <input
-                      type="date"
-                      required
-                      value={formData.period_start}
-                      onChange={(e) => setFormData({ ...formData, period_start: e.target.value })}
-                      style={{
-                        width: '100%',
-                        padding: '0.75rem',
-                        border: '1px solid #d1d5db',
-                        borderRadius: '6px',
-                        fontSize: '0.875rem'
-                      }}
-                    />
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setShowModal(false)}>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden" onClick={(e) => e.stopPropagation()}>
+            <div className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white p-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-white/20 rounded-lg">
+                    <FileText className="h-6 w-6" />
                   </div>
-
                   <div>
-                    <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>
-                      Period End *
-                    </label>
-                    <input
-                      type="date"
-                      required
-                      value={formData.period_end}
-                      onChange={(e) => setFormData({ ...formData, period_end: e.target.value })}
-                      style={{
-                        width: '100%',
-                        padding: '0.75rem',
-                        border: '1px solid #d1d5db',
-                        borderRadius: '6px',
-                        fontSize: '0.875rem'
-                      }}
-                    />
+                    <h2 className="text-xl font-semibold">New VAT Return</h2>
+                    <p className="text-white/80 text-sm">Create a new VAT return period</p>
                   </div>
                 </div>
+                <button onClick={() => setShowModal(false)} className="p-2 hover:bg-white/20 rounded-lg transition-colors">
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+            </div>
 
+            <form onSubmit={handleSubmit} className="p-6 space-y-6">
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>
-                    Filing Date
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Period Start *
                   </label>
                   <input
                     type="date"
-                    value={formData.filing_date}
-                    onChange={(e) => setFormData({ ...formData, filing_date: e.target.value })}
-                    style={{
-                      width: '100%',
-                      padding: '0.75rem',
-                      border: '1px solid #d1d5db',
-                      borderRadius: '6px',
-                      fontSize: '0.875rem'
-                    }}
+                    required
+                    value={formData.period_start}
+                    onChange={(e) => setFormData({ ...formData, period_start: e.target.value })}
+                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Period End *
+                  </label>
+                  <input
+                    type="date"
+                    required
+                    value={formData.period_end}
+                    onChange={(e) => setFormData({ ...formData, period_end: e.target.value })}
+                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
                   />
                 </div>
               </div>
 
-              <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem', justifyContent: 'flex-end' }}>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Filing Date
+                </label>
+                <input
+                  type="date"
+                  value={formData.filing_date}
+                  onChange={(e) => setFormData({ ...formData, filing_date: e.target.value })}
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                />
+              </div>
+
+              <div className="flex gap-3 pt-4">
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  style={{
-                    padding: '0.75rem 1.5rem',
-                    background: '#f3f4f6',
-                    border: 'none',
-                    borderRadius: '6px',
-                    fontSize: '0.875rem',
-                    fontWeight: '600',
-                    cursor: 'pointer'
-                  }}
+                  className="flex-1 px-6 py-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl font-semibold hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  style={{
-                    padding: '0.75rem 1.5rem',
-                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '6px',
-                    fontSize: '0.875rem',
-                    fontWeight: '600',
-                    cursor: 'pointer'
-                  }}
+                  className="flex-1 px-6 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
                 >
                   Create VAT Return
                 </button>
