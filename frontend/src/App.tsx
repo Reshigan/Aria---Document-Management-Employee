@@ -55,6 +55,8 @@ import SalesOrderDetail from './pages/ERP/Detail/SalesOrderDetail';
 import DeliveryDetail from './pages/ERP/Detail/DeliveryDetail';
 import PurchaseOrderDetail from './pages/ERP/Detail/PurchaseOrderDetail';
 import GoodsReceiptDetail from './pages/ERP/Detail/GoodsReceiptDetail';
+import APPurchaseOrderDetail from './pages/AP/PurchaseOrderDetail';
+import APBillDetail from './pages/AP/BillDetail';
 import DataImport from './pages/Admin/DataImport';
 import RoleDashboard from './pages/Admin/RoleDashboard';
 import RBACManagement from './pages/Admin/RBACManagement';
@@ -208,13 +210,18 @@ function App() {
           <Route path="/gl/journal-entries" element={<GeneralLedger />} />
           <Route path="/gl/chart-of-accounts" element={<GeneralLedger />} />
           
-          {/* Accounts Payable */}
-          <Route path="/ap" element={<InvoiceList />} />
-          <Route path="/ap/invoices" element={<InvoiceList />} />
-          <Route path="/ap/invoices/new" element={<InvoiceForm />} />
-          <Route path="/ap/bills" element={<Bills />} />
-          <Route path="/ap/payments" element={<Payments />} />
-          <Route path="/ap/suppliers" element={<Suppliers />} />
+                    {/* Accounts Payable */}
+                    <Route path="/ap" element={<InvoiceList />} />
+                    <Route path="/ap/invoices" element={<InvoiceList />} />
+                    <Route path="/ap/invoices/new" element={<InvoiceForm />} />
+                    <Route path="/ap/bills" element={<Bills />} />
+                    <Route path="/ap/bills/new" element={<APBillDetail />} />
+                    <Route path="/ap/bills/:id" element={<APBillDetail />} />
+                    <Route path="/ap/purchase-orders" element={<PurchaseOrders />} />
+                    <Route path="/ap/purchase-orders/new" element={<APPurchaseOrderDetail />} />
+                    <Route path="/ap/purchase-orders/:id" element={<APPurchaseOrderDetail />} />
+                    <Route path="/ap/payments" element={<Payments />} />
+                    <Route path="/ap/suppliers" element={<Suppliers />} />
           
                     {/* Accounts Receivable */}
                     <Route path="/ar" element={<AccountsReceivable />} />
