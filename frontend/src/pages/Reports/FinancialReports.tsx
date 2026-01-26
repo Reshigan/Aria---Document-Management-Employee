@@ -65,35 +65,35 @@ export default function FinancialReports() {
     if (!data) return null;
 
     return (
-      <div style={{ background: 'white', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', overflow: 'hidden' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-          <thead style={{ background: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden">
+        <table className="w-full">
+          <thead className="bg-gray-50 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700">
             <tr>
-              <th style={{ padding: '1rem', textAlign: 'left', fontSize: '0.875rem', fontWeight: '600', color: '#374151' }}>Account Code</th>
-              <th style={{ padding: '1rem', textAlign: 'left', fontSize: '0.875rem', fontWeight: '600', color: '#374151' }}>Account Name</th>
-              <th style={{ padding: '1rem', textAlign: 'right', fontSize: '0.875rem', fontWeight: '600', color: '#374151' }}>Debit</th>
-              <th style={{ padding: '1rem', textAlign: 'right', fontSize: '0.875rem', fontWeight: '600', color: '#374151' }}>Credit</th>
+              <th className="p-4 text-left text-sm font-semibold text-gray-700 dark:text-gray-300">Account Code</th>
+              <th className="p-4 text-left text-sm font-semibold text-gray-700 dark:text-gray-300">Account Name</th>
+              <th className="p-4 text-right text-sm font-semibold text-gray-700 dark:text-gray-300">Debit</th>
+              <th className="p-4 text-right text-sm font-semibold text-gray-700 dark:text-gray-300">Credit</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
             {data.accounts?.map((account: any, idx: number) => (
-              <tr key={idx} style={{ borderBottom: '1px solid #e5e7eb' }}>
-                <td style={{ padding: '1rem', color: '#6b7280' }}>{account.account_code}</td>
-                <td style={{ padding: '1rem', fontWeight: '500' }}>{account.account_name}</td>
-                <td style={{ padding: '1rem', textAlign: 'right', color: '#059669' }}>
+              <tr key={idx} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                <td className="p-4 text-gray-500 dark:text-gray-400">{account.account_code}</td>
+                <td className="p-4 font-medium text-gray-900 dark:text-white">{account.account_name}</td>
+                <td className="p-4 text-right text-emerald-600 dark:text-emerald-400">
                   {account.debit > 0 ? `R ${account.debit.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}` : '-'}
                 </td>
-                <td style={{ padding: '1rem', textAlign: 'right', color: '#dc2626' }}>
+                <td className="p-4 text-right text-red-600 dark:text-red-400">
                   {account.credit > 0 ? `R ${account.credit.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}` : '-'}
                 </td>
               </tr>
             ))}
-            <tr style={{ background: '#f9fafb', fontWeight: 'bold' }}>
-              <td colSpan={2} style={{ padding: '1rem' }}>Total</td>
-              <td style={{ padding: '1rem', textAlign: 'right', color: '#059669' }}>
+            <tr className="bg-gray-50 dark:bg-gray-900/50 font-bold">
+              <td colSpan={2} className="p-4 text-gray-900 dark:text-white">Total</td>
+              <td className="p-4 text-right text-emerald-600 dark:text-emerald-400">
                 R {data.total_debit?.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
               </td>
-              <td style={{ padding: '1rem', textAlign: 'right', color: '#dc2626' }}>
+              <td className="p-4 text-right text-red-600 dark:text-red-400">
                 R {data.total_credit?.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
               </td>
             </tr>
@@ -108,39 +108,39 @@ export default function FinancialReports() {
     if (!data) return null;
 
     return (
-      <div style={{ background: 'white', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', padding: '2rem' }}>
-        <div style={{ marginBottom: '2rem' }}>
-          <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '1rem' }}>Revenue</h3>
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8">
+        <div className="mb-8">
+          <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Revenue</h3>
           {data.revenue?.map((item: any, idx: number) => (
-            <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem 0', borderBottom: '1px solid #e5e7eb' }}>
-              <span>{item.account_name}</span>
-              <span style={{ fontWeight: '500' }}>R {item.amount.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</span>
+            <div key={idx} className="flex justify-between py-2 border-b border-gray-100 dark:border-gray-700">
+              <span className="text-gray-700 dark:text-gray-300">{item.account_name}</span>
+              <span className="font-medium text-gray-900 dark:text-white">R {item.amount.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</span>
             </div>
           ))}
-          <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.75rem 0', fontWeight: 'bold', fontSize: '1.125rem' }}>
-            <span>Total Revenue</span>
-            <span style={{ color: '#059669' }}>R {data.total_revenue?.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</span>
+          <div className="flex justify-between py-3 font-bold text-lg">
+            <span className="text-gray-900 dark:text-white">Total Revenue</span>
+            <span className="text-emerald-600 dark:text-emerald-400">R {data.total_revenue?.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</span>
           </div>
         </div>
 
-        <div style={{ marginBottom: '2rem' }}>
-          <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '1rem' }}>Expenses</h3>
+        <div className="mb-8">
+          <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Expenses</h3>
           {data.expenses?.map((item: any, idx: number) => (
-            <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem 0', borderBottom: '1px solid #e5e7eb' }}>
-              <span>{item.account_name}</span>
-              <span style={{ fontWeight: '500' }}>R {item.amount.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</span>
+            <div key={idx} className="flex justify-between py-2 border-b border-gray-100 dark:border-gray-700">
+              <span className="text-gray-700 dark:text-gray-300">{item.account_name}</span>
+              <span className="font-medium text-gray-900 dark:text-white">R {item.amount.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</span>
             </div>
           ))}
-          <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.75rem 0', fontWeight: 'bold', fontSize: '1.125rem' }}>
-            <span>Total Expenses</span>
-            <span style={{ color: '#dc2626' }}>R {data.total_expenses?.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</span>
+          <div className="flex justify-between py-3 font-bold text-lg">
+            <span className="text-gray-900 dark:text-white">Total Expenses</span>
+            <span className="text-red-600 dark:text-red-400">R {data.total_expenses?.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</span>
           </div>
         </div>
 
-        <div style={{ borderTop: '2px solid #374151', paddingTop: '1rem' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '1.5rem', fontWeight: 'bold' }}>
-            <span>Net Profit</span>
-            <span style={{ color: data.net_profit >= 0 ? '#059669' : '#dc2626' }}>
+        <div className="border-t-2 border-gray-800 dark:border-gray-200 pt-4">
+          <div className="flex justify-between text-2xl font-bold">
+            <span className="text-gray-900 dark:text-white">Net Profit</span>
+            <span className={data.net_profit >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}>
               R {data.net_profit?.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
             </span>
           </div>
@@ -154,95 +154,95 @@ export default function FinancialReports() {
     if (!data) return null;
 
     return (
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
-        <div style={{ background: 'white', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', padding: '2rem' }}>
-          <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '1rem' }}>Assets</h3>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8">
+          <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Assets</h3>
           
-          <div style={{ marginBottom: '1.5rem' }}>
-            <h4 style={{ fontSize: '1rem', fontWeight: '600', marginBottom: '0.5rem', color: '#6b7280' }}>Current Assets</h4>
+          <div className="mb-6">
+            <h4 className="text-base font-semibold text-gray-500 dark:text-gray-400 mb-2">Current Assets</h4>
             {data.current_assets?.map((item: any, idx: number) => (
-              <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem 0' }}>
+              <div key={idx} className="flex justify-between py-2 text-gray-700 dark:text-gray-300">
                 <span>{item.account_name}</span>
                 <span>R {item.amount.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</span>
               </div>
             ))}
-            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem 0', fontWeight: 'bold', borderTop: '1px solid #e5e7eb' }}>
+            <div className="flex justify-between py-2 font-bold border-t border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white">
               <span>Total Current Assets</span>
               <span>R {data.total_current_assets?.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</span>
             </div>
           </div>
 
           <div>
-            <h4 style={{ fontSize: '1rem', fontWeight: '600', marginBottom: '0.5rem', color: '#6b7280' }}>Fixed Assets</h4>
+            <h4 className="text-base font-semibold text-gray-500 dark:text-gray-400 mb-2">Fixed Assets</h4>
             {data.fixed_assets?.map((item: any, idx: number) => (
-              <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem 0' }}>
+              <div key={idx} className="flex justify-between py-2 text-gray-700 dark:text-gray-300">
                 <span>{item.account_name}</span>
                 <span>R {item.amount.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</span>
               </div>
             ))}
-            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem 0', fontWeight: 'bold', borderTop: '1px solid #e5e7eb' }}>
+            <div className="flex justify-between py-2 font-bold border-t border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white">
               <span>Total Fixed Assets</span>
               <span>R {data.total_fixed_assets?.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</span>
             </div>
           </div>
 
-          <div style={{ borderTop: '2px solid #374151', marginTop: '1rem', paddingTop: '1rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '1.25rem', fontWeight: 'bold' }}>
-              <span>Total Assets</span>
-              <span style={{ color: '#059669' }}>R {data.total_assets?.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</span>
+          <div className="border-t-2 border-gray-800 dark:border-gray-200 mt-4 pt-4">
+            <div className="flex justify-between text-xl font-bold">
+              <span className="text-gray-900 dark:text-white">Total Assets</span>
+              <span className="text-emerald-600 dark:text-emerald-400">R {data.total_assets?.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</span>
             </div>
           </div>
         </div>
 
-        <div style={{ background: 'white', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', padding: '2rem' }}>
-          <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '1rem' }}>Liabilities & Equity</h3>
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8">
+          <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Liabilities & Equity</h3>
           
-          <div style={{ marginBottom: '1.5rem' }}>
-            <h4 style={{ fontSize: '1rem', fontWeight: '600', marginBottom: '0.5rem', color: '#6b7280' }}>Current Liabilities</h4>
+          <div className="mb-6">
+            <h4 className="text-base font-semibold text-gray-500 dark:text-gray-400 mb-2">Current Liabilities</h4>
             {data.current_liabilities?.map((item: any, idx: number) => (
-              <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem 0' }}>
+              <div key={idx} className="flex justify-between py-2 text-gray-700 dark:text-gray-300">
                 <span>{item.account_name}</span>
                 <span>R {item.amount.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</span>
               </div>
             ))}
-            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem 0', fontWeight: 'bold', borderTop: '1px solid #e5e7eb' }}>
+            <div className="flex justify-between py-2 font-bold border-t border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white">
               <span>Total Current Liabilities</span>
               <span>R {data.total_current_liabilities?.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</span>
             </div>
           </div>
 
-          <div style={{ marginBottom: '1.5rem' }}>
-            <h4 style={{ fontSize: '1rem', fontWeight: '600', marginBottom: '0.5rem', color: '#6b7280' }}>Long-term Liabilities</h4>
+          <div className="mb-6">
+            <h4 className="text-base font-semibold text-gray-500 dark:text-gray-400 mb-2">Long-term Liabilities</h4>
             {data.long_term_liabilities?.map((item: any, idx: number) => (
-              <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem 0' }}>
+              <div key={idx} className="flex justify-between py-2 text-gray-700 dark:text-gray-300">
                 <span>{item.account_name}</span>
                 <span>R {item.amount.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</span>
               </div>
             ))}
-            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem 0', fontWeight: 'bold', borderTop: '1px solid #e5e7eb' }}>
+            <div className="flex justify-between py-2 font-bold border-t border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white">
               <span>Total Long-term Liabilities</span>
               <span>R {data.total_long_term_liabilities?.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</span>
             </div>
           </div>
 
           <div>
-            <h4 style={{ fontSize: '1rem', fontWeight: '600', marginBottom: '0.5rem', color: '#6b7280' }}>Equity</h4>
+            <h4 className="text-base font-semibold text-gray-500 dark:text-gray-400 mb-2">Equity</h4>
             {data.equity?.map((item: any, idx: number) => (
-              <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem 0' }}>
+              <div key={idx} className="flex justify-between py-2 text-gray-700 dark:text-gray-300">
                 <span>{item.account_name}</span>
                 <span>R {item.amount.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</span>
               </div>
             ))}
-            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem 0', fontWeight: 'bold', borderTop: '1px solid #e5e7eb' }}>
+            <div className="flex justify-between py-2 font-bold border-t border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white">
               <span>Total Equity</span>
               <span>R {data.total_equity?.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</span>
             </div>
           </div>
 
-          <div style={{ borderTop: '2px solid #374151', marginTop: '1rem', paddingTop: '1rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '1.25rem', fontWeight: 'bold' }}>
-              <span>Total Liabilities & Equity</span>
-              <span style={{ color: '#dc2626' }}>R {data.total_liabilities_equity?.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</span>
+          <div className="border-t-2 border-gray-800 dark:border-gray-200 mt-4 pt-4">
+            <div className="flex justify-between text-xl font-bold">
+              <span className="text-gray-900 dark:text-white">Total Liabilities & Equity</span>
+              <span className="text-red-600 dark:text-red-400">R {data.total_liabilities_equity?.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</span>
             </div>
           </div>
         </div>
@@ -255,41 +255,41 @@ export default function FinancialReports() {
     if (!data) return null;
 
     return (
-      <div style={{ background: 'white', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', overflow: 'hidden' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-          <thead style={{ background: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden">
+        <table className="w-full">
+          <thead className="bg-gray-50 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700">
             <tr>
-              <th style={{ padding: '1rem', textAlign: 'left', fontSize: '0.875rem', fontWeight: '600', color: '#374151' }}>
+              <th className="p-4 text-left text-sm font-semibold text-gray-700 dark:text-gray-300">
                 {type === 'receivables' ? 'Customer' : 'Supplier'}
               </th>
-              <th style={{ padding: '1rem', textAlign: 'right', fontSize: '0.875rem', fontWeight: '600', color: '#374151' }}>Current</th>
-              <th style={{ padding: '1rem', textAlign: 'right', fontSize: '0.875rem', fontWeight: '600', color: '#374151' }}>1-30 Days</th>
-              <th style={{ padding: '1rem', textAlign: 'right', fontSize: '0.875rem', fontWeight: '600', color: '#374151' }}>31-60 Days</th>
-              <th style={{ padding: '1rem', textAlign: 'right', fontSize: '0.875rem', fontWeight: '600', color: '#374151' }}>61-90 Days</th>
-              <th style={{ padding: '1rem', textAlign: 'right', fontSize: '0.875rem', fontWeight: '600', color: '#374151' }}>90+ Days</th>
-              <th style={{ padding: '1rem', textAlign: 'right', fontSize: '0.875rem', fontWeight: '600', color: '#374151' }}>Total</th>
+              <th className="p-4 text-right text-sm font-semibold text-gray-700 dark:text-gray-300">Current</th>
+              <th className="p-4 text-right text-sm font-semibold text-gray-700 dark:text-gray-300">1-30 Days</th>
+              <th className="p-4 text-right text-sm font-semibold text-gray-700 dark:text-gray-300">31-60 Days</th>
+              <th className="p-4 text-right text-sm font-semibold text-gray-700 dark:text-gray-300">61-90 Days</th>
+              <th className="p-4 text-right text-sm font-semibold text-gray-700 dark:text-gray-300">90+ Days</th>
+              <th className="p-4 text-right text-sm font-semibold text-gray-700 dark:text-gray-300">Total</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
             {data.items?.map((item: any, idx: number) => (
-              <tr key={idx} style={{ borderBottom: '1px solid #e5e7eb' }}>
-                <td style={{ padding: '1rem', fontWeight: '500' }}>{item.name}</td>
-                <td style={{ padding: '1rem', textAlign: 'right' }}>R {item.current.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</td>
-                <td style={{ padding: '1rem', textAlign: 'right' }}>R {item.days_1_30.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</td>
-                <td style={{ padding: '1rem', textAlign: 'right' }}>R {item.days_31_60.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</td>
-                <td style={{ padding: '1rem', textAlign: 'right' }}>R {item.days_61_90.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</td>
-                <td style={{ padding: '1rem', textAlign: 'right', color: '#dc2626' }}>R {item.days_90_plus.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</td>
-                <td style={{ padding: '1rem', textAlign: 'right', fontWeight: 'bold' }}>R {item.total.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</td>
+              <tr key={idx} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                <td className="p-4 font-medium text-gray-900 dark:text-white">{item.name}</td>
+                <td className="p-4 text-right text-gray-700 dark:text-gray-300">R {item.current.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</td>
+                <td className="p-4 text-right text-gray-700 dark:text-gray-300">R {item.days_1_30.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</td>
+                <td className="p-4 text-right text-gray-700 dark:text-gray-300">R {item.days_31_60.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</td>
+                <td className="p-4 text-right text-gray-700 dark:text-gray-300">R {item.days_61_90.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</td>
+                <td className="p-4 text-right text-red-600 dark:text-red-400">R {item.days_90_plus.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</td>
+                <td className="p-4 text-right font-bold text-gray-900 dark:text-white">R {item.total.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</td>
               </tr>
             ))}
-            <tr style={{ background: '#f9fafb', fontWeight: 'bold' }}>
-              <td style={{ padding: '1rem' }}>Total</td>
-              <td style={{ padding: '1rem', textAlign: 'right' }}>R {data.total_current?.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</td>
-              <td style={{ padding: '1rem', textAlign: 'right' }}>R {data.total_1_30?.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</td>
-              <td style={{ padding: '1rem', textAlign: 'right' }}>R {data.total_31_60?.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</td>
-              <td style={{ padding: '1rem', textAlign: 'right' }}>R {data.total_61_90?.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</td>
-              <td style={{ padding: '1rem', textAlign: 'right', color: '#dc2626' }}>R {data.total_90_plus?.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</td>
-              <td style={{ padding: '1rem', textAlign: 'right' }}>R {data.grand_total?.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</td>
+            <tr className="bg-gray-50 dark:bg-gray-900/50 font-bold">
+              <td className="p-4 text-gray-900 dark:text-white">Total</td>
+              <td className="p-4 text-right text-gray-900 dark:text-white">R {data.total_current?.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</td>
+              <td className="p-4 text-right text-gray-900 dark:text-white">R {data.total_1_30?.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</td>
+              <td className="p-4 text-right text-gray-900 dark:text-white">R {data.total_31_60?.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</td>
+              <td className="p-4 text-right text-gray-900 dark:text-white">R {data.total_61_90?.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</td>
+              <td className="p-4 text-right text-red-600 dark:text-red-400">R {data.total_90_plus?.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</td>
+              <td className="p-4 text-right text-gray-900 dark:text-white">R {data.grand_total?.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</td>
             </tr>
           </tbody>
         </table>
@@ -299,7 +299,7 @@ export default function FinancialReports() {
 
   const renderReport = () => {
     if (loading) {
-      return <div style={{ padding: '3rem', textAlign: 'center', color: '#6b7280' }}>Loading report...</div>;
+      return <div className="p-12 text-center text-gray-500 dark:text-gray-400">Loading report...</div>;
     }
 
     switch (selectedReport) {
@@ -314,121 +314,86 @@ export default function FinancialReports() {
       case 'aged_payables':
         return renderAgedReport('payables');
       default:
-        return <div style={{ padding: '3rem', textAlign: 'center', color: '#6b7280' }}>Select a report to view</div>;
+        return <div className="p-12 text-center text-gray-500 dark:text-gray-400">Select a report to view</div>;
     }
   };
 
   return (
-    <div style={{ padding: '2rem' }}>
-      <div style={{ marginBottom: '2rem' }}>
-        <h1 style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>Financial Reports</h1>
-        <p style={{ color: '#6b7280' }}>View comprehensive financial reports and analytics</p>
-      </div>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6">
+      <div className="max-w-7xl mx-auto">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Financial Reports</h1>
+          <p className="text-gray-500 dark:text-gray-400 mt-1">View comprehensive financial reports and analytics</p>
+        </div>
 
-      <div style={{ display: 'flex', gap: '2rem', marginBottom: '2rem' }}>
-        <div style={{ flex: '0 0 250px' }}>
-          <div style={{ background: 'white', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', padding: '1rem' }}>
-            <h3 style={{ fontSize: '1rem', fontWeight: '600', marginBottom: '1rem', color: '#374151' }}>Reports</h3>
-            {reports.map((report) => {
-              const Icon = report.icon;
-              return (
-                <button
-                  key={report.id}
-                  onClick={() => setSelectedReport(report.id)}
-                  style={{
-                    width: '100%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.75rem',
-                    padding: '0.75rem',
-                    background: selectedReport === report.id ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' : 'transparent',
-                    color: selectedReport === report.id ? 'white' : '#374151',
-                    border: 'none',
-                    borderRadius: '8px',
-                    fontSize: '0.875rem',
-                    fontWeight: '500',
-                    cursor: 'pointer',
-                    marginBottom: '0.5rem',
-                    textAlign: 'left'
-                  }}
-                >
-                  <Icon size={18} />
-                  {report.name}
-                </button>
-              );
-            })}
-          </div>
+        <div className="flex flex-col lg:flex-row gap-8">
+          <div className="lg:w-64 flex-shrink-0">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-4">
+              <h3 className="text-base font-semibold text-gray-700 dark:text-gray-300 mb-4">Reports</h3>
+              {reports.map((report) => {
+                const Icon = report.icon;
+                return (
+                  <button
+                    key={report.id}
+                    onClick={() => setSelectedReport(report.id)}
+                    className={`w-full flex items-center gap-3 p-3 rounded-xl text-sm font-medium mb-2 text-left transition-all ${
+                      selectedReport === report.id
+                        ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-500/30'
+                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                    }`}
+                  >
+                    <Icon size={18} />
+                    {report.name}
+                  </button>
+                );
+              })}
+            </div>
 
-          <div style={{ background: 'white', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', padding: '1rem', marginTop: '1rem' }}>
-            <h3 style={{ fontSize: '1rem', fontWeight: '600', marginBottom: '1rem', color: '#374151', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <Calendar size={18} />
-              Date Range
-            </h3>
-            <div style={{ display: 'grid', gap: '0.75rem' }}>
-              <div>
-                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '500', marginBottom: '0.25rem', color: '#6b7280' }}>
-                  Start Date
-                </label>
-                <input
-                  type="date"
-                  value={dateRange.start_date}
-                  onChange={(e) => setDateRange({ ...dateRange, start_date: e.target.value })}
-                  style={{
-                    width: '100%',
-                    padding: '0.5rem',
-                    border: '1px solid #d1d5db',
-                    borderRadius: '6px',
-                    fontSize: '0.875rem'
-                  }}
-                />
-              </div>
-              <div>
-                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '500', marginBottom: '0.25rem', color: '#6b7280' }}>
-                  End Date
-                </label>
-                <input
-                  type="date"
-                  value={dateRange.end_date}
-                  onChange={(e) => setDateRange({ ...dateRange, end_date: e.target.value })}
-                  style={{
-                    width: '100%',
-                    padding: '0.5rem',
-                    border: '1px solid #d1d5db',
-                    borderRadius: '6px',
-                    fontSize: '0.875rem'
-                  }}
-                />
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-4 mt-4">
+              <h3 className="text-base font-semibold text-gray-700 dark:text-gray-300 mb-4 flex items-center gap-2">
+                <Calendar size={18} />
+                Date Range
+              </h3>
+              <div className="space-y-3">
+                <div>
+                  <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
+                    Start Date
+                  </label>
+                  <input
+                    type="date"
+                    value={dateRange.start_date}
+                    onChange={(e) => setDateRange({ ...dateRange, start_date: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-xl text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
+                    End Date
+                  </label>
+                  <input
+                    type="date"
+                    value={dateRange.end_date}
+                    onChange={(e) => setDateRange({ ...dateRange, end_date: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-xl text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                  />
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        <div style={{ flex: 1 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-            <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>
-              {reports.find(r => r.id === selectedReport)?.name}
-            </h2>
-            <button
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.5rem',
-                padding: '0.75rem 1.5rem',
-                background: '#f3f4f6',
-                border: 'none',
-                borderRadius: '8px',
-                fontSize: '0.875rem',
-                fontWeight: '600',
-                cursor: 'pointer',
-                color: '#374151'
-              }}
-            >
-              <Download size={18} />
-              Export PDF
-            </button>
+          <div className="flex-1">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                {reports.find(r => r.id === selectedReport)?.name}
+              </h2>
+              <button className="flex items-center gap-2 px-6 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all shadow-sm">
+                <Download size={18} />
+                Export PDF
+              </button>
+            </div>
+
+            {renderReport()}
           </div>
-
-          {renderReport()}
         </div>
       </div>
     </div>
