@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { FileText, Plus, Download, Eye, Edit, Trash2, X } from 'lucide-react';
+import { useState, useEffect } from 'react';
 import { useCompany } from '../../lib/company';
+import { FileText, Plus, Download, Eye, Edit, X, RefreshCw, AlertCircle, Check, File, Layers } from 'lucide-react';
 
 interface DocumentTemplate {
   id: string;
@@ -31,13 +31,10 @@ export default function DocumentTemplates() {
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState<DocumentTemplate | null>(null);
   const [formData, setFormData] = useState<TemplateFormData>({
-    name: '',
-    type: 'invoice',
-    template_format: 'html',
-    is_active: true,
-    is_default: false,
+    name: '', type: 'invoice', template_format: 'html', is_active: true, is_default: false,
   });
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const documentTypes = [
     { value: 'all', label: 'All Types' },
@@ -50,56 +47,37 @@ export default function DocumentTemplates() {
   ];
 
   useEffect(() => {
-    if (currentCompany) {
-      loadTemplates();
-    }
+    if (currentCompany) loadTemplates();
   }, [currentCompany, selectedType]);
 
   const loadTemplates = async () => {
     if (!currentCompany) return;
-    
     try {
       setLoading(true);
       const typeParam = selectedType !== 'all' ? `&document_type=${selectedType}` : '';
-      const response = await fetch(
-        `https://aria.vantax.co.za/api/erp/documents/templates?company_id=${currentCompany.id}${typeParam}`
-      );
-      
-      if (!response.ok) {
-        throw new Error('Failed to fetch templates');
-      }
-      
+      const response = await fetch(`https://aria.vantax.co.za/api/erp/documents/templates?company_id=${currentCompany.id}${typeParam}`);
+      if (!response.ok) throw new Error('Failed to fetch templates');
       const data = await response.json();
       setTemplates(data.templates || []);
-    } catch (error) {
-      console.error('Error loading templates:', error);
-    } finally {
-      setLoading(false);
-    }
+      setError(null);
+    } catch (err) {
+      console.error('Error loading templates:', err);
+      setError('Failed to load templates');
+    } finally { setLoading(false); }
   };
 
   const generateDocument = async (templateId: string, type: string) => {
     if (!currentCompany) return;
-    
     try {
       const response = await fetch('https://aria.vantax.co.za/api/erp/documents/generate', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          company_id: currentCompany.id,
-          document_type: type,
-          source_id: '00000000-0000-0000-0000-000000000001',
-          source_table: 'invoices',
-          template_id: templateId,
+          company_id: currentCompany.id, document_type: type,
+          source_id: '00000000-0000-0000-0000-000000000001', source_table: 'invoices', template_id: templateId,
         }),
       });
-      
-      if (!response.ok) {
-        throw new Error('Failed to generate document');
-      }
-      
+      if (!response.ok) throw new Error('Failed to generate document');
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -109,32 +87,20 @@ export default function DocumentTemplates() {
       a.click();
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
-    } catch (error) {
-      console.error('Error generating document:', error);
-      alert('Failed to generate document. Please try again.');
+    } catch (err) {
+      console.error('Error generating document:', err);
+      setError('Failed to generate document');
     }
   };
 
   const handleCreate = () => {
-    setFormData({
-      name: '',
-      type: 'invoice',
-      template_format: 'html',
-      is_active: true,
-      is_default: false,
-    });
+    setFormData({ name: '', type: 'invoice', template_format: 'html', is_active: true, is_default: false });
     setShowCreateModal(true);
   };
 
   const handleEdit = (template: DocumentTemplate) => {
     setSelectedTemplate(template);
-    setFormData({
-      name: template.name,
-      type: template.type,
-      template_format: template.template_format,
-      is_active: template.is_active,
-      is_default: template.is_default,
-    });
+    setFormData({ name: template.name, type: template.type, template_format: template.template_format, is_active: template.is_active, is_default: template.is_default });
     setShowEditModal(true);
   };
 
@@ -145,559 +111,205 @@ export default function DocumentTemplates() {
 
   const handleSubmitCreate = async () => {
     if (!currentCompany || !formData.name) return;
-    
     setSaving(true);
     try {
       const response = await fetch('https://aria.vantax.co.za/api/erp/documents/templates', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          company_id: currentCompany.id,
-          ...formData,
-        }),
+        body: JSON.stringify({ company_id: currentCompany.id, ...formData }),
       });
-      
       if (!response.ok) throw new Error('Failed to create template');
-      
       setShowCreateModal(false);
       loadTemplates();
-    } catch (error) {
-      console.error('Error creating template:', error);
-      alert('Failed to create template. Please try again.');
-    } finally {
-      setSaving(false);
-    }
+    } catch (err) {
+      console.error('Error creating template:', err);
+      setError('Failed to create template');
+    } finally { setSaving(false); }
   };
 
   const handleSubmitEdit = async () => {
     if (!currentCompany || !selectedTemplate || !formData.name) return;
-    
     setSaving(true);
     try {
       const response = await fetch(`https://aria.vantax.co.za/api/erp/documents/templates/${selectedTemplate.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          company_id: currentCompany.id,
-          ...formData,
-        }),
+        body: JSON.stringify({ company_id: currentCompany.id, ...formData }),
       });
-      
       if (!response.ok) throw new Error('Failed to update template');
-      
       setShowEditModal(false);
       setSelectedTemplate(null);
       loadTemplates();
-    } catch (error) {
-      console.error('Error updating template:', error);
-      alert('Failed to update template. Please try again.');
-    } finally {
-      setSaving(false);
-    }
+    } catch (err) {
+      console.error('Error updating template:', err);
+      setError('Failed to update template');
+    } finally { setSaving(false); }
+  };
+
+  const getTypeBadge = (type: string) => {
+    const styles: Record<string, string> = {
+      invoice: 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800',
+      delivery_note: 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800',
+      quote: 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-800',
+      sales_order: 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800',
+      purchase_order: 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 border-orange-200 dark:border-orange-800',
+      credit_note: 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 border-red-200 dark:border-red-800',
+    };
+    return styles[type] || 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600';
+  };
+
+  const stats = {
+    total: templates.length,
+    active: templates.filter(t => t.is_active).length,
+    defaults: templates.filter(t => t.is_default).length,
+    types: new Set(templates.map(t => t.type)).size
+  };
+
+  const renderFormModal = (isEdit: boolean) => {
+    const isOpen = isEdit ? showEditModal : showCreateModal;
+    const onClose = () => isEdit ? setShowEditModal(false) : setShowCreateModal(false);
+    if (!isOpen) return null;
+
+    return (
+      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
+        <div onClick={(e) => e.stopPropagation()} className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden">
+          <div className="bg-gradient-to-r from-violet-600 to-purple-600 text-white p-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-white/20 rounded-lg"><FileText className="h-6 w-6" /></div>
+                <div><h2 className="text-xl font-semibold">{isEdit ? 'Edit Template' : 'Create Template'}</h2><p className="text-white/80 text-sm">Document template settings</p></div>
+              </div>
+              <button onClick={onClose} className="p-2 hover:bg-white/20 rounded-lg transition-colors"><X className="h-5 w-5" /></button>
+            </div>
+          </div>
+          <div className="p-6 space-y-4">
+            {error && (<div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl flex items-center gap-3"><AlertCircle className="h-5 w-5 text-red-500" /><p className="text-red-700 dark:text-red-300">{error}</p></div>)}
+            <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Template Name *</label><input type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} placeholder="e.g., Standard Invoice Template" className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all" /></div>
+            <div className="grid grid-cols-2 gap-4">
+              <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Document Type *</label><select value={formData.type} onChange={(e) => setFormData({ ...formData, type: e.target.value })} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all">{documentTypes.filter(t => t.value !== 'all').map((type) => (<option key={type.value} value={type.value}>{type.label}</option>))}</select></div>
+              <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Format</label><select value={formData.template_format} onChange={(e) => setFormData({ ...formData, template_format: e.target.value })} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all"><option value="html">HTML</option><option value="pdf">PDF</option></select></div>
+            </div>
+            <div className="flex gap-6">
+              <label className="flex items-center gap-2 cursor-pointer"><input type="checkbox" checked={formData.is_active} onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })} className="w-5 h-5 rounded border-gray-300 text-violet-600 focus:ring-violet-500" /><span className="text-sm font-medium text-gray-700 dark:text-gray-300">Active</span></label>
+              <label className="flex items-center gap-2 cursor-pointer"><input type="checkbox" checked={formData.is_default} onChange={(e) => setFormData({ ...formData, is_default: e.target.checked })} className="w-5 h-5 rounded border-gray-300 text-violet-600 focus:ring-violet-500" /><span className="text-sm font-medium text-gray-700 dark:text-gray-300">Set as Default</span></label>
+            </div>
+          </div>
+          <div className="p-6 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 flex justify-end gap-3">
+            <button type="button" onClick={onClose} className="px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">Cancel</button>
+            <button onClick={isEdit ? handleSubmitEdit : handleSubmitCreate} disabled={saving || !formData.name} className={`px-6 py-3 rounded-xl font-medium transition-all shadow-lg ${saving || !formData.name ? 'bg-gray-300 dark:bg-gray-600 text-gray-500 cursor-not-allowed' : 'bg-gradient-to-r from-violet-600 to-purple-600 text-white hover:from-violet-700 hover:to-purple-700 shadow-violet-500/30'}`}>{saving ? 'Saving...' : isEdit ? 'Update' : 'Create'}</button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const renderPreviewModal = () => {
+    if (!showPreviewModal || !selectedTemplate) return null;
+    return (
+      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => { setShowPreviewModal(false); setSelectedTemplate(null); }}>
+        <div onClick={(e) => e.stopPropagation()} className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-3xl overflow-hidden max-h-[90vh] overflow-y-auto">
+          <div className="bg-gradient-to-r from-violet-600 to-purple-600 text-white p-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3"><div className="p-2 bg-white/20 rounded-lg"><Eye className="h-6 w-6" /></div><div><h2 className="text-xl font-semibold">Preview: {selectedTemplate.name}</h2><p className="text-white/80 text-sm">{selectedTemplate.type.replace('_', ' ').toUpperCase()}</p></div></div>
+              <button onClick={() => { setShowPreviewModal(false); setSelectedTemplate(null); }} className="p-2 hover:bg-white/20 rounded-lg transition-colors"><X className="h-5 w-5" /></button>
+            </div>
+          </div>
+          <div className="p-6">
+            <div className="bg-gray-50 dark:bg-gray-900/50 rounded-xl p-6">
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-8 border border-gray-200 dark:border-gray-700">
+                <div className="text-center mb-8"><h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">{selectedTemplate.type.replace('_', ' ').toUpperCase()}</h3><p className="text-gray-500 dark:text-gray-400">Template: {selectedTemplate.name}</p></div>
+                <div className="border-t border-gray-200 dark:border-gray-700 pt-6 space-y-3">
+                  <p className="text-gray-700 dark:text-gray-300"><span className="font-semibold">Document Type:</span> {selectedTemplate.type.replace('_', ' ')}</p>
+                  <p className="text-gray-700 dark:text-gray-300"><span className="font-semibold">Format:</span> {selectedTemplate.template_format.toUpperCase()}</p>
+                  <p className="text-gray-700 dark:text-gray-300"><span className="font-semibold">Status:</span> <span className={selectedTemplate.is_active ? 'text-green-600 dark:text-green-400' : 'text-gray-500'}>{selectedTemplate.is_active ? 'Active' : 'Inactive'}</span></p>
+                  <p className="text-gray-700 dark:text-gray-300"><span className="font-semibold">Default:</span> {selectedTemplate.is_default ? 'Yes' : 'No'}</p>
+                  <p className="text-gray-700 dark:text-gray-300"><span className="font-semibold">Created:</span> {new Date(selectedTemplate.created_at).toLocaleDateString()}</p>
+                </div>
+                <div className="mt-8 p-4 bg-gray-50 dark:bg-gray-900/50 rounded-xl"><p className="text-gray-500 dark:text-gray-400 text-sm text-center">This is a preview of the template metadata. Click "Generate Sample" to create a sample document.</p></div>
+              </div>
+            </div>
+          </div>
+          <div className="p-6 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 flex justify-end gap-3">
+            <button onClick={() => { setShowPreviewModal(false); setSelectedTemplate(null); }} className="px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">Close</button>
+            <button onClick={() => { generateDocument(selectedTemplate.id, selectedTemplate.type); setShowPreviewModal(false); setSelectedTemplate(null); }} className="px-6 py-3 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-xl font-medium hover:from-violet-700 hover:to-purple-700 transition-all shadow-lg shadow-violet-500/30">Generate Sample</button>
+          </div>
+        </div>
+      </div>
+    );
   };
 
   return (
-    <div style={{ padding: '2rem' }}>
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'space-between', 
-        alignItems: 'center',
-        marginBottom: '2rem'
-      }}>
-        <div>
-          <h1 style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>
-            Document Templates
-          </h1>
-          <p style={{ color: 'var(--gray-600)' }}>
-            Manage document templates with QR codes and company branding
-          </p>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-violet-50 dark:from-gray-900 dark:to-gray-800 p-6">
+      <div className="max-w-7xl mx-auto space-y-6">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-violet-600 to-purple-600 bg-clip-text text-transparent">Document Templates</h1>
+            <p className="text-gray-500 dark:text-gray-400 mt-1">Manage document templates with QR codes and company branding</p>
+          </div>
+          <div className="flex items-center gap-3">
+            <button onClick={loadTemplates} className="p-3 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-200 dark:border-gray-700"><RefreshCw className={`h-5 w-5 text-gray-600 dark:text-gray-400 ${loading ? 'animate-spin' : ''}`} /></button>
+            <button onClick={handleCreate} className="flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-xl font-medium hover:from-violet-700 hover:to-purple-700 transition-all shadow-lg shadow-violet-500/30"><Plus className="h-5 w-5" />New Template</button>
+          </div>
         </div>
-        <button
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-            padding: '0.75rem 1.5rem',
-            backgroundColor: 'var(--primary-600)',
-            color: 'white',
-            border: 'none',
-            borderRadius: '0.5rem',
-            cursor: 'pointer',
-            fontWeight: 500,
-          }}
-          onClick={handleCreate}
-        >
-          <Plus size={20} />
-          New Template
-        </button>
-      </div>
 
-      <div style={{ marginBottom: '1.5rem' }}>
-        <label style={{ 
-          display: 'block', 
-          marginBottom: '0.5rem',
-          fontWeight: 500,
-          color: 'var(--gray-700)'
-        }}>
-          Filter by Type:
-        </label>
-        <select
-          value={selectedType}
-          onChange={(e) => setSelectedType(e.target.value)}
-          style={{
-            padding: '0.5rem 1rem',
-            border: '1px solid var(--gray-300)',
-            borderRadius: '0.375rem',
-            fontSize: '0.875rem',
-            minWidth: '200px',
-          }}
-        >
-          {documentTypes.map((type) => (
-            <option key={type.value} value={type.value}>
-              {type.label}
-            </option>
-          ))}
-        </select>
-      </div>
+        {error && (<div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl flex items-center gap-3"><AlertCircle className="h-5 w-5 text-red-500" /><p className="text-red-700 dark:text-red-300">{error}</p><button onClick={() => setError(null)} className="ml-auto p-1 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg"><X className="h-4 w-4 text-red-500" /></button></div>)}
 
-      {loading ? (
-        <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--gray-600)' }}>
-          Loading templates...
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
+            <div className="flex items-center gap-4"><div className="p-3 bg-gradient-to-br from-violet-500 to-purple-500 rounded-xl shadow-lg shadow-violet-500/30"><FileText className="h-6 w-6 text-white" /></div><div><p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.total}</p><p className="text-sm text-gray-500 dark:text-gray-400">Total Templates</p></div></div>
+          </div>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
+            <div className="flex items-center gap-4"><div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg shadow-green-500/30"><Check className="h-6 w-6 text-white" /></div><div><p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.active}</p><p className="text-sm text-gray-500 dark:text-gray-400">Active</p></div></div>
+          </div>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
+            <div className="flex items-center gap-4"><div className="p-3 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl shadow-lg shadow-amber-500/30"><File className="h-6 w-6 text-white" /></div><div><p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.defaults}</p><p className="text-sm text-gray-500 dark:text-gray-400">Defaults</p></div></div>
+          </div>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
+            <div className="flex items-center gap-4"><div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl shadow-lg shadow-blue-500/30"><Layers className="h-6 w-6 text-white" /></div><div><p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.types}</p><p className="text-sm text-gray-500 dark:text-gray-400">Document Types</p></div></div>
+          </div>
         </div>
-      ) : templates.length === 0 ? (
-        <div style={{
-          textAlign: 'center',
-          padding: '3rem',
-          backgroundColor: 'var(--gray-50)',
-          borderRadius: '0.5rem',
-          border: '1px dashed var(--gray-300)',
-        }}>
-          <FileText size={48} style={{ color: 'var(--gray-400)', margin: '0 auto 1rem' }} />
-          <h3 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '0.5rem' }}>
-            No templates found
-          </h3>
-          <p style={{ color: 'var(--gray-600)', marginBottom: '1.5rem' }}>
-            Create your first document template to get started
-          </p>
-          <button
-            style={{
-              padding: '0.75rem 1.5rem',
-              backgroundColor: 'var(--primary-600)',
-              color: 'white',
-              border: 'none',
-              borderRadius: '0.5rem',
-              cursor: 'pointer',
-              fontWeight: 500,
-            }}
-            onClick={handleCreate}
-          >
-            Create Template
-          </button>
-        </div>
-      ) : (
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-          gap: '1.5rem',
-        }}>
-          {templates.map((template) => (
-            <div
-              key={template.id}
-              style={{
-                backgroundColor: 'white',
-                border: '1px solid var(--gray-200)',
-                borderRadius: '0.5rem',
-                padding: '1.5rem',
-                boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'start', justifyContent: 'space-between', marginBottom: '1rem' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                  <div style={{
-                    padding: '0.75rem',
-                    backgroundColor: 'var(--primary-50)',
-                    borderRadius: '0.5rem',
-                  }}>
-                    <FileText size={24} style={{ color: 'var(--primary-600)' }} />
+
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+          <div className="p-5 border-b border-gray-100 dark:border-gray-700">
+            <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Filter by Type</label><select value={selectedType} onChange={(e) => setSelectedType(e.target.value)} className="px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all min-w-[200px]">{documentTypes.map((type) => (<option key={type.value} value={type.value}>{type.label}</option>))}</select></div>
+          </div>
+
+          {loading ? (
+            <div className="p-12 text-center"><RefreshCw className="h-8 w-8 animate-spin text-violet-500 mx-auto mb-4" /><p className="text-gray-500 dark:text-gray-400">Loading templates...</p></div>
+          ) : templates.length === 0 ? (
+            <div className="p-12 text-center"><div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-2xl flex items-center justify-center mx-auto mb-4"><FileText className="h-8 w-8 text-gray-400" /></div><h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No templates found</h3><p className="text-gray-500 dark:text-gray-400 mb-6">Create your first document template to get started</p><button onClick={handleCreate} className="px-5 py-3 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-xl font-medium hover:from-violet-700 hover:to-purple-700 transition-all">Create Template</button></div>
+          ) : (
+            <div className="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {templates.map((template) => (
+                <div key={template.id} className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-6 shadow-sm hover:shadow-lg transition-all">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                      <div className="p-3 bg-gradient-to-br from-violet-100 to-purple-100 dark:from-violet-900/30 dark:to-purple-900/30 rounded-xl"><FileText className="h-6 w-6 text-violet-600 dark:text-violet-400" /></div>
+                      <div><h3 className="font-semibold text-gray-900 dark:text-white">{template.name}</h3><span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${getTypeBadge(template.type)}`}>{template.type.replace('_', ' ')}</span></div>
+                    </div>
+                    {template.is_default && (<span className="px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 text-xs font-medium rounded-lg border border-green-200 dark:border-green-800">Default</span>)}
                   </div>
-                  <div>
-                    <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '0.25rem' }}>
-                      {template.name}
-                    </h3>
-                    <p style={{ fontSize: '0.875rem', color: 'var(--gray-600)' }}>
-                      {template.type.replace('_', ' ').toUpperCase()}
-                    </p>
+                  <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-4">
+                    <span className={`w-2 h-2 rounded-full ${template.is_active ? 'bg-green-500' : 'bg-gray-400'}`}></span>
+                    <span>{template.is_active ? 'Active' : 'Inactive'}</span>
+                    <span className="mx-2">|</span>
+                    <span>{template.template_format.toUpperCase()}</span>
+                  </div>
+                  <div className="flex gap-2 pt-4 border-t border-gray-100 dark:border-gray-700">
+                    <button onClick={() => generateDocument(template.id, template.type)} className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-xl text-sm font-medium hover:from-violet-700 hover:to-purple-700 transition-all"><Download className="h-4 w-4" />Generate</button>
+                    <button onClick={() => handlePreview(template)} className="p-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"><Eye className="h-4 w-4" /></button>
+                    <button onClick={() => handleEdit(template)} className="p-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"><Edit className="h-4 w-4" /></button>
                   </div>
                 </div>
-                {template.is_default && (
-                  <span style={{
-                    padding: '0.25rem 0.5rem',
-                    backgroundColor: 'var(--green-100)',
-                    color: 'var(--green-700)',
-                    fontSize: '0.75rem',
-                    fontWeight: 500,
-                    borderRadius: '0.25rem',
-                  }}>
-                    Default
-                  </span>
-                )}
-              </div>
-
-              <div style={{ 
-                display: 'flex', 
-                gap: '0.5rem',
-                marginTop: '1rem',
-                paddingTop: '1rem',
-                borderTop: '1px solid var(--gray-200)',
-              }}>
-                <button
-                  style={{
-                    flex: 1,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '0.5rem',
-                    padding: '0.5rem',
-                    backgroundColor: 'var(--primary-600)',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '0.375rem',
-                    cursor: 'pointer',
-                    fontSize: '0.875rem',
-                    fontWeight: 500,
-                  }}
-                  onClick={() => generateDocument(template.id, template.type)}
-                  title="Generate PDF"
-                >
-                  <Download size={16} />
-                  Generate
-                </button>
-                <button
-                  style={{
-                    padding: '0.5rem',
-                    backgroundColor: 'var(--gray-100)',
-                    color: 'var(--gray-700)',
-                    border: 'none',
-                    borderRadius: '0.375rem',
-                    cursor: 'pointer',
-                  }}
-                  onClick={() => handlePreview(template)}
-                  title="Preview"
-                >
-                  <Eye size={16} />
-                </button>
-                <button
-                  style={{
-                    padding: '0.5rem',
-                    backgroundColor: 'var(--gray-100)',
-                    color: 'var(--gray-700)',
-                    border: 'none',
-                    borderRadius: '0.375rem',
-                    cursor: 'pointer',
-                  }}
-                  onClick={() => handleEdit(template)}
-                  title="Edit"
-                >
-                  <Edit size={16} />
-                </button>
-              </div>
+              ))}
             </div>
-          ))}
+          )}
         </div>
-      )}
+      </div>
 
-      {/* Create Modal */}
-      {showCreateModal && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 1000,
-        }}>
-          <div style={{
-            backgroundColor: 'white',
-            borderRadius: '0.5rem',
-            padding: '1.5rem',
-            width: '100%',
-            maxWidth: '500px',
-            maxHeight: '90vh',
-            overflow: 'auto',
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-              <h2 style={{ fontSize: '1.25rem', fontWeight: 600 }}>Create New Template</h2>
-              <button onClick={() => setShowCreateModal(false)} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
-                <X size={20} />
-              </button>
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500 }}>Template Name *</label>
-                <input
-                  type="text"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  style={{ width: '100%', padding: '0.5rem', border: '1px solid var(--gray-300)', borderRadius: '0.375rem' }}
-                  placeholder="e.g., Standard Invoice Template"
-                />
-              </div>
-              <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500 }}>Document Type *</label>
-                <select
-                  value={formData.type}
-                  onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-                  style={{ width: '100%', padding: '0.5rem', border: '1px solid var(--gray-300)', borderRadius: '0.375rem' }}
-                >
-                  {documentTypes.filter(t => t.value !== 'all').map((type) => (
-                    <option key={type.value} value={type.value}>{type.label}</option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500 }}>Format</label>
-                <select
-                  value={formData.template_format}
-                  onChange={(e) => setFormData({ ...formData, template_format: e.target.value })}
-                  style={{ width: '100%', padding: '0.5rem', border: '1px solid var(--gray-300)', borderRadius: '0.375rem' }}
-                >
-                  <option value="html">HTML</option>
-                  <option value="pdf">PDF</option>
-                </select>
-              </div>
-              <div style={{ display: 'flex', gap: '1rem' }}>
-                <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <input
-                    type="checkbox"
-                    checked={formData.is_active}
-                    onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
-                  />
-                  Active
-                </label>
-                <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <input
-                    type="checkbox"
-                    checked={formData.is_default}
-                    onChange={(e) => setFormData({ ...formData, is_default: e.target.checked })}
-                  />
-                  Set as Default
-                </label>
-              </div>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginTop: '1.5rem' }}>
-              <button
-                onClick={() => setShowCreateModal(false)}
-                style={{ padding: '0.5rem 1rem', border: '1px solid var(--gray-300)', borderRadius: '0.375rem', cursor: 'pointer' }}
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleSubmitCreate}
-                disabled={saving || !formData.name}
-                style={{
-                  padding: '0.5rem 1rem',
-                  backgroundColor: 'var(--primary-600)',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '0.375rem',
-                  cursor: saving ? 'not-allowed' : 'pointer',
-                  opacity: saving || !formData.name ? 0.5 : 1,
-                }}
-              >
-                {saving ? 'Creating...' : 'Create Template'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Edit Modal */}
-      {showEditModal && selectedTemplate && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 1000,
-        }}>
-          <div style={{
-            backgroundColor: 'white',
-            borderRadius: '0.5rem',
-            padding: '1.5rem',
-            width: '100%',
-            maxWidth: '500px',
-            maxHeight: '90vh',
-            overflow: 'auto',
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-              <h2 style={{ fontSize: '1.25rem', fontWeight: 600 }}>Edit Template</h2>
-              <button onClick={() => { setShowEditModal(false); setSelectedTemplate(null); }} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
-                <X size={20} />
-              </button>
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500 }}>Template Name *</label>
-                <input
-                  type="text"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  style={{ width: '100%', padding: '0.5rem', border: '1px solid var(--gray-300)', borderRadius: '0.375rem' }}
-                />
-              </div>
-              <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500 }}>Document Type *</label>
-                <select
-                  value={formData.type}
-                  onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-                  style={{ width: '100%', padding: '0.5rem', border: '1px solid var(--gray-300)', borderRadius: '0.375rem' }}
-                >
-                  {documentTypes.filter(t => t.value !== 'all').map((type) => (
-                    <option key={type.value} value={type.value}>{type.label}</option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500 }}>Format</label>
-                <select
-                  value={formData.template_format}
-                  onChange={(e) => setFormData({ ...formData, template_format: e.target.value })}
-                  style={{ width: '100%', padding: '0.5rem', border: '1px solid var(--gray-300)', borderRadius: '0.375rem' }}
-                >
-                  <option value="html">HTML</option>
-                  <option value="pdf">PDF</option>
-                </select>
-              </div>
-              <div style={{ display: 'flex', gap: '1rem' }}>
-                <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <input
-                    type="checkbox"
-                    checked={formData.is_active}
-                    onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
-                  />
-                  Active
-                </label>
-                <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <input
-                    type="checkbox"
-                    checked={formData.is_default}
-                    onChange={(e) => setFormData({ ...formData, is_default: e.target.checked })}
-                  />
-                  Set as Default
-                </label>
-              </div>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginTop: '1.5rem' }}>
-              <button
-                onClick={() => { setShowEditModal(false); setSelectedTemplate(null); }}
-                style={{ padding: '0.5rem 1rem', border: '1px solid var(--gray-300)', borderRadius: '0.375rem', cursor: 'pointer' }}
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleSubmitEdit}
-                disabled={saving || !formData.name}
-                style={{
-                  padding: '0.5rem 1rem',
-                  backgroundColor: 'var(--primary-600)',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '0.375rem',
-                  cursor: saving ? 'not-allowed' : 'pointer',
-                  opacity: saving || !formData.name ? 0.5 : 1,
-                }}
-              >
-                {saving ? 'Saving...' : 'Save Changes'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Preview Modal */}
-      {showPreviewModal && selectedTemplate && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 1000,
-        }}>
-          <div style={{
-            backgroundColor: 'white',
-            borderRadius: '0.5rem',
-            padding: '1.5rem',
-            width: '100%',
-            maxWidth: '800px',
-            maxHeight: '90vh',
-            overflow: 'auto',
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-              <h2 style={{ fontSize: '1.25rem', fontWeight: 600 }}>Preview: {selectedTemplate.name}</h2>
-              <button onClick={() => { setShowPreviewModal(false); setSelectedTemplate(null); }} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
-                <X size={20} />
-              </button>
-            </div>
-            <div style={{ backgroundColor: 'var(--gray-50)', padding: '1.5rem', borderRadius: '0.5rem', minHeight: '400px' }}>
-              <div style={{ backgroundColor: 'white', padding: '2rem', border: '1px solid var(--gray-200)', borderRadius: '0.25rem' }}>
-                <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-                  <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>
-                    {selectedTemplate.type.replace('_', ' ').toUpperCase()}
-                  </h3>
-                  <p style={{ color: 'var(--gray-600)' }}>Template: {selectedTemplate.name}</p>
-                </div>
-                <div style={{ borderTop: '1px solid var(--gray-200)', paddingTop: '1rem' }}>
-                  <p style={{ marginBottom: '0.5rem' }}><strong>Document Type:</strong> {selectedTemplate.type.replace('_', ' ')}</p>
-                  <p style={{ marginBottom: '0.5rem' }}><strong>Format:</strong> {selectedTemplate.template_format.toUpperCase()}</p>
-                  <p style={{ marginBottom: '0.5rem' }}><strong>Status:</strong> {selectedTemplate.is_active ? 'Active' : 'Inactive'}</p>
-                  <p style={{ marginBottom: '0.5rem' }}><strong>Default:</strong> {selectedTemplate.is_default ? 'Yes' : 'No'}</p>
-                  <p style={{ marginBottom: '0.5rem' }}><strong>Created:</strong> {new Date(selectedTemplate.created_at).toLocaleDateString()}</p>
-                </div>
-                <div style={{ marginTop: '2rem', padding: '1rem', backgroundColor: 'var(--gray-50)', borderRadius: '0.25rem' }}>
-                  <p style={{ color: 'var(--gray-600)', fontSize: '0.875rem', textAlign: 'center' }}>
-                    This is a preview of the template metadata. Click "Generate" on the template card to create a sample document.
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginTop: '1.5rem' }}>
-              <button
-                onClick={() => { setShowPreviewModal(false); setSelectedTemplate(null); }}
-                style={{ padding: '0.5rem 1rem', border: '1px solid var(--gray-300)', borderRadius: '0.375rem', cursor: 'pointer' }}
-              >
-                Close
-              </button>
-              <button
-                onClick={() => { generateDocument(selectedTemplate.id, selectedTemplate.type); setShowPreviewModal(false); setSelectedTemplate(null); }}
-                style={{
-                  padding: '0.5rem 1rem',
-                  backgroundColor: 'var(--primary-600)',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '0.375rem',
-                  cursor: 'pointer',
-                }}
-              >
-                Generate Sample
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {renderFormModal(false)}
+      {renderFormModal(true)}
+      {renderPreviewModal()}
     </div>
   );
 }

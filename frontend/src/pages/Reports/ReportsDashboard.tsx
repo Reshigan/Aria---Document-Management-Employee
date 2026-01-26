@@ -1,11 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { FileText, TrendingUp, DollarSign, Package, Users, FileSpreadsheet, BarChart3, PieChart } from 'lucide-react';
+import { FileText, TrendingUp, DollarSign, Package, Users, FileSpreadsheet, BarChart3, ChevronRight } from 'lucide-react';
 
 interface ReportCategory {
   title: string;
-  icon: React.ReactNode;
-  color: string;
+  icon: React.ElementType;
+  gradient: string;
+  shadowColor: string;
   reports: {
     name: string;
     path: string;
@@ -16,8 +17,9 @@ interface ReportCategory {
 const reportCategories: ReportCategory[] = [
   {
     title: 'Financial Reports',
-    icon: <DollarSign size={24} />,
-    color: '#8b5cf6',
+    icon: DollarSign,
+    gradient: 'from-violet-500 to-purple-500',
+    shadowColor: 'shadow-violet-500/30',
     reports: [
       { name: 'Trial Balance', path: '/reports/financial/trial-balance', description: 'Account balances summary' },
       { name: 'Balance Sheet', path: '/reports/financial/balance-sheet', description: 'Assets, liabilities, equity' },
@@ -27,8 +29,9 @@ const reportCategories: ReportCategory[] = [
   },
   {
     title: 'AR/AP Reports',
-    icon: <FileText size={24} />,
-    color: '#10b981',
+    icon: FileText,
+    gradient: 'from-emerald-500 to-teal-500',
+    shadowColor: 'shadow-emerald-500/30',
     reports: [
       { name: 'AR Aging', path: '/reports/ar-aging', description: 'Accounts receivable aging' },
       { name: 'AP Aging', path: '/reports/ar-ap/ap-aging', description: 'Accounts payable aging' },
@@ -36,8 +39,9 @@ const reportCategories: ReportCategory[] = [
   },
   {
     title: 'Inventory Reports',
-    icon: <Package size={24} />,
-    color: '#f59e0b',
+    icon: Package,
+    gradient: 'from-amber-500 to-orange-500',
+    shadowColor: 'shadow-amber-500/30',
     reports: [
       { name: 'Stock Valuation', path: '/reports/stock-valuation', description: 'Inventory value by item' },
       { name: 'Inventory Valuation', path: '/reports/inventory/valuation', description: 'Complete inventory valuation' },
@@ -45,8 +49,9 @@ const reportCategories: ReportCategory[] = [
   },
   {
     title: 'Sales & Purchase Reports',
-    icon: <TrendingUp size={24} />,
-    color: '#6366f1',
+    icon: TrendingUp,
+    gradient: 'from-indigo-500 to-blue-500',
+    shadowColor: 'shadow-indigo-500/30',
     reports: [
       { name: 'Sales KPIs', path: '/reports/sales-purchase/sales-kpis', description: 'Sales performance metrics' },
       { name: 'Purchase KPIs', path: '/reports/sales-purchase/purchase-kpis', description: 'Purchase performance metrics' },
@@ -54,8 +59,9 @@ const reportCategories: ReportCategory[] = [
   },
   {
     title: 'Tax & Compliance',
-    icon: <FileSpreadsheet size={24} />,
-    color: '#dc2626',
+    icon: FileSpreadsheet,
+    gradient: 'from-red-500 to-rose-500',
+    shadowColor: 'shadow-red-500/30',
     reports: [
       { name: 'VAT Summary', path: '/reports/vat-summary', description: 'VAT collected and paid' },
       { name: 'BBBEE Compliance', path: '/reports/compliance/bbbee', description: 'BBBEE scorecard' },
@@ -63,8 +69,9 @@ const reportCategories: ReportCategory[] = [
   },
   {
     title: 'HR & Payroll Reports',
-    icon: <Users size={24} />,
-    color: '#14b8a6',
+    icon: Users,
+    gradient: 'from-teal-500 to-cyan-500',
+    shadowColor: 'shadow-teal-500/30',
     reports: [
       { name: 'Payroll Activity', path: '/reports/payroll/activity', description: 'Payroll runs and payments' },
       { name: 'Expense Management', path: '/reports/expense/management', description: 'Employee expenses' },
@@ -74,63 +81,60 @@ const reportCategories: ReportCategory[] = [
 
 export const ReportsDashboard: React.FC = () => {
   return (
-    <div style={{ padding: '2rem', maxWidth: '1400px', margin: '0 auto' }}>
-      <div style={{ marginBottom: '2rem' }}>
-        <h1 style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>Reports</h1>
-        <p style={{ color: '#6b7280' }}>Comprehensive reporting across all ERP modules</p>
-      </div>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-6 lg:p-8">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl shadow-lg shadow-indigo-500/30">
+              <BarChart3 className="h-7 w-7 text-white" />
+            </div>
+            Reports
+          </h1>
+          <p className="text-gray-500 dark:text-gray-400 mt-1">Comprehensive reporting across all ERP modules</p>
+        </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '2rem' }}>
-        {reportCategories.map((category) => (
-          <div
-            key={category.title}
-            style={{
-              background: 'white',
-              borderRadius: '12px',
-              padding: '1.5rem',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-              border: '1px solid #e5e7eb',
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
-              <div style={{ color: category.color }}>
-                {category.icon}
+        {/* Report Categories Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+          {reportCategories.map((category) => {
+            const IconComponent = category.icon;
+            return (
+              <div
+                key={category.title}
+                className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all duration-300"
+              >
+                {/* Category Header */}
+                <div className="flex items-center gap-3 mb-5">
+                  <div className={`p-3 bg-gradient-to-br ${category.gradient} rounded-xl shadow-lg ${category.shadowColor}`}>
+                    <IconComponent className="h-6 w-6 text-white" />
+                  </div>
+                  <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{category.title}</h2>
+                </div>
+
+                {/* Report Links */}
+                <div className="space-y-2">
+                  {category.reports.map((report) => (
+                    <Link
+                      key={report.path}
+                      to={report.path}
+                      className="group flex items-center justify-between p-3 rounded-xl border border-gray-100 dark:border-gray-700 hover:border-gray-200 dark:hover:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-all duration-200"
+                    >
+                      <div>
+                        <div className="font-medium text-gray-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                          {report.name}
+                        </div>
+                        <div className="text-sm text-gray-500 dark:text-gray-400">
+                          {report.description}
+                        </div>
+                      </div>
+                      <ChevronRight className="h-5 w-5 text-gray-400 group-hover:text-indigo-500 group-hover:translate-x-1 transition-all" />
+                    </Link>
+                  ))}
+                </div>
               </div>
-              <h2 style={{ fontSize: '1.25rem', fontWeight: '600', margin: 0 }}>{category.title}</h2>
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-              {category.reports.map((report) => (
-                <Link
-                  key={report.path}
-                  to={report.path}
-                  style={{
-                    display: 'block',
-                    padding: '0.75rem',
-                    borderRadius: '8px',
-                    textDecoration: 'none',
-                    transition: 'all 0.2s',
-                    border: '1px solid #e5e7eb',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background = '#f9fafb';
-                    e.currentTarget.style.borderColor = category.color;
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background = 'white';
-                    e.currentTarget.style.borderColor = '#e5e7eb';
-                  }}
-                >
-                  <div style={{ fontWeight: '500', color: '#111827', marginBottom: '0.25rem' }}>
-                    {report.name}
-                  </div>
-                  <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>
-                    {report.description}
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-        ))}
+            );
+          })}
+        </div>
       </div>
     </div>
   );

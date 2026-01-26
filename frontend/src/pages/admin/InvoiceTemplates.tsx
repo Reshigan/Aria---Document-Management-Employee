@@ -47,10 +47,8 @@ export default function InvoiceTemplates() {
       const data = await response.json();
       if (data.success) setTemplates(data.data || []);
     } catch (error) {
-      setTemplates([
-        { id: '1', name: 'Standard Invoice', is_default: true, template_type: 'invoice', primary_color: '#1e40af', secondary_color: '#64748b', font_family: 'Inter', show_logo: true, show_payment_advice: true, show_tax_summary: true },
-        { id: '2', name: 'Modern Quote', is_default: false, template_type: 'quote', primary_color: '#059669', secondary_color: '#6b7280', font_family: 'Arial', show_logo: true, show_payment_advice: false, show_tax_summary: true },
-      ]);
+      console.error('Failed to fetch templates:', error);
+      setTemplates([]);
     } finally { setLoading(false); }
   };
 

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { collectionsApi } from '../../services/newPagesApi';
+import { Phone, Plus, RefreshCw, AlertCircle, X, DollarSign, Calendar, Users, Clock, Mail, MapPin, FileText } from 'lucide-react';
 
 interface Collection {
   id: string;
@@ -31,6 +32,7 @@ export default function Collections() {
       setLoading(true);
       const response = await collectionsApi.getAll();
       setCollections(response.data.collections || []);
+      setError(null);
     } catch (err) { setError('Failed to load collections'); } finally { setLoading(false); }
   };
 
@@ -46,61 +48,123 @@ export default function Collections() {
 
   const formatCurrency = (amount: number) => new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR' }).format(amount);
 
-  if (loading) return <div className="flex items-center justify-center h-64"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div></div>;
+  const getMethodIcon = (method: string) => {
+    switch (method) {
+      case 'phone': return <Phone className="h-4 w-4" />;
+      case 'email': return <Mail className="h-4 w-4" />;
+      case 'visit': return <MapPin className="h-4 w-4" />;
+      case 'letter': return <FileText className="h-4 w-4" />;
+      default: return <Phone className="h-4 w-4" />;
+    }
+  };
+
+  const getMethodBadge = (method: string) => {
+    const styles: Record<string, string> = {
+      phone: 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800',
+      email: 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-800',
+      visit: 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800',
+      letter: 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800',
+    };
+    return styles[method] || styles.phone;
+  };
+
+  const stats = {
+    total: collections.length,
+    totalOutstanding: collections.reduce((sum, c) => sum + c.amount_outstanding, 0),
+    withPromise: collections.filter(c => c.promise_to_pay_date).length,
+    followUps: collections.filter(c => c.follow_up_date && new Date(c.follow_up_date) >= new Date()).length,
+  };
 
   return (
-    <div className="p-6">
-      <div className="flex justify-between items-center mb-6">
-        <div><h1 className="text-2xl font-bold text-gray-900">Collections</h1><p className="text-gray-600">Track customer collection activities</p></div>
-        <button onClick={() => setShowForm(true)} className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">+ New Collection</button>
-      </div>
-      {error && <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">{error}</div>}
-      {showForm && (
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <h2 className="text-lg font-semibold mb-4">Log Collection Activity</h2>
-          <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4">
-            <div><label className="block text-sm font-medium text-gray-700 mb-1">Contact Date</label><input type="date" value={formData.contact_date} onChange={(e) => setFormData({ ...formData, contact_date: e.target.value })} className="w-full border rounded-lg px-3 py-2" required /></div>
-            <div><label className="block text-sm font-medium text-gray-700 mb-1">Contact Method</label><select value={formData.contact_method} onChange={(e) => setFormData({ ...formData, contact_method: e.target.value })} className="w-full border rounded-lg px-3 py-2"><option value="phone">Phone</option><option value="email">Email</option><option value="visit">Visit</option><option value="letter">Letter</option></select></div>
-            <div><label className="block text-sm font-medium text-gray-700 mb-1">Contact Person</label><input type="text" value={formData.contact_person} onChange={(e) => setFormData({ ...formData, contact_person: e.target.value })} className="w-full border rounded-lg px-3 py-2" required /></div>
-            <div><label className="block text-sm font-medium text-gray-700 mb-1">Amount Outstanding</label><input type="number" value={formData.amount_outstanding} onChange={(e) => setFormData({ ...formData, amount_outstanding: parseFloat(e.target.value) })} className="w-full border rounded-lg px-3 py-2" required /></div>
-            <div><label className="block text-sm font-medium text-gray-700 mb-1">Promise to Pay Date</label><input type="date" value={formData.promise_to_pay_date} onChange={(e) => setFormData({ ...formData, promise_to_pay_date: e.target.value })} className="w-full border rounded-lg px-3 py-2" /></div>
-            <div><label className="block text-sm font-medium text-gray-700 mb-1">Follow-up Date</label><input type="date" value={formData.follow_up_date} onChange={(e) => setFormData({ ...formData, follow_up_date: e.target.value })} className="w-full border rounded-lg px-3 py-2" /></div>
-            <div className="col-span-2"><label className="block text-sm font-medium text-gray-700 mb-1">Outcome</label><textarea value={formData.outcome} onChange={(e) => setFormData({ ...formData, outcome: e.target.value })} className="w-full border rounded-lg px-3 py-2" rows={2} /></div>
-            <div className="col-span-2 flex gap-2"><button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">Create</button><button type="button" onClick={() => setShowForm(false)} className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300">Cancel</button></div>
-          </form>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-orange-50 dark:from-gray-900 dark:to-gray-800 p-6">
+      <div className="max-w-7xl mx-auto space-y-6">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">Collections</h1>
+            <p className="text-gray-500 dark:text-gray-400 mt-1">Track customer collection activities</p>
+          </div>
+          <div className="flex items-center gap-3">
+            <button onClick={fetchCollections} className="p-3 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-200 dark:border-gray-700"><RefreshCw className={`h-5 w-5 text-gray-600 dark:text-gray-400 ${loading ? 'animate-spin' : ''}`} /></button>
+            <button onClick={() => setShowForm(true)} className="flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-orange-600 to-red-600 text-white rounded-xl font-medium hover:from-orange-700 hover:to-red-700 transition-all shadow-lg shadow-orange-500/30"><Plus className="h-5 w-5" />Log Collection</button>
+          </div>
         </div>
-      )}
-      <div className="bg-white rounded-lg shadow-md overflow-hidden">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Ref #</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Customer</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Contact Date</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Method</th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Outstanding</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Promise Date</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Outcome</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Assigned To</th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {collections.length === 0 ? (<tr><td colSpan={8} className="px-6 py-8 text-center text-gray-500">No collection records found.</td></tr>) : (
-              collections.map((col) => (
-                <tr key={col.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{col.collection_number}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{col.customer_name || '-'}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{col.contact_date}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 capitalize">{col.contact_method}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">{formatCurrency(col.amount_outstanding)}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{col.promise_to_pay_date || '-'}</td>
-                  <td className="px-6 py-4 text-sm text-gray-500 max-w-xs truncate">{col.outcome || '-'}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{col.assigned_to_name || '-'}</td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+
+        {error && (<div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl flex items-center gap-3"><AlertCircle className="h-5 w-5 text-red-500" /><p className="text-red-700 dark:text-red-300">{error}</p><button onClick={() => setError(null)} className="ml-auto p-1 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg"><X className="h-4 w-4 text-red-500" /></button></div>)}
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
+            <div className="flex items-center gap-4"><div className="p-3 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl shadow-lg shadow-orange-500/30"><Phone className="h-6 w-6 text-white" /></div><div><p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.total}</p><p className="text-sm text-gray-500 dark:text-gray-400">Total Activities</p></div></div>
+          </div>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
+            <div className="flex items-center gap-4"><div className="p-3 bg-gradient-to-br from-red-500 to-rose-500 rounded-xl shadow-lg shadow-red-500/30"><DollarSign className="h-6 w-6 text-white" /></div><div><p className="text-2xl font-bold text-gray-900 dark:text-white">{formatCurrency(stats.totalOutstanding)}</p><p className="text-sm text-gray-500 dark:text-gray-400">Outstanding</p></div></div>
+          </div>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
+            <div className="flex items-center gap-4"><div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg shadow-green-500/30"><Calendar className="h-6 w-6 text-white" /></div><div><p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.withPromise}</p><p className="text-sm text-gray-500 dark:text-gray-400">With Promise</p></div></div>
+          </div>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
+            <div className="flex items-center gap-4"><div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl shadow-lg shadow-blue-500/30"><Clock className="h-6 w-6 text-white" /></div><div><p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.followUps}</p><p className="text-sm text-gray-500 dark:text-gray-400">Pending Follow-ups</p></div></div>
+          </div>
+        </div>
+
+        {showForm && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setShowForm(false)}>
+            <div onClick={(e) => e.stopPropagation()} className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden max-h-[90vh] overflow-y-auto">
+              <div className="bg-gradient-to-r from-orange-600 to-red-600 text-white p-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3"><div className="p-2 bg-white/20 rounded-lg"><Phone className="h-6 w-6" /></div><div><h2 className="text-xl font-semibold">Log Collection Activity</h2><p className="text-white/80 text-sm">Record customer contact</p></div></div>
+                  <button onClick={() => setShowForm(false)} className="p-2 hover:bg-white/20 rounded-lg transition-colors"><X className="h-5 w-5" /></button>
+                </div>
+              </div>
+              <form onSubmit={handleSubmit} className="p-6 space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Contact Date *</label><input type="date" value={formData.contact_date} onChange={(e) => setFormData({ ...formData, contact_date: e.target.value })} required className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all" /></div>
+                  <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Contact Method *</label><select value={formData.contact_method} onChange={(e) => setFormData({ ...formData, contact_method: e.target.value })} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"><option value="phone">Phone</option><option value="email">Email</option><option value="visit">Visit</option><option value="letter">Letter</option></select></div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Contact Person *</label><input type="text" value={formData.contact_person} onChange={(e) => setFormData({ ...formData, contact_person: e.target.value })} required className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all" /></div>
+                  <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Amount Outstanding *</label><input type="number" value={formData.amount_outstanding} onChange={(e) => setFormData({ ...formData, amount_outstanding: parseFloat(e.target.value) })} required className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all" /></div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Promise to Pay Date</label><input type="date" value={formData.promise_to_pay_date} onChange={(e) => setFormData({ ...formData, promise_to_pay_date: e.target.value })} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all" /></div>
+                  <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Follow-up Date</label><input type="date" value={formData.follow_up_date} onChange={(e) => setFormData({ ...formData, follow_up_date: e.target.value })} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all" /></div>
+                </div>
+                <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Outcome</label><textarea value={formData.outcome} onChange={(e) => setFormData({ ...formData, outcome: e.target.value })} rows={2} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all resize-none" /></div>
+                <div className="flex justify-end gap-3 pt-4">
+                  <button type="button" onClick={() => setShowForm(false)} className="px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">Cancel</button>
+                  <button type="submit" className="px-6 py-3 bg-gradient-to-r from-orange-600 to-red-600 text-white rounded-xl font-medium hover:from-orange-700 hover:to-red-700 transition-all shadow-lg shadow-orange-500/30">Create</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+          {loading ? (
+            <div className="p-12 text-center"><RefreshCw className="h-8 w-8 animate-spin text-orange-500 mx-auto mb-4" /><p className="text-gray-500 dark:text-gray-400">Loading collections...</p></div>
+          ) : collections.length === 0 ? (
+            <div className="p-12 text-center"><div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-2xl flex items-center justify-center mx-auto mb-4"><Phone className="h-8 w-8 text-gray-400" /></div><h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No collection records</h3><p className="text-gray-500 dark:text-gray-400 mb-6">Log your first collection activity</p><button onClick={() => setShowForm(true)} className="px-5 py-3 bg-gradient-to-r from-orange-600 to-red-600 text-white rounded-xl font-medium hover:from-orange-700 hover:to-red-700 transition-all">Log Collection</button></div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-50 dark:bg-gray-900/50"><tr><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Ref #</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Customer</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Contact Date</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Method</th><th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Outstanding</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Promise Date</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Outcome</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Assigned To</th></tr></thead>
+                <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
+                  {collections.map((col) => (
+                    <tr key={col.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                      <td className="px-6 py-4 font-semibold text-orange-600 dark:text-orange-400">{col.collection_number}</td>
+                      <td className="px-6 py-4 text-gray-900 dark:text-white">{col.customer_name || '-'}</td>
+                      <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{col.contact_date}</td>
+                      <td className="px-6 py-4"><span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium border capitalize ${getMethodBadge(col.contact_method)}`}>{getMethodIcon(col.contact_method)}{col.contact_method}</span></td>
+                      <td className="px-6 py-4 text-right font-semibold text-red-600 dark:text-red-400">{formatCurrency(col.amount_outstanding)}</td>
+                      <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{col.promise_to_pay_date || '-'}</td>
+                      <td className="px-6 py-4 text-gray-600 dark:text-gray-300 max-w-xs truncate">{col.outcome || '-'}</td>
+                      <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{col.assigned_to_name || '-'}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

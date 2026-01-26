@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ShoppingCart, Plus, Search, Trash2, Check } from 'lucide-react';
+import { ShoppingCart, Plus, Search, Trash2, Check, Clock, Package, FileText, CheckCircle } from 'lucide-react';
 import api from '../../lib/api';
 
 interface PurchaseOrder {
@@ -145,217 +145,180 @@ export default function PurchaseOrders() {
     received: filteredPOs.filter(po => po.status === 'received')
   };
 
-  const getStatusColor = (status: string) => {
-    const colors: Record<string, string> = {
-      draft: '#6b7280',
-      sent: '#3b82f6',
-      acknowledged: '#f59e0b',
-      partially_received: '#8b5cf6',
-      received: '#10b981',
-      cancelled: '#ef4444'
+  const getStatusBadge = (status: string) => {
+    const styles: Record<string, string> = {
+      draft: 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300',
+      sent: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
+      acknowledged: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
+      partially_received: 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400',
+      received: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
+      cancelled: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
     };
-    return colors[status] || '#6b7280';
+    return styles[status] || 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300';
   };
 
-  return (
-    <div style={{ padding: '2rem' }}>
-      <div style={{ marginBottom: '2rem' }}>
-        <h1 style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          <ShoppingCart size={32} style={{ color: '#f97316' }} />
-          Purchase Orders
-        </h1>
-        <p style={{ color: '#6b7280' }}>Manage purchase orders and track supplier deliveries</p>
-      </div>
+  const getStatIcon = (status: string) => {
+    switch (status) {
+      case 'draft': return <FileText className="h-6 w-6 text-white" />;
+      case 'sent': return <Clock className="h-6 w-6 text-white" />;
+      case 'acknowledged': return <Package className="h-6 w-6 text-white" />;
+      case 'received': return <CheckCircle className="h-6 w-6 text-white" />;
+      default: return <ShoppingCart className="h-6 w-6 text-white" />;
+    }
+  };
 
-      {/* Action Bar */}
-      <div style={{ 
-        display: 'flex', 
-        gap: '1rem', 
-        marginBottom: '2rem',
-        padding: '1.5rem',
-        background: 'white',
-        borderRadius: '0.5rem',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-      }}>
-        <div style={{ flex: 1, position: 'relative' }}>
-          <Search size={20} style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: '#9ca3af' }} />
-          <input
-            type="text"
-            placeholder="Search purchase orders..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            style={{
-              width: '100%',
-              padding: '0.5rem 1rem 0.5rem 2.5rem',
-              border: '1px solid #d1d5db',
-              borderRadius: '0.375rem',
-              fontSize: '0.875rem'
-            }}
-          />
+  const getStatGradient = (status: string) => {
+    switch (status) {
+      case 'draft': return 'from-gray-500 to-slate-600';
+      case 'sent': return 'from-blue-500 to-indigo-500';
+      case 'acknowledged': return 'from-amber-500 to-orange-500';
+      case 'received': return 'from-green-500 to-emerald-500';
+      default: return 'from-orange-500 to-red-500';
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-orange-50 dark:from-gray-900 dark:to-gray-800 p-8">
+        <div className="flex items-center justify-center h-64">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500"></div>
         </div>
-        <select
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-          style={{
-            padding: '0.5rem 1rem',
-            border: '1px solid #d1d5db',
-            borderRadius: '0.375rem',
-            fontSize: '0.875rem',
-            minWidth: '150px'
-          }}
-        >
-          <option value="">All Statuses</option>
-          <option value="draft">Draft</option>
-          <option value="sent">Sent</option>
-          <option value="acknowledged">Acknowledged</option>
-          <option value="partially_received">Partially Received</option>
-          <option value="received">Received</option>
-          <option value="cancelled">Cancelled</option>
-        </select>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-orange-50 dark:from-gray-900 dark:to-gray-800 p-8">
+      {/* Header */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl shadow-lg shadow-orange-500/30">
+              <ShoppingCart className="h-7 w-7 text-white" />
+            </div>
+            Purchase Orders
+          </h1>
+          <p className="text-gray-500 dark:text-gray-400 mt-1">Manage purchase orders and track supplier deliveries</p>
+        </div>
         <button
           onClick={() => navigate('/ap/purchase-orders/new')}
-          style={{
-            padding: '0.5rem 1.5rem',
-            background: '#f97316',
-            color: 'white',
-            border: 'none',
-            borderRadius: '0.375rem',
-            fontSize: '0.875rem',
-            fontWeight: '500',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem'
-          }}
+          className="px-6 py-2.5 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-xl hover:from-orange-600 hover:to-red-600 transition-all shadow-lg shadow-orange-500/30 flex items-center gap-2 font-medium"
         >
-          <Plus size={16} />
+          <Plus className="h-5 w-5" />
           New Purchase Order
         </button>
       </div>
 
-      {/* Stats */}
-      <div style={{ 
-        display: 'grid', 
-        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
-        gap: '1rem',
-        marginBottom: '2rem'
-      }}>
+      {/* Search and Filter Bar */}
+      <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-gray-700 mb-6">
+        <div className="flex flex-col md:flex-row gap-4">
+          <div className="flex-1 relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search purchase orders..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-10 pr-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+            />
+          </div>
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent min-w-[180px]"
+          >
+            <option value="">All Statuses</option>
+            <option value="draft">Draft</option>
+            <option value="sent">Sent</option>
+            <option value="acknowledged">Acknowledged</option>
+            <option value="partially_received">Partially Received</option>
+            <option value="received">Received</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+        </div>
+      </div>
+
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
         {Object.entries(statsByStatus).map(([status, pos]) => (
-          <div key={status} style={{ padding: '1.5rem', background: 'white', borderRadius: '0.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-            <div style={{ fontSize: '0.875rem', color: '#6b7280', textTransform: 'capitalize', marginBottom: '0.5rem' }}>
-              {status.replace('_', ' ')} POs
-            </div>
-            <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#f97316' }}>{pos.length}</div>
-            <div style={{ fontSize: '0.875rem', color: '#6b7280', marginTop: '0.25rem' }}>
-              R {pos.reduce((sum, po) => sum + po.total_amount, 0).toFixed(2)}
+          <div key={status} className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
+            <div className="flex items-center gap-4">
+              <div className={`p-3 bg-gradient-to-br ${getStatGradient(status)} rounded-xl shadow-lg`}>
+                {getStatIcon(status)}
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">{pos.length}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400 capitalize">{status.replace('_', ' ')} POs</p>
+                <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
+                  R {pos.reduce((sum, po) => sum + po.total_amount, 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
+                </p>
+              </div>
             </div>
           </div>
         ))}
       </div>
 
       {/* Purchase Orders Table */}
-      {loading ? (
-        <div style={{ textAlign: 'center', padding: '3rem' }}>Loading...</div>
-      ) : filteredPOs.length === 0 ? (
-        <div style={{ 
-          textAlign: 'center', 
-          padding: '3rem',
-          background: 'white',
-          borderRadius: '0.5rem',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-        }}>
-          <ShoppingCart size={48} style={{ margin: '0 auto 1rem', color: '#d1d5db' }} />
-          <h3 style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '0.5rem' }}>No purchase orders yet</h3>
-          <p style={{ color: '#6b7280', marginBottom: '1.5rem' }}>
-            Create your first purchase order to order from suppliers
-          </p>
-          <button
-            onClick={() => navigate('/ap/purchase-orders/new')}
-            style={{
-              padding: '0.5rem 1.5rem',
-              background: '#f97316',
-              color: 'white',
-              border: 'none',
-              borderRadius: '0.375rem',
-              fontSize: '0.875rem',
-              fontWeight: '500',
-              cursor: 'pointer'
-            }}
-          >
-            Create Purchase Order
-          </button>
-        </div>
-      ) : (
-        <div style={{ background: 'white', borderRadius: '0.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', overflow: 'hidden' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <thead style={{ background: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+        {filteredPOs.length === 0 ? (
+          <div className="px-6 py-12 text-center">
+            <ShoppingCart className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
+            <p className="text-gray-500 dark:text-gray-400">No purchase orders found</p>
+            <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">Create your first purchase order to order from suppliers</p>
+            <button
+              onClick={() => navigate('/ap/purchase-orders/new')}
+              className="mt-4 px-5 py-2 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-xl font-medium hover:from-orange-600 hover:to-red-600 transition-all shadow-lg shadow-orange-500/30"
+            >
+              Create Purchase Order
+            </button>
+          </div>
+        ) : (
+          <table className="w-full">
+            <thead className="bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-600">
               <tr>
-                <th style={{ padding: '0.75rem 1rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>PO Number</th>
-                <th style={{ padding: '0.75rem 1rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Supplier</th>
-                <th style={{ padding: '0.75rem 1rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Order Date</th>
-                <th style={{ padding: '0.75rem 1rem', textAlign: 'right', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Total</th>
-                <th style={{ padding: '0.75rem 1rem', textAlign: 'center', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Status</th>
-                <th style={{ padding: '0.75rem 1rem', textAlign: 'right', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Actions</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">PO Number</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Supplier</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Order Date</th>
+                <th className="px-6 py-4 text-right text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Total</th>
+                <th className="px-6 py-4 text-center text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Status</th>
+                <th className="px-6 py-4 text-center text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
               {filteredPOs.map((po) => {
                 const supplier = suppliers.find(s => s.id === po.supplier_id);
                 return (
                   <tr 
                     key={po.id} 
-                    style={{ borderBottom: '1px solid #e5e7eb', cursor: 'pointer' }}
+                    className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors cursor-pointer"
                     onClick={() => navigate(`/ap/purchase-orders/${po.id}`)}
                   >
-                    <td style={{ padding: '1rem', fontSize: '0.875rem', fontWeight: '500' }}>{po.po_number}</td>
-                    <td style={{ padding: '1rem', fontSize: '0.875rem' }}>{supplier?.supplier_name || 'Unknown'}</td>
-                    <td style={{ padding: '1rem', fontSize: '0.875rem', color: '#6b7280' }}>{new Date(po.order_date).toLocaleDateString()}</td>
-                    <td style={{ padding: '1rem', fontSize: '0.875rem', fontWeight: '500', textAlign: 'right' }}>R {po.total_amount.toFixed(2)}</td>
-                    <td style={{ padding: '1rem', textAlign: 'center' }}>
-                      <span style={{
-                        padding: '0.25rem 0.75rem',
-                        borderRadius: '9999px',
-                        fontSize: '0.75rem',
-                        fontWeight: '500',
-                        background: `${getStatusColor(po.status)}20`,
-                        color: getStatusColor(po.status)
-                      }}>
-                        {po.status}
+                    <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">{po.po_number}</td>
+                    <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{supplier?.supplier_name || 'Unknown'}</td>
+                    <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{new Date(po.order_date).toLocaleDateString()}</td>
+                    <td className="px-6 py-4 text-right font-medium text-gray-900 dark:text-white">R {po.total_amount.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</td>
+                    <td className="px-6 py-4 text-center">
+                      <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium capitalize ${getStatusBadge(po.status)}`}>
+                        {po.status.replace('_', ' ')}
                       </span>
                     </td>
-                    <td style={{ padding: '1rem', textAlign: 'right' }} onClick={(e) => e.stopPropagation()}>
-                      <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
+                    <td className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
+                      <div className="flex gap-2 justify-center">
                         {po.status === 'draft' && (
                           <button
                             onClick={() => handleApprove(po.id)}
-                            style={{
-                              padding: '0.25rem 0.5rem',
-                              background: '#10b981',
-                              color: 'white',
-                              border: 'none',
-                              borderRadius: '0.25rem',
-                              cursor: 'pointer',
-                              fontSize: '0.75rem'
-                            }}
+                            className="p-2 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/30 rounded-lg transition-colors"
                             title="Approve"
                           >
-                            <Check size={14} />
+                            <Check className="h-4 w-4" />
                           </button>
                         )}
                         <button
                           onClick={() => handleDelete(po.id)}
-                          style={{
-                            padding: '0.25rem 0.5rem',
-                            background: '#ef4444',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '0.25rem',
-                            cursor: 'pointer',
-                            fontSize: '0.75rem'
-                          }}
+                          className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors"
                           title="Delete"
                         >
-                          <Trash2 size={14} />
+                          <Trash2 className="h-4 w-4" />
                         </button>
                       </div>
                     </td>
@@ -364,195 +327,129 @@ export default function PurchaseOrders() {
               })}
             </tbody>
           </table>
-        </div>
-      )}
+        )}
+      </div>
 
       {/* Modal */}
       {showModal && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background: 'rgba(0,0,0,0.5)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 1000
-        }}>
-          <div style={{
-            background: 'white',
-            borderRadius: '0.5rem',
-            padding: '2rem',
-            width: '90%',
-            maxWidth: '600px',
-            maxHeight: '90vh',
-            overflow: 'auto'
-          }}>
-            <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1.5rem' }}>
-              New Purchase Order
-            </h2>
-            <form onSubmit={handleSubmit}>
-              <div style={{ marginBottom: '1rem' }}>
-                <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>
-                  Supplier *
-                </label>
-                <select
-                  value={formData.supplier_id}
-                  onChange={(e) => setFormData({ ...formData, supplier_id: e.target.value })}
-                  required
-                  style={{
-                    width: '100%',
-                    padding: '0.5rem',
-                    border: '1px solid #d1d5db',
-                    borderRadius: '0.375rem',
-                    fontSize: '0.875rem'
-                  }}
-                >
-                  <option value="">Select Supplier</option>
-                  {suppliers.map(supplier => (
-                    <option key={supplier.id} value={supplier.id}>{supplier.supplier_name}</option>
-                  ))}
-                </select>
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl w-[700px] max-h-[90vh] overflow-hidden shadow-2xl">
+            <div className="bg-gradient-to-r from-orange-500 to-red-500 px-6 py-4">
+              <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                <ShoppingCart className="h-5 w-5" />
+                New Purchase Order
+              </h2>
+            </div>
+            <form onSubmit={handleSubmit} className="p-6 overflow-y-auto max-h-[calc(90vh-140px)]">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Supplier *
+                  </label>
+                  <select
+                    value={formData.supplier_id}
+                    onChange={(e) => setFormData({ ...formData, supplier_id: e.target.value })}
+                    required
+                    className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  >
+                    <option value="">Select Supplier</option>
+                    {suppliers.map(supplier => (
+                      <option key={supplier.id} value={supplier.id}>{supplier.supplier_name}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Order Date *
+                  </label>
+                  <input
+                    type="date"
+                    value={formData.order_date}
+                    onChange={(e) => setFormData({ ...formData, order_date: e.target.value })}
+                    required
+                    className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  />
+                </div>
               </div>
 
-              <div style={{ marginBottom: '1rem' }}>
-                <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>
-                  Order Date *
-                </label>
-                <input
-                  type="date"
-                  value={formData.order_date}
-                  onChange={(e) => setFormData({ ...formData, order_date: e.target.value })}
-                  required
-                  style={{
-                    width: '100%',
-                    padding: '0.5rem',
-                    border: '1px solid #d1d5db',
-                    borderRadius: '0.375rem',
-                    fontSize: '0.875rem'
-                  }}
-                />
-              </div>
-
-              <div style={{ marginBottom: '1rem' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                  <label style={{ fontSize: '0.875rem', fontWeight: '500' }}>Line Items *</label>
+              <div className="mb-5">
+                <div className="flex justify-between items-center mb-3">
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Line Items *</label>
                   <button
                     type="button"
                     onClick={addLine}
-                    style={{
-                      padding: '0.25rem 0.75rem',
-                      background: '#f97316',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '0.25rem',
-                      fontSize: '0.75rem',
-                      cursor: 'pointer'
-                    }}
+                    className="px-3 py-1.5 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-lg text-xs font-medium hover:from-orange-600 hover:to-red-600 transition-all"
                   >
-                    Add Line
+                    + Add Line
                   </button>
                 </div>
-                {formData.lines.map((line, index) => (
-                  <div key={index} style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: '0.5rem', marginBottom: '0.5rem' }}>
-                    <select
-                      value={line.product_id}
-                      onChange={(e) => {
-                        const productId = e.target.value;
-                        const product = products.find(p => p.id === parseInt(productId));
-                        const newLines = [...formData.lines];
-                        newLines[index] = { ...newLines[index], product_id: productId };
-                        if (product) {
-                          newLines[index].unit_price = product.cost_price.toString();
-                        }
-                        setFormData({ ...formData, lines: newLines });
-                      }}
-                      required
-                      style={{
-                        padding: '0.5rem',
-                        border: '1px solid #d1d5db',
-                        borderRadius: '0.375rem',
-                        fontSize: '0.875rem'
-                      }}
-                    >
-                      <option value="">Select Product</option>
-                      {products.map(product => (
-                        <option key={product.id} value={product.id}>{product.product_name}</option>
-                      ))}
-                    </select>
-                    <input
-                      type="number"
-                      placeholder="Quantity"
-                      value={line.quantity}
-                      onChange={(e) => {
-                        const newLines = [...formData.lines];
-                        newLines[index] = { ...newLines[index], quantity: e.target.value };
-                        setFormData({ ...formData, lines: newLines });
-                      }}
-                      required
-                      min="0.01"
-                      step="0.01"
-                      style={{
-                        padding: '0.5rem',
-                        border: '1px solid #d1d5db',
-                        borderRadius: '0.375rem',
-                        fontSize: '0.875rem'
-                      }}
-                    />
-                    <input
-                      type="number"
-                      placeholder="Unit Price"
-                      value={line.unit_price}
-                      onChange={(e) => {
-                        const newLines = [...formData.lines];
-                        newLines[index] = { ...newLines[index], unit_price: e.target.value };
-                        setFormData({ ...formData, lines: newLines });
-                      }}
-                      required
-                      min="0"
-                      step="0.01"
-                      style={{
-                        padding: '0.5rem',
-                        border: '1px solid #d1d5db',
-                        borderRadius: '0.375rem',
-                        fontSize: '0.875rem'
-                      }}
-                    />
-                  </div>
-                ))}
+                <div className="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-4 space-y-3">
+                  {formData.lines.map((line, index) => (
+                    <div key={index} className="grid grid-cols-6 gap-3">
+                      <select
+                        value={line.product_id}
+                        onChange={(e) => {
+                          const productId = e.target.value;
+                          const product = products.find(p => p.id === parseInt(productId));
+                          const newLines = [...formData.lines];
+                          newLines[index] = { ...newLines[index], product_id: productId };
+                          if (product) {
+                            newLines[index].unit_price = product.cost_price.toString();
+                          }
+                          setFormData({ ...formData, lines: newLines });
+                        }}
+                        required
+                        className="col-span-3 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                      >
+                        <option value="">Select Product</option>
+                        {products.map(product => (
+                          <option key={product.id} value={product.id}>{product.product_name}</option>
+                        ))}
+                      </select>
+                      <input
+                        type="number"
+                        placeholder="Qty"
+                        value={line.quantity}
+                        onChange={(e) => {
+                          const newLines = [...formData.lines];
+                          newLines[index] = { ...newLines[index], quantity: e.target.value };
+                          setFormData({ ...formData, lines: newLines });
+                        }}
+                        required
+                        min="0.01"
+                        step="0.01"
+                        className="col-span-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                      />
+                      <input
+                        type="number"
+                        placeholder="Price"
+                        value={line.unit_price}
+                        onChange={(e) => {
+                          const newLines = [...formData.lines];
+                          newLines[index] = { ...newLines[index], unit_price: e.target.value };
+                          setFormData({ ...formData, lines: newLines });
+                        }}
+                        required
+                        min="0"
+                        step="0.01"
+                        className="col-span-2 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                      />
+                    </div>
+                  ))}
+                </div>
               </div>
 
-              <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
+              <div className="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-600">
                 <button
                   type="button"
                   onClick={() => { setShowModal(false); resetForm(); }}
-                  style={{
-                    padding: '0.5rem 1.5rem',
-                    background: '#e5e7eb',
-                    color: '#374151',
-                    border: 'none',
-                    borderRadius: '0.375rem',
-                    fontSize: '0.875rem',
-                    fontWeight: '500',
-                    cursor: 'pointer'
-                  }}
+                  className="px-5 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  style={{
-                    padding: '0.5rem 1.5rem',
-                    background: '#f97316',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '0.375rem',
-                    fontSize: '0.875rem',
-                    fontWeight: '500',
-                    cursor: 'pointer'
-                  }}
+                  className="px-5 py-2.5 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-xl font-medium hover:from-orange-600 hover:to-red-600 transition-all shadow-lg shadow-orange-500/30"
                 >
                   Create Purchase Order
                 </button>

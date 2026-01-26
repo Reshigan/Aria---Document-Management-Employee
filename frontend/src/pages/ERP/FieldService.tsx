@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import api from '../../lib/api';
-import { Plus, Search, Eye, Send, CheckCircle, Wrench, X } from 'lucide-react';
+import { Plus, Search, Eye, Send, CheckCircle, Wrench, X, RefreshCw, AlertCircle, Clock, Truck, Calendar, Users } from 'lucide-react';
 
 interface ServiceRequest {
   id: number;
@@ -66,9 +66,10 @@ export default function FieldService() {
         setWorkOrders(response.data.work_orders || []);
       }
       setError(null);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error loading field service data:', err);
-      setError(err.response?.data?.detail || 'Failed to load data');
+      const error = err as { response?: { data?: { detail?: string } } };
+      setError(error.response?.data?.detail || 'Failed to load data');
     } finally {
       setLoading(false);
     }
@@ -78,9 +79,10 @@ export default function FieldService() {
     try {
       await api.post(`/field-service/work-orders/${woId}/dispatch`);
       loadData();
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error dispatching work order:', err);
-      setError(err.response?.data?.detail || 'Failed to dispatch work order');
+      const error = err as { response?: { data?: { detail?: string } } };
+      setError(error.response?.data?.detail || 'Failed to dispatch work order');
     }
   };
 
@@ -88,9 +90,10 @@ export default function FieldService() {
     try {
       await api.post(`/field-service/work-orders/${woId}/complete`);
       loadData();
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error completing work order:', err);
-      setError(err.response?.data?.detail || 'Failed to complete work order');
+      const error = err as { response?: { data?: { detail?: string } } };
+      setError(error.response?.data?.detail || 'Failed to complete work order');
     }
   };
 
@@ -129,34 +132,35 @@ export default function FieldService() {
       setShowCreateModal(false);
       loadData();
       setError(null);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error creating:', err);
-      setError(err.response?.data?.detail || 'Failed to create');
+      const error = err as { response?: { data?: { detail?: string } } };
+      setError(error.response?.data?.detail || 'Failed to create');
     }
   };
 
-  const getStatusColor = (status: string) => {
-    const colors: Record<string, string> = {
-      new: 'bg-blue-100 text-blue-800',
-      assigned: 'bg-purple-100 text-purple-800',
-      in_progress: 'bg-yellow-100 text-yellow-800',
-      completed: 'bg-green-100 text-green-800',
-      cancelled: 'bg-red-100 text-red-800',
-      draft: 'bg-gray-100 text-gray-800',
-      scheduled: 'bg-blue-100 text-blue-800',
-      dispatched: 'bg-purple-100 text-purple-800',
+  const getStatusBadge = (status: string) => {
+    const styles: Record<string, string> = {
+      new: 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800',
+      assigned: 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-800',
+      in_progress: 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800',
+      completed: 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800',
+      cancelled: 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 border-red-200 dark:border-red-800',
+      draft: 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600',
+      scheduled: 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800',
+      dispatched: 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-800',
     };
-    return colors[status] || 'bg-gray-100 text-gray-800';
+    return styles[status] || styles.draft;
   };
 
-  const getPriorityColor = (priority: string) => {
-    const colors: Record<string, string> = {
-      low: 'bg-gray-100 text-gray-600',
-      medium: 'bg-blue-100 text-blue-600',
-      high: 'bg-orange-100 text-orange-600',
-      urgent: 'bg-red-100 text-red-600',
+  const getPriorityBadge = (priority: string) => {
+    const styles: Record<string, string> = {
+      low: 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-600',
+      medium: 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800',
+      high: 'bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 border-orange-200 dark:border-orange-800',
+      urgent: 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 border-red-200 dark:border-red-800',
     };
-    return colors[priority] || 'bg-gray-100 text-gray-600';
+    return styles[priority] || styles.medium;
   };
 
   const filteredRequests = serviceRequests.filter(sr => {
@@ -173,552 +177,388 @@ export default function FieldService() {
     return matchesSearch;
   });
 
-  return (
-    <div style={{ padding: '2rem' }}>
-      <div style={{ marginBottom: '2rem' }}>
-        <h1 style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>Field Service</h1>
-        <p style={{ color: '#6b7280' }}>Manage service requests and field work orders</p>
-      </div>
+  const requestStats = {
+    total: serviceRequests.length,
+    new: serviceRequests.filter(sr => sr.status === 'new').length,
+    assigned: serviceRequests.filter(sr => sr.status === 'assigned').length,
+    in_progress: serviceRequests.filter(sr => sr.status === 'in_progress').length,
+    completed: serviceRequests.filter(sr => sr.status === 'completed').length
+  };
 
-      {error && (
-        <div style={{
-          padding: '1rem',
-          marginBottom: '1rem',
-          background: '#fee2e2',
-          border: '1px solid #fecaca',
-          borderRadius: '0.5rem',
-          color: '#991b1b'
-        }}>
-          {error}
-        </div>
-      )}
+  const woStats = {
+    total: workOrders.length,
+    scheduled: workOrders.filter(wo => wo.status === 'scheduled').length,
+    dispatched: workOrders.filter(wo => wo.status === 'dispatched').length,
+    in_progress: workOrders.filter(wo => wo.status === 'in_progress').length,
+    completed: workOrders.filter(wo => wo.status === 'completed').length
+  };
 
-      {/* Tabs */}
-      <div style={{ 
-        display: 'flex', 
-        gap: '0.5rem', 
-        marginBottom: '1rem',
-        borderBottom: '1px solid #e5e7eb'
-      }}>
-        <button
-          onClick={() => setActiveTab('requests')}
-          style={{
-            padding: '0.75rem 1.5rem',
-            background: activeTab === 'requests' ? '#2563eb' : 'transparent',
-            color: activeTab === 'requests' ? 'white' : '#6b7280',
-            border: 'none',
-            borderBottom: activeTab === 'requests' ? '2px solid #2563eb' : 'none',
-            cursor: 'pointer',
-            fontWeight: '500'
-          }}
-        >
-          Service Requests
-        </button>
-        <button
-          onClick={() => setActiveTab('workorders')}
-          style={{
-            padding: '0.75rem 1.5rem',
-            background: activeTab === 'workorders' ? '#2563eb' : 'transparent',
-            color: activeTab === 'workorders' ? 'white' : '#6b7280',
-            border: 'none',
-            borderBottom: activeTab === 'workorders' ? '2px solid #2563eb' : 'none',
-            cursor: 'pointer',
-            fontWeight: '500'
-          }}
-        >
-          Work Orders
-        </button>
-      </div>
+  const renderCreateModal = () => {
+    if (!showCreateModal) return null;
 
-      {/* Search and Filters */}
-      <div style={{ 
-        display: 'flex', 
-        gap: '1rem', 
-        marginBottom: '2rem',
-        padding: '1.5rem',
-        background: 'white',
-        borderRadius: '0.5rem',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-      }}>
-        <input
-          type="text"
-          placeholder={`Search by ${activeTab === 'requests' ? 'request' : 'work order'} number or customer...`}
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          style={{
-            flex: 1,
-            padding: '0.5rem 1rem',
-            border: '1px solid #d1d5db',
-            borderRadius: '0.375rem',
-            fontSize: '0.875rem'
-          }}
-        />
-        <select
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-          style={{
-            padding: '0.5rem 1rem',
-            border: '1px solid #d1d5db',
-            borderRadius: '0.375rem',
-            fontSize: '0.875rem',
-            minWidth: '150px'
-          }}
-        >
-          <option value="">All Statuses</option>
-          {activeTab === 'requests' ? (
-            <>
-              <option value="new">New</option>
-              <option value="assigned">Assigned</option>
-              <option value="in_progress">In Progress</option>
-              <option value="completed">Completed</option>
-              <option value="cancelled">Cancelled</option>
-            </>
-          ) : (
-            <>
-              <option value="draft">Draft</option>
-              <option value="scheduled">Scheduled</option>
-              <option value="dispatched">Dispatched</option>
-              <option value="in_progress">In Progress</option>
-              <option value="completed">Completed</option>
-              <option value="cancelled">Cancelled</option>
-            </>
-          )}
-        </select>
-        <button
-          onClick={handleCreate}
-          style={{
-            padding: '0.5rem 1.5rem',
-            background: '#2563eb',
-            color: 'white',
-            border: 'none',
-            borderRadius: '0.375rem',
-            fontSize: '0.875rem',
-            fontWeight: '500',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem'
-          }}
-        >
-          <Plus size={16} />
-          Create {activeTab === 'requests' ? 'Request' : 'Work Order'}
-        </button>
-      </div>
+    const isViewMode = selectedItem !== null;
+    const title = isViewMode 
+      ? (activeTab === 'requests' ? 'Service Request Details' : 'Work Order Details')
+      : (activeTab === 'requests' ? 'Create Service Request' : 'Create Work Order');
 
-      {/* Content */}
-      {loading ? (
-        <div style={{ textAlign: 'center', padding: '3rem' }}>Loading...</div>
-      ) : activeTab === 'requests' ? (
-        filteredRequests.length === 0 ? (
-          <div style={{ 
-            textAlign: 'center', 
-            padding: '3rem',
-            background: 'white',
-            borderRadius: '0.5rem',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-          }}>
-            <p style={{ color: '#6b7280' }}>No service requests found</p>
-          </div>
-        ) : (
-          <div style={{ 
-            background: 'white', 
-            borderRadius: '0.5rem',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-            overflow: 'hidden'
-          }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-              <thead style={{ background: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
-                <tr>
-                  <th style={{ padding: '0.75rem 1rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Request #</th>
-                  <th style={{ padding: '0.75rem 1rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Customer</th>
-                  <th style={{ padding: '0.75rem 1rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Type</th>
-                  <th style={{ padding: '0.75rem 1rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Priority</th>
-                  <th style={{ padding: '0.75rem 1rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Status</th>
-                  <th style={{ padding: '0.75rem 1rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Reported</th>
-                  <th style={{ padding: '0.75rem 1rem', textAlign: 'right', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredRequests.map((sr) => (
-                  <tr key={sr.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
-                    <td style={{ padding: '1rem', fontSize: '0.875rem', fontWeight: '500' }}>{sr.request_number}</td>
-                    <td style={{ padding: '1rem', fontSize: '0.875rem' }}>{sr.customer_name}</td>
-                    <td style={{ padding: '1rem', fontSize: '0.875rem' }}>{sr.request_type}</td>
-                    <td style={{ padding: '1rem' }}>
-                      <span style={{
-                        padding: '0.25rem 0.75rem',
-                        borderRadius: '9999px',
-                        fontSize: '0.75rem',
-                        fontWeight: '500'
-                      }} className={getPriorityColor(sr.priority)}>
-                        {sr.priority}
-                      </span>
-                    </td>
-                    <td style={{ padding: '1rem' }}>
-                      <span style={{
-                        padding: '0.25rem 0.75rem',
-                        borderRadius: '9999px',
-                        fontSize: '0.75rem',
-                        fontWeight: '500'
-                      }} className={getStatusColor(sr.status)}>
-                        {sr.status}
-                      </span>
-                    </td>
-                    <td style={{ padding: '1rem', fontSize: '0.875rem' }}>
-                      {new Date(sr.reported_date).toLocaleDateString()}
-                    </td>
-                    <td style={{ padding: '1rem', textAlign: 'right' }}>
-                      <button
-                        onClick={() => handleViewDetails(sr)}
-                        style={{
-                          padding: '0.25rem 0.75rem',
-                          background: '#3b82f6',
-                          color: 'white',
-                          border: 'none',
-                          borderRadius: '0.25rem',
-                          fontSize: '0.75rem',
-                          cursor: 'pointer',
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: '0.25rem'
-                        }}
-                      >
-                        <Eye size={12} />
-                        View
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )
-      ) : (
-        filteredWorkOrders.length === 0 ? (
-          <div style={{ 
-            textAlign: 'center', 
-            padding: '3rem',
-            background: 'white',
-            borderRadius: '0.5rem',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-          }}>
-            <p style={{ color: '#6b7280' }}>No work orders found</p>
-          </div>
-        ) : (
-          <div style={{ 
-            background: 'white', 
-            borderRadius: '0.5rem',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-            overflow: 'hidden'
-          }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-              <thead style={{ background: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
-                <tr>
-                  <th style={{ padding: '0.75rem 1rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>WO #</th>
-                  <th style={{ padding: '0.75rem 1rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Customer</th>
-                  <th style={{ padding: '0.75rem 1rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Work Type</th>
-                  <th style={{ padding: '0.75rem 1rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Priority</th>
-                  <th style={{ padding: '0.75rem 1rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Status</th>
-                  <th style={{ padding: '0.75rem 1rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Scheduled</th>
-                  <th style={{ padding: '0.75rem 1rem', textAlign: 'right', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredWorkOrders.map((wo) => (
-                  <tr key={wo.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
-                    <td style={{ padding: '1rem', fontSize: '0.875rem', fontWeight: '500' }}>{wo.work_order_number}</td>
-                    <td style={{ padding: '1rem', fontSize: '0.875rem' }}>{wo.customer_name}</td>
-                    <td style={{ padding: '1rem', fontSize: '0.875rem' }}>{wo.work_type}</td>
-                    <td style={{ padding: '1rem' }}>
-                      <span style={{
-                        padding: '0.25rem 0.75rem',
-                        borderRadius: '9999px',
-                        fontSize: '0.75rem',
-                        fontWeight: '500'
-                      }} className={getPriorityColor(wo.priority)}>
-                        {wo.priority}
-                      </span>
-                    </td>
-                    <td style={{ padding: '1rem' }}>
-                      <span style={{
-                        padding: '0.25rem 0.75rem',
-                        borderRadius: '9999px',
-                        fontSize: '0.75rem',
-                        fontWeight: '500'
-                      }} className={getStatusColor(wo.status)}>
-                        {wo.status}
-                      </span>
-                    </td>
-                    <td style={{ padding: '1rem', fontSize: '0.875rem' }}>
-                      {wo.scheduled_date ? new Date(wo.scheduled_date).toLocaleDateString() : '-'}
-                    </td>
-                    <td style={{ padding: '1rem', textAlign: 'right' }}>
-                      <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
-                        {wo.status === 'scheduled' && (
-                          <button
-                            onClick={() => dispatchWorkOrder(wo.id)}
-                            style={{
-                              padding: '0.25rem 0.75rem',
-                              background: '#8b5cf6',
-                              color: 'white',
-                              border: 'none',
-                              borderRadius: '0.25rem',
-                              fontSize: '0.75rem',
-                              cursor: 'pointer',
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: '0.25rem'
-                            }}
-                          >
-                            <Send size={12} />
-                            Dispatch
-                          </button>
-                        )}
-                        {(wo.status === 'dispatched' || wo.status === 'in_progress') && (
-                          <button
-                            onClick={() => completeWorkOrder(wo.id)}
-                            style={{
-                              padding: '0.25rem 0.75rem',
-                              background: '#10b981',
-                              color: 'white',
-                              border: 'none',
-                              borderRadius: '0.25rem',
-                              fontSize: '0.75rem',
-                              cursor: 'pointer',
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: '0.25rem'
-                            }}
-                          >
-                            <CheckCircle size={12} />
-                            Complete
-                          </button>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )
-      )}
-
-      {/* Summary Stats */}
-      <div style={{ 
-        display: 'grid', 
-        gridTemplateColumns: 'repeat(4, 1fr)', 
-        gap: '1rem',
-        marginTop: '2rem'
-      }}>
-        {activeTab === 'requests' ? (
-          ['new', 'assigned', 'in_progress', 'completed'].map((status) => {
-            const count = serviceRequests.filter(sr => sr.status === status).length;
-            return (
-              <div key={status} style={{
-                padding: '1.5rem',
-                background: 'white',
-                borderRadius: '0.5rem',
-                boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-              }}>
-                <div style={{ fontSize: '0.875rem', color: '#6b7280', textTransform: 'capitalize', marginBottom: '0.5rem' }}>
-                  {status.replace('_', ' ')}
-                </div>
-                <div style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>
-                  {count}
+    return (
+      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setShowCreateModal(false)}>
+        <div onClick={(e) => e.stopPropagation()} className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden">
+          <div className="bg-gradient-to-r from-cyan-600 to-teal-600 text-white p-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-white/20 rounded-lg"><Wrench className="h-6 w-6" /></div>
+                <div>
+                  <h2 className="text-xl font-semibold">{title}</h2>
+                  <p className="text-white/80 text-sm">{isViewMode ? 'View details' : 'Fill in the details'}</p>
                 </div>
               </div>
-            );
-          })
-        ) : (
-          ['scheduled', 'dispatched', 'in_progress', 'completed'].map((status) => {
-            const count = workOrders.filter(wo => wo.status === status).length;
-            return (
-              <div key={status} style={{
-                padding: '1.5rem',
-                background: 'white',
-                borderRadius: '0.5rem',
-                boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-              }}>
-                <div style={{ fontSize: '0.875rem', color: '#6b7280', textTransform: 'capitalize', marginBottom: '0.5rem' }}>
-                  {status.replace('_', ' ')}
-                </div>
-                <div style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>
-                  {count}
-                </div>
-              </div>
-            );
-          })
-        )}
-      </div>
-
-      {/* Create/View Modal */}
-      {showCreateModal && (
-        <div
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            background: 'rgba(0, 0, 0, 0.5)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 1000
-          }}
-          onClick={() => setShowCreateModal(false)}
-        >
-          <div
-            onClick={(e) => e.stopPropagation()}
-            style={{
-              background: 'white',
-              borderRadius: '0.5rem',
-              boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)',
-              maxWidth: '500px',
-              width: '95%',
-              maxHeight: '90vh',
-              overflow: 'auto'
-            }}
-          >
-            <div style={{
-              padding: '1.5rem',
-              borderBottom: '1px solid #e5e7eb',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between'
-            }}>
-              <h2 style={{ fontSize: '1.25rem', fontWeight: '600', margin: 0 }}>
-                {selectedItem ? 'View Details' : `Create ${activeTab === 'requests' ? 'Service Request' : 'Work Order'}`}
-              </h2>
-              <button
-                onClick={() => setShowCreateModal(false)}
-                style={{ padding: '0.25rem', background: 'transparent', border: 'none', color: '#6b7280', cursor: 'pointer' }}
-              >
-                <X size={24} />
-              </button>
+              <button onClick={() => setShowCreateModal(false)} className="p-2 hover:bg-white/20 rounded-lg transition-colors"><X className="h-5 w-5" /></button>
             </div>
-            {selectedItem ? (
-              <div style={{ padding: '1.5rem' }}>
-                {'request_number' in selectedItem ? (
+          </div>
+
+          {isViewMode ? (
+            <div className="p-6 space-y-4">
+              {activeTab === 'requests' && selectedItem && 'request_number' in selectedItem && (
+                <>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div><p className="text-sm text-gray-500 dark:text-gray-400">Request #</p><p className="font-semibold text-gray-900 dark:text-white">{selectedItem.request_number}</p></div>
+                    <div><p className="text-sm text-gray-500 dark:text-gray-400">Customer</p><p className="font-semibold text-gray-900 dark:text-white">{selectedItem.customer_name}</p></div>
+                    <div><p className="text-sm text-gray-500 dark:text-gray-400">Type</p><p className="font-semibold text-gray-900 dark:text-white capitalize">{selectedItem.request_type}</p></div>
+                    <div><p className="text-sm text-gray-500 dark:text-gray-400">Priority</p><span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${getPriorityBadge(selectedItem.priority)}`}>{selectedItem.priority}</span></div>
+                    <div><p className="text-sm text-gray-500 dark:text-gray-400">Status</p><span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${getStatusBadge(selectedItem.status)}`}>{selectedItem.status}</span></div>
+                    <div><p className="text-sm text-gray-500 dark:text-gray-400">Reported</p><p className="font-semibold text-gray-900 dark:text-white">{new Date(selectedItem.reported_date).toLocaleDateString()}</p></div>
+                  </div>
+                  <div><p className="text-sm text-gray-500 dark:text-gray-400">Description</p><p className="text-gray-900 dark:text-white">{selectedItem.description || 'No description'}</p></div>
+                </>
+              )}
+              {activeTab === 'workorders' && selectedItem && 'work_order_number' in selectedItem && (
+                <>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div><p className="text-sm text-gray-500 dark:text-gray-400">WO #</p><p className="font-semibold text-gray-900 dark:text-white">{selectedItem.work_order_number}</p></div>
+                    <div><p className="text-sm text-gray-500 dark:text-gray-400">Customer</p><p className="font-semibold text-gray-900 dark:text-white">{selectedItem.customer_name}</p></div>
+                    <div><p className="text-sm text-gray-500 dark:text-gray-400">Work Type</p><p className="font-semibold text-gray-900 dark:text-white capitalize">{selectedItem.work_type}</p></div>
+                    <div><p className="text-sm text-gray-500 dark:text-gray-400">Priority</p><span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${getPriorityBadge(selectedItem.priority)}`}>{selectedItem.priority}</span></div>
+                    <div><p className="text-sm text-gray-500 dark:text-gray-400">Status</p><span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${getStatusBadge(selectedItem.status)}`}>{selectedItem.status}</span></div>
+                    <div><p className="text-sm text-gray-500 dark:text-gray-400">Scheduled</p><p className="font-semibold text-gray-900 dark:text-white">{selectedItem.scheduled_date ? new Date(selectedItem.scheduled_date).toLocaleDateString() : '-'}</p></div>
+                    <div><p className="text-sm text-gray-500 dark:text-gray-400">Technician</p><p className="font-semibold text-gray-900 dark:text-white">{selectedItem.technician_name || 'Unassigned'}</p></div>
+                    <div><p className="text-sm text-gray-500 dark:text-gray-400">Total Cost</p><p className="font-semibold text-gray-900 dark:text-white">R {(selectedItem.total_cost || 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</p></div>
+                  </div>
+                </>
+              )}
+              <div className="pt-4 border-t border-gray-200 dark:border-gray-700 flex justify-end">
+                <button onClick={() => setShowCreateModal(false)} className="px-6 py-3 bg-gradient-to-r from-cyan-600 to-teal-600 text-white rounded-xl font-medium hover:from-cyan-700 hover:to-teal-700 transition-all">Close</button>
+              </div>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit}>
+              <div className="p-6 space-y-4">
+                {error && (
+                  <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl flex items-center gap-3">
+                    <AlertCircle className="h-5 w-5 text-red-500 flex-shrink-0" />
+                    <p className="text-red-700 dark:text-red-300">{error}</p>
+                  </div>
+                )}
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Customer Name *</label>
+                  <input type="text" value={formData.customer_name} onChange={(e) => setFormData({ ...formData, customer_name: e.target.value })} required className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all" placeholder="Enter customer name" />
+                </div>
+
+                {activeTab === 'requests' ? (
                   <>
-                    <p><strong>Request #:</strong> {selectedItem.request_number}</p>
-                    <p><strong>Customer:</strong> {selectedItem.customer_name}</p>
-                    <p><strong>Type:</strong> {selectedItem.request_type}</p>
-                    <p><strong>Priority:</strong> {selectedItem.priority}</p>
-                    <p><strong>Status:</strong> {selectedItem.status}</p>
-                    <p><strong>Description:</strong> {selectedItem.description}</p>
-                    <p><strong>Reported:</strong> {new Date(selectedItem.reported_date).toLocaleDateString()}</p>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Request Type</label>
+                      <select value={formData.request_type} onChange={(e) => setFormData({ ...formData, request_type: e.target.value })} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all">
+                        <option value="repair">Repair</option>
+                        <option value="maintenance">Maintenance</option>
+                        <option value="installation">Installation</option>
+                        <option value="inspection">Inspection</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Description</label>
+                      <textarea value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} rows={3} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all resize-none" placeholder="Describe the issue..." />
+                    </div>
                   </>
                 ) : (
                   <>
-                    <p><strong>WO #:</strong> {selectedItem.work_order_number}</p>
-                    <p><strong>Customer:</strong> {selectedItem.customer_name}</p>
-                    <p><strong>Work Type:</strong> {selectedItem.work_type}</p>
-                    <p><strong>Priority:</strong> {selectedItem.priority}</p>
-                    <p><strong>Status:</strong> {selectedItem.status}</p>
-                    <p><strong>Scheduled:</strong> {selectedItem.scheduled_date ? new Date(selectedItem.scheduled_date).toLocaleDateString() : '-'}</p>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Work Type</label>
+                      <select value={formData.work_type} onChange={(e) => setFormData({ ...formData, work_type: e.target.value })} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all">
+                        <option value="installation">Installation</option>
+                        <option value="repair">Repair</option>
+                        <option value="maintenance">Maintenance</option>
+                        <option value="inspection">Inspection</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Scheduled Date</label>
+                      <input type="date" value={formData.scheduled_date} onChange={(e) => setFormData({ ...formData, scheduled_date: e.target.value })} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all" />
+                    </div>
                   </>
+                )}
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Priority</label>
+                  <select value={formData.priority} onChange={(e) => setFormData({ ...formData, priority: e.target.value })} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all">
+                    <option value="low">Low</option>
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
+                    <option value="urgent">Urgent</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="p-6 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 flex justify-end gap-3">
+                <button type="button" onClick={() => setShowCreateModal(false)} className="px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">Cancel</button>
+                <button type="submit" className="px-6 py-3 bg-gradient-to-r from-cyan-600 to-teal-600 text-white rounded-xl font-medium hover:from-cyan-700 hover:to-teal-700 transition-all shadow-lg shadow-cyan-500/30">Create</button>
+              </div>
+            </form>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-cyan-50 dark:from-gray-900 dark:to-gray-800 p-6">
+      <div className="max-w-7xl mx-auto space-y-6">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-cyan-600 to-teal-600 bg-clip-text text-transparent">Field Service</h1>
+            <p className="text-gray-500 dark:text-gray-400 mt-1">Manage service requests and field work orders</p>
+          </div>
+          <div className="flex items-center gap-3">
+            <button onClick={() => loadData()} className="p-3 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-200 dark:border-gray-700">
+              <RefreshCw className={`h-5 w-5 text-gray-600 dark:text-gray-400 ${loading ? 'animate-spin' : ''}`} />
+            </button>
+            <button onClick={handleCreate} className="flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-cyan-600 to-teal-600 text-white rounded-xl font-medium hover:from-cyan-700 hover:to-teal-700 transition-all shadow-lg shadow-cyan-500/30">
+              <Plus className="h-5 w-5" />Create {activeTab === 'requests' ? 'Request' : 'Work Order'}
+            </button>
+          </div>
+        </div>
+
+        {error && !showCreateModal && (
+          <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl flex items-center gap-3">
+            <AlertCircle className="h-5 w-5 text-red-500 flex-shrink-0" />
+            <p className="text-red-700 dark:text-red-300">{error}</p>
+            <button onClick={() => setError(null)} className="ml-auto p-1 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg"><X className="h-4 w-4 text-red-500" /></button>
+          </div>
+        )}
+
+        <div className="flex gap-2 border-b border-gray-200 dark:border-gray-700">
+          <button onClick={() => setActiveTab('requests')} className={`px-6 py-3 font-medium transition-all ${activeTab === 'requests' ? 'text-cyan-600 dark:text-cyan-400 border-b-2 border-cyan-600 dark:border-cyan-400' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'}`}>Service Requests</button>
+          <button onClick={() => setActiveTab('workorders')} className={`px-6 py-3 font-medium transition-all ${activeTab === 'workorders' ? 'text-cyan-600 dark:text-cyan-400 border-b-2 border-cyan-600 dark:border-cyan-400' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'}`}>Work Orders</button>
+        </div>
+
+        {activeTab === 'requests' ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-gradient-to-br from-cyan-500 to-teal-500 rounded-xl shadow-lg shadow-cyan-500/30"><Wrench className="h-6 w-6 text-white" /></div>
+                <div><p className="text-2xl font-bold text-gray-900 dark:text-white">{requestStats.total}</p><p className="text-sm text-gray-500 dark:text-gray-400">Total Requests</p></div>
+              </div>
+            </div>
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl shadow-lg shadow-blue-500/30"><Clock className="h-6 w-6 text-white" /></div>
+                <div><p className="text-2xl font-bold text-gray-900 dark:text-white">{requestStats.new}</p><p className="text-sm text-gray-500 dark:text-gray-400">New</p></div>
+              </div>
+            </div>
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-gradient-to-br from-purple-500 to-violet-500 rounded-xl shadow-lg shadow-purple-500/30"><Users className="h-6 w-6 text-white" /></div>
+                <div><p className="text-2xl font-bold text-gray-900 dark:text-white">{requestStats.assigned}</p><p className="text-sm text-gray-500 dark:text-gray-400">Assigned</p></div>
+              </div>
+            </div>
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl shadow-lg shadow-amber-500/30"><Truck className="h-6 w-6 text-white" /></div>
+                <div><p className="text-2xl font-bold text-gray-900 dark:text-white">{requestStats.in_progress}</p><p className="text-sm text-gray-500 dark:text-gray-400">In Progress</p></div>
+              </div>
+            </div>
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg shadow-green-500/30"><CheckCircle className="h-6 w-6 text-white" /></div>
+                <div><p className="text-2xl font-bold text-gray-900 dark:text-white">{requestStats.completed}</p><p className="text-sm text-gray-500 dark:text-gray-400">Completed</p></div>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-gradient-to-br from-cyan-500 to-teal-500 rounded-xl shadow-lg shadow-cyan-500/30"><Wrench className="h-6 w-6 text-white" /></div>
+                <div><p className="text-2xl font-bold text-gray-900 dark:text-white">{woStats.total}</p><p className="text-sm text-gray-500 dark:text-gray-400">Total WOs</p></div>
+              </div>
+            </div>
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl shadow-lg shadow-blue-500/30"><Calendar className="h-6 w-6 text-white" /></div>
+                <div><p className="text-2xl font-bold text-gray-900 dark:text-white">{woStats.scheduled}</p><p className="text-sm text-gray-500 dark:text-gray-400">Scheduled</p></div>
+              </div>
+            </div>
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-gradient-to-br from-purple-500 to-violet-500 rounded-xl shadow-lg shadow-purple-500/30"><Send className="h-6 w-6 text-white" /></div>
+                <div><p className="text-2xl font-bold text-gray-900 dark:text-white">{woStats.dispatched}</p><p className="text-sm text-gray-500 dark:text-gray-400">Dispatched</p></div>
+              </div>
+            </div>
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl shadow-lg shadow-amber-500/30"><Truck className="h-6 w-6 text-white" /></div>
+                <div><p className="text-2xl font-bold text-gray-900 dark:text-white">{woStats.in_progress}</p><p className="text-sm text-gray-500 dark:text-gray-400">In Progress</p></div>
+              </div>
+            </div>
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg shadow-green-500/30"><CheckCircle className="h-6 w-6 text-white" /></div>
+                <div><p className="text-2xl font-bold text-gray-900 dark:text-white">{woStats.completed}</p><p className="text-sm text-gray-500 dark:text-gray-400">Completed</p></div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+          <div className="p-5 border-b border-gray-100 dark:border-gray-700">
+            <div className="flex flex-col md:flex-row gap-4">
+              <div className="flex-1 relative">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <input type="text" placeholder={`Search by ${activeTab === 'requests' ? 'request' : 'work order'} number or customer...`} value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-12 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all" />
+              </div>
+              <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all min-w-[150px]">
+                <option value="">All Statuses</option>
+                {activeTab === 'requests' ? (
+                  <>
+                    <option value="new">New</option>
+                    <option value="assigned">Assigned</option>
+                    <option value="in_progress">In Progress</option>
+                    <option value="completed">Completed</option>
+                    <option value="cancelled">Cancelled</option>
+                  </>
+                ) : (
+                  <>
+                    <option value="draft">Draft</option>
+                    <option value="scheduled">Scheduled</option>
+                    <option value="dispatched">Dispatched</option>
+                    <option value="in_progress">In Progress</option>
+                    <option value="completed">Completed</option>
+                    <option value="cancelled">Cancelled</option>
+                  </>
+                )}
+              </select>
+            </div>
+          </div>
+
+          {loading ? (
+            <div className="p-12 text-center">
+              <RefreshCw className="h-8 w-8 animate-spin text-cyan-500 mx-auto mb-4" />
+              <p className="text-gray-500 dark:text-gray-400">Loading...</p>
+            </div>
+          ) : activeTab === 'requests' ? (
+            filteredRequests.length === 0 ? (
+              <div className="p-12 text-center">
+                <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-2xl flex items-center justify-center mx-auto mb-4"><Wrench className="h-8 w-8 text-gray-400" /></div>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No service requests found</h3>
+                <p className="text-gray-500 dark:text-gray-400 mb-6">{searchTerm || statusFilter ? 'Try adjusting your filters' : 'Get started by creating your first service request'}</p>
+                {!searchTerm && !statusFilter && (
+                  <button onClick={handleCreate} className="px-5 py-3 bg-gradient-to-r from-cyan-600 to-teal-600 text-white rounded-xl font-medium hover:from-cyan-700 hover:to-teal-700 transition-all">Create First Request</button>
                 )}
               </div>
             ) : (
-              <form onSubmit={handleSubmit}>
-                <div style={{ padding: '1.5rem' }}>
-                  <div style={{ marginBottom: '1rem' }}>
-                    <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>Customer Name *</label>
-                    <input
-                      type="text"
-                      value={formData.customer_name}
-                      onChange={(e) => setFormData({ ...formData, customer_name: e.target.value })}
-                      required
-                      style={{ width: '100%', padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', fontSize: '0.875rem' }}
-                    />
-                  </div>
-                  {activeTab === 'requests' ? (
-                    <>
-                      <div style={{ marginBottom: '1rem' }}>
-                        <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>Request Type</label>
-                        <select
-                          value={formData.request_type}
-                          onChange={(e) => setFormData({ ...formData, request_type: e.target.value })}
-                          style={{ width: '100%', padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', fontSize: '0.875rem' }}
-                        >
-                          <option value="repair">Repair</option>
-                          <option value="maintenance">Maintenance</option>
-                          <option value="installation">Installation</option>
-                          <option value="inspection">Inspection</option>
-                        </select>
-                      </div>
-                      <div style={{ marginBottom: '1rem' }}>
-                        <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>Description</label>
-                        <textarea
-                          value={formData.description}
-                          onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                          rows={3}
-                          style={{ width: '100%', padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', fontSize: '0.875rem', resize: 'vertical' }}
-                        />
-                      </div>
-                    </>
-                  ) : (
-                    <>
-                      <div style={{ marginBottom: '1rem' }}>
-                        <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>Work Type</label>
-                        <select
-                          value={formData.work_type}
-                          onChange={(e) => setFormData({ ...formData, work_type: e.target.value })}
-                          style={{ width: '100%', padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', fontSize: '0.875rem' }}
-                        >
-                          <option value="installation">Installation</option>
-                          <option value="repair">Repair</option>
-                          <option value="maintenance">Maintenance</option>
-                          <option value="inspection">Inspection</option>
-                        </select>
-                      </div>
-                      <div style={{ marginBottom: '1rem' }}>
-                        <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>Scheduled Date</label>
-                        <input
-                          type="date"
-                          value={formData.scheduled_date}
-                          onChange={(e) => setFormData({ ...formData, scheduled_date: e.target.value })}
-                          style={{ width: '100%', padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', fontSize: '0.875rem' }}
-                        />
-                      </div>
-                    </>
-                  )}
-                  <div style={{ marginBottom: '1rem' }}>
-                    <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>Priority</label>
-                    <select
-                      value={formData.priority}
-                      onChange={(e) => setFormData({ ...formData, priority: e.target.value })}
-                      style={{ width: '100%', padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', fontSize: '0.875rem' }}
-                    >
-                      <option value="low">Low</option>
-                      <option value="medium">Medium</option>
-                      <option value="high">High</option>
-                      <option value="urgent">Urgent</option>
-                    </select>
-                  </div>
-                </div>
-                <div style={{ padding: '1.5rem', borderTop: '1px solid #e5e7eb', display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
-                  <button
-                    type="button"
-                    onClick={() => setShowCreateModal(false)}
-                    style={{ padding: '0.5rem 1rem', background: 'white', border: '1px solid #d1d5db', borderRadius: '0.375rem', fontSize: '0.875rem', fontWeight: '500', color: '#374151', cursor: 'pointer' }}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    style={{ padding: '0.5rem 1rem', background: '#2563eb', border: 'none', borderRadius: '0.375rem', fontSize: '0.875rem', fontWeight: '500', color: 'white', cursor: 'pointer' }}
-                  >
-                    Create
-                  </button>
-                </div>
-              </form>
-            )}
-          </div>
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-gray-50 dark:bg-gray-900/50">
+                    <tr>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Request #</th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Customer</th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Type</th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Priority</th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Reported</th>
+                      <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
+                    {filteredRequests.map((sr) => (
+                      <tr key={sr.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                        <td className="px-6 py-4 font-semibold text-cyan-600 dark:text-cyan-400">{sr.request_number}</td>
+                        <td className="px-6 py-4 text-gray-900 dark:text-white">{sr.customer_name}</td>
+                        <td className="px-6 py-4 text-gray-600 dark:text-gray-300 capitalize">{sr.request_type}</td>
+                        <td className="px-6 py-4"><span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${getPriorityBadge(sr.priority)}`}>{sr.priority}</span></td>
+                        <td className="px-6 py-4"><span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${getStatusBadge(sr.status)}`}>{sr.status}</span></td>
+                        <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{new Date(sr.reported_date).toLocaleDateString()}</td>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center justify-end">
+                            <button onClick={() => handleViewDetails(sr)} className="p-2 hover:bg-cyan-100 dark:hover:bg-cyan-900/30 text-cyan-600 dark:text-cyan-400 rounded-lg transition-colors"><Eye className="h-4 w-4" /></button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )
+          ) : (
+            filteredWorkOrders.length === 0 ? (
+              <div className="p-12 text-center">
+                <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-2xl flex items-center justify-center mx-auto mb-4"><Wrench className="h-8 w-8 text-gray-400" /></div>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No work orders found</h3>
+                <p className="text-gray-500 dark:text-gray-400 mb-6">{searchTerm || statusFilter ? 'Try adjusting your filters' : 'Get started by creating your first work order'}</p>
+                {!searchTerm && !statusFilter && (
+                  <button onClick={handleCreate} className="px-5 py-3 bg-gradient-to-r from-cyan-600 to-teal-600 text-white rounded-xl font-medium hover:from-cyan-700 hover:to-teal-700 transition-all">Create First Work Order</button>
+                )}
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-gray-50 dark:bg-gray-900/50">
+                    <tr>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">WO #</th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Customer</th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Work Type</th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Priority</th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Scheduled</th>
+                      <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
+                    {filteredWorkOrders.map((wo) => (
+                      <tr key={wo.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                        <td className="px-6 py-4 font-semibold text-cyan-600 dark:text-cyan-400">{wo.work_order_number}</td>
+                        <td className="px-6 py-4 text-gray-900 dark:text-white">{wo.customer_name}</td>
+                        <td className="px-6 py-4 text-gray-600 dark:text-gray-300 capitalize">{wo.work_type}</td>
+                        <td className="px-6 py-4"><span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${getPriorityBadge(wo.priority)}`}>{wo.priority}</span></td>
+                        <td className="px-6 py-4"><span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${getStatusBadge(wo.status)}`}>{wo.status}</span></td>
+                        <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{wo.scheduled_date ? new Date(wo.scheduled_date).toLocaleDateString() : '-'}</td>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center justify-end gap-2">
+                            {wo.status === 'scheduled' && (
+                              <button onClick={() => dispatchWorkOrder(wo.id)} className="flex items-center gap-1 px-3 py-2 bg-gradient-to-r from-purple-600 to-violet-600 text-white rounded-lg text-xs font-medium hover:from-purple-700 hover:to-violet-700 transition-all shadow-sm">
+                                <Send className="h-3 w-3" />Dispatch
+                              </button>
+                            )}
+                            {(wo.status === 'dispatched' || wo.status === 'in_progress') && (
+                              <button onClick={() => completeWorkOrder(wo.id)} className="flex items-center gap-1 px-3 py-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg text-xs font-medium hover:from-green-700 hover:to-emerald-700 transition-all shadow-sm">
+                                <CheckCircle className="h-3 w-3" />Complete
+                              </button>
+                            )}
+                            <button onClick={() => handleViewDetails(wo)} className="p-2 hover:bg-cyan-100 dark:hover:bg-cyan-900/30 text-cyan-600 dark:text-cyan-400 rounded-lg transition-colors"><Eye className="h-4 w-4" /></button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )
+          )}
         </div>
-      )}
+      </div>
+
+      {renderCreateModal()}
     </div>
   );
 }

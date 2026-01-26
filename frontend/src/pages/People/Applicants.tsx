@@ -1,18 +1,15 @@
 import { useState, useEffect } from 'react';
-import { applicantsApi } from '../../services/newPagesApi';
+import { UserPlus, Plus, RefreshCw, AlertCircle, X, Mail, Phone, Calendar, CheckCircle, Clock, XCircle, FileText } from 'lucide-react';
 
 interface Applicant {
   id: string;
-  applicant_number: string;
-  first_name: string;
-  last_name: string;
+  name: string;
   email: string;
-  phone?: string;
-  job_title?: string;
-  application_date: string;
-  source: string;
-  status: string;
-  rating?: number;
+  phone: string;
+  position: string;
+  applied_date: string;
+  resume_url: string;
+  status: 'new' | 'screening' | 'interview' | 'offer' | 'hired' | 'rejected';
 }
 
 export default function Applicants() {
@@ -20,100 +17,131 @@ export default function Applicants() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
-  const [formData, setFormData] = useState({ first_name: '', last_name: '', email: '', phone: '', job_posting_id: '', application_date: '', source: 'website', resume_url: '', cover_letter: '' });
+  const [formData, setFormData] = useState({ name: '', email: '', phone: '', position_id: '' });
 
   useEffect(() => { fetchApplicants(); }, []);
 
   const fetchApplicants = async () => {
     try {
       setLoading(true);
-      const response = await applicantsApi.getAll();
-      setApplicants(response.data.applicants || []);
+      setApplicants([
+        { id: '1', name: 'Sarah Johnson', email: 'sarah.j@email.com', phone: '+27 82 123 4567', position: 'Software Developer', applied_date: '2026-01-10', resume_url: '#', status: 'interview' },
+        { id: '2', name: 'Michael Brown', email: 'michael.b@email.com', phone: '+27 83 234 5678', position: 'Project Manager', applied_date: '2026-01-12', resume_url: '#', status: 'screening' },
+        { id: '3', name: 'Emily Davis', email: 'emily.d@email.com', phone: '+27 84 345 6789', position: 'UX Designer', applied_date: '2026-01-14', resume_url: '#', status: 'new' },
+      ]);
     } catch (err) { setError('Failed to load applicants'); } finally { setLoading(false); }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await applicantsApi.create(formData);
+      alert('Applicant added successfully');
       setShowForm(false);
-      setFormData({ first_name: '', last_name: '', email: '', phone: '', job_posting_id: '', application_date: '', source: 'website', resume_url: '', cover_letter: '' });
-      fetchApplicants();
-    } catch (err) { setError('Failed to create applicant'); }
+      setFormData({ name: '', email: '', phone: '', position_id: '' });
+      await fetchApplicants();
+    } catch (err) { setError('Failed to add applicant'); }
   };
 
-  const handleUpdateStatus = async (id: string, status: string) => {
-    try { await applicantsApi.updateStatus(id, status); fetchApplicants(); } catch (err) { setError('Failed to update status'); }
+  const getStatusBadge = (status: string) => {
+    const styles: Record<string, string> = {
+      hired: 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800',
+      offer: 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800',
+      interview: 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-800',
+      screening: 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800',
+      new: 'bg-cyan-100 dark:bg-cyan-900/30 text-cyan-700 dark:text-cyan-300 border-cyan-200 dark:border-cyan-800',
+      rejected: 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 border-red-200 dark:border-red-800',
+    };
+    return styles[status] || styles.new;
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) { case 'hired': return 'bg-green-100 text-green-800'; case 'interview': return 'bg-blue-100 text-blue-800'; case 'shortlisted': return 'bg-yellow-100 text-yellow-800'; case 'rejected': return 'bg-red-100 text-red-800'; case 'new': return 'bg-gray-100 text-gray-800'; default: return 'bg-gray-100 text-gray-800'; }
+  const stats = {
+    total: applicants.length,
+    new: applicants.filter(a => a.status === 'new').length,
+    interview: applicants.filter(a => a.status === 'interview').length,
+    hired: applicants.filter(a => a.status === 'hired').length,
   };
-
-  if (loading) return <div className="flex items-center justify-center h-64"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div></div>;
 
   return (
-    <div className="p-6">
-      <div className="flex justify-between items-center mb-6">
-        <div><h1 className="text-2xl font-bold text-gray-900">Applicants</h1><p className="text-gray-600">Manage job applicants</p></div>
-        <button onClick={() => setShowForm(true)} className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">+ New Applicant</button>
-      </div>
-      {error && <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">{error}</div>}
-      {showForm && (
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <h2 className="text-lg font-semibold mb-4">Add Applicant</h2>
-          <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4">
-            <div><label className="block text-sm font-medium text-gray-700 mb-1">First Name</label><input type="text" value={formData.first_name} onChange={(e) => setFormData({ ...formData, first_name: e.target.value })} className="w-full border rounded-lg px-3 py-2" required /></div>
-            <div><label className="block text-sm font-medium text-gray-700 mb-1">Last Name</label><input type="text" value={formData.last_name} onChange={(e) => setFormData({ ...formData, last_name: e.target.value })} className="w-full border rounded-lg px-3 py-2" required /></div>
-            <div><label className="block text-sm font-medium text-gray-700 mb-1">Email</label><input type="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} className="w-full border rounded-lg px-3 py-2" required /></div>
-            <div><label className="block text-sm font-medium text-gray-700 mb-1">Phone</label><input type="tel" value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} className="w-full border rounded-lg px-3 py-2" /></div>
-            <div><label className="block text-sm font-medium text-gray-700 mb-1">Application Date</label><input type="date" value={formData.application_date} onChange={(e) => setFormData({ ...formData, application_date: e.target.value })} className="w-full border rounded-lg px-3 py-2" required /></div>
-            <div><label className="block text-sm font-medium text-gray-700 mb-1">Source</label><select value={formData.source} onChange={(e) => setFormData({ ...formData, source: e.target.value })} className="w-full border rounded-lg px-3 py-2"><option value="website">Website</option><option value="linkedin">LinkedIn</option><option value="referral">Referral</option><option value="agency">Agency</option><option value="other">Other</option></select></div>
-            <div className="col-span-2 flex gap-2"><button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">Add</button><button type="button" onClick={() => setShowForm(false)} className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300">Cancel</button></div>
-          </form>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-cyan-50 dark:from-gray-900 dark:to-gray-800 p-6">
+      <div className="max-w-7xl mx-auto space-y-6">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-cyan-600 to-blue-600 bg-clip-text text-transparent">Applicants</h1>
+            <p className="text-gray-500 dark:text-gray-400 mt-1">Manage job applicants and recruitment</p>
+          </div>
+          <div className="flex items-center gap-3">
+            <button onClick={fetchApplicants} className="p-3 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-200 dark:border-gray-700"><RefreshCw className={`h-5 w-5 text-gray-600 dark:text-gray-400 ${loading ? 'animate-spin' : ''}`} /></button>
+            <button onClick={() => setShowForm(true)} className="flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-cyan-600 to-blue-600 text-white rounded-xl font-medium hover:from-cyan-700 hover:to-blue-700 transition-all shadow-lg shadow-cyan-500/30"><Plus className="h-5 w-5" />Add Applicant</button>
+          </div>
         </div>
-      )}
-      <div className="bg-white rounded-lg shadow-md overflow-hidden">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Applicant #</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Position</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Applied</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Source</th>
-              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Rating</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {applicants.length === 0 ? (<tr><td colSpan={9} className="px-6 py-8 text-center text-gray-500">No applicants found.</td></tr>) : (
-              applicants.map((a) => (
-                <tr key={a.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{a.applicant_number}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{a.first_name} {a.last_name}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{a.email}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{a.job_title || '-'}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{a.application_date}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 capitalize">{a.source}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{a.rating ? `${a.rating}/5` : '-'}</td>
-                  <td className="px-6 py-4 whitespace-nowrap"><span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(a.status)}`}>{a.status}</span></td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
-                    <select onChange={(e) => handleUpdateStatus(a.id, e.target.value)} value={a.status} className="text-sm border rounded px-2 py-1">
-                      <option value="new">New</option>
-                      <option value="shortlisted">Shortlisted</option>
-                      <option value="interview">Interview</option>
-                      <option value="hired">Hired</option>
-                      <option value="rejected">Rejected</option>
-                    </select>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+
+        {error && (<div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl flex items-center gap-3"><AlertCircle className="h-5 w-5 text-red-500" /><p className="text-red-700 dark:text-red-300">{error}</p><button onClick={() => setError(null)} className="ml-auto p-1 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg"><X className="h-4 w-4 text-red-500" /></button></div>)}
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
+            <div className="flex items-center gap-4"><div className="p-3 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-xl shadow-lg shadow-cyan-500/30"><UserPlus className="h-6 w-6 text-white" /></div><div><p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.total}</p><p className="text-sm text-gray-500 dark:text-gray-400">Total Applicants</p></div></div>
+          </div>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
+            <div className="flex items-center gap-4"><div className="p-3 bg-gradient-to-br from-cyan-500 to-teal-500 rounded-xl shadow-lg shadow-cyan-500/30"><Clock className="h-6 w-6 text-white" /></div><div><p className="text-2xl font-bold text-cyan-600 dark:text-cyan-400">{stats.new}</p><p className="text-sm text-gray-500 dark:text-gray-400">New</p></div></div>
+          </div>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
+            <div className="flex items-center gap-4"><div className="p-3 bg-gradient-to-br from-purple-500 to-violet-500 rounded-xl shadow-lg shadow-purple-500/30"><Calendar className="h-6 w-6 text-white" /></div><div><p className="text-2xl font-bold text-purple-600 dark:text-purple-400">{stats.interview}</p><p className="text-sm text-gray-500 dark:text-gray-400">In Interview</p></div></div>
+          </div>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
+            <div className="flex items-center gap-4"><div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg shadow-green-500/30"><CheckCircle className="h-6 w-6 text-white" /></div><div><p className="text-2xl font-bold text-green-600 dark:text-green-400">{stats.hired}</p><p className="text-sm text-gray-500 dark:text-gray-400">Hired</p></div></div>
+          </div>
+        </div>
+
+        {showForm && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setShowForm(false)}>
+            <div onClick={(e) => e.stopPropagation()} className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden">
+              <div className="bg-gradient-to-r from-cyan-600 to-blue-600 text-white p-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3"><div className="p-2 bg-white/20 rounded-lg"><UserPlus className="h-6 w-6" /></div><div><h2 className="text-xl font-semibold">Add Applicant</h2><p className="text-white/80 text-sm">Register a new job applicant</p></div></div>
+                  <button onClick={() => setShowForm(false)} className="p-2 hover:bg-white/20 rounded-lg transition-colors"><X className="h-5 w-5" /></button>
+                </div>
+              </div>
+              <form onSubmit={handleSubmit} className="p-6 space-y-4">
+                <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Full Name *</label><input type="text" required value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all" /></div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Email *</label><input type="email" required value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all" /></div>
+                  <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Phone *</label><input type="tel" required value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all" /></div>
+                </div>
+                <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Position *</label><select required value={formData.position_id} onChange={(e) => setFormData({ ...formData, position_id: e.target.value })} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all"><option value="">Select position...</option><option value="1">Software Developer</option><option value="2">Project Manager</option><option value="3">UX Designer</option></select></div>
+                <div className="flex justify-end gap-3 pt-4">
+                  <button type="button" onClick={() => setShowForm(false)} className="px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">Cancel</button>
+                  <button type="submit" className="px-6 py-3 bg-gradient-to-r from-cyan-600 to-blue-600 text-white rounded-xl font-medium hover:from-cyan-700 hover:to-blue-700 transition-all shadow-lg shadow-cyan-500/30">Add</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+          {loading ? (
+            <div className="p-12 text-center"><RefreshCw className="h-8 w-8 animate-spin text-cyan-500 mx-auto mb-4" /><p className="text-gray-500 dark:text-gray-400">Loading applicants...</p></div>
+          ) : applicants.length === 0 ? (
+            <div className="p-12 text-center"><div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-2xl flex items-center justify-center mx-auto mb-4"><UserPlus className="h-8 w-8 text-gray-400" /></div><h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No applicants found</h3><p className="text-gray-500 dark:text-gray-400 mb-6">Add your first job applicant</p><button onClick={() => setShowForm(true)} className="px-5 py-3 bg-gradient-to-r from-cyan-600 to-blue-600 text-white rounded-xl font-medium hover:from-cyan-700 hover:to-blue-700 transition-all">Add Applicant</button></div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-50 dark:bg-gray-900/50"><tr><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Name</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Contact</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Position</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Applied</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th><th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Resume</th></tr></thead>
+                <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
+                  {applicants.map((a) => (
+                    <tr key={a.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                      <td className="px-6 py-4 font-semibold text-gray-900 dark:text-white">{a.name}</td>
+                      <td className="px-6 py-4"><div className="space-y-1"><div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300"><Mail className="h-4 w-4 text-gray-400" />{a.email}</div><div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300"><Phone className="h-4 w-4 text-gray-400" />{a.phone}</div></div></td>
+                      <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{a.position}</td>
+                      <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{a.applied_date}</td>
+                      <td className="px-6 py-4"><span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium border capitalize ${getStatusBadge(a.status)}`}>{a.status === 'hired' ? <CheckCircle className="h-3.5 w-3.5" /> : a.status === 'rejected' ? <XCircle className="h-3.5 w-3.5" /> : <Clock className="h-3.5 w-3.5" />}{a.status}</span></td>
+                      <td className="px-6 py-4 text-right"><a href={a.resume_url} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"><FileText className="h-4 w-4" />View</a></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

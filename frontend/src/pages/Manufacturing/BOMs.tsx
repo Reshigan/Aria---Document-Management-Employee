@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import api from '../../lib/api';
 import { ConfirmDialog } from '../../components/ConfirmDialog';
+import { Layers, Plus, RefreshCw, AlertCircle, X, DollarSign, CheckCircle, Clock, Edit2, Trash2, Package } from 'lucide-react';
 
 interface BOM {
   id: number;
@@ -13,29 +14,16 @@ interface BOM {
   created_at: string;
 }
 
-const BOMs: React.FC = () => {
+export default function BOMs() {
   const [boms, setBOMs] = useState<BOM[]>([]);
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [editingBOM, setEditingBOM] = useState<BOM | null>(null);
-  const [form, setForm] = useState({
-    bom_code: '',
-    product_name: '',
-    version: '',
-    total_components: '',
-    total_cost: '',
-    status: 'DRAFT' as 'DRAFT' | 'ACTIVE' | 'OBSOLETE'
-  });
-  const [deleteConfirm, setDeleteConfirm] = useState<{ show: boolean; id: number; code: string }>({
-    show: false,
-    id: 0,
-    code: ''
-  });
+  const [form, setForm] = useState({ bom_code: '', product_name: '', version: '1.0', total_components: '', total_cost: '', status: 'DRAFT' as 'DRAFT' | 'ACTIVE' | 'OBSOLETE' });
+  const [deleteConfirm, setDeleteConfirm] = useState<{ show: boolean; id: number; code: string }>({ show: false, id: 0, code: '' });
   const [error, setError] = useState('');
 
-  useEffect(() => {
-    loadBOMs();
-  }, []);
+  useEffect(() => { loadBOMs(); }, []);
 
   const loadBOMs = async () => {
     setLoading(true);
@@ -43,57 +31,34 @@ const BOMs: React.FC = () => {
     try {
       const response = await api.get('/manufacturing/boms');
       setBOMs(response.data.boms || []);
-    } catch (err: any) {
-      setError(err.response?.data?.detail || 'Failed to load BOMs');
-    } finally {
-      setLoading(false);
-    }
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { detail?: string } } };
+      setError(error.response?.data?.detail || 'Failed to load BOMs');
+    } finally { setLoading(false); }
   };
 
   const handleCreate = () => {
     setEditingBOM(null);
-    setForm({
-      bom_code: '',
-      product_name: '',
-      version: '1.0',
-      total_components: '',
-      total_cost: '',
-      status: 'DRAFT'
-    });
+    setForm({ bom_code: '', product_name: '', version: '1.0', total_components: '', total_cost: '', status: 'DRAFT' });
     setShowModal(true);
   };
 
   const handleEdit = (bom: BOM) => {
     setEditingBOM(bom);
-    setForm({
-      bom_code: bom.bom_code,
-      product_name: bom.product_name,
-      version: bom.version,
-      total_components: bom.total_components.toString(),
-      total_cost: bom.total_cost.toString(),
-      status: bom.status
-    });
+    setForm({ bom_code: bom.bom_code, product_name: bom.product_name, version: bom.version, total_components: bom.total_components.toString(), total_cost: bom.total_cost.toString(), status: bom.status });
     setShowModal(true);
   };
 
   const handleSave = async () => {
     setError('');
     try {
-      const payload = {
-        ...form,
-        total_components: parseInt(form.total_components) || 0,
-        total_cost: parseFloat(form.total_cost) || 0
-      };
-      
-      if (editingBOM) {
-        await api.put(`/manufacturing/boms/${editingBOM.id}`, payload);
-      } else {
-        await api.post('/manufacturing/boms', payload);
-      }
+      const payload = { ...form, total_components: parseInt(form.total_components) || 0, total_cost: parseFloat(form.total_cost) || 0 };
+      if (editingBOM) { await api.put(`/manufacturing/boms/${editingBOM.id}`, payload); } else { await api.post('/manufacturing/boms', payload); }
       setShowModal(false);
       loadBOMs();
-    } catch (err: any) {
-      setError(err.response?.data?.detail || 'Failed to save BOM');
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { detail?: string } } };
+      setError(error.response?.data?.detail || 'Failed to save BOM');
     }
   };
 
@@ -102,206 +67,122 @@ const BOMs: React.FC = () => {
       await api.delete(`/manufacturing/boms/${id}`);
       loadBOMs();
       setDeleteConfirm({ show: false, id: 0, code: '' });
-    } catch (err: any) {
-      setError(err.response?.data?.detail || 'Failed to delete BOM');
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { detail?: string } } };
+      setError(error.response?.data?.detail || 'Failed to delete BOM');
     }
   };
 
+  const formatCurrency = (amount: number) => new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR' }).format(amount);
+
   const getStatusBadge = (status: string) => {
-    const colors: Record<string, { bg: string; text: string }> = {
-      DRAFT: { bg: '#f3f4f6', text: '#374151' },
-      ACTIVE: { bg: '#dcfce7', text: '#166534' },
-      OBSOLETE: { bg: '#fee2e2', text: '#991b1b' }
+    const styles: Record<string, string> = {
+      ACTIVE: 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800',
+      DRAFT: 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600',
+      OBSOLETE: 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 border-red-200 dark:border-red-800',
     };
-    const color = colors[status] || { bg: '#f3f4f6', text: '#374151' };
-    return <span style={{ padding: '4px 8px', fontSize: '12px', fontWeight: 600, borderRadius: '9999px', backgroundColor: color.bg, color: color.text }}>{status}</span>;
+    return styles[status] || styles.DRAFT;
   };
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR' }).format(amount);
+  const stats = {
+    total: boms.length,
+    active: boms.filter(b => b.status === 'ACTIVE').length,
+    draft: boms.filter(b => b.status === 'DRAFT').length,
+    totalCost: boms.reduce((sum, b) => sum + b.total_cost, 0),
   };
 
   return (
-    <div style={{ padding: '24px' }} data-testid="manufacturing-boms">
-      <div style={{ marginBottom: '24px' }}>
-        <h1 style={{ fontSize: '30px', fontWeight: 'bold', color: '#111827', marginBottom: '8px' }}>Bills of Materials</h1>
-        <p style={{ color: '#6b7280' }}>Manage product BOMs and component lists</p>
-      </div>
-
-      {error && (
-        <div style={{ padding: '12px 16px', marginBottom: '16px', backgroundColor: '#fee2e2', border: '1px solid #fecaca', borderRadius: '6px', color: '#991b1b' }}>
-          {error}
-        </div>
-      )}
-
-      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '16px' }}>
-        <button
-          onClick={handleCreate}
-          style={{ padding: '8px 16px', backgroundColor: '#2563eb', color: 'white', border: 'none', borderRadius: '6px', fontWeight: 600, cursor: 'pointer' }}
-          data-testid="create-button"
-        >
-          + New BOM
-        </button>
-      </div>
-
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginBottom: '16px' }}>
-        <div style={{ backgroundColor: 'white', padding: '16px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-          <div style={{ fontSize: '14px', color: '#6b7280', marginBottom: '4px' }}>Active BOMs</div>
-          <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#059669' }}>{boms.filter(b => b.status === 'ACTIVE').length}</div>
-        </div>
-        <div style={{ backgroundColor: 'white', padding: '16px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-          <div style={{ fontSize: '14px', color: '#6b7280', marginBottom: '4px' }}>Draft</div>
-          <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#6b7280' }}>{boms.filter(b => b.status === 'DRAFT').length}</div>
-        </div>
-        <div style={{ backgroundColor: 'white', padding: '16px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-          <div style={{ fontSize: '14px', color: '#6b7280', marginBottom: '4px' }}>Total BOMs</div>
-          <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#111827' }}>{boms.length}</div>
-        </div>
-      </div>
-
-      <div style={{ backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', overflow: 'hidden' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }} data-testid="boms-table">
-          <thead style={{ backgroundColor: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
-            <tr>
-              <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>BOM Code</th>
-              <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Product</th>
-              <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Version</th>
-              <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Components</th>
-              <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Total Cost</th>
-              <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Status</th>
-              <th style={{ padding: '12px 16px', textAlign: 'right', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {loading ? (
-              <tr><td colSpan={7} style={{ padding: '40px', textAlign: 'center', color: '#6b7280' }}>Loading...</td></tr>
-            ) : boms.length === 0 ? (
-              <tr><td colSpan={7} style={{ padding: '40px', textAlign: 'center', color: '#6b7280' }}>No BOMs found</td></tr>
-            ) : (
-              boms.map((bom) => (
-                <tr key={bom.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
-                  <td style={{ padding: '12px 16px', fontSize: '14px', color: '#111827', fontWeight: 600 }}>{bom.bom_code}</td>
-                  <td style={{ padding: '12px 16px', fontSize: '14px', color: '#6b7280' }}>{bom.product_name}</td>
-                  <td style={{ padding: '12px 16px', fontSize: '14px', color: '#6b7280' }}>{bom.version}</td>
-                  <td style={{ padding: '12px 16px', fontSize: '14px', color: '#6b7280' }}>{bom.total_components}</td>
-                  <td style={{ padding: '12px 16px', fontSize: '14px', color: '#6b7280' }}>{formatCurrency(bom.total_cost)}</td>
-                  <td style={{ padding: '12px 16px' }}>{getStatusBadge(bom.status)}</td>
-                  <td style={{ padding: '12px 16px', textAlign: 'right' }}>
-                    <button
-                      onClick={() => handleEdit(bom)}
-                      style={{ padding: '4px 8px', marginRight: '8px', fontSize: '12px', color: '#2563eb', background: 'none', border: 'none', cursor: 'pointer' }}
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => setDeleteConfirm({ show: true, id: bom.id, code: bom.bom_code })}
-                      style={{ padding: '4px 8px', fontSize: '12px', color: '#dc2626', background: 'none', border: 'none', cursor: 'pointer' }}
-                    >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
-
-      {showModal && (
-        <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}>
-          <div style={{ backgroundColor: 'white', borderRadius: '8px', padding: '24px', width: '500px', maxHeight: '90vh', overflow: 'auto' }}>
-            <h2 style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '16px' }}>
-              {editingBOM ? 'Edit BOM' : 'New BOM'}
-            </h2>
-            <div style={{ marginBottom: '16px' }}>
-              <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>BOM Code *</label>
-              <input
-                type="text"
-                value={form.bom_code}
-                onChange={(e) => setForm({ ...form, bom_code: e.target.value })}
-                style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
-              />
-            </div>
-            <div style={{ marginBottom: '16px' }}>
-              <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Product Name *</label>
-              <input
-                type="text"
-                value={form.product_name}
-                onChange={(e) => setForm({ ...form, product_name: e.target.value })}
-                style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
-              />
-            </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
-              <div>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Version *</label>
-                <input
-                  type="text"
-                  value={form.version}
-                  onChange={(e) => setForm({ ...form, version: e.target.value })}
-                  style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
-                />
-              </div>
-              <div>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Total Components *</label>
-                <input
-                  type="number"
-                  value={form.total_components}
-                  onChange={(e) => setForm({ ...form, total_components: e.target.value })}
-                  style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
-                />
-              </div>
-            </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
-              <div>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Total Cost *</label>
-                <input
-                  type="number"
-                  step="0.01"
-                  value={form.total_cost}
-                  onChange={(e) => setForm({ ...form, total_cost: e.target.value })}
-                  style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
-                />
-              </div>
-              <div>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Status *</label>
-                <select
-                  value={form.status}
-                  onChange={(e) => setForm({ ...form, status: e.target.value as any })}
-                  style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
-                >
-                  <option value="DRAFT">Draft</option>
-                  <option value="ACTIVE">Active</option>
-                  <option value="OBSOLETE">Obsolete</option>
-                </select>
-              </div>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
-              <button
-                onClick={() => setShowModal(false)}
-                style={{ padding: '8px 16px', border: '1px solid #d1d5db', borderRadius: '6px', fontWeight: 600, cursor: 'pointer', background: 'white' }}
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleSave}
-                style={{ padding: '8px 16px', backgroundColor: '#2563eb', color: 'white', border: 'none', borderRadius: '6px', fontWeight: 600, cursor: 'pointer' }}
-              >
-                Save
-              </button>
-            </div>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-orange-50 dark:from-gray-900 dark:to-gray-800 p-6" data-testid="manufacturing-boms">
+      <div className="max-w-7xl mx-auto space-y-6">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-orange-600 to-amber-600 bg-clip-text text-transparent">Bills of Materials</h1>
+            <p className="text-gray-500 dark:text-gray-400 mt-1">Manage product BOMs and component lists</p>
+          </div>
+          <div className="flex items-center gap-3">
+            <button onClick={loadBOMs} className="p-3 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-200 dark:border-gray-700"><RefreshCw className={`h-5 w-5 text-gray-600 dark:text-gray-400 ${loading ? 'animate-spin' : ''}`} /></button>
+            <button onClick={handleCreate} data-testid="create-button" className="flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-orange-600 to-amber-600 text-white rounded-xl font-medium hover:from-orange-700 hover:to-amber-700 transition-all shadow-lg shadow-orange-500/30"><Plus className="h-5 w-5" />New BOM</button>
           </div>
         </div>
-      )}
 
-      <ConfirmDialog
-        isOpen={deleteConfirm.show}
-        title="Delete BOM"
-        message={`Are you sure you want to delete BOM ${deleteConfirm.code}? This action cannot be undone.`}
-        onConfirm={() => handleDelete(deleteConfirm.id)}
-        onCancel={() => setDeleteConfirm({ show: false, id: 0, code: '' })}
-      />
+        {error && (<div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl flex items-center gap-3"><AlertCircle className="h-5 w-5 text-red-500" /><p className="text-red-700 dark:text-red-300">{error}</p><button onClick={() => setError('')} className="ml-auto p-1 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg"><X className="h-4 w-4 text-red-500" /></button></div>)}
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
+            <div className="flex items-center gap-4"><div className="p-3 bg-gradient-to-br from-orange-500 to-amber-500 rounded-xl shadow-lg shadow-orange-500/30"><Layers className="h-6 w-6 text-white" /></div><div><p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.total}</p><p className="text-sm text-gray-500 dark:text-gray-400">Total BOMs</p></div></div>
+          </div>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
+            <div className="flex items-center gap-4"><div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg shadow-green-500/30"><CheckCircle className="h-6 w-6 text-white" /></div><div><p className="text-2xl font-bold text-green-600 dark:text-green-400">{stats.active}</p><p className="text-sm text-gray-500 dark:text-gray-400">Active</p></div></div>
+          </div>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
+            <div className="flex items-center gap-4"><div className="p-3 bg-gradient-to-br from-gray-500 to-slate-500 rounded-xl shadow-lg shadow-gray-500/30"><Clock className="h-6 w-6 text-white" /></div><div><p className="text-2xl font-bold text-gray-600 dark:text-gray-400">{stats.draft}</p><p className="text-sm text-gray-500 dark:text-gray-400">Draft</p></div></div>
+          </div>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
+            <div className="flex items-center gap-4"><div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl shadow-lg shadow-blue-500/30"><DollarSign className="h-6 w-6 text-white" /></div><div><p className="text-2xl font-bold text-gray-900 dark:text-white">{formatCurrency(stats.totalCost)}</p><p className="text-sm text-gray-500 dark:text-gray-400">Total Cost</p></div></div>
+          </div>
+        </div>
+
+        {showModal && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setShowModal(false)}>
+            <div onClick={(e) => e.stopPropagation()} className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden">
+              <div className="bg-gradient-to-r from-orange-600 to-amber-600 text-white p-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3"><div className="p-2 bg-white/20 rounded-lg"><Layers className="h-6 w-6" /></div><div><h2 className="text-xl font-semibold">{editingBOM ? 'Edit BOM' : 'New BOM'}</h2><p className="text-white/80 text-sm">Bill of Materials details</p></div></div>
+                  <button onClick={() => setShowModal(false)} className="p-2 hover:bg-white/20 rounded-lg transition-colors"><X className="h-5 w-5" /></button>
+                </div>
+              </div>
+              <div className="p-6 space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">BOM Code *</label><input type="text" value={form.bom_code} onChange={(e) => setForm({ ...form, bom_code: e.target.value })} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all" /></div>
+                  <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Version *</label><input type="text" value={form.version} onChange={(e) => setForm({ ...form, version: e.target.value })} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all" /></div>
+                </div>
+                <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Product Name *</label><input type="text" value={form.product_name} onChange={(e) => setForm({ ...form, product_name: e.target.value })} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all" /></div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Total Components *</label><input type="number" value={form.total_components} onChange={(e) => setForm({ ...form, total_components: e.target.value })} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all" /></div>
+                  <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Total Cost *</label><input type="number" step="0.01" value={form.total_cost} onChange={(e) => setForm({ ...form, total_cost: e.target.value })} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all" /></div>
+                </div>
+                <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Status *</label><select value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value as 'DRAFT' | 'ACTIVE' | 'OBSOLETE' })} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"><option value="DRAFT">Draft</option><option value="ACTIVE">Active</option><option value="OBSOLETE">Obsolete</option></select></div>
+                <div className="flex justify-end gap-3 pt-4">
+                  <button onClick={() => setShowModal(false)} className="px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">Cancel</button>
+                  <button onClick={handleSave} className="px-6 py-3 bg-gradient-to-r from-orange-600 to-amber-600 text-white rounded-xl font-medium hover:from-orange-700 hover:to-amber-700 transition-all shadow-lg shadow-orange-500/30">Save</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+          {loading ? (
+            <div className="p-12 text-center"><RefreshCw className="h-8 w-8 animate-spin text-orange-500 mx-auto mb-4" /><p className="text-gray-500 dark:text-gray-400">Loading BOMs...</p></div>
+          ) : boms.length === 0 ? (
+            <div className="p-12 text-center"><div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-2xl flex items-center justify-center mx-auto mb-4"><Layers className="h-8 w-8 text-gray-400" /></div><h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No BOMs found</h3><p className="text-gray-500 dark:text-gray-400 mb-6">Create your first Bill of Materials</p><button onClick={handleCreate} className="px-5 py-3 bg-gradient-to-r from-orange-600 to-amber-600 text-white rounded-xl font-medium hover:from-orange-700 hover:to-amber-700 transition-all">New BOM</button></div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full" data-testid="boms-table">
+                <thead className="bg-gray-50 dark:bg-gray-900/50"><tr><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">BOM Code</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Product</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Version</th><th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Components</th><th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Total Cost</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th><th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th></tr></thead>
+                <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
+                  {boms.map((bom) => (
+                    <tr key={bom.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                      <td className="px-6 py-4 font-semibold text-orange-600 dark:text-orange-400">{bom.bom_code}</td>
+                      <td className="px-6 py-4 text-gray-900 dark:text-white">{bom.product_name}</td>
+                      <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{bom.version}</td>
+                      <td className="px-6 py-4 text-right text-gray-900 dark:text-white">{bom.total_components}</td>
+                      <td className="px-6 py-4 text-right font-semibold text-gray-900 dark:text-white">{formatCurrency(bom.total_cost)}</td>
+                      <td className="px-6 py-4"><span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium border ${getStatusBadge(bom.status)}`}>{bom.status === 'ACTIVE' ? <CheckCircle className="h-3.5 w-3.5" /> : bom.status === 'DRAFT' ? <Clock className="h-3.5 w-3.5" /> : <Package className="h-3.5 w-3.5" />}{bom.status}</span></td>
+                      <td className="px-6 py-4 text-right flex items-center justify-end gap-1">
+                        <button onClick={() => handleEdit(bom)} className="p-2 hover:bg-blue-100 dark:hover:bg-blue-900/30 rounded-lg transition-colors" title="Edit"><Edit2 className="h-4 w-4 text-blue-600 dark:text-blue-400" /></button>
+                        <button onClick={() => setDeleteConfirm({ show: true, id: bom.id, code: bom.bom_code })} className="p-2 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg transition-colors" title="Delete"><Trash2 className="h-4 w-4 text-red-600 dark:text-red-400" /></button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+
+        <ConfirmDialog isOpen={deleteConfirm.show} title="Delete BOM" message={`Are you sure you want to delete BOM ${deleteConfirm.code}? This action cannot be undone.`} onConfirm={() => handleDelete(deleteConfirm.id)} onCancel={() => setDeleteConfirm({ show: false, id: 0, code: '' })} />
+      </div>
     </div>
   );
-};
-
-export default BOMs;
+}

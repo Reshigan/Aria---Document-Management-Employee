@@ -1,106 +1,101 @@
 import { useState, useEffect } from 'react';
-import { cashForecastsApi } from '../../services/newPagesApi';
+import { TrendingUp, RefreshCw, AlertCircle, X, DollarSign, ArrowUpRight, ArrowDownRight, Calendar } from 'lucide-react';
 
-interface CashForecast {
-  id: string;
-  forecast_name: string;
-  forecast_date: string;
-  period_start: string;
-  period_end: string;
+interface ForecastPeriod {
+  period: string;
   opening_balance: number;
-  projected_inflows: number;
-  projected_outflows: number;
+  expected_inflows: number;
+  expected_outflows: number;
+  net_change: number;
   closing_balance: number;
-  status: string;
 }
 
 export default function CashForecast() {
-  const [forecasts, setForecasts] = useState<CashForecast[]>([]);
+  const [forecast, setForecast] = useState<ForecastPeriod[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [showForm, setShowForm] = useState(false);
-  const [formData, setFormData] = useState({ forecast_name: '', forecast_date: '', period_start: '', period_end: '', opening_balance: 0, projected_inflows: 0, projected_outflows: 0, closing_balance: 0, notes: '' });
+  const [period, setPeriod] = useState<'weekly' | 'monthly'>('weekly');
 
-  useEffect(() => { fetchForecasts(); }, []);
+  useEffect(() => { fetchForecast(); }, [period]);
 
-  const fetchForecasts = async () => {
+  const fetchForecast = async () => {
     try {
       setLoading(true);
-      const response = await cashForecastsApi.getAll();
-      setForecasts(response.data.cash_forecasts || []);
-    } catch (err) { setError('Failed to load cash forecasts'); } finally { setLoading(false); }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const closingBalance = formData.opening_balance + formData.projected_inflows - formData.projected_outflows;
-    try {
-      await cashForecastsApi.create({ ...formData, closing_balance: closingBalance });
-      setShowForm(false);
-      setFormData({ forecast_name: '', forecast_date: '', period_start: '', period_end: '', opening_balance: 0, projected_inflows: 0, projected_outflows: 0, closing_balance: 0, notes: '' });
-      fetchForecasts();
-    } catch (err) { setError('Failed to create cash forecast'); }
+      const token = localStorage.getItem('token');
+      const res = await fetch(`/api/financial/cash-forecast?period=${period}`, { headers: { 'Authorization': `Bearer ${token}` } });
+      if (res.ok) { const data = await res.json(); setForecast(data.forecast || []); }
+      setError(null);
+    } catch (err) { setError('Failed to load cash forecast'); } finally { setLoading(false); }
   };
 
   const formatCurrency = (amount: number) => new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR' }).format(amount);
-  const getStatusColor = (status: string) => {
-    switch (status) { case 'approved': return 'bg-green-100 text-green-800'; case 'draft': return 'bg-gray-100 text-gray-800'; default: return 'bg-gray-100 text-gray-800'; }
+
+  const stats = {
+    totalInflows: forecast.reduce((sum, f) => sum + f.expected_inflows, 0),
+    totalOutflows: forecast.reduce((sum, f) => sum + f.expected_outflows, 0),
+    netChange: forecast.reduce((sum, f) => sum + f.net_change, 0),
+    endingBalance: forecast.length > 0 ? forecast[forecast.length - 1].closing_balance : 0,
   };
 
-  if (loading) return <div className="flex items-center justify-center h-64"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div></div>;
-
   return (
-    <div className="p-6">
-      <div className="flex justify-between items-center mb-6">
-        <div><h1 className="text-2xl font-bold text-gray-900">Cash Forecast</h1><p className="text-gray-600">Project future cash flows and balances</p></div>
-        <button onClick={() => setShowForm(true)} className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">+ New Forecast</button>
-      </div>
-      {error && <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">{error}</div>}
-      {showForm && (
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <h2 className="text-lg font-semibold mb-4">Create Cash Forecast</h2>
-          <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4">
-            <div><label className="block text-sm font-medium text-gray-700 mb-1">Forecast Name</label><input type="text" value={formData.forecast_name} onChange={(e) => setFormData({ ...formData, forecast_name: e.target.value })} className="w-full border rounded-lg px-3 py-2" required /></div>
-            <div><label className="block text-sm font-medium text-gray-700 mb-1">Forecast Date</label><input type="date" value={formData.forecast_date} onChange={(e) => setFormData({ ...formData, forecast_date: e.target.value })} className="w-full border rounded-lg px-3 py-2" required /></div>
-            <div><label className="block text-sm font-medium text-gray-700 mb-1">Period Start</label><input type="date" value={formData.period_start} onChange={(e) => setFormData({ ...formData, period_start: e.target.value })} className="w-full border rounded-lg px-3 py-2" required /></div>
-            <div><label className="block text-sm font-medium text-gray-700 mb-1">Period End</label><input type="date" value={formData.period_end} onChange={(e) => setFormData({ ...formData, period_end: e.target.value })} className="w-full border rounded-lg px-3 py-2" required /></div>
-            <div><label className="block text-sm font-medium text-gray-700 mb-1">Opening Balance</label><input type="number" value={formData.opening_balance} onChange={(e) => setFormData({ ...formData, opening_balance: parseFloat(e.target.value) })} className="w-full border rounded-lg px-3 py-2" required /></div>
-            <div><label className="block text-sm font-medium text-gray-700 mb-1">Projected Inflows</label><input type="number" value={formData.projected_inflows} onChange={(e) => setFormData({ ...formData, projected_inflows: parseFloat(e.target.value) })} className="w-full border rounded-lg px-3 py-2" required /></div>
-            <div><label className="block text-sm font-medium text-gray-700 mb-1">Projected Outflows</label><input type="number" value={formData.projected_outflows} onChange={(e) => setFormData({ ...formData, projected_outflows: parseFloat(e.target.value) })} className="w-full border rounded-lg px-3 py-2" required /></div>
-            <div><label className="block text-sm font-medium text-gray-700 mb-1">Closing Balance (Calculated)</label><input type="number" value={formData.opening_balance + formData.projected_inflows - formData.projected_outflows} className="w-full border rounded-lg px-3 py-2 bg-gray-100" disabled /></div>
-            <div className="col-span-2 flex gap-2"><button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">Create</button><button type="button" onClick={() => setShowForm(false)} className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300">Cancel</button></div>
-          </form>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-teal-50 dark:from-gray-900 dark:to-gray-800 p-6">
+      <div className="max-w-7xl mx-auto space-y-6">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-teal-600 to-cyan-600 bg-clip-text text-transparent">Cash Forecast</h1>
+            <p className="text-gray-500 dark:text-gray-400 mt-1">Project future cash positions</p>
+          </div>
+          <div className="flex items-center gap-3">
+            <div className="flex bg-white dark:bg-gray-800 rounded-xl p-1 shadow-sm border border-gray-200 dark:border-gray-700">
+              <button onClick={() => setPeriod('weekly')} className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${period === 'weekly' ? 'bg-gradient-to-r from-teal-600 to-cyan-600 text-white shadow-lg' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'}`}>Weekly</button>
+              <button onClick={() => setPeriod('monthly')} className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${period === 'monthly' ? 'bg-gradient-to-r from-teal-600 to-cyan-600 text-white shadow-lg' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'}`}>Monthly</button>
+            </div>
+            <button onClick={fetchForecast} className="p-3 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-200 dark:border-gray-700"><RefreshCw className={`h-5 w-5 text-gray-600 dark:text-gray-400 ${loading ? 'animate-spin' : ''}`} /></button>
+          </div>
         </div>
-      )}
-      <div className="bg-white rounded-lg shadow-md overflow-hidden">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Period</th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Opening</th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Inflows</th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Outflows</th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Closing</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {forecasts.length === 0 ? (<tr><td colSpan={7} className="px-6 py-8 text-center text-gray-500">No cash forecasts found.</td></tr>) : (
-              forecasts.map((f) => (
-                <tr key={f.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{f.forecast_name}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{f.period_start} to {f.period_end}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">{formatCurrency(f.opening_balance)}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-green-600 text-right">+{formatCurrency(f.projected_inflows)}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-red-600 text-right">-{formatCurrency(f.projected_outflows)}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 text-right">{formatCurrency(f.closing_balance)}</td>
-                  <td className="px-6 py-4 whitespace-nowrap"><span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(f.status)}`}>{f.status}</span></td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+
+        {error && (<div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl flex items-center gap-3"><AlertCircle className="h-5 w-5 text-red-500" /><p className="text-red-700 dark:text-red-300">{error}</p><button onClick={() => setError(null)} className="ml-auto p-1 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg"><X className="h-4 w-4 text-red-500" /></button></div>)}
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
+            <div className="flex items-center gap-4"><div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg shadow-green-500/30"><ArrowUpRight className="h-6 w-6 text-white" /></div><div><p className="text-2xl font-bold text-green-600 dark:text-green-400">{formatCurrency(stats.totalInflows)}</p><p className="text-sm text-gray-500 dark:text-gray-400">Expected Inflows</p></div></div>
+          </div>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
+            <div className="flex items-center gap-4"><div className="p-3 bg-gradient-to-br from-red-500 to-rose-500 rounded-xl shadow-lg shadow-red-500/30"><ArrowDownRight className="h-6 w-6 text-white" /></div><div><p className="text-2xl font-bold text-red-600 dark:text-red-400">{formatCurrency(stats.totalOutflows)}</p><p className="text-sm text-gray-500 dark:text-gray-400">Expected Outflows</p></div></div>
+          </div>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
+            <div className="flex items-center gap-4"><div className="p-3 bg-gradient-to-br from-teal-500 to-cyan-500 rounded-xl shadow-lg shadow-teal-500/30"><TrendingUp className="h-6 w-6 text-white" /></div><div><p className={`text-2xl font-bold ${stats.netChange >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>{formatCurrency(stats.netChange)}</p><p className="text-sm text-gray-500 dark:text-gray-400">Net Change</p></div></div>
+          </div>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
+            <div className="flex items-center gap-4"><div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl shadow-lg shadow-blue-500/30"><DollarSign className="h-6 w-6 text-white" /></div><div><p className="text-2xl font-bold text-gray-900 dark:text-white">{formatCurrency(stats.endingBalance)}</p><p className="text-sm text-gray-500 dark:text-gray-400">Ending Balance</p></div></div>
+          </div>
+        </div>
+
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+          {loading ? (
+            <div className="p-12 text-center"><RefreshCw className="h-8 w-8 animate-spin text-teal-500 mx-auto mb-4" /><p className="text-gray-500 dark:text-gray-400">Loading forecast...</p></div>
+          ) : forecast.length === 0 ? (
+            <div className="p-12 text-center"><div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-2xl flex items-center justify-center mx-auto mb-4"><TrendingUp className="h-8 w-8 text-gray-400" /></div><h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No forecast data</h3><p className="text-gray-500 dark:text-gray-400">Cash forecast will appear here based on your transactions</p></div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-50 dark:bg-gray-900/50"><tr><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Period</th><th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Opening Balance</th><th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Expected Inflows</th><th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Expected Outflows</th><th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Net Change</th><th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Closing Balance</th></tr></thead>
+                <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
+                  {forecast.map((f, idx) => (
+                    <tr key={idx} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                      <td className="px-6 py-4 font-semibold text-teal-600 dark:text-teal-400 flex items-center gap-2"><Calendar className="h-4 w-4" />{f.period}</td>
+                      <td className="px-6 py-4 text-right text-gray-900 dark:text-white">{formatCurrency(f.opening_balance)}</td>
+                      <td className="px-6 py-4 text-right text-green-600 dark:text-green-400">{formatCurrency(f.expected_inflows)}</td>
+                      <td className="px-6 py-4 text-right text-red-600 dark:text-red-400">{formatCurrency(f.expected_outflows)}</td>
+                      <td className={`px-6 py-4 text-right font-semibold ${f.net_change >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>{formatCurrency(f.net_change)}</td>
+                      <td className="px-6 py-4 text-right font-bold text-gray-900 dark:text-white">{formatCurrency(f.closing_balance)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

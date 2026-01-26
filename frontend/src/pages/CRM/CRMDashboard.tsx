@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../lib/api';
 import { ConfirmDialog } from '../../components/ConfirmDialog';
+import { Users, Target, Building2, Plus, Search, Edit2, Trash2, ArrowRight, TrendingUp, DollarSign, Star } from 'lucide-react';
 
 interface Lead {
   id: number;
@@ -356,30 +357,29 @@ const CRMDashboard: React.FC = () => {
   );
 
   const getLeadScoreBadge = (score: number) => {
-    if (score >= 80) return <span style={{ padding: '4px 8px', fontSize: '12px', fontWeight: 600, borderRadius: '9999px', backgroundColor: '#dcfce7', color: '#166534' }}>★ {score}</span>;
-    if (score >= 60) return <span style={{ padding: '4px 8px', fontSize: '12px', fontWeight: 600, borderRadius: '9999px', backgroundColor: '#dbeafe', color: '#1e40af' }}>★ {score}</span>;
-    if (score >= 40) return <span style={{ padding: '4px 8px', fontSize: '12px', fontWeight: 600, borderRadius: '9999px', backgroundColor: '#fef3c7', color: '#92400e' }}>★ {score}</span>;
-    return <span style={{ padding: '4px 8px', fontSize: '12px', fontWeight: 600, borderRadius: '9999px', backgroundColor: '#fee2e2', color: '#991b1b' }}>★ {score}</span>;
+    if (score >= 80) return <span className="px-2.5 py-1 text-xs font-semibold rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 flex items-center gap-1"><Star className="h-3 w-3" />{score}</span>;
+    if (score >= 60) return <span className="px-2.5 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 flex items-center gap-1"><Star className="h-3 w-3" />{score}</span>;
+    if (score >= 40) return <span className="px-2.5 py-1 text-xs font-semibold rounded-full bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 flex items-center gap-1"><Star className="h-3 w-3" />{score}</span>;
+    return <span className="px-2.5 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 flex items-center gap-1"><Star className="h-3 w-3" />{score}</span>;
   };
 
   const getStatusBadge = (status: string) => {
-    const colors: Record<string, { bg: string; text: string }> = {
-      NEW: { bg: '#dbeafe', text: '#1e40af' },
-      CONTACTED: { bg: '#fef3c7', text: '#92400e' },
-      QUALIFIED: { bg: '#dcfce7', text: '#166534' },
-      CONVERTED: { bg: '#e0e7ff', text: '#4338ca' },
-      LOST: { bg: '#fee2e2', text: '#991b1b' },
-      OPEN: { bg: '#dbeafe', text: '#1e40af' },
-      WON: { bg: '#dcfce7', text: '#166534' },
-      PROSPECTING: { bg: '#f3f4f6', text: '#374151' },
-      QUALIFICATION: { bg: '#dbeafe', text: '#1e40af' },
-      PROPOSAL: { bg: '#fef3c7', text: '#92400e' },
-      NEGOTIATION: { bg: '#fed7aa', text: '#9a3412' },
-      CLOSED_WON: { bg: '#dcfce7', text: '#166534' },
-      CLOSED_LOST: { bg: '#fee2e2', text: '#991b1b' }
+    const styles: Record<string, string> = {
+      NEW: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
+      CONTACTED: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
+      QUALIFIED: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400',
+      CONVERTED: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400',
+      LOST: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
+      OPEN: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
+      WON: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400',
+      PROSPECTING: 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300',
+      QUALIFICATION: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
+      PROPOSAL: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
+      NEGOTIATION: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400',
+      CLOSED_WON: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400',
+      CLOSED_LOST: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
     };
-    const color = colors[status] || { bg: '#f3f4f6', text: '#374151' };
-    return <span style={{ padding: '4px 8px', fontSize: '12px', fontWeight: 600, borderRadius: '9999px', backgroundColor: color.bg, color: color.text }}>{status.replace('_', ' ')}</span>;
+    return <span className={`px-2.5 py-1 text-xs font-semibold rounded-full ${styles[status] || 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300'}`}>{status.replace('_', ' ')}</span>;
   };
 
   const formatCurrency = (amount: number) => {
@@ -391,67 +391,45 @@ const CRMDashboard: React.FC = () => {
   };
 
   return (
-    <div style={{ padding: '24px' }}>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-6 lg:p-8">
       {/* Header */}
-      <div style={{ marginBottom: '24px' }}>
-        <h1 style={{ fontSize: '30px', fontWeight: 'bold', color: '#111827', marginBottom: '8px' }}>CRM</h1>
-        <p style={{ color: '#6b7280' }}>Manage leads, opportunities, and customer relationships</p>
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3 mb-2">
+          <div className="p-2 bg-gradient-to-br from-rose-500 to-pink-500 rounded-xl shadow-lg shadow-rose-500/30">
+            <Users className="h-7 w-7 text-white" />
+          </div>
+          CRM
+        </h1>
+        <p className="text-gray-500 dark:text-gray-400 ml-14">Manage leads, opportunities, and customer relationships</p>
       </div>
 
       {/* Error Display */}
       {error && (
-        <div style={{ padding: '12px 16px', marginBottom: '16px', backgroundColor: '#fee2e2', border: '1px solid #fecaca', borderRadius: '6px', color: '#991b1b' }}>
+        <div className="p-4 mb-6 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl text-red-700 dark:text-red-300">
           {error}
         </div>
       )}
 
       {/* Tabs */}
-      <div style={{ borderBottom: '1px solid #e5e7eb', marginBottom: '24px' }}>
-        <div style={{ display: 'flex', gap: '16px' }}>
+      <div className="border-b border-gray-200 dark:border-gray-700 mb-6">
+        <div className="flex gap-1">
           <button
             onClick={() => setActiveTab('leads')}
-            style={{
-              padding: '12px 16px',
-              fontSize: '14px',
-              fontWeight: 600,
-              color: activeTab === 'leads' ? '#2563eb' : '#6b7280',
-              borderBottom: activeTab === 'leads' ? '2px solid #2563eb' : '2px solid transparent',
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer'
-            }}
+            className={`px-4 py-3 text-sm font-semibold rounded-t-lg transition-colors ${activeTab === 'leads' ? 'bg-white dark:bg-gray-800 text-rose-600 dark:text-rose-400 border-b-2 border-rose-500' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'}`}
           >
-            Leads ({leads.length})
+            <span className="flex items-center gap-2"><Target className="h-4 w-4" />Leads ({leads.length})</span>
           </button>
           <button
             onClick={() => setActiveTab('opportunities')}
-            style={{
-              padding: '12px 16px',
-              fontSize: '14px',
-              fontWeight: 600,
-              color: activeTab === 'opportunities' ? '#2563eb' : '#6b7280',
-              borderBottom: activeTab === 'opportunities' ? '2px solid #2563eb' : '2px solid transparent',
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer'
-            }}
+            className={`px-4 py-3 text-sm font-semibold rounded-t-lg transition-colors ${activeTab === 'opportunities' ? 'bg-white dark:bg-gray-800 text-rose-600 dark:text-rose-400 border-b-2 border-rose-500' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'}`}
           >
-            Opportunities ({opportunities.length})
+            <span className="flex items-center gap-2"><TrendingUp className="h-4 w-4" />Opportunities ({opportunities.length})</span>
           </button>
           <button
             onClick={() => setActiveTab('customers')}
-            style={{
-              padding: '12px 16px',
-              fontSize: '14px',
-              fontWeight: 600,
-              color: activeTab === 'customers' ? '#2563eb' : '#6b7280',
-              borderBottom: activeTab === 'customers' ? '2px solid #2563eb' : '2px solid transparent',
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer'
-            }}
+            className={`px-4 py-3 text-sm font-semibold rounded-t-lg transition-colors ${activeTab === 'customers' ? 'bg-white dark:bg-gray-800 text-rose-600 dark:text-rose-400 border-b-2 border-rose-500' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'}`}
           >
-            Customers ({customers.length})
+            <span className="flex items-center gap-2"><Building2 className="h-4 w-4" />Customers ({customers.length})</span>
           </button>
         </div>
       </div>
@@ -460,59 +438,63 @@ const CRMDashboard: React.FC = () => {
       {activeTab === 'leads' && (
         <div>
           {/* Actions Bar */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-            <input
-              type="text"
-              placeholder="Search leads..."
-              value={leadsSearch}
-              onChange={(e) => setLeadsSearch(e.target.value)}
-              style={{ padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px', width: '300px' }}
-            />
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+            <div className="relative w-full sm:w-80">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search leads..."
+                value={leadsSearch}
+                onChange={(e) => setLeadsSearch(e.target.value)}
+                className="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-500 text-gray-900 dark:text-white"
+              />
+            </div>
             <button
               onClick={handleCreateLead}
-              style={{ padding: '8px 16px', backgroundColor: '#2563eb', color: 'white', border: 'none', borderRadius: '6px', fontWeight: 600, cursor: 'pointer' }}
+              className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-rose-500 to-pink-500 text-white rounded-xl font-semibold shadow-lg shadow-rose-500/30 hover:shadow-xl hover:shadow-rose-500/40 transition-all"
             >
-              + New Lead
+              <Plus className="h-5 w-5" />
+              New Lead
             </button>
           </div>
 
           {/* Leads Table */}
-          <div style={{ backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', overflow: 'hidden' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-              <thead style={{ backgroundColor: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+            <table className="w-full">
+              <thead className="bg-gray-50 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700">
                 <tr>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Company</th>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Contact</th>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Email</th>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Score</th>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Status</th>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Actions</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Company</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Contact</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Email</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Score</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                 {leadsLoading ? (
                   <tr>
-                    <td colSpan={6} style={{ padding: '24px', textAlign: 'center', color: '#6b7280' }}>Loading leads...</td>
+                    <td colSpan={6} className="px-6 py-8 text-center text-gray-500 dark:text-gray-400">Loading leads...</td>
                   </tr>
                 ) : filteredLeads.length === 0 ? (
                   <tr>
-                    <td colSpan={6} style={{ padding: '24px', textAlign: 'center', color: '#6b7280' }}>No leads found</td>
+                    <td colSpan={6} className="px-6 py-8 text-center text-gray-500 dark:text-gray-400">No leads found</td>
                   </tr>
                 ) : (
                   filteredLeads.map((lead) => (
-                    <tr key={lead.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
-                      <td style={{ padding: '12px 16px', fontSize: '14px', fontWeight: 600 }}>{lead.company_name}</td>
-                      <td style={{ padding: '12px 16px', fontSize: '14px' }}>{lead.contact_person}</td>
-                      <td style={{ padding: '12px 16px', fontSize: '14px' }}>{lead.email}</td>
-                      <td style={{ padding: '12px 16px' }}>{getLeadScoreBadge(lead.lead_score)}</td>
-                      <td style={{ padding: '12px 16px' }}>{getStatusBadge(lead.status)}</td>
-                      <td style={{ padding: '12px 16px' }}>
-                        <div style={{ display: 'flex', gap: '8px' }}>
-                          <button onClick={() => handleEditLead(lead)} style={{ padding: '4px 8px', fontSize: '12px', color: '#2563eb', background: 'none', border: 'none', cursor: 'pointer' }}>Edit</button>
+                    <tr key={lead.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                      <td className="px-6 py-4 text-sm font-semibold text-gray-900 dark:text-white">{lead.company_name}</td>
+                      <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{lead.contact_person}</td>
+                      <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{lead.email}</td>
+                      <td className="px-6 py-4">{getLeadScoreBadge(lead.lead_score)}</td>
+                      <td className="px-6 py-4">{getStatusBadge(lead.status)}</td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-2">
+                          <button onClick={() => handleEditLead(lead)} className="p-1.5 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"><Edit2 className="h-4 w-4" /></button>
                           {lead.status === 'QUALIFIED' && (
-                            <button onClick={() => handleConvertLead(lead.id)} style={{ padding: '4px 8px', fontSize: '12px', color: '#059669', background: 'none', border: 'none', cursor: 'pointer' }}>Convert</button>
+                            <button onClick={() => handleConvertLead(lead.id)} className="p-1.5 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 rounded-lg transition-colors"><ArrowRight className="h-4 w-4" /></button>
                           )}
-                          <button onClick={() => setDeleteConfirm({ show: true, type: 'lead', id: lead.id, name: lead.company_name })} style={{ padding: '4px 8px', fontSize: '12px', color: '#dc2626', background: 'none', border: 'none', cursor: 'pointer' }}>Delete</button>
+                          <button onClick={() => setDeleteConfirm({ show: true, type: 'lead', id: lead.id, name: lead.company_name })} className="p-1.5 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"><Trash2 className="h-4 w-4" /></button>
                         </div>
                       </td>
                     </tr>
@@ -528,83 +510,102 @@ const CRMDashboard: React.FC = () => {
       {activeTab === 'opportunities' && (
         <div>
           {/* Actions Bar */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-            <input
-              type="text"
-              placeholder="Search opportunities..."
-              value={oppsSearch}
-              onChange={(e) => setOppsSearch(e.target.value)}
-              style={{ padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px', width: '300px' }}
-            />
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+            <div className="relative w-full sm:w-80">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search opportunities..."
+                value={oppsSearch}
+                onChange={(e) => setOppsSearch(e.target.value)}
+                className="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-500 text-gray-900 dark:text-white"
+              />
+            </div>
             <button
               onClick={handleCreateOpportunity}
-              style={{ padding: '8px 16px', backgroundColor: '#2563eb', color: 'white', border: 'none', borderRadius: '6px', fontWeight: 600, cursor: 'pointer' }}
+              className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-rose-500 to-pink-500 text-white rounded-xl font-semibold shadow-lg shadow-rose-500/30 hover:shadow-xl hover:shadow-rose-500/40 transition-all"
             >
-              + New Opportunity
+              <Plus className="h-5 w-5" />
+              New Opportunity
             </button>
           </div>
 
           {/* Pipeline Summary */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginBottom: '16px' }}>
-            <div style={{ backgroundColor: 'white', padding: '16px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-              <div style={{ fontSize: '14px', color: '#6b7280', marginBottom: '4px' }}>Total Pipeline</div>
-              <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#111827' }}>
-                {formatCurrency(opportunities.reduce((sum, o) => sum + o.amount, 0))}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-gradient-to-br from-rose-500 to-pink-500 rounded-xl shadow-lg shadow-rose-500/30">
+                  <DollarSign className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">{formatCurrency(opportunities.reduce((sum, o) => sum + o.amount, 0))}</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Total Pipeline</p>
+                </div>
               </div>
             </div>
-            <div style={{ backgroundColor: 'white', padding: '16px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-              <div style={{ fontSize: '14px', color: '#6b7280', marginBottom: '4px' }}>Weighted Value</div>
-              <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#2563eb' }}>
-                {formatCurrency(opportunities.reduce((sum, o) => sum + (o.amount * o.probability / 100), 0))}
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl shadow-lg shadow-blue-500/30">
+                  <TrendingUp className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">{formatCurrency(opportunities.reduce((sum, o) => sum + (o.amount * o.probability / 100), 0))}</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Weighted Value</p>
+                </div>
               </div>
             </div>
-            <div style={{ backgroundColor: 'white', padding: '16px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-              <div style={{ fontSize: '14px', color: '#6b7280', marginBottom: '4px' }}>Open Opportunities</div>
-              <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#059669' }}>
-                {opportunities.filter(o => o.status === 'OPEN').length}
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-gradient-to-br from-emerald-500 to-green-500 rounded-xl shadow-lg shadow-emerald-500/30">
+                  <Target className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">{opportunities.filter(o => o.status === 'OPEN').length}</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Open Opportunities</p>
+                </div>
               </div>
             </div>
           </div>
 
           {/* Opportunities Table */}
-          <div style={{ backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', overflow: 'hidden' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-              <thead style={{ backgroundColor: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+            <table className="w-full">
+              <thead className="bg-gray-50 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700">
                 <tr>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Title</th>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Customer</th>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Amount</th>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Stage</th>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Probability</th>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Close Date</th>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Actions</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Title</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Customer</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Amount</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Stage</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Probability</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Close Date</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                 {oppsLoading ? (
                   <tr>
-                    <td colSpan={7} style={{ padding: '24px', textAlign: 'center', color: '#6b7280' }}>Loading opportunities...</td>
+                    <td colSpan={7} className="px-6 py-8 text-center text-gray-500 dark:text-gray-400">Loading opportunities...</td>
                   </tr>
                 ) : filteredOpportunities.length === 0 ? (
                   <tr>
-                    <td colSpan={7} style={{ padding: '24px', textAlign: 'center', color: '#6b7280' }}>No opportunities found</td>
+                    <td colSpan={7} className="px-6 py-8 text-center text-gray-500 dark:text-gray-400">No opportunities found</td>
                   </tr>
                 ) : (
                   filteredOpportunities.map((opp) => (
-                    <tr key={opp.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
-                      <td style={{ padding: '12px 16px', fontSize: '14px', fontWeight: 600 }}>{opp.title}</td>
-                      <td style={{ padding: '12px 16px', fontSize: '14px' }}>{opp.customer_name || `Customer #${opp.customer_id}`}</td>
-                      <td style={{ padding: '12px 16px', fontSize: '14px', fontWeight: 600 }}>{formatCurrency(opp.amount)}</td>
-                      <td style={{ padding: '12px 16px' }}>{getStatusBadge(opp.stage)}</td>
-                      <td style={{ padding: '12px 16px', fontSize: '14px' }}>{opp.probability}%</td>
-                      <td style={{ padding: '12px 16px', fontSize: '14px' }}>{formatDate(opp.expected_close_date)}</td>
-                      <td style={{ padding: '12px 16px' }}>
-                        <div style={{ display: 'flex', gap: '8px' }}>
-                          <button onClick={() => handleEditOpportunity(opp)} style={{ padding: '4px 8px', fontSize: '12px', color: '#2563eb', background: 'none', border: 'none', cursor: 'pointer' }}>Edit</button>
+                    <tr key={opp.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                      <td className="px-6 py-4 text-sm font-semibold text-gray-900 dark:text-white">{opp.title}</td>
+                      <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{opp.customer_name || `Customer #${opp.customer_id}`}</td>
+                      <td className="px-6 py-4 text-sm font-semibold text-gray-900 dark:text-white">{formatCurrency(opp.amount)}</td>
+                      <td className="px-6 py-4">{getStatusBadge(opp.stage)}</td>
+                      <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{opp.probability}%</td>
+                      <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{formatDate(opp.expected_close_date)}</td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-2">
+                          <button onClick={() => handleEditOpportunity(opp)} className="p-1.5 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"><Edit2 className="h-4 w-4" /></button>
                           {opp.status === 'OPEN' && opp.stage === 'NEGOTIATION' && (
-                            <button onClick={() => handleWinOpportunity(opp.id)} style={{ padding: '4px 8px', fontSize: '12px', color: '#059669', background: 'none', border: 'none', cursor: 'pointer' }}>Win</button>
+                            <button onClick={() => handleWinOpportunity(opp.id)} className="p-1.5 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 rounded-lg transition-colors"><ArrowRight className="h-4 w-4" /></button>
                           )}
-                          <button onClick={() => setDeleteConfirm({ show: true, type: 'opportunity', id: opp.id, name: opp.title })} style={{ padding: '4px 8px', fontSize: '12px', color: '#dc2626', background: 'none', border: 'none', cursor: 'pointer' }}>Delete</button>
+                          <button onClick={() => setDeleteConfirm({ show: true, type: 'opportunity', id: opp.id, name: opp.title })} className="p-1.5 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"><Trash2 className="h-4 w-4" /></button>
                         </div>
                       </td>
                     </tr>
@@ -620,58 +621,62 @@ const CRMDashboard: React.FC = () => {
       {activeTab === 'customers' && (
         <div>
           {/* Actions Bar */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-            <input
-              type="text"
-              placeholder="Search customers..."
-              value={customersSearch}
-              onChange={(e) => setCustomersSearch(e.target.value)}
-              style={{ padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px', width: '300px' }}
-            />
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+            <div className="relative w-full sm:w-80">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search customers..."
+                value={customersSearch}
+                onChange={(e) => setCustomersSearch(e.target.value)}
+                className="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-500 text-gray-900 dark:text-white"
+              />
+            </div>
             <button
               onClick={handleCreateCustomer}
-              style={{ padding: '8px 16px', backgroundColor: '#2563eb', color: 'white', border: 'none', borderRadius: '6px', fontWeight: 600, cursor: 'pointer' }}
+              className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-rose-500 to-pink-500 text-white rounded-xl font-semibold shadow-lg shadow-rose-500/30 hover:shadow-xl hover:shadow-rose-500/40 transition-all"
             >
-              + New Customer
+              <Plus className="h-5 w-5" />
+              New Customer
             </button>
           </div>
 
           {/* Customers Table */}
-          <div style={{ backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', overflow: 'hidden' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-              <thead style={{ backgroundColor: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+            <table className="w-full">
+              <thead className="bg-gray-50 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700">
                 <tr>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Code</th>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Name</th>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Contact</th>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Email</th>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>BBBEE</th>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Credit Limit</th>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Actions</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Code</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Name</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Contact</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Email</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">BBBEE</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Credit Limit</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                 {customersLoading ? (
                   <tr>
-                    <td colSpan={7} style={{ padding: '24px', textAlign: 'center', color: '#6b7280' }}>Loading customers...</td>
+                    <td colSpan={7} className="px-6 py-8 text-center text-gray-500 dark:text-gray-400">Loading customers...</td>
                   </tr>
                 ) : filteredCustomers.length === 0 ? (
                   <tr>
-                    <td colSpan={7} style={{ padding: '24px', textAlign: 'center', color: '#6b7280' }}>No customers found</td>
+                    <td colSpan={7} className="px-6 py-8 text-center text-gray-500 dark:text-gray-400">No customers found</td>
                   </tr>
                 ) : (
                   filteredCustomers.map((customer) => (
-                    <tr key={customer.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
-                      <td style={{ padding: '12px 16px', fontSize: '14px', fontWeight: 600, color: '#2563eb' }}>{customer.customer_code}</td>
-                      <td style={{ padding: '12px 16px', fontSize: '14px', fontWeight: 600 }}>{customer.customer_name}</td>
-                      <td style={{ padding: '12px 16px', fontSize: '14px' }}>{customer.contact_person}</td>
-                      <td style={{ padding: '12px 16px', fontSize: '14px' }}>{customer.email}</td>
-                      <td style={{ padding: '12px 16px', fontSize: '14px' }}>Level {customer.bbbee_level || 'N/A'}</td>
-                      <td style={{ padding: '12px 16px', fontSize: '14px', fontWeight: 600 }}>{formatCurrency(customer.credit_limit)}</td>
-                      <td style={{ padding: '12px 16px' }}>
-                        <div style={{ display: 'flex', gap: '8px' }}>
-                          <button onClick={() => handleEditCustomer(customer)} style={{ padding: '4px 8px', fontSize: '12px', color: '#2563eb', background: 'none', border: 'none', cursor: 'pointer' }}>Edit</button>
-                          <button onClick={() => setDeleteConfirm({ show: true, type: 'customer', id: customer.id, name: customer.customer_name })} style={{ padding: '4px 8px', fontSize: '12px', color: '#dc2626', background: 'none', border: 'none', cursor: 'pointer' }}>Delete</button>
+                    <tr key={customer.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                      <td className="px-6 py-4 text-sm font-semibold text-rose-600 dark:text-rose-400">{customer.customer_code}</td>
+                      <td className="px-6 py-4 text-sm font-semibold text-gray-900 dark:text-white">{customer.customer_name}</td>
+                      <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{customer.contact_person}</td>
+                      <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{customer.email}</td>
+                      <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">Level {customer.bbbee_level || 'N/A'}</td>
+                      <td className="px-6 py-4 text-sm font-semibold text-gray-900 dark:text-white">{formatCurrency(customer.credit_limit)}</td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-2">
+                          <button onClick={() => handleEditCustomer(customer)} className="p-1.5 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"><Edit2 className="h-4 w-4" /></button>
+                          <button onClick={() => setDeleteConfirm({ show: true, type: 'customer', id: customer.id, name: customer.customer_name })} className="p-1.5 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"><Trash2 className="h-4 w-4" /></button>
                         </div>
                       </td>
                     </tr>
@@ -685,55 +690,60 @@ const CRMDashboard: React.FC = () => {
 
       {/* LEAD MODAL */}
       {showLeadModal && (
-        <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}>
-          <div style={{ backgroundColor: 'white', borderRadius: '8px', width: '600px', maxHeight: '90vh', overflow: 'auto' }}>
-            <div style={{ padding: '20px', borderBottom: '1px solid #e5e7eb', position: 'sticky', top: 0, backgroundColor: 'white', zIndex: 10 }}>
-              <h2 style={{ fontSize: '20px', fontWeight: 'bold' }}>{editingLead ? 'Edit Lead' : 'New Lead'}</h2>
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl w-full max-w-xl max-h-[90vh] overflow-auto shadow-2xl">
+            <div className="p-6 border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-gradient-to-r from-rose-500 to-pink-500 rounded-t-2xl">
+              <h2 className="text-xl font-bold text-white flex items-center gap-3">
+                <Target className="h-6 w-6" />
+                {editingLead ? 'Edit Lead' : 'New Lead'}
+              </h2>
             </div>
-            <div style={{ padding: '20px' }}>
-              <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Company Name *</label>
+            <div className="p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Company Name *</label>
                 <input
                   type="text"
                   value={leadForm.company_name}
                   onChange={(e) => setLeadForm({ ...leadForm, company_name: e.target.value })}
-                  style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                  className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-rose-500"
                 />
               </div>
-              <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Contact Person *</label>
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Contact Person *</label>
                 <input
                   type="text"
                   value={leadForm.contact_person}
                   onChange={(e) => setLeadForm({ ...leadForm, contact_person: e.target.value })}
-                  style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                  className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-rose-500"
                 />
               </div>
-              <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Email *</label>
-                <input
-                  type="email"
-                  value={leadForm.email}
-                  onChange={(e) => setLeadForm({ ...leadForm, email: e.target.value })}
-                  style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
-                />
-              </div>
-              <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Phone</label>
-                <input
-                  type="text"
-                  value={leadForm.phone}
-                  onChange={(e) => setLeadForm({ ...leadForm, phone: e.target.value })}
-                  style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
-                />
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Company Size</label>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Email *</label>
+                  <input
+                    type="email"
+                    value={leadForm.email}
+                    onChange={(e) => setLeadForm({ ...leadForm, email: e.target.value })}
+                    className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-rose-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Phone</label>
+                  <input
+                    type="text"
+                    value={leadForm.phone}
+                    onChange={(e) => setLeadForm({ ...leadForm, phone: e.target.value })}
+                    className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-rose-500"
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Company Size</label>
                   <select
                     value={leadForm.company_size}
                     onChange={(e) => setLeadForm({ ...leadForm, company_size: e.target.value as any })}
-                    style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                    className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-rose-500"
                   >
                     <option value="Small">Small</option>
                     <option value="Medium">Medium</option>
@@ -742,11 +752,11 @@ const CRMDashboard: React.FC = () => {
                   </select>
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Engagement Level</label>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Engagement Level</label>
                   <select
                     value={leadForm.engagement_level}
                     onChange={(e) => setLeadForm({ ...leadForm, engagement_level: e.target.value as any })}
-                    style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                    className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-rose-500"
                   >
                     <option value="Cold">Cold</option>
                     <option value="Warm">Warm</option>
@@ -755,13 +765,13 @@ const CRMDashboard: React.FC = () => {
                   </select>
                 </div>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Budget Range</label>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Budget Range</label>
                   <select
                     value={leadForm.budget_range}
                     onChange={(e) => setLeadForm({ ...leadForm, budget_range: e.target.value })}
-                    style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                    className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-rose-500"
                   >
                     <option value="<100k">&lt;100k</option>
                     <option value="100k-500k">100k-500k</option>
@@ -770,11 +780,11 @@ const CRMDashboard: React.FC = () => {
                   </select>
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Decision Timeframe</label>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Decision Timeframe</label>
                   <select
                     value={leadForm.decision_timeframe}
                     onChange={(e) => setLeadForm({ ...leadForm, decision_timeframe: e.target.value })}
-                    style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                    className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-rose-500"
                   >
                     <option value=">6 months">&gt;6 months</option>
                     <option value="3-6 months">3-6 months</option>
@@ -784,16 +794,16 @@ const CRMDashboard: React.FC = () => {
                 </div>
               </div>
             </div>
-            <div style={{ padding: '20px', borderTop: '1px solid #e5e7eb', display: 'flex', justifyContent: 'flex-end', gap: '12px', position: 'sticky', bottom: 0, backgroundColor: 'white' }}>
+            <div className="p-6 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3 sticky bottom-0 bg-white dark:bg-gray-800 rounded-b-2xl">
               <button
                 onClick={() => setShowLeadModal(false)}
-                style={{ padding: '8px 16px', border: '1px solid #d1d5db', borderRadius: '6px', fontWeight: 600, cursor: 'pointer', background: 'white' }}
+                className="px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-semibold hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSaveLead}
-                style={{ padding: '8px 16px', backgroundColor: '#2563eb', color: 'white', border: 'none', borderRadius: '6px', fontWeight: 600, cursor: 'pointer' }}
+                className="px-6 py-3 bg-gradient-to-r from-rose-500 to-pink-500 text-white rounded-xl font-semibold shadow-lg shadow-rose-500/30 hover:shadow-xl hover:shadow-rose-500/40 transition-all"
               >
                 {editingLead ? 'Update' : 'Create'}
               </button>
@@ -804,47 +814,52 @@ const CRMDashboard: React.FC = () => {
 
       {/* OPPORTUNITY MODAL */}
       {showOppModal && (
-        <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}>
-          <div style={{ backgroundColor: 'white', borderRadius: '8px', width: '600px', maxHeight: '90vh', overflow: 'auto' }}>
-            <div style={{ padding: '20px', borderBottom: '1px solid #e5e7eb', position: 'sticky', top: 0, backgroundColor: 'white', zIndex: 10 }}>
-              <h2 style={{ fontSize: '20px', fontWeight: 'bold' }}>{editingOpp ? 'Edit Opportunity' : 'New Opportunity'}</h2>
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl w-full max-w-xl max-h-[90vh] overflow-auto shadow-2xl">
+            <div className="p-6 border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-gradient-to-r from-rose-500 to-pink-500 rounded-t-2xl">
+              <h2 className="text-xl font-bold text-white flex items-center gap-3">
+                <DollarSign className="h-6 w-6" />
+                {editingOpp ? 'Edit Opportunity' : 'New Opportunity'}
+              </h2>
             </div>
-            <div style={{ padding: '20px' }}>
-              <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Title *</label>
+            <div className="p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Title *</label>
                 <input
                   type="text"
                   value={oppForm.title}
                   onChange={(e) => setOppForm({ ...oppForm, title: e.target.value })}
-                  style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                  className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-rose-500"
                 />
               </div>
-              <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Customer ID *</label>
-                <input
-                  type="number"
-                  value={oppForm.customer_id}
-                  onChange={(e) => setOppForm({ ...oppForm, customer_id: e.target.value })}
-                  style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
-                />
-              </div>
-              <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Amount (ZAR) *</label>
-                <input
-                  type="number"
-                  step="0.01"
-                  value={oppForm.amount}
-                  onChange={(e) => setOppForm({ ...oppForm, amount: e.target.value })}
-                  style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
-                />
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Stage</label>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Customer ID *</label>
+                  <input
+                    type="number"
+                    value={oppForm.customer_id}
+                    onChange={(e) => setOppForm({ ...oppForm, customer_id: e.target.value })}
+                    className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-rose-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Amount (ZAR) *</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={oppForm.amount}
+                    onChange={(e) => setOppForm({ ...oppForm, amount: e.target.value })}
+                    className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-rose-500"
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Stage</label>
                   <select
                     value={oppForm.stage}
                     onChange={(e) => setOppForm({ ...oppForm, stage: e.target.value as any })}
-                    style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                    className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-rose-500"
                   >
                     <option value="PROSPECTING">Prospecting</option>
                     <option value="QUALIFICATION">Qualification</option>
@@ -855,37 +870,37 @@ const CRMDashboard: React.FC = () => {
                   </select>
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Probability (%)</label>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Probability (%)</label>
                   <input
                     type="number"
                     min="0"
                     max="100"
                     value={oppForm.probability}
                     onChange={(e) => setOppForm({ ...oppForm, probability: e.target.value })}
-                    style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                    className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-rose-500"
                   />
                 </div>
               </div>
-              <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Expected Close Date *</label>
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Expected Close Date *</label>
                 <input
                   type="date"
                   value={oppForm.expected_close_date}
                   onChange={(e) => setOppForm({ ...oppForm, expected_close_date: e.target.value })}
-                  style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                  className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-rose-500"
                 />
               </div>
             </div>
-            <div style={{ padding: '20px', borderTop: '1px solid #e5e7eb', display: 'flex', justifyContent: 'flex-end', gap: '12px', position: 'sticky', bottom: 0, backgroundColor: 'white' }}>
+            <div className="p-6 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3 sticky bottom-0 bg-white dark:bg-gray-800 rounded-b-2xl">
               <button
                 onClick={() => setShowOppModal(false)}
-                style={{ padding: '8px 16px', border: '1px solid #d1d5db', borderRadius: '6px', fontWeight: 600, cursor: 'pointer', background: 'white' }}
+                className="px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-semibold hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSaveOpportunity}
-                style={{ padding: '8px 16px', backgroundColor: '#2563eb', color: 'white', border: 'none', borderRadius: '6px', fontWeight: 600, cursor: 'pointer' }}
+                className="px-6 py-3 bg-gradient-to-r from-rose-500 to-pink-500 text-white rounded-xl font-semibold shadow-lg shadow-rose-500/30 hover:shadow-xl hover:shadow-rose-500/40 transition-all"
               >
                 {editingOpp ? 'Update' : 'Create'}
               </button>
@@ -896,92 +911,98 @@ const CRMDashboard: React.FC = () => {
 
       {/* CUSTOMER MODAL */}
       {showCustomerModal && (
-        <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}>
-          <div style={{ backgroundColor: 'white', borderRadius: '8px', width: '600px', maxHeight: '90vh', overflow: 'auto' }}>
-            <div style={{ padding: '20px', borderBottom: '1px solid #e5e7eb', position: 'sticky', top: 0, backgroundColor: 'white', zIndex: 10 }}>
-              <h2 style={{ fontSize: '20px', fontWeight: 'bold' }}>{editingCustomer ? 'Edit Customer' : 'New Customer'}</h2>
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl w-full max-w-xl max-h-[90vh] overflow-auto shadow-2xl">
+            <div className="p-6 border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-gradient-to-r from-rose-500 to-pink-500 rounded-t-2xl">
+              <h2 className="text-xl font-bold text-white flex items-center gap-3">
+                <Building2 className="h-6 w-6" />
+                {editingCustomer ? 'Edit Customer' : 'New Customer'}
+              </h2>
             </div>
-            <div style={{ padding: '20px' }}>
-              <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Customer Name *</label>
+            <div className="p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Customer Name *</label>
                 <input
                   type="text"
                   value={customerForm.customer_name}
                   onChange={(e) => setCustomerForm({ ...customerForm, customer_name: e.target.value })}
-                  style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                  className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-rose-500"
                 />
               </div>
-              <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Contact Person *</label>
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Contact Person *</label>
                 <input
                   type="text"
                   value={customerForm.contact_person}
                   onChange={(e) => setCustomerForm({ ...customerForm, contact_person: e.target.value })}
-                  style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                  className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-rose-500"
                 />
               </div>
-              <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Email *</label>
-                <input
-                  type="email"
-                  value={customerForm.email}
-                  onChange={(e) => setCustomerForm({ ...customerForm, email: e.target.value })}
-                  style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
-                />
-              </div>
-              <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Phone</label>
-                <input
-                  type="text"
-                  value={customerForm.phone}
-                  onChange={(e) => setCustomerForm({ ...customerForm, phone: e.target.value })}
-                  style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
-                />
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>BBBEE Level</label>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Email *</label>
+                  <input
+                    type="email"
+                    value={customerForm.email}
+                    onChange={(e) => setCustomerForm({ ...customerForm, email: e.target.value })}
+                    className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-rose-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Phone</label>
+                  <input
+                    type="text"
+                    value={customerForm.phone}
+                    onChange={(e) => setCustomerForm({ ...customerForm, phone: e.target.value })}
+                    className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-rose-500"
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">BBBEE Level</label>
                   <input
                     type="number"
                     min="1"
                     max="8"
                     value={customerForm.bbbee_level}
                     onChange={(e) => setCustomerForm({ ...customerForm, bbbee_level: e.target.value })}
-                    style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                    className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-rose-500"
                   />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Credit Limit (ZAR) *</label>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Credit Limit (ZAR) *</label>
                   <input
                     type="number"
                     step="0.01"
                     value={customerForm.credit_limit}
                     onChange={(e) => setCustomerForm({ ...customerForm, credit_limit: e.target.value })}
-                    style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                    className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-rose-500"
                   />
                 </div>
               </div>
-              <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+              <div>
+                <label className="flex items-center gap-3 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={customerForm.is_active}
                     onChange={(e) => setCustomerForm({ ...customerForm, is_active: e.target.checked })}
+                    className="w-5 h-5 rounded border-gray-300 text-rose-500 focus:ring-rose-500"
                   />
-                  <span style={{ fontSize: '14px', fontWeight: 600 }}>Active</span>
+                  <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">Active</span>
                 </label>
               </div>
             </div>
-            <div style={{ padding: '20px', borderTop: '1px solid #e5e7eb', display: 'flex', justifyContent: 'flex-end', gap: '12px', position: 'sticky', bottom: 0, backgroundColor: 'white' }}>
+            <div className="p-6 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3 sticky bottom-0 bg-white dark:bg-gray-800 rounded-b-2xl">
               <button
                 onClick={() => setShowCustomerModal(false)}
-                style={{ padding: '8px 16px', border: '1px solid #d1d5db', borderRadius: '6px', fontWeight: 600, cursor: 'pointer', background: 'white' }}
+                className="px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-semibold hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSaveCustomer}
-                style={{ padding: '8px 16px', backgroundColor: '#2563eb', color: 'white', border: 'none', borderRadius: '6px', fontWeight: 600, cursor: 'pointer' }}
+                className="px-6 py-3 bg-gradient-to-r from-rose-500 to-pink-500 text-white rounded-xl font-semibold shadow-lg shadow-rose-500/30 hover:shadow-xl hover:shadow-rose-500/40 transition-all"
               >
                 {editingCustomer ? 'Update' : 'Create'}
               </button>

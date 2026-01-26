@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import api from '../../lib/api';
 import { LineItemsTable, LineItem } from '../../components/LineItemsTable';
 import { ConfirmDialog } from '../../components/ConfirmDialog';
-import { Plus, Search, Edit, Trash2, Send, DollarSign, FileText, X } from 'lucide-react';
+import { Plus, Search, Edit, Trash2, Send, DollarSign, FileText, X, RefreshCw, TrendingUp, Clock, CheckCircle, AlertCircle } from 'lucide-react';
 
 interface Invoice {
   id: string;
@@ -60,7 +60,7 @@ export default function Invoices() {
   const loadInvoices = async () => {
     try {
       setLoading(true);
-      const params: any = {};
+      const params: Record<string, string> = {};
       if (searchTerm) params.search = searchTerm;
       if (statusFilter) params.status = statusFilter;
       
@@ -68,9 +68,10 @@ export default function Invoices() {
       const data = response.data?.data || response.data || [];
       setInvoices(Array.isArray(data) ? data : []);
       setError(null);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error loading invoices:', err);
-      setError(err.response?.data?.detail || 'Failed to load invoices');
+      const error = err as { response?: { data?: { detail?: string } } };
+      setError(error.response?.data?.detail || 'Failed to load invoices');
     } finally {
       setLoading(false);
     }
@@ -124,9 +125,10 @@ export default function Invoices() {
       await api.delete(`/erp/order-to-cash/invoices/${selectedInvoice.id}`);
       loadInvoices();
       setSelectedInvoice(null);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error deleting invoice:', err);
-      setError(err.response?.data?.detail || 'Failed to delete invoice');
+      const error = err as { response?: { data?: { detail?: string } } };
+      setError(error.response?.data?.detail || 'Failed to delete invoice');
     }
   };
 
@@ -168,9 +170,10 @@ export default function Invoices() {
       setShowEditModal(false);
       setSelectedInvoice(null);
       setError(null);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error saving invoice:', err);
-      setError(err.response?.data?.detail || 'Failed to save invoice');
+      const error = err as { response?: { data?: { detail?: string } } };
+      setError(error.response?.data?.detail || 'Failed to save invoice');
     }
   };
 
@@ -188,9 +191,10 @@ export default function Invoices() {
       loadInvoices();
       setShowPostDialog(false);
       setSelectedInvoice(null);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error posting invoice:', err);
-      setError(err.response?.data?.detail || 'Failed to post invoice');
+      const error = err as { response?: { data?: { detail?: string } } };
+      setError(error.response?.data?.detail || 'Failed to post invoice');
     }
   };
 
@@ -199,22 +203,30 @@ export default function Invoices() {
       await api.post(`/erp/order-to-cash/invoices/${invoice.id}/send`);
       alert(`Invoice sent to ${invoice.customer_email}!`);
       loadInvoices();
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error sending invoice:', err);
-      setError(err.response?.data?.detail || 'Failed to send invoice');
+      const error = err as { response?: { data?: { detail?: string } } };
+      setError(error.response?.data?.detail || 'Failed to send invoice');
     }
   };
 
-  const getStatusColor = (status: string) => {
-    const colors: Record<string, string> = {
-      draft: '#6b7280',
-      posted: '#3b82f6',
-      sent: '#8b5cf6',
-      paid: '#10b981',
-      overdue: '#ef4444',
-      cancelled: '#6b7280'
+  const getStatusConfig = (status: string) => {
+    const configs: Record<string, { bg: string; text: string; border: string }> = {
+      draft: { bg: 'bg-gray-100 dark:bg-gray-800', text: 'text-gray-700 dark:text-gray-300', border: 'border-gray-200 dark:border-gray-700' },
+      posted: { bg: 'bg-blue-100 dark:bg-blue-900/30', text: 'text-blue-700 dark:text-blue-300', border: 'border-blue-200 dark:border-blue-800' },
+      sent: { bg: 'bg-purple-100 dark:bg-purple-900/30', text: 'text-purple-700 dark:text-purple-300', border: 'border-purple-200 dark:border-purple-800' },
+      paid: { bg: 'bg-green-100 dark:bg-green-900/30', text: 'text-green-700 dark:text-green-300', border: 'border-green-200 dark:border-green-800' },
+      overdue: { bg: 'bg-red-100 dark:bg-red-900/30', text: 'text-red-700 dark:text-red-300', border: 'border-red-200 dark:border-red-800' },
+      cancelled: { bg: 'bg-gray-100 dark:bg-gray-800', text: 'text-gray-500 dark:text-gray-400', border: 'border-gray-200 dark:border-gray-700' }
     };
-    return colors[status] || '#6b7280';
+    return configs[status] || configs.draft;
+  };
+
+  const stats = {
+    total: invoices.length,
+    draft: invoices.filter(i => i.status === 'draft').length,
+    paid: invoices.filter(i => i.status === 'paid').length,
+    outstandingValue: invoices.filter(i => i.status !== 'paid' && i.status !== 'cancelled').reduce((sum, i) => sum + (i.total_amount - (i.amount_paid || 0)), 0)
   };
 
   const renderFormModal = (isEdit: boolean) => {
@@ -224,222 +236,80 @@ export default function Invoices() {
     if (!isOpen) return null;
 
     return (
-      <div
-        style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background: 'rgba(0, 0, 0, 0.5)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 1000,
-          overflow: 'auto'
-        }}
-        onClick={onClose}
-      >
-        <div
-          onClick={(e) => e.stopPropagation()}
-          style={{
-            background: 'white',
-            borderRadius: '0.5rem',
-            boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)',
-            maxWidth: '1200px',
-            width: '95%',
-            maxHeight: '95vh',
-            overflow: 'auto',
-            margin: '2rem'
-          }}
-        >
-          <div style={{
-            padding: '1.5rem',
-            borderBottom: '1px solid #e5e7eb',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            position: 'sticky',
-            top: 0,
-            background: 'white',
-            zIndex: 10
-          }}>
-            <h2 style={{ fontSize: '1.25rem', fontWeight: '600', margin: 0 }}>
-              {isEdit ? 'Edit Invoice' : 'Create Invoice'}
-            </h2>
-            <button
-              onClick={onClose}
-              style={{
-                padding: '0.25rem',
-                background: 'transparent',
-                border: 'none',
-                color: '#6b7280',
-                cursor: 'pointer'
-              }}
-            >
-              <X size={24} />
-            </button>
+      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
+        <div onClick={(e) => e.stopPropagation()} className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden">
+          <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-white/20 rounded-lg"><FileText className="h-6 w-6" /></div>
+                <div>
+                  <h2 className="text-xl font-semibold">{isEdit ? 'Edit Invoice' : 'Create New Invoice'}</h2>
+                  <p className="text-white/80 text-sm">Fill in the details below</p>
+                </div>
+              </div>
+              <button onClick={onClose} className="p-2 hover:bg-white/20 rounded-lg transition-colors"><X className="h-5 w-5" /></button>
+            </div>
           </div>
 
-          <form onSubmit={handleSubmit}>
-            <div style={{ padding: '1.5rem' }}>
+          <form onSubmit={handleSubmit} className="overflow-y-auto max-h-[calc(90vh-180px)]">
+            <div className="p-6 space-y-6">
               {error && (
-                <div style={{
-                  padding: '1rem',
-                  background: '#fee2e2',
-                  border: '1px solid #fecaca',
-                  borderRadius: '0.375rem',
-                  color: '#991b1b',
-                  marginBottom: '1rem'
-                }}>
-                  {error}
+                <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl flex items-center gap-3">
+                  <AlertCircle className="h-5 w-5 text-red-500 flex-shrink-0" />
+                  <p className="text-red-700 dark:text-red-300">{error}</p>
                 </div>
               )}
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>
-                    Customer Name *
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.customer_name || ''}
-                    onChange={(e) => setFormData({ ...formData, customer_name: e.target.value })}
-                    required
-                    style={{
-                      width: '100%',
-                      padding: '0.5rem',
-                      border: '1px solid #d1d5db',
-                      borderRadius: '0.375rem',
-                      fontSize: '0.875rem'
-                    }}
-                  />
-                </div>
-
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>
-                    Customer Email *
-                  </label>
-                  <input
-                    type="email"
-                    value={formData.customer_email || ''}
-                    onChange={(e) => setFormData({ ...formData, customer_email: e.target.value })}
-                    required
-                    style={{
-                      width: '100%',
-                      padding: '0.5rem',
-                      border: '1px solid #d1d5db',
-                      borderRadius: '0.375rem',
-                      fontSize: '0.875rem'
-                    }}
-                  />
-                </div>
-
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>
-                    Invoice Date *
-                  </label>
-                  <input
-                    type="date"
-                    value={formData.invoice_date || ''}
-                    onChange={(e) => setFormData({ ...formData, invoice_date: e.target.value })}
-                    required
-                    style={{
-                      width: '100%',
-                      padding: '0.5rem',
-                      border: '1px solid #d1d5db',
-                      borderRadius: '0.375rem',
-                      fontSize: '0.875rem'
-                    }}
-                  />
-                </div>
-
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>
-                    Due Date
-                  </label>
-                  <input
-                    type="date"
-                    value={formData.due_date || ''}
-                    onChange={(e) => setFormData({ ...formData, due_date: e.target.value })}
-                    style={{
-                      width: '100%',
-                      padding: '0.5rem',
-                      border: '1px solid #d1d5db',
-                      borderRadius: '0.375rem',
-                      fontSize: '0.875rem'
-                    }}
-                  />
+              <div className="bg-gray-50 dark:bg-gray-900/50 rounded-xl p-5">
+                <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4 flex items-center gap-2">
+                  <span className="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 flex items-center justify-center text-xs">1</span>
+                  Customer Information
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Customer Name *</label>
+                    <input type="text" value={formData.customer_name || ''} onChange={(e) => setFormData({ ...formData, customer_name: e.target.value })} required className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" placeholder="Enter customer name" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Customer Email *</label>
+                    <input type="email" value={formData.customer_email || ''} onChange={(e) => setFormData({ ...formData, customer_email: e.target.value })} required className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" placeholder="customer@example.com" />
+                  </div>
                 </div>
               </div>
 
-              <div style={{ marginBottom: '1.5rem' }}>
-                <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>
-                  Notes
-                </label>
-                <textarea
-                  value={formData.notes || ''}
-                  onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                  rows={3}
-                  style={{
-                    width: '100%',
-                    padding: '0.5rem',
-                    border: '1px solid #d1d5db',
-                    borderRadius: '0.375rem',
-                    fontSize: '0.875rem',
-                    resize: 'vertical'
-                  }}
-                />
+              <div className="bg-gray-50 dark:bg-gray-900/50 rounded-xl p-5">
+                <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4 flex items-center gap-2">
+                  <span className="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 flex items-center justify-center text-xs">2</span>
+                  Invoice Details
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Invoice Date *</label>
+                    <input type="date" value={formData.invoice_date || ''} onChange={(e) => setFormData({ ...formData, invoice_date: e.target.value })} required className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Due Date</label>
+                    <input type="date" value={formData.due_date || ''} onChange={(e) => setFormData({ ...formData, due_date: e.target.value })} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" />
+                  </div>
+                </div>
+                <div className="mt-4">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Notes</label>
+                  <textarea value={formData.notes || ''} onChange={(e) => setFormData({ ...formData, notes: e.target.value })} rows={3} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none" placeholder="Add any notes or special instructions..." />
+                </div>
               </div>
 
-              <LineItemsTable
-                items={lineItems}
-                onChange={setLineItems}
-                products={products}
-              />
+              <div className="bg-gray-50 dark:bg-gray-900/50 rounded-xl p-5">
+                <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4 flex items-center gap-2">
+                  <span className="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 flex items-center justify-center text-xs">3</span>
+                  Line Items
+                </h3>
+                <LineItemsTable items={lineItems} onChange={setLineItems} products={products} />
+              </div>
             </div>
 
-            <div style={{
-              padding: '1.5rem',
-              borderTop: '1px solid #e5e7eb',
-              display: 'flex',
-              gap: '0.75rem',
-              justifyContent: 'flex-end',
-              position: 'sticky',
-              bottom: 0,
-              background: 'white'
-            }}>
-              <button
-                type="button"
-                onClick={onClose}
-                style={{
-                  padding: '0.5rem 1rem',
-                  background: 'white',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '0.375rem',
-                  fontSize: '0.875rem',
-                  fontWeight: '500',
-                  color: '#374151',
-                  cursor: 'pointer'
-                }}
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                style={{
-                  padding: '0.5rem 1rem',
-                  background: '#2563eb',
-                  border: 'none',
-                  borderRadius: '0.375rem',
-                  fontSize: '0.875rem',
-                  fontWeight: '500',
-                  color: 'white',
-                  cursor: 'pointer'
-                }}
-              >
-                {isEdit ? 'Update Invoice' : 'Create Invoice'}
-              </button>
+            <div className="p-6 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 flex justify-end gap-3">
+              <button type="button" onClick={onClose} className="px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">Cancel</button>
+              <button type="submit" className="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-medium hover:from-blue-700 hover:to-indigo-700 transition-all shadow-lg shadow-blue-500/30">{isEdit ? 'Update Invoice' : 'Create Invoice'}</button>
             </div>
           </form>
         </div>
@@ -448,80 +318,58 @@ export default function Invoices() {
   };
 
   return (
-    <div style={{ padding: '2rem' }}>
-      <div style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div>
-          <h1 style={{ fontSize: '1.875rem', fontWeight: '700', marginBottom: '0.5rem' }}>Invoices</h1>
-          <p style={{ color: '#6b7280' }}>Manage customer invoices and track payments</p>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 p-6">
+      <div className="max-w-7xl mx-auto space-y-6">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Invoices</h1>
+            <p className="text-gray-500 dark:text-gray-400 mt-1">Manage customer invoices and track payments</p>
+          </div>
+          <div className="flex items-center gap-3">
+            <button onClick={() => loadInvoices()} className="p-3 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-200 dark:border-gray-700">
+              <RefreshCw className={`h-5 w-5 text-gray-600 dark:text-gray-400 ${loading ? 'animate-spin' : ''}`} />
+            </button>
+            <button onClick={handleCreate} className="flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-medium hover:from-blue-700 hover:to-indigo-700 transition-all shadow-lg shadow-blue-500/30">
+              <Plus className="h-5 w-5" />New Invoice
+            </button>
+          </div>
         </div>
-        <button
-          onClick={handleCreate}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-            padding: '0.75rem 1.5rem',
-            background: '#2563eb',
-            color: 'white',
-            border: 'none',
-            borderRadius: '0.5rem',
-            fontSize: '0.875rem',
-            fontWeight: '600',
-            cursor: 'pointer'
-          }}
-        >
-          <Plus size={20} />
-          New Invoice
-        </button>
-      </div>
 
-      <div style={{
-        background: 'white',
-        borderRadius: '0.5rem',
-        boxShadow: '0 1px 3px 0 rgba(0,0,0,0.1)',
-        overflow: 'hidden'
-      }}>
-        <div style={{ padding: '1.5rem', borderBottom: '1px solid #e5e7eb' }}>
-          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-            <div style={{ flex: '1', minWidth: '250px', position: 'relative' }}>
-              <Search
-                size={20}
-                style={{
-                  position: 'absolute',
-                  left: '0.75rem',
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  color: '#9ca3af'
-                }}
-              />
-              <input
-                type="text"
-                placeholder="Search by customer, invoice number..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                style={{
-                  width: '100%',
-                  padding: '0.5rem 0.75rem 0.5rem 2.5rem',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '0.375rem',
-                  fontSize: '0.875rem'
-                }}
-              />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg shadow-blue-500/30"><FileText className="h-6 w-6 text-white" /></div>
+              <div><p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.total}</p><p className="text-sm text-gray-500 dark:text-gray-400">Total Invoices</p></div>
             </div>
+          </div>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl shadow-lg shadow-amber-500/30"><Clock className="h-6 w-6 text-white" /></div>
+              <div><p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.draft}</p><p className="text-sm text-gray-500 dark:text-gray-400">Draft</p></div>
+            </div>
+          </div>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg shadow-green-500/30"><CheckCircle className="h-6 w-6 text-white" /></div>
+              <div><p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.paid}</p><p className="text-sm text-gray-500 dark:text-gray-400">Paid</p></div>
+            </div>
+          </div>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-gradient-to-br from-purple-500 to-violet-500 rounded-xl shadow-lg shadow-purple-500/30"><TrendingUp className="h-6 w-6 text-white" /></div>
+              <div><p className="text-2xl font-bold text-gray-900 dark:text-white">R {stats.outstandingValue.toLocaleString()}</p><p className="text-sm text-gray-500 dark:text-gray-400">Outstanding</p></div>
+            </div>
+          </div>
+        </div>
 
-            <div style={{ minWidth: '200px' }}>
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                style={{
-                  width: '100%',
-                  padding: '0.5rem 0.75rem',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '0.375rem',
-                  fontSize: '0.875rem',
-                  background: 'white'
-                }}
-              >
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+          <div className="p-5 border-b border-gray-100 dark:border-gray-700">
+            <div className="flex flex-col md:flex-row gap-4">
+              <div className="flex-1 relative">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <input type="text" placeholder="Search by customer, invoice number..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-12 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" />
+              </div>
+              <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all min-w-[180px]">
                 <option value="">All Statuses</option>
                 <option value="draft">Draft</option>
                 <option value="posted">Posted</option>
@@ -531,195 +379,82 @@ export default function Invoices() {
               </select>
             </div>
           </div>
-        </div>
 
-        {loading ? (
-          <div style={{ padding: '3rem', textAlign: 'center', color: '#6b7280' }}>
-            Loading invoices...
-          </div>
-        ) : invoices.length === 0 ? (
-          <div style={{ padding: '3rem', textAlign: 'center' }}>
-            <FileText size={48} style={{ margin: '0 auto 1rem', color: '#d1d5db' }} />
-            <h3 style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '0.5rem' }}>No invoices found</h3>
-            <p style={{ color: '#6b7280', marginBottom: '1.5rem' }}>
-              {searchTerm || statusFilter ? 'Try adjusting your filters' : 'Get started by creating your first invoice'}
-            </p>
-            {!searchTerm && !statusFilter && (
-              <button
-                onClick={handleCreate}
-                style={{
-                  padding: '0.5rem 1rem',
-                  background: '#2563eb',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '0.375rem',
-                  fontSize: '0.875rem',
-                  fontWeight: '500',
-                  cursor: 'pointer'
-                }}
-              >
-                Create First Invoice
-              </button>
-            )}
-          </div>
-        ) : (
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-              <thead style={{ background: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
-                <tr>
-                  <th style={{ padding: '0.75rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280' }}>Invoice #</th>
-                  <th style={{ padding: '0.75rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280' }}>Customer</th>
-                  <th style={{ padding: '0.75rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280' }}>Invoice Date</th>
-                  <th style={{ padding: '0.75rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280' }}>Due Date</th>
-                  <th style={{ padding: '0.75rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280' }}>Status</th>
-                  <th style={{ padding: '0.75rem', textAlign: 'right', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280' }}>Total</th>
-                  <th style={{ padding: '0.75rem', textAlign: 'right', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280' }}>Balance</th>
-                  <th style={{ padding: '0.75rem', textAlign: 'right', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280' }}>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {invoices.map((invoice) => {
-                  const balance = invoice.total_amount - (invoice.amount_paid || 0);
-                  return (
-                    <tr key={invoice.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
-                      <td style={{ padding: '1rem', fontSize: '0.875rem', fontWeight: '500' }}>{invoice.invoice_number}</td>
-                      <td style={{ padding: '1rem' }}>
-                        <div style={{ fontSize: '0.875rem', fontWeight: '500' }}>{invoice.customer_name}</div>
-                        {invoice.customer_email && (
-                          <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>{invoice.customer_email}</div>
-                        )}
-                      </td>
-                      <td style={{ padding: '1rem', fontSize: '0.875rem' }}>{new Date(invoice.invoice_date).toLocaleDateString()}</td>
-                      <td style={{ padding: '1rem', fontSize: '0.875rem' }}>
-                        {invoice.due_date ? new Date(invoice.due_date).toLocaleDateString() : '-'}
-                      </td>
-                      <td style={{ padding: '1rem' }}>
-                        <span style={{
-                          padding: '0.25rem 0.75rem',
-                          borderRadius: '9999px',
-                          fontSize: '0.75rem',
-                          fontWeight: '500',
-                          background: `${getStatusColor(invoice.status)}20`,
-                          color: getStatusColor(invoice.status)
-                        }}>
-                          {invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1)}
-                        </span>
-                      </td>
-                      <td style={{ padding: '1rem', fontSize: '0.875rem', fontWeight: '600', textAlign: 'right' }}>
-                        R {invoice.total_amount.toFixed(2)}
-                      </td>
-                      <td style={{ padding: '1rem', fontSize: '0.875rem', fontWeight: '600', textAlign: 'right', color: balance > 0 ? '#ef4444' : '#10b981' }}>
-                        R {balance.toFixed(2)}
-                      </td>
-                      <td style={{ padding: '1rem' }}>
-                        <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
-                          {invoice.status === 'draft' && (
-                            <>
-                              <button
-                                onClick={() => handleEdit(invoice)}
-                                title="Edit"
-                                style={{
-                                  padding: '0.5rem',
-                                  background: 'transparent',
-                                  border: '1px solid #d1d5db',
-                                  borderRadius: '0.375rem',
-                                  color: '#2563eb',
-                                  cursor: 'pointer'
-                                }}
-                              >
-                                <Edit size={16} />
-                              </button>
-                              <button
-                                onClick={() => handlePost(invoice)}
-                                title="Post to AR"
-                                style={{
-                                  padding: '0.5rem 1rem',
-                                  background: '#10b981',
-                                  border: 'none',
-                                  borderRadius: '0.375rem',
-                                  color: 'white',
-                                  fontSize: '0.75rem',
-                                  fontWeight: '500',
-                                  cursor: 'pointer',
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  gap: '0.25rem'
-                                }}
-                              >
-                                <DollarSign size={14} />
-                                Post
-                              </button>
-                              <button
-                                onClick={() => handleDelete(invoice)}
-                                title="Delete"
-                                style={{
-                                  padding: '0.5rem',
-                                  background: 'transparent',
-                                  border: '1px solid #d1d5db',
-                                  borderRadius: '0.375rem',
-                                  color: '#ef4444',
-                                  cursor: 'pointer'
-                                }}
-                              >
-                                <Trash2 size={16} />
-                              </button>
-                            </>
-                          )}
-                          {(invoice.status === 'posted' || invoice.status === 'sent') && invoice.customer_email && (
-                            <button
-                              onClick={() => handleSend(invoice)}
-                              title="Send to Customer"
-                              style={{
-                                padding: '0.5rem 1rem',
-                                background: '#8b5cf6',
-                                border: 'none',
-                                borderRadius: '0.375rem',
-                                color: 'white',
-                                fontSize: '0.75rem',
-                                fontWeight: '500',
-                                cursor: 'pointer',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '0.25rem'
-                              }}
-                            >
-                              <Send size={14} />
-                              Send
-                            </button>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        )}
+          {loading ? (
+            <div className="p-12 text-center">
+              <RefreshCw className="h-8 w-8 animate-spin text-blue-500 mx-auto mb-4" />
+              <p className="text-gray-500 dark:text-gray-400">Loading invoices...</p>
+            </div>
+          ) : invoices.length === 0 ? (
+            <div className="p-12 text-center">
+              <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-2xl flex items-center justify-center mx-auto mb-4"><FileText className="h-8 w-8 text-gray-400" /></div>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No invoices found</h3>
+              <p className="text-gray-500 dark:text-gray-400 mb-6">{searchTerm || statusFilter ? 'Try adjusting your filters' : 'Get started by creating your first invoice'}</p>
+              {!searchTerm && !statusFilter && (
+                <button onClick={handleCreate} className="px-5 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-medium hover:from-blue-700 hover:to-indigo-700 transition-all">Create First Invoice</button>
+              )}
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-50 dark:bg-gray-900/50">
+                  <tr>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Invoice #</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Customer</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Date</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Due Date</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
+                    <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Total</th>
+                    <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Balance</th>
+                    <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
+                  {invoices.map((invoice) => {
+                    const balance = invoice.total_amount - (invoice.amount_paid || 0);
+                    const statusConfig = getStatusConfig(invoice.status);
+                    return (
+                      <tr key={invoice.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                        <td className="px-6 py-4"><span className="font-semibold text-gray-900 dark:text-white">{invoice.invoice_number}</span></td>
+                        <td className="px-6 py-4">
+                          <div><p className="font-medium text-gray-900 dark:text-white">{invoice.customer_name}</p>{invoice.customer_email && (<p className="text-sm text-gray-500 dark:text-gray-400">{invoice.customer_email}</p>)}</div>
+                        </td>
+                        <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{new Date(invoice.invoice_date).toLocaleDateString()}</td>
+                        <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{invoice.due_date ? new Date(invoice.due_date).toLocaleDateString() : '-'}</td>
+                        <td className="px-6 py-4">
+                          <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${statusConfig.bg} ${statusConfig.text} border ${statusConfig.border}`}>{invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1)}</span>
+                        </td>
+                        <td className="px-6 py-4 text-right font-semibold text-gray-900 dark:text-white">R {invoice.total_amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
+                        <td className={`px-6 py-4 text-right font-semibold ${balance > 0 ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'}`}>R {balance.toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center justify-end gap-2">
+                            {invoice.status === 'draft' && (
+                              <>
+                                <button onClick={() => handleEdit(invoice)} title="Edit" className="p-2 hover:bg-blue-100 dark:hover:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg transition-colors"><Edit className="h-4 w-4" /></button>
+                                <button onClick={() => handlePost(invoice)} title="Post to AR" className="flex items-center gap-1 px-3 py-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-lg text-xs font-medium hover:from-green-600 hover:to-emerald-600 transition-all"><DollarSign className="h-3.5 w-3.5" />Post</button>
+                                <button onClick={() => handleDelete(invoice)} title="Delete" className="p-2 hover:bg-red-100 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg transition-colors"><Trash2 className="h-4 w-4" /></button>
+                              </>
+                            )}
+                            {(invoice.status === 'posted' || invoice.status === 'sent') && invoice.customer_email && (
+                              <button onClick={() => handleSend(invoice)} title="Send to Customer" className="flex items-center gap-1 px-3 py-2 bg-gradient-to-r from-purple-500 to-violet-500 text-white rounded-lg text-xs font-medium hover:from-purple-600 hover:to-violet-600 transition-all"><Send className="h-3.5 w-3.5" />Send</button>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
       </div>
 
       {renderFormModal(false)}
       {renderFormModal(true)}
 
-      <ConfirmDialog
-        isOpen={showDeleteDialog}
-        onClose={() => setShowDeleteDialog(false)}
-        onConfirm={confirmDelete}
-        title="Delete Invoice"
-        message={`Are you sure you want to delete invoice ${selectedInvoice?.invoice_number}? This action cannot be undone.`}
-        confirmText="Delete"
-        variant="danger"
-      />
-
-      <ConfirmDialog
-        isOpen={showPostDialog}
-        onClose={() => setShowPostDialog(false)}
-        onConfirm={confirmPost}
-        title="Post Invoice"
-        message={`Post invoice ${selectedInvoice?.invoice_number} to Accounts Receivable? This will make it official and cannot be undone.`}
-        confirmText="Post to AR"
-        variant="info"
-      />
+      <ConfirmDialog isOpen={showDeleteDialog} onClose={() => setShowDeleteDialog(false)} onConfirm={confirmDelete} title="Delete Invoice" message={`Are you sure you want to delete invoice ${selectedInvoice?.invoice_number}? This action cannot be undone.`} confirmText="Delete" variant="danger" />
+      <ConfirmDialog isOpen={showPostDialog} onClose={() => setShowPostDialog(false)} onConfirm={confirmPost} title="Post Invoice" message={`Post invoice ${selectedInvoice?.invoice_number} to Accounts Receivable? This will make it official and cannot be undone.`} confirmText="Post to AR" variant="info" />
     </div>
   );
 }

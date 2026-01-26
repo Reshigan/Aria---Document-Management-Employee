@@ -80,27 +80,18 @@ export const ExecutiveDashboard: React.FC = () => {
 
   // Show loading skeleton while fetching data
   const LoadingSkeleton = () => (
-    <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem'}}>
-      <Loader2 className="animate-spin" size={24} style={{marginRight: '0.5rem'}} />
-      <span>Loading dashboard data...</span>
+    <div className="flex items-center justify-center p-8">
+      <Loader2 className="animate-spin h-6 w-6 mr-2 text-indigo-500" />
+      <span className="text-gray-600 dark:text-gray-400">Loading dashboard data...</span>
     </div>
   );
 
   // Error banner with retry
   const ErrorBanner = () => (
-    <div style={{
-      backgroundColor: 'var(--danger-50)', 
-      border: '1px solid var(--danger-200)', 
-      borderRadius: '0.5rem', 
-      padding: '1rem', 
-      marginBottom: '1.5rem',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'space-between'
-    }}>
-      <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
-        <AlertCircle size={20} color="var(--danger)" />
-        <span style={{color: 'var(--danger)'}}>{error}</span>
+    <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-4 mb-6 flex items-center justify-between">
+      <div className="flex items-center gap-2">
+        <AlertCircle className="h-5 w-5 text-red-500" />
+        <span className="text-red-600 dark:text-red-400">{error}</span>
       </div>
       <Button size="sm" onClick={() => { setLoading(true); fetchDashboardData(); }}>
         Retry
@@ -109,11 +100,16 @@ export const ExecutiveDashboard: React.FC = () => {
   );
 
   return (
-    <div className="executive-dashboard">
-      <div className="dashboard-header">
-        <div>
-          <h1 style={{fontSize: '1.875rem', fontWeight: 700, marginBottom: '0.5rem'}}>Executive Dashboard</h1>
-          <p style={{color: 'var(--gray-600)'}}>Real-time financial overview powered by {metrics?.active_bots || 58} AI automation agents</p>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6">
+      <div className="mb-8">
+        <div className="flex items-center gap-3 mb-2">
+          <div className="p-3 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl shadow-lg shadow-indigo-500/30">
+            <TrendingUp className="h-8 w-8 text-white" />
+          </div>
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Executive Dashboard</h1>
+            <p className="text-gray-600 dark:text-gray-400">Real-time financial overview powered by {metrics?.active_bots || 58} AI automation agents</p>
+          </div>
         </div>
       </div>
 
@@ -123,7 +119,7 @@ export const ExecutiveDashboard: React.FC = () => {
         <LoadingSkeleton />
       ) : (
         <>
-          <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1.5rem', marginBottom: '1.5rem'}}>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
             <div data-testid="metric-revenue">
               <StatCard
                 title="Total Revenue (YTD)"
@@ -162,15 +158,15 @@ export const ExecutiveDashboard: React.FC = () => {
             />
           </div>
 
-          <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem', marginBottom: '1.5rem'}}>
-            <Card data-testid="revenue-chart">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            <Card data-testid="revenue-chart" className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
               <CardHeader><CardTitle>Accounts Payable</CardTitle></CardHeader>
               <CardBody>
-                <div style={{fontSize: '2rem', fontWeight: 700, marginBottom: '1rem'}}>
+                <div className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
                   {formatCurrency(metrics?.ap_outstanding || 0)}
                 </div>
-                <div style={{fontSize: '0.875rem', color: 'var(--gray-600)', display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
-                  <Bot size={14} />
+                <div className="text-sm text-gray-600 dark:text-gray-400 flex items-center gap-2">
+                  <Bot className="h-4 w-4" />
                   <span>
                     {metrics?.invoices_processed_today > 0 
                       ? `Invoice Reconciliation Agent: ${metrics.invoices_processed_today} invoices processed today`
@@ -180,14 +176,14 @@ export const ExecutiveDashboard: React.FC = () => {
               </CardBody>
             </Card>
 
-            <Card data-testid="expense-chart">
+            <Card data-testid="expense-chart" className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
               <CardHeader><CardTitle>Accounts Receivable</CardTitle></CardHeader>
               <CardBody>
-                <div style={{fontSize: '2rem', fontWeight: 700, marginBottom: '1rem'}}>
+                <div className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
                   {formatCurrency(metrics?.ar_outstanding || 0)}
                 </div>
-                <div style={{fontSize: '0.875rem', color: 'var(--gray-600)', display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
-                  <Bot size={14} />
+                <div className="text-sm text-gray-600 dark:text-gray-400 flex items-center gap-2">
+                  <Bot className="h-4 w-4" />
                   <span>
                     {metrics?.pending_payments > 0 
                       ? `Payment Prediction Agent: ${metrics.pending_payments} payments pending`
@@ -198,45 +194,45 @@ export const ExecutiveDashboard: React.FC = () => {
             </Card>
           </div>
 
-          <Card style={{marginBottom: '1.5rem'}}>
+          <Card className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 mb-6">
             <CardHeader>
-              <CardTitle>🤖 Automation Agents - All {metrics?.active_bots || 58} Active</CardTitle>
+              <CardTitle>Automation Agents - All {metrics?.active_bots || 58} Active</CardTitle>
             </CardHeader>
             <CardBody>
-              <div style={{display: 'flex', gap: '2rem', marginBottom: '1.5rem', padding: '1rem', backgroundColor: 'var(--gray-50)', borderRadius: '0.5rem', flexWrap: 'wrap'}}>
+              <div className="flex flex-wrap gap-8 mb-6 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
                 <div>
-                  <div style={{fontSize: '0.875rem', color: 'var(--gray-600)'}}>Total Agents</div>
-                  <div style={{fontSize: '1.5rem', fontWeight: 700}}>{metrics?.bot_count || 58}</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">Total Agents</div>
+                  <div className="text-2xl font-bold text-gray-900 dark:text-white">{metrics?.bot_count || 58}</div>
                 </div>
                 <div>
-                  <div style={{fontSize: '0.875rem', color: 'var(--gray-600)'}}>Active</div>
-                  <div style={{fontSize: '1.5rem', fontWeight: 700, color: 'var(--success)'}}>{metrics?.active_bots || 58}</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">Active</div>
+                  <div className="text-2xl font-bold text-green-600">{metrics?.active_bots || 58}</div>
                 </div>
                 <div>
-                  <div style={{fontSize: '0.875rem', color: 'var(--gray-600)'}}>Transactions Today</div>
-                  <div style={{fontSize: '1.5rem', fontWeight: 700}}>{metrics?.transactions_today?.toLocaleString() || '0'}</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">Transactions Today</div>
+                  <div className="text-2xl font-bold text-gray-900 dark:text-white">{metrics?.transactions_today?.toLocaleString() || '0'}</div>
                 </div>
                 <div>
-                  <div style={{fontSize: '0.875rem', color: 'var(--gray-600)'}}>Success Rate</div>
-                  <div style={{fontSize: '1.5rem', fontWeight: 700, color: metrics?.success_rate >= 90 ? 'var(--success)' : 'var(--warning)'}}>{metrics?.success_rate || 100}%</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">Success Rate</div>
+                  <div className={`text-2xl font-bold ${metrics?.success_rate >= 90 ? 'text-green-600' : 'text-yellow-600'}`}>{metrics?.success_rate || 100}%</div>
                 </div>
               </div>
 
-              <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1rem'}}>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {agents.length > 0 ? agents.map((agent, index) => (
-                  <div key={index} style={{border: '1px solid var(--gray-200)', borderRadius: '0.5rem', padding: '1rem'}}>
-                    <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '0.75rem'}}>
-                      <Bot size={20} color="var(--primary-600)" />
+                  <div key={index} className="border border-gray-200 dark:border-gray-600 rounded-xl p-4 hover:shadow-md transition-shadow bg-white dark:bg-gray-800">
+                    <div className="flex justify-between mb-3">
+                      <Bot className="h-5 w-5 text-indigo-600" />
                       <Badge variant={agent.status === 'active' ? 'success' : 'default'} size="sm">
                         {agent.status}
                       </Badge>
                     </div>
-                    <h4 style={{fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.875rem'}}>{agent.name}</h4>
-                    <p style={{fontSize: '0.75rem', color: 'var(--gray-600)'}}>{agent.description}</p>
+                    <h4 className="font-semibold text-sm text-gray-900 dark:text-white mb-2">{agent.name}</h4>
+                    <p className="text-xs text-gray-600 dark:text-gray-400">{agent.description}</p>
                   </div>
                 )) : (
-                  <div style={{gridColumn: '1 / -1', textAlign: 'center', padding: '2rem', color: 'var(--gray-500)'}}>
-                    <Bot size={32} style={{marginBottom: '0.5rem', opacity: 0.5}} />
+                  <div className="col-span-full text-center p-8 text-gray-500 dark:text-gray-400">
+                    <Bot className="h-8 w-8 mx-auto mb-2 opacity-50" />
                     <p>No agents configured yet. Visit the Bots page to set up automation.</p>
                   </div>
                 )}

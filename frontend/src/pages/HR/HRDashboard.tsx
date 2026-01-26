@@ -64,175 +64,203 @@ const HRDashboard: React.FC = () => {
 
   const getActivityIcon = (type: string) => {
     switch (type) {
-      case 'hire': return <UserCheck size={16} style={{ color: '#10b981' }} />;
-      case 'termination': return <UserX size={16} style={{ color: '#ef4444' }} />;
-      case 'leave': return <Calendar size={16} style={{ color: '#f59e0b' }} />;
-      case 'promotion': return <Award size={16} style={{ color: '#8b5cf6' }} />;
-      default: return <Users size={16} />;
+      case 'hire': return <UserCheck className="h-4 w-4 text-green-500" />;
+      case 'termination': return <UserX className="h-4 w-4 text-red-500" />;
+      case 'leave': return <Calendar className="h-4 w-4 text-amber-500" />;
+      case 'promotion': return <Award className="h-4 w-4 text-purple-500" />;
+      default: return <Users className="h-4 w-4 text-gray-500" />;
     }
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 p-8">
+        <div className="flex items-center justify-center h-64">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div style={{ padding: '24px' }} data-testid="hr-dashboard">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 p-8" data-testid="hr-dashboard">
       {/* Header */}
-      <div style={{ marginBottom: '24px' }}>
-        <h1 style={{ fontSize: '30px', fontWeight: 'bold', color: '#111827', marginBottom: '8px' }}>
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
+          <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl shadow-lg shadow-blue-500/30">
+            <Users className="h-7 w-7 text-white" />
+          </div>
           Human Resources Dashboard
         </h1>
-        <p style={{ color: '#6b7280' }}>
+        <p className="text-gray-500 dark:text-gray-400 mt-1">
           Manage employees, departments, attendance, and leave requests
         </p>
       </div>
 
       {/* Error Display */}
       {error && (
-        <div style={{ padding: '12px 16px', marginBottom: '16px', backgroundColor: '#fee2e2', border: '1px solid #fecaca', borderRadius: '6px', color: '#991b1b' }}>
+        <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-xl text-red-700 dark:text-red-400">
           {error}
         </div>
       )}
 
       {/* Quick Actions */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '24px' }}>
-        <Link to="/hr/employees" style={{ textDecoration: 'none' }}>
-          <div style={{ backgroundColor: 'white', padding: '20px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', cursor: 'pointer', transition: 'transform 0.2s' }}>
-            <Users size={24} style={{ color: '#2563eb', marginBottom: '8px' }} />
-            <div style={{ fontSize: '14px', fontWeight: 600, color: '#111827' }}>Employees</div>
-            <div style={{ fontSize: '12px', color: '#6b7280' }}>Manage employee records</div>
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <Link to="/hr/employees" className="group">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg hover:border-blue-200 dark:hover:border-blue-800 transition-all">
+            <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl shadow-lg shadow-blue-500/30 w-fit mb-4">
+              <Users className="h-6 w-6 text-white" />
+            </div>
+            <div className="font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">Employees</div>
+            <div className="text-sm text-gray-500 dark:text-gray-400">Manage employee records</div>
           </div>
         </Link>
-        <Link to="/hr/departments" style={{ textDecoration: 'none' }}>
-          <div style={{ backgroundColor: 'white', padding: '20px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', cursor: 'pointer', transition: 'transform 0.2s' }}>
-            <Briefcase size={24} style={{ color: '#10b981', marginBottom: '8px' }} />
-            <div style={{ fontSize: '14px', fontWeight: 600, color: '#111827' }}>Departments</div>
-            <div style={{ fontSize: '12px', color: '#6b7280' }}>Manage departments</div>
+        <Link to="/hr/departments" className="group">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg hover:border-green-200 dark:hover:border-green-800 transition-all">
+            <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg shadow-green-500/30 w-fit mb-4">
+              <Briefcase className="h-6 w-6 text-white" />
+            </div>
+            <div className="font-semibold text-gray-900 dark:text-white group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors">Departments</div>
+            <div className="text-sm text-gray-500 dark:text-gray-400">Manage departments</div>
           </div>
         </Link>
-        <Link to="/hr/attendance" style={{ textDecoration: 'none' }}>
-          <div style={{ backgroundColor: 'white', padding: '20px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', cursor: 'pointer', transition: 'transform 0.2s' }}>
-            <Clock size={24} style={{ color: '#f59e0b', marginBottom: '8px' }} />
-            <div style={{ fontSize: '14px', fontWeight: 600, color: '#111827' }}>Attendance</div>
-            <div style={{ fontSize: '12px', color: '#6b7280' }}>Track attendance</div>
+        <Link to="/hr/attendance" className="group">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg hover:border-amber-200 dark:hover:border-amber-800 transition-all">
+            <div className="p-3 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl shadow-lg shadow-amber-500/30 w-fit mb-4">
+              <Clock className="h-6 w-6 text-white" />
+            </div>
+            <div className="font-semibold text-gray-900 dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">Attendance</div>
+            <div className="text-sm text-gray-500 dark:text-gray-400">Track attendance</div>
           </div>
         </Link>
-        <Link to="/hr/leave" style={{ textDecoration: 'none' }}>
-          <div style={{ backgroundColor: 'white', padding: '20px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', cursor: 'pointer', transition: 'transform 0.2s' }}>
-            <Calendar size={24} style={{ color: '#8b5cf6', marginBottom: '8px' }} />
-            <div style={{ fontSize: '14px', fontWeight: 600, color: '#111827' }}>Leave Management</div>
-            <div style={{ fontSize: '12px', color: '#6b7280' }}>Manage leave requests</div>
+        <Link to="/hr/leave" className="group">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg hover:border-purple-200 dark:hover:border-purple-800 transition-all">
+            <div className="p-3 bg-gradient-to-br from-purple-500 to-violet-500 rounded-xl shadow-lg shadow-purple-500/30 w-fit mb-4">
+              <Calendar className="h-6 w-6 text-white" />
+            </div>
+            <div className="font-semibold text-gray-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">Leave Management</div>
+            <div className="text-sm text-gray-500 dark:text-gray-400">Manage leave requests</div>
           </div>
         </Link>
       </div>
 
       {/* Key Metrics */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '24px' }}>
-        <div style={{ backgroundColor: 'white', padding: '20px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '8px' }}>
-            <div style={{ fontSize: '14px', color: '#6b7280' }}>Total Employees</div>
-            <Users size={20} style={{ color: '#2563eb' }} />
-          </div>
-          <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#111827' }}>{metrics.active_employees}</div>
-          <div style={{ fontSize: '12px', color: '#6b7280', marginTop: '4px' }}>
-            {metrics.total_employees} total (incl. inactive)
-          </div>
-        </div>
-
-        <div style={{ backgroundColor: 'white', padding: '20px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '8px' }}>
-            <div style={{ fontSize: '14px', color: '#6b7280' }}>Departments</div>
-            <Briefcase size={20} style={{ color: '#10b981' }} />
-          </div>
-          <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#111827' }}>{metrics.departments}</div>
-          <div style={{ fontSize: '12px', color: '#6b7280', marginTop: '4px' }}>
-            Active departments
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl shadow-lg shadow-blue-500/30">
+              <Users className="h-6 w-6 text-white" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{metrics.active_employees}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Total Employees</p>
+              <p className="text-xs text-gray-400 dark:text-gray-500">{metrics.total_employees} total (incl. inactive)</p>
+            </div>
           </div>
         </div>
-
-        <div style={{ backgroundColor: 'white', padding: '20px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '8px' }}>
-            <div style={{ fontSize: '14px', color: '#6b7280' }}>Attendance Rate</div>
-            <TrendingUp size={20} style={{ color: '#10b981' }} />
-          </div>
-          <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#111827' }}>
-            {metrics.attendance_rate.toFixed(1)}%
-          </div>
-          <div style={{ fontSize: '12px', color: '#6b7280', marginTop: '4px' }}>
-            Last 30 days
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg shadow-green-500/30">
+              <Briefcase className="h-6 w-6 text-white" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{metrics.departments}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Departments</p>
+              <p className="text-xs text-gray-400 dark:text-gray-500">Active departments</p>
+            </div>
           </div>
         </div>
-
-        <div style={{ backgroundColor: 'white', padding: '20px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '8px' }}>
-            <div style={{ fontSize: '14px', color: '#6b7280' }}>Pending Leave</div>
-            <Calendar size={20} style={{ color: '#f59e0b' }} />
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-gradient-to-br from-teal-500 to-cyan-500 rounded-xl shadow-lg shadow-teal-500/30">
+              <TrendingUp className="h-6 w-6 text-white" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{metrics.attendance_rate.toFixed(1)}%</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Attendance Rate</p>
+              <p className="text-xs text-gray-400 dark:text-gray-500">Last 30 days</p>
+            </div>
           </div>
-          <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#111827' }}>
-            {metrics.pending_leave_requests}
-          </div>
-          <div style={{ fontSize: '12px', color: '#6b7280', marginTop: '4px' }}>
-            Requests awaiting approval
+        </div>
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl shadow-lg shadow-amber-500/30">
+              <Calendar className="h-6 w-6 text-white" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{metrics.pending_leave_requests}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Pending Leave</p>
+              <p className="text-xs text-gray-400 dark:text-gray-500">Requests awaiting approval</p>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Secondary Metrics */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginBottom: '24px' }}>
-        <div style={{ backgroundColor: 'white', padding: '16px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-          <div style={{ fontSize: '14px', color: '#6b7280', marginBottom: '4px' }}>Average Tenure</div>
-          <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#111827' }}>
-            {Math.floor(metrics.avg_tenure_months / 12)} years {metrics.avg_tenure_months % 12} months
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl shadow-lg shadow-indigo-500/30">
+              <Clock className="h-6 w-6 text-white" />
+            </div>
+            <div>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">
+                {Math.floor(metrics.avg_tenure_months / 12)}y {metrics.avg_tenure_months % 12}m
+              </p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Average Tenure</p>
+            </div>
           </div>
         </div>
-
-        <div style={{ backgroundColor: 'white', padding: '16px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-          <div style={{ fontSize: '14px', color: '#6b7280', marginBottom: '4px' }}>Turnover Rate</div>
-          <div style={{ fontSize: '20px', fontWeight: 'bold', color: metrics.turnover_rate > 15 ? '#ef4444' : '#111827' }}>
-            {metrics.turnover_rate.toFixed(1)}%
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-4">
+            <div className={`p-3 rounded-xl shadow-lg ${metrics.turnover_rate > 15 ? 'bg-gradient-to-br from-red-500 to-rose-500 shadow-red-500/30' : 'bg-gradient-to-br from-green-500 to-emerald-500 shadow-green-500/30'}`}>
+              <TrendingUp className="h-6 w-6 text-white" />
+            </div>
+            <div>
+              <p className={`text-xl font-bold ${metrics.turnover_rate > 15 ? 'text-red-600 dark:text-red-400' : 'text-gray-900 dark:text-white'}`}>
+                {metrics.turnover_rate.toFixed(1)}%
+              </p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Turnover Rate</p>
+            </div>
           </div>
         </div>
-
-        <div style={{ backgroundColor: 'white', padding: '16px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-          <div style={{ fontSize: '14px', color: '#6b7280', marginBottom: '4px' }}>Open Positions</div>
-          <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#111827' }}>
-            {metrics.open_positions}
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-xl shadow-lg shadow-cyan-500/30">
+              <Briefcase className="h-6 w-6 text-white" />
+            </div>
+            <div>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{metrics.open_positions}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Open Positions</p>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Recent Activity */}
-      <div style={{ backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', padding: '20px' }}>
-        <h2 style={{ fontSize: '18px', fontWeight: 'bold', color: '#111827', marginBottom: '16px' }}>
-          Recent Activity
-        </h2>
-        {loading ? (
-          <div style={{ textAlign: 'center', padding: '40px', color: '#6b7280' }}>Loading...</div>
-        ) : recentActivity.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '40px', color: '#6b7280' }}>No recent activity</div>
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+        <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Recent Activity</h2>
+        {recentActivity.length === 0 ? (
+          <div className="text-center py-8 text-gray-500 dark:text-gray-400">No recent activity</div>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          <div className="space-y-3">
             {recentActivity.slice(0, 10).map((activity) => (
               <div
                 key={activity.id}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '12px',
-                  padding: '12px',
-                  backgroundColor: '#f9fafb',
-                  borderRadius: '6px'
-                }}
+                className="flex items-center gap-4 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
               >
-                <div style={{ flexShrink: 0 }}>
+                <div className="flex-shrink-0">
                   {getActivityIcon(activity.type)}
                 </div>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: '14px', fontWeight: 600, color: '#111827' }}>
+                <div className="flex-1 min-w-0">
+                  <div className="font-medium text-gray-900 dark:text-white truncate">
                     {activity.employee_name}
                   </div>
-                  <div style={{ fontSize: '13px', color: '#6b7280' }}>
+                  <div className="text-sm text-gray-500 dark:text-gray-400 truncate">
                     {activity.description}
                   </div>
                 </div>
-                <div style={{ fontSize: '12px', color: '#9ca3af', flexShrink: 0 }}>
+                <div className="text-xs text-gray-400 dark:text-gray-500 flex-shrink-0">
                   {formatDate(activity.date)}
                 </div>
               </div>

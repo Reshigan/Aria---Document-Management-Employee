@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Database, Plus, Search, Play, Pause, RotateCcw, Trash2, CheckCircle, XCircle, Clock } from 'lucide-react';
+import { Database, Plus, Search, Play, Pause, RotateCcw, Trash2, CheckCircle, XCircle, Clock, Upload, FileSpreadsheet, ArrowRight, AlertCircle } from 'lucide-react';
 import api from '../../lib/api';
 
 interface MigrationJob {
@@ -144,50 +144,82 @@ export default function MigrationJobs() {
   const errorRecords = jobs.reduce((sum, j) => sum + (j.error_records || 0), 0);
 
   return (
-    <div className="p-6">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
-          <Database size={28} className="text-purple-500" />
-          Data Migration
-        </h1>
-        <p className="text-gray-600 mt-1">Import data from external systems into ARIA ERP</p>
-      </div>
-
-      <div className="grid grid-cols-4 gap-4 mb-6">
-        <div className="bg-white rounded-lg shadow p-4">
-          <div className="text-sm text-gray-500">Total Jobs</div>
-          <div className="text-2xl font-bold text-purple-600">{jobs.length}</div>
-        </div>
-        <div className="bg-white rounded-lg shadow p-4">
-          <div className="text-sm text-gray-500">Total Records</div>
-          <div className="text-2xl font-bold text-blue-600">{totalRecords.toLocaleString()}</div>
-        </div>
-        <div className="bg-white rounded-lg shadow p-4">
-          <div className="text-sm text-gray-500">Successful</div>
-          <div className="text-2xl font-bold text-green-600">{successRecords.toLocaleString()}</div>
-        </div>
-        <div className="bg-white rounded-lg shadow p-4">
-          <div className="text-sm text-gray-500">Errors</div>
-          <div className="text-2xl font-bold text-red-600">{errorRecords.toLocaleString()}</div>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-purple-50 dark:from-gray-900 dark:to-gray-800 p-6">
+      <div className="mb-8">
+        <div className="flex items-center gap-3 mb-2">
+          <div className="p-3 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-xl shadow-lg shadow-purple-500/30">
+            <Database className="h-8 w-8 text-white" />
+          </div>
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Data Migration</h1>
+            <p className="text-gray-600 dark:text-gray-400">Import data from external systems into ARIA ERP</p>
+          </div>
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow">
-        <div className="p-4 border-b flex gap-4 flex-wrap">
-          <div className="flex-1 min-w-[200px] relative">
-            <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-xl shadow-lg shadow-purple-500/30">
+              <Database className="h-6 w-6 text-white" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{jobs.length}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Total Jobs</p>
+            </div>
+          </div>
+        </div>
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl shadow-lg shadow-blue-500/30">
+              <FileSpreadsheet className="h-6 w-6 text-white" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{totalRecords.toLocaleString()}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Total Records</p>
+            </div>
+          </div>
+        </div>
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg shadow-green-500/30">
+              <CheckCircle className="h-6 w-6 text-white" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{successRecords.toLocaleString()}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Successful</p>
+            </div>
+          </div>
+        </div>
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-gradient-to-br from-red-500 to-rose-500 rounded-xl shadow-lg shadow-red-500/30">
+              <AlertCircle className="h-6 w-6 text-white" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{errorRecords.toLocaleString()}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Errors</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
+        <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex flex-col md:flex-row gap-4">
+          <div className="flex-1 relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
             <input
               type="text"
               placeholder="Search jobs..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500"
+              className="w-full pl-10 pr-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent"
             />
           </div>
           <select
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
-            className="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500"
+            className="px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500"
           >
             <option value="">All Status</option>
             <option value="pending">Pending</option>
@@ -199,147 +231,157 @@ export default function MigrationJobs() {
           </select>
           <button
             onClick={() => { resetForm(); setShowForm(true); }}
-            className="px-4 py-2 bg-purple-600 text-white rounded-lg flex items-center gap-2 hover:bg-purple-700"
+            className="px-6 py-2.5 bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-xl hover:from-purple-600 hover:to-indigo-600 transition-all shadow-lg shadow-purple-500/30 flex items-center gap-2 font-medium"
           >
-            <Plus size={16} />
+            <Plus className="h-5 w-5" />
             New Migration
           </button>
         </div>
 
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gray-50">
+            <thead className="bg-gray-50 dark:bg-gray-700/50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Job</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Source</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Target</th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Progress</th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Status</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Job</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Source</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Target</th>
+                <th className="px-6 py-4 text-center text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Progress</th>
+                <th className="px-6 py-4 text-center text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Status</th>
+                <th className="px-6 py-4 text-right text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200">
+            <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
               {filteredJobs.map((job) => (
-                <tr key={job.id} className="hover:bg-gray-50">
+                <tr key={job.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                   <td className="px-6 py-4">
-                    <div className="font-medium text-gray-900">{job.name}</div>
+                    <div className="font-medium text-gray-900 dark:text-white">{job.name}</div>
                     {job.description && (
-                      <div className="text-sm text-gray-500 truncate max-w-xs">{job.description}</div>
+                      <div className="text-sm text-gray-500 dark:text-gray-400 truncate max-w-xs">{job.description}</div>
                     )}
                   </td>
                   <td className="px-6 py-4">
-                    <div className="text-sm text-gray-900">{job.source_system}</div>
-                    <div className="text-xs text-gray-500">{job.source_type.toUpperCase()}</div>
+                    <div className="text-sm font-medium text-gray-900 dark:text-white">{job.source_system}</div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400">{job.source_type.toUpperCase()}</div>
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-600">
+                  <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">
                     {job.target_module}
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex items-center justify-center gap-2">
-                      <div className="w-24 bg-gray-200 rounded-full h-2">
+                      <div className="w-24 bg-gray-200 dark:bg-gray-600 rounded-full h-2">
                         <div 
-                          className={`h-2 rounded-full ${job.status === 'failed' ? 'bg-red-600' : 'bg-purple-600'}`}
+                          className={`h-2 rounded-full ${job.status === 'failed' ? 'bg-red-500' : 'bg-gradient-to-r from-purple-500 to-indigo-500'}`}
                           style={{ width: `${getProgress(job)}%` }}
                         />
                       </div>
-                      <span className="text-xs text-gray-600">{getProgress(job)}%</span>
+                      <span className="text-xs text-gray-600 dark:text-gray-400">{getProgress(job)}%</span>
                     </div>
-                    <div className="text-xs text-center text-gray-500 mt-1">
+                    <div className="text-xs text-center text-gray-500 dark:text-gray-400 mt-1">
                       {job.processed_records || 0} / {job.total_records || 0}
                     </div>
                   </td>
                   <td className="px-6 py-4 text-center">
-                    <span className={`px-2 py-1 text-xs rounded-full ${statusColors[job.status]}`}>
+                    <span className={`px-2.5 py-1 text-xs font-medium rounded-lg ${statusColors[job.status]} dark:bg-opacity-30`}>
                       {job.status}
                     </span>
                     {job.error_records && job.error_records > 0 && (
-                      <div className="text-xs text-red-500 mt-1">
+                      <div className="text-xs text-red-500 dark:text-red-400 mt-1">
                         {job.error_records} errors
                       </div>
                     )}
                   </td>
                   <td className="px-6 py-4 text-right">
-                    {job.status === 'pending' && (
+                    <div className="flex items-center justify-end gap-2">
+                      {job.status === 'pending' && (
+                        <button
+                          onClick={() => handleStart(job.id)}
+                          className="p-2 text-green-600 hover:bg-green-100 dark:hover:bg-green-900/30 rounded-lg transition-colors"
+                          title="Start"
+                        >
+                          <Play className="h-4 w-4" />
+                        </button>
+                      )}
+                      {job.status === 'running' && (
+                        <button
+                          onClick={() => handlePause(job.id)}
+                          className="p-2 text-yellow-600 hover:bg-yellow-100 dark:hover:bg-yellow-900/30 rounded-lg transition-colors"
+                          title="Pause"
+                        >
+                          <Pause className="h-4 w-4" />
+                        </button>
+                      )}
+                      {(job.status === 'paused' || job.status === 'failed') && (
+                        <button
+                          onClick={() => handleRetry(job.id)}
+                          className="p-2 text-blue-600 hover:bg-blue-100 dark:hover:bg-blue-900/30 rounded-lg transition-colors"
+                          title="Retry"
+                        >
+                          <RotateCcw className="h-4 w-4" />
+                        </button>
+                      )}
                       <button
-                        onClick={() => handleStart(job.id)}
-                        className="text-green-600 hover:text-green-900 mr-2"
-                        title="Start"
+                        onClick={() => handleDelete(job.id)}
+                        className="p-2 text-red-600 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg transition-colors"
+                        title="Delete"
                       >
-                        <Play size={16} />
+                        <Trash2 className="h-4 w-4" />
                       </button>
-                    )}
-                    {job.status === 'running' && (
-                      <button
-                        onClick={() => handlePause(job.id)}
-                        className="text-yellow-600 hover:text-yellow-900 mr-2"
-                        title="Pause"
-                      >
-                        <Pause size={16} />
-                      </button>
-                    )}
-                    {(job.status === 'paused' || job.status === 'failed') && (
-                      <button
-                        onClick={() => handleRetry(job.id)}
-                        className="text-blue-600 hover:text-blue-900 mr-2"
-                        title="Retry"
-                      >
-                        <RotateCcw size={16} />
-                      </button>
-                    )}
-                    <button
-                      onClick={() => handleDelete(job.id)}
-                      className="text-red-600 hover:text-red-900"
-                      title="Delete"
-                    >
-                      <Trash2 size={16} />
-                    </button>
+                    </div>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
           {filteredJobs.length === 0 && (
-            <div className="p-8 text-center text-gray-500">
-              {searchTerm || filterStatus 
-                ? 'No migration jobs found matching your criteria' 
-                : 'No migration jobs yet. Create your first one!'}
+            <div className="p-12 text-center">
+              <Database className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
+              <p className="text-gray-500 dark:text-gray-400">
+                {searchTerm || filterStatus 
+                  ? 'No migration jobs found matching your criteria' 
+                  : 'No migration jobs yet. Create your first one!'}
+              </p>
             </div>
           )}
         </div>
       </div>
 
       {showForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-md p-6">
-            <h2 className="text-xl font-bold mb-4">New Migration Job</h2>
-            <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden">
+            <div className="bg-gradient-to-r from-purple-500 to-indigo-500 px-6 py-4">
+              <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                <Upload className="h-5 w-5" />
+                New Migration Job
+              </h2>
+            </div>
+            <form onSubmit={handleSubmit} className="p-6 space-y-5">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Job Name *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Job Name *</label>
                 <input
                   type="text"
                   required
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   placeholder="e.g., Import Customers from Odoo"
-                  className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500"
+                  className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Description</label>
                 <textarea
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   rows={2}
-                  className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500"
+                  className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Source System</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Source System</label>
                   <select
                     value={formData.source_system}
                     onChange={(e) => setFormData({ ...formData, source_system: e.target.value })}
-                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500"
+                    className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500"
                   >
                     <option value="odoo">Odoo</option>
                     <option value="sage">Sage</option>
@@ -350,11 +392,11 @@ export default function MigrationJobs() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Source Type</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Source Type</label>
                   <select
                     value={formData.source_type}
                     onChange={(e) => setFormData({ ...formData, source_type: e.target.value })}
-                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500"
+                    className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500"
                   >
                     <option value="csv">CSV File</option>
                     <option value="xlsx">Excel File</option>
@@ -364,11 +406,11 @@ export default function MigrationJobs() {
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Target Module</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Target Module</label>
                 <select
                   value={formData.target_module}
                   onChange={(e) => setFormData({ ...formData, target_module: e.target.value })}
-                  className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500"
+                  className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500"
                 >
                   <option value="customers">Customers</option>
                   <option value="suppliers">Suppliers</option>
@@ -383,17 +425,17 @@ export default function MigrationJobs() {
                   <option value="journal_entries">Journal Entries</option>
                 </select>
               </div>
-              <div className="flex justify-end gap-3 pt-4">
+              <div className="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
                 <button
                   type="button"
                   onClick={() => { setShowForm(false); resetForm(); }}
-                  className="px-4 py-2 border rounded-lg hover:bg-gray-50"
+                  className="px-5 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-medium"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+                  className="px-5 py-2.5 bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-xl hover:from-purple-600 hover:to-indigo-600 transition-all shadow-lg shadow-purple-500/30 font-medium"
                 >
                   Create Job
                 </button>

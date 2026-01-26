@@ -410,22 +410,15 @@ export default function InvoiceDetail() {
       loading={loading}
     >
       {error && (
-        <div style={{
-          padding: '1rem',
-          background: '#fee2e2',
-          border: '1px solid #fecaca',
-          borderRadius: '0.5rem',
-          color: '#991b1b',
-          marginBottom: '1.5rem'
-        }}>
+        <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl text-red-700 dark:text-red-300 mb-6">
           {error}
         </div>
       )}
 
-      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '1.5rem' }}>
-        <div>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2">
           <TransactionCard title="Invoice Information">
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <TransactionField
                 label="Customer"
                 type="select"
@@ -452,7 +445,7 @@ export default function InvoiceDetail() {
                 disabled={invoice?.status !== 'draft' && !isNew}
               />
             </div>
-            <div style={{ marginTop: '1rem' }}>
+            <div className="mt-4">
               <TransactionField
                 label="Notes"
                 type="textarea"
@@ -462,7 +455,7 @@ export default function InvoiceDetail() {
                 disabled={invoice?.status !== 'draft' && !isNew}
               />
             </div>
-            <div style={{ marginTop: '1rem' }}>
+            <div className="mt-4">
               <TransactionField
                 label="Terms and Conditions"
                 type="textarea"
@@ -487,7 +480,7 @@ export default function InvoiceDetail() {
         <div>
           {invoice && (
             <>
-              <div style={{ marginBottom: '1.5rem' }}>
+              <div className="mb-6">
                 <PostingStatus
                   status={invoice.status}
                   glEntryId={invoice.journal_entry_id}
@@ -498,7 +491,7 @@ export default function InvoiceDetail() {
                 />
               </div>
 
-              <div style={{ marginBottom: '1.5rem' }}>
+              <div className="mb-6">
                 <AutomationPanel
                   documentType="invoice"
                   documentId={invoice.id}
@@ -511,38 +504,25 @@ export default function InvoiceDetail() {
 
           {invoice && invoice.status === 'posted' && (
             <TransactionCard title="Payment Status">
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ color: '#6b7280' }}>Total Amount:</span>
-                  <span style={{ fontWeight: '500' }}>R {invoice.total_amount.toFixed(2)}</span>
+              <div className="flex flex-col gap-3">
+                <div className="flex justify-between">
+                  <span className="text-gray-500 dark:text-gray-400">Total Amount:</span>
+                  <span className="font-medium text-gray-900 dark:text-white">R {invoice.total_amount.toFixed(2)}</span>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ color: '#6b7280' }}>Amount Paid:</span>
-                  <span style={{ fontWeight: '500', color: '#10b981' }}>R {invoice.amount_paid.toFixed(2)}</span>
+                <div className="flex justify-between">
+                  <span className="text-gray-500 dark:text-gray-400">Amount Paid:</span>
+                  <span className="font-medium text-emerald-600 dark:text-emerald-400">R {invoice.amount_paid.toFixed(2)}</span>
                 </div>
-                <div style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  paddingTop: '0.75rem',
-                  borderTop: '2px solid #e5e7eb',
-                  fontSize: '1.125rem',
-                  fontWeight: '600'
-                }}>
-                  <span>Outstanding:</span>
-                  <span style={{ color: invoice.amount_outstanding > 0 ? '#ef4444' : '#10b981' }}>
+                <div className="flex justify-between pt-3 border-t-2 border-gray-200 dark:border-gray-700 text-lg font-semibold">
+                  <span className="text-gray-900 dark:text-white">Outstanding:</span>
+                  <span className={invoice.amount_outstanding > 0 ? 'text-red-500' : 'text-emerald-500'}>
                     R {invoice.amount_outstanding.toFixed(2)}
                   </span>
                 </div>
-                <div style={{ marginTop: '0.5rem' }}>
-                  <span style={{
-                    padding: '0.25rem 0.75rem',
-                    borderRadius: '9999px',
-                    fontSize: '0.75rem',
-                    fontWeight: '600',
-                    color: 'white',
-                    background: invoice.payment_status === 'paid' ? '#10b981' : invoice.payment_status === 'partial' ? '#8b5cf6' : '#f59e0b',
-                    textTransform: 'uppercase'
-                  }}>
+                <div className="mt-2">
+                  <span className={`px-3 py-1 rounded-full text-xs font-semibold text-white uppercase ${
+                    invoice.payment_status === 'paid' ? 'bg-emerald-500' : invoice.payment_status === 'partial' ? 'bg-purple-500' : 'bg-amber-500'
+                  }`}>
                     {invoice.payment_status}
                   </span>
                 </div>
@@ -551,25 +531,18 @@ export default function InvoiceDetail() {
           )}
 
           <TransactionCard title="Totals">
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: '#6b7280' }}>Subtotal:</span>
-                <span style={{ fontWeight: '500' }}>R {totals.subtotal.toFixed(2)}</span>
+            <div className="flex flex-col gap-3">
+              <div className="flex justify-between">
+                <span className="text-gray-500 dark:text-gray-400">Subtotal:</span>
+                <span className="font-medium text-gray-900 dark:text-white">R {totals.subtotal.toFixed(2)}</span>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: '#6b7280' }}>Tax (VAT):</span>
-                <span style={{ fontWeight: '500' }}>R {totals.taxAmount.toFixed(2)}</span>
+              <div className="flex justify-between">
+                <span className="text-gray-500 dark:text-gray-400">Tax (VAT):</span>
+                <span className="font-medium text-gray-900 dark:text-white">R {totals.taxAmount.toFixed(2)}</span>
               </div>
-              <div style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                paddingTop: '0.75rem',
-                borderTop: '2px solid #e5e7eb',
-                fontSize: '1.125rem',
-                fontWeight: '600'
-              }}>
-                <span>Total:</span>
-                <span>R {totals.total.toFixed(2)}</span>
+              <div className="flex justify-between pt-3 border-t-2 border-gray-200 dark:border-gray-700 text-lg font-semibold">
+                <span className="text-gray-900 dark:text-white">Total:</span>
+                <span className="text-gray-900 dark:text-white">R {totals.total.toFixed(2)}</span>
               </div>
             </div>
           </TransactionCard>
@@ -579,22 +552,7 @@ export default function InvoiceDetail() {
               <button
                 onClick={handleCreateReceipt}
                 disabled={loading}
-                style={{
-                  width: '100%',
-                  padding: '0.75rem',
-                  background: '#10b981',
-                  border: 'none',
-                  borderRadius: '0.375rem',
-                  fontSize: '0.875rem',
-                  fontWeight: '500',
-                  color: 'white',
-                  cursor: loading ? 'not-allowed' : 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '0.5rem',
-                  opacity: loading ? 0.5 : 1
-                }}
+                className={`w-full py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-xl text-sm font-medium flex items-center justify-center gap-2 hover:from-emerald-600 hover:to-emerald-700 shadow-lg shadow-emerald-500/30 transition-all ${loading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
               >
                 <DollarSign size={16} />
                 Record Payment
@@ -604,16 +562,16 @@ export default function InvoiceDetail() {
 
           {invoice && (
             <TransactionCard title="Metadata">
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.875rem' }}>
+              <div className="flex flex-col gap-2 text-sm">
                 <div>
-                  <span style={{ color: '#6b7280' }}>Created:</span>
+                  <span className="text-gray-500 dark:text-gray-400">Created:</span>
                   <br />
-                  <span>{new Date(invoice.created_at).toLocaleString()}</span>
+                  <span className="text-gray-900 dark:text-white">{new Date(invoice.created_at).toLocaleString()}</span>
                 </div>
                 <div>
-                  <span style={{ color: '#6b7280' }}>Last Updated:</span>
+                  <span className="text-gray-500 dark:text-gray-400">Last Updated:</span>
                   <br />
-                  <span>{new Date(invoice.updated_at).toLocaleString()}</span>
+                  <span className="text-gray-900 dark:text-white">{new Date(invoice.updated_at).toLocaleString()}</span>
                 </div>
               </div>
             </TransactionCard>
@@ -623,91 +581,61 @@ export default function InvoiceDetail() {
 
       {/* Email Modal */}
       {showEmailModal && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 1000,
-        }}>
-          <div style={{
-            backgroundColor: 'white',
-            borderRadius: '0.5rem',
-            padding: '1.5rem',
-            width: '100%',
-            maxWidth: '600px',
-            maxHeight: '90vh',
-            overflow: 'auto',
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-              <h2 style={{ fontSize: '1.25rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 w-full max-w-[600px] max-h-[90vh] overflow-auto shadow-2xl">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-white flex items-center gap-2">
                 <Mail size={20} />
                 Send Invoice via Email
               </h2>
-              <button onClick={() => setShowEmailModal(false)} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
+              <button onClick={() => setShowEmailModal(false)} className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
                 <X size={20} />
               </button>
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <div className="flex flex-col gap-4">
               <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500 }}>To *</label>
+                <label className="block mb-2 font-medium text-gray-700 dark:text-gray-300">To *</label>
                 <input
                   type="email"
                   value={emailTo}
                   onChange={(e) => setEmailTo(e.target.value)}
-                  style={{ width: '100%', padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.375rem' }}
+                  className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="customer@example.com"
                 />
               </div>
               <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500 }}>Subject</label>
+                <label className="block mb-2 font-medium text-gray-700 dark:text-gray-300">Subject</label>
                 <input
                   type="text"
                   value={emailSubject}
                   onChange={(e) => setEmailSubject(e.target.value)}
-                  style={{ width: '100%', padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.375rem' }}
+                  className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
               <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500 }}>Message</label>
+                <label className="block mb-2 font-medium text-gray-700 dark:text-gray-300">Message</label>
                 <textarea
                   value={emailBody}
                   onChange={(e) => setEmailBody(e.target.value)}
                   rows={10}
-                  style={{ width: '100%', padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', resize: 'vertical' }}
+                  className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y"
                 />
               </div>
-              <div style={{ backgroundColor: '#f3f4f6', padding: '0.75rem', borderRadius: '0.375rem', fontSize: '0.875rem', color: '#6b7280' }}>
+              <div className="bg-gray-100 dark:bg-gray-700 p-3 rounded-xl text-sm text-gray-600 dark:text-gray-300">
                 <strong>Note:</strong> The invoice PDF will be automatically attached to this email.
               </div>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginTop: '1.5rem' }}>
+            <div className="flex justify-end gap-3 mt-6">
               <button
                 onClick={() => setShowEmailModal(false)}
-                style={{ padding: '0.5rem 1rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', cursor: 'pointer', backgroundColor: 'white' }}
+                className="px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-xl font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSendEmail}
                 disabled={sendingEmail || !emailTo}
-                style={{
-                  padding: '0.5rem 1rem',
-                  backgroundColor: '#2563eb',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '0.375rem',
-                  cursor: sendingEmail ? 'not-allowed' : 'pointer',
-                  opacity: sendingEmail || !emailTo ? 0.5 : 1,
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                }}
+                className={`px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-medium flex items-center gap-2 hover:from-blue-600 hover:to-blue-700 shadow-lg shadow-blue-500/30 transition-all ${sendingEmail || !emailTo ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
                 <Mail size={16} />
                 {sendingEmail ? 'Sending...' : 'Send Email'}

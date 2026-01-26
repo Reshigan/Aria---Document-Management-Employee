@@ -252,54 +252,24 @@ export default function AriaChat() {
   ];
 
   return (
-    <div style={{ 
-      height: 'calc(100vh - 4rem)', 
-      display: 'flex', 
-      flexDirection: 'column',
-      padding: '2rem',
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
-    }}>
+    <div className="h-[calc(100vh-4rem)] flex flex-col p-8 bg-gradient-to-br from-indigo-600 to-purple-700 dark:from-indigo-900 dark:to-purple-900">
       {/* Header */}
-      <div style={{ 
-        marginBottom: '1.5rem',
-        textAlign: 'center'
-      }}>
-        <div style={{ 
-          display: 'flex', 
-          alignItems: 'center', 
-          justifyContent: 'center',
-          gap: '1rem',
-          marginBottom: '0.5rem'
-        }}>
-          <MessageSquare size={40} style={{ color: 'white' }} />
-          <h1 style={{ fontSize: '2.5rem', fontWeight: 'bold', color: 'white', margin: 0 }}>
+      <div className="mb-6 text-center">
+        <div className="flex items-center justify-center gap-4 mb-2">
+          <MessageSquare size={40} className="text-white" />
+          <h1 className="text-4xl font-bold text-white m-0">
             Ask Aria
           </h1>
         </div>
-        <p style={{ color: 'rgba(255,255,255,0.9)', fontSize: '1.125rem' }}>
+        <p className="text-white/90 text-lg">
           Your AI-powered business assistant
         </p>
       </div>
 
       {/* Chat Container */}
-      <div style={{ 
-        flex: 1,
-        background: 'white',
-        borderRadius: '1rem',
-        boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)',
-        display: 'flex',
-        flexDirection: 'column',
-        overflow: 'hidden'
-      }}>
+      <div className="flex-1 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl flex flex-col overflow-hidden">
         {/* Messages */}
-        <div style={{ 
-          flex: 1,
-          overflowY: 'auto',
-          padding: '2rem',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '1.5rem'
-        }}>
+        <div className="flex-1 overflow-y-auto p-8 flex flex-col gap-6">
           {messages.map((message) => (
             <div
               key={message.id}

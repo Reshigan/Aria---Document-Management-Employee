@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../../lib/api';
 import { ConfirmDialog } from '../../components/ConfirmDialog';
-import { Search, Truck, Package, CheckCircle, FileText, X } from 'lucide-react';
+import { Search, Truck, Package, CheckCircle, X, RefreshCw, AlertCircle, Clock, MapPin } from 'lucide-react';
 
 interface Delivery {
   id: string;
@@ -50,16 +50,17 @@ export default function Deliveries() {
   const loadDeliveries = async () => {
     try {
       setLoading(true);
-      const params: any = {};
+      const params: Record<string, string> = {};
       if (searchTerm) params.search = searchTerm;
       if (statusFilter) params.status = statusFilter;
       
       const response = await api.get('/erp/order-to-cash/deliveries', { params });
       setDeliveries(response.data);
       setError(null);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error loading deliveries:', err);
-      setError(err.response?.data?.detail || 'Failed to load deliveries');
+      const error = err as { response?: { data?: { detail?: string } } };
+      setError(error.response?.data?.detail || 'Failed to load deliveries');
     } finally {
       setLoading(false);
     }
@@ -85,9 +86,10 @@ export default function Deliveries() {
       setShowShipModal(false);
       setSelectedDelivery(null);
       setError(null);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error shipping delivery:', err);
-      setError(err.response?.data?.detail || 'Failed to ship delivery. Check stock availability.');
+      const error = err as { response?: { data?: { detail?: string } } };
+      setError(error.response?.data?.detail || 'Failed to ship delivery. Check stock availability.');
     }
   };
 
@@ -105,197 +107,82 @@ export default function Deliveries() {
       loadDeliveries();
       setShowCompleteDialog(false);
       setSelectedDelivery(null);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error completing delivery:', err);
-      setError(err.response?.data?.detail || 'Failed to complete delivery');
+      const error = err as { response?: { data?: { detail?: string } } };
+      setError(error.response?.data?.detail || 'Failed to complete delivery');
     }
   };
 
-  const getStatusColor = (status: string) => {
-    const colors: Record<string, string> = {
-      draft: '#6b7280',
-      ready: '#3b82f6',
-      shipped: '#8b5cf6',
-      delivered: '#10b981',
-      cancelled: '#ef4444'
+  const getStatusBadge = (status: string) => {
+    const styles: Record<string, string> = {
+      draft: 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600',
+      ready: 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800',
+      shipped: 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-800',
+      delivered: 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800',
+      cancelled: 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 border-red-200 dark:border-red-800'
     };
-    return colors[status] || '#6b7280';
+    return styles[status] || styles.draft;
+  };
+
+  const stats = {
+    total: deliveries.length,
+    draft: deliveries.filter(d => d.status === 'draft').length,
+    ready: deliveries.filter(d => d.status === 'ready').length,
+    shipped: deliveries.filter(d => d.status === 'shipped').length,
+    delivered: deliveries.filter(d => d.status === 'delivered').length
   };
 
   const renderShipModal = () => {
     if (!showShipModal || !selectedDelivery) return null;
 
     return (
-      <div
-        style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background: 'rgba(0, 0, 0, 0.5)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 1000
-        }}
-        onClick={() => setShowShipModal(false)}
-      >
-        <div
-          onClick={(e) => e.stopPropagation()}
-          style={{
-            background: 'white',
-            borderRadius: '0.5rem',
-            boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)',
-            maxWidth: '600px',
-            width: '90%'
-          }}
-        >
-          <div style={{
-            padding: '1.5rem',
-            borderBottom: '1px solid #e5e7eb',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between'
-          }}>
-            <h2 style={{ fontSize: '1.25rem', fontWeight: '600', margin: 0 }}>
-              Ship Delivery {selectedDelivery.delivery_number}
-            </h2>
-            <button
-              onClick={() => setShowShipModal(false)}
-              style={{
-                padding: '0.25rem',
-                background: 'transparent',
-                border: 'none',
-                color: '#6b7280',
-                cursor: 'pointer'
-              }}
-            >
-              <X size={24} />
-            </button>
+      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setShowShipModal(false)}>
+        <div onClick={(e) => e.stopPropagation()} className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden">
+          <div className="bg-gradient-to-r from-emerald-600 to-teal-600 text-white p-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-white/20 rounded-lg"><Truck className="h-6 w-6" /></div>
+                <div>
+                  <h2 className="text-xl font-semibold">Ship Delivery</h2>
+                  <p className="text-white/80 text-sm">{selectedDelivery.delivery_number}</p>
+                </div>
+              </div>
+              <button onClick={() => setShowShipModal(false)} className="p-2 hover:bg-white/20 rounded-lg transition-colors"><X className="h-5 w-5" /></button>
+            </div>
           </div>
 
-          <div style={{ padding: '1.5rem' }}>
+          <div className="p-6 space-y-4">
             {error && (
-              <div style={{
-                padding: '1rem',
-                background: '#fee2e2',
-                border: '1px solid #fecaca',
-                borderRadius: '0.375rem',
-                color: '#991b1b',
-                marginBottom: '1rem'
-              }}>
-                {error}
+              <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl flex items-center gap-3">
+                <AlertCircle className="h-5 w-5 text-red-500 flex-shrink-0" />
+                <p className="text-red-700 dark:text-red-300">{error}</p>
               </div>
             )}
 
-            <div style={{ marginBottom: '1rem' }}>
-              <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>
-                Tracking Number
-              </label>
-              <input
-                type="text"
-                value={shipFormData.tracking_number}
-                onChange={(e) => setShipFormData({ ...shipFormData, tracking_number: e.target.value })}
-                placeholder="Enter tracking number"
-                style={{
-                  width: '100%',
-                  padding: '0.5rem',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '0.375rem',
-                  fontSize: '0.875rem'
-                }}
-              />
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Tracking Number</label>
+              <input type="text" value={shipFormData.tracking_number} onChange={(e) => setShipFormData({ ...shipFormData, tracking_number: e.target.value })} placeholder="Enter tracking number" className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all" />
             </div>
 
-            <div style={{ marginBottom: '1rem' }}>
-              <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>
-                Carrier
-              </label>
-              <input
-                type="text"
-                value={shipFormData.carrier}
-                onChange={(e) => setShipFormData({ ...shipFormData, carrier: e.target.value })}
-                placeholder="e.g., DHL, FedEx, Courier Guy"
-                style={{
-                  width: '100%',
-                  padding: '0.5rem',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '0.375rem',
-                  fontSize: '0.875rem'
-                }}
-              />
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Carrier</label>
+              <input type="text" value={shipFormData.carrier} onChange={(e) => setShipFormData({ ...shipFormData, carrier: e.target.value })} placeholder="e.g., DHL, FedEx, Courier Guy" className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all" />
             </div>
 
-            <div style={{ marginBottom: '1rem' }}>
-              <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>
-                Notes
-              </label>
-              <textarea
-                value={shipFormData.notes}
-                onChange={(e) => setShipFormData({ ...shipFormData, notes: e.target.value })}
-                rows={3}
-                placeholder="Add any shipping notes..."
-                style={{
-                  width: '100%',
-                  padding: '0.5rem',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '0.375rem',
-                  fontSize: '0.875rem',
-                  resize: 'vertical'
-                }}
-              />
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Notes</label>
+              <textarea value={shipFormData.notes} onChange={(e) => setShipFormData({ ...shipFormData, notes: e.target.value })} rows={3} placeholder="Add any shipping notes..." className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all resize-none" />
             </div>
 
-            <div style={{
-              padding: '1rem',
-              background: '#eff6ff',
-              border: '1px solid #bfdbfe',
-              borderRadius: '0.375rem',
-              fontSize: '0.875rem',
-              color: '#1e40af'
-            }}>
-              <strong>Note:</strong> Shipping this delivery will automatically issue stock from the warehouse.
+            <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl">
+              <p className="text-sm text-blue-700 dark:text-blue-300"><strong>Note:</strong> Shipping this delivery will automatically issue stock from the warehouse.</p>
             </div>
           </div>
 
-          <div style={{
-            padding: '1.5rem',
-            borderTop: '1px solid #e5e7eb',
-            display: 'flex',
-            gap: '0.75rem',
-            justifyContent: 'flex-end'
-          }}>
-            <button
-              onClick={() => setShowShipModal(false)}
-              style={{
-                padding: '0.5rem 1rem',
-                background: 'white',
-                border: '1px solid #d1d5db',
-                borderRadius: '0.375rem',
-                fontSize: '0.875rem',
-                fontWeight: '500',
-                color: '#374151',
-                cursor: 'pointer'
-              }}
-            >
-              Cancel
-            </button>
-            <button
-              onClick={confirmShip}
-              style={{
-                padding: '0.5rem 1rem',
-                background: '#10b981',
-                border: 'none',
-                borderRadius: '0.375rem',
-                fontSize: '0.875rem',
-                fontWeight: '500',
-                color: 'white',
-                cursor: 'pointer'
-              }}
-            >
-              Ship & Issue Stock
-            </button>
+          <div className="p-6 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 flex justify-end gap-3">
+            <button onClick={() => setShowShipModal(false)} className="px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">Cancel</button>
+            <button onClick={confirmShip} className="px-6 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-xl font-medium hover:from-emerald-700 hover:to-teal-700 transition-all shadow-lg shadow-emerald-500/30">Ship & Issue Stock</button>
           </div>
         </div>
       </div>
@@ -303,59 +190,69 @@ export default function Deliveries() {
   };
 
   return (
-    <div style={{ padding: '2rem' }}>
-      <div style={{ marginBottom: '2rem' }}>
-        <h1 style={{ fontSize: '1.875rem', fontWeight: '700', marginBottom: '0.5rem' }}>Deliveries</h1>
-        <p style={{ color: '#6b7280' }}>Manage order deliveries and track shipments</p>
-      </div>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-teal-50 dark:from-gray-900 dark:to-gray-800 p-6">
+      <div className="max-w-7xl mx-auto space-y-6">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">Deliveries</h1>
+            <p className="text-gray-500 dark:text-gray-400 mt-1">Manage order deliveries and track shipments</p>
+          </div>
+          <div className="flex items-center gap-3">
+            <button onClick={() => loadDeliveries()} className="p-3 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-200 dark:border-gray-700">
+              <RefreshCw className={`h-5 w-5 text-gray-600 dark:text-gray-400 ${loading ? 'animate-spin' : ''}`} />
+            </button>
+          </div>
+        </div>
 
-      <div style={{
-        background: 'white',
-        borderRadius: '0.5rem',
-        boxShadow: '0 1px 3px 0 rgba(0,0,0,0.1)',
-        overflow: 'hidden'
-      }}>
-        <div style={{ padding: '1.5rem', borderBottom: '1px solid #e5e7eb' }}>
-          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-            <div style={{ flex: '1', minWidth: '250px', position: 'relative' }}>
-              <Search
-                size={20}
-                style={{
-                  position: 'absolute',
-                  left: '0.75rem',
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  color: '#9ca3af'
-                }}
-              />
-              <input
-                type="text"
-                placeholder="Search by delivery number, customer..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                style={{
-                  width: '100%',
-                  padding: '0.5rem 0.75rem 0.5rem 2.5rem',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '0.375rem',
-                  fontSize: '0.875rem'
-                }}
-              />
+        {error && (
+          <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl flex items-center gap-3">
+            <AlertCircle className="h-5 w-5 text-red-500 flex-shrink-0" />
+            <p className="text-red-700 dark:text-red-300">{error}</p>
+            <button onClick={() => setError(null)} className="ml-auto p-1 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg"><X className="h-4 w-4 text-red-500" /></button>
+          </div>
+        )}
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl shadow-lg shadow-emerald-500/30"><Truck className="h-6 w-6 text-white" /></div>
+              <div><p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.total}</p><p className="text-sm text-gray-500 dark:text-gray-400">Total</p></div>
             </div>
+          </div>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-gradient-to-br from-gray-500 to-gray-600 rounded-xl shadow-lg shadow-gray-500/30"><Clock className="h-6 w-6 text-white" /></div>
+              <div><p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.draft}</p><p className="text-sm text-gray-500 dark:text-gray-400">Draft</p></div>
+            </div>
+          </div>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl shadow-lg shadow-blue-500/30"><Package className="h-6 w-6 text-white" /></div>
+              <div><p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.ready}</p><p className="text-sm text-gray-500 dark:text-gray-400">Ready</p></div>
+            </div>
+          </div>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-gradient-to-br from-purple-500 to-violet-500 rounded-xl shadow-lg shadow-purple-500/30"><Truck className="h-6 w-6 text-white" /></div>
+              <div><p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.shipped}</p><p className="text-sm text-gray-500 dark:text-gray-400">Shipped</p></div>
+            </div>
+          </div>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg shadow-green-500/30"><CheckCircle className="h-6 w-6 text-white" /></div>
+              <div><p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.delivered}</p><p className="text-sm text-gray-500 dark:text-gray-400">Delivered</p></div>
+            </div>
+          </div>
+        </div>
 
-            <div style={{ minWidth: '200px' }}>
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                style={{
-                  width: '100%',
-                  padding: '0.5rem 0.75rem',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '0.375rem',
-                  fontSize: '0.875rem',
-                  background: 'white'
-                }}
-              >
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+          <div className="p-5 border-b border-gray-100 dark:border-gray-700">
+            <div className="flex flex-col md:flex-row gap-4">
+              <div className="flex-1 relative">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <input type="text" placeholder="Search by delivery number, customer..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-12 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all" />
+              </div>
+              <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all min-w-[180px]">
                 <option value="">All Statuses</option>
                 <option value="draft">Draft</option>
                 <option value="ready">Ready</option>
@@ -365,136 +262,82 @@ export default function Deliveries() {
               </select>
             </div>
           </div>
-        </div>
 
-        {loading ? (
-          <div style={{ padding: '3rem', textAlign: 'center', color: '#6b7280' }}>
-            Loading deliveries...
-          </div>
-        ) : deliveries.length === 0 ? (
-          <div style={{ padding: '3rem', textAlign: 'center' }}>
-            <Package size={48} style={{ margin: '0 auto 1rem', color: '#d1d5db' }} />
-            <h3 style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '0.5rem' }}>No deliveries found</h3>
-            <p style={{ color: '#6b7280' }}>
-              {searchTerm || statusFilter ? 'Try adjusting your filters' : 'Deliveries are created from approved sales orders'}
-            </p>
-          </div>
-        ) : (
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-              <thead style={{ background: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
-                <tr>
-                  <th style={{ padding: '0.75rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280' }}>Delivery #</th>
-                  <th style={{ padding: '0.75rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280' }}>SO #</th>
-                  <th style={{ padding: '0.75rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280' }}>Customer</th>
-                  <th style={{ padding: '0.75rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280' }}>Warehouse</th>
-                  <th style={{ padding: '0.75rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280' }}>Delivery Date</th>
-                  <th style={{ padding: '0.75rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280' }}>Tracking</th>
-                  <th style={{ padding: '0.75rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280' }}>Status</th>
-                  <th style={{ padding: '0.75rem', textAlign: 'right', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280' }}>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {deliveries.map((delivery) => (
-                  <tr key={delivery.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
-                    <td style={{ padding: '1rem', fontSize: '0.875rem', fontWeight: '500' }}>
-                      <Link to={`/deliveries/${delivery.id}`} style={{ color: '#2563eb', textDecoration: 'none' }}>
-                        {delivery.delivery_number}
-                      </Link>
-                    </td>
-                    <td style={{ padding: '1rem', fontSize: '0.875rem', color: '#6b7280' }}>{delivery.sales_order_number || '-'}</td>
-                    <td style={{ padding: '1rem', fontSize: '0.875rem' }}>{delivery.customer_name || '-'}</td>
-                    <td style={{ padding: '1rem', fontSize: '0.875rem' }}>{delivery.warehouse_name || '-'}</td>
-                    <td style={{ padding: '1rem', fontSize: '0.875rem' }}>{new Date(delivery.delivery_date).toLocaleDateString()}</td>
-                    <td style={{ padding: '1rem' }}>
-                      {delivery.tracking_number ? (
-                        <div>
-                          <div style={{ fontSize: '0.875rem', fontWeight: '500' }}>{delivery.tracking_number}</div>
-                          <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>{delivery.carrier}</div>
-                        </div>
-                      ) : (
-                        <span style={{ fontSize: '0.875rem', color: '#9ca3af' }}>-</span>
-                      )}
-                    </td>
-                    <td style={{ padding: '1rem' }}>
-                      <span style={{
-                        padding: '0.25rem 0.75rem',
-                        borderRadius: '9999px',
-                        fontSize: '0.75rem',
-                        fontWeight: '500',
-                        background: `${getStatusColor(delivery.status)}20`,
-                        color: getStatusColor(delivery.status)
-                      }}>
-                        {delivery.status.charAt(0).toUpperCase() + delivery.status.slice(1)}
-                      </span>
-                    </td>
-                    <td style={{ padding: '1rem' }}>
-                      <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
-                        {(delivery.status === 'draft' || delivery.status === 'ready') && (
-                          <button
-                            onClick={() => handleShip(delivery)}
-                            title="Ship & Issue Stock"
-                            style={{
-                              padding: '0.5rem 1rem',
-                              background: '#10b981',
-                              border: 'none',
-                              borderRadius: '0.375rem',
-                              color: 'white',
-                              fontSize: '0.75rem',
-                              fontWeight: '500',
-                              cursor: 'pointer',
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: '0.25rem'
-                            }}
-                          >
-                            <Truck size={14} />
-                            Ship
-                          </button>
-                        )}
-                        {delivery.status === 'shipped' && (
-                          <button
-                            onClick={() => handleComplete(delivery)}
-                            title="Mark as Delivered"
-                            style={{
-                              padding: '0.5rem 1rem',
-                              background: '#8b5cf6',
-                              border: 'none',
-                              borderRadius: '0.375rem',
-                              color: 'white',
-                              fontSize: '0.75rem',
-                              fontWeight: '500',
-                              cursor: 'pointer',
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: '0.25rem'
-                            }}
-                          >
-                            <CheckCircle size={14} />
-                            Complete
-                          </button>
-                        )}
-                      </div>
-                    </td>
+          {loading ? (
+            <div className="p-12 text-center">
+              <RefreshCw className="h-8 w-8 animate-spin text-emerald-500 mx-auto mb-4" />
+              <p className="text-gray-500 dark:text-gray-400">Loading deliveries...</p>
+            </div>
+          ) : deliveries.length === 0 ? (
+            <div className="p-12 text-center">
+              <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-2xl flex items-center justify-center mx-auto mb-4"><Package className="h-8 w-8 text-gray-400" /></div>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No deliveries found</h3>
+              <p className="text-gray-500 dark:text-gray-400">{searchTerm || statusFilter ? 'Try adjusting your filters' : 'Deliveries are created from approved sales orders'}</p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-50 dark:bg-gray-900/50">
+                  <tr>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Delivery #</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">SO #</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Customer</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Warehouse</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Delivery Date</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Tracking</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
+                    <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+                </thead>
+                <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
+                  {deliveries.map((delivery) => (
+                    <tr key={delivery.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                      <td className="px-6 py-4">
+                        <Link to={`/deliveries/${delivery.id}`} className="font-semibold text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300">{delivery.delivery_number}</Link>
+                      </td>
+                      <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{delivery.sales_order_number || '-'}</td>
+                      <td className="px-6 py-4 text-gray-900 dark:text-white">{delivery.customer_name || '-'}</td>
+                      <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{delivery.warehouse_name || '-'}</td>
+                      <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{new Date(delivery.delivery_date).toLocaleDateString()}</td>
+                      <td className="px-6 py-4">
+                        {delivery.tracking_number ? (
+                          <div>
+                            <p className="font-medium text-gray-900 dark:text-white">{delivery.tracking_number}</p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">{delivery.carrier}</p>
+                          </div>
+                        ) : (
+                          <span className="text-gray-400">-</span>
+                        )}
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${getStatusBadge(delivery.status)}`}>{delivery.status.charAt(0).toUpperCase() + delivery.status.slice(1)}</span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center justify-end gap-2">
+                          {(delivery.status === 'draft' || delivery.status === 'ready') && (
+                            <button onClick={() => handleShip(delivery)} className="flex items-center gap-1 px-3 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-lg text-xs font-medium hover:from-emerald-700 hover:to-teal-700 transition-all shadow-sm">
+                              <Truck className="h-3 w-3" />Ship
+                            </button>
+                          )}
+                          {delivery.status === 'shipped' && (
+                            <button onClick={() => handleComplete(delivery)} className="flex items-center gap-1 px-3 py-2 bg-gradient-to-r from-purple-600 to-violet-600 text-white rounded-lg text-xs font-medium hover:from-purple-700 hover:to-violet-700 transition-all shadow-sm">
+                              <CheckCircle className="h-3 w-3" />Complete
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
       </div>
 
       {renderShipModal()}
 
-      <ConfirmDialog
-        isOpen={showCompleteDialog}
-        onClose={() => setShowCompleteDialog(false)}
-        onConfirm={confirmComplete}
-        title="Complete Delivery"
-        message={`Mark delivery ${selectedDelivery?.delivery_number} as complete? This confirms the customer has received the goods.`}
-        confirmText="Mark Complete"
-        variant="info"
-      />
+      <ConfirmDialog isOpen={showCompleteDialog} onClose={() => setShowCompleteDialog(false)} onConfirm={confirmComplete} title="Complete Delivery" message={`Are you sure you want to mark delivery ${selectedDelivery?.delivery_number} as complete?`} confirmText="Complete" variant="primary" />
     </div>
   );
 }

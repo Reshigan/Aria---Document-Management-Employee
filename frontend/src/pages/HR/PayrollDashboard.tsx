@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { DollarSign, Users, FileText, Calculator, Plus, Search, Edit2, Trash2, Check, CreditCard } from 'lucide-react';
 import api from '../../lib/api';
 import { ConfirmDialog } from '../../components/ConfirmDialog';
 
@@ -290,23 +291,21 @@ const PayrollDashboard: React.FC = () => {
   );
 
   const getStatusBadge = (status: string) => {
-    const colors: Record<string, { bg: string; text: string }> = {
-      DRAFT: { bg: '#f3f4f6', text: '#374151' },
-      APPROVED: { bg: '#dbeafe', text: '#1e40af' },
-      PAID: { bg: '#dcfce7', text: '#166534' }
+    const styles: Record<string, string> = {
+      DRAFT: 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300',
+      APPROVED: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
+      PAID: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
     };
-    const color = colors[status] || { bg: '#f3f4f6', text: '#374151' };
-    return <span style={{ padding: '4px 8px', fontSize: '12px', fontWeight: 600, borderRadius: '9999px', backgroundColor: color.bg, color: color.text }}>{status}</span>;
+    return <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${styles[status] || 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300'}`}>{status}</span>;
   };
 
   const getEmploymentTypeBadge = (type: string) => {
-    const colors: Record<string, { bg: string; text: string }> = {
-      PERMANENT: { bg: '#dcfce7', text: '#166534' },
-      CONTRACT: { bg: '#dbeafe', text: '#1e40af' },
-      TEMPORARY: { bg: '#fef3c7', text: '#92400e' }
+    const styles: Record<string, string> = {
+      PERMANENT: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
+      CONTRACT: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
+      TEMPORARY: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
     };
-    const color = colors[type] || { bg: '#f3f4f6', text: '#374151' };
-    return <span style={{ padding: '4px 8px', fontSize: '12px', fontWeight: 600, borderRadius: '9999px', backgroundColor: color.bg, color: color.text }}>{type}</span>;
+    return <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${styles[type] || 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300'}`}>{type}</span>;
   };
 
   const formatCurrency = (amount: number) => {
@@ -318,66 +317,59 @@ const PayrollDashboard: React.FC = () => {
   };
 
   return (
-    <div style={{ padding: '24px' }}>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-green-50 dark:from-gray-900 dark:to-gray-800 p-8">
       {/* Header */}
-      <div style={{ marginBottom: '24px' }}>
-        <h1 style={{ fontSize: '30px', fontWeight: 'bold', color: '#111827', marginBottom: '8px' }}>Payroll</h1>
-        <p style={{ color: '#6b7280' }}>Manage employees, payslips, and SA tax compliance (PAYE, UIF, SDL)</p>
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
+          <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg shadow-green-500/30">
+            <DollarSign className="h-7 w-7 text-white" />
+          </div>
+          Payroll
+        </h1>
+        <p className="text-gray-500 dark:text-gray-400 mt-1">Manage employees, payslips, and SA tax compliance (PAYE, UIF, SDL)</p>
       </div>
 
       {/* Error Display */}
       {error && (
-        <div style={{ padding: '12px 16px', marginBottom: '16px', backgroundColor: '#fee2e2', border: '1px solid #fecaca', borderRadius: '6px', color: '#991b1b' }}>
+        <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-xl text-red-700 dark:text-red-400">
           {error}
         </div>
       )}
 
       {/* Tabs */}
-      <div style={{ borderBottom: '1px solid #e5e7eb', marginBottom: '24px' }}>
-        <div style={{ display: 'flex', gap: '16px' }}>
+      <div className="bg-white dark:bg-gray-800 rounded-2xl p-2 shadow-sm border border-gray-100 dark:border-gray-700 mb-6">
+        <div className="flex flex-wrap gap-2">
           <button
             onClick={() => setActiveTab('employees')}
-            style={{
-              padding: '12px 16px',
-              fontSize: '14px',
-              fontWeight: 600,
-              color: activeTab === 'employees' ? '#2563eb' : '#6b7280',
-              borderBottom: activeTab === 'employees' ? '2px solid #2563eb' : '2px solid transparent',
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer'
-            }}
+            className={`px-4 py-2.5 rounded-xl font-medium transition-all flex items-center gap-2 ${
+              activeTab === 'employees'
+                ? 'bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-lg shadow-green-500/30'
+                : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+            }`}
           >
+            <Users className="h-4 w-4" />
             Employees ({employees.length})
           </button>
           <button
             onClick={() => setActiveTab('payslips')}
-            style={{
-              padding: '12px 16px',
-              fontSize: '14px',
-              fontWeight: 600,
-              color: activeTab === 'payslips' ? '#2563eb' : '#6b7280',
-              borderBottom: activeTab === 'payslips' ? '2px solid #2563eb' : '2px solid transparent',
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer'
-            }}
+            className={`px-4 py-2.5 rounded-xl font-medium transition-all flex items-center gap-2 ${
+              activeTab === 'payslips'
+                ? 'bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-lg shadow-green-500/30'
+                : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+            }`}
           >
+            <FileText className="h-4 w-4" />
             Payslips ({payslips.length})
           </button>
           <button
             onClick={() => setActiveTab('tax_summary')}
-            style={{
-              padding: '12px 16px',
-              fontSize: '14px',
-              fontWeight: 600,
-              color: activeTab === 'tax_summary' ? '#2563eb' : '#6b7280',
-              borderBottom: activeTab === 'tax_summary' ? '2px solid #2563eb' : '2px solid transparent',
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer'
-            }}
+            className={`px-4 py-2.5 rounded-xl font-medium transition-all flex items-center gap-2 ${
+              activeTab === 'tax_summary'
+                ? 'bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-lg shadow-green-500/30'
+                : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+            }`}
           >
+            <Calculator className="h-4 w-4" />
             Tax Summary (PAYE/UIF/SDL)
           </button>
         </div>
@@ -387,91 +379,122 @@ const PayrollDashboard: React.FC = () => {
       {activeTab === 'employees' && (
         <div>
           {/* Actions Bar */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-            <input
-              type="text"
-              placeholder="Search employees..."
-              value={employeesSearch}
-              onChange={(e) => setEmployeesSearch(e.target.value)}
-              style={{ padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px', width: '300px' }}
-            />
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+            <div className="relative w-full md:w-80">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search employees..."
+                value={employeesSearch}
+                onChange={(e) => setEmployeesSearch(e.target.value)}
+                className="w-full pl-10 pr-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              />
+            </div>
             <button
               onClick={handleCreateEmployee}
-              style={{ padding: '8px 16px', backgroundColor: '#2563eb', color: 'white', border: 'none', borderRadius: '6px', fontWeight: 600, cursor: 'pointer' }}
+              className="px-6 py-2.5 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-xl hover:from-green-600 hover:to-emerald-600 transition-all shadow-lg shadow-green-500/30 flex items-center gap-2 font-medium"
             >
-              + New Employee
+              <Plus className="h-5 w-5" />
+              New Employee
             </button>
           </div>
 
           {/* Summary Cards */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '16px' }}>
-            <div style={{ backgroundColor: 'white', padding: '16px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-              <div style={{ fontSize: '14px', color: '#6b7280', marginBottom: '4px' }}>Total Employees</div>
-              <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#111827' }}>{employees.filter(e => e.is_active).length}</div>
-            </div>
-            <div style={{ backgroundColor: 'white', padding: '16px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-              <div style={{ fontSize: '14px', color: '#6b7280', marginBottom: '4px' }}>Permanent</div>
-              <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#059669' }}>
-                {employees.filter(e => e.is_active && e.employment_type === 'PERMANENT').length}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl shadow-lg shadow-blue-500/30">
+                  <Users className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">{employees.filter(e => e.is_active).length}</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Total Employees</p>
+                </div>
               </div>
             </div>
-            <div style={{ backgroundColor: 'white', padding: '16px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-              <div style={{ fontSize: '14px', color: '#6b7280', marginBottom: '4px' }}>Contract</div>
-              <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#2563eb' }}>
-                {employees.filter(e => e.is_active && e.employment_type === 'CONTRACT').length}
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg shadow-green-500/30">
+                  <Users className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">{employees.filter(e => e.is_active && e.employment_type === 'PERMANENT').length}</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Permanent</p>
+                </div>
               </div>
             </div>
-            <div style={{ backgroundColor: 'white', padding: '16px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-              <div style={{ fontSize: '14px', color: '#6b7280', marginBottom: '4px' }}>Total Payroll</div>
-              <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#111827' }}>
-                {formatCurrency(employees.filter(e => e.is_active).reduce((sum, e) => sum + e.salary, 0))}
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl shadow-lg shadow-blue-500/30">
+                  <Users className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">{employees.filter(e => e.is_active && e.employment_type === 'CONTRACT').length}</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Contract</p>
+                </div>
+              </div>
+            </div>
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg shadow-green-500/30">
+                  <DollarSign className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">{formatCurrency(employees.filter(e => e.is_active).reduce((sum, e) => sum + e.salary, 0))}</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Total Payroll</p>
+                </div>
               </div>
             </div>
           </div>
 
           {/* Employees Table */}
-          <div style={{ backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', overflow: 'hidden' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-              <thead style={{ backgroundColor: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
-                <tr>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Employee #</th>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Name</th>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Department</th>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Position</th>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Type</th>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Salary</th>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {employeesLoading ? (
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+            {employeesLoading ? (
+              <div className="flex items-center justify-center h-64">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500"></div>
+              </div>
+            ) : filteredEmployees.length === 0 ? (
+              <div className="px-6 py-12 text-center">
+                <Users className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
+                <p className="text-gray-500 dark:text-gray-400">No employees found</p>
+              </div>
+            ) : (
+              <table className="w-full">
+                <thead className="bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-600">
                   <tr>
-                    <td colSpan={7} style={{ padding: '24px', textAlign: 'center', color: '#6b7280' }}>Loading employees...</td>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Employee #</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Name</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Department</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Position</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Type</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Salary</th>
+                    <th className="px-6 py-4 text-center text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Actions</th>
                   </tr>
-                ) : filteredEmployees.length === 0 ? (
-                  <tr>
-                    <td colSpan={7} style={{ padding: '24px', textAlign: 'center', color: '#6b7280' }}>No employees found</td>
-                  </tr>
-                ) : (
-                  filteredEmployees.map((employee) => (
-                    <tr key={employee.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
-                      <td style={{ padding: '12px 16px', fontSize: '14px', fontWeight: 600, color: '#2563eb' }}>{employee.employee_number}</td>
-                      <td style={{ padding: '12px 16px', fontSize: '14px' }}>{employee.first_name} {employee.last_name}</td>
-                      <td style={{ padding: '12px 16px', fontSize: '14px' }}>{employee.department}</td>
-                      <td style={{ padding: '12px 16px', fontSize: '14px' }}>{employee.position}</td>
-                      <td style={{ padding: '12px 16px' }}>{getEmploymentTypeBadge(employee.employment_type)}</td>
-                      <td style={{ padding: '12px 16px', fontSize: '14px', fontWeight: 600 }}>{formatCurrency(employee.salary)}</td>
-                      <td style={{ padding: '12px 16px' }}>
-                        <div style={{ display: 'flex', gap: '8px' }}>
-                          <button onClick={() => handleEditEmployee(employee)} style={{ padding: '4px 8px', fontSize: '12px', color: '#2563eb', background: 'none', border: 'none', cursor: 'pointer' }}>Edit</button>
-                          <button onClick={() => setDeleteConfirm({ show: true, type: 'employee', id: employee.id, name: `${employee.first_name} ${employee.last_name}` })} style={{ padding: '4px 8px', fontSize: '12px', color: '#dc2626', background: 'none', border: 'none', cursor: 'pointer' }}>Delete</button>
+                </thead>
+                <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                  {filteredEmployees.map((employee) => (
+                    <tr key={employee.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                      <td className="px-6 py-4 font-medium text-green-600 dark:text-green-400">{employee.employee_number}</td>
+                      <td className="px-6 py-4 text-gray-900 dark:text-white">{employee.first_name} {employee.last_name}</td>
+                      <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{employee.department}</td>
+                      <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{employee.position}</td>
+                      <td className="px-6 py-4">{getEmploymentTypeBadge(employee.employment_type)}</td>
+                      <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">{formatCurrency(employee.salary)}</td>
+                      <td className="px-6 py-4">
+                        <div className="flex gap-2 justify-center">
+                          <button onClick={() => handleEditEmployee(employee)} className="p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors" title="Edit">
+                            <Edit2 className="h-4 w-4" />
+                          </button>
+                          <button onClick={() => setDeleteConfirm({ show: true, type: 'employee', id: employee.id, name: `${employee.first_name} ${employee.last_name}` })} className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors" title="Delete">
+                            <Trash2 className="h-4 w-4" />
+                          </button>
                         </div>
                       </td>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+                  ))}
+                </tbody>
+              </table>
+            )}
           </div>
         </div>
       )}
@@ -480,101 +503,138 @@ const PayrollDashboard: React.FC = () => {
       {activeTab === 'payslips' && (
         <div>
           {/* Actions Bar */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-            <input
-              type="text"
-              placeholder="Search payslips..."
-              value={payslipsSearch}
-              onChange={(e) => setPayslipsSearch(e.target.value)}
-              style={{ padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px', width: '300px' }}
-            />
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+            <div className="relative w-full md:w-80">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search payslips..."
+                value={payslipsSearch}
+                onChange={(e) => setPayslipsSearch(e.target.value)}
+                className="w-full pl-10 pr-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              />
+            </div>
             <button
               onClick={handleCreatePayslip}
-              style={{ padding: '8px 16px', backgroundColor: '#2563eb', color: 'white', border: 'none', borderRadius: '6px', fontWeight: 600, cursor: 'pointer' }}
+              className="px-6 py-2.5 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-xl hover:from-green-600 hover:to-emerald-600 transition-all shadow-lg shadow-green-500/30 flex items-center gap-2 font-medium"
             >
-              + New Payslip
+              <Plus className="h-5 w-5" />
+              New Payslip
             </button>
           </div>
 
           {/* Summary Cards */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '16px' }}>
-            <div style={{ backgroundColor: 'white', padding: '16px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-              <div style={{ fontSize: '14px', color: '#6b7280', marginBottom: '4px' }}>Total Payslips</div>
-              <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#111827' }}>{payslips.length}</div>
-            </div>
-            <div style={{ backgroundColor: 'white', padding: '16px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-              <div style={{ fontSize: '14px', color: '#6b7280', marginBottom: '4px' }}>Draft</div>
-              <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#6b7280' }}>
-                {payslips.filter(p => p.status === 'DRAFT').length}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl shadow-lg shadow-blue-500/30">
+                  <FileText className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">{payslips.length}</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Total Payslips</p>
+                </div>
               </div>
             </div>
-            <div style={{ backgroundColor: 'white', padding: '16px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-              <div style={{ fontSize: '14px', color: '#6b7280', marginBottom: '4px' }}>Paid</div>
-              <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#059669' }}>
-                {payslips.filter(p => p.status === 'PAID').length}
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-gradient-to-br from-gray-500 to-slate-500 rounded-xl shadow-lg shadow-gray-500/30">
+                  <FileText className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">{payslips.filter(p => p.status === 'DRAFT').length}</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Draft</p>
+                </div>
               </div>
             </div>
-            <div style={{ backgroundColor: 'white', padding: '16px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-              <div style={{ fontSize: '14px', color: '#6b7280', marginBottom: '4px' }}>Total Net Pay</div>
-              <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#111827' }}>
-                {formatCurrency(payslips.reduce((sum, p) => sum + p.net_salary, 0))}
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg shadow-green-500/30">
+                  <Check className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">{payslips.filter(p => p.status === 'PAID').length}</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Paid</p>
+                </div>
+              </div>
+            </div>
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg shadow-green-500/30">
+                  <DollarSign className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">{formatCurrency(payslips.reduce((sum, p) => sum + p.net_salary, 0))}</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Total Net Pay</p>
+                </div>
               </div>
             </div>
           </div>
 
           {/* Payslips Table */}
-          <div style={{ backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', overflow: 'hidden' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-              <thead style={{ backgroundColor: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
-                <tr>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Payslip #</th>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Employee</th>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Period</th>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Gross</th>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>PAYE</th>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>UIF</th>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Net</th>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Status</th>
-                  <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {payslipsLoading ? (
-                  <tr>
-                    <td colSpan={9} style={{ padding: '24px', textAlign: 'center', color: '#6b7280' }}>Loading payslips...</td>
-                  </tr>
-                ) : filteredPayslips.length === 0 ? (
-                  <tr>
-                    <td colSpan={9} style={{ padding: '24px', textAlign: 'center', color: '#6b7280' }}>No payslips found</td>
-                  </tr>
-                ) : (
-                  filteredPayslips.map((payslip) => (
-                    <tr key={payslip.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
-                      <td style={{ padding: '12px 16px', fontSize: '14px', fontWeight: 600, color: '#2563eb' }}>{payslip.payslip_number}</td>
-                      <td style={{ padding: '12px 16px', fontSize: '14px' }}>{payslip.employee_name || `Employee #${payslip.employee_id}`}</td>
-                      <td style={{ padding: '12px 16px', fontSize: '14px' }}>{formatDate(payslip.pay_period_start)} - {formatDate(payslip.pay_period_end)}</td>
-                      <td style={{ padding: '12px 16px', fontSize: '14px' }}>{formatCurrency(payslip.gross_salary)}</td>
-                      <td style={{ padding: '12px 16px', fontSize: '14px' }}>{formatCurrency(payslip.paye)}</td>
-                      <td style={{ padding: '12px 16px', fontSize: '14px' }}>{formatCurrency(payslip.uif)}</td>
-                      <td style={{ padding: '12px 16px', fontSize: '14px', fontWeight: 600 }}>{formatCurrency(payslip.net_salary)}</td>
-                      <td style={{ padding: '12px 16px' }}>{getStatusBadge(payslip.status)}</td>
-                      <td style={{ padding: '12px 16px' }}>
-                        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                          <button onClick={() => handleEditPayslip(payslip)} style={{ padding: '4px 8px', fontSize: '12px', color: '#2563eb', background: 'none', border: 'none', cursor: 'pointer' }}>Edit</button>
-                          {payslip.status === 'DRAFT' && (
-                            <button onClick={() => handleApprovePayslip(payslip.id)} style={{ padding: '4px 8px', fontSize: '12px', color: '#059669', background: 'none', border: 'none', cursor: 'pointer' }}>Approve</button>
-                          )}
-                          {payslip.status === 'APPROVED' && (
-                            <button onClick={() => handlePayPayslip(payslip.id)} style={{ padding: '4px 8px', fontSize: '12px', color: '#f59e0b', background: 'none', border: 'none', cursor: 'pointer' }}>Pay</button>
-                          )}
-                          <button onClick={() => setDeleteConfirm({ show: true, type: 'payslip', id: payslip.id, name: payslip.payslip_number })} style={{ padding: '4px 8px', fontSize: '12px', color: '#dc2626', background: 'none', border: 'none', cursor: 'pointer' }}>Delete</button>
-                        </div>
-                      </td>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+            {payslipsLoading ? (
+              <div className="flex items-center justify-center h-64">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500"></div>
+              </div>
+            ) : filteredPayslips.length === 0 ? (
+              <div className="px-6 py-12 text-center">
+                <FileText className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
+                <p className="text-gray-500 dark:text-gray-400">No payslips found</p>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-600">
+                    <tr>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Payslip #</th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Employee</th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Period</th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Gross</th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">PAYE</th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">UIF</th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Net</th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Status</th>
+                      <th className="px-6 py-4 text-center text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Actions</th>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                    {filteredPayslips.map((payslip) => (
+                      <tr key={payslip.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                        <td className="px-6 py-4 font-medium text-green-600 dark:text-green-400">{payslip.payslip_number}</td>
+                        <td className="px-6 py-4 text-gray-900 dark:text-white">{payslip.employee_name || `Employee #${payslip.employee_id}`}</td>
+                        <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{formatDate(payslip.pay_period_start)} - {formatDate(payslip.pay_period_end)}</td>
+                        <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{formatCurrency(payslip.gross_salary)}</td>
+                        <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{formatCurrency(payslip.paye)}</td>
+                        <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{formatCurrency(payslip.uif)}</td>
+                        <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">{formatCurrency(payslip.net_salary)}</td>
+                        <td className="px-6 py-4">{getStatusBadge(payslip.status)}</td>
+                        <td className="px-6 py-4">
+                          <div className="flex gap-2 justify-center flex-wrap">
+                            <button onClick={() => handleEditPayslip(payslip)} className="p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors" title="Edit">
+                              <Edit2 className="h-4 w-4" />
+                            </button>
+                            {payslip.status === 'DRAFT' && (
+                              <button onClick={() => handleApprovePayslip(payslip.id)} className="p-2 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/30 rounded-lg transition-colors" title="Approve">
+                                <Check className="h-4 w-4" />
+                              </button>
+                            )}
+                            {payslip.status === 'APPROVED' && (
+                              <button onClick={() => handlePayPayslip(payslip.id)} className="p-2 text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-900/30 rounded-lg transition-colors" title="Pay">
+                                <CreditCard className="h-4 w-4" />
+                              </button>
+                            )}
+                            <button onClick={() => setDeleteConfirm({ show: true, type: 'payslip', id: payslip.id, name: payslip.payslip_number })} className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors" title="Delete">
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -583,123 +643,146 @@ const PayrollDashboard: React.FC = () => {
       {activeTab === 'tax_summary' && (
         <div>
           {taxSummaryLoading ? (
-            <div style={{ padding: '24px', textAlign: 'center', color: '#6b7280' }}>Loading tax summary...</div>
+            <div className="flex items-center justify-center h-64">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500"></div>
+            </div>
           ) : taxSummary ? (
             <div>
-              <div style={{ marginBottom: '16px' }}>
-                <h2 style={{ fontSize: '20px', fontWeight: 'bold', color: '#111827', marginBottom: '8px' }}>SA Tax Compliance Summary</h2>
-                <p style={{ color: '#6b7280' }}>Period: {taxSummary.period}</p>
+              <div className="mb-6">
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">SA Tax Compliance Summary</h2>
+                <p className="text-gray-500 dark:text-gray-400">Period: {taxSummary.period}</p>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginBottom: '24px' }}>
-                <div style={{ backgroundColor: 'white', padding: '24px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-                  <div style={{ fontSize: '14px', color: '#6b7280', marginBottom: '8px' }}>Total PAYE (Pay As You Earn)</div>
-                  <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#dc2626' }}>{formatCurrency(taxSummary.total_paye)}</div>
-                  <div style={{ fontSize: '12px', color: '#6b7280', marginTop: '8px' }}>Income tax withheld from employees</div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className="p-3 bg-gradient-to-br from-red-500 to-rose-500 rounded-xl shadow-lg shadow-red-500/30">
+                      <Calculator className="h-6 w-6 text-white" />
+                    </div>
+                    <div className="text-sm text-gray-500 dark:text-gray-400">Total PAYE (Pay As You Earn)</div>
+                  </div>
+                  <div className="text-3xl font-bold text-red-600 dark:text-red-400">{formatCurrency(taxSummary.total_paye)}</div>
+                  <div className="text-xs text-gray-400 dark:text-gray-500 mt-2">Income tax withheld from employees</div>
                 </div>
-                <div style={{ backgroundColor: 'white', padding: '24px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-                  <div style={{ fontSize: '14px', color: '#6b7280', marginBottom: '8px' }}>Total UIF (Unemployment Insurance Fund)</div>
-                  <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#2563eb' }}>{formatCurrency(taxSummary.total_uif)}</div>
-                  <div style={{ fontSize: '12px', color: '#6b7280', marginTop: '8px' }}>1% of gross salary (max R17,712/month)</div>
+                <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl shadow-lg shadow-blue-500/30">
+                      <Calculator className="h-6 w-6 text-white" />
+                    </div>
+                    <div className="text-sm text-gray-500 dark:text-gray-400">Total UIF (Unemployment Insurance Fund)</div>
+                  </div>
+                  <div className="text-3xl font-bold text-blue-600 dark:text-blue-400">{formatCurrency(taxSummary.total_uif)}</div>
+                  <div className="text-xs text-gray-400 dark:text-gray-500 mt-2">1% of gross salary (max R17,712/month)</div>
                 </div>
-                <div style={{ backgroundColor: 'white', padding: '24px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-                  <div style={{ fontSize: '14px', color: '#6b7280', marginBottom: '8px' }}>Total SDL (Skills Development Levy)</div>
-                  <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#059669' }}>{formatCurrency(taxSummary.total_sdl)}</div>
-                  <div style={{ fontSize: '12px', color: '#6b7280', marginTop: '8px' }}>1% of total payroll</div>
+                <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg shadow-green-500/30">
+                      <Calculator className="h-6 w-6 text-white" />
+                    </div>
+                    <div className="text-sm text-gray-500 dark:text-gray-400">Total SDL (Skills Development Levy)</div>
+                  </div>
+                  <div className="text-3xl font-bold text-green-600 dark:text-green-400">{formatCurrency(taxSummary.total_sdl)}</div>
+                  <div className="text-xs text-gray-400 dark:text-gray-500 mt-2">1% of total payroll</div>
                 </div>
               </div>
 
-              <div style={{ backgroundColor: 'white', padding: '24px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-                <h3 style={{ fontSize: '18px', fontWeight: 'bold', color: '#111827', marginBottom: '16px' }}>Total Tax Liability</h3>
-                <div style={{ fontSize: '48px', fontWeight: 'bold', color: '#111827' }}>
+              <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Total Tax Liability</h3>
+                <div className="text-5xl font-bold text-gray-900 dark:text-white">
                   {formatCurrency(taxSummary.total_paye + taxSummary.total_uif + taxSummary.total_sdl)}
                 </div>
-                <div style={{ fontSize: '14px', color: '#6b7280', marginTop: '8px' }}>
+                <div className="text-sm text-gray-500 dark:text-gray-400 mt-2">
                   Amount to be paid to SARS via EMP201 submission
                 </div>
               </div>
             </div>
           ) : (
-            <div style={{ padding: '24px', textAlign: 'center', color: '#6b7280' }}>No tax summary available</div>
+            <div className="px-6 py-12 text-center">
+              <Calculator className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
+              <p className="text-gray-500 dark:text-gray-400">No tax summary available</p>
+            </div>
           )}
         </div>
       )}
 
       {/* EMPLOYEE MODAL */}
       {showEmployeeModal && (
-        <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}>
-          <div style={{ backgroundColor: 'white', borderRadius: '8px', width: '600px', maxHeight: '90vh', overflow: 'auto' }}>
-            <div style={{ padding: '20px', borderBottom: '1px solid #e5e7eb', position: 'sticky', top: 0, backgroundColor: 'white', zIndex: 10 }}>
-              <h2 style={{ fontSize: '20px', fontWeight: 'bold' }}>{editingEmployee ? 'Edit Employee' : 'New Employee'}</h2>
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-auto shadow-2xl">
+            <div className="p-6 border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-gradient-to-r from-green-500 to-emerald-500 rounded-t-2xl">
+              <h2 className="text-xl font-bold text-white flex items-center gap-3">
+                <Users className="h-6 w-6" />
+                {editingEmployee ? 'Edit Employee' : 'New Employee'}
+              </h2>
             </div>
-            <div style={{ padding: '20px' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+            <div className="p-6 space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>First Name *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">First Name *</label>
                   <input
                     type="text"
                     value={employeeForm.first_name}
                     onChange={(e) => setEmployeeForm({ ...employeeForm, first_name: e.target.value })}
-                    style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                    className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
                   />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Last Name *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Last Name *</label>
                   <input
                     type="text"
                     value={employeeForm.last_name}
                     onChange={(e) => setEmployeeForm({ ...employeeForm, last_name: e.target.value })}
-                    style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                    className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
                   />
                 </div>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Email *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email *</label>
                   <input
                     type="email"
                     value={employeeForm.email}
                     onChange={(e) => setEmployeeForm({ ...employeeForm, email: e.target.value })}
-                    style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                    className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
                   />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Phone *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Phone *</label>
                   <input
                     type="text"
                     value={employeeForm.phone}
                     onChange={(e) => setEmployeeForm({ ...employeeForm, phone: e.target.value })}
-                    style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                    className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
                   />
                 </div>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Department *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Department *</label>
                   <input
                     type="text"
                     value={employeeForm.department}
                     onChange={(e) => setEmployeeForm({ ...employeeForm, department: e.target.value })}
-                    style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                    className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
                   />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Position *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Position *</label>
                   <input
                     type="text"
                     value={employeeForm.position}
                     onChange={(e) => setEmployeeForm({ ...employeeForm, position: e.target.value })}
-                    style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                    className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
                   />
                 </div>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Employment Type *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Employment Type *</label>
                   <select
                     value={employeeForm.employment_type}
                     onChange={(e) => setEmployeeForm({ ...employeeForm, employment_type: e.target.value as 'PERMANENT' | 'CONTRACT' | 'TEMPORARY' })}
-                    style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                    className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
                   >
                     <option value="PERMANENT">Permanent</option>
                     <option value="CONTRACT">Contract</option>
@@ -707,37 +790,38 @@ const PayrollDashboard: React.FC = () => {
                   </select>
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Monthly Salary (ZAR) *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Monthly Salary (ZAR) *</label>
                   <input
                     type="number"
                     step="0.01"
                     value={employeeForm.salary}
                     onChange={(e) => setEmployeeForm({ ...employeeForm, salary: e.target.value })}
-                    style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                    className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
                   />
                 </div>
               </div>
-              <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+              <div>
+                <label className="flex items-center gap-3 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={employeeForm.is_active}
                     onChange={(e) => setEmployeeForm({ ...employeeForm, is_active: e.target.checked })}
+                    className="w-5 h-5 rounded border-gray-300 text-green-500 focus:ring-green-500"
                   />
-                  <span style={{ fontSize: '14px', fontWeight: 600 }}>Active</span>
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Active</span>
                 </label>
               </div>
             </div>
-            <div style={{ padding: '20px', borderTop: '1px solid #e5e7eb', display: 'flex', justifyContent: 'flex-end', gap: '12px', position: 'sticky', bottom: 0, backgroundColor: 'white' }}>
+            <div className="p-6 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3 sticky bottom-0 bg-white dark:bg-gray-800">
               <button
                 onClick={() => setShowEmployeeModal(false)}
-                style={{ padding: '8px 16px', border: '1px solid #d1d5db', borderRadius: '6px', fontWeight: 600, cursor: 'pointer', background: 'white' }}
+                className="px-6 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSaveEmployee}
-                style={{ padding: '8px 16px', backgroundColor: '#2563eb', color: 'white', border: 'none', borderRadius: '6px', fontWeight: 600, cursor: 'pointer' }}
+                className="px-6 py-2.5 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-xl font-medium hover:from-green-600 hover:to-emerald-600 transition-all shadow-lg shadow-green-500/30"
               >
                 {editingEmployee ? 'Update' : 'Create'}
               </button>
@@ -748,104 +832,107 @@ const PayrollDashboard: React.FC = () => {
 
       {/* PAYSLIP MODAL */}
       {showPayslipModal && (
-        <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}>
-          <div style={{ backgroundColor: 'white', borderRadius: '8px', width: '600px', maxHeight: '90vh', overflow: 'auto' }}>
-            <div style={{ padding: '20px', borderBottom: '1px solid #e5e7eb', position: 'sticky', top: 0, backgroundColor: 'white', zIndex: 10 }}>
-              <h2 style={{ fontSize: '20px', fontWeight: 'bold' }}>{editingPayslip ? 'Edit Payslip' : 'New Payslip'}</h2>
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-auto shadow-2xl">
+            <div className="p-6 border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-gradient-to-r from-green-500 to-emerald-500 rounded-t-2xl">
+              <h2 className="text-xl font-bold text-white flex items-center gap-3">
+                <FileText className="h-6 w-6" />
+                {editingPayslip ? 'Edit Payslip' : 'New Payslip'}
+              </h2>
             </div>
-            <div style={{ padding: '20px' }}>
-              <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Employee ID *</label>
+            <div className="p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Employee ID *</label>
                 <input
                   type="number"
                   value={payslipForm.employee_id}
                   onChange={(e) => setPayslipForm({ ...payslipForm, employee_id: e.target.value })}
-                  style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                  className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 />
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Pay Period Start *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Pay Period Start *</label>
                   <input
                     type="date"
                     value={payslipForm.pay_period_start}
                     onChange={(e) => setPayslipForm({ ...payslipForm, pay_period_start: e.target.value })}
-                    style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                    className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
                   />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Pay Period End *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Pay Period End *</label>
                   <input
                     type="date"
                     value={payslipForm.pay_period_end}
                     onChange={(e) => setPayslipForm({ ...payslipForm, pay_period_end: e.target.value })}
-                    style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                    className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
                   />
                 </div>
               </div>
-              <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Gross Salary (ZAR) *</label>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Gross Salary (ZAR) *</label>
                 <input
                   type="number"
                   step="0.01"
                   value={payslipForm.gross_salary}
                   onChange={(e) => setPayslipForm({ ...payslipForm, gross_salary: e.target.value })}
-                  style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                  className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 />
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                  <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>PAYE (ZAR) *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">PAYE (ZAR) *</label>
                   <input
                     type="number"
                     step="0.01"
                     value={payslipForm.paye}
                     onChange={(e) => setPayslipForm({ ...payslipForm, paye: e.target.value })}
-                    style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                    className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
                   />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>UIF (ZAR) *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">UIF (ZAR) *</label>
                   <input
                     type="number"
                     step="0.01"
                     value={payslipForm.uif}
                     onChange={(e) => setPayslipForm({ ...payslipForm, uif: e.target.value })}
-                    style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                    className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
                   />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>SDL (ZAR) *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">SDL (ZAR) *</label>
                   <input
                     type="number"
                     step="0.01"
                     value={payslipForm.sdl}
                     onChange={(e) => setPayslipForm({ ...payslipForm, sdl: e.target.value })}
-                    style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                    className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
                   />
                 </div>
               </div>
-              <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Other Deductions (ZAR)</label>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Other Deductions (ZAR)</label>
                 <input
                   type="number"
                   step="0.01"
                   value={payslipForm.other_deductions}
                   onChange={(e) => setPayslipForm({ ...payslipForm, other_deductions: e.target.value })}
-                  style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                  className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 />
               </div>
             </div>
-            <div style={{ padding: '20px', borderTop: '1px solid #e5e7eb', display: 'flex', justifyContent: 'flex-end', gap: '12px', position: 'sticky', bottom: 0, backgroundColor: 'white' }}>
+            <div className="p-6 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3 sticky bottom-0 bg-white dark:bg-gray-800">
               <button
                 onClick={() => setShowPayslipModal(false)}
-                style={{ padding: '8px 16px', border: '1px solid #d1d5db', borderRadius: '6px', fontWeight: 600, cursor: 'pointer', background: 'white' }}
+                className="px-6 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSavePayslip}
-                style={{ padding: '8px 16px', backgroundColor: '#2563eb', color: 'white', border: 'none', borderRadius: '6px', fontWeight: 600, cursor: 'pointer' }}
+                className="px-6 py-2.5 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-xl font-medium hover:from-green-600 hover:to-emerald-600 transition-all shadow-lg shadow-green-500/30"
               >
                 {editingPayslip ? 'Update' : 'Create'}
               </button>

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { FolderOpen, Plus, Search, TrendingDown, DollarSign, Package } from 'lucide-react';
+import { FolderOpen, Plus, Search, TrendingDown, DollarSign, Package, X } from 'lucide-react';
 import api from '../../lib/api';
 
 interface AssetCategory {
@@ -115,168 +115,147 @@ export default function FixedAssetsDashboard() {
     return new Date(dateString).toLocaleDateString('en-ZA');
   };
 
+  if (loading && assets.length === 0) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-slate-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-500 dark:text-gray-400">Loading fixed assets...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div style={{ padding: '2rem' }}>
-      <div style={{ marginBottom: '2rem' }}>
-        <h1 style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          <FolderOpen size={32} style={{ color: '#64748b' }} />
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-6 lg:p-8">
+      {/* Header */}
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
+          <div className="p-2 bg-gradient-to-br from-slate-500 to-gray-600 rounded-xl shadow-lg shadow-slate-500/30">
+            <FolderOpen className="h-7 w-7 text-white" />
+          </div>
           Fixed Assets
         </h1>
-        <p style={{ color: '#6b7280' }}>Manage fixed assets, depreciation, and asset disposals</p>
+        <p className="text-gray-500 dark:text-gray-400 mt-1">Manage fixed assets, depreciation, and asset disposals</p>
       </div>
 
       {/* Action Bar */}
-      <div style={{ 
-        display: 'flex', 
-        gap: '1rem', 
-        marginBottom: '2rem',
-        padding: '1.5rem',
-        background: 'white',
-        borderRadius: '0.5rem',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-      }}>
-        <div style={{ flex: 1, position: 'relative' }}>
-          <Search size={20} style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: '#9ca3af' }} />
-          <input
-            type="text"
-            placeholder="Search assets..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            style={{
-              width: '100%',
-              padding: '0.5rem 1rem 0.5rem 2.5rem',
-              border: '1px solid #d1d5db',
-              borderRadius: '0.375rem',
-              fontSize: '0.875rem'
-            }}
-          />
+      <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-gray-700 mb-6">
+        <div className="flex flex-col md:flex-row gap-4">
+          <div className="flex-1 relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search assets..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-10 pr-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all"
+            />
+          </div>
+          <button
+            onClick={() => setShowAddModal(true)}
+            className="flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-slate-500 to-gray-600 text-white rounded-xl font-semibold shadow-lg shadow-slate-500/30 hover:shadow-xl hover:shadow-slate-500/40 transition-all duration-200"
+          >
+            <Plus className="h-5 w-5" />
+            Add Asset
+          </button>
         </div>
-        <button
-          onClick={() => setShowAddModal(true)}
-          style={{
-            padding: '0.5rem 1.5rem',
-            background: '#64748b',
-            color: 'white',
-            border: 'none',
-            borderRadius: '0.375rem',
-            fontSize: '0.875rem',
-            fontWeight: '500',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem'
-          }}
-        >
-          <Plus size={16} />
-          Add Asset
-        </button>
       </div>
 
-      {/* Stats */}
-      <div style={{ 
-        display: 'grid', 
-        gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', 
-        gap: '1rem',
-        marginBottom: '2rem'
-      }}>
-        <div style={{ padding: '1.5rem', background: 'white', borderRadius: '0.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
-            <Package size={20} style={{ color: '#64748b' }} />
-            <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>Total Assets</div>
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-gradient-to-br from-slate-500 to-gray-600 rounded-xl shadow-lg shadow-slate-500/30">
+              <Package className="h-6 w-6 text-white" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{summary.total_assets}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Total Assets</p>
+            </div>
           </div>
-          <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#64748b' }}>{summary.total_assets}</div>
         </div>
-        <div style={{ padding: '1.5rem', background: 'white', borderRadius: '0.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
-            <DollarSign size={20} style={{ color: '#10b981' }} />
-            <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>Book Value</div>
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl shadow-lg shadow-emerald-500/30">
+              <DollarSign className="h-6 w-6 text-white" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{formatCurrency(summary.total_book_value)}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Book Value</p>
+            </div>
           </div>
-          <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#10b981' }}>{formatCurrency(summary.total_book_value)}</div>
         </div>
-        <div style={{ padding: '1.5rem', background: 'white', borderRadius: '0.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
-            <TrendingDown size={20} style={{ color: '#ef4444' }} />
-            <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>Accumulated Depreciation</div>
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-gradient-to-br from-red-500 to-rose-500 rounded-xl shadow-lg shadow-red-500/30">
+              <TrendingDown className="h-6 w-6 text-white" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{formatCurrency(summary.total_depreciation)}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Accumulated Depreciation</p>
+            </div>
           </div>
-          <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#ef4444' }}>{formatCurrency(summary.total_depreciation)}</div>
         </div>
-        <div style={{ padding: '1.5rem', background: 'white', borderRadius: '0.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
-            <DollarSign size={20} style={{ color: '#3b82f6' }} />
-            <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>Total Cost</div>
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl shadow-lg shadow-blue-500/30">
+              <DollarSign className="h-6 w-6 text-white" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{formatCurrency(summary.total_cost)}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Total Cost</p>
+            </div>
           </div>
-          <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#3b82f6' }}>{formatCurrency(summary.total_cost)}</div>
         </div>
       </div>
 
       {/* Assets Table */}
-      {loading ? (
-        <div style={{ textAlign: 'center', padding: '3rem', background: 'white', borderRadius: '0.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-          <p style={{ color: '#6b7280' }}>Loading assets...</p>
-        </div>
-      ) : filteredAssets.length === 0 ? (
-        <div style={{ 
-          textAlign: 'center', 
-          padding: '3rem',
-          background: 'white',
-          borderRadius: '0.5rem',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-        }}>
-          <FolderOpen size={48} style={{ margin: '0 auto 1rem', color: '#d1d5db' }} />
-          <h3 style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '0.5rem' }}>No fixed assets yet</h3>
-          <p style={{ color: '#6b7280', marginBottom: '1.5rem' }}>
+      {filteredAssets.length === 0 ? (
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-12 text-center">
+          <FolderOpen className="h-16 w-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No fixed assets yet</h3>
+          <p className="text-gray-500 dark:text-gray-400 mb-6">
             Start by adding your first fixed asset to track depreciation and book value
           </p>
           <button
             onClick={() => setShowAddModal(true)}
-            style={{
-              padding: '0.5rem 1.5rem',
-              background: '#64748b',
-              color: 'white',
-              border: 'none',
-              borderRadius: '0.375rem',
-              fontSize: '0.875rem',
-              fontWeight: '500',
-              cursor: 'pointer'
-            }}
+            className="px-5 py-2.5 bg-gradient-to-r from-slate-500 to-gray-600 text-white rounded-xl font-semibold shadow-lg shadow-slate-500/30 hover:shadow-xl hover:shadow-slate-500/40 transition-all"
           >
             Add Your First Asset
           </button>
         </div>
       ) : (
-        <div style={{ background: 'white', borderRadius: '0.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', overflow: 'hidden' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <thead style={{ background: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+          <table className="w-full">
+            <thead className="bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-700">
               <tr>
-                <th style={{ padding: '0.75rem 1rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Asset Number</th>
-                <th style={{ padding: '0.75rem 1rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Description</th>
-                <th style={{ padding: '0.75rem 1rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Category</th>
-                <th style={{ padding: '0.75rem 1rem', textAlign: 'right', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Acquisition Cost</th>
-                <th style={{ padding: '0.75rem 1rem', textAlign: 'right', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Depreciation</th>
-                <th style={{ padding: '0.75rem 1rem', textAlign: 'right', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Book Value</th>
-                <th style={{ padding: '0.75rem 1rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Acquisition Date</th>
-                <th style={{ padding: '0.75rem 1rem', textAlign: 'center', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Status</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Asset Number</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Description</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Category</th>
+                <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Acquisition Cost</th>
+                <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Depreciation</th>
+                <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Book Value</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Acquisition Date</th>
+                <th className="px-6 py-4 text-center text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
               {filteredAssets.map((asset) => (
-                <tr key={asset.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
-                  <td style={{ padding: '1rem', fontWeight: '500', color: '#111827' }}>{asset.asset_number}</td>
-                  <td style={{ padding: '1rem', color: '#374151' }}>{asset.description}</td>
-                  <td style={{ padding: '1rem', color: '#6b7280', fontSize: '0.875rem' }}>{asset.category_name}</td>
-                  <td style={{ padding: '1rem', textAlign: 'right', color: '#374151' }}>{formatCurrency(asset.acquisition_cost)}</td>
-                  <td style={{ padding: '1rem', textAlign: 'right', color: '#ef4444' }}>{formatCurrency(asset.accumulated_depreciation)}</td>
-                  <td style={{ padding: '1rem', textAlign: 'right', fontWeight: '500', color: '#10b981' }}>{formatCurrency(asset.book_value)}</td>
-                  <td style={{ padding: '1rem', color: '#6b7280', fontSize: '0.875rem' }}>{formatDate(asset.acquisition_date)}</td>
-                  <td style={{ padding: '1rem', textAlign: 'center' }}>
-                    <span style={{
-                      padding: '0.25rem 0.75rem',
-                      borderRadius: '9999px',
-                      fontSize: '0.75rem',
-                      fontWeight: '500',
-                      background: asset.status === 'active' ? '#d1fae5' : '#fee2e2',
-                      color: asset.status === 'active' ? '#065f46' : '#991b1b'
-                    }}>
+                <tr key={asset.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors">
+                  <td className="px-6 py-4 font-semibold text-gray-900 dark:text-white">{asset.asset_number}</td>
+                  <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{asset.description}</td>
+                  <td className="px-6 py-4 text-gray-500 dark:text-gray-400 text-sm">{asset.category_name}</td>
+                  <td className="px-6 py-4 text-right text-gray-600 dark:text-gray-300">{formatCurrency(asset.acquisition_cost)}</td>
+                  <td className="px-6 py-4 text-right text-red-600 dark:text-red-400">{formatCurrency(asset.accumulated_depreciation)}</td>
+                  <td className="px-6 py-4 text-right font-semibold text-emerald-600 dark:text-emerald-400">{formatCurrency(asset.book_value)}</td>
+                  <td className="px-6 py-4 text-gray-500 dark:text-gray-400 text-sm">{formatDate(asset.acquisition_date)}</td>
+                  <td className="px-6 py-4 text-center">
+                    <span className={`px-2.5 py-1 text-xs font-semibold rounded-full ${
+                      asset.status === 'active' 
+                        ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400' 
+                        : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'
+                    }`}>
                       {asset.status}
                     </span>
                   </td>
@@ -289,172 +268,99 @@ export default function FixedAssetsDashboard() {
 
       {/* Add Asset Modal */}
       {showAddModal && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background: 'rgba(0,0,0,0.5)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 1000
-        }}>
-          <div style={{
-            background: 'white',
-            borderRadius: '0.5rem',
-            padding: '2rem',
-            width: '90%',
-            maxWidth: '500px',
-            maxHeight: '90vh',
-            overflow: 'auto'
-          }}>
-            <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1.5rem' }}>Add Fixed Asset</h2>
-            
-            <div style={{ marginBottom: '1rem' }}>
-              <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>
-                Category *
-              </label>
-              <select
-                value={newAsset.category_id}
-                onChange={(e) => setNewAsset({ ...newAsset, category_id: e.target.value })}
-                style={{
-                  width: '100%',
-                  padding: '0.5rem',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '0.375rem',
-                  fontSize: '0.875rem'
-                }}
-              >
-                <option value="">Select category...</option>
-                {categories.map(cat => (
-                  <option key={cat.id} value={cat.id}>{cat.name}</option>
-                ))}
-              </select>
-            </div>
-
-            <div style={{ marginBottom: '1rem' }}>
-              <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>
-                Description *
-              </label>
-              <input
-                type="text"
-                value={newAsset.description}
-                onChange={(e) => setNewAsset({ ...newAsset, description: e.target.value })}
-                style={{
-                  width: '100%',
-                  padding: '0.5rem',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '0.375rem',
-                  fontSize: '0.875rem'
-                }}
-              />
-            </div>
-
-            <div style={{ marginBottom: '1rem' }}>
-              <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>
-                Acquisition Date *
-              </label>
-              <input
-                type="date"
-                value={newAsset.acquisition_date}
-                onChange={(e) => setNewAsset({ ...newAsset, acquisition_date: e.target.value })}
-                style={{
-                  width: '100%',
-                  padding: '0.5rem',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '0.375rem',
-                  fontSize: '0.875rem'
-                }}
-              />
-            </div>
-
-            <div style={{ marginBottom: '1rem' }}>
-              <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>
-                Acquisition Cost *
-              </label>
-              <input
-                type="number"
-                step="0.01"
-                value={newAsset.acquisition_cost}
-                onChange={(e) => setNewAsset({ ...newAsset, acquisition_cost: e.target.value })}
-                style={{
-                  width: '100%',
-                  padding: '0.5rem',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '0.375rem',
-                  fontSize: '0.875rem'
-                }}
-              />
-            </div>
-
-            <div style={{ marginBottom: '1rem' }}>
-              <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>
-                Location
-              </label>
-              <input
-                type="text"
-                value={newAsset.location}
-                onChange={(e) => setNewAsset({ ...newAsset, location: e.target.value })}
-                style={{
-                  width: '100%',
-                  padding: '0.5rem',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '0.375rem',
-                  fontSize: '0.875rem'
-                }}
-              />
-            </div>
-
-            <div style={{ marginBottom: '1.5rem' }}>
-              <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>
-                Serial Number
-              </label>
-              <input
-                type="text"
-                value={newAsset.serial_number}
-                onChange={(e) => setNewAsset({ ...newAsset, serial_number: e.target.value })}
-                style={{
-                  width: '100%',
-                  padding: '0.5rem',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '0.375rem',
-                  fontSize: '0.875rem'
-                }}
-              />
-            </div>
-
-            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl w-full max-w-lg max-h-[90vh] overflow-auto shadow-2xl">
+            <div className="p-6 border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-gradient-to-r from-slate-500 to-gray-600 rounded-t-2xl flex items-center justify-between">
+              <h2 className="text-xl font-bold text-white flex items-center gap-3">
+                <FolderOpen className="h-6 w-6" />
+                Add Fixed Asset
+              </h2>
               <button
                 onClick={() => setShowAddModal(false)}
-                style={{
-                  padding: '0.5rem 1.5rem',
-                  background: '#f3f4f6',
-                  color: '#374151',
-                  border: 'none',
-                  borderRadius: '0.375rem',
-                  fontSize: '0.875rem',
-                  fontWeight: '500',
-                  cursor: 'pointer'
-                }}
+                className="p-1 hover:bg-white/20 rounded-lg transition-colors"
+              >
+                <X className="h-5 w-5 text-white" />
+              </button>
+            </div>
+            <div className="p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Category *</label>
+                <select
+                  value={newAsset.category_id}
+                  onChange={(e) => setNewAsset({ ...newAsset, category_id: e.target.value })}
+                  className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all"
+                >
+                  <option value="">Select category...</option>
+                  {categories.map(cat => (
+                    <option key={cat.id} value={cat.id}>{cat.name}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Description *</label>
+                <input
+                  type="text"
+                  value={newAsset.description}
+                  onChange={(e) => setNewAsset({ ...newAsset, description: e.target.value })}
+                  className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Acquisition Date *</label>
+                  <input
+                    type="date"
+                    value={newAsset.acquisition_date}
+                    onChange={(e) => setNewAsset({ ...newAsset, acquisition_date: e.target.value })}
+                    className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Acquisition Cost *</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={newAsset.acquisition_cost}
+                    onChange={(e) => setNewAsset({ ...newAsset, acquisition_cost: e.target.value })}
+                    className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Location</label>
+                  <input
+                    type="text"
+                    value={newAsset.location}
+                    onChange={(e) => setNewAsset({ ...newAsset, location: e.target.value })}
+                    className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Serial Number</label>
+                  <input
+                    type="text"
+                    value={newAsset.serial_number}
+                    onChange={(e) => setNewAsset({ ...newAsset, serial_number: e.target.value })}
+                    className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all"
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="p-6 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3">
+              <button
+                onClick={() => setShowAddModal(false)}
+                className="px-5 py-2.5 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-semibold hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={handleAddAsset}
                 disabled={!newAsset.category_id || !newAsset.description || !newAsset.acquisition_cost}
-                style={{
-                  padding: '0.5rem 1.5rem',
-                  background: '#64748b',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '0.375rem',
-                  fontSize: '0.875rem',
-                  fontWeight: '500',
-                  cursor: newAsset.category_id && newAsset.description && newAsset.acquisition_cost ? 'pointer' : 'not-allowed',
-                  opacity: newAsset.category_id && newAsset.description && newAsset.acquisition_cost ? 1 : 0.5
-                }}
+                className="px-5 py-2.5 bg-gradient-to-r from-slate-500 to-gray-600 text-white rounded-xl font-semibold shadow-lg shadow-slate-500/30 hover:shadow-xl hover:shadow-slate-500/40 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Add Asset
               </button>

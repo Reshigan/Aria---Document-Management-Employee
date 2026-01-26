@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '../../lib/api';
 import { ConfirmDialog } from '../../components/ConfirmDialog';
-import { Plus, Search, Edit, Trash2, BookOpen, X, Check } from 'lucide-react';
+import { Plus, Search, Edit, Trash2, BookOpen, X, Check, RefreshCw, AlertCircle, FileText, Calculator, TrendingUp } from 'lucide-react';
 
 interface Account {
   id: string;
@@ -34,12 +34,7 @@ interface JournalEntryLine {
 
 interface TrialBalance {
   as_of_date: string;
-  accounts: {
-    account_code: string;
-    account_name: string;
-    balance: number;
-    balance_type: 'debit' | 'credit';
-  }[];
+  accounts: { account_code: string; account_name: string; balance: number; balance_type: 'debit' | 'credit'; }[];
   total_debits: number;
   total_credits: number;
   balanced: boolean;
@@ -61,47 +56,37 @@ export default function GeneralLedger() {
   const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
   const [selectedJournal, setSelectedJournal] = useState<JournalEntry | null>(null);
   const [accountFormData, setAccountFormData] = useState<Partial<Account>>({
-    account_code: '',
-    account_name: '',
-    account_type: 'asset',
-    account_category: '',
-    is_active: true
+    account_code: '', account_name: '', account_type: 'asset', account_category: '', is_active: true
   });
-  const [journalFormData, setJournalFormData] = useState<Partial<JournalEntry>>({
-    entry_date: new Date().toISOString().split('T')[0],
-    description: '',
-    reference: ''
+  const [journalFormData, setJournalFormData] = useState({
+    entry_date: new Date().toISOString().split('T')[0], description: '', reference: ''
   });
-  const [journalLines, setJournalLines] = useState<JournalEntryLine[]>([]);
+  const [journalLines, setJournalLines] = useState<JournalEntryLine[]>([
+    { line_number: 1, account_code: '', description: '', debit_amount: 0, credit_amount: 0 },
+    { line_number: 2, account_code: '', description: '', debit_amount: 0, credit_amount: 0 }
+  ]);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (activeTab === 'accounts') {
-      loadAccounts();
-    } else if (activeTab === 'journal') {
-      loadJournalEntries();
-      loadAccounts();
-    } else if (activeTab === 'trial-balance') {
-      loadTrialBalance();
-    }
+    if (activeTab === 'accounts') loadAccounts();
+    else if (activeTab === 'journal') { loadJournalEntries(); loadAccounts(); }
+    else if (activeTab === 'trial-balance') loadTrialBalance();
   }, [activeTab, searchTerm, typeFilter]);
 
   const loadAccounts = async () => {
     try {
       setLoading(true);
-      const params: any = {};
+      const params: Record<string, string> = {};
       if (searchTerm) params.search = searchTerm;
       if (typeFilter) params.type = typeFilter;
-      
       const response = await api.get('/erp/gl/chart-of-accounts', { params });
       setAccounts(response.data.accounts || response.data || []);
       setError(null);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error loading accounts:', err);
-      setError(err.response?.data?.detail || 'Failed to load accounts');
-    } finally {
-      setLoading(false);
-    }
+      const error = err as { response?: { data?: { detail?: string } } };
+      setError(error.response?.data?.detail || 'Failed to load accounts');
+    } finally { setLoading(false); }
   };
 
   const loadJournalEntries = async () => {
@@ -110,12 +95,11 @@ export default function GeneralLedger() {
       const response = await api.get('/erp/gl/journal-entries');
       setJournalEntries(response.data.entries || response.data || []);
       setError(null);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error loading journal entries:', err);
-      setError(err.response?.data?.detail || 'Failed to load journal entries');
-    } finally {
-      setLoading(false);
-    }
+      const error = err as { response?: { data?: { detail?: string } } };
+      setError(error.response?.data?.detail || 'Failed to load journal entries');
+    } finally { setLoading(false); }
   };
 
   const loadTrialBalance = async () => {
@@ -124,34 +108,21 @@ export default function GeneralLedger() {
       const response = await api.get('/erp/reports/trial-balance');
       setTrialBalance(response.data);
       setError(null);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error loading trial balance:', err);
-      setError(err.response?.data?.detail || 'Failed to load trial balance');
-    } finally {
-      setLoading(false);
-    }
+      const error = err as { response?: { data?: { detail?: string } } };
+      setError(error.response?.data?.detail || 'Failed to load trial balance');
+    } finally { setLoading(false); }
   };
 
   const handleCreateAccount = () => {
-    setAccountFormData({
-      account_code: '',
-      account_name: '',
-      account_type: 'asset',
-      account_category: '',
-      is_active: true
-    });
+    setAccountFormData({ account_code: '', account_name: '', account_type: 'asset', account_category: '', is_active: true });
     setShowCreateAccountModal(true);
   };
 
   const handleEditAccount = (account: Account) => {
     setSelectedAccount(account);
-    setAccountFormData({
-      account_code: account.account_code,
-      account_name: account.account_name,
-      account_type: account.account_type,
-      account_category: account.account_category,
-      is_active: account.is_active
-    });
+    setAccountFormData({ ...account });
     setShowEditAccountModal(true);
   };
 
@@ -162,49 +133,37 @@ export default function GeneralLedger() {
 
   const confirmDeleteAccount = async () => {
     if (!selectedAccount) return;
-    
     try {
       await api.delete(`/erp/gl/chart-of-accounts/${selectedAccount.account_code}`);
       loadAccounts();
       setSelectedAccount(null);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error deleting account:', err);
-      setError(err.response?.data?.detail || 'Failed to delete account');
+      const error = err as { response?: { data?: { detail?: string } } };
+      setError(error.response?.data?.detail || 'Failed to delete account');
     }
   };
 
   const handleSubmitAccount = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!accountFormData.account_code || !accountFormData.account_name) {
-      setError('Please fill in all required fields');
-      return;
-    }
-
+    if (!accountFormData.account_code || !accountFormData.account_name) { setError('Please fill in all required fields'); return; }
     try {
-      if (showEditAccountModal && selectedAccount) {
-        await api.put(`/erp/gl/chart-of-accounts/${selectedAccount.account_code}`, accountFormData);
-      } else {
-        await api.post('/erp/gl/chart-of-accounts', accountFormData);
-      }
-
+      if (showEditAccountModal && selectedAccount) await api.put(`/erp/gl/chart-of-accounts/${selectedAccount.account_code}`, accountFormData);
+      else await api.post('/erp/gl/chart-of-accounts', accountFormData);
       loadAccounts();
       setShowCreateAccountModal(false);
       setShowEditAccountModal(false);
       setSelectedAccount(null);
       setError(null);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error saving account:', err);
-      setError(err.response?.data?.detail || 'Failed to save account');
+      const error = err as { response?: { data?: { detail?: string } } };
+      setError(error.response?.data?.detail || 'Failed to save account');
     }
   };
 
   const handleCreateJournal = () => {
-    setJournalFormData({
-      entry_date: new Date().toISOString().split('T')[0],
-      description: '',
-      reference: ''
-    });
+    setJournalFormData({ entry_date: new Date().toISOString().split('T')[0], description: '', reference: '' });
     setJournalLines([
       { line_number: 1, account_code: '', description: '', debit_amount: 0, credit_amount: 0 },
       { line_number: 2, account_code: '', description: '', debit_amount: 0, credit_amount: 0 }
@@ -214,33 +173,20 @@ export default function GeneralLedger() {
 
   const handleSubmitJournal = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (journalLines.length < 2) {
-      setError('Journal entry must have at least 2 lines');
-      return;
-    }
-
+    if (journalLines.length < 2) { setError('Journal entry must have at least 2 lines'); return; }
     const totalDebits = journalLines.reduce((sum, line) => sum + (line.debit_amount || 0), 0);
     const totalCredits = journalLines.reduce((sum, line) => sum + (line.credit_amount || 0), 0);
-
-    if (Math.abs(totalDebits - totalCredits) > 0.01) {
-      setError(`Journal entry is not balanced. Debits: R${totalDebits.toFixed(2)}, Credits: R${totalCredits.toFixed(2)}`);
-      return;
-    }
-
+    if (Math.abs(totalDebits - totalCredits) > 0.01) { setError(`Journal entry is not balanced. Debits: R${totalDebits.toFixed(2)}, Credits: R${totalCredits.toFixed(2)}`); return; }
     try {
-      const payload = {
-        ...journalFormData,
-        lines: journalLines.filter(line => line.account_code && (line.debit_amount > 0 || line.credit_amount > 0))
-      };
-
+      const payload = { ...journalFormData, lines: journalLines.filter(line => line.account_code && (line.debit_amount > 0 || line.credit_amount > 0)) };
       await api.post('/erp/gl/journal-entries', payload);
       loadJournalEntries();
       setShowCreateJournalModal(false);
       setError(null);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error saving journal entry:', err);
-      setError(err.response?.data?.detail || 'Failed to save journal entry');
+      const error = err as { response?: { data?: { detail?: string } } };
+      setError(error.response?.data?.detail || 'Failed to save journal entry');
     }
   };
 
@@ -251,31 +197,25 @@ export default function GeneralLedger() {
 
   const confirmPostJournal = async () => {
     if (!selectedJournal) return;
-    
     try {
       await api.post(`/erp/gl/journal-entries/${selectedJournal.id}/post`);
-      alert('Journal entry posted to GL successfully!');
       loadJournalEntries();
       setShowPostJournalDialog(false);
       setSelectedJournal(null);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error posting journal entry:', err);
-      setError(err.response?.data?.detail || 'Failed to post journal entry');
+      const error = err as { response?: { data?: { detail?: string } } };
+      setError(error.response?.data?.detail || 'Failed to post journal entry');
     }
   };
 
   const addJournalLine = () => {
-    setJournalLines([
-      ...journalLines,
-      { line_number: journalLines.length + 1, account_code: '', description: '', debit_amount: 0, credit_amount: 0 }
-    ]);
+    setJournalLines([...journalLines, { line_number: journalLines.length + 1, account_code: '', description: '', debit_amount: 0, credit_amount: 0 }]);
   };
 
   const removeJournalLine = (index: number) => {
     const newLines = journalLines.filter((_, i) => i !== index);
-    newLines.forEach((line, i) => {
-      line.line_number = i + 1;
-    });
+    newLines.forEach((line, i) => { line.line_number = i + 1; });
     setJournalLines(newLines);
   };
 
@@ -289,238 +229,64 @@ export default function GeneralLedger() {
   const getTotalCredits = () => journalLines.reduce((sum, line) => sum + (line.credit_amount || 0), 0);
   const isBalanced = () => Math.abs(getTotalDebits() - getTotalCredits()) < 0.01;
 
-  const getAccountTypeColor = (type: string) => {
-    const colors: Record<string, string> = {
-      asset: '#2563eb',
-      liability: '#ef4444',
-      equity: '#8b5cf6',
-      revenue: '#10b981',
-      expense: '#f59e0b'
+  const getAccountTypeBadge = (type: string) => {
+    const styles: Record<string, string> = {
+      asset: 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800',
+      liability: 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 border-red-200 dark:border-red-800',
+      equity: 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-800',
+      revenue: 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800',
+      expense: 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800',
     };
-    return colors[type] || '#6b7280';
+    return styles[type] || styles.asset;
   };
 
-  const formatCurrency = (amount: number) => {
-    return `R ${amount.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  const getStatusBadge = (status: string) => {
+    const styles: Record<string, string> = {
+      draft: 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600',
+      posted: 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800',
+    };
+    return styles[status] || styles.draft;
   };
 
-  const renderAccountFormModal = (isEdit: boolean) => {
+  const stats = {
+    totalAccounts: accounts.length,
+    activeAccounts: accounts.filter(a => a.is_active).length,
+    totalJournals: journalEntries.length,
+    draftJournals: journalEntries.filter(j => j.status === 'draft').length,
+    postedJournals: journalEntries.filter(j => j.status === 'posted').length
+  };
+
+  const renderAccountModal = (isEdit: boolean) => {
     const isOpen = isEdit ? showEditAccountModal : showCreateAccountModal;
     const onClose = () => isEdit ? setShowEditAccountModal(false) : setShowCreateAccountModal(false);
-
     if (!isOpen) return null;
 
     return (
-      <div
-        style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background: 'rgba(0, 0, 0, 0.5)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 1000,
-          overflow: 'auto'
-        }}
-        onClick={onClose}
-      >
-        <div
-          onClick={(e) => e.stopPropagation()}
-          style={{
-            background: 'white',
-            borderRadius: '0.5rem',
-            boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)',
-            maxWidth: '600px',
-            width: '95%',
-            maxHeight: '95vh',
-            overflow: 'auto',
-            margin: '2rem'
-          }}
-        >
-          <div style={{
-            padding: '1.5rem',
-            borderBottom: '1px solid #e5e7eb',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            position: 'sticky',
-            top: 0,
-            background: 'white',
-            zIndex: 10
-          }}>
-            <h2 style={{ fontSize: '1.25rem', fontWeight: '600', margin: 0 }}>
-              {isEdit ? 'Edit Account' : 'Create Account'}
-            </h2>
-            <button
-              onClick={onClose}
-              style={{
-                padding: '0.25rem',
-                background: 'transparent',
-                border: 'none',
-                color: '#6b7280',
-                cursor: 'pointer'
-              }}
-            >
-              <X size={24} />
-            </button>
-          </div>
-
-          <form onSubmit={handleSubmitAccount}>
-            <div style={{ padding: '1.5rem' }}>
-              {error && (
-                <div style={{
-                  padding: '1rem',
-                  background: '#fee2e2',
-                  border: '1px solid #fecaca',
-                  borderRadius: '0.375rem',
-                  color: '#991b1b',
-                  marginBottom: '1rem'
-                }}>
-                  {error}
-                </div>
-              )}
-
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>
-                    Account Code *
-                  </label>
-                  <input
-                    type="text"
-                    value={accountFormData.account_code || ''}
-                    onChange={(e) => setAccountFormData({ ...accountFormData, account_code: e.target.value })}
-                    required
-                    disabled={isEdit}
-                    style={{
-                      width: '100%',
-                      padding: '0.5rem',
-                      border: '1px solid #d1d5db',
-                      borderRadius: '0.375rem',
-                      fontSize: '0.875rem',
-                      background: isEdit ? '#f3f4f6' : 'white'
-                    }}
-                  />
-                </div>
-
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>
-                    Account Type *
-                  </label>
-                  <select
-                    value={accountFormData.account_type || 'asset'}
-                    onChange={(e) => setAccountFormData({ ...accountFormData, account_type: e.target.value })}
-                    required
-                    style={{
-                      width: '100%',
-                      padding: '0.5rem',
-                      border: '1px solid #d1d5db',
-                      borderRadius: '0.375rem',
-                      fontSize: '0.875rem'
-                    }}
-                  >
-                    <option value="asset">Asset</option>
-                    <option value="liability">Liability</option>
-                    <option value="equity">Equity</option>
-                    <option value="revenue">Revenue</option>
-                    <option value="expense">Expense</option>
-                  </select>
-                </div>
+      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
+        <div onClick={(e) => e.stopPropagation()} className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden">
+          <div className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white p-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-white/20 rounded-lg"><BookOpen className="h-6 w-6" /></div>
+                <div><h2 className="text-xl font-semibold">{isEdit ? 'Edit Account' : 'Create Account'}</h2><p className="text-white/80 text-sm">Chart of Accounts</p></div>
               </div>
-
-              <div style={{ marginBottom: '1rem' }}>
-                <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>
-                  Account Name *
-                </label>
-                <input
-                  type="text"
-                  value={accountFormData.account_name || ''}
-                  onChange={(e) => setAccountFormData({ ...accountFormData, account_name: e.target.value })}
-                  required
-                  style={{
-                    width: '100%',
-                    padding: '0.5rem',
-                    border: '1px solid #d1d5db',
-                    borderRadius: '0.375rem',
-                    fontSize: '0.875rem'
-                  }}
-                />
-              </div>
-
-              <div style={{ marginBottom: '1rem' }}>
-                <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>
-                  Category
-                </label>
-                <input
-                  type="text"
-                  value={accountFormData.account_category || ''}
-                  onChange={(e) => setAccountFormData({ ...accountFormData, account_category: e.target.value })}
-                  style={{
-                    width: '100%',
-                    padding: '0.5rem',
-                    border: '1px solid #d1d5db',
-                    borderRadius: '0.375rem',
-                    fontSize: '0.875rem'
-                  }}
-                />
-              </div>
-
-              <div style={{ marginBottom: '1rem' }}>
-                <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
-                  <input
-                    type="checkbox"
-                    checked={accountFormData.is_active || false}
-                    onChange={(e) => setAccountFormData({ ...accountFormData, is_active: e.target.checked })}
-                    style={{ width: '1rem', height: '1rem' }}
-                  />
-                  <span style={{ fontSize: '0.875rem', fontWeight: '500' }}>Active</span>
-                </label>
-              </div>
+              <button onClick={onClose} className="p-2 hover:bg-white/20 rounded-lg transition-colors"><X className="h-5 w-5" /></button>
             </div>
-
-            <div style={{
-              padding: '1.5rem',
-              borderTop: '1px solid #e5e7eb',
-              display: 'flex',
-              gap: '0.75rem',
-              justifyContent: 'flex-end',
-              position: 'sticky',
-              bottom: 0,
-              background: 'white'
-            }}>
-              <button
-                type="button"
-                onClick={onClose}
-                style={{
-                  padding: '0.5rem 1rem',
-                  background: 'white',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '0.375rem',
-                  fontSize: '0.875rem',
-                  fontWeight: '500',
-                  color: '#374151',
-                  cursor: 'pointer'
-                }}
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                style={{
-                  padding: '0.5rem 1rem',
-                  background: '#2563eb',
-                  border: 'none',
-                  borderRadius: '0.375rem',
-                  fontSize: '0.875rem',
-                  fontWeight: '500',
-                  color: 'white',
-                  cursor: 'pointer'
-                }}
-              >
-                {isEdit ? 'Update Account' : 'Create Account'}
-              </button>
+          </div>
+          <form onSubmit={handleSubmitAccount}>
+            <div className="p-6 space-y-4">
+              {error && (<div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl flex items-center gap-3"><AlertCircle className="h-5 w-5 text-red-500" /><p className="text-red-700 dark:text-red-300">{error}</p></div>)}
+              <div className="grid grid-cols-2 gap-4">
+                <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Account Code *</label><input type="text" value={accountFormData.account_code || ''} onChange={(e) => setAccountFormData({ ...accountFormData, account_code: e.target.value })} required disabled={isEdit} className={`w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all ${isEdit ? 'bg-gray-100 dark:bg-gray-600' : ''}`} /></div>
+                <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Account Type *</label><select value={accountFormData.account_type || 'asset'} onChange={(e) => setAccountFormData({ ...accountFormData, account_type: e.target.value })} required className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"><option value="asset">Asset</option><option value="liability">Liability</option><option value="equity">Equity</option><option value="revenue">Revenue</option><option value="expense">Expense</option></select></div>
+              </div>
+              <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Account Name *</label><input type="text" value={accountFormData.account_name || ''} onChange={(e) => setAccountFormData({ ...accountFormData, account_name: e.target.value })} required className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all" /></div>
+              <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Category</label><input type="text" value={accountFormData.account_category || ''} onChange={(e) => setAccountFormData({ ...accountFormData, account_category: e.target.value })} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all" placeholder="e.g., Current Assets, Fixed Assets" /></div>
+              <label className="flex items-center gap-2 cursor-pointer"><input type="checkbox" checked={accountFormData.is_active || false} onChange={(e) => setAccountFormData({ ...accountFormData, is_active: e.target.checked })} className="w-5 h-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" /><span className="text-sm font-medium text-gray-700 dark:text-gray-300">Active</span></label>
+            </div>
+            <div className="p-6 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 flex justify-end gap-3">
+              <button type="button" onClick={onClose} className="px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">Cancel</button>
+              <button type="submit" className="px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-medium hover:from-indigo-700 hover:to-purple-700 transition-all shadow-lg shadow-indigo-500/30">{isEdit ? 'Update' : 'Create'}</button>
             </div>
           </form>
         </div>
@@ -528,359 +294,53 @@ export default function GeneralLedger() {
     );
   };
 
-  const renderJournalFormModal = () => {
+  const renderJournalModal = () => {
     if (!showCreateJournalModal) return null;
-
     return (
-      <div
-        style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background: 'rgba(0, 0, 0, 0.5)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 1000,
-          overflow: 'auto'
-        }}
-        onClick={() => setShowCreateJournalModal(false)}
-      >
-        <div
-          onClick={(e) => e.stopPropagation()}
-          style={{
-            background: 'white',
-            borderRadius: '0.5rem',
-            boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)',
-            maxWidth: '1200px',
-            width: '95%',
-            maxHeight: '95vh',
-            overflow: 'auto',
-            margin: '2rem'
-          }}
-        >
-          <div style={{
-            padding: '1.5rem',
-            borderBottom: '1px solid #e5e7eb',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            position: 'sticky',
-            top: 0,
-            background: 'white',
-            zIndex: 10
-          }}>
-            <h2 style={{ fontSize: '1.25rem', fontWeight: '600', margin: 0 }}>
-              Create Journal Entry
-            </h2>
-            <button
-              onClick={() => setShowCreateJournalModal(false)}
-              style={{
-                padding: '0.25rem',
-                background: 'transparent',
-                border: 'none',
-                color: '#6b7280',
-                cursor: 'pointer'
-              }}
-            >
-              <X size={24} />
-            </button>
+      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setShowCreateJournalModal(false)}>
+        <div onClick={(e) => e.stopPropagation()} className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-4xl overflow-hidden max-h-[90vh] overflow-y-auto">
+          <div className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white p-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3"><div className="p-2 bg-white/20 rounded-lg"><FileText className="h-6 w-6" /></div><div><h2 className="text-xl font-semibold">Create Journal Entry</h2><p className="text-white/80 text-sm">Record a new journal entry</p></div></div>
+              <button onClick={() => setShowCreateJournalModal(false)} className="p-2 hover:bg-white/20 rounded-lg transition-colors"><X className="h-5 w-5" /></button>
+            </div>
           </div>
-
           <form onSubmit={handleSubmitJournal}>
-            <div style={{ padding: '1.5rem' }}>
-              {error && (
-                <div style={{
-                  padding: '1rem',
-                  background: '#fee2e2',
-                  border: '1px solid #fecaca',
-                  borderRadius: '0.375rem',
-                  color: '#991b1b',
-                  marginBottom: '1rem'
-                }}>
-                  {error}
-                </div>
-              )}
-
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>
-                    Entry Date *
-                  </label>
-                  <input
-                    type="date"
-                    value={journalFormData.entry_date || ''}
-                    onChange={(e) => setJournalFormData({ ...journalFormData, entry_date: e.target.value })}
-                    required
-                    style={{
-                      width: '100%',
-                      padding: '0.5rem',
-                      border: '1px solid #d1d5db',
-                      borderRadius: '0.375rem',
-                      fontSize: '0.875rem'
-                    }}
-                  />
-                </div>
-
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>
-                    Reference
-                  </label>
-                  <input
-                    type="text"
-                    value={journalFormData.reference || ''}
-                    onChange={(e) => setJournalFormData({ ...journalFormData, reference: e.target.value })}
-                    style={{
-                      width: '100%',
-                      padding: '0.5rem',
-                      border: '1px solid #d1d5db',
-                      borderRadius: '0.375rem',
-                      fontSize: '0.875rem'
-                    }}
-                  />
-                </div>
-
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>
-                    Balance Status
-                  </label>
-                  <div style={{
-                    padding: '0.5rem',
-                    borderRadius: '0.375rem',
-                    fontSize: '0.875rem',
-                    fontWeight: '600',
-                    background: isBalanced() ? '#d1fae5' : '#fee2e2',
-                    color: isBalanced() ? '#065f46' : '#991b1b',
-                    textAlign: 'center'
-                  }}>
-                    {isBalanced() ? '✓ Balanced' : '✗ Not Balanced'}
-                  </div>
-                </div>
+            <div className="p-6 space-y-6">
+              {error && (<div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl flex items-center gap-3"><AlertCircle className="h-5 w-5 text-red-500" /><p className="text-red-700 dark:text-red-300">{error}</p></div>)}
+              <div className="grid grid-cols-3 gap-4">
+                <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Entry Date</label><input type="date" value={journalFormData.entry_date} onChange={(e) => setJournalFormData({ ...journalFormData, entry_date: e.target.value })} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all" /></div>
+                <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Reference</label><input type="text" value={journalFormData.reference} onChange={(e) => setJournalFormData({ ...journalFormData, reference: e.target.value })} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all" placeholder="Optional reference" /></div>
+                <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Description</label><input type="text" value={journalFormData.description} onChange={(e) => setJournalFormData({ ...journalFormData, description: e.target.value })} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all" placeholder="Journal description" /></div>
               </div>
-
-              <div style={{ marginBottom: '1.5rem' }}>
-                <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>
-                  Description *
-                </label>
-                <textarea
-                  value={journalFormData.description || ''}
-                  onChange={(e) => setJournalFormData({ ...journalFormData, description: e.target.value })}
-                  required
-                  rows={2}
-                  style={{
-                    width: '100%',
-                    padding: '0.5rem',
-                    border: '1px solid #d1d5db',
-                    borderRadius: '0.375rem',
-                    fontSize: '0.875rem',
-                    resize: 'vertical'
-                  }}
-                />
-              </div>
-
-              <div style={{ marginBottom: '1rem' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                  <h3 style={{ fontSize: '1rem', fontWeight: '600' }}>Journal Lines</h3>
-                  <button
-                    type="button"
-                    onClick={addJournalLine}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.5rem',
-                      padding: '0.5rem 1rem',
-                      background: '#2563eb',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '0.375rem',
-                      fontSize: '0.875rem',
-                      fontWeight: '500',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    <Plus size={16} />
-                    Add Line
-                  </button>
-                </div>
-
-                <div style={{ overflowX: 'auto', border: '1px solid #e5e7eb', borderRadius: '0.5rem' }}>
-                  <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                    <thead style={{ background: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
-                      <tr>
-                        <th style={{ padding: '0.75rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', width: '50px' }}>#</th>
-                        <th style={{ padding: '0.75rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', minWidth: '150px' }}>Account</th>
-                        <th style={{ padding: '0.75rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', minWidth: '200px' }}>Description</th>
-                        <th style={{ padding: '0.75rem', textAlign: 'right', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', width: '120px' }}>Debit</th>
-                        <th style={{ padding: '0.75rem', textAlign: 'right', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', width: '120px' }}>Credit</th>
-                        <th style={{ padding: '0.75rem', width: '50px' }}></th>
-                      </tr>
-                    </thead>
-                    <tbody>
+              <div>
+                <div className="flex items-center justify-between mb-4"><h3 className="font-semibold text-gray-900 dark:text-white">Journal Lines</h3><button type="button" onClick={addJournalLine} className="flex items-center gap-1 px-3 py-2 text-sm bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 rounded-lg hover:bg-indigo-200 dark:hover:bg-indigo-900/50 transition-colors"><Plus className="h-4 w-4" />Add Line</button></div>
+                <div className="border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden">
+                  <table className="w-full">
+                    <thead className="bg-gray-50 dark:bg-gray-900/50"><tr><th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">#</th><th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Account</th><th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Description</th><th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Debit</th><th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Credit</th><th className="px-4 py-3 w-10"></th></tr></thead>
+                    <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
                       {journalLines.map((line, index) => (
-                        <tr key={index} style={{ borderBottom: '1px solid #e5e7eb' }}>
-                          <td style={{ padding: '0.75rem', fontSize: '0.875rem' }}>{line.line_number}</td>
-                          <td style={{ padding: '0.75rem' }}>
-                            <select
-                              value={line.account_code}
-                              onChange={(e) => {
-                                const account = accounts.find(a => a.account_code === e.target.value);
-                                updateJournalLine(index, {
-                                  account_code: e.target.value,
-                                  account_name: account?.account_name
-                                });
-                              }}
-                              required
-                              style={{
-                                width: '100%',
-                                padding: '0.5rem',
-                                border: '1px solid #d1d5db',
-                                borderRadius: '0.375rem',
-                                fontSize: '0.875rem'
-                              }}
-                            >
-                              <option value="">Select account...</option>
-                              {accounts.filter(a => a.is_active).map(account => (
-                                <option key={account.id} value={account.account_code}>
-                                  {account.account_code} - {account.account_name}
-                                </option>
-                              ))}
-                            </select>
-                          </td>
-                          <td style={{ padding: '0.75rem' }}>
-                            <input
-                              type="text"
-                              value={line.description || ''}
-                              onChange={(e) => updateJournalLine(index, { description: e.target.value })}
-                              style={{
-                                width: '100%',
-                                padding: '0.5rem',
-                                border: '1px solid #d1d5db',
-                                borderRadius: '0.375rem',
-                                fontSize: '0.875rem'
-                              }}
-                            />
-                          </td>
-                          <td style={{ padding: '0.75rem' }}>
-                            <input
-                              type="number"
-                              value={line.debit_amount || 0}
-                              onChange={(e) => updateJournalLine(index, {
-                                debit_amount: parseFloat(e.target.value) || 0,
-                                credit_amount: 0
-                              })}
-                              min="0"
-                              step="0.01"
-                              style={{
-                                width: '100%',
-                                padding: '0.5rem',
-                                border: '1px solid #d1d5db',
-                                borderRadius: '0.375rem',
-                                fontSize: '0.875rem',
-                                textAlign: 'right'
-                              }}
-                            />
-                          </td>
-                          <td style={{ padding: '0.75rem' }}>
-                            <input
-                              type="number"
-                              value={line.credit_amount || 0}
-                              onChange={(e) => updateJournalLine(index, {
-                                credit_amount: parseFloat(e.target.value) || 0,
-                                debit_amount: 0
-                              })}
-                              min="0"
-                              step="0.01"
-                              style={{
-                                width: '100%',
-                                padding: '0.5rem',
-                                border: '1px solid #d1d5db',
-                                borderRadius: '0.375rem',
-                                fontSize: '0.875rem',
-                                textAlign: 'right'
-                              }}
-                            />
-                          </td>
-                          <td style={{ padding: '0.75rem' }}>
-                            {journalLines.length > 2 && (
-                              <button
-                                type="button"
-                                onClick={() => removeJournalLine(index)}
-                                style={{
-                                  padding: '0.25rem',
-                                  background: 'transparent',
-                                  border: 'none',
-                                  color: '#ef4444',
-                                  cursor: 'pointer'
-                                }}
-                              >
-                                <X size={16} />
-                              </button>
-                            )}
-                          </td>
+                        <tr key={index}>
+                          <td className="px-4 py-2 text-gray-500 dark:text-gray-400">{line.line_number}</td>
+                          <td className="px-4 py-2"><select value={line.account_code} onChange={(e) => updateJournalLine(index, { account_code: e.target.value })} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"><option value="">Select account...</option>{accounts.map(a => <option key={a.account_code} value={a.account_code}>{a.account_code} - {a.account_name}</option>)}</select></td>
+                          <td className="px-4 py-2"><input type="text" value={line.description || ''} onChange={(e) => updateJournalLine(index, { description: e.target.value })} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent" placeholder="Line description" /></td>
+                          <td className="px-4 py-2"><input type="number" min="0" step="0.01" value={line.debit_amount || ''} onChange={(e) => updateJournalLine(index, { debit_amount: parseFloat(e.target.value) || 0, credit_amount: 0 })} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm text-right focus:ring-2 focus:ring-indigo-500 focus:border-transparent" /></td>
+                          <td className="px-4 py-2"><input type="number" min="0" step="0.01" value={line.credit_amount || ''} onChange={(e) => updateJournalLine(index, { credit_amount: parseFloat(e.target.value) || 0, debit_amount: 0 })} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm text-right focus:ring-2 focus:ring-indigo-500 focus:border-transparent" /></td>
+                          <td className="px-4 py-2">{journalLines.length > 2 && <button type="button" onClick={() => removeJournalLine(index)} className="p-1 text-red-500 hover:bg-red-100 dark:hover:bg-red-900/30 rounded"><X className="h-4 w-4" /></button>}</td>
                         </tr>
                       ))}
                     </tbody>
-                    <tfoot style={{ background: '#f9fafb', borderTop: '2px solid #d1d5db' }}>
-                      <tr>
-                        <td colSpan={3} style={{ padding: '0.75rem', fontSize: '0.875rem', fontWeight: '600' }}>Total</td>
-                        <td style={{ padding: '0.75rem', fontSize: '0.875rem', fontWeight: '600', textAlign: 'right' }}>
-                          {formatCurrency(getTotalDebits())}
-                        </td>
-                        <td style={{ padding: '0.75rem', fontSize: '0.875rem', fontWeight: '600', textAlign: 'right' }}>
-                          {formatCurrency(getTotalCredits())}
-                        </td>
-                        <td></td>
-                      </tr>
+                    <tfoot className="bg-gray-50 dark:bg-gray-900/50">
+                      <tr><td colSpan={3} className="px-4 py-3 text-right font-semibold text-gray-700 dark:text-gray-300">Totals:</td><td className="px-4 py-3 text-right font-bold text-gray-900 dark:text-white">R {getTotalDebits().toFixed(2)}</td><td className="px-4 py-3 text-right font-bold text-gray-900 dark:text-white">R {getTotalCredits().toFixed(2)}</td><td></td></tr>
+                      <tr><td colSpan={6} className="px-4 py-2"><div className={`flex items-center gap-2 justify-center ${isBalanced() ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>{isBalanced() ? <><Check className="h-4 w-4" />Balanced</> : <><AlertCircle className="h-4 w-4" />Not Balanced (Difference: R {Math.abs(getTotalDebits() - getTotalCredits()).toFixed(2)})</>}</div></td></tr>
                     </tfoot>
                   </table>
                 </div>
               </div>
             </div>
-
-            <div style={{
-              padding: '1.5rem',
-              borderTop: '1px solid #e5e7eb',
-              display: 'flex',
-              gap: '0.75rem',
-              justifyContent: 'flex-end',
-              position: 'sticky',
-              bottom: 0,
-              background: 'white'
-            }}>
-              <button
-                type="button"
-                onClick={() => setShowCreateJournalModal(false)}
-                style={{
-                  padding: '0.5rem 1rem',
-                  background: 'white',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '0.375rem',
-                  fontSize: '0.875rem',
-                  fontWeight: '500',
-                  color: '#374151',
-                  cursor: 'pointer'
-                }}
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                disabled={!isBalanced()}
-                style={{
-                  padding: '0.5rem 1rem',
-                  background: isBalanced() ? '#2563eb' : '#d1d5db',
-                  border: 'none',
-                  borderRadius: '0.375rem',
-                  fontSize: '0.875rem',
-                  fontWeight: '500',
-                  color: 'white',
-                  cursor: isBalanced() ? 'pointer' : 'not-allowed'
-                }}
-              >
-                Create Journal Entry
-              </button>
+            <div className="p-6 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 flex justify-end gap-3">
+              <button type="button" onClick={() => setShowCreateJournalModal(false)} className="px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">Cancel</button>
+              <button type="submit" disabled={!isBalanced()} className={`px-6 py-3 rounded-xl font-medium transition-all shadow-lg ${isBalanced() ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:from-indigo-700 hover:to-purple-700 shadow-indigo-500/30' : 'bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400 cursor-not-allowed'}`}>Create Journal Entry</button>
             </div>
           </form>
         </div>
@@ -888,509 +348,137 @@ export default function GeneralLedger() {
     );
   };
 
-  return (
-    <div style={{ padding: '2rem' }}>
-      <div style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div>
-          <h1 style={{ fontSize: '1.875rem', fontWeight: '700', marginBottom: '0.5rem' }}>General Ledger</h1>
-          <p style={{ color: '#6b7280' }}>Chart of Accounts, Journal Entries & Trial Balance</p>
-        </div>
-        {activeTab === 'accounts' && (
-          <button
-            onClick={handleCreateAccount}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.5rem',
-              padding: '0.75rem 1.5rem',
-              background: '#2563eb',
-              color: 'white',
-              border: 'none',
-              borderRadius: '0.5rem',
-              fontSize: '0.875rem',
-              fontWeight: '600',
-              cursor: 'pointer'
-            }}
-          >
-            <Plus size={20} />
-            New Account
-          </button>
-        )}
-        {activeTab === 'journal' && (
-          <button
-            onClick={handleCreateJournal}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.5rem',
-              padding: '0.75rem 1.5rem',
-              background: '#2563eb',
-              color: 'white',
-              border: 'none',
-              borderRadius: '0.5rem',
-              fontSize: '0.875rem',
-              fontWeight: '600',
-              cursor: 'pointer'
-            }}
-          >
-            <Plus size={20} />
-            New Journal Entry
-          </button>
-        )}
-      </div>
+  const getCreateButton = () => {
+    if (activeTab === 'accounts') return <button onClick={handleCreateAccount} className="flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-medium hover:from-indigo-700 hover:to-purple-700 transition-all shadow-lg shadow-indigo-500/30"><Plus className="h-5 w-5" />Add Account</button>;
+    if (activeTab === 'journal') return <button onClick={handleCreateJournal} className="flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-medium hover:from-indigo-700 hover:to-purple-700 transition-all shadow-lg shadow-indigo-500/30"><Plus className="h-5 w-5" />New Journal Entry</button>;
+    return null;
+  };
 
-      <div style={{ marginBottom: '2rem' }}>
-        <div style={{ borderBottom: '1px solid #e5e7eb' }}>
-          <div style={{ display: 'flex', gap: '2rem' }}>
-            <button
-              onClick={() => setActiveTab('accounts')}
-              style={{
-                padding: '1rem 0',
-                background: 'transparent',
-                border: 'none',
-                borderBottom: activeTab === 'accounts' ? '2px solid #2563eb' : '2px solid transparent',
-                color: activeTab === 'accounts' ? '#2563eb' : '#6b7280',
-                fontSize: '0.875rem',
-                fontWeight: '600',
-                cursor: 'pointer'
-              }}
-            >
-              Chart of Accounts
-            </button>
-            <button
-              onClick={() => setActiveTab('journal')}
-              style={{
-                padding: '1rem 0',
-                background: 'transparent',
-                border: 'none',
-                borderBottom: activeTab === 'journal' ? '2px solid #2563eb' : '2px solid transparent',
-                color: activeTab === 'journal' ? '#2563eb' : '#6b7280',
-                fontSize: '0.875rem',
-                fontWeight: '600',
-                cursor: 'pointer'
-              }}
-            >
-              Journal Entries
-            </button>
-            <button
-              onClick={() => setActiveTab('trial-balance')}
-              style={{
-                padding: '1rem 0',
-                background: 'transparent',
-                border: 'none',
-                borderBottom: activeTab === 'trial-balance' ? '2px solid #2563eb' : '2px solid transparent',
-                color: activeTab === 'trial-balance' ? '#2563eb' : '#6b7280',
-                fontSize: '0.875rem',
-                fontWeight: '600',
-                cursor: 'pointer'
-              }}
-            >
-              Trial Balance
-            </button>
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6">
+      <div className="max-w-7xl mx-auto space-y-6">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">General Ledger</h1>
+            <p className="text-gray-500 dark:text-gray-400 mt-1">Chart of Accounts, Journal Entries & Trial Balance</p>
+          </div>
+          <div className="flex items-center gap-3">
+            <button onClick={() => { if (activeTab === 'accounts') loadAccounts(); else if (activeTab === 'journal') loadJournalEntries(); else loadTrialBalance(); }} className="p-3 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-200 dark:border-gray-700"><RefreshCw className={`h-5 w-5 text-gray-600 dark:text-gray-400 ${loading ? 'animate-spin' : ''}`} /></button>
+            {getCreateButton()}
           </div>
         </div>
-      </div>
 
-      {activeTab === 'accounts' && (
-        <>
-          <div style={{
-            background: 'white',
-            borderRadius: '0.5rem',
-            boxShadow: '0 1px 3px 0 rgba(0,0,0,0.1)',
-            overflow: 'hidden'
-          }}>
-            <div style={{ padding: '1.5rem', borderBottom: '1px solid #e5e7eb' }}>
-              <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-                <div style={{ flex: '1', minWidth: '250px', position: 'relative' }}>
-                  <Search
-                    size={20}
-                    style={{
-                      position: 'absolute',
-                      left: '0.75rem',
-                      top: '50%',
-                      transform: 'translateY(-50%)',
-                      color: '#9ca3af'
-                    }}
-                  />
-                  <input
-                    type="text"
-                    placeholder="Search by code or name..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    style={{
-                      width: '100%',
-                      padding: '0.5rem 0.75rem 0.5rem 2.5rem',
-                      border: '1px solid #d1d5db',
-                      borderRadius: '0.375rem',
-                      fontSize: '0.875rem'
-                    }}
-                  />
-                </div>
+        {error && (<div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl flex items-center gap-3"><AlertCircle className="h-5 w-5 text-red-500" /><p className="text-red-700 dark:text-red-300">{error}</p><button onClick={() => setError(null)} className="ml-auto p-1 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg"><X className="h-4 w-4 text-red-500" /></button></div>)}
 
-                <div style={{ minWidth: '200px' }}>
-                  <select
-                    value={typeFilter}
-                    onChange={(e) => setTypeFilter(e.target.value)}
-                    style={{
-                      width: '100%',
-                      padding: '0.5rem 0.75rem',
-                      border: '1px solid #d1d5db',
-                      borderRadius: '0.375rem',
-                      fontSize: '0.875rem',
-                      background: 'white'
-                    }}
-                  >
-                    <option value="">All Types</option>
-                    <option value="asset">Asset</option>
-                    <option value="liability">Liability</option>
-                    <option value="equity">Equity</option>
-                    <option value="revenue">Revenue</option>
-                    <option value="expense">Expense</option>
-                  </select>
-                </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
+            <div className="flex items-center gap-4"><div className="p-3 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl shadow-lg shadow-indigo-500/30"><BookOpen className="h-6 w-6 text-white" /></div><div><p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.totalAccounts}</p><p className="text-sm text-gray-500 dark:text-gray-400">Total Accounts</p></div></div>
+          </div>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
+            <div className="flex items-center gap-4"><div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl shadow-lg shadow-blue-500/30"><FileText className="h-6 w-6 text-white" /></div><div><p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.totalJournals}</p><p className="text-sm text-gray-500 dark:text-gray-400">Journal Entries</p></div></div>
+          </div>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
+            <div className="flex items-center gap-4"><div className="p-3 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl shadow-lg shadow-amber-500/30"><Calculator className="h-6 w-6 text-white" /></div><div><p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.draftJournals}</p><p className="text-sm text-gray-500 dark:text-gray-400">Draft Entries</p></div></div>
+          </div>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
+            <div className="flex items-center gap-4"><div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg shadow-green-500/30"><Check className="h-6 w-6 text-white" /></div><div><p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.postedJournals}</p><p className="text-sm text-gray-500 dark:text-gray-400">Posted Entries</p></div></div>
+          </div>
+        </div>
+
+        <div className="flex gap-2 border-b border-gray-200 dark:border-gray-700">
+          {(['accounts', 'journal', 'trial-balance'] as const).map(tab => (
+            <button key={tab} onClick={() => setActiveTab(tab)} className={`px-6 py-3 font-medium capitalize transition-all ${activeTab === tab ? 'text-indigo-600 dark:text-indigo-400 border-b-2 border-indigo-600 dark:border-indigo-400' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'}`}>{tab === 'trial-balance' ? 'Trial Balance' : tab}</button>
+          ))}
+        </div>
+
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+          {activeTab !== 'trial-balance' && (
+            <div className="p-5 border-b border-gray-100 dark:border-gray-700">
+              <div className="flex flex-col md:flex-row gap-4">
+                <div className="flex-1 relative"><Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" /><input type="text" placeholder="Search..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-12 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all" /></div>
+                {activeTab === 'accounts' && (<select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} className="px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all min-w-[150px]"><option value="">All Types</option><option value="asset">Asset</option><option value="liability">Liability</option><option value="equity">Equity</option><option value="revenue">Revenue</option><option value="expense">Expense</option></select>)}
               </div>
             </div>
+          )}
 
-            {loading ? (
-              <div style={{ padding: '3rem', textAlign: 'center', color: '#6b7280' }}>
-                Loading accounts...
-              </div>
-            ) : accounts.length === 0 ? (
-              <div style={{ padding: '3rem', textAlign: 'center' }}>
-                <BookOpen size={48} style={{ margin: '0 auto 1rem', color: '#d1d5db' }} />
-                <h3 style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '0.5rem' }}>No accounts found</h3>
-                <p style={{ color: '#6b7280', marginBottom: '1.5rem' }}>
-                  {searchTerm || typeFilter ? 'Try adjusting your filters' : 'Get started by creating your first account'}
-                </p>
-                {!searchTerm && !typeFilter && (
-                  <button
-                    onClick={handleCreateAccount}
-                    style={{
-                      padding: '0.5rem 1rem',
-                      background: '#2563eb',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '0.375rem',
-                      fontSize: '0.875rem',
-                      fontWeight: '500',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    Create Account
-                  </button>
-                )}
-              </div>
-            ) : (
-              <div style={{ overflowX: 'auto' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                  <thead style={{ background: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
-                    <tr>
-                      <th style={{ padding: '0.75rem 1rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Code</th>
-                      <th style={{ padding: '0.75rem 1rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Name</th>
-                      <th style={{ padding: '0.75rem 1rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Type</th>
-                      <th style={{ padding: '0.75rem 1rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Category</th>
-                      <th style={{ padding: '0.75rem 1rem', textAlign: 'center', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Status</th>
-                      <th style={{ padding: '0.75rem 1rem', textAlign: 'right', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {accounts.map((account) => (
-                      <tr key={account.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
-                        <td style={{ padding: '1rem', fontSize: '0.875rem', fontWeight: '500', fontFamily: 'monospace' }}>{account.account_code}</td>
-                        <td style={{ padding: '1rem', fontSize: '0.875rem' }}>{account.account_name}</td>
-                        <td style={{ padding: '1rem' }}>
-                          <span style={{
-                            padding: '0.25rem 0.75rem',
-                            borderRadius: '9999px',
-                            fontSize: '0.75rem',
-                            fontWeight: '500',
-                            background: getAccountTypeColor(account.account_type) + '20',
-                            color: getAccountTypeColor(account.account_type)
-                          }}>
-                            {account.account_type}
-                          </span>
-                        </td>
-                        <td style={{ padding: '1rem', fontSize: '0.875rem', color: '#6b7280' }}>{account.account_category || '-'}</td>
-                        <td style={{ padding: '1rem', textAlign: 'center' }}>
-                          <span style={{
-                            padding: '0.25rem 0.75rem',
-                            borderRadius: '9999px',
-                            fontSize: '0.75rem',
-                            fontWeight: '500',
-                            background: account.is_active ? '#d1fae5' : '#f3f4f6',
-                            color: account.is_active ? '#065f46' : '#6b7280'
-                          }}>
-                            {account.is_active ? 'Active' : 'Inactive'}
-                          </span>
-                        </td>
-                        <td style={{ padding: '1rem' }}>
-                          <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
-                            <button
-                              onClick={() => handleEditAccount(account)}
-                              style={{
-                                padding: '0.25rem 0.5rem',
-                                background: 'transparent',
-                                border: '1px solid #d1d5db',
-                                borderRadius: '0.25rem',
-                                color: '#6b7280',
-                                cursor: 'pointer',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '0.25rem'
-                              }}
-                            >
-                              <Edit size={14} />
-                            </button>
-                            <button
-                              onClick={() => handleDeleteAccount(account)}
-                              style={{
-                                padding: '0.25rem 0.5rem',
-                                background: 'transparent',
-                                border: '1px solid #fecaca',
-                                borderRadius: '0.25rem',
-                                color: '#ef4444',
-                                cursor: 'pointer',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '0.25rem'
-                              }}
-                            >
-                              <Trash2 size={14} />
-                            </button>
-                          </div>
-                        </td>
+          {loading ? (
+            <div className="p-12 text-center"><RefreshCw className="h-8 w-8 animate-spin text-indigo-500 mx-auto mb-4" /><p className="text-gray-500 dark:text-gray-400">Loading...</p></div>
+          ) : activeTab === 'accounts' ? (
+            accounts.length === 0 ? (<div className="p-12 text-center"><div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-2xl flex items-center justify-center mx-auto mb-4"><BookOpen className="h-8 w-8 text-gray-400" /></div><h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No accounts found</h3><p className="text-gray-500 dark:text-gray-400 mb-6">Get started by adding your first account</p><button onClick={handleCreateAccount} className="px-5 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-medium hover:from-indigo-700 hover:to-purple-700 transition-all">Add First Account</button></div>) : (
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-gray-50 dark:bg-gray-900/50"><tr><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Code</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Name</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Type</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Category</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th><th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th></tr></thead>
+                  <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
+                    {accounts.map(account => (
+                      <tr key={account.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                        <td className="px-6 py-4 font-semibold text-indigo-600 dark:text-indigo-400">{account.account_code}</td>
+                        <td className="px-6 py-4 text-gray-900 dark:text-white">{account.account_name}</td>
+                        <td className="px-6 py-4"><span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border capitalize ${getAccountTypeBadge(account.account_type)}`}>{account.account_type}</span></td>
+                        <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{account.account_category || '-'}</td>
+                        <td className="px-6 py-4"><span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${account.is_active ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600'}`}>{account.is_active ? 'Active' : 'Inactive'}</span></td>
+                        <td className="px-6 py-4"><div className="flex items-center justify-end gap-2"><button onClick={() => handleEditAccount(account)} className="p-2 hover:bg-indigo-100 dark:hover:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-lg transition-colors"><Edit className="h-4 w-4" /></button><button onClick={() => handleDeleteAccount(account)} className="p-2 hover:bg-red-100 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg transition-colors"><Trash2 className="h-4 w-4" /></button></div></td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
               </div>
-            )}
-          </div>
-        </>
-      )}
-
-      {activeTab === 'journal' && (
-        <>
-          <div style={{
-            background: 'white',
-            borderRadius: '0.5rem',
-            boxShadow: '0 1px 3px 0 rgba(0,0,0,0.1)',
-            overflow: 'hidden'
-          }}>
-            {loading ? (
-              <div style={{ padding: '3rem', textAlign: 'center', color: '#6b7280' }}>
-                Loading journal entries...
-              </div>
-            ) : journalEntries.length === 0 ? (
-              <div style={{ padding: '3rem', textAlign: 'center' }}>
-                <BookOpen size={48} style={{ margin: '0 auto 1rem', color: '#d1d5db' }} />
-                <h3 style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '0.5rem' }}>No journal entries found</h3>
-                <p style={{ color: '#6b7280', marginBottom: '1.5rem' }}>Get started by creating your first journal entry</p>
-                <button
-                  onClick={handleCreateJournal}
-                  style={{
-                    padding: '0.5rem 1rem',
-                    background: '#2563eb',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '0.375rem',
-                    fontSize: '0.875rem',
-                    fontWeight: '500',
-                    cursor: 'pointer'
-                  }}
-                >
-                  Create Journal Entry
-                </button>
-              </div>
-            ) : (
-              <div style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                {journalEntries.map((entry) => (
-                  <div key={entry.id} style={{
-                    border: '1px solid #e5e7eb',
-                    borderRadius: '0.5rem',
-                    padding: '1.5rem'
-                  }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
-                      <div>
-                        <h3 style={{ fontWeight: '600', marginBottom: '0.25rem', fontSize: '1rem' }}>{entry.entry_number}</h3>
-                        <p style={{ color: '#6b7280', fontSize: '0.875rem' }}>{entry.description}</p>
-                        {entry.reference && (
-                          <p style={{ color: '#6b7280', fontSize: '0.75rem', marginTop: '0.25rem' }}>Ref: {entry.reference}</p>
-                        )}
-                      </div>
-                      <div style={{ textAlign: 'right' }}>
-                        <p style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.5rem' }}>
-                          {new Date(entry.entry_date).toLocaleDateString()}
-                        </p>
-                        <span style={{
-                          display: 'inline-block',
-                          padding: '0.25rem 0.75rem',
-                          borderRadius: '9999px',
-                          fontSize: '0.75rem',
-                          fontWeight: '500',
-                          background: entry.status === 'posted' ? '#d1fae5' : '#fef3c7',
-                          color: entry.status === 'posted' ? '#065f46' : '#92400e'
-                        }}>
-                          {entry.status}
-                        </span>
-                        {entry.status === 'draft' && (
-                          <button
-                            onClick={() => handlePostJournal(entry)}
-                            style={{
-                              display: 'block',
-                              marginTop: '0.5rem',
-                              padding: '0.25rem 0.75rem',
-                              background: '#2563eb',
-                              color: 'white',
-                              border: 'none',
-                              borderRadius: '0.25rem',
-                              fontSize: '0.75rem',
-                              cursor: 'pointer'
-                            }}
-                          >
-                            Post to GL
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                    <div style={{ overflowX: 'auto' }}>
-                      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                        <thead style={{ background: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
-                          <tr>
-                            <th style={{ padding: '0.5rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280' }}>Account</th>
-                            <th style={{ padding: '0.5rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280' }}>Description</th>
-                            <th style={{ padding: '0.5rem', textAlign: 'right', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280' }}>Debit</th>
-                            <th style={{ padding: '0.5rem', textAlign: 'right', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280' }}>Credit</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {entry.lines?.map((line, idx) => (
-                            <tr key={idx} style={{ borderBottom: '1px solid #e5e7eb' }}>
-                              <td style={{ padding: '0.5rem', fontSize: '0.875rem', fontFamily: 'monospace' }}>
-                                {line.account_code} - {line.account_name}
-                              </td>
-                              <td style={{ padding: '0.5rem', fontSize: '0.875rem', color: '#6b7280' }}>
-                                {line.description || '-'}
-                              </td>
-                              <td style={{ padding: '0.5rem', textAlign: 'right', fontSize: '0.875rem' }}>
-                                {line.debit_amount > 0 ? formatCurrency(line.debit_amount) : '-'}
-                              </td>
-                              <td style={{ padding: '0.5rem', textAlign: 'right', fontSize: '0.875rem' }}>
-                                {line.credit_amount > 0 ? formatCurrency(line.credit_amount) : '-'}
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </>
-      )}
-
-      {activeTab === 'trial-balance' && (
-        <>
-          <div style={{
-            background: 'white',
-            borderRadius: '0.5rem',
-            boxShadow: '0 1px 3px 0 rgba(0,0,0,0.1)',
-            overflow: 'hidden'
-          }}>
-            {loading ? (
-              <div style={{ padding: '3rem', textAlign: 'center', color: '#6b7280' }}>
-                Loading trial balance...
-              </div>
-            ) : !trialBalance ? (
-              <div style={{ padding: '3rem', textAlign: 'center' }}>
-                <BookOpen size={48} style={{ margin: '0 auto 1rem', color: '#d1d5db' }} />
-                <h3 style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '0.5rem' }}>No trial balance data</h3>
-                <p style={{ color: '#6b7280' }}>Trial balance will be available once you have posted journal entries</p>
-              </div>
-            ) : (
-              <>
-                <div style={{ padding: '1.5rem', borderBottom: '1px solid #e5e7eb' }}>
-                  <h2 style={{ fontSize: '1.25rem', fontWeight: '600' }}>
-                    Trial Balance - As of {trialBalance.as_of_date}
-                  </h2>
-                </div>
-                <div style={{ overflowX: 'auto' }}>
-                  <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                    <thead style={{ background: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
-                      <tr>
-                        <th style={{ padding: '0.75rem 1rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Code</th>
-                        <th style={{ padding: '0.75rem 1rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Account Name</th>
-                        <th style={{ padding: '0.75rem 1rem', textAlign: 'right', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Debit</th>
-                        <th style={{ padding: '0.75rem 1rem', textAlign: 'right', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase' }}>Credit</th>
+            )
+          ) : activeTab === 'journal' ? (
+            journalEntries.length === 0 ? (<div className="p-12 text-center"><div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-2xl flex items-center justify-center mx-auto mb-4"><FileText className="h-8 w-8 text-gray-400" /></div><h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No journal entries found</h3><p className="text-gray-500 dark:text-gray-400 mb-6">Get started by creating your first journal entry</p><button onClick={handleCreateJournal} className="px-5 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-medium hover:from-indigo-700 hover:to-purple-700 transition-all">Create First Entry</button></div>) : (
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-gray-50 dark:bg-gray-900/50"><tr><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Entry #</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Date</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Description</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Reference</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th><th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th></tr></thead>
+                  <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
+                    {journalEntries.map(journal => (
+                      <tr key={journal.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                        <td className="px-6 py-4 font-semibold text-indigo-600 dark:text-indigo-400">{journal.entry_number}</td>
+                        <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{new Date(journal.entry_date).toLocaleDateString()}</td>
+                        <td className="px-6 py-4 text-gray-900 dark:text-white">{journal.description || '-'}</td>
+                        <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{journal.reference || '-'}</td>
+                        <td className="px-6 py-4"><span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border capitalize ${getStatusBadge(journal.status)}`}>{journal.status}</span></td>
+                        <td className="px-6 py-4"><div className="flex items-center justify-end gap-2">{journal.status === 'draft' && <button onClick={() => handlePostJournal(journal)} className="flex items-center gap-1 px-3 py-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg text-xs font-medium hover:from-green-700 hover:to-emerald-700 transition-all shadow-sm"><Check className="h-3 w-3" />Post</button>}</div></td>
                       </tr>
-                    </thead>
-                    <tbody>
-                      {trialBalance.accounts?.map((account, idx) => (
-                        <tr key={idx} style={{ borderBottom: '1px solid #e5e7eb' }}>
-                          <td style={{ padding: '1rem', fontSize: '0.875rem', fontFamily: 'monospace' }}>{account.account_code}</td>
-                          <td style={{ padding: '1rem', fontSize: '0.875rem' }}>{account.account_name}</td>
-                          <td style={{ padding: '1rem', fontSize: '0.875rem', textAlign: 'right', fontWeight: '500' }}>
-                            {account.balance_type === 'debit' ? formatCurrency(account.balance) : '-'}
-                          </td>
-                          <td style={{ padding: '1rem', fontSize: '0.875rem', textAlign: 'right', fontWeight: '500' }}>
-                            {account.balance_type === 'credit' ? formatCurrency(account.balance) : '-'}
-                          </td>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )
+          ) : (
+            !trialBalance ? (<div className="p-12 text-center"><div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-2xl flex items-center justify-center mx-auto mb-4"><TrendingUp className="h-8 w-8 text-gray-400" /></div><h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No trial balance data</h3><p className="text-gray-500 dark:text-gray-400">Post journal entries to generate trial balance</p></div>) : (
+              <div>
+                <div className="p-5 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
+                  <div><h3 className="font-semibold text-gray-900 dark:text-white">Trial Balance</h3><p className="text-sm text-gray-500 dark:text-gray-400">As of {new Date(trialBalance.as_of_date).toLocaleDateString()}</p></div>
+                  <div className={`flex items-center gap-2 px-4 py-2 rounded-xl ${trialBalance.balanced ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300' : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300'}`}>{trialBalance.balanced ? <><Check className="h-4 w-4" />Balanced</> : <><AlertCircle className="h-4 w-4" />Not Balanced</>}</div>
+                </div>
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead className="bg-gray-50 dark:bg-gray-900/50"><tr><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Account Code</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Account Name</th><th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Debit</th><th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Credit</th></tr></thead>
+                    <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
+                      {trialBalance.accounts.map(acc => (
+                        <tr key={acc.account_code} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                          <td className="px-6 py-4 font-semibold text-indigo-600 dark:text-indigo-400">{acc.account_code}</td>
+                          <td className="px-6 py-4 text-gray-900 dark:text-white">{acc.account_name}</td>
+                          <td className="px-6 py-4 text-right text-gray-900 dark:text-white">{acc.balance_type === 'debit' ? `R ${acc.balance.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}` : '-'}</td>
+                          <td className="px-6 py-4 text-right text-gray-900 dark:text-white">{acc.balance_type === 'credit' ? `R ${acc.balance.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}` : '-'}</td>
                         </tr>
                       ))}
                     </tbody>
-                    <tfoot style={{ background: '#f9fafb', borderTop: '2px solid #d1d5db' }}>
-                      <tr>
-                        <td colSpan={2} style={{ padding: '1rem', fontSize: '0.875rem', fontWeight: '700' }}>Total</td>
-                        <td style={{ padding: '1rem', fontSize: '0.875rem', fontWeight: '700', textAlign: 'right' }}>
-                          {formatCurrency(trialBalance.total_debits)}
-                        </td>
-                        <td style={{ padding: '1rem', fontSize: '0.875rem', fontWeight: '700', textAlign: 'right' }}>
-                          {formatCurrency(trialBalance.total_credits)}
-                        </td>
-                      </tr>
+                    <tfoot className="bg-gray-50 dark:bg-gray-900/50 font-bold">
+                      <tr><td colSpan={2} className="px-6 py-4 text-right text-gray-700 dark:text-gray-300">Totals:</td><td className="px-6 py-4 text-right text-gray-900 dark:text-white">R {trialBalance.total_debits.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</td><td className="px-6 py-4 text-right text-gray-900 dark:text-white">R {trialBalance.total_credits.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</td></tr>
                     </tfoot>
                   </table>
                 </div>
-                <div style={{ padding: '1.5rem', textAlign: 'right' }}>
-                  <span style={{
-                    padding: '0.5rem 1rem',
-                    borderRadius: '0.5rem',
-                    fontWeight: '600',
-                    background: trialBalance.balanced ? '#d1fae5' : '#fee2e2',
-                    color: trialBalance.balanced ? '#065f46' : '#991b1b'
-                  }}>
-                    {trialBalance.balanced ? '✓ Balanced' : '✗ Not Balanced'}
-                  </span>
-                </div>
-              </>
-            )}
-          </div>
-        </>
-      )}
+              </div>
+            )
+          )}
+        </div>
+      </div>
 
-      {renderAccountFormModal(false)}
-      {renderAccountFormModal(true)}
-      {renderJournalFormModal()}
-
-      <ConfirmDialog
-        isOpen={showDeleteAccountDialog}
-        onClose={() => setShowDeleteAccountDialog(false)}
-        onConfirm={confirmDeleteAccount}
-        title="Delete Account"
-        message={`Are you sure you want to delete account "${selectedAccount?.account_code} - ${selectedAccount?.account_name}"? This action cannot be undone.`}
-        variant="danger"
-      />
-
-      <ConfirmDialog
-        isOpen={showPostJournalDialog}
-        onClose={() => setShowPostJournalDialog(false)}
-        onConfirm={confirmPostJournal}
-        title="Post Journal Entry"
-        message={`Are you sure you want to post journal entry "${selectedJournal?.entry_number}" to the General Ledger? This action cannot be undone.`}
-        variant="warning"
-      />
+      {renderAccountModal(false)}
+      {renderAccountModal(true)}
+      {renderJournalModal()}
+      <ConfirmDialog isOpen={showDeleteAccountDialog} onClose={() => setShowDeleteAccountDialog(false)} onConfirm={confirmDeleteAccount} title="Delete Account" message={`Are you sure you want to delete ${selectedAccount?.account_name}? This action cannot be undone.`} confirmText="Delete" confirmVariant="danger" />
+      <ConfirmDialog isOpen={showPostJournalDialog} onClose={() => setShowPostJournalDialog(false)} onConfirm={confirmPostJournal} title="Post Journal Entry" message={`Are you sure you want to post ${selectedJournal?.entry_number}? This will update the general ledger and cannot be undone.`} confirmText="Post" confirmVariant="primary" />
     </div>
   );
 }

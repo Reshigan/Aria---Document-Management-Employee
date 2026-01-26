@@ -1,12 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Plus, Search, Download, FileText } from 'lucide-react';
+import { FileText, Plus, RefreshCw, AlertCircle, X, DollarSign, Clock, CheckCircle, AlertTriangle, Search } from 'lucide-react';
 import { formatCurrency, formatDate, getStatusColor } from '../../utils/formatters';
 
 interface Invoice {
   id: number;
   invoice_number: string;
   customer_id: number;
+  customer_name?: string;
   invoice_date: string;
   due_date: string;
   total_amount: number;
@@ -14,123 +15,128 @@ interface Invoice {
   status: string;
 }
 
-const InvoiceList: React.FC = () => {
+export default function InvoiceList() {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [filters, setFilters] = useState({
-    status: '',
-    from_date: '',
-    to_date: ''
-  });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
 
-  // Mock data for demonstration
   useEffect(() => {
-    setInvoices([
-      { id: 1, invoice_number: 'INV-2025-00001', customer_id: 1, invoice_date: '2025-10-01', due_date: '2025-10-31', total_amount: 15000, balance: 15000, status: 'approved' },
-      { id: 2, invoice_number: 'INV-2025-00002', customer_id: 2, invoice_date: '2025-10-15', due_date: '2025-11-14', total_amount: 8500, balance: 4250, status: 'partial' },
-      { id: 3, invoice_number: 'INV-2025-00003', customer_id: 3, invoice_date: '2025-10-20', due_date: '2025-11-19', total_amount: 23000, balance: 0, status: 'paid' }
-    ]);
-  }, []);
-
-  const getStatusBadge = (status: string) => {
-    const { bg, text } = getStatusColor(status);
-    const labels: Record<string, string> = {
-      draft: 'Draft', approved: 'Approved', partial: 'Partial', paid: 'Paid', cancelled: 'Cancelled', overdue: 'Overdue'
+    const fetchInvoices = async () => {
+      try {
+        setLoading(true);
+        const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
+        const response = await fetch(`${API_BASE}/api/invoices`, {
+          headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setInvoices(Array.isArray(data) ? data : data.data || []);
+        } else {
+          setInvoices([]);
+        }
+      } catch (err) {
+        console.error('Failed to load invoices:', err);
+        setError('Failed to load invoices');
+        setInvoices([]);
+      } finally {
+        setLoading(false);
+      }
     };
-    return <span className={`px-2 py-1 text-xs font-medium rounded-full ${bg} ${text}`}>{labels[status] || status}</span>;
-  };
+    fetchInvoices();
+  }, []);
 
   const isOverdue = (dueDate: string, status: string) => {
     if (status === 'paid' || status === 'cancelled') return false;
     return new Date(dueDate) < new Date();
   };
 
+  const getStatusBadge = (status: string) => {
+    const styles: Record<string, string> = {
+      approved: 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800',
+      partial: 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800',
+      paid: 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800',
+      draft: 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600',
+      overdue: 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 border-red-200 dark:border-red-800',
+      cancelled: 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600',
+    };
+    return styles[status] || styles.draft;
+  };
+
+  const filteredInvoices = invoices.filter(inv => 
+    inv.invoice_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    inv.customer_name?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const stats = {
+    total: invoices.length,
+    totalAmount: invoices.reduce((sum, inv) => sum + inv.total_amount, 0),
+    outstanding: invoices.reduce((sum, inv) => sum + inv.balance, 0),
+    overdue: invoices.filter(inv => isOverdue(inv.due_date, inv.status)).reduce((sum, inv) => sum + inv.balance, 0),
+  };
+
   return (
-    <div className="p-6">
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Invoices</h1>
-          <p className="text-gray-500 mt-1">Manage your sales invoices</p>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 p-6">
+      <div className="max-w-7xl mx-auto space-y-6">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Invoices</h1>
+            <p className="text-gray-500 dark:text-gray-400 mt-1">Manage your sales invoices</p>
+          </div>
+          <div className="flex items-center gap-3">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <input type="text" placeholder="Search invoices..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pl-10 pr-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl w-64 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-gray-900 dark:text-white" />
+            </div>
+            <Link to="/ar/invoices/new" className="flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-medium hover:from-blue-700 hover:to-indigo-700 transition-all shadow-lg shadow-blue-500/30"><Plus className="h-5 w-5" />New Invoice</Link>
+          </div>
         </div>
-                <Link to="/ar/invoices/new" className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center">
-                  <Plus className="w-4 h-4 mr-2" />
-                  New Invoice
-                </Link>
-      </div>
 
-      {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <div className="bg-white p-4 rounded-lg shadow">
-          <div className="text-sm text-gray-500 mb-1">Total Invoices</div>
-          <div className="text-2xl font-bold text-gray-900">{invoices.length}</div>
-        </div>
-        <div className="bg-white p-4 rounded-lg shadow">
-          <div className="text-sm text-gray-500 mb-1">Total Amount</div>
-          <div className="text-2xl font-bold text-blue-600">
-            {formatCurrency(invoices.reduce((sum, inv) => sum + inv.total_amount, 0))}
-          </div>
-        </div>
-        <div className="bg-white p-4 rounded-lg shadow">
-          <div className="text-sm text-gray-500 mb-1">Outstanding</div>
-          <div className="text-2xl font-bold text-yellow-600">
-            {formatCurrency(invoices.reduce((sum, inv) => sum + inv.balance, 0))}
-          </div>
-        </div>
-        <div className="bg-white p-4 rounded-lg shadow">
-          <div className="text-sm text-gray-500 mb-1">Overdue</div>
-          <div className="text-2xl font-bold text-red-600">
-            {formatCurrency(invoices.filter(inv => isOverdue(inv.due_date, inv.status)).reduce((sum, inv) => sum + inv.balance, 0))}
-          </div>
-        </div>
-      </div>
+        {error && (<div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl flex items-center gap-3"><AlertCircle className="h-5 w-5 text-red-500" /><p className="text-red-700 dark:text-red-300">{error}</p><button onClick={() => setError(null)} className="ml-auto p-1 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg"><X className="h-4 w-4 text-red-500" /></button></div>)}
 
-      {/* Table */}
-      <div className="bg-white rounded-lg shadow overflow-hidden">
-        <table className="w-full">
-          <thead className="bg-gray-50 border-b">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Invoice #</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Due Date</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Amount</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Balance</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200">
-            {invoices.map((invoice) => (
-              <tr key={invoice.id} className="hover:bg-gray-50">
-                <td className="px-6 py-4">
-                  <Link to={`/financial/invoices/${invoice.id}`} className="text-blue-600 hover:text-blue-800 font-medium">
-                    {invoice.invoice_number}
-                  </Link>
-                </td>
-                <td className="px-6 py-4 text-sm">{formatDate(invoice.invoice_date)}</td>
-                <td className="px-6 py-4 text-sm">
-                  <span className={isOverdue(invoice.due_date, invoice.status) ? 'text-red-600 font-medium' : ''}>
-                    {formatDate(invoice.due_date)}
-                  </span>
-                </td>
-                <td className="px-6 py-4 text-sm font-medium">{formatCurrency(invoice.total_amount)}</td>
-                <td className="px-6 py-4 text-sm">
-                  <span className={invoice.balance > 0 ? 'text-yellow-600 font-medium' : 'text-green-600'}>
-                    {formatCurrency(invoice.balance)}
-                  </span>
-                </td>
-                <td className="px-6 py-4">{getStatusBadge(invoice.status)}</td>
-                <td className="px-6 py-4">
-                  <Link to={`/financial/invoices/${invoice.id}`} className="text-blue-600 hover:text-blue-800 text-sm">
-                    View
-                  </Link>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
+            <div className="flex items-center gap-4"><div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl shadow-lg shadow-blue-500/30"><FileText className="h-6 w-6 text-white" /></div><div><p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.total}</p><p className="text-sm text-gray-500 dark:text-gray-400">Total Invoices</p></div></div>
+          </div>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
+            <div className="flex items-center gap-4"><div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg shadow-green-500/30"><DollarSign className="h-6 w-6 text-white" /></div><div><p className="text-2xl font-bold text-gray-900 dark:text-white">{formatCurrency(stats.totalAmount)}</p><p className="text-sm text-gray-500 dark:text-gray-400">Total Amount</p></div></div>
+          </div>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
+            <div className="flex items-center gap-4"><div className="p-3 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl shadow-lg shadow-amber-500/30"><Clock className="h-6 w-6 text-white" /></div><div><p className="text-2xl font-bold text-amber-600 dark:text-amber-400">{formatCurrency(stats.outstanding)}</p><p className="text-sm text-gray-500 dark:text-gray-400">Outstanding</p></div></div>
+          </div>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
+            <div className="flex items-center gap-4"><div className="p-3 bg-gradient-to-br from-red-500 to-rose-500 rounded-xl shadow-lg shadow-red-500/30"><AlertTriangle className="h-6 w-6 text-white" /></div><div><p className="text-2xl font-bold text-red-600 dark:text-red-400">{formatCurrency(stats.overdue)}</p><p className="text-sm text-gray-500 dark:text-gray-400">Overdue</p></div></div>
+          </div>
+        </div>
+
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+          {loading ? (
+            <div className="p-12 text-center"><RefreshCw className="h-8 w-8 animate-spin text-blue-500 mx-auto mb-4" /><p className="text-gray-500 dark:text-gray-400">Loading invoices...</p></div>
+          ) : filteredInvoices.length === 0 ? (
+            <div className="p-12 text-center"><div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-2xl flex items-center justify-center mx-auto mb-4"><FileText className="h-8 w-8 text-gray-400" /></div><h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No invoices found</h3><p className="text-gray-500 dark:text-gray-400 mb-6">Create your first invoice to get started</p><Link to="/ar/invoices/new" className="px-5 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-medium hover:from-blue-700 hover:to-indigo-700 transition-all inline-block">New Invoice</Link></div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-50 dark:bg-gray-900/50"><tr><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Invoice #</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Customer</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Date</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Due Date</th><th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Amount</th><th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Balance</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th><th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th></tr></thead>
+                <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
+                  {filteredInvoices.map((invoice) => (
+                    <tr key={invoice.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                      <td className="px-6 py-4"><Link to={`/financial/invoices/${invoice.id}`} className="font-semibold text-blue-600 dark:text-blue-400 hover:underline">{invoice.invoice_number}</Link></td>
+                      <td className="px-6 py-4 text-gray-900 dark:text-white">{invoice.customer_name || '-'}</td>
+                      <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{formatDate(invoice.invoice_date)}</td>
+                      <td className="px-6 py-4"><span className={isOverdue(invoice.due_date, invoice.status) ? 'text-red-600 dark:text-red-400 font-medium' : 'text-gray-600 dark:text-gray-300'}>{formatDate(invoice.due_date)}</span></td>
+                      <td className="px-6 py-4 text-right font-semibold text-gray-900 dark:text-white">{formatCurrency(invoice.total_amount)}</td>
+                      <td className="px-6 py-4 text-right"><span className={invoice.balance > 0 ? 'text-amber-600 dark:text-amber-400 font-medium' : 'text-green-600 dark:text-green-400'}>{formatCurrency(invoice.balance)}</span></td>
+                      <td className="px-6 py-4"><span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium border capitalize ${getStatusBadge(invoice.status)}`}>{invoice.status === 'paid' ? <CheckCircle className="h-3.5 w-3.5" /> : invoice.status === 'partial' ? <Clock className="h-3.5 w-3.5" /> : <FileText className="h-3.5 w-3.5" />}{invoice.status}</span></td>
+                      <td className="px-6 py-4 text-right"><Link to={`/financial/invoices/${invoice.id}`} className="px-3 py-1.5 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-lg text-xs font-medium hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors">View</Link></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
-};
-
-export default InvoiceList;
+}

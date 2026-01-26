@@ -21,16 +21,40 @@ const VATSummaryReport: React.FC = () => {
   const [data, setData] = useState<VATData | null>(null);
 
   useEffect(() => {
-    // Mock data
-    setData({
-      period_start: period.start,
-      period_end: period.end,
-      sales_excl_vat: 500000,
-      output_vat: 75000, // 15% of sales
-      purchases_excl_vat: 280000,
-      input_vat: 42000, // 15% of purchases
-      net_vat: 33000 // output - input
-    });
+    const fetchVATData = async () => {
+      try {
+        const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
+        const response = await fetch(`${API_BASE}/api/reports/vat-summary?start=${period.start}&end=${period.end}`, {
+          headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+        });
+        if (response.ok) {
+          const result = await response.json();
+          setData(result.data || result);
+        } else {
+          setData({
+            period_start: period.start,
+            period_end: period.end,
+            sales_excl_vat: 0,
+            output_vat: 0,
+            purchases_excl_vat: 0,
+            input_vat: 0,
+            net_vat: 0
+          });
+        }
+      } catch (err) {
+        console.error('Failed to load VAT data:', err);
+        setData({
+          period_start: period.start,
+          period_end: period.end,
+          sales_excl_vat: 0,
+          output_vat: 0,
+          purchases_excl_vat: 0,
+          input_vat: 0,
+          net_vat: 0
+        });
+      }
+    };
+    fetchVATData();
   }, [period]);
 
   if (!data) return <div>Loading...</div>;

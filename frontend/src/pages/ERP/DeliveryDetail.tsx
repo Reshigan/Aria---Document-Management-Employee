@@ -208,34 +208,20 @@ export default function DeliveryDetail() {
       loading={loading}
     >
       {error && (
-        <div style={{
-          padding: '1rem',
-          background: '#fee2e2',
-          border: '1px solid #fecaca',
-          borderRadius: '0.5rem',
-          color: '#991b1b',
-          marginBottom: '1.5rem'
-        }}>
+        <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl text-red-700 dark:text-red-300 mb-6">
           {error}
         </div>
       )}
 
-      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '1.5rem' }}>
-        <div>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2">
           <TransactionCard title="Delivery Information">
             {delivery?.sales_order_number && (
-              <div style={{
-                padding: '0.75rem',
-                background: '#eff6ff',
-                border: '1px solid #bfdbfe',
-                borderRadius: '0.375rem',
-                marginBottom: '1rem',
-                fontSize: '0.875rem'
-              }}>
+              <div className="p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl mb-4 text-sm">
                 <strong>Sales Order:</strong> {delivery.sales_order_number}
               </div>
             )}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <TransactionField
                 label="Customer"
                 type="select"
@@ -262,7 +248,7 @@ export default function DeliveryDetail() {
                 disabled={delivery?.status !== 'draft' && !isNew}
               />
             </div>
-            <div style={{ marginTop: '1rem' }}>
+            <div className="mt-4">
               <TransactionField
                 label="Notes"
                 type="textarea"
@@ -287,7 +273,7 @@ export default function DeliveryDetail() {
         <div>
           {delivery && (
             <>
-              <div style={{ marginBottom: '1.5rem' }}>
+              <div className="mb-6">
                 <PostingStatus
                   status={delivery.status}
                   glEntryId={delivery.gl_entry_id}
@@ -298,7 +284,7 @@ export default function DeliveryDetail() {
                 />
               </div>
 
-              <div style={{ marginBottom: '1.5rem' }}>
+              <div className="mb-6">
                 <AutomationPanel
                   documentType="delivery"
                   documentId={delivery.id}
@@ -314,22 +300,7 @@ export default function DeliveryDetail() {
               <button
                 onClick={handleCreateInvoice}
                 disabled={loading}
-                style={{
-                  width: '100%',
-                  padding: '0.75rem',
-                  background: '#10b981',
-                  border: 'none',
-                  borderRadius: '0.375rem',
-                  fontSize: '0.875rem',
-                  fontWeight: '500',
-                  color: 'white',
-                  cursor: loading ? 'not-allowed' : 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '0.5rem',
-                  opacity: loading ? 0.5 : 1
-                }}
+                className={`w-full py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-xl text-sm font-medium flex items-center justify-center gap-2 hover:from-emerald-600 hover:to-emerald-700 shadow-lg shadow-emerald-500/30 transition-all ${loading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
               >
                 <FileText size={16} />
                 Create Invoice
@@ -339,16 +310,16 @@ export default function DeliveryDetail() {
 
           {delivery && (
             <TransactionCard title="Metadata">
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.875rem' }}>
+              <div className="flex flex-col gap-2 text-sm">
                 <div>
-                  <span style={{ color: '#6b7280' }}>Created:</span>
+                  <span className="text-gray-500 dark:text-gray-400">Created:</span>
                   <br />
-                  <span>{new Date(delivery.created_at).toLocaleString()}</span>
+                  <span className="text-gray-900 dark:text-white">{new Date(delivery.created_at).toLocaleString()}</span>
                 </div>
                 <div>
-                  <span style={{ color: '#6b7280' }}>Last Updated:</span>
+                  <span className="text-gray-500 dark:text-gray-400">Last Updated:</span>
                   <br />
-                  <span>{new Date(delivery.updated_at).toLocaleString()}</span>
+                  <span className="text-gray-900 dark:text-white">{new Date(delivery.updated_at).toLocaleString()}</span>
                 </div>
               </div>
             </TransactionCard>

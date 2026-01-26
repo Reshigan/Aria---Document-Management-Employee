@@ -274,22 +274,15 @@ export default function ReceiptDetail() {
       loading={loading}
     >
       {error && (
-        <div style={{
-          padding: '1rem',
-          background: '#fee2e2',
-          border: '1px solid #fecaca',
-          borderRadius: '0.5rem',
-          color: '#991b1b',
-          marginBottom: '1.5rem'
-        }}>
+        <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl text-red-700 dark:text-red-300 mb-6">
           {error}
         </div>
       )}
 
-      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '1.5rem' }}>
-        <div>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2">
           <TransactionCard title="Payment Information">
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <TransactionField
                 label="Customer"
                 type="select"
@@ -347,7 +340,7 @@ export default function ReceiptDetail() {
                 disabled={receipt?.status !== 'draft' && !isNew}
               />
             </div>
-            <div style={{ marginTop: '1rem' }}>
+            <div className="mt-4">
               <TransactionField
                 label="Notes"
                 type="textarea"
@@ -365,16 +358,7 @@ export default function ReceiptDetail() {
               (receipt?.status === 'draft' || isNew) && (
                 <button
                   onClick={addAllocation}
-                  style={{
-                    padding: '0.5rem 1rem',
-                    background: '#2563eb',
-                    border: 'none',
-                    borderRadius: '0.375rem',
-                    fontSize: '0.875rem',
-                    fontWeight: '500',
-                    color: 'white',
-                    cursor: 'pointer'
-                  }}
+                  className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl text-sm font-medium hover:from-blue-600 hover:to-blue-700 shadow-lg shadow-blue-500/30 transition-all"
                 >
                   Add Allocation
                 </button>
@@ -382,41 +366,25 @@ export default function ReceiptDetail() {
             }
           >
             {allocations.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: '2rem', color: '#6b7280' }}>
+              <div className="text-center py-8 text-gray-500 dark:text-gray-400">
                 No allocations added. Click "Add Allocation" to allocate payment to invoices.
               </div>
             ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <div className="flex flex-col gap-4">
                 {allocations.map((alloc, index) => (
                   <div
                     key={index}
-                    style={{
-                      display: 'grid',
-                      gridTemplateColumns: '2fr 1fr auto',
-                      gap: '0.75rem',
-                      alignItems: 'end'
-                    }}
+                    className="grid grid-cols-[2fr_1fr_auto] gap-3 items-end"
                   >
                     <div>
-                      <label style={{
-                        display: 'block',
-                        fontSize: '0.875rem',
-                        fontWeight: '500',
-                        marginBottom: '0.5rem'
-                      }}>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         Invoice
                       </label>
                       <select
                         value={alloc.invoice_id}
                         onChange={(e) => updateAllocation(index, 'invoice_id', e.target.value)}
                         disabled={receipt?.status !== 'draft' && !isNew}
-                        style={{
-                          width: '100%',
-                          padding: '0.5rem',
-                          border: '1px solid #d1d5db',
-                          borderRadius: '0.375rem',
-                          fontSize: '0.875rem'
-                        }}
+                        className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-900 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       >
                         <option value="">Select invoice...</option>
                         {invoices.map((inv) => (
@@ -427,12 +395,7 @@ export default function ReceiptDetail() {
                       </select>
                     </div>
                     <div>
-                      <label style={{
-                        display: 'block',
-                        fontSize: '0.875rem',
-                        fontWeight: '500',
-                        marginBottom: '0.5rem'
-                      }}>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         Amount
                       </label>
                       <input
@@ -441,26 +404,13 @@ export default function ReceiptDetail() {
                         value={alloc.amount}
                         onChange={(e) => updateAllocation(index, 'amount', e.target.value)}
                         disabled={receipt?.status !== 'draft' && !isNew}
-                        style={{
-                          width: '100%',
-                          padding: '0.5rem',
-                          border: '1px solid #d1d5db',
-                          borderRadius: '0.375rem',
-                          fontSize: '0.875rem'
-                        }}
+                        className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-900 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       />
                     </div>
                     {(receipt?.status === 'draft' || isNew) && (
                       <button
                         onClick={() => removeAllocation(index)}
-                        style={{
-                          padding: '0.5rem',
-                          background: '#ef4444',
-                          border: 'none',
-                          borderRadius: '0.375rem',
-                          color: 'white',
-                          cursor: 'pointer'
-                        }}
+                        className="p-2 bg-red-500 hover:bg-red-600 text-white rounded-xl transition-colors"
                       >
                         <Trash2 size={16} />
                       </button>
@@ -475,7 +425,7 @@ export default function ReceiptDetail() {
         <div>
           {receipt && (
             <>
-              <div style={{ marginBottom: '1.5rem' }}>
+              <div className="mb-6">
                 <PostingStatus
                   status={receipt.status}
                   glEntryId={receipt.journal_entry_id}
@@ -486,7 +436,7 @@ export default function ReceiptDetail() {
                 />
               </div>
 
-              <div style={{ marginBottom: '1.5rem' }}>
+              <div className="mb-6">
                 <AutomationPanel
                   documentType="receipt"
                   documentId={receipt.id}
@@ -498,37 +448,23 @@ export default function ReceiptDetail() {
           )}
 
           <TransactionCard title="Allocation Summary">
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: '#6b7280' }}>Payment Amount:</span>
-                <span style={{ fontWeight: '500' }}>R {parseFloat(amount).toFixed(2)}</span>
+            <div className="flex flex-col gap-3">
+              <div className="flex justify-between">
+                <span className="text-gray-500 dark:text-gray-400">Payment Amount:</span>
+                <span className="font-medium text-gray-900 dark:text-white">R {parseFloat(amount).toFixed(2)}</span>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: '#6b7280' }}>Total Allocated:</span>
-                <span style={{ fontWeight: '500' }}>R {totalAllocated.toFixed(2)}</span>
+              <div className="flex justify-between">
+                <span className="text-gray-500 dark:text-gray-400">Total Allocated:</span>
+                <span className="font-medium text-gray-900 dark:text-white">R {totalAllocated.toFixed(2)}</span>
               </div>
-              <div style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                paddingTop: '0.75rem',
-                borderTop: '2px solid #e5e7eb',
-                fontSize: '1.125rem',
-                fontWeight: '600'
-              }}>
-                <span>Unallocated:</span>
-                <span style={{ color: unallocated > 0.01 ? '#ef4444' : '#10b981' }}>
+              <div className="flex justify-between pt-3 border-t-2 border-gray-200 dark:border-gray-700 text-lg font-semibold">
+                <span className="text-gray-900 dark:text-white">Unallocated:</span>
+                <span className={unallocated > 0.01 ? 'text-red-500' : 'text-emerald-500'}>
                   R {unallocated.toFixed(2)}
                 </span>
               </div>
               {unallocated > 0.01 && (
-                <div style={{
-                  padding: '0.75rem',
-                  background: '#fef3c7',
-                  border: '1px solid #fde68a',
-                  borderRadius: '0.375rem',
-                  fontSize: '0.875rem',
-                  color: '#92400e'
-                }}>
+                <div className="p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl text-sm text-amber-700 dark:text-amber-300">
                   Warning: Payment not fully allocated
                 </div>
               )}
@@ -537,16 +473,16 @@ export default function ReceiptDetail() {
 
           {receipt && (
             <TransactionCard title="Metadata">
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.875rem' }}>
+              <div className="flex flex-col gap-2 text-sm">
                 <div>
-                  <span style={{ color: '#6b7280' }}>Created:</span>
+                  <span className="text-gray-500 dark:text-gray-400">Created:</span>
                   <br />
-                  <span>{new Date(receipt.created_at).toLocaleString()}</span>
+                  <span className="text-gray-900 dark:text-white">{new Date(receipt.created_at).toLocaleString()}</span>
                 </div>
                 <div>
-                  <span style={{ color: '#6b7280' }}>Last Updated:</span>
+                  <span className="text-gray-500 dark:text-gray-400">Last Updated:</span>
                   <br />
-                  <span>{new Date(receipt.updated_at).toLocaleString()}</span>
+                  <span className="text-gray-900 dark:text-white">{new Date(receipt.updated_at).toLocaleString()}</span>
                 </div>
               </div>
             </TransactionCard>

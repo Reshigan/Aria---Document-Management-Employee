@@ -1,5 +1,5 @@
 import React from 'react';
-import { RefreshCw, CheckCircle, XCircle, Clock } from 'lucide-react';
+import { RefreshCw, CheckCircle, XCircle, Clock, Activity } from 'lucide-react';
 import { DataTable } from '../../components/shared/DataTable';
 
 export default function IntegrationSyncPage() {
@@ -11,44 +11,62 @@ export default function IntegrationSyncPage() {
   ];
 
   return (
-    <div className="container mx-auto p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold flex items-center gap-3">
-          <RefreshCw className="h-8 w-8" />
-          Integration Sync History
-        </h1>
-        <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-6 lg:p-8">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3 mb-2">
+            <div className="p-2 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-xl shadow-lg shadow-cyan-500/30">
+              <RefreshCw className="h-7 w-7 text-white" />
+            </div>
+            Integration Sync History
+          </h1>
+          <p className="text-gray-500 dark:text-gray-400 ml-14">Monitor and manage data synchronization</p>
+        </div>
+        <button className="flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-xl font-semibold shadow-lg shadow-cyan-500/30 hover:shadow-xl hover:shadow-cyan-500/40 transition-all duration-200">
+          <RefreshCw className="h-5 w-5" />
           Sync All Now
         </button>
       </div>
 
-      <div className="grid grid-cols-3 gap-6 mb-8">
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex items-center justify-between mb-2">
-            <div className="text-sm font-medium text-gray-600">Total Syncs Today</div>
-            <RefreshCw className="h-5 w-5 text-blue-600" />
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-xl shadow-lg shadow-cyan-500/30">
+              <Activity className="h-6 w-6 text-white" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">12</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Total Syncs Today</p>
+            </div>
           </div>
-          <div className="text-3xl font-bold text-gray-900">12</div>
         </div>
 
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex items-center justify-between mb-2">
-            <div className="text-sm font-medium text-gray-600">Successful</div>
-            <CheckCircle className="h-5 w-5 text-green-600" />
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-gradient-to-br from-emerald-500 to-green-500 rounded-xl shadow-lg shadow-emerald-500/30">
+              <CheckCircle className="h-6 w-6 text-white" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">11</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Successful</p>
+            </div>
           </div>
-          <div className="text-3xl font-bold text-green-600">11</div>
         </div>
 
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex items-center justify-between mb-2">
-            <div className="text-sm font-medium text-gray-600">Failed</div>
-            <XCircle className="h-5 w-5 text-red-600" />
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-gradient-to-br from-red-500 to-rose-500 rounded-xl shadow-lg shadow-red-500/30">
+              <XCircle className="h-6 w-6 text-white" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">1</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Failed</p>
+            </div>
           </div>
-          <div className="text-3xl font-bold text-red-600">1</div>
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
         <DataTable
           data={syncHistory}
           columns={[
@@ -56,11 +74,11 @@ export default function IntegrationSyncPage() {
             { key: 'type', label: 'Data Type' },
             { key: 'status', label: 'Status', render: (row: any) => {
               const icons = {
-                Success: <CheckCircle className="h-4 w-4 text-green-600 inline mr-1" />,
-                Failed: <XCircle className="h-4 w-4 text-red-600 inline mr-1" />,
-                Pending: <Clock className="h-4 w-4 text-yellow-600 inline mr-1" />
+                Success: <CheckCircle className="h-4 w-4 text-emerald-600 dark:text-emerald-400 inline mr-1" />,
+                Failed: <XCircle className="h-4 w-4 text-red-600 dark:text-red-400 inline mr-1" />,
+                Pending: <Clock className="h-4 w-4 text-amber-600 dark:text-amber-400 inline mr-1" />
               };
-              return <span>{icons[row.status as keyof typeof icons]}{row.status}</span>;
+              return <span className="text-gray-900 dark:text-white">{icons[row.status as keyof typeof icons]}{row.status}</span>;
             }},
             { key: 'records', label: 'Records' },
             { key: 'time', label: 'Time' }
