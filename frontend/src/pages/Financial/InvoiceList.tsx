@@ -22,15 +22,28 @@ export default function InvoiceList() {
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
-    setLoading(true);
-    setTimeout(() => {
-      setInvoices([
-        { id: 1, invoice_number: 'INV-2025-00001', customer_id: 1, customer_name: 'ABC Manufacturing', invoice_date: '2025-10-01', due_date: '2025-10-31', total_amount: 15000, balance: 15000, status: 'approved' },
-        { id: 2, invoice_number: 'INV-2025-00002', customer_id: 2, customer_name: 'XYZ Trading', invoice_date: '2025-10-15', due_date: '2025-11-14', total_amount: 8500, balance: 4250, status: 'partial' },
-        { id: 3, invoice_number: 'INV-2025-00003', customer_id: 3, customer_name: 'Mega Corp', invoice_date: '2025-10-20', due_date: '2025-11-19', total_amount: 23000, balance: 0, status: 'paid' }
-      ]);
-      setLoading(false);
-    }, 500);
+    const fetchInvoices = async () => {
+      try {
+        setLoading(true);
+        const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
+        const response = await fetch(`${API_BASE}/api/invoices`, {
+          headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setInvoices(Array.isArray(data) ? data : data.data || []);
+        } else {
+          setInvoices([]);
+        }
+      } catch (err) {
+        console.error('Failed to load invoices:', err);
+        setError('Failed to load invoices');
+        setInvoices([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchInvoices();
   }, []);
 
   const isOverdue = (dueDate: string, status: string) => {

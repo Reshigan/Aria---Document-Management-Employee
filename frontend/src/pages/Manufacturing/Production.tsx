@@ -25,12 +25,21 @@ export default function Production() {
   const fetchOrders = async () => {
     try {
       setLoading(true);
-      setOrders([
-        { id: '1', order_number: 'PRD-2026-001', product_name: 'Widget A', quantity: 1000, completed_quantity: 750, start_date: '2026-01-10', end_date: '2026-01-20', status: 'in_progress', priority: 'high' },
-        { id: '2', order_number: 'PRD-2026-002', product_name: 'Widget B', quantity: 500, completed_quantity: 500, start_date: '2026-01-05', end_date: '2026-01-15', status: 'completed', priority: 'medium' },
-        { id: '3', order_number: 'PRD-2026-003', product_name: 'Component X', quantity: 2000, completed_quantity: 0, start_date: '2026-01-25', end_date: '2026-02-05', status: 'planned', priority: 'low' },
-      ]);
-    } catch (err) { setError('Failed to load production orders'); } finally { setLoading(false); }
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
+      const response = await fetch(`${API_BASE}/api/production-orders`, {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setOrders(Array.isArray(data) ? data : data.data || []);
+      } else {
+        setOrders([]);
+      }
+    } catch (err) { 
+      console.error('Failed to load production orders:', err);
+      setError('Failed to load production orders'); 
+      setOrders([]);
+    } finally { setLoading(false); }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
