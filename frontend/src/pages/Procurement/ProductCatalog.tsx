@@ -22,13 +22,24 @@ const ProductCatalog: React.FC = () => {
   const [filterLowStock, setFilterLowStock] = useState(false);
 
   useEffect(() => {
-    // Mock data
-    setProducts([
-      { id: 1, product_code: 'PROD-001', product_name: 'Laptop Dell XPS 15', description: 'High-performance laptop', cost_price: 18000, selling_price: 22000, stock_on_hand: 15, reorder_level: 10, reorder_quantity: 20, is_active: true },
-      { id: 2, product_code: 'PROD-002', product_name: 'Office Chair Executive', description: 'Ergonomic office chair', cost_price: 2500, selling_price: 3500, stock_on_hand: 8, reorder_level: 10, reorder_quantity: 15, is_active: true },
-      { id: 3, product_code: 'PROD-003', product_name: 'Printer HP LaserJet', description: 'Network laser printer', cost_price: 4500, selling_price: 6000, stock_on_hand: 25, reorder_level: 5, reorder_quantity: 10, is_active: true },
-      { id: 4, product_code: 'PROD-004', product_name: 'Monitor 27" 4K', description: '4K display monitor', cost_price: 6000, selling_price: 8000, stock_on_hand: 3, reorder_level: 8, reorder_quantity: 12, is_active: true }
-    ]);
+    const fetchProducts = async () => {
+      try {
+        const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
+        const response = await fetch(`${API_BASE}/api/products`, {
+          headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setProducts(Array.isArray(data) ? data : data.data || []);
+        } else {
+          setProducts([]);
+        }
+      } catch (err) {
+        console.error('Failed to load products:', err);
+        setProducts([]);
+      }
+    };
+    fetchProducts();
   }, []);
 
   const filteredProducts = products.filter(p => {
