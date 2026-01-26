@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Download, Package, TrendingUp, TrendingDown } from 'lucide-react';
+import { Download, Package, TrendingUp, TrendingDown, RefreshCw } from 'lucide-react';
 import { formatCurrency } from '../../utils/formatters';
+
+const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
 
 interface StockItem {
   product_code: string;
@@ -13,19 +15,30 @@ interface StockItem {
 
 const StockValuationReport: React.FC = () => {
   const [data, setData] = useState<StockItem[]>([]);
+  const [loading, setLoading] = useState(true);
   const [filterCategory, setFilterCategory] = useState('');
 
   useEffect(() => {
-    // Mock data
-    setData([
-      { product_code: 'PROD-001', product_name: 'Laptop Dell XPS 15', quantity: 15, cost_price: 18000, total_value: 270000, category: 'Electronics' },
-      { product_code: 'PROD-002', product_name: 'Office Chair Executive', quantity: 8, cost_price: 2500, total_value: 20000, category: 'Furniture' },
-      { product_code: 'PROD-003', product_name: 'Printer HP LaserJet', quantity: 25, cost_price: 4500, total_value: 112500, category: 'Electronics' },
-      { product_code: 'PROD-004', product_name: 'Monitor 27" 4K', quantity: 3, cost_price: 6000, total_value: 18000, category: 'Electronics' },
-      { product_code: 'PROD-005', product_name: 'Desk Standing', quantity: 12, cost_price: 3500, total_value: 42000, category: 'Furniture' },
-      { product_code: 'PROD-006', product_name: 'Keyboard Mechanical', quantity: 45, cost_price: 1200, total_value: 54000, category: 'Electronics' }
-    ]);
+    fetchData();
   }, []);
+
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(`${API_BASE}/api/reports/stock-valuation`);
+      const result = await response.json();
+      if (result.success) {
+        setData(result.data || []);
+      } else {
+        setData([]);
+      }
+    } catch (error) {
+      console.error('Failed to fetch stock valuation:', error);
+      setData([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const categories = [...new Set(data.map(item => item.category))];
   const filteredData = filterCategory ? data.filter(item => item.category === filterCategory) : data;

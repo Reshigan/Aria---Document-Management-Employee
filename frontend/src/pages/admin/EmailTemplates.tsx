@@ -55,11 +55,8 @@ export default function EmailTemplates() {
       const data = await response.json();
       if (data.success) setTemplates(data.data || []);
     } catch (error) {
-      setTemplates([
-        { id: '1', name: 'Invoice Email', template_type: 'invoice', subject: 'Invoice {{invoice_number}} from {{company_name}}', body_html: '<p>Dear {{customer_name}},</p><p>Please find attached invoice {{invoice_number}} for {{total_amount}}.</p><p>Due date: {{due_date}}</p><p><a href="{{payment_link}}">Pay Now</a></p>', body_text: 'Dear {{customer_name}}, Please find attached invoice {{invoice_number}} for {{total_amount}}. Due date: {{due_date}}', is_active: true, variables: ['customer_name', 'company_name', 'invoice_number', 'total_amount', 'due_date', 'payment_link'] },
-        { id: '2', name: 'Payment Reminder', template_type: 'invoice_reminder', subject: 'Reminder: Invoice {{invoice_number}} is overdue', body_html: '<p>Dear {{customer_name}},</p><p>This is a friendly reminder that invoice {{invoice_number}} for {{total_amount}} is now overdue.</p><p><a href="{{payment_link}}">Pay Now</a></p>', body_text: 'Dear {{customer_name}}, This is a friendly reminder that invoice {{invoice_number}} for {{total_amount}} is now overdue.', is_active: true, variables: ['customer_name', 'invoice_number', 'total_amount', 'payment_link'] },
-        { id: '3', name: 'Quote Email', template_type: 'quote', subject: 'Quote from {{company_name}}', body_html: '<p>Dear {{customer_name}},</p><p>Thank you for your interest. Please find attached our quote.</p>', body_text: 'Dear {{customer_name}}, Thank you for your interest. Please find attached our quote.', is_active: true, variables: ['customer_name', 'company_name'] },
-      ]);
+      console.error('Failed to fetch email templates:', error);
+      setTemplates([]);
     } finally { setLoading(false); }
   };
 

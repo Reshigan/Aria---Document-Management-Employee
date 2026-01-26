@@ -53,14 +53,8 @@ export default function ChartOfAccounts() {
       const data = await response.json();
       if (data.success) setAccounts(data.data || []);
     } catch (error) {
-      setAccounts([
-        { id: '1', code: '1000', name: 'Cash', account_type: 'bank', description: 'Main cash account', parent_account_id: null, is_system_account: true, is_active: true },
-        { id: '2', code: '1100', name: 'Accounts Receivable', account_type: 'current_asset', description: 'Trade receivables', parent_account_id: null, is_system_account: true, is_active: true },
-        { id: '3', code: '2000', name: 'Accounts Payable', account_type: 'liability', description: 'Trade payables', parent_account_id: null, is_system_account: true, is_active: true },
-        { id: '4', code: '3000', name: 'Share Capital', account_type: 'equity', description: 'Issued share capital', parent_account_id: null, is_system_account: true, is_active: true },
-        { id: '5', code: '4000', name: 'Sales Revenue', account_type: 'revenue', description: 'Revenue from sales', parent_account_id: null, is_system_account: true, is_active: true },
-        { id: '6', code: '5000', name: 'Operating Expenses', account_type: 'expense', description: 'General expenses', parent_account_id: null, is_system_account: false, is_active: true },
-      ]);
+      console.error('Failed to fetch accounts:', error);
+      setAccounts([]);
     } finally { setLoading(false); }
   };
 

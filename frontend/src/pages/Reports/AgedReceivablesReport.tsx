@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Download, TrendingUp } from 'lucide-react';
-import { formatCurrency, formatDate } from '../../utils/formatters';
+import { Download, TrendingUp, RefreshCw } from 'lucide-react';
+import { formatCurrency } from '../../utils/formatters';
+
+const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
 
 interface AgedReceivable {
   customer_id: number;
@@ -15,16 +17,29 @@ interface AgedReceivable {
 
 const AgedReceivablesReport: React.FC = () => {
   const [data, setData] = useState<AgedReceivable[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Mock data
-    setData([
-      { customer_id: 1, customer_name: 'ABC Manufacturing', current: 15000, days_30: 8500, days_60: 0, days_90: 0, days_90_plus: 0, total_outstanding: 23500 },
-      { customer_id: 2, customer_name: 'XYZ Trading', current: 0, days_30: 12000, days_60: 5000, days_90: 0, days_90_plus: 0, total_outstanding: 17000 },
-      { customer_id: 3, customer_name: 'Mega Corp', current: 35000, days_30: 0, days_60: 0, days_90: 8000, days_90_plus: 0, total_outstanding: 43000 },
-      { customer_id: 4, customer_name: 'Small Business Ltd', current: 0, days_30: 0, days_60: 0, days_90: 0, days_90_plus: 12000, total_outstanding: 12000 }
-    ]);
+    fetchData();
   }, []);
+
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(`${API_BASE}/api/reports/aged-receivables`);
+      const result = await response.json();
+      if (result.success) {
+        setData(result.data || []);
+      } else {
+        setData([]);
+      }
+    } catch (error) {
+      console.error('Failed to fetch aged receivables:', error);
+      setData([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const totals = data.reduce((acc, row) => ({
     current: acc.current + row.current,

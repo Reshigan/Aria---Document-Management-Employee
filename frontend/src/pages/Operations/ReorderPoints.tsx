@@ -24,12 +24,19 @@ export default function ReorderPoints() {
   const fetchItems = async () => {
     try {
       setLoading(true);
-      setItems([
-        { id: '1', product_name: 'Widget A', sku: 'WGT-001', current_stock: 150, reorder_point: 100, reorder_quantity: 500, lead_time_days: 7, status: 'ok' },
-        { id: '2', product_name: 'Component X', sku: 'CMP-001', current_stock: 45, reorder_point: 50, reorder_quantity: 200, lead_time_days: 14, status: 'low' },
-        { id: '3', product_name: 'Assembly Y', sku: 'ASM-001', current_stock: 10, reorder_point: 25, reorder_quantity: 100, lead_time_days: 21, status: 'critical' },
-      ]);
-    } catch (err) { setError('Failed to load reorder points'); } finally { setLoading(false); }
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
+      const response = await fetch(`${API_BASE}/api/operations/reorder-points`);
+      const result = await response.json();
+      if (result.success) {
+        setItems(result.data || []);
+      } else {
+        setItems([]);
+      }
+    } catch (err) { 
+      console.error('Failed to load reorder points:', err);
+      setError('Failed to load reorder points'); 
+      setItems([]);
+    } finally { setLoading(false); }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
