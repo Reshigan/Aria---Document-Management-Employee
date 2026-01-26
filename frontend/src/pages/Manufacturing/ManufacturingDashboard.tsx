@@ -31,14 +31,28 @@ export default function ManufacturingDashboard() {
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
-      setStats({ totalOrders: 45, inProgress: 12, completed: 28, onHold: 5, totalBOMs: 67, activeBOMs: 52, efficiency: 94.5, defectRate: 1.2 });
-      setRecentOrders([
-        { id: '1', order_number: 'PRD-2026-001', product_name: 'Widget A', progress: 75, status: 'in_progress', priority: 'high' },
-        { id: '2', order_number: 'PRD-2026-002', product_name: 'Widget B', progress: 100, status: 'completed', priority: 'medium' },
-        { id: '3', order_number: 'PRD-2026-003', product_name: 'Component X', progress: 0, status: 'planned', priority: 'low' },
-        { id: '4', order_number: 'PRD-2026-004', product_name: 'Assembly Y', progress: 45, status: 'in_progress', priority: 'urgent' },
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
+      const [statsRes, ordersRes] = await Promise.all([
+        fetch(`${API_BASE}/api/manufacturing/dashboard-stats`, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }),
+        fetch(`${API_BASE}/api/manufacturing/recent-orders`, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } })
       ]);
-    } catch (err) { console.error('Failed to load dashboard data'); } finally { setLoading(false); }
+      if (statsRes.ok) {
+        const data = await statsRes.json();
+        setStats(data.data || data || { totalOrders: 0, inProgress: 0, completed: 0, onHold: 0, totalBOMs: 0, activeBOMs: 0, efficiency: 0, defectRate: 0 });
+      } else {
+        setStats({ totalOrders: 0, inProgress: 0, completed: 0, onHold: 0, totalBOMs: 0, activeBOMs: 0, efficiency: 0, defectRate: 0 });
+      }
+      if (ordersRes.ok) {
+        const data = await ordersRes.json();
+        setRecentOrders(Array.isArray(data) ? data : data.data || []);
+      } else {
+        setRecentOrders([]);
+      }
+    } catch (err) { 
+      console.error('Failed to load dashboard data:', err);
+      setStats({ totalOrders: 0, inProgress: 0, completed: 0, onHold: 0, totalBOMs: 0, activeBOMs: 0, efficiency: 0, defectRate: 0 });
+      setRecentOrders([]);
+    } finally { setLoading(false); }
   };
 
   const getStatusBadge = (status: string) => {
