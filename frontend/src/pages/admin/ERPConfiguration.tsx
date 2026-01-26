@@ -201,9 +201,9 @@ export default function ERPConfigurationPage() {
   }
 
   return (
-    <div className="container mx-auto p-6 max-w-7xl">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 container mx-auto p-6 max-w-7xl">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
+        <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent flex items-center gap-3">
           <Database className="h-8 w-8 text-blue-600 dark:text-blue-400" />
           ERP Configuration
         </h1>
@@ -224,9 +224,9 @@ export default function ERPConfigurationPage() {
           };
 
           return (
-            <div key={erp.id} className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+            <div key={erp.id} className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700-lg overflow-hidden">
               {/* Header */}
-              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 border-b border-gray-200 dark:border-gray-700">
+              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 border-b border-gray-100 dark:border-gray-700">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
                     <div className="text-4xl">{erp.logo}</div>
@@ -265,7 +265,7 @@ export default function ERPConfigurationPage() {
 
               {/* Configuration Form */}
               {connection.enabled && (
-                <div className="p-6">
+                <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                     {erp.id === 'xero' && (
                       <>

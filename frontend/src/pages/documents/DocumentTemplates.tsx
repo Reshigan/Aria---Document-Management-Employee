@@ -22,7 +22,7 @@ export default function DocumentTemplatesPage() {
   };
 
   return (
-    <div className="container mx-auto p-6">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 container mx-auto p-6">
       <h1 className="text-3xl font-bold mb-6 flex items-center gap-3">
         <FileText className="h-8 w-8" />
         Document Templates
@@ -64,7 +64,7 @@ export default function DocumentTemplatesPage() {
         {DOCUMENT_CATEGORIES.map((category) => (
           <div 
             key={category.name} 
-            className={`bg-white rounded-lg shadow p-6 ${selectedCategory === category.name ? 'ring-2 ring-blue-600 active' : ''}`}
+            className={`bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6 ${selectedCategory === category.name ? 'ring-2 ring-blue-600 active' : ''}`}
             data-testid={category.testId}
           >
             <h3 className="text-lg font-bold mb-2">{category.name}</h3>

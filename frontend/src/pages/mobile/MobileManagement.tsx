@@ -45,7 +45,7 @@ export default function MobileManagement() {
   });
 
   return (
-    <div className="container mx-auto p-6">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 container mx-auto p-6">
       <h1 className="text-3xl font-bold mb-6 flex items-center gap-3">
         <Smartphone className="h-8 w-8" />
         Mobile Management
@@ -53,7 +53,7 @@ export default function MobileManagement() {
 
       {/* Mobile Analytics */}
       <div className="grid grid-cols-4 gap-6 mb-6" data-testid="mobile-analytics">
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600 dark:text-gray-400">Devices</p>
@@ -63,7 +63,7 @@ export default function MobileManagement() {
           </div>
         </div>
         
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600 dark:text-gray-400">Sync Sessions</p>
@@ -73,7 +73,7 @@ export default function MobileManagement() {
           </div>
         </div>
         
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600 dark:text-gray-400">Storage Used</p>
@@ -83,7 +83,7 @@ export default function MobileManagement() {
           </div>
         </div>
         
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600 dark:text-gray-400">Events</p>
@@ -95,7 +95,7 @@ export default function MobileManagement() {
       </div>
 
       {/* Analytics Chart */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6" data-testid="analytics-chart">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6 mb-6" data-testid="analytics-chart">
         <h3 className="text-lg font-semibold mb-4">Mobile Activity</h3>
         <div className="h-64 flex items-center justify-center bg-gray-50 dark:bg-gray-900 rounded">
           <p className="text-gray-500 dark:text-gray-400">Activity chart placeholder</p>
@@ -104,7 +104,7 @@ export default function MobileManagement() {
 
       <div className="grid grid-cols-3 gap-6">
         {/* Mobile Device Manager */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6" data-testid="mobile-device-manager">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6" data-testid="mobile-device-manager">
           <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
             <Smartphone className="h-5 w-5" />
             Devices
@@ -130,7 +130,7 @@ export default function MobileManagement() {
         </div>
 
         {/* Sync Monitor */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6" data-testid="sync-monitor">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6" data-testid="sync-monitor">
           <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
             <RefreshCw className="h-5 w-5" />
             Sync Monitor
@@ -166,7 +166,7 @@ export default function MobileManagement() {
         </div>
 
         {/* Offline Document Manager */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6" data-testid="offline-document-manager">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6" data-testid="offline-document-manager">
           <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
             <Download className="h-5 w-5" />
             Offline Documents

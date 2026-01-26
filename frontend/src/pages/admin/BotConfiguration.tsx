@@ -84,18 +84,18 @@ export default function BotConfigurationPage() {
   }
 
   return (
-    <div className="container mx-auto p-6 max-w-6xl">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 container mx-auto p-6 max-w-6xl">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
+        <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent flex items-center gap-3">
           <Agent className="h-8 w-8" />
           Agent Configuration
         </h1>
         <p className="text-gray-600 dark:text-gray-400 mt-2">Configure AI agents and automation settings</p>
       </div>
 
-      <div className="space-y-6">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6 space-y-6">
         {agents.map((agent) => (
-          <div key={agent.id} className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+          <div key={agent.id} className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
             <div className="flex items-start justify-between mb-4">
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-2">
@@ -230,7 +230,7 @@ export default function BotConfigurationPage() {
         <Button
           onClick={handleSaveConfig}
           disabled={saving}
-          className="bg-blue-600 dark:bg-blue-500 hover:bg-blue-700 text-white"
+          className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-lg shadow-indigo-500/30"
         >
           {saving ? 'Saving...' : 'Save Configuration'}
         </Button>

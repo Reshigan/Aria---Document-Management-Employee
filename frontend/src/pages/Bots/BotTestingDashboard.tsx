@@ -157,10 +157,10 @@ const BotTestingDashboard: React.FC = () => {
   const completedBots = agents.filter(agent => agent.status === 'passed' || agent.status === 'failed').length;
 
   return (
-    <div className="p-6">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6">
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center">
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent flex items-center">
             <Agent className="w-8 h-8 mr-3 text-blue-600 dark:text-blue-400" />
             AI Agent Testing Dashboard
           </h1>
@@ -170,21 +170,21 @@ const BotTestingDashboard: React.FC = () => {
 
       {/* Summary */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+        <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-lg">
           <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">Agents Tested</div>
-          <div className="text-2xl font-bold text-gray-900 dark:text-white">{completedBots} / {agents.length}</div>
+          <div className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{completedBots} / {agents.length}</div>
         </div>
-        <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+        <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-lg">
           <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">Overall Accuracy</div>
           <div className={`text-2xl font-bold ${overallAccuracy >= 85 ? 'text-green-600' : 'text-yellow-600'}`}>
             {formatPercentage(overallAccuracy)}
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+        <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-lg">
           <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">Tests Passed</div>
           <div className="text-2xl font-bold text-green-600 dark:text-green-400">{totalPassed} / {totalTests}</div>
         </div>
-        <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+        <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-lg">
           <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">Unique Agents</div>
           <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">{agents.filter(b => b.unique_feature).length}</div>
         </div>
@@ -193,7 +193,7 @@ const BotTestingDashboard: React.FC = () => {
       {/* Agent Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {agents.map((agent) => (
-          <div key={agent.bot_id} className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+          <div key={agent.bot_id} className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-4">
             <div className="flex items-center justify-between mb-3">
               <div className={`p-2 rounded-lg ${agent.unique_feature ? 'bg-purple-100 text-purple-600' : 'bg-blue-100 text-blue-600'}`}>
                 {agent.icon}

@@ -32,13 +32,13 @@ export default function GenerateDocumentPage() {
   };
 
   return (
-    <div className="container mx-auto p-6 max-w-4xl">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 container mx-auto p-6 max-w-4xl">
       <h1 className="text-3xl font-bold mb-6 flex items-center gap-3">
         <FileText className="h-8 w-8" />
         Generate Document
       </h1>
 
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 space-y-6" data-testid="invoice-form">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6 space-y-6" data-testid="invoice-form">
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Document Type *
@@ -193,8 +193,8 @@ export default function GenerateDocumentPage() {
       {/* PDF Preview Modal */}
       {showPreview && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6">
               <h2 className="text-2xl font-bold mb-4">Document Preview</h2>
               <div className="border rounded p-8 bg-gray-50 dark:bg-gray-900 min-h-[500px]" data-testid="pdf-preview">
                 <div className="text-center text-gray-500 dark:text-gray-400">PDF Preview would render here</div>

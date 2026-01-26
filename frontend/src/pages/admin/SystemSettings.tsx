@@ -156,13 +156,13 @@ export default function SystemSettingsPage() {
   }
 
   return (
-    <div className="container mx-auto p-6 max-w-6xl">
-      <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-3">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 container mx-auto p-6 max-w-6xl">
+      <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-6 flex items-center gap-3">
         <Settings className="h-8 w-8" />
         System Settings
       </h1>
 
-      <div className="border-b border-gray-200 dark:border-gray-700 mb-6">
+      <div className="border-b border-gray-100 dark:border-gray-700 mb-6">
         <nav className="flex space-x-8">
           {[
             { id: 'audit', label: 'Audit Logs', icon: Activity },
@@ -186,8 +186,8 @@ export default function SystemSettingsPage() {
       </div>
 
       {activeTab === 'audit' && (
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
-          <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700">
+          <div className="p-4 border-b border-gray-100 dark:border-gray-700">
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white">System Audit Logs</h2>
             <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">Track all system activities and user actions</p>
           </div>
@@ -196,7 +196,7 @@ export default function SystemSettingsPage() {
       )}
 
       {activeTab === 'security' && (
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 space-y-6">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6 space-y-6">
           <div>
             <h3 className="text-lg font-medium mb-4">Password Policy</h3>
             <div className="space-y-3">
@@ -278,7 +278,7 @@ export default function SystemSettingsPage() {
       )}
 
       {activeTab === 'notifications' && (
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 space-y-6">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6 space-y-6">
           <div>
             <h3 className="text-lg font-medium mb-4">Notification Channels</h3>
             <div className="space-y-3">
@@ -343,7 +343,7 @@ export default function SystemSettingsPage() {
       )}
 
       {activeTab === 'backup' && (
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 space-y-6">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6 space-y-6">
           <div>
             <h3 className="text-lg font-medium mb-4">Automated Backups</h3>
             <label className="flex items-center gap-3 mb-4">
@@ -402,7 +402,7 @@ export default function SystemSettingsPage() {
       )}
 
       {activeTab === 'api' && (
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
           <div className="flex items-center justify-between mb-6">
             <div>
               <h3 className="text-lg font-medium">API Keys</h3>
@@ -434,8 +434,8 @@ export default function SystemSettingsPage() {
           )}
           {showNewKeyModal && (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full p-6">
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Create API Key</h2>
+              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700-xl max-w-md w-full p-6">
+                <h2 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-4">Create API Key</h2>
                 {copiedKey ? (
                   <div className="space-y-4">
                     <div className="bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-200 rounded-lg p-4">

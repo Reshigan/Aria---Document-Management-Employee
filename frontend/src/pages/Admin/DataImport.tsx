@@ -91,15 +91,15 @@ const DataImport: React.FC = () => {
   };
 
   return (
-    <div className="p-6 max-w-6xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6 max-w-6xl mx-auto">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Data Import</h1>
+        <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Data Import</h1>
         <p className="text-gray-600 dark:text-gray-400 mt-2">
           Import bulk data from CSV files into your ERP system
         </p>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700-md p-6 mb-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -158,7 +158,7 @@ const DataImport: React.FC = () => {
       </div>
 
       {result && (
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700-md p-6">
           <div className="flex items-center gap-3 mb-4">
             {result.success ? (
               <CheckCircle className="text-green-600 dark:text-green-400" size={24} />

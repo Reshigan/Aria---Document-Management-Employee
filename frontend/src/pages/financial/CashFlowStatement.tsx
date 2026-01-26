@@ -11,13 +11,13 @@ export default function CashFlowStatementPage() {
   const netChange = data.operating.net + data.investing.net + data.financing.net;
 
   return (
-    <div className="container mx-auto p-6 max-w-4xl">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 container mx-auto p-6 max-w-4xl">
       <h1 className="text-3xl font-bold mb-6 flex items-center gap-3">
         <Activity className="h-8 w-8" />
         Cash Flow Statement
       </h1>
 
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 space-y-6">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6 space-y-6">
         <div>
           <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-3">Operating Activities</h3>
           <div className="space-y-2">

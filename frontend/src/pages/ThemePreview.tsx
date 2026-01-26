@@ -4,7 +4,7 @@ import { MainLayout } from '../components/layout/MainLayout';
 const ThemePreview: React.FC = () => {
   return (
     <MainLayout>
-      <div className="p-8">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-8">
         <div className="max-w-6xl mx-auto">
           {/* Header */}
           <div className="mb-8">
@@ -17,7 +17,7 @@ const ThemePreview: React.FC = () => {
           </div>
 
           {/* Color Palette */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700-md p-6 mb-6">
             <h2 className="text-2xl font-semibold mb-4" style={{ color: 'var(--color-primary)' }}>
               Color Palette
             </h2>
@@ -56,7 +56,7 @@ const ThemePreview: React.FC = () => {
           </div>
 
           {/* Theme Features */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700-md p-6 mb-6">
             <h2 className="text-2xl font-semibold mb-4" style={{ color: 'var(--color-primary)' }}>
               Theme Features
             </h2>
@@ -121,7 +121,7 @@ const ThemePreview: React.FC = () => {
           </div>
 
           {/* Buttons */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700-md p-6 mb-6">
             <h2 className="text-2xl font-semibold mb-4" style={{ color: 'var(--color-primary)' }}>
               Button Styles
             </h2>
@@ -156,17 +156,17 @@ const ThemePreview: React.FC = () => {
 
           {/* Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border-l-4" style={{ borderColor: 'var(--color-accent)' }}>
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700-md p-6 border-l-4" style={{ borderColor: 'var(--color-accent)' }}>
               <h3 className="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-2">Total Agents</h3>
               <p className="text-3xl font-bold" style={{ color: 'var(--color-primary)' }}>67</p>
               <p className="text-sm" style={{ color: 'var(--color-accent)' }}>+12% this month</p>
             </div>
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border-l-4" style={{ borderColor: 'var(--color-accent)' }}>
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700-md p-6 border-l-4" style={{ borderColor: 'var(--color-accent)' }}>
               <h3 className="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-2">ERP Modules</h3>
               <p className="text-3xl font-bold" style={{ color: 'var(--color-primary)' }}>8</p>
               <p className="text-sm" style={{ color: 'var(--color-accent)' }}>All Active</p>
             </div>
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border-l-4" style={{ borderColor: 'var(--color-accent)' }}>
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700-md p-6 border-l-4" style={{ borderColor: 'var(--color-accent)' }}>
               <h3 className="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-2">Confidence</h3>
               <p className="text-3xl font-bold" style={{ color: 'var(--color-primary)' }}>94%</p>
               <p className="text-sm" style={{ color: 'var(--color-accent)' }}>Excellent</p>
@@ -175,7 +175,7 @@ const ThemePreview: React.FC = () => {
 
           {/* Sidebar Instructions */}
           <div 
-            className="rounded-lg shadow-md p-6 text-white"
+            className="rounded-xl shadow-lg p-6 text-white"
             style={{ backgroundColor: 'var(--color-primary)' }}
           >
             <h2 className="text-2xl font-semibold mb-4">

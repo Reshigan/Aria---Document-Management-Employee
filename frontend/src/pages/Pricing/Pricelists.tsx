@@ -145,9 +145,9 @@ export default function Pricelists() {
   };
 
   return (
-    <div className="p-6">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
+        <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent flex items-center gap-3">
           <Tag size={28} className="text-green-500" />
           Pricelists
         </h1>
@@ -155,23 +155,23 @@ export default function Pricelists() {
       </div>
 
       <div className="grid grid-cols-4 gap-4 mb-6">
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-4">
           <div className="text-sm text-gray-500 dark:text-gray-400">Total Pricelists</div>
           <div className="text-2xl font-bold text-green-600 dark:text-green-400">{pricelists.length}</div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-4">
           <div className="text-sm text-gray-500 dark:text-gray-400">Active Now</div>
           <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
             {pricelists.filter(isActive).length}
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-4">
           <div className="text-sm text-gray-500 dark:text-gray-400">Default Pricelist</div>
           <div className="text-lg font-bold text-purple-600 dark:text-purple-400 truncate">
             {pricelists.find(p => p.is_default)?.name || 'None'}
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-4">
           <div className="text-sm text-gray-500 dark:text-gray-400">Total Rules</div>
           <div className="text-2xl font-bold text-orange-600">
             {pricelists.reduce((sum, p) => sum + (p.rule_count || 0), 0)}
@@ -179,7 +179,7 @@ export default function Pricelists() {
         </div>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700">
         <div className="p-4 border-b flex gap-4">
           <div className="flex-1 relative">
             <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
@@ -295,7 +295,7 @@ export default function Pricelists() {
 
       {showForm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-lg p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700-xl w-full max-w-lg p-6">
             <h2 className="text-xl font-bold mb-4">
               {editingPricelist ? 'Edit Pricelist' : 'Add Pricelist'}
             </h2>

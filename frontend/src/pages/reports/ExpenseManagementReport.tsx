@@ -3,7 +3,7 @@ import { Receipt } from 'lucide-react';
 
 export default function ExpenseManagementReportPage() {
   return (
-    <div className="container mx-auto p-6">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 container mx-auto p-6">
       <h1 className="text-3xl font-bold mb-6 flex items-center gap-3">
         <Receipt className="h-8 w-8" />
         Expense Management Report
@@ -15,13 +15,13 @@ export default function ExpenseManagementReportPage() {
           { label: 'Pending', value: 12, color: 'yellow' },
           { label: 'Rejected', value: 2, color: 'red' }
         ].map((stat) => (
-          <div key={stat.label} className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+          <div key={stat.label} className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
             <div className="text-sm font-medium text-gray-600 dark:text-gray-400">{stat.label}</div>
             <div className={`text-3xl font-bold text-${stat.color}-600 mt-2`}>{stat.value}</div>
           </div>
         ))}
       </div>
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
         <h3 className="text-lg font-bold mb-4">Auto-Coding Accuracy: 90%</h3>
         <p className="text-gray-600 dark:text-gray-400">142 of 156 claims auto-coded successfully</p>
       </div>

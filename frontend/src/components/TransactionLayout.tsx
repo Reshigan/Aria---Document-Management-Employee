@@ -62,7 +62,7 @@ export function TransactionLayout({
   };
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f9fafb' }}>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800">
       {/* Header */}
       <div style={{
         background: 'white',

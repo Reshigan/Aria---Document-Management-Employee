@@ -16,7 +16,7 @@ export default function ProfitLossStatementPage() {
   const netProfit = totalRevenue - totalCosts - totalExpenses;
 
   return (
-    <div className="container mx-auto p-6 max-w-4xl">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 container mx-auto p-6 max-w-4xl">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold flex items-center gap-3">
           <TrendingUp className="h-8 w-8" />
@@ -35,7 +35,7 @@ export default function ProfitLossStatementPage() {
         </div>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 space-y-6">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6 space-y-6">
         <div data-testid="section-revenue">
           <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-3">Revenue</h3>
           {Object.entries(data.revenue).map(([key, value]) => (

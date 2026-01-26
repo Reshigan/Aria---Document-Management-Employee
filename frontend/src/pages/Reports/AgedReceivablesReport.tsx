@@ -51,7 +51,7 @@ const AgedReceivablesReport: React.FC = () => {
   }), { current: 0, days_30: 0, days_60: 0, days_90: 0, days_90_plus: 0, total_outstanding: 0 });
 
   return (
-    <div className="p-6">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6">
       <div className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-3xl font-bold">Aged Receivables Report</h1>

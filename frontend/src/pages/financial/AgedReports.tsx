@@ -16,7 +16,7 @@ export default function AgedReportsPage() {
   ];
 
   return (
-    <div className="container mx-auto p-6">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 container mx-auto p-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold flex items-center gap-3">
           <Calendar className="h-8 w-8" />
@@ -39,7 +39,7 @@ export default function AgedReportsPage() {
       </div>
 
       {reportType === 'debtors' && (
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700">
           <DataTable
             data={debtors}
             columns={[
@@ -58,7 +58,7 @@ export default function AgedReportsPage() {
       )}
 
       {reportType === 'creditors' && (
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700">
           <DataTable
             data={creditors}
             columns={[

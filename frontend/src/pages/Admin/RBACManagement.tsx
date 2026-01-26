@@ -100,7 +100,7 @@ const RBACManagement: React.FC = () => {
   return (
     <div className="p-6 max-w-7xl mx-auto">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
+        <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent flex items-center gap-3">
           <Shield size={32} className="text-blue-600 dark:text-blue-400" />
           RBAC Management
         </h1>
@@ -110,7 +110,7 @@ const RBACManagement: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700-md p-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-semibold flex items-center gap-2">
               <Users size={20} />
@@ -142,7 +142,7 @@ const RBACManagement: React.FC = () => {
           </div>
         </div>
 
-        <div className="lg:col-span-2 bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+        <div className="lg:col-span-2 bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700-md p-6">
           {selectedRole ? (
             <>
               <div className="flex items-center justify-between mb-6">
@@ -183,9 +183,9 @@ const RBACManagement: React.FC = () => {
                 </div>
               </div>
 
-              <div className="space-y-6">
+              <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6 space-y-6">
                 {Object.entries(groupedPermissions).map(([module, perms]) => (
-                  <div key={module} className="border-b border-gray-200 dark:border-gray-700 pb-4">
+                  <div key={module} className="border-b border-gray-100 dark:border-gray-700 pb-4">
                     <h3 className="font-semibold text-gray-900 dark:text-white mb-3 uppercase text-sm">
                       {module}
                     </h3>

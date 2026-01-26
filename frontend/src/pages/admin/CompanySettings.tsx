@@ -236,7 +236,7 @@ export default function CompanySettingsPage() {
   // This ensures tests can find elements even if API calls are slow
   if (!settings) {
     return (
-      <div className="container mx-auto p-6">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 container mx-auto p-6">
         <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 rounded-lg p-4 flex items-center gap-3">
           <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400" />
           <p className="text-red-800 dark:text-red-300">Error loading company settings</p>
@@ -246,9 +246,9 @@ export default function CompanySettingsPage() {
   }
 
   return (
-    <div className="container mx-auto p-6 max-w-6xl">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 container mx-auto p-6 max-w-6xl">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Company Settings</h1>
+        <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Company Settings</h1>
         <p className="text-gray-600 dark:text-gray-400 mt-2">Configure your company details and preferences</p>
       </div>
 
@@ -259,7 +259,7 @@ export default function CompanySettingsPage() {
         </div>
       )}
 
-      <div className="border-b border-gray-200 dark:border-gray-700 mb-6">
+      <div className="border-b border-gray-100 dark:border-gray-700 mb-6">
         <nav className="flex space-x-8">
           {[
             { id: 'company', label: 'Company Details', icon: Building2 },
@@ -284,9 +284,9 @@ export default function CompanySettingsPage() {
         </nav>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
         {activeTab === 'company' && (
-          <div className="space-y-6">
+          <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6 space-y-6">
             <div className="grid grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -463,7 +463,7 @@ export default function CompanySettingsPage() {
         )}
 
         {activeTab === 'compliance' && (
-          <div className="space-y-6">
+          <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6 space-y-6">
             <div>
               <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">BBBEE Settings</h3>
               <div className="grid grid-cols-2 gap-6">
@@ -587,7 +587,7 @@ export default function CompanySettingsPage() {
         )}
 
         {activeTab === 'branding' && (
-          <div className="space-y-6">
+          <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6 space-y-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Company Logo</label>
               <div className="flex items-start gap-6">
@@ -680,7 +680,7 @@ export default function CompanySettingsPage() {
         )}
 
         {activeTab === 'banking' && (
-          <div className="space-y-6">
+          <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6 space-y-6">
             <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Bank Account Details</h3>
             <div className="grid grid-cols-2 gap-6">
               <div>
@@ -795,7 +795,7 @@ export default function CompanySettingsPage() {
           type="submit"
           onClick={handleSave}
           disabled={saving}
-          className="bg-blue-600 dark:bg-blue-500 hover:bg-blue-700 text-white"
+          className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-lg shadow-indigo-500/30"
         >
           {saving ? (
             <>

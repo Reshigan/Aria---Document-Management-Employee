@@ -100,7 +100,7 @@ const BotDetail: React.FC = () => {
   return (
     <div className="min-h-screen bg-white dark:bg-gray-800">
       {/* Navigation */}
-      <nav className="fixed top-0 w-full z-50 bg-white dark:bg-gray-800/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-700">
+      <nav className="fixed top-0 w-full z-50 bg-white dark:bg-gray-800/80 backdrop-blur-md border-b border-gray-100 dark:border-gray-700">
         <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
           <Link to="/" className="flex items-center space-x-3">
             <div className="w-9 h-9 rounded-lg bg-black flex items-center justify-center">
@@ -162,17 +162,17 @@ const BotDetail: React.FC = () => {
             <div className="grid grid-cols-3 gap-6 mb-8">
               <div className="text-center p-6 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
                 <TrendingUp className="w-8 h-8 text-green-600 dark:text-green-400 mx-auto mb-3" />
-                <div className="text-3xl font-bold text-gray-900 dark:text-white mb-1">{botData.roi}%</div>
+                <div className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-1">{botData.roi}%</div>
                 <div className="text-sm text-gray-600 dark:text-gray-400">ROI</div>
               </div>
               <div className="text-center p-6 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
                 <Clock className="w-8 h-8 text-blue-600 dark:text-blue-400 mx-auto mb-3" />
-                <div className="text-3xl font-bold text-gray-900 dark:text-white mb-1">{botData.deploymentTime}</div>
+                <div className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-1">{botData.deploymentTime}</div>
                 <div className="text-sm text-gray-600 dark:text-gray-400">Deploy Time</div>
               </div>
               <div className="text-center p-6 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
                 <Zap className="w-8 h-8 text-yellow-600 dark:text-yellow-400 mx-auto mb-3" />
-                <div className="text-3xl font-bold text-gray-900 dark:text-white mb-1">95%+</div>
+                <div className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-1">95%+</div>
                 <div className="text-sm text-gray-600 dark:text-gray-400">Accuracy</div>
               </div>
             </div>
@@ -222,7 +222,7 @@ const BotDetail: React.FC = () => {
       {/* Features Grid */}
       <section className="py-16 px-6 bg-gray-50 dark:bg-gray-900">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-12 text-center">
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-12 text-center">
             Key Features
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -251,7 +251,7 @@ const BotDetail: React.FC = () => {
       {/* Use Cases */}
       <section className="py-16 px-6 bg-white dark:bg-gray-800">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-12 text-center">
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-12 text-center">
             Use Cases & ROI
           </h2>
           <div className="space-y-8">
@@ -293,7 +293,7 @@ const BotDetail: React.FC = () => {
       {/* Integrations */}
       <section className="py-16 px-6 bg-gray-50 dark:bg-gray-900">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-8 text-center">
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-8 text-center">
             Integrations
           </h2>
           <div className="flex flex-wrap justify-center gap-4">
@@ -312,14 +312,14 @@ const BotDetail: React.FC = () => {
       {/* Pricing */}
       <section className="py-16 px-6 bg-white dark:bg-gray-800">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-12 text-center">
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-12 text-center">
             Pricing
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Starter */}
             <div className="p-8 bg-white dark:bg-gray-800 rounded-xl border-2 border-gray-200 dark:border-gray-700">
               <div className="text-center mb-6">
-                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Starter</h3>
+                <h3 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2">Starter</h3>
                 <div className="text-4xl font-bold text-gray-900 dark:text-white mb-1">
                   {botData.pricing.starter}
                 </div>
@@ -390,7 +390,7 @@ const BotDetail: React.FC = () => {
             {/* Enterprise */}
             <div className="p-8 bg-white dark:bg-gray-800 rounded-xl border-2 border-gray-200 dark:border-gray-700">
               <div className="text-center mb-6">
-                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Enterprise</h3>
+                <h3 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2">Enterprise</h3>
                 <div className="text-4xl font-bold text-gray-900 dark:text-white mb-1">
                   {botData.pricing.enterprise}
                 </div>
@@ -454,7 +454,7 @@ const BotDetail: React.FC = () => {
       {/* Requirements */}
       <section className="py-16 px-6 bg-white dark:bg-gray-800">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-8 text-center">
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-8 text-center">
             Requirements
           </h2>
           <div className="bg-gray-50 dark:bg-gray-900 rounded-xl p-8 border border-gray-200 dark:border-gray-700">

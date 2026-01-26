@@ -19,7 +19,7 @@ export default function PendingActionsPage() {
     // Show success message
     const successDiv = document.createElement('div');
     successDiv.setAttribute('data-testid', 'success-message');
-    successDiv.className = 'fixed top-4 right-4 bg-green-50 border border-green-200 text-green-700 px-6 py-3 rounded-lg shadow-lg z-50';
+    successDiv.className = 'fixed top-4 right-4 bg-green-50 border border-green-200 text-green-700 px-6 py-3 rounded-2xl shadow-lg z-50';
     successDiv.textContent = 'Action approved successfully!';
     document.body.appendChild(successDiv);
     setTimeout(() => successDiv.remove(), 3000);
@@ -29,7 +29,7 @@ export default function PendingActionsPage() {
     // Show success message
     const successDiv = document.createElement('div');
     successDiv.setAttribute('data-testid', 'success-message');
-    successDiv.className = 'fixed top-4 right-4 bg-green-50 border border-green-200 text-green-700 px-6 py-3 rounded-lg shadow-lg z-50';
+    successDiv.className = 'fixed top-4 right-4 bg-green-50 border border-green-200 text-green-700 px-6 py-3 rounded-2xl shadow-lg z-50';
     successDiv.textContent = 'Action rejected successfully!';
     document.body.appendChild(successDiv);
     setTimeout(() => successDiv.remove(), 3000);
@@ -39,7 +39,7 @@ export default function PendingActionsPage() {
   };
 
   return (
-    <div className="container mx-auto p-6">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 container mx-auto p-6">
       <h1 className="text-3xl font-bold mb-6 flex items-center gap-3">
         <CheckSquare className="h-8 w-8" />
         Pending Actions
@@ -59,7 +59,7 @@ export default function PendingActionsPage() {
         </select>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow" data-testid="actions-table">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700" data-testid="actions-table">
         <DataTable
           data={filteredActions}
           columns={[
@@ -112,7 +112,7 @@ export default function PendingActionsPage() {
       {/* Reject Modal */}
       {showRejectModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full p-6" data-testid="modal-reject-reason">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700-xl max-w-md w-full p-6" data-testid="modal-reject-reason">
             <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Reject Action</h2>
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">

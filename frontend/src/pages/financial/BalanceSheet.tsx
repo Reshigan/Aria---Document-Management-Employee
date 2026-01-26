@@ -17,14 +17,14 @@ export default function BalanceSheetPage() {
   const equity = totalAssets - totalLiabilities;
 
   return (
-    <div className="container mx-auto p-6 max-w-5xl">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 container mx-auto p-6 max-w-5xl">
       <h1 className="text-3xl font-bold mb-6 flex items-center gap-3">
         <Scale className="h-8 w-8" />
         Balance Sheet
       </h1>
 
       <div className="grid grid-cols-2 gap-6">
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6" data-testid="section-assets">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6" data-testid="section-assets">
           <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Assets</h3>
           <div className="space-y-4">
             <div data-testid="current-assets">
@@ -52,7 +52,7 @@ export default function BalanceSheetPage() {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
           <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Liabilities & Equity</h3>
           <div className="space-y-4">
             <div data-testid="section-liabilities">

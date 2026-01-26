@@ -104,13 +104,13 @@ export default function ERPDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800">
       {/* Header */}
       <header className="bg-white dark:bg-gray-800 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">ARIA ERP</h1>
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">ARIA ERP</h1>
               <p className="text-sm text-gray-500 dark:text-gray-400">Production-Grade Enterprise Resource Planning</p>
             </div>
             <div className="flex items-center space-x-2">
@@ -161,7 +161,7 @@ export default function ERPDashboard() {
           <div className="space-y-6">
             {/* Module Status Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
                 <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Payables</h3>
                 <p className="text-3xl font-bold text-red-600 dark:text-red-400 mt-2">
                   {apAging ? formatCurrency(apAging.summary.total_outstanding) : '...'}
@@ -169,7 +169,7 @@ export default function ERPDashboard() {
                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Outstanding to suppliers</p>
               </div>
 
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
                 <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Receivables</h3>
                 <p className="text-3xl font-bold text-green-600 dark:text-green-400 mt-2">
                   {arAging ? formatCurrency(arAging.summary.total_outstanding) : '...'}
@@ -177,7 +177,7 @@ export default function ERPDashboard() {
                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Outstanding from customers</p>
               </div>
 
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
                 <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Active Modules</h3>
                 <p className="text-3xl font-bold text-blue-600 dark:text-blue-400 mt-2">
                   {health ? Object.keys(health.modules).length : '...'}
@@ -187,7 +187,7 @@ export default function ERPDashboard() {
             </div>
 
             {/* Modules Grid */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700">
               <div className="px-6 py-4 border-b">
                 <h2 className="text-lg font-semibold text-gray-900 dark:text-white">ERP Modules</h2>
               </div>
@@ -211,7 +211,7 @@ export default function ERPDashboard() {
             </div>
 
             {/* Automation Agents */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700">
               <div className="px-6 py-4 border-b">
                 <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Automation Agents</h2>
                 <p className="text-sm text-gray-500 dark:text-gray-400">15 intelligent agents working 24/7</p>
@@ -240,31 +240,31 @@ export default function ERPDashboard() {
           <div className="space-y-6">
             {/* AP Summary Cards */}
             <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-4">
                 <h4 className="text-xs font-medium text-gray-500 dark:text-gray-400">Total</h4>
                 <p className="text-xl font-bold text-gray-900 dark:text-white mt-1">
                   {apAging && formatCurrency(apAging.summary.total_outstanding)}
                 </p>
               </div>
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-4">
                 <h4 className="text-xs font-medium text-gray-500 dark:text-gray-400">Current</h4>
                 <p className="text-xl font-bold text-green-600 dark:text-green-400 mt-1">
                   {apAging && formatCurrency(apAging.summary.current)}
                 </p>
               </div>
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-4">
                 <h4 className="text-xs font-medium text-gray-500 dark:text-gray-400">30 Days</h4>
                 <p className="text-xl font-bold text-yellow-600 dark:text-yellow-400 mt-1">
                   {apAging && formatCurrency(apAging.summary.days_30)}
                 </p>
               </div>
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-4">
                 <h4 className="text-xs font-medium text-gray-500 dark:text-gray-400">60 Days</h4>
                 <p className="text-xl font-bold text-orange-600 mt-1">
                   {apAging && formatCurrency(apAging.summary.days_60)}
                 </p>
               </div>
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-4">
                 <h4 className="text-xs font-medium text-gray-500 dark:text-gray-400">90+ Days</h4>
                 <p className="text-xl font-bold text-red-600 dark:text-red-400 mt-1">
                   {apAging && formatCurrency(apAging.summary.days_90_plus)}
@@ -273,7 +273,7 @@ export default function ERPDashboard() {
             </div>
 
             {/* AP Invoices Table */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700">
               <div className="px-6 py-4 border-b">
                 <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Outstanding Payables</h2>
               </div>
@@ -326,31 +326,31 @@ export default function ERPDashboard() {
           <div className="space-y-6">
             {/* AR Summary Cards */}
             <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-4">
                 <h4 className="text-xs font-medium text-gray-500 dark:text-gray-400">Total</h4>
                 <p className="text-xl font-bold text-gray-900 dark:text-white mt-1">
                   {arAging && formatCurrency(arAging.summary.total_outstanding)}
                 </p>
               </div>
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-4">
                 <h4 className="text-xs font-medium text-gray-500 dark:text-gray-400">Current</h4>
                 <p className="text-xl font-bold text-green-600 dark:text-green-400 mt-1">
                   {arAging && formatCurrency(arAging.summary.current)}
                 </p>
               </div>
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-4">
                 <h4 className="text-xs font-medium text-gray-500 dark:text-gray-400">30 Days</h4>
                 <p className="text-xl font-bold text-yellow-600 dark:text-yellow-400 mt-1">
                   {arAging && formatCurrency(arAging.summary.days_30)}
                 </p>
               </div>
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-4">
                 <h4 className="text-xs font-medium text-gray-500 dark:text-gray-400">60 Days</h4>
                 <p className="text-xl font-bold text-orange-600 mt-1">
                   {arAging && formatCurrency(arAging.summary.days_60)}
                 </p>
               </div>
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-4">
                 <h4 className="text-xs font-medium text-gray-500 dark:text-gray-400">90+ Days</h4>
                 <p className="text-xl font-bold text-red-600 dark:text-red-400 mt-1">
                   {arAging && formatCurrency(arAging.summary.days_90_plus)}
@@ -359,7 +359,7 @@ export default function ERPDashboard() {
             </div>
 
             {/* AR Invoices Table */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700">
               <div className="px-6 py-4 border-b">
                 <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Outstanding Receivables</h2>
               </div>
@@ -409,7 +409,7 @@ export default function ERPDashboard() {
         )}
 
         {activeTab === 'gl' && (
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-8 text-center">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-8 text-center">
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">General Ledger</h2>
             <p className="text-gray-500 dark:text-gray-400">Coming soon: Trial Balance, Balance Sheet, P&L Statement</p>
           </div>

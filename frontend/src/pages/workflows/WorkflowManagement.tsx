@@ -13,7 +13,7 @@ export default function WorkflowManagementPage() {
   ];
 
   return (
-    <div className="container mx-auto p-6">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 container mx-auto p-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold flex items-center gap-3">
           <Workflow className="h-8 w-8" />
@@ -30,14 +30,14 @@ export default function WorkflowManagementPage() {
 
       <div className="grid grid-cols-3 gap-6 mb-8">
         {workflowTypes.map((wf) => (
-          <div key={wf.id} className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 hover:shadow-lg transition-shadow cursor-pointer">
+          <div key={wf.id} className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6 hover:shadow-lg transition-shadow cursor-pointer">
             <h3 className="text-lg font-bold mb-2">{wf.name}</h3>
             <p className="text-gray-600 dark:text-gray-400 text-sm">{wf.description}</p>
           </div>
         ))}
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
         <h3 className="text-lg font-bold mb-4">Active Workflows</h3>
         <DataTable
           data={[
@@ -58,7 +58,7 @@ export default function WorkflowManagementPage() {
 
       {showStartModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700-xl max-w-md w-full p-6">
             <h2 className="text-2xl font-bold mb-4">Start New Workflow</h2>
             <div className="space-y-3">
               {workflowTypes.map((wf) => (

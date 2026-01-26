@@ -118,7 +118,7 @@ export default function AgentSettings() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6 space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
@@ -128,11 +128,11 @@ export default function AgentSettings() {
           >
             <ArrowLeft className="h-5 w-5" />
           </button>
-          <div className="bg-blue-100 dark:bg-blue-900/30 rounded-lg p-3">
+          <div className="bg-indigo-100 dark:bg-indigo-900/30 rounded-xl p-3">
             <Bot className="h-8 w-8 text-blue-600 dark:text-blue-400" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{agent.name}</h1>
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{agent.name}</h1>
             <p className="text-gray-600 dark:text-gray-400">{agent.category}</p>
           </div>
         </div>
@@ -147,7 +147,7 @@ export default function AgentSettings() {
       </div>
 
       {/* Tabs */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700">
         <div className="border-b">
           <div className="flex space-x-8 px-6">
             <button
@@ -184,9 +184,9 @@ export default function AgentSettings() {
         </div>
 
         {/* Tab Content */}
-        <div className="p-6">
+        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6">
           {activeTab === 'info' && (
-            <div className="space-y-6">
+            <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6 space-y-6">
               <div>
                 <h3 className="text-lg font-semibold mb-2">Description</h3>
                 <p className="text-gray-600 dark:text-gray-400">
@@ -222,7 +222,7 @@ export default function AgentSettings() {
           )}
 
           {activeTab === 'settings' && (
-            <div className="space-y-6">
+            <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6 space-y-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Agent Name
@@ -297,13 +297,13 @@ export default function AgentSettings() {
           )}
 
           {activeTab === 'usage' && usage && (
-            <div className="space-y-6">
+            <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6 space-y-6">
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div className="bg-blue-50 dark:bg-blue-900/30 rounded-lg p-4">
                   <div className="flex items-center justify-between mb-2">
                     <Activity className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                   </div>
-                  <div className="text-2xl font-bold text-gray-900 dark:text-white">{usage.total_runs}</div>
+                  <div className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{usage.total_runs}</div>
                   <div className="text-sm text-gray-600 dark:text-gray-400">Total Runs</div>
                 </div>
 
@@ -311,7 +311,7 @@ export default function AgentSettings() {
                   <div className="flex items-center justify-between mb-2">
                     <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400" />
                   </div>
-                  <div className="text-2xl font-bold text-gray-900 dark:text-white">{usage.success_rate}%</div>
+                  <div className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{usage.success_rate}%</div>
                   <div className="text-sm text-gray-600 dark:text-gray-400">Success Rate</div>
                 </div>
 
@@ -319,7 +319,7 @@ export default function AgentSettings() {
                   <div className="flex items-center justify-between mb-2">
                     <Clock className="h-5 w-5 text-yellow-600 dark:text-yellow-400" />
                   </div>
-                  <div className="text-2xl font-bold text-gray-900 dark:text-white">
+                  <div className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
                     {(usage.avg_duration_ms / 1000).toFixed(1)}s
                   </div>
                   <div className="text-sm text-gray-600 dark:text-gray-400">Avg Duration</div>
@@ -329,7 +329,7 @@ export default function AgentSettings() {
                   <div className="flex items-center justify-between mb-2">
                     <TrendingUp className="h-5 w-5 text-purple-600 dark:text-purple-400" />
                   </div>
-                  <div className="text-2xl font-bold text-gray-900 dark:text-white">{usage.runs_7d}</div>
+                  <div className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{usage.runs_7d}</div>
                   <div className="text-sm text-gray-600 dark:text-gray-400">Last 7 Days</div>
                 </div>
               </div>

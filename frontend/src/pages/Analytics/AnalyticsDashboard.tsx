@@ -109,10 +109,10 @@ export default function AnalyticsDashboard() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6 space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent flex items-center gap-3">
             <BarChart3 className="h-8 w-8 text-blue-600 dark:text-blue-400" />
             Business Intelligence
           </h1>
@@ -141,7 +141,7 @@ export default function AnalyticsDashboard() {
         </div>
       </div>
 
-      <div className="border-b border-gray-200 dark:border-gray-700">
+      <div className="border-b border-gray-100 dark:border-gray-700">
         <nav className="-mb-px flex space-x-8">
           {[
             { id: 'executive', label: 'Executive Dashboard', icon: Activity },
@@ -199,7 +199,7 @@ function ExecutiveDashboardTab({ data, formatCurrency, formatNumber }: {
   formatNumber: (n: number) => string;
 }) {
   return (
-    <div className="space-y-6">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6 space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <MetricCard
           title="Revenue YTD"
@@ -230,7 +230,7 @@ function ExecutiveDashboardTab({ data, formatCurrency, formatNumber }: {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
           <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
             <Users className="h-5 w-5 text-blue-600 dark:text-blue-400" />
             Master Data
@@ -251,7 +251,7 @@ function ExecutiveDashboardTab({ data, formatCurrency, formatNumber }: {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
           <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
             <Activity className="h-5 w-5 text-green-600 dark:text-green-400" />
             Activity This Month
@@ -272,7 +272,7 @@ function ExecutiveDashboardTab({ data, formatCurrency, formatNumber }: {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
           <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
             <PieChart className="h-5 w-5 text-purple-600 dark:text-purple-400" />
             Top Customers
@@ -292,7 +292,7 @@ function ExecutiveDashboardTab({ data, formatCurrency, formatNumber }: {
         </div>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
         <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
           <Package className="h-5 w-5 text-orange-600" />
           Top Products by Sales
@@ -346,8 +346,8 @@ function FinancialReportsTab({ dateRange, setDateRange, formatCurrency }: {
   }, [reportType, dateRange]);
 
   return (
-    <div className="space-y-6">
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6 space-y-6">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-4">
         <div className="flex flex-wrap gap-4 items-center">
           <div className="flex gap-2">
             {[
@@ -394,7 +394,7 @@ function FinancialReportsTab({ dateRange, setDateRange, formatCurrency }: {
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
         </div>
       ) : reportData ? (
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700">
           {reportType === 'profit-loss' && <ProfitLossReport data={reportData} formatCurrency={formatCurrency} />}
           {reportType === 'balance-sheet' && <BalanceSheetReport data={reportData} formatCurrency={formatCurrency} />}
           {reportType === 'cash-flow' && <CashFlowReport data={reportData} formatCurrency={formatCurrency} />}
@@ -407,11 +407,11 @@ function FinancialReportsTab({ dateRange, setDateRange, formatCurrency }: {
 
 function ProfitLossReport({ data, formatCurrency }: { data: any; formatCurrency: (n: number) => string }) {
   return (
-    <div className="p-6">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6">
       <h3 className="text-xl font-bold mb-6">Profit & Loss Statement</h3>
       <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">Period: {data.period?.start_date} to {data.period?.end_date}</p>
       
-      <div className="space-y-6">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6 space-y-6">
         <div>
           <h4 className="font-semibold text-green-700 dark:text-green-300 mb-2">Revenue</h4>
           {(data.revenue?.accounts || []).map((acc: any, idx: number) => (
@@ -484,12 +484,12 @@ function ProfitLossReport({ data, formatCurrency }: { data: any; formatCurrency:
 
 function BalanceSheetReport({ data, formatCurrency }: { data: any; formatCurrency: (n: number) => string }) {
   return (
-    <div className="p-6">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6">
       <h3 className="text-xl font-bold mb-6">Balance Sheet</h3>
       <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">As of: {data.as_of_date}</p>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div className="space-y-6">
+        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6 space-y-6">
           <div>
             <h4 className="font-semibold text-blue-700 dark:text-blue-300 mb-2">Current Assets</h4>
             {(data.assets?.current?.accounts || []).map((acc: any, idx: number) => (
@@ -526,7 +526,7 @@ function BalanceSheetReport({ data, formatCurrency }: { data: any; formatCurrenc
           </div>
         </div>
 
-        <div className="space-y-6">
+        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6 space-y-6">
           <div>
             <h4 className="font-semibold text-red-700 dark:text-red-300 mb-2">Current Liabilities</h4>
             {(data.liabilities?.current?.accounts || []).map((acc: any, idx: number) => (
@@ -585,11 +585,11 @@ function BalanceSheetReport({ data, formatCurrency }: { data: any; formatCurrenc
 
 function CashFlowReport({ data, formatCurrency }: { data: any; formatCurrency: (n: number) => string }) {
   return (
-    <div className="p-6">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6">
       <h3 className="text-xl font-bold mb-6">Cash Flow Statement</h3>
       <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">Period: {data.period?.start_date} to {data.period?.end_date}</p>
       
-      <div className="space-y-6">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6 space-y-6">
         <div className="bg-white dark:bg-gray-800 border rounded-lg p-4">
           <h4 className="font-semibold text-blue-700 dark:text-blue-300 mb-3">Operating Activities</h4>
           <div className="space-y-2">
@@ -638,7 +638,7 @@ function AgingReport({ data, formatCurrency, type }: { data: any; formatCurrency
   const isAR = type === 'ar-aging';
   
   return (
-    <div className="p-6">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6">
       <h3 className="text-xl font-bold mb-6">{isAR ? 'Accounts Receivable' : 'Accounts Payable'} Aging</h3>
       <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">As of: {data.as_of_date}</p>
       
@@ -733,8 +733,8 @@ function SalesAnalyticsTab({ dateRange, setDateRange, formatCurrency }: {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6 space-y-6">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-4">
         <div className="flex gap-2 items-center">
           <Calendar className="h-4 w-4 text-gray-500 dark:text-gray-400" />
           <input
@@ -783,7 +783,7 @@ function SalesAnalyticsTab({ dateRange, setDateRange, formatCurrency }: {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
               <h3 className="text-lg font-semibold mb-4">Sales by Month</h3>
               <div className="space-y-2">
                 {(data.sales_by_month || []).map((month: any, idx: number) => (
@@ -801,7 +801,7 @@ function SalesAnalyticsTab({ dateRange, setDateRange, formatCurrency }: {
               </div>
             </div>
 
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
               <h3 className="text-lg font-semibold mb-4">Top Customers</h3>
               <div className="space-y-2">
                 {(data.sales_by_customer || []).slice(0, 10).map((customer: any, idx: number) => (
@@ -852,8 +852,8 @@ function ProcurementAnalyticsTab({ dateRange, setDateRange, formatCurrency }: {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6 space-y-6">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-4">
         <div className="flex gap-2 items-center">
           <Calendar className="h-4 w-4 text-gray-500 dark:text-gray-400" />
           <input
@@ -902,7 +902,7 @@ function ProcurementAnalyticsTab({ dateRange, setDateRange, formatCurrency }: {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
               <h3 className="text-lg font-semibold mb-4">Spend by Month</h3>
               <div className="space-y-2">
                 {(data.spend_by_month || []).map((month: any, idx: number) => (
@@ -920,7 +920,7 @@ function ProcurementAnalyticsTab({ dateRange, setDateRange, formatCurrency }: {
               </div>
             </div>
 
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
               <h3 className="text-lg font-semibold mb-4">Top Suppliers by Spend</h3>
               <div className="space-y-2">
                 {(data.spend_by_supplier || []).slice(0, 10).map((supplier: any, idx: number) => (
@@ -966,8 +966,8 @@ function DataIntegrityTab({ data, onRefresh }: { data: IntegrityResult; onRefres
   };
 
   return (
-    <div className="space-y-6">
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6 space-y-6">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
         <div className="flex justify-between items-center mb-6">
           <div>
             <h3 className="text-xl font-bold">Data Integrity Checks</h3>
@@ -1060,14 +1060,14 @@ function MetricCard({ title, value, subtitle, icon, color }: {
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
       <div className="flex items-center justify-between mb-2">
         <span className="text-sm text-gray-600 dark:text-gray-400">{title}</span>
         <div className={`p-2 rounded-lg ${colorClasses[color]}`}>
           {icon}
         </div>
       </div>
-      <p className="text-2xl font-bold text-gray-900 dark:text-white">{value}</p>
+      <p className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{value}</p>
       {subtitle && <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{subtitle}</p>}
     </div>
   );
