@@ -60,10 +60,10 @@ const StockValuationReport: React.FC = () => {
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Stock Valuation Report</h1>
-          <p className="text-gray-500 mt-1">Current inventory valuation</p>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Stock Valuation Report</h1>
+          <p className="text-gray-500 dark:text-gray-400 mt-1">Current inventory valuation</p>
         </div>
-        <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center">
+        <button className="px-4 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-md hover:bg-blue-700 flex items-center">
           <Download className="w-4 h-4 mr-2" />
           Export PDF
         </button>
@@ -107,22 +107,22 @@ const StockValuationReport: React.FC = () => {
       </div>
 
       {/* Category Breakdown */}
-      <div className="bg-white rounded-lg shadow p-6 mb-6">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6">
         <h2 className="text-lg font-semibold mb-4">Valuation by Category</h2>
         <div className="space-y-4">
           {categoryTotals.map((cat) => (
             <div key={cat.category}>
               <div className="flex justify-between items-center mb-1">
-                <span className="text-sm font-medium text-gray-700">{cat.category}</span>
-                <span className="text-sm font-bold text-gray-900">{formatCurrency(cat.value)}</span>
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{cat.category}</span>
+                <span className="text-sm font-bold text-gray-900 dark:text-white">{formatCurrency(cat.value)}</span>
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
+              <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2">
                 <div
-                  className="bg-blue-600 h-2 rounded-full transition-all"
+                  className="bg-blue-600 dark:bg-blue-500 h-2 rounded-full transition-all"
                   style={{ width: `${cat.percentage}%` }}
                 />
               </div>
-              <div className="text-xs text-gray-500 mt-1">{cat.percentage.toFixed(1)}% of total inventory value</div>
+              <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">{cat.percentage.toFixed(1)}% of total inventory value</div>
             </div>
           ))}
         </div>
@@ -133,7 +133,7 @@ const StockValuationReport: React.FC = () => {
         <select
           value={filterCategory}
           onChange={(e) => setFilterCategory(e.target.value)}
-          className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
         >
           <option value="">All Categories</option>
           {categories.map(cat => (
@@ -143,39 +143,39 @@ const StockValuationReport: React.FC = () => {
       </div>
 
       {/* Stock Table */}
-      <div className="bg-white rounded-lg shadow overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
         <table className="w-full">
-          <thead className="bg-gray-50 border-b-2 border-gray-200">
+          <thead className="bg-gray-50 dark:bg-gray-900 border-b-2 border-gray-200 dark:border-gray-700">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Product Code</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Product Name</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Category</th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Quantity</th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Cost Price</th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Total Value</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Product Code</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Product Name</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Category</th>
+              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Quantity</th>
+              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Cost Price</th>
+              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Total Value</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-200">
+          <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
             {filteredData.map((item) => (
-              <tr key={item.product_code} className="hover:bg-gray-50">
+              <tr key={item.product_code} className="hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900">
                 <td className="px-6 py-4 font-mono text-sm">{item.product_code}</td>
-                <td className="px-6 py-4 font-medium text-gray-900">{item.product_name}</td>
+                <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">{item.product_name}</td>
                 <td className="px-6 py-4">
-                  <span className="px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800">
+                  <span className="px-2 py-1 text-xs font-medium rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200">
                     {item.category}
                   </span>
                 </td>
                 <td className="px-6 py-4 text-right text-sm">{item.quantity.toLocaleString()}</td>
                 <td className="px-6 py-4 text-right text-sm">{formatCurrency(item.cost_price)}</td>
-                <td className="px-6 py-4 text-right font-semibold text-gray-900">{formatCurrency(item.total_value)}</td>
+                <td className="px-6 py-4 text-right font-semibold text-gray-900 dark:text-white">{formatCurrency(item.total_value)}</td>
               </tr>
             ))}
             {/* Totals Row */}
-            <tr className="bg-gray-50 font-bold">
-              <td colSpan={3} className="px-6 py-4 text-gray-900">TOTAL ({filteredData.length} products)</td>
-              <td className="px-6 py-4 text-right text-blue-700">{totals.quantity.toLocaleString()}</td>
+            <tr className="bg-gray-50 dark:bg-gray-900 font-bold">
+              <td colSpan={3} className="px-6 py-4 text-gray-900 dark:text-white">TOTAL ({filteredData.length} products)</td>
+              <td className="px-6 py-4 text-right text-blue-700 dark:text-blue-300">{totals.quantity.toLocaleString()}</td>
               <td className="px-6 py-4"></td>
-              <td className="px-6 py-4 text-right text-blue-700 text-lg">{formatCurrency(totals.value)}</td>
+              <td className="px-6 py-4 text-right text-blue-700 dark:text-blue-300 text-lg">{formatCurrency(totals.value)}</td>
             </tr>
           </tbody>
         </table>
@@ -183,15 +183,15 @@ const StockValuationReport: React.FC = () => {
 
       {/* Insights */}
       <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="bg-green-50 border-l-4 border-green-400 p-4 rounded">
-          <h3 className="text-sm font-medium text-green-800 mb-2">Top Category</h3>
-          <p className="text-sm text-green-700">
+        <div className="bg-green-50 dark:bg-green-900/30 border-l-4 border-green-400 p-4 rounded">
+          <h3 className="text-sm font-medium text-green-800 dark:text-green-300 mb-2">Top Category</h3>
+          <p className="text-sm text-green-700 dark:text-green-300">
             {categoryTotals[0]?.category} accounts for {categoryTotals[0]?.percentage.toFixed(1)}% of inventory value ({formatCurrency(categoryTotals[0]?.value)})
           </p>
         </div>
-        <div className="bg-blue-50 border-l-4 border-blue-400 p-4 rounded">
-          <h3 className="text-sm font-medium text-blue-800 mb-2">Inventory Health</h3>
-          <p className="text-sm text-blue-700">
+        <div className="bg-blue-50 dark:bg-blue-900/30 border-l-4 border-blue-400 p-4 rounded">
+          <h3 className="text-sm font-medium text-blue-800 dark:text-blue-200 mb-2">Inventory Health</h3>
+          <p className="text-sm text-blue-700 dark:text-blue-300">
             Total inventory value of {formatCurrency(totals.value)} across {totals.items} products with average holding of {Math.round(totals.quantity / totals.items)} units per product
           </p>
         </div>

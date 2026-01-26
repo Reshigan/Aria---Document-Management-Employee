@@ -8,22 +8,22 @@ import { motion } from 'framer-motion';
 
 export const Landing: React.FC = () => {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white dark:bg-gray-800">
       {/* Navigation */}
-      <nav className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-gray-200">
+      <nav className="fixed top-0 w-full z-50 bg-white dark:bg-gray-800/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-700">
         <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <div className="w-9 h-9 rounded-lg bg-black flex items-center justify-center">
               <Agent className="w-5 h-5 text-white" />
             </div>
-            <span className="text-2xl font-semibold text-gray-900 tracking-tight">Aria</span>
+            <span className="text-2xl font-semibold text-gray-900 dark:text-white tracking-tight">Aria</span>
           </div>
           
           <div className="flex items-center space-x-8">
-            <Link to="/agents" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition">
+            <Link to="/agents" className="text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:text-white transition">
               Platform
             </Link>
-            <Link to="/login" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition">
+            <Link to="/login" className="text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:text-white transition">
               Sign In
             </Link>
             <Link 
@@ -45,18 +45,18 @@ export const Landing: React.FC = () => {
             transition={{ duration: 0.8 }}
             className="text-center"
           >
-            <div className="inline-flex items-center space-x-2 px-4 py-2 rounded-full bg-gray-100 text-gray-700 text-sm font-medium mb-8">
+            <div className="inline-flex items-center space-x-2 px-4 py-2 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-sm font-medium mb-8">
               <Sparkles className="w-4 h-4" />
               <span>Enterprise AI Platform for South Africa</span>
             </div>
             
-            <h1 className="text-6xl md:text-7xl lg:text-8xl font-bold text-gray-900 mb-8 leading-none tracking-tight">
+            <h1 className="text-6xl md:text-7xl lg:text-8xl font-bold text-gray-900 dark:text-white mb-8 leading-none tracking-tight">
               Intelligence that
               <br />
               works for you
             </h1>
             
-            <p className="text-xl md:text-2xl text-gray-600 mb-12 max-w-3xl mx-auto font-light">
+            <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-400 mb-12 max-w-3xl mx-auto font-light">
               67 AI-powered automation agents and 11 complete ERP modules ready to transform your business operations.
               From invoices to compliance, manufacturing to retail, SAP integration to master data management, we handle it all.
             </p>
@@ -72,23 +72,23 @@ export const Landing: React.FC = () => {
               
               <Link
                 to="/agents"
-                className="px-8 py-4 bg-white hover:bg-gray-50 text-gray-900 border border-gray-300 rounded-lg font-medium text-lg transition-all"
+                className="px-8 py-4 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg font-medium text-lg transition-all"
               >
                 Explore platform
               </Link>
             </div>
             
-            <div className="flex items-center justify-center space-x-8 text-sm text-gray-500">
+            <div className="flex items-center justify-center space-x-8 text-sm text-gray-500 dark:text-gray-400">
               <div className="flex items-center space-x-2">
-                <CheckCircle className="w-5 h-5 text-green-600" />
+                <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400" />
                 <span>No credit card required</span>
               </div>
               <div className="flex items-center space-x-2">
-                <CheckCircle className="w-5 h-5 text-green-600" />
+                <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400" />
                 <span>14-day free trial</span>
               </div>
               <div className="flex items-center space-x-2">
-                <CheckCircle className="w-5 h-5 text-green-600" />
+                <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400" />
                 <span>Cancel anytime</span>
               </div>
             </div>
@@ -97,15 +97,15 @@ export const Landing: React.FC = () => {
       </section>
 
       {/* Features Grid */}
-      <section className="py-24 px-6 bg-gray-50">
+      <section className="py-24 px-6 bg-gray-50 dark:bg-gray-900">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-20">
-            <h2 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 tracking-tight">
+            <h2 className="text-5xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6 tracking-tight">
               Built for enterprise,
               <br />
               priced for growth
             </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
               A complete AI platform that replaces multiple systems and saves you millions
             </p>
           </div>
@@ -133,13 +133,13 @@ export const Landing: React.FC = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: i * 0.1 }}
-                className="p-10 bg-white rounded-2xl border border-gray-200 hover:border-gray-300 transition-all"
+                className="p-10 bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:border-gray-600 transition-all"
               >
                 <div className="w-12 h-12 bg-black rounded-lg flex items-center justify-center mb-6">
                   <feature.icon className="w-6 h-6 text-white" />
                 </div>
-                <h3 className="text-2xl font-semibold text-gray-900 mb-4">{feature.title}</h3>
-                <p className="text-gray-600 leading-relaxed">{feature.description}</p>
+                <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">{feature.title}</h3>
+                <p className="text-gray-600 dark:text-gray-400 leading-relaxed">{feature.description}</p>
               </motion.div>
             ))}
           </div>
@@ -167,14 +167,14 @@ export const Landing: React.FC = () => {
       </section>
 
       {/* CTA */}
-      <section className="py-32 px-6 bg-white">
+      <section className="py-32 px-6 bg-white dark:bg-gray-800">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-5xl md:text-6xl font-bold text-gray-900 mb-8 leading-tight tracking-tight">
+          <h2 className="text-5xl md:text-6xl font-bold text-gray-900 dark:text-white mb-8 leading-tight tracking-tight">
             Ready to automate
             <br />
             your business?
           </h2>
-          <p className="text-xl text-gray-600 mb-12 max-w-2xl mx-auto">
+          <p className="text-xl text-gray-600 dark:text-gray-400 mb-12 max-w-2xl mx-auto">
             Start your 14-day free trial today. No credit card required.
           </p>
           <Link
@@ -188,7 +188,7 @@ export const Landing: React.FC = () => {
       </section>
 
       {/* Footer */}
-      <footer className="py-16 px-6 border-t border-gray-200 bg-white">
+      <footer className="py-16 px-6 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
             <div>
@@ -196,41 +196,41 @@ export const Landing: React.FC = () => {
                 <div className="w-9 h-9 rounded-lg bg-black flex items-center justify-center">
                   <Agent className="w-5 h-5 text-white" />
                 </div>
-                <span className="text-2xl font-semibold text-gray-900">Aria</span>
+                <span className="text-2xl font-semibold text-gray-900 dark:text-white">Aria</span>
               </div>
-              <p className="text-gray-600 text-sm">
+              <p className="text-gray-600 dark:text-gray-400 text-sm">
                 Enterprise AI automation for South African businesses
               </p>
             </div>
             
             <div>
-              <h4 className="font-semibold text-gray-900 mb-4">Product</h4>
-              <ul className="space-y-3 text-sm text-gray-600">
-                <li><Link to="/agents" className="hover:text-gray-900">Platform</Link></li>
-                <li><a href="#" className="hover:text-gray-900">Features</a></li>
-                <li><a href="#" className="hover:text-gray-900">Integrations</a></li>
+              <h4 className="font-semibold text-gray-900 dark:text-white mb-4">Product</h4>
+              <ul className="space-y-3 text-sm text-gray-600 dark:text-gray-400">
+                <li><Link to="/agents" className="hover:text-gray-900 dark:text-white">Platform</Link></li>
+                <li><a href="#" className="hover:text-gray-900 dark:text-white">Features</a></li>
+                <li><a href="#" className="hover:text-gray-900 dark:text-white">Integrations</a></li>
               </ul>
             </div>
             
             <div>
-              <h4 className="font-semibold text-gray-900 mb-4">Company</h4>
-              <ul className="space-y-3 text-sm text-gray-600">
-                <li><a href="#" className="hover:text-gray-900">About</a></li>
-                <li><a href="#" className="hover:text-gray-900">Contact</a></li>
+              <h4 className="font-semibold text-gray-900 dark:text-white mb-4">Company</h4>
+              <ul className="space-y-3 text-sm text-gray-600 dark:text-gray-400">
+                <li><a href="#" className="hover:text-gray-900 dark:text-white">About</a></li>
+                <li><a href="#" className="hover:text-gray-900 dark:text-white">Contact</a></li>
               </ul>
             </div>
             
             <div>
-              <h4 className="font-semibold text-gray-900 mb-4">Legal</h4>
-              <ul className="space-y-3 text-sm text-gray-600">
-                <li><a href="#" className="hover:text-gray-900">Privacy</a></li>
-                <li><a href="#" className="hover:text-gray-900">Terms</a></li>
+              <h4 className="font-semibold text-gray-900 dark:text-white mb-4">Legal</h4>
+              <ul className="space-y-3 text-sm text-gray-600 dark:text-gray-400">
+                <li><a href="#" className="hover:text-gray-900 dark:text-white">Privacy</a></li>
+                <li><a href="#" className="hover:text-gray-900 dark:text-white">Terms</a></li>
               </ul>
             </div>
           </div>
           
-          <div className="pt-8 border-t border-gray-200 text-center">
-            <p className="text-sm text-gray-500">&copy; 2025 Vanta X Pty Ltd. All rights reserved.</p>
+          <div className="pt-8 border-t border-gray-200 dark:border-gray-700 text-center">
+            <p className="text-sm text-gray-500 dark:text-gray-400">&copy; 2025 Vanta X Pty Ltd. All rights reserved.</p>
           </div>
         </div>
       </footer>

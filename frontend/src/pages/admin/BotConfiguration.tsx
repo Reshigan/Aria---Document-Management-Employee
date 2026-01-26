@@ -86,33 +86,33 @@ export default function BotConfigurationPage() {
   return (
     <div className="container mx-auto p-6 max-w-6xl">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
           <Agent className="h-8 w-8" />
           Agent Configuration
         </h1>
-        <p className="text-gray-600 mt-2">Configure AI agents and automation settings</p>
+        <p className="text-gray-600 dark:text-gray-400 mt-2">Configure AI agents and automation settings</p>
       </div>
 
       <div className="space-y-6">
         {agents.map((agent) => (
-          <div key={agent.id} className="bg-white rounded-lg shadow p-6">
+          <div key={agent.id} className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
             <div className="flex items-start justify-between mb-4">
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-2">
-                  <h3 className="text-xl font-bold text-gray-900">{agent.name}</h3>
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-white">{agent.name}</h3>
                   {agent.enabled ? (
-                    <span className="flex items-center gap-1 text-green-600 text-sm">
+                    <span className="flex items-center gap-1 text-green-600 dark:text-green-400 text-sm">
                       <CheckCircle className="h-4 w-4" />
                       Enabled
                     </span>
                   ) : (
-                    <span className="flex items-center gap-1 text-gray-600 text-sm">
+                    <span className="flex items-center gap-1 text-gray-600 dark:text-gray-400 text-sm">
                       <XCircle className="h-4 w-4" />
                       Disabled
                     </span>
                   )}
                 </div>
-                <p className="text-gray-600">{agent.description}</p>
+                <p className="text-gray-600 dark:text-gray-400">{agent.description}</p>
               </div>
               <label className="relative inline-flex items-center cursor-pointer">
                 <input
@@ -121,7 +121,7 @@ export default function BotConfigurationPage() {
                   onChange={(e) => handleToggleBot(agent.id, e.target.checked)}
                   className="sr-only peer"
                 />
-                <div className="w-14 h-7 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-blue-600"></div>
+                <div className="w-14 h-7 bg-gray-200 dark:bg-gray-600 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[4px] after:bg-white dark:bg-gray-800 after:border-gray-300 dark:border-gray-600 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-blue-600 dark:bg-blue-500"></div>
               </label>
             </div>
 
@@ -129,7 +129,7 @@ export default function BotConfigurationPage() {
               <div className="border-t pt-4 space-y-4">
                 {agent.auto_approval_limit !== undefined && (
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-2">
                       <DollarSign className="h-4 w-4" />
                       Auto-Approval Limit (ZAR)
                     </label>
@@ -137,17 +137,17 @@ export default function BotConfigurationPage() {
                       type="number"
                       value={agent.auto_approval_limit}
                       onChange={(e) => handleUpdateLimit(agent.id, parseFloat(e.target.value))}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-md"
+                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md"
                       placeholder="10000"
                     />
-                    <p className="text-sm text-gray-500 mt-1">
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                       Automatically approve transactions below this amount
                     </p>
                   </div>
                 )}
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-3 flex items-center gap-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3 flex items-center gap-2">
                     <Bell className="h-4 w-4" />
                     Notification Channels
                   </label>
@@ -157,37 +157,37 @@ export default function BotConfigurationPage() {
                         type="checkbox"
                         checked={agent.notifications.email}
                         onChange={(e) => handleUpdateNotifications(agent.id, 'email', e.target.checked)}
-                        className="w-4 h-4 text-blue-600 rounded"
+                        className="w-4 h-4 text-blue-600 dark:text-blue-400 rounded"
                       />
-                      <Mail className="h-4 w-4 text-gray-600" />
-                      <span className="text-gray-700">Email Notifications</span>
+                      <Mail className="h-4 w-4 text-gray-600 dark:text-gray-400" />
+                      <span className="text-gray-700 dark:text-gray-300">Email Notifications</span>
                     </label>
                     <label className="flex items-center gap-3">
                       <input
                         type="checkbox"
                         checked={agent.notifications.whatsapp}
                         onChange={(e) => handleUpdateNotifications(agent.id, 'whatsapp', e.target.checked)}
-                        className="w-4 h-4 text-blue-600 rounded"
+                        className="w-4 h-4 text-blue-600 dark:text-blue-400 rounded"
                       />
-                      <MessageSquare className="h-4 w-4 text-gray-600" />
-                      <span className="text-gray-700">WhatsApp Notifications</span>
+                      <MessageSquare className="h-4 w-4 text-gray-600 dark:text-gray-400" />
+                      <span className="text-gray-700 dark:text-gray-300">WhatsApp Notifications</span>
                     </label>
                     <label className="flex items-center gap-3">
                       <input
                         type="checkbox"
                         checked={agent.notifications.in_app}
                         onChange={(e) => handleUpdateNotifications(agent.id, 'in_app', e.target.checked)}
-                        className="w-4 h-4 text-blue-600 rounded"
+                        className="w-4 h-4 text-blue-600 dark:text-blue-400 rounded"
                       />
-                      <Bell className="h-4 w-4 text-gray-600" />
-                      <span className="text-gray-700">In-App Notifications</span>
+                      <Bell className="h-4 w-4 text-gray-600 dark:text-gray-400" />
+                      <span className="text-gray-700 dark:text-gray-300">In-App Notifications</span>
                     </label>
                   </div>
                 </div>
 
                 {agent.id === 'invoice_bot' && (
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       Matching Confidence Threshold (%)
                     </label>
                     <input
@@ -195,9 +195,9 @@ export default function BotConfigurationPage() {
                       min="70"
                       max="100"
                       defaultValue="95"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-md"
+                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md"
                     />
-                    <p className="text-sm text-gray-500 mt-1">
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                       Minimum confidence level for auto-matching invoices
                     </p>
                   </div>
@@ -205,7 +205,7 @@ export default function BotConfigurationPage() {
 
                 {agent.id === 'bbbee_bot' && (
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       Certificate Expiry Reminder (days before)
                     </label>
                     <input
@@ -213,7 +213,7 @@ export default function BotConfigurationPage() {
                       min="1"
                       max="90"
                       defaultValue="30"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-md"
+                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md"
                     />
                   </div>
                 )}
@@ -230,7 +230,7 @@ export default function BotConfigurationPage() {
         <Button
           onClick={handleSaveConfig}
           disabled={saving}
-          className="bg-blue-600 hover:bg-blue-700 text-white"
+          className="bg-blue-600 dark:bg-blue-500 hover:bg-blue-700 text-white"
         >
           {saving ? 'Saving...' : 'Save Configuration'}
         </Button>

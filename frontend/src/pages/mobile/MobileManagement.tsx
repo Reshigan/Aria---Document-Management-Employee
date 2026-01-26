@@ -53,40 +53,40 @@ export default function MobileManagement() {
 
       {/* Mobile Analytics */}
       <div className="grid grid-cols-4 gap-6 mb-6" data-testid="mobile-analytics">
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Devices</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Devices</p>
               <p className="text-2xl font-bold" data-testid="device-count">{stats.deviceCount}</p>
             </div>
-            <Smartphone className="h-8 w-8 text-blue-600" />
+            <Smartphone className="h-8 w-8 text-blue-600 dark:text-blue-400" />
           </div>
         </div>
         
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Sync Sessions</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Sync Sessions</p>
               <p className="text-2xl font-bold" data-testid="sync-sessions">{stats.syncSessions}</p>
             </div>
-            <RefreshCw className="h-8 w-8 text-green-600" />
+            <RefreshCw className="h-8 w-8 text-green-600 dark:text-green-400" />
           </div>
         </div>
         
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Storage Used</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Storage Used</p>
               <p className="text-2xl font-bold" data-testid="storage-usage">{stats.storageUsage}</p>
             </div>
-            <Download className="h-8 w-8 text-purple-600" />
+            <Download className="h-8 w-8 text-purple-600 dark:text-purple-400" />
           </div>
         </div>
         
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Events</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Events</p>
               <p className="text-2xl font-bold" data-testid="event-count">{stats.eventCount}</p>
             </div>
             <BarChart3 className="h-8 w-8 text-orange-600" />
@@ -95,16 +95,16 @@ export default function MobileManagement() {
       </div>
 
       {/* Analytics Chart */}
-      <div className="bg-white rounded-lg shadow p-6 mb-6" data-testid="analytics-chart">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6" data-testid="analytics-chart">
         <h3 className="text-lg font-semibold mb-4">Mobile Activity</h3>
-        <div className="h-64 flex items-center justify-center bg-gray-50 rounded">
-          <p className="text-gray-500">Activity chart placeholder</p>
+        <div className="h-64 flex items-center justify-center bg-gray-50 dark:bg-gray-900 rounded">
+          <p className="text-gray-500 dark:text-gray-400">Activity chart placeholder</p>
         </div>
       </div>
 
       <div className="grid grid-cols-3 gap-6">
         {/* Mobile Device Manager */}
-        <div className="bg-white rounded-lg shadow p-6" data-testid="mobile-device-manager">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6" data-testid="mobile-device-manager">
           <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
             <Smartphone className="h-5 w-5" />
             Devices
@@ -120,7 +120,7 @@ export default function MobileManagement() {
                     {device.status}
                   </span>
                 </div>
-                <div className="text-sm text-gray-600">
+                <div className="text-sm text-gray-600 dark:text-gray-400">
                   <p data-testid="device-type">Type: {device.type}</p>
                   <p>Last sync: {device.lastSync}</p>
                 </div>
@@ -130,7 +130,7 @@ export default function MobileManagement() {
         </div>
 
         {/* Sync Monitor */}
-        <div className="bg-white rounded-lg shadow p-6" data-testid="sync-monitor">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6" data-testid="sync-monitor">
           <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
             <RefreshCw className="h-5 w-5" />
             Sync Monitor
@@ -150,14 +150,14 @@ export default function MobileManagement() {
           </div>
 
           <div className="space-y-3">
-            <h4 className="text-sm font-medium text-gray-700">Recent Sessions</h4>
+            <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">Recent Sessions</h4>
             {syncSessions.map((session) => (
               <div key={session.id} className="border rounded-lg p-3" data-testid="sync-session">
                 <div className="flex items-center justify-between mb-1">
                   <span className="text-sm font-medium" data-testid="sync-status">{session.status}</span>
-                  <span className="text-xs text-gray-500">{session.timestamp}</span>
+                  <span className="text-xs text-gray-500 dark:text-gray-400">{session.timestamp}</span>
                 </div>
-                <div className="text-sm text-gray-600" data-testid="sync-progress">
+                <div className="text-sm text-gray-600 dark:text-gray-400" data-testid="sync-progress">
                   Progress: {session.progress}
                 </div>
               </div>
@@ -166,7 +166,7 @@ export default function MobileManagement() {
         </div>
 
         {/* Offline Document Manager */}
-        <div className="bg-white rounded-lg shadow p-6" data-testid="offline-document-manager">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6" data-testid="offline-document-manager">
           <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
             <Download className="h-5 w-5" />
             Offline Documents
@@ -176,11 +176,11 @@ export default function MobileManagement() {
               <div key={doc.id} className="border rounded-lg p-3" data-testid="offline-document">
                 <div className="flex items-center justify-between mb-1">
                   <span className="text-sm font-medium">{doc.name}</span>
-                  <span className="text-xs px-2 py-1 bg-green-100 text-green-800 rounded" data-testid="download-status">
+                  <span className="text-xs px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 rounded" data-testid="download-status">
                     {doc.downloadStatus}
                   </span>
                 </div>
-                <div className="text-xs text-gray-600" data-testid="file-size">
+                <div className="text-xs text-gray-600 dark:text-gray-400" data-testid="file-size">
                   Size: {doc.size}
                 </div>
               </div>

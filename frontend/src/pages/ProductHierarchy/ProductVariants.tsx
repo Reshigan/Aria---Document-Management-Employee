@@ -128,39 +128,39 @@ export default function ProductVariants() {
   return (
     <div className="p-6">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
           <Layers size={28} className="text-purple-500" />
           Product Variants
         </h1>
-        <p className="text-gray-600 mt-1">Manage product variants with SKUs, pricing, and stock levels</p>
+        <p className="text-gray-600 dark:text-gray-400 mt-1">Manage product variants with SKUs, pricing, and stock levels</p>
       </div>
 
       <div className="grid grid-cols-4 gap-4 mb-6">
-        <div className="bg-white rounded-lg shadow p-4">
-          <div className="text-sm text-gray-500">Total Variants</div>
-          <div className="text-2xl font-bold text-purple-600">{variants.length}</div>
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+          <div className="text-sm text-gray-500 dark:text-gray-400">Total Variants</div>
+          <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">{variants.length}</div>
         </div>
-        <div className="bg-white rounded-lg shadow p-4">
-          <div className="text-sm text-gray-500">Active Variants</div>
-          <div className="text-2xl font-bold text-green-600">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+          <div className="text-sm text-gray-500 dark:text-gray-400">Active Variants</div>
+          <div className="text-2xl font-bold text-green-600 dark:text-green-400">
             {variants.filter(v => v.is_active).length}
           </div>
         </div>
-        <div className="bg-white rounded-lg shadow p-4">
-          <div className="text-sm text-gray-500">Total Stock</div>
-          <div className="text-2xl font-bold text-blue-600">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+          <div className="text-sm text-gray-500 dark:text-gray-400">Total Stock</div>
+          <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
             {totalStock.toLocaleString()}
           </div>
         </div>
-        <div className="bg-white rounded-lg shadow p-4">
-          <div className="text-sm text-gray-500">Stock Value</div>
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+          <div className="text-sm text-gray-500 dark:text-gray-400">Stock Value</div>
           <div className="text-2xl font-bold text-orange-600">
             R {totalValue.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
           </div>
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
         <div className="p-4 border-b flex gap-4">
           <div className="flex-1 relative">
             <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
@@ -186,38 +186,38 @@ export default function ProductVariants() {
 
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gray-50">
+            <thead className="bg-gray-50 dark:bg-gray-900">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Variant</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Template</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">SKU</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Attributes</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">List Price</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Cost</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Stock</th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Status</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Variant</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Template</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">SKU</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Attributes</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">List Price</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Cost</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Stock</th>
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Status</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200">
+            <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
               {filteredVariants.map((variant) => (
-                <tr key={variant.id} className="hover:bg-gray-50">
+                <tr key={variant.id} className="hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900">
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
                       <Package size={18} className="text-gray-400" />
-                      <div className="font-medium text-gray-900">{variant.name}</div>
+                      <div className="font-medium text-gray-900 dark:text-white">{variant.name}</div>
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-600">
+                  <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
                     {variant.template_name || '-'}
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-600">
+                  <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
                     {variant.sku || '-'}
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex flex-wrap gap-1">
                       {variant.attribute_values?.map((val, idx) => (
-                        <span key={idx} className="px-2 py-0.5 bg-purple-100 text-purple-800 text-xs rounded-full">
+                        <span key={idx} className="px-2 py-0.5 bg-purple-100 dark:bg-purple-900/30 text-purple-800 text-xs rounded-full">
                           {val}
                         </span>
                       )) || '-'}
@@ -228,7 +228,7 @@ export default function ProductVariants() {
                       ? `R ${variant.list_price.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}`
                       : '-'}
                   </td>
-                  <td className="px-6 py-4 text-right text-sm text-gray-600">
+                  <td className="px-6 py-4 text-right text-sm text-gray-600 dark:text-gray-400">
                     {variant.cost_price 
                       ? `R ${variant.cost_price.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}`
                       : '-'}
@@ -252,13 +252,13 @@ export default function ProductVariants() {
                   <td className="px-6 py-4 text-right">
                     <button
                       onClick={() => handleEdit(variant)}
-                      className="text-blue-600 hover:text-blue-900 mr-2"
+                      className="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:text-blue-100 mr-2"
                     >
                       <Edit size={16} />
                     </button>
                     <button
                       onClick={() => handleDelete(variant.id)}
-                      className="text-red-600 hover:text-red-900"
+                      className="text-red-600 dark:text-red-400 hover:text-red-900"
                     >
                       <Trash2 size={16} />
                     </button>
@@ -268,7 +268,7 @@ export default function ProductVariants() {
             </tbody>
           </table>
           {filteredVariants.length === 0 && (
-            <div className="p-8 text-center text-gray-500">
+            <div className="p-8 text-center text-gray-500 dark:text-gray-400">
               {searchTerm || selectedTemplate 
                 ? 'No variants found matching your criteria' 
                 : 'No variants yet. Generate variants from product templates.'}
@@ -279,16 +279,16 @@ export default function ProductVariants() {
 
       {showForm && editingVariant && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-lg p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-lg p-6">
             <h2 className="text-xl font-bold mb-4">Edit Variant</h2>
-            <div className="mb-4 p-3 bg-gray-50 rounded-lg">
-              <div className="text-sm text-gray-500">Variant Name</div>
+            <div className="mb-4 p-3 bg-gray-50 dark:bg-gray-900 rounded-lg">
+              <div className="text-sm text-gray-500 dark:text-gray-400">Variant Name</div>
               <div className="font-medium">{editingVariant.name}</div>
             </div>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">SKU</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">SKU</label>
                   <input
                     type="text"
                     value={formData.sku}
@@ -297,7 +297,7 @@ export default function ProductVariants() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Barcode</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Barcode</label>
                   <input
                     type="text"
                     value={formData.barcode}
@@ -306,7 +306,7 @@ export default function ProductVariants() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">List Price (R)</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">List Price (R)</label>
                   <input
                     type="number"
                     step="0.01"
@@ -316,7 +316,7 @@ export default function ProductVariants() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Cost Price (R)</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Cost Price (R)</label>
                   <input
                     type="number"
                     step="0.01"
@@ -326,7 +326,7 @@ export default function ProductVariants() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Weight (kg)</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Weight (kg)</label>
                   <input
                     type="number"
                     step="0.01"
@@ -336,7 +336,7 @@ export default function ProductVariants() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Stock Quantity</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Stock Quantity</label>
                   <input
                     type="number"
                     value={formData.stock_quantity}
@@ -350,15 +350,15 @@ export default function ProductVariants() {
                   type="checkbox"
                   checked={formData.is_active}
                   onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
-                  className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                  className="h-4 w-4 text-purple-600 dark:text-purple-400 focus:ring-purple-500 border-gray-300 dark:border-gray-600 rounded"
                 />
-                <label className="ml-2 text-sm text-gray-900">Active</label>
+                <label className="ml-2 text-sm text-gray-900 dark:text-white">Active</label>
               </div>
               <div className="flex justify-end gap-3 pt-4">
                 <button
                   type="button"
                   onClick={() => { setShowForm(false); setEditingVariant(null); }}
-                  className="px-4 py-2 border rounded-lg hover:bg-gray-50"
+                  className="px-4 py-2 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900"
                 >
                   Cancel
                 </button>

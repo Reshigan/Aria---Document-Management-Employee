@@ -40,47 +40,47 @@ export default function InvoiceReconciliationReportPage() {
 
   return (
     <div className="container mx-auto p-6">
-      <h1 className="text-3xl font-bold text-gray-900 mb-6 flex items-center gap-3">
+      <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-3">
         <FileText className="h-8 w-8" />
         Invoice Reconciliation Report
       </h1>
 
       <div className="grid grid-cols-4 gap-6 mb-8">
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
           <div className="flex items-center justify-between mb-2">
-            <div className="text-sm font-medium text-gray-600">Total Processed</div>
-            <FileText className="h-5 w-5 text-blue-600" />
+            <div className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Processed</div>
+            <FileText className="h-5 w-5 text-blue-600 dark:text-blue-400" />
           </div>
-          <div className="text-3xl font-bold text-gray-900">234</div>
+          <div className="text-3xl font-bold text-gray-900 dark:text-white">234</div>
         </div>
 
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
           <div className="flex items-center justify-between mb-2">
-            <div className="text-sm font-medium text-gray-600">Auto-Matched</div>
-            <CheckCircle className="h-5 w-5 text-green-600" />
+            <div className="text-sm font-medium text-gray-600 dark:text-gray-400">Auto-Matched</div>
+            <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400" />
           </div>
-          <div className="text-3xl font-bold text-gray-900">223</div>
-          <div className="text-sm text-gray-600 mt-2">95.3% accuracy</div>
+          <div className="text-3xl font-bold text-gray-900 dark:text-white">223</div>
+          <div className="text-sm text-gray-600 dark:text-gray-400 mt-2">95.3% accuracy</div>
         </div>
 
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
           <div className="flex items-center justify-between mb-2">
-            <div className="text-sm font-medium text-gray-600">Pending Review</div>
-            <Clock className="h-5 w-5 text-yellow-600" />
+            <div className="text-sm font-medium text-gray-600 dark:text-gray-400">Pending Review</div>
+            <Clock className="h-5 w-5 text-yellow-600 dark:text-yellow-400" />
           </div>
-          <div className="text-3xl font-bold text-gray-900">8</div>
+          <div className="text-3xl font-bold text-gray-900 dark:text-white">8</div>
         </div>
 
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
           <div className="flex items-center justify-between mb-2">
-            <div className="text-sm font-medium text-gray-600">Unmatched</div>
-            <XCircle className="h-5 w-5 text-red-600" />
+            <div className="text-sm font-medium text-gray-600 dark:text-gray-400">Unmatched</div>
+            <XCircle className="h-5 w-5 text-red-600 dark:text-red-400" />
           </div>
-          <div className="text-3xl font-bold text-gray-900">3</div>
+          <div className="text-3xl font-bold text-gray-900 dark:text-white">3</div>
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
         <DataTable
           data={data.invoices}
           columns={columns}

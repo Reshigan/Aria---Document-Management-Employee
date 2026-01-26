@@ -28,16 +28,16 @@ export default function ProfitLossStatementPage() {
             <option value="quarter">This Quarter</option>
             <option value="year">This Year</option>
           </select>
-          <button className="px-4 py-2 bg-blue-600 text-white rounded-lg" data-testid="button-export-pdf">
+          <button className="px-4 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-lg" data-testid="button-export-pdf">
             <Download className="h-4 w-4 inline mr-2" />
             Export PDF
           </button>
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow p-6 space-y-6">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 space-y-6">
         <div data-testid="section-revenue">
-          <h3 className="text-lg font-bold text-gray-900 mb-3">Revenue</h3>
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-3">Revenue</h3>
           {Object.entries(data.revenue).map(([key, value]) => (
             <div key={key} className="flex justify-between py-2 border-b" data-testid={key === 'sales' ? 'revenue-sales' : undefined}>
               <span className="capitalize">{key}</span>
@@ -46,12 +46,12 @@ export default function ProfitLossStatementPage() {
           ))}
           <div className="flex justify-between py-2 font-bold text-lg" data-testid="total">
             <span>Total Revenue</span>
-            <span className="text-green-600">R {totalRevenue.toLocaleString()}</span>
+            <span className="text-green-600 dark:text-green-400">R {totalRevenue.toLocaleString()}</span>
           </div>
         </div>
 
         <div data-testid="section-cogs">
-          <h3 className="text-lg font-bold text-gray-900 mb-3">Cost of Sales</h3>
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-3">Cost of Sales</h3>
           {Object.entries(data.costs).map(([key, value]) => (
             <div key={key} className="flex justify-between py-2 border-b">
               <span className="capitalize">{key}</span>
@@ -60,12 +60,12 @@ export default function ProfitLossStatementPage() {
           ))}
           <div className="flex justify-between py-2 font-bold">
             <span>Total Costs</span>
-            <span className="text-red-600">R {totalCosts.toLocaleString()}</span>
+            <span className="text-red-600 dark:text-red-400">R {totalCosts.toLocaleString()}</span>
           </div>
         </div>
 
         <div data-testid="section-expenses">
-          <h3 className="text-lg font-bold text-gray-900 mb-3">Operating Expenses</h3>
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-3">Operating Expenses</h3>
           {Object.entries(data.expenses).map(([key, value]) => (
             <div key={key} className="flex justify-between py-2 border-b">
               <span className="capitalize">{key}</span>
@@ -74,7 +74,7 @@ export default function ProfitLossStatementPage() {
           ))}
           <div className="flex justify-between py-2 font-bold">
             <span>Total Expenses</span>
-            <span className="text-red-600">R {totalExpenses.toLocaleString()}</span>
+            <span className="text-red-600 dark:text-red-400">R {totalExpenses.toLocaleString()}</span>
           </div>
         </div>
 
@@ -85,7 +85,7 @@ export default function ProfitLossStatementPage() {
               R {netProfit.toLocaleString()}
             </span>
           </div>
-          <div className="text-sm text-gray-600 text-right">
+          <div className="text-sm text-gray-600 dark:text-gray-400 text-right">
             {((netProfit / totalRevenue) * 100).toFixed(1)}% profit margin
           </div>
         </div>

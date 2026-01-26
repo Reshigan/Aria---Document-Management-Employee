@@ -243,64 +243,64 @@ export default function DocumentUpload() {
           <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
             Ask Aria
           </h1>
-          <p className="text-gray-600">Upload documents for automatic processing and posting to ERP</p>
+          <p className="text-gray-600 dark:text-gray-400">Upload documents for automatic processing and posting to ERP</p>
         </div>
 
         {error && (
-          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
-            <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+          <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/30 border border-red-200 rounded-lg flex items-start gap-3">
+            <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
             <div className="flex-1">
-              <p className="text-red-800 font-medium">Error</p>
-              <p className="text-red-600 text-sm">{error}</p>
+              <p className="text-red-800 dark:text-red-300 font-medium">Error</p>
+              <p className="text-red-600 dark:text-red-400 text-sm">{error}</p>
             </div>
           </div>
         )}
 
         {success && (
-          <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-start gap-3">
-            <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+          <div className="mb-6 p-4 bg-green-50 dark:bg-green-900/30 border border-green-200 rounded-lg flex items-start gap-3">
+            <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
             <div className="flex-1">
-              <p className="text-green-800 font-medium">Success</p>
-              <p className="text-green-600 text-sm">{success}</p>
+              <p className="text-green-800 dark:text-green-300 font-medium">Success</p>
+              <p className="text-green-600 dark:text-green-400 text-sm">{success}</p>
             </div>
           </div>
         )}
 
         {!processedDoc && (
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-8">
+          <div className="bg-white dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-8">
             <div className="mb-6 grid grid-cols-3 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Company ID
                 </label>
                 <input
                   type="number"
                   value={companyId}
                   onChange={(e) => setCompanyId(parseInt(e.target.value))}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Vendor ID (Optional)
                 </label>
                 <input
                   type="number"
                   value={vendorId || ''}
                   onChange={(e) => setVendorId(e.target.value ? parseInt(e.target.value) : null)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent"
                   placeholder="Leave empty to detect"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Instruction (Optional)
                 </label>
                 <input
                   type="text"
                   value={instruction}
                   onChange={(e) => setInstruction(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent"
                   placeholder="e.g., Post to vendor ABC"
                 />
               </div>
@@ -320,16 +320,16 @@ export default function DocumentUpload() {
             >
               {isProcessing ? (
                 <div className="flex flex-col items-center gap-4">
-                  <Loader className="w-12 h-12 text-blue-600 animate-spin" />
-                  <p className="text-gray-600">Processing document...</p>
+                  <Loader className="w-12 h-12 text-blue-600 dark:text-blue-400 animate-spin" />
+                  <p className="text-gray-600 dark:text-gray-400">Processing document...</p>
                 </div>
               ) : (
                 <>
                   <Upload className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                  <p className="text-xl font-medium text-gray-700 mb-2">
+                  <p className="text-xl font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Drop your document here
                   </p>
-                  <p className="text-gray-500 mb-6">
+                  <p className="text-gray-500 dark:text-gray-400 mb-6">
                     or click to browse (PDF, JPG, PNG - max 10MB)
                   </p>
                   <input
@@ -353,11 +353,11 @@ export default function DocumentUpload() {
 
         {processedDoc && (
           <div className="space-y-6">
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-6">
+            <div className="bg-white dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-6">
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
-                  <FileText className="w-6 h-6 text-blue-600" />
-                  <h2 className="text-2xl font-bold text-gray-800">
+                  <FileText className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+                  <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">
                     {processedDoc.doc_type.charAt(0).toUpperCase() + processedDoc.doc_type.slice(1)} Detected
                   </h2>
                 </div>
@@ -390,7 +390,7 @@ export default function DocumentUpload() {
 
               <div className="grid grid-cols-2 gap-4 mb-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Supplier Name
                     <span className={`ml-2 text-xs px-2 py-0.5 rounded ${getConfidenceColor(processedDoc.field_confidence.supplier_name || 0)}`}>
                       {((processedDoc.field_confidence.supplier_name || 0) * 100).toFixed(0)}%
@@ -400,11 +400,11 @@ export default function DocumentUpload() {
                     type="text"
                     value={processedDoc.header.supplier_name}
                     onChange={(e) => handleHeaderChange('supplier_name', e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Invoice Number
                     <span className={`ml-2 text-xs px-2 py-0.5 rounded ${getConfidenceColor(processedDoc.field_confidence.invoice_number || 0)}`}>
                       {((processedDoc.field_confidence.invoice_number || 0) * 100).toFixed(0)}%
@@ -414,72 +414,72 @@ export default function DocumentUpload() {
                     type="text"
                     value={processedDoc.header.invoice_number}
                     onChange={(e) => handleHeaderChange('invoice_number', e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Invoice Date</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Invoice Date</label>
                   <input
                     type="date"
                     value={processedDoc.header.invoice_date}
                     onChange={(e) => handleHeaderChange('invoice_date', e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Due Date</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Due Date</label>
                   <input
                     type="date"
                     value={processedDoc.header.due_date}
                     onChange={(e) => handleHeaderChange('due_date', e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Net Amount</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Net Amount</label>
                   <input
                     type="number"
                     step="0.01"
                     value={processedDoc.header.net_amount}
                     onChange={(e) => handleHeaderChange('net_amount', parseFloat(e.target.value))}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">VAT Amount</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">VAT Amount</label>
                   <input
                     type="number"
                     step="0.01"
                     value={processedDoc.header.vat_amount}
                     onChange={(e) => handleHeaderChange('vat_amount', parseFloat(e.target.value))}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
                   />
                 </div>
               </div>
 
               <div className="mb-6">
-                <h3 className="text-lg font-semibold text-gray-800 mb-4">Line Items</h3>
+                <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">Line Items</h3>
                 <div className="overflow-x-auto">
                   <table className="w-full">
-                    <thead className="bg-gray-50">
+                    <thead className="bg-gray-50 dark:bg-gray-900">
                       <tr>
-                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Description</th>
-                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Qty</th>
-                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Unit Price</th>
-                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Discount %</th>
-                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Tax %</th>
-                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Total</th>
+                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-700 dark:text-gray-300">Description</th>
+                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-700 dark:text-gray-300">Qty</th>
+                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-700 dark:text-gray-300">Unit Price</th>
+                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-700 dark:text-gray-300">Discount %</th>
+                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-700 dark:text-gray-300">Tax %</th>
+                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-700 dark:text-gray-300">Total</th>
                       </tr>
                     </thead>
                     <tbody>
                       {processedDoc.lines.map((line, idx) => (
-                        <tr key={idx} className="border-t border-gray-200">
+                        <tr key={idx} className="border-t border-gray-200 dark:border-gray-700">
                           <td className="px-4 py-2">
                             <input
                               type="text"
                               value={line.description}
                               onChange={(e) => handleLineChange(idx, 'description', e.target.value)}
-                              className="w-full px-2 py-1 border border-gray-300 rounded"
+                              className="w-full px-2 py-1 border border-gray-300 dark:border-gray-600 rounded"
                             />
                           </td>
                           <td className="px-4 py-2">
@@ -487,7 +487,7 @@ export default function DocumentUpload() {
                               type="number"
                               value={line.quantity}
                               onChange={(e) => handleLineChange(idx, 'quantity', e.target.value)}
-                              className="w-20 px-2 py-1 border border-gray-300 rounded"
+                              className="w-20 px-2 py-1 border border-gray-300 dark:border-gray-600 rounded"
                             />
                           </td>
                           <td className="px-4 py-2">
@@ -496,7 +496,7 @@ export default function DocumentUpload() {
                               step="0.01"
                               value={line.unit_price}
                               onChange={(e) => handleLineChange(idx, 'unit_price', e.target.value)}
-                              className="w-24 px-2 py-1 border border-gray-300 rounded"
+                              className="w-24 px-2 py-1 border border-gray-300 dark:border-gray-600 rounded"
                             />
                           </td>
                           <td className="px-4 py-2">
@@ -505,7 +505,7 @@ export default function DocumentUpload() {
                               step="0.01"
                               value={line.discount_percent}
                               onChange={(e) => handleLineChange(idx, 'discount_percent', e.target.value)}
-                              className="w-20 px-2 py-1 border border-gray-300 rounded"
+                              className="w-20 px-2 py-1 border border-gray-300 dark:border-gray-600 rounded"
                             />
                           </td>
                           <td className="px-4 py-2">
@@ -514,7 +514,7 @@ export default function DocumentUpload() {
                               step="0.01"
                               value={line.tax_rate}
                               onChange={(e) => handleLineChange(idx, 'tax_rate', e.target.value)}
-                              className="w-20 px-2 py-1 border border-gray-300 rounded"
+                              className="w-20 px-2 py-1 border border-gray-300 dark:border-gray-600 rounded"
                             />
                           </td>
                           <td className="px-4 py-2 font-medium">
@@ -547,7 +547,7 @@ export default function DocumentUpload() {
                 </button>
                 <button
                   onClick={() => setProcessedDoc(null)}
-                  className="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg font-medium hover:bg-gray-300 transition-all"
+                  className="px-6 py-3 bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg font-medium hover:bg-gray-300 transition-all"
                 >
                   Cancel
                 </button>

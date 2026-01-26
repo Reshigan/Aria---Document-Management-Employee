@@ -93,22 +93,22 @@ const DataImport: React.FC = () => {
   return (
     <div className="p-6 max-w-6xl mx-auto">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Data Import</h1>
-        <p className="text-gray-600 mt-2">
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Data Import</h1>
+        <p className="text-gray-600 dark:text-gray-400 mt-2">
           Import bulk data from CSV files into your ERP system
         </p>
       </div>
 
-      <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Select Module
             </label>
             <select
               value={selectedModule}
               onChange={(e) => setSelectedModule(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent"
             >
               {modules.map((module) => (
                 <option key={module.value} value={module.value}>
@@ -121,7 +121,7 @@ const DataImport: React.FC = () => {
           <div className="flex items-end">
             <button
               onClick={downloadTemplate}
-              className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 dark:bg-gray-600 transition-colors"
             >
               <Download size={20} />
               Download Template
@@ -130,7 +130,7 @@ const DataImport: React.FC = () => {
         </div>
 
         <div className="mt-6">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Upload CSV File
           </label>
           <div className="flex items-center gap-4">
@@ -138,19 +138,19 @@ const DataImport: React.FC = () => {
               type="file"
               accept=".csv"
               onChange={handleFileChange}
-              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent"
             />
             <button
               onClick={handleImport}
               disabled={!file || importing}
-              className="flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+              className="flex items-center gap-2 px-6 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
             >
               <Upload size={20} />
               {importing ? 'Importing...' : 'Import Data'}
             </button>
           </div>
           {file && (
-            <p className="text-sm text-gray-600 mt-2">
+            <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
               Selected: {file.name} ({(file.size / 1024).toFixed(2)} KB)
             </p>
           )}
@@ -158,12 +158,12 @@ const DataImport: React.FC = () => {
       </div>
 
       {result && (
-        <div className="bg-white rounded-lg shadow-md p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
           <div className="flex items-center gap-3 mb-4">
             {result.success ? (
-              <CheckCircle className="text-green-600" size={24} />
+              <CheckCircle className="text-green-600 dark:text-green-400" size={24} />
             ) : (
-              <AlertCircle className="text-red-600" size={24} />
+              <AlertCircle className="text-red-600 dark:text-red-400" size={24} />
             )}
             <h2 className="text-xl font-semibold">
               {result.success ? 'Import Completed' : 'Import Completed with Errors'}
@@ -171,17 +171,17 @@ const DataImport: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-3 gap-4 mb-6">
-            <div className="bg-blue-50 p-4 rounded-lg">
-              <p className="text-sm text-gray-600">Total Rows</p>
-              <p className="text-2xl font-bold text-blue-600">{result.total_rows}</p>
+            <div className="bg-blue-50 dark:bg-blue-900/30 p-4 rounded-lg">
+              <p className="text-sm text-gray-600 dark:text-gray-400">Total Rows</p>
+              <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">{result.total_rows}</p>
             </div>
-            <div className="bg-green-50 p-4 rounded-lg">
-              <p className="text-sm text-gray-600">Successful</p>
-              <p className="text-2xl font-bold text-green-600">{result.successful}</p>
+            <div className="bg-green-50 dark:bg-green-900/30 p-4 rounded-lg">
+              <p className="text-sm text-gray-600 dark:text-gray-400">Successful</p>
+              <p className="text-2xl font-bold text-green-600 dark:text-green-400">{result.successful}</p>
             </div>
-            <div className="bg-red-50 p-4 rounded-lg">
-              <p className="text-sm text-gray-600">Failed</p>
-              <p className="text-2xl font-bold text-red-600">{result.failed}</p>
+            <div className="bg-red-50 dark:bg-red-900/30 p-4 rounded-lg">
+              <p className="text-sm text-gray-600 dark:text-gray-400">Failed</p>
+              <p className="text-2xl font-bold text-red-600 dark:text-red-400">{result.failed}</p>
             </div>
           </div>
 
@@ -192,26 +192,26 @@ const DataImport: React.FC = () => {
                 Error Details
               </h3>
               <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
+                <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                  <thead className="bg-gray-50 dark:bg-gray-900">
                     <tr>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
                         Row
                       </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
                         Field
                       </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
                         Error Message
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
+                  <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                     {result.errors.map((error, idx) => (
                       <tr key={idx}>
-                        <td className="px-4 py-3 text-sm text-gray-900">{error.row}</td>
-                        <td className="px-4 py-3 text-sm text-gray-900">{error.field}</td>
-                        <td className="px-4 py-3 text-sm text-red-600">{error.message}</td>
+                        <td className="px-4 py-3 text-sm text-gray-900 dark:text-white">{error.row}</td>
+                        <td className="px-4 py-3 text-sm text-gray-900 dark:text-white">{error.field}</td>
+                        <td className="px-4 py-3 text-sm text-red-600 dark:text-red-400">{error.message}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -222,12 +222,12 @@ const DataImport: React.FC = () => {
         </div>
       )}
 
-      <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+      <div className="mt-6 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
         <div className="flex items-start gap-3">
-          <FileText className="text-blue-600 mt-1" size={20} />
+          <FileText className="text-blue-600 dark:text-blue-400 mt-1" size={20} />
           <div>
-            <h3 className="font-semibold text-blue-900 mb-2">Import Guidelines</h3>
-            <ul className="text-sm text-blue-800 space-y-1">
+            <h3 className="font-semibold text-blue-900 dark:text-blue-100 mb-2">Import Guidelines</h3>
+            <ul className="text-sm text-blue-800 dark:text-blue-200 space-y-1">
               <li>• Download the template for your selected module first</li>
               <li>• Fill in the CSV file with your data following the template format</li>
               <li>• Ensure all required fields are populated</li>

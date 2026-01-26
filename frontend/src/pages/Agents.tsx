@@ -78,18 +78,18 @@ export default function Agents() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6 space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">AI Agents</h1>
-          <p className="text-gray-600 mt-1">
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">AI Agents</h1>
+          <p className="text-gray-600 dark:text-gray-400 mt-1">
             {agents.length} AI-powered automation agents available
           </p>
         </div>
-        <div className="bg-blue-100 rounded-lg px-4 py-2">
+        <div className="bg-green-100 dark:bg-green-900/30 rounded-xl px-4 py-2">
           <div className="flex items-center">
-            <CheckCircle className="h-5 w-5 text-blue-600 mr-2" />
-            <span className="text-sm font-medium text-blue-900">
+            <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400 mr-2" />
+            <span className="text-sm font-medium text-green-800 dark:text-green-300">
               All agents operational
             </span>
           </div>
@@ -99,14 +99,14 @@ export default function Agents() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <button
           onClick={() => setSelectedCategory('all')}
-          className={`p-4 rounded-lg border-2 transition-all ${
+          className={`p-4 rounded-xl border-2 transition-all ${
             selectedCategory === 'all'
-              ? 'border-blue-600 bg-blue-50'
-              : 'border-gray-200 hover:border-gray-300'
+              ? 'border-indigo-600 bg-indigo-50 dark:bg-indigo-900/30 dark:border-indigo-500'
+              : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 bg-white dark:bg-gray-800'
           }`}
         >
-          <div className="text-sm font-medium text-gray-600">All Agents</div>
-          <div className="text-2xl font-bold text-gray-900">{agents.length}</div>
+          <div className="text-sm font-medium text-gray-600 dark:text-gray-400">All Agents</div>
+          <div className="text-2xl font-bold text-gray-900 dark:text-white">{agents.length}</div>
         </button>
         {Object.entries(categories)
           .slice(0, 3)
@@ -114,27 +114,27 @@ export default function Agents() {
             <button
               key={category}
               onClick={() => setSelectedCategory(category)}
-              className={`p-4 rounded-lg border-2 transition-all text-left ${
+              className={`p-4 rounded-xl border-2 transition-all text-left ${
                 selectedCategory === category
-                  ? 'border-blue-600 bg-blue-50'
-                  : 'border-gray-200 hover:border-gray-300'
+                  ? 'border-indigo-600 bg-indigo-50 dark:bg-indigo-900/30 dark:border-indigo-500'
+                  : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 bg-white dark:bg-gray-800'
               }`}
             >
-              <div className="text-sm font-medium text-gray-600">{category}</div>
-              <div className="text-2xl font-bold text-gray-900">{count}</div>
+              <div className="text-sm font-medium text-gray-600 dark:text-gray-400">{category}</div>
+              <div className="text-2xl font-bold text-gray-900 dark:text-white">{count}</div>
             </button>
           ))}
       </div>
 
-      <div className="bg-white rounded-lg shadow">
-        <div className="p-4 border-b">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700">
+        <div className="p-4 border-b border-gray-100 dark:border-gray-700">
           <div className="flex space-x-2 overflow-x-auto">
             <button
               onClick={() => setSelectedCategory('all')}
-              className={`px-4 py-2 rounded-lg whitespace-nowrap ${
+              className={`px-4 py-2 rounded-xl whitespace-nowrap transition-all ${
                 selectedCategory === 'all'
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-500/30'
+                  : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
               }`}
             >
               All ({agents.length})
@@ -143,10 +143,10 @@ export default function Agents() {
               <button
                 key={category}
                 onClick={() => setSelectedCategory(category)}
-                className={`px-4 py-2 rounded-lg whitespace-nowrap ${
+                className={`px-4 py-2 rounded-xl whitespace-nowrap transition-all ${
                   selectedCategory === category
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-500/30'
+                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                 }`}
               >
                 {category} ({count})
@@ -159,26 +159,26 @@ export default function Agents() {
           {filteredBots.map((agent) => (
             <div
               key={agent.id}
-              className="border rounded-lg p-4 hover:shadow-lg transition-shadow cursor-pointer"
+              className="border border-gray-200 dark:border-gray-700 rounded-xl p-4 hover:shadow-lg transition-all cursor-pointer bg-white dark:bg-gray-800/50"
               onClick={() => setSelectedBot(agent)}
             >
               <div className="flex items-start justify-between mb-3">
-                <div className="bg-blue-100 rounded-lg p-2">
-                  <Bot className="h-6 w-6 text-blue-600" />
+                <div className="bg-indigo-100 dark:bg-indigo-900/30 rounded-xl p-2">
+                  <Bot className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
                 </div>
-                <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">
+                <span className="text-xs bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400 px-2 py-1 rounded-full">
                   {agent.status}
                 </span>
               </div>
-              <h3 className="font-semibold text-gray-900 mb-1">{agent.name}</h3>
-              <p className="text-xs text-gray-600 mb-3">{agent.category}</p>
+              <h3 className="font-semibold text-gray-900 dark:text-white mb-1">{agent.name}</h3>
+              <p className="text-xs text-gray-600 dark:text-gray-400 mb-3">{agent.category}</p>
               <div className="flex space-x-2">
                 <button
                   onClick={(e) => {
                     e.stopPropagation()
                     handleExecuteBot(agent.id)
                   }}
-                  className="flex-1 bg-blue-600 text-white py-2 rounded-lg text-sm hover:bg-blue-700 flex items-center justify-center"
+                  className="flex-1 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white py-2 rounded-xl text-sm shadow-lg shadow-indigo-500/30 flex items-center justify-center transition-all"
                 >
                   <Play className="h-4 w-4 mr-2" />
                   Execute
@@ -188,7 +188,7 @@ export default function Agents() {
                     e.stopPropagation()
                     navigate(`/agents/${agent.id}`)
                   }}
-                  className="px-3 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 flex items-center justify-center"
+                  className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl text-sm hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center justify-center text-gray-700 dark:text-gray-300 transition-colors"
                 >
                   <Settings className="h-4 w-4" />
                 </button>
@@ -198,7 +198,7 @@ export default function Agents() {
         </div>
 
         {filteredBots.length === 0 && (
-          <div className="text-center py-12 text-gray-500">
+          <div className="text-center py-12 text-gray-500 dark:text-gray-400">
             No agents found in this category
           </div>
         )}
@@ -252,22 +252,22 @@ function BotDetailsModal({
   }
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <div className="p-6">
           <div className="flex items-start justify-between mb-4">
             <div className="flex items-center">
-              <div className="bg-blue-100 rounded-lg p-3 mr-4">
-                <Bot className="h-8 w-8 text-blue-600" />
+              <div className="bg-indigo-100 dark:bg-indigo-900/30 rounded-xl p-3 mr-4">
+                <Bot className="h-8 w-8 text-indigo-600 dark:text-indigo-400" />
               </div>
               <div>
-                <h2 className="text-2xl font-bold text-gray-900">{agent.name}</h2>
-                <p className="text-sm text-gray-600">{agent.category}</p>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{agent.name}</h2>
+                <p className="text-sm text-gray-600 dark:text-gray-400">{agent.category}</p>
               </div>
             </div>
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-gray-600 text-2xl"
+              className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 text-2xl"
             >
               ×
             </button>
@@ -275,23 +275,23 @@ function BotDetailsModal({
 
           {loading ? (
             <div className="flex justify-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
             </div>
           ) : (
             <div className="space-y-4">
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">Description</h3>
-                <p className="text-gray-600 text-sm">
+                <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Description</h3>
+                <p className="text-gray-600 dark:text-gray-400 text-sm">
                   {details?.description || 'This agent automates business processes efficiently.'}
                 </p>
               </div>
 
               {details?.capabilities && (
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-2">Capabilities</h3>
+                  <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Capabilities</h3>
                   <ul className="list-disc list-inside space-y-1">
                     {details.capabilities.map((cap: string, idx: number) => (
-                      <li key={idx} className="text-gray-600 text-sm">
+                      <li key={idx} className="text-gray-600 dark:text-gray-400 text-sm">
                         {cap}
                       </li>
                     ))}
@@ -299,23 +299,23 @@ function BotDetailsModal({
                 </div>
               )}
 
-              <div className="bg-gray-50 rounded-lg p-4">
+              <div className="bg-gray-50 dark:bg-gray-900/50 rounded-xl p-4">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium text-gray-700">Status</span>
-                  <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Status</span>
+                  <span className="text-xs bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400 px-2 py-1 rounded-full">
                     Operational
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-gray-700">Module</span>
-                  <span className="text-xs text-gray-600 font-mono">{agent.module}</span>
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Module</span>
+                  <span className="text-xs text-gray-600 dark:text-gray-400 font-mono">{agent.module}</span>
                 </div>
               </div>
 
               <div className="flex justify-end space-x-3 pt-4">
                 <button
                   onClick={onClose}
-                  className="px-4 py-2 border rounded-lg hover:bg-gray-50"
+                  className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-colors"
                 >
                   Close
                 </button>
@@ -324,7 +324,7 @@ function BotDetailsModal({
                     onExecute(agent.id)
                     onClose()
                   }}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center"
+                  className="px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-xl shadow-lg shadow-indigo-500/30 flex items-center transition-all"
                 >
                   <Play className="h-4 w-4 mr-2" />
                   Execute Agent

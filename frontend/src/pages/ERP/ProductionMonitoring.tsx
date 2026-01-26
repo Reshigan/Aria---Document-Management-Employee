@@ -148,12 +148,12 @@ const ProductionMonitoring: React.FC = () => {
 
   const getStatusBadge = (status: string) => {
     const statusConfig: Record<string, { color: string; icon: React.ReactNode }> = {
-      pending: { color: 'bg-yellow-100 text-yellow-800', icon: <Clock className="w-3 h-3" /> },
-      processing: { color: 'bg-blue-100 text-blue-800', icon: <RefreshCw className="w-3 h-3" /> },
-      completed: { color: 'bg-green-100 text-green-800', icon: <CheckCircle className="w-3 h-3" /> },
-      failed: { color: 'bg-red-100 text-red-800', icon: <XCircle className="w-3 h-3" /> },
-      healthy: { color: 'bg-green-100 text-green-800', icon: <CheckCircle className="w-3 h-3" /> },
-      unhealthy: { color: 'bg-red-100 text-red-800', icon: <XCircle className="w-3 h-3" /> }
+      pending: { color: 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300', icon: <Clock className="w-3 h-3" /> },
+      processing: { color: 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200', icon: <RefreshCw className="w-3 h-3" /> },
+      completed: { color: 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300', icon: <CheckCircle className="w-3 h-3" /> },
+      failed: { color: 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300', icon: <XCircle className="w-3 h-3" /> },
+      healthy: { color: 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300', icon: <CheckCircle className="w-3 h-3" /> },
+      unhealthy: { color: 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300', icon: <XCircle className="w-3 h-3" /> }
     };
 
     const config = statusConfig[status.toLowerCase()] || statusConfig.pending;
@@ -177,7 +177,7 @@ const ProductionMonitoring: React.FC = () => {
           <h3 className="text-lg font-semibold">Background Jobs</h3>
           <button 
             onClick={loadData}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            className="flex items-center gap-2 px-4 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-lg hover:bg-blue-700"
           >
             <RefreshCw className="w-4 h-4" />
             Refresh
@@ -185,69 +185,69 @@ const ProductionMonitoring: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-500">Pending Jobs</p>
-                <p className="text-2xl font-bold text-yellow-600 mt-1">{pendingJobs}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Pending Jobs</p>
+                <p className="text-2xl font-bold text-yellow-600 dark:text-yellow-400 mt-1">{pendingJobs}</p>
               </div>
-              <div className="p-3 bg-yellow-100 rounded-lg">
-                <Clock className="w-6 h-6 text-yellow-600" />
+              <div className="p-3 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg">
+                <Clock className="w-6 h-6 text-yellow-600 dark:text-yellow-400" />
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-500">Failed Jobs</p>
-                <p className="text-2xl font-bold text-red-600 mt-1">{failedJobs}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Failed Jobs</p>
+                <p className="text-2xl font-bold text-red-600 dark:text-red-400 mt-1">{failedJobs}</p>
               </div>
-              <div className="p-3 bg-red-100 rounded-lg">
-                <XCircle className="w-6 h-6 text-red-600" />
+              <div className="p-3 bg-red-100 dark:bg-red-900/30 rounded-lg">
+                <XCircle className="w-6 h-6 text-red-600 dark:text-red-400" />
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-500">Completed Jobs</p>
-                <p className="text-2xl font-bold text-green-600 mt-1">{completedJobs}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Completed Jobs</p>
+                <p className="text-2xl font-bold text-green-600 dark:text-green-400 mt-1">{completedJobs}</p>
               </div>
-              <div className="p-3 bg-green-100 rounded-lg">
-                <CheckCircle className="w-6 h-6 text-green-600" />
+              <div className="p-3 bg-green-100 dark:bg-green-900/30 rounded-lg">
+                <CheckCircle className="w-6 h-6 text-green-600 dark:text-green-400" />
               </div>
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow overflow-hidden">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
+          <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <thead className="bg-gray-50 dark:bg-gray-900">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Job Name</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Priority</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Retry Count</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Scheduled At</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Job Name</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Type</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Priority</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Status</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Retry Count</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Scheduled At</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Actions</th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
               {backgroundJobs.map((job) => (
-                <tr key={job.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 text-sm font-medium text-gray-900">{job.job_name}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{job.job_type}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{job.priority}</td>
+                <tr key={job.id} className="hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900">
+                  <td className="px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">{job.job_name}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{job.job_type}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{job.priority}</td>
                   <td className="px-6 py-4 whitespace-nowrap">{getStatusBadge(job.status)}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{job.retry_count}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{job.retry_count}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                     {new Date(job.scheduled_at).toLocaleString()}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    <button className="text-blue-600 hover:text-blue-900">View</button>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                    <button className="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:text-blue-100">View</button>
                   </td>
                 </tr>
               ))}
@@ -262,47 +262,47 @@ const ProductionMonitoring: React.FC = () => {
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-semibold">Scheduled Tasks</h3>
-        <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+        <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-lg hover:bg-blue-700">
           <Plus className="w-4 h-4" />
           New Task
         </button>
       </div>
 
-      <div className="bg-white rounded-lg shadow overflow-hidden">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
+        <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+          <thead className="bg-gray-50 dark:bg-gray-900">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Task Name</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Cron Expression</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Last Run</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Next Run</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Task Name</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Type</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Cron Expression</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Last Run</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Next Run</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Status</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Actions</th>
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
+          <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
             {scheduledTasks.map((task) => (
-              <tr key={task.id} className="hover:bg-gray-50">
-                <td className="px-6 py-4 text-sm font-medium text-gray-900">{task.task_name}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{task.task_type}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-mono">{task.cron_expression}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+              <tr key={task.id} className="hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900">
+                <td className="px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">{task.task_name}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{task.task_type}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 font-mono">{task.cron_expression}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                   {task.last_run_at ? new Date(task.last_run_at).toLocaleString() : 'Never'}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                   {task.next_run_at ? new Date(task.next_run_at).toLocaleString() : '-'}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   {task.is_enabled ? (
-                    <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Enabled</span>
+                    <span className="px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 text-xs rounded-full">Enabled</span>
                   ) : (
-                    <span className="px-2 py-1 bg-gray-100 text-gray-800 text-xs rounded-full">Disabled</span>
+                    <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-100 text-xs rounded-full">Disabled</span>
                   )}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  <button className="text-blue-600 hover:text-blue-900 mr-3">Edit</button>
-                  <button className="text-red-600 hover:text-red-900">Delete</button>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                  <button className="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:text-blue-100 mr-3">Edit</button>
+                  <button className="text-red-600 dark:text-red-400 hover:text-red-900">Delete</button>
                 </td>
               </tr>
             ))}
@@ -318,36 +318,36 @@ const ProductionMonitoring: React.FC = () => {
         <h3 className="text-lg font-semibold">System Health Checks</h3>
         <button 
           onClick={loadData}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          className="flex items-center gap-2 px-4 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-lg hover:bg-blue-700"
         >
           <RefreshCw className="w-4 h-4" />
           Refresh
         </button>
       </div>
 
-      <div className="bg-white rounded-lg shadow overflow-hidden">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
+        <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+          <thead className="bg-gray-50 dark:bg-gray-900">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Check Name</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Response Time</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Error Message</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Checked At</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Check Name</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Type</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Status</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Response Time</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Error Message</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Checked At</th>
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
+          <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
             {healthChecks.map((check) => (
-              <tr key={check.id} className="hover:bg-gray-50">
-                <td className="px-6 py-4 text-sm font-medium text-gray-900">{check.check_name}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{check.check_type}</td>
+              <tr key={check.id} className="hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900">
+                <td className="px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">{check.check_name}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{check.check_type}</td>
                 <td className="px-6 py-4 whitespace-nowrap">{getStatusBadge(check.status)}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                   {check.response_time_ms ? `${check.response_time_ms}ms` : '-'}
                 </td>
-                <td className="px-6 py-4 text-sm text-red-600">{check.error_message || '-'}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <td className="px-6 py-4 text-sm text-red-600 dark:text-red-400">{check.error_message || '-'}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                   {new Date(check.created_at).toLocaleString()}
                 </td>
               </tr>
@@ -368,27 +368,27 @@ const ProductionMonitoring: React.FC = () => {
         </button>
       </div>
 
-      <div className="bg-white rounded-lg shadow overflow-hidden">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
+        <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+          <thead className="bg-gray-50 dark:bg-gray-900">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">User ID</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Action</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Entity Type</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Entity ID</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">IP Address</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Timestamp</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">User ID</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Action</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Entity Type</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Entity ID</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">IP Address</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Timestamp</th>
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
+          <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
             {auditLogs.map((log) => (
-              <tr key={log.id} className="hover:bg-gray-50">
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{log.user_id}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{log.action}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{log.entity_type}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{log.entity_id || '-'}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{log.ip_address || '-'}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+              <tr key={log.id} className="hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900">
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{log.user_id}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{log.action}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{log.entity_type}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{log.entity_id || '-'}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{log.ip_address || '-'}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                   {new Date(log.created_at).toLocaleString()}
                 </td>
               </tr>
@@ -407,8 +407,8 @@ const ProductionMonitoring: React.FC = () => {
         <div className="flex justify-between items-center">
           <h3 className="text-lg font-semibold">Error Logs</h3>
           <div className="flex items-center gap-4">
-            <span className="text-sm text-gray-600">
-              Unresolved: <span className="font-bold text-red-600">{unresolvedErrors}</span>
+            <span className="text-sm text-gray-600 dark:text-gray-400">
+              Unresolved: <span className="font-bold text-red-600 dark:text-red-400">{unresolvedErrors}</span>
             </span>
             <button className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
               <Download className="w-4 h-4" />
@@ -417,39 +417,39 @@ const ProductionMonitoring: React.FC = () => {
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow overflow-hidden">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
+          <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <thead className="bg-gray-50 dark:bg-gray-900">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Error Type</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Error Message</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Resolved At</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Created At</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Error Type</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Error Message</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Status</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Resolved At</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Created At</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Actions</th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
               {errorLogs.map((error) => (
                 <tr key={error.id} className={`hover:bg-gray-50 ${!error.is_resolved ? 'bg-red-50' : ''}`}>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{error.error_type}</td>
-                  <td className="px-6 py-4 text-sm text-gray-900">{error.error_message}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{error.error_type}</td>
+                  <td className="px-6 py-4 text-sm text-gray-900 dark:text-white">{error.error_message}</td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     {error.is_resolved ? (
-                      <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Resolved</span>
+                      <span className="px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 text-xs rounded-full">Resolved</span>
                     ) : (
-                      <span className="px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full">Unresolved</span>
+                      <span className="px-2 py-1 bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300 text-xs rounded-full">Unresolved</span>
                     )}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                     {error.resolved_at ? new Date(error.resolved_at).toLocaleString() : '-'}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                     {new Date(error.created_at).toLocaleString()}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                     {!error.is_resolved && (
-                      <button className="text-green-600 hover:text-green-900">Mark Resolved</button>
+                      <button className="text-green-600 dark:text-green-400 hover:text-green-900">Mark Resolved</button>
                     )}
                   </td>
                 </tr>
@@ -467,30 +467,30 @@ const ProductionMonitoring: React.FC = () => {
         <h3 className="text-lg font-semibold">System Metrics</h3>
         <button 
           onClick={loadData}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          className="flex items-center gap-2 px-4 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-lg hover:bg-blue-700"
         >
           <RefreshCw className="w-4 h-4" />
           Refresh
         </button>
       </div>
 
-      <div className="bg-white rounded-lg shadow overflow-hidden">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
+        <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+          <thead className="bg-gray-50 dark:bg-gray-900">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Metric Name</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Value</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Unit</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Timestamp</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Metric Name</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Value</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Unit</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Timestamp</th>
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
+          <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
             {systemMetrics.map((metric, index) => (
-              <tr key={index} className="hover:bg-gray-50">
-                <td className="px-6 py-4 text-sm font-medium text-gray-900">{metric.metric_name}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{metric.metric_value.toFixed(2)}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{metric.metric_unit}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+              <tr key={index} className="hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900">
+                <td className="px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">{metric.metric_name}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{metric.metric_value.toFixed(2)}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{metric.metric_unit}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                   {new Date(metric.created_at).toLocaleString()}
                 </td>
               </tr>
@@ -505,12 +505,12 @@ const ProductionMonitoring: React.FC = () => {
     <div className="p-6 space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Production Monitoring</h1>
-          <p className="text-gray-600">Background jobs, scheduled tasks, health checks, audit logs, and system metrics</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Production Monitoring</h1>
+          <p className="text-gray-600 dark:text-gray-400">Background jobs, scheduled tasks, health checks, audit logs, and system metrics</p>
         </div>
       </div>
 
-      <div className="border-b border-gray-200">
+      <div className="border-b border-gray-200 dark:border-gray-700">
         <nav className="-mb-px flex space-x-8">
           <button
             onClick={() => setActiveTab('jobs')}

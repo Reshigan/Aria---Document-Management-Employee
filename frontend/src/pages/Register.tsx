@@ -32,24 +32,24 @@ export default function Register() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center p-4">
-      <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8">
+      <div className="max-w-md w-full bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-600 rounded-full mb-4">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-600 dark:bg-blue-500 rounded-full mb-4">
             <UserPlus className="h-8 w-8 text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-gray-900">Create Account</h1>
-          <p className="text-gray-600 mt-2">Get started with ARIA ERP</p>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Create Account</h1>
+          <p className="text-gray-600 dark:text-gray-400 mt-2">Get started with ARIA ERP</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+            <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 text-red-700 dark:text-red-300 px-4 py-3 rounded-lg">
               {error}
             </div>
           )}
 
           <div>
-            <label htmlFor="company_name" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="company_name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Company Name
             </label>
             <input
@@ -58,13 +58,13 @@ export default function Register() {
               value={formData.company_name}
               onChange={(e) => setFormData({ ...formData, company_name: e.target.value })}
               required
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent"
               placeholder="Acme Corp"
             />
           </div>
 
           <div>
-            <label htmlFor="full_name" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="full_name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Full Name
             </label>
             <input
@@ -73,13 +73,13 @@ export default function Register() {
               value={formData.full_name}
               onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
               required
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent"
               placeholder="John Doe"
             />
           </div>
 
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Email
             </label>
             <input
@@ -88,13 +88,13 @@ export default function Register() {
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               required
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent"
               placeholder="you@company.com"
             />
           </div>
 
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Password
             </label>
             <input
@@ -104,7 +104,7 @@ export default function Register() {
               onChange={(e) => setFormData({ ...formData, password: e.target.value })}
               required
               minLength={8}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent"
               placeholder="••••••••"
             />
           </div>
@@ -112,15 +112,15 @@ export default function Register() {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-blue-600 dark:bg-blue-500 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isLoading ? 'Creating account...' : 'Create account'}
           </button>
         </form>
 
-        <p className="mt-6 text-center text-sm text-gray-600">
+        <p className="mt-6 text-center text-sm text-gray-600 dark:text-gray-400">
           Already have an account?{' '}
-          <Link to="/login" className="text-blue-600 font-medium hover:text-blue-700">
+          <Link to="/login" className="text-blue-600 dark:text-blue-400 font-medium hover:text-blue-700 dark:text-blue-300">
             Sign in
           </Link>
         </p>

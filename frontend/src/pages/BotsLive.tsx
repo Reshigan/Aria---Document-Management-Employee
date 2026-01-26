@@ -112,10 +112,10 @@ export default function BotsLive() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
         <div className="text-center">
-          <Loader className="w-12 h-12 text-blue-600 animate-spin mx-auto mb-4" />
-          <p className="text-gray-600">Loading agents from API...</p>
+          <Loader className="w-12 h-12 text-indigo-600 dark:text-indigo-400 animate-spin mx-auto mb-4" />
+          <p className="text-gray-600 dark:text-gray-400">Loading agents from API...</p>
         </div>
       </div>
     );
@@ -123,16 +123,16 @@ export default function BotsLive() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="bg-white rounded-lg shadow-lg p-8 max-w-md">
-          <AlertCircle className="w-12 h-12 text-red-600 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-gray-900 text-center mb-2">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 max-w-md">
+          <AlertCircle className="w-12 h-12 text-red-600 dark:text-red-400 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white text-center mb-2">
             Connection Error
           </h2>
-          <p className="text-gray-600 text-center mb-4">{error}</p>
+          <p className="text-gray-600 dark:text-gray-400 text-center mb-4">{error}</p>
           <button
             onClick={loadBots}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
+            className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-medium py-2 px-4 rounded-xl transition-all shadow-lg shadow-indigo-500/30"
           >
             Retry
           </button>
@@ -142,20 +142,20 @@ export default function BotsLive() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 py-12 px-4">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="bg-white rounded-lg shadow-lg p-8 mb-8">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 mb-8 border border-gray-100 dark:border-gray-700">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-4xl font-bold text-gray-900 mb-2">
+              <h1 className="text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2">
                 Live Agent Status
               </h1>
-              <p className="text-gray-600">
+              <p className="text-gray-600 dark:text-gray-400">
                 Real-time data from backend API - {agents.length} agents operational
               </p>
             </div>
-            <div className="flex items-center gap-2 text-green-600">
+            <div className="flex items-center gap-2 text-green-600 dark:text-green-400">
               <CheckCircle className="w-6 h-6" />
               <span className="font-semibold">Connected</span>
             </div>
@@ -165,46 +165,46 @@ export default function BotsLive() {
         {/* Agent Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {agents.map((agent) => {
-            const Icon = iconMap[agent.name] || Agent;
+            const Icon = iconMap[agent.name] || Bot;
             return (
               <div
                 key={agent.name}
-                className="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow"
+                className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all border border-gray-100 dark:border-gray-700"
               >
                 <div className="flex items-start justify-between mb-4">
-                  <div className="bg-blue-100 p-3 rounded-lg">
-                    <Icon className="w-8 h-8 text-blue-600" />
+                  <div className="bg-indigo-100 dark:bg-indigo-900/30 p-3 rounded-xl">
+                    <Icon className="w-8 h-8 text-indigo-600 dark:text-indigo-400" />
                   </div>
-                  <div className="flex items-center gap-2 text-green-600 text-sm">
+                  <div className="flex items-center gap-2 text-green-600 dark:text-green-400 text-sm">
                     <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                     <span>Active</span>
                   </div>
                 </div>
 
-                <h3 className="text-xl font-bold text-gray-900 mb-2">
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
                   {agent.type.replace(/Agent$/, '').replace(/([A-Z])/g, ' $1').trim()}
                 </h3>
                 
-                <p className="text-gray-600 text-sm mb-4">
+                <p className="text-gray-600 dark:text-gray-400 text-sm mb-4">
                   {agent.description}
                 </p>
 
                 {agent.capabilities.length > 0 && (
                   <div className="mb-4">
-                    <p className="text-xs font-semibold text-gray-700 mb-2">
+                    <p className="text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2">
                       Capabilities:
                     </p>
                     <div className="flex flex-wrap gap-2">
                       {agent.capabilities.slice(0, 3).map((cap, idx) => (
                         <span
                           key={idx}
-                          className="inline-block bg-blue-50 text-blue-700 text-xs px-2 py-1 rounded"
+                          className="inline-block bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 text-xs px-2 py-1 rounded-lg"
                         >
                           {cap.replace(/_/g, ' ')}
                         </span>
                       ))}
                       {agent.capabilities.length > 3 && (
-                        <span className="inline-block bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded">
+                        <span className="inline-block bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 text-xs px-2 py-1 rounded-lg">
                           +{agent.capabilities.length - 3} more
                         </span>
                       )}
@@ -215,10 +215,10 @@ export default function BotsLive() {
                 <button
                   onClick={() => executeBot(agent.name)}
                   disabled={executingBot === agent.name}
-                  className={`w-full flex items-center justify-center gap-2 py-2 px-4 rounded-lg font-medium transition-colors ${
+                  className={`w-full flex items-center justify-center gap-2 py-2 px-4 rounded-xl font-medium transition-all ${
                     executingBot === agent.name
-                      ? 'bg-gray-300 cursor-not-allowed'
-                      : 'bg-blue-600 hover:bg-blue-700 text-white'
+                      ? 'bg-gray-300 dark:bg-gray-600 cursor-not-allowed text-gray-500 dark:text-gray-400'
+                      : 'bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-lg shadow-indigo-500/30'
                   }`}
                 >
                   {executingBot === agent.name ? (
@@ -240,20 +240,20 @@ export default function BotsLive() {
 
         {/* Execution Result */}
         {executionResult && (
-          <div className="mt-8 bg-white rounded-lg shadow-lg p-6">
-            <h3 className="text-xl font-bold text-gray-900 mb-4">
+          <div className="mt-8 bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 border border-gray-100 dark:border-gray-700">
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
               Last Execution Result
             </h3>
-            <pre className="bg-gray-50 p-4 rounded-lg overflow-auto max-h-96 text-sm">
+            <pre className="bg-gray-50 dark:bg-gray-900 p-4 rounded-xl overflow-auto max-h-96 text-sm text-gray-800 dark:text-gray-200">
               {JSON.stringify(executionResult, null, 2)}
             </pre>
           </div>
         )}
 
         {/* API Info */}
-        <div className="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-6">
-          <h3 className="font-semibold text-blue-900 mb-2">API Information</h3>
-          <div className="text-sm text-blue-800 space-y-1">
+        <div className="mt-8 bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-800 rounded-2xl p-6">
+          <h3 className="font-semibold text-indigo-900 dark:text-indigo-300 mb-2">API Information</h3>
+          <div className="text-sm text-indigo-800 dark:text-indigo-400 space-y-1">
             <p><strong>Endpoint:</strong> {window.location.origin}/api</p>
             <p><strong>Agents Loaded:</strong> {agents.length}</p>
             <p><strong>Status:</strong> All systems operational</p>

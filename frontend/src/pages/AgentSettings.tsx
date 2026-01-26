@@ -106,10 +106,10 @@ export default function AgentSettings() {
   if (!agent) {
     return (
       <div className="p-8 text-center">
-        <p className="text-gray-600">Agent not found</p>
+        <p className="text-gray-600 dark:text-gray-400">Agent not found</p>
         <button
           onClick={() => navigate('/agents')}
-          className="mt-4 text-blue-600 hover:text-blue-700"
+          className="mt-4 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:text-blue-300"
         >
           Back to Agents
         </button>
@@ -124,22 +124,22 @@ export default function AgentSettings() {
         <div className="flex items-center space-x-4">
           <button
             onClick={() => navigate('/agents')}
-            className="p-2 hover:bg-gray-100 rounded-lg"
+            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 dark:bg-gray-700 rounded-lg"
           >
             <ArrowLeft className="h-5 w-5" />
           </button>
-          <div className="bg-blue-100 rounded-lg p-3">
-            <Bot className="h-8 w-8 text-blue-600" />
+          <div className="bg-blue-100 dark:bg-blue-900/30 rounded-lg p-3">
+            <Bot className="h-8 w-8 text-blue-600 dark:text-blue-400" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">{agent.name}</h1>
-            <p className="text-gray-600">{agent.category}</p>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{agent.name}</h1>
+            <p className="text-gray-600 dark:text-gray-400">{agent.category}</p>
           </div>
         </div>
         <button
           onClick={handleSave}
           disabled={saving}
-          className="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50"
+          className="flex items-center space-x-2 bg-blue-600 dark:bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50"
         >
           <Save className="h-4 w-4" />
           <span>{saving ? 'Saving...' : 'Save Changes'}</span>
@@ -147,7 +147,7 @@ export default function AgentSettings() {
       </div>
 
       {/* Tabs */}
-      <div className="bg-white rounded-lg shadow">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
         <div className="border-b">
           <div className="flex space-x-8 px-6">
             <button
@@ -189,7 +189,7 @@ export default function AgentSettings() {
             <div className="space-y-6">
               <div>
                 <h3 className="text-lg font-semibold mb-2">Description</h3>
-                <p className="text-gray-600">
+                <p className="text-gray-600 dark:text-gray-400">
                   {agent.description || 'This agent automates business processes efficiently.'}
                 </p>
               </div>
@@ -199,21 +199,21 @@ export default function AgentSettings() {
                   <h3 className="text-lg font-semibold mb-2">Capabilities</h3>
                   <ul className="list-disc list-inside space-y-1">
                     {agent.capabilities.map((cap, idx) => (
-                      <li key={idx} className="text-gray-600">{cap}</li>
+                      <li key={idx} className="text-gray-600 dark:text-gray-400">{cap}</li>
                     ))}
                   </ul>
                 </div>
               )}
 
               <div className="grid grid-cols-2 gap-4">
-                <div className="bg-gray-50 rounded-lg p-4">
-                  <div className="text-sm text-gray-600">Module</div>
+                <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
+                  <div className="text-sm text-gray-600 dark:text-gray-400">Module</div>
                   <div className="text-lg font-semibold">{agent.module}</div>
                 </div>
-                <div className="bg-gray-50 rounded-lg p-4">
-                  <div className="text-sm text-gray-600">Status</div>
+                <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
+                  <div className="text-sm text-gray-600 dark:text-gray-400">Status</div>
                   <div className="flex items-center space-x-2">
-                    <CheckCircle className="h-5 w-5 text-green-600" />
+                    <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400" />
                     <span className="text-lg font-semibold">{agent.status}</span>
                   </div>
                 </div>
@@ -224,37 +224,37 @@ export default function AgentSettings() {
           {activeTab === 'settings' && (
             <div className="space-y-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Agent Name
                 </label>
                 <input
                   type="text"
                   value={agent.name}
                   onChange={(e) => setAgent({ ...agent, name: e.target.value })}
-                  className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Description
                 </label>
                 <textarea
                   value={agent.description || ''}
                   onChange={(e) => setAgent({ ...agent, description: e.target.value })}
                   rows={4}
-                  className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Model
                 </label>
                 <select
                   value={agent.model || 'tinyllama'}
                   onChange={(e) => setAgent({ ...agent, model: e.target.value })}
-                  className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
                 >
                   <option value="tinyllama">TinyLlama (Fast, Local)</option>
                   <option value="qwen2.5:3b-instruct">Qwen 2.5 3B (Balanced)</option>
@@ -263,7 +263,7 @@ export default function AgentSettings() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Temperature: {agent.temperature || 0.7}
                 </label>
                 <input
@@ -275,7 +275,7 @@ export default function AgentSettings() {
                   onChange={(e) => setAgent({ ...agent, temperature: parseFloat(e.target.value) })}
                   className="w-full"
                 />
-                <div className="flex justify-between text-xs text-gray-500 mt-1">
+                <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
                   <span>Precise</span>
                   <span>Creative</span>
                 </div>
@@ -289,7 +289,7 @@ export default function AgentSettings() {
                   onChange={(e) => setAgent({ ...agent, enabled: e.target.checked })}
                   className="rounded"
                 />
-                <label htmlFor="enabled" className="text-sm font-medium text-gray-700">
+                <label htmlFor="enabled" className="text-sm font-medium text-gray-700 dark:text-gray-300">
                   Enable this agent
                 </label>
               </div>
@@ -299,55 +299,55 @@ export default function AgentSettings() {
           {activeTab === 'usage' && usage && (
             <div className="space-y-6">
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="bg-blue-50 rounded-lg p-4">
+                <div className="bg-blue-50 dark:bg-blue-900/30 rounded-lg p-4">
                   <div className="flex items-center justify-between mb-2">
-                    <Activity className="h-5 w-5 text-blue-600" />
+                    <Activity className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                   </div>
-                  <div className="text-2xl font-bold text-gray-900">{usage.total_runs}</div>
-                  <div className="text-sm text-gray-600">Total Runs</div>
+                  <div className="text-2xl font-bold text-gray-900 dark:text-white">{usage.total_runs}</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">Total Runs</div>
                 </div>
 
-                <div className="bg-green-50 rounded-lg p-4">
+                <div className="bg-green-50 dark:bg-green-900/30 rounded-lg p-4">
                   <div className="flex items-center justify-between mb-2">
-                    <CheckCircle className="h-5 w-5 text-green-600" />
+                    <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400" />
                   </div>
-                  <div className="text-2xl font-bold text-gray-900">{usage.success_rate}%</div>
-                  <div className="text-sm text-gray-600">Success Rate</div>
+                  <div className="text-2xl font-bold text-gray-900 dark:text-white">{usage.success_rate}%</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">Success Rate</div>
                 </div>
 
-                <div className="bg-yellow-50 rounded-lg p-4">
+                <div className="bg-yellow-50 dark:bg-yellow-900/30 rounded-lg p-4">
                   <div className="flex items-center justify-between mb-2">
-                    <Clock className="h-5 w-5 text-yellow-600" />
+                    <Clock className="h-5 w-5 text-yellow-600 dark:text-yellow-400" />
                   </div>
-                  <div className="text-2xl font-bold text-gray-900">
+                  <div className="text-2xl font-bold text-gray-900 dark:text-white">
                     {(usage.avg_duration_ms / 1000).toFixed(1)}s
                   </div>
-                  <div className="text-sm text-gray-600">Avg Duration</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">Avg Duration</div>
                 </div>
 
-                <div className="bg-purple-50 rounded-lg p-4">
+                <div className="bg-purple-50 dark:bg-purple-900/30 rounded-lg p-4">
                   <div className="flex items-center justify-between mb-2">
-                    <TrendingUp className="h-5 w-5 text-purple-600" />
+                    <TrendingUp className="h-5 w-5 text-purple-600 dark:text-purple-400" />
                   </div>
-                  <div className="text-2xl font-bold text-gray-900">{usage.runs_7d}</div>
-                  <div className="text-sm text-gray-600">Last 7 Days</div>
+                  <div className="text-2xl font-bold text-gray-900 dark:text-white">{usage.runs_7d}</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">Last 7 Days</div>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="border rounded-lg p-4">
-                  <div className="text-sm text-gray-600 mb-1">Successful Runs</div>
-                  <div className="text-2xl font-bold text-green-600">{usage.successful_runs}</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">Successful Runs</div>
+                  <div className="text-2xl font-bold text-green-600 dark:text-green-400">{usage.successful_runs}</div>
                 </div>
                 <div className="border rounded-lg p-4">
-                  <div className="text-sm text-gray-600 mb-1">Failed Runs</div>
-                  <div className="text-2xl font-bold text-red-600">{usage.failed_runs}</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">Failed Runs</div>
+                  <div className="text-2xl font-bold text-red-600 dark:text-red-400">{usage.failed_runs}</div>
                 </div>
               </div>
 
               {usage.last_run && (
-                <div className="bg-gray-50 rounded-lg p-4">
-                  <div className="text-sm text-gray-600">Last Run</div>
+                <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
+                  <div className="text-sm text-gray-600 dark:text-gray-400">Last Run</div>
                   <div className="text-lg font-semibold">
                     {new Date(usage.last_run).toLocaleString()}
                   </div>
@@ -358,11 +358,11 @@ export default function AgentSettings() {
                 <h3 className="text-lg font-semibold mb-2">Activity Breakdown</h3>
                 <div className="space-y-2">
                   <div className="flex justify-between items-center">
-                    <span className="text-gray-600">Last 7 days</span>
+                    <span className="text-gray-600 dark:text-gray-400">Last 7 days</span>
                     <span className="font-semibold">{usage.runs_7d} runs</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-gray-600">Last 30 days</span>
+                    <span className="text-gray-600 dark:text-gray-400">Last 30 days</span>
                     <span className="font-semibold">{usage.runs_30d} runs</span>
                   </div>
                 </div>

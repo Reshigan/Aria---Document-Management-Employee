@@ -43,7 +43,7 @@ const Login: React.FC = () => {
         <div className="backdrop-blur-xl rounded-2xl p-8 bg-slate-800/70 border border-white/10">
           <form onSubmit={handleSubmit} className="space-y-6">
             {error && (
-              <div data-testid="error-message" className="p-4 bg-red-500/20 border border-red-500/50 rounded-xl text-red-200 text-sm">
+              <div data-testid="error-message" className="p-4 bg-red-50 dark:bg-red-900/300/20 border border-red-500/50 rounded-xl text-red-200 text-sm">
                 {error}
               </div>
             )}
@@ -60,7 +60,7 @@ const Login: React.FC = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="w-full pl-11 pr-4 py-3 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500 bg-slate-900/60 border border-white/15"
+                  className="w-full pl-11 pr-4 py-3 rounded-xl text-white placeholder-gray-400 dark:placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500 bg-slate-900/60 border border-white/15"
                   placeholder="you@company.com"
                 />
               </div>
@@ -78,7 +78,7 @@ const Login: React.FC = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="w-full pl-11 pr-4 py-3 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500 bg-slate-900/60 border border-white/15"
+                  className="w-full pl-11 pr-4 py-3 rounded-xl text-white placeholder-gray-400 dark:placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500 bg-slate-900/60 border border-white/15"
                   placeholder="••••••••"
                 />
               </div>

@@ -50,7 +50,7 @@ export default function PendingActionsPage() {
           name="filter_type"
           value={filterType}
           onChange={(e) => setFilterType(e.target.value)}
-          className="px-4 py-2 border border-gray-300 rounded-lg"
+          className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg"
         >
           <option value="all">All Types</option>
           <option value="invoice_approval">Invoice Approval</option>
@@ -59,7 +59,7 @@ export default function PendingActionsPage() {
         </select>
       </div>
 
-      <div className="bg-white rounded-lg shadow" data-testid="actions-table">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow" data-testid="actions-table">
         <DataTable
           data={filteredActions}
           columns={[
@@ -87,14 +87,14 @@ export default function PendingActionsPage() {
               render: (value: any, row: any) => (
                 <div className="flex gap-2">
                   <button 
-                    className="p-2 text-green-600 hover:bg-green-50 rounded" 
+                    className="p-2 text-green-600 dark:text-green-400 hover:bg-green-50 dark:bg-green-900/30 rounded" 
                     data-testid={`action-approve-${row.id}`}
                     onClick={handleApprove}
                   >
                     <Check className="h-4 w-4" />
                   </button>
                   <button 
-                    className="p-2 text-red-600 hover:bg-red-50 rounded" 
+                    className="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:bg-red-900/30 rounded" 
                     data-testid={`action-reject-${row.id}`}
                     onClick={() => setShowRejectModal(true)}
                   >
@@ -112,17 +112,17 @@ export default function PendingActionsPage() {
       {/* Reject Modal */}
       {showRejectModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6" data-testid="modal-reject-reason">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Reject Action</h2>
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full p-6" data-testid="modal-reject-reason">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Reject Action</h2>
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Reason for rejection *
               </label>
               <textarea
                 name="reason"
                 value={rejectReason}
                 onChange={(e) => setRejectReason(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md"
                 rows={4}
                 placeholder="Please provide a reason..."
               />
@@ -130,7 +130,7 @@ export default function PendingActionsPage() {
             <div className="flex justify-end gap-3">
               <button
                 onClick={() => setShowRejectModal(false)}
-                className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900"
               >
                 Cancel
               </button>

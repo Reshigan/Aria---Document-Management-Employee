@@ -37,7 +37,7 @@ export default function DocumentTemplatesPage() {
             placeholder="Search templates..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg"
+            className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg"
           />
         </div>
         <div className="flex gap-2 flex-wrap">
@@ -68,12 +68,12 @@ export default function DocumentTemplatesPage() {
             data-testid={category.testId}
           >
             <h3 className="text-lg font-bold mb-2">{category.name}</h3>
-            <p className="text-gray-600 text-sm mb-4">{category.count} templates</p>
+            <p className="text-gray-600 dark:text-gray-400 text-sm mb-4">{category.count} templates</p>
             <ul className="space-y-2">
               {category.templates.map((template) => (
                 <li 
                   key={template} 
-                  className="text-sm text-blue-600 hover:underline cursor-pointer"
+                  className="text-sm text-blue-600 dark:text-blue-400 hover:underline cursor-pointer"
                   data-testid={template === 'Tax Invoice' ? 'template-tax-invoice' : undefined}
                   onClick={() => handleTemplateClick(template)}
                 >

@@ -15,15 +15,15 @@ export default function ExpenseManagementReportPage() {
           { label: 'Pending', value: 12, color: 'yellow' },
           { label: 'Rejected', value: 2, color: 'red' }
         ].map((stat) => (
-          <div key={stat.label} className="bg-white rounded-lg shadow p-6">
-            <div className="text-sm font-medium text-gray-600">{stat.label}</div>
+          <div key={stat.label} className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <div className="text-sm font-medium text-gray-600 dark:text-gray-400">{stat.label}</div>
             <div className={`text-3xl font-bold text-${stat.color}-600 mt-2`}>{stat.value}</div>
           </div>
         ))}
       </div>
-      <div className="bg-white rounded-lg shadow p-6">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
         <h3 className="text-lg font-bold mb-4">Auto-Coding Accuracy: 90%</h3>
-        <p className="text-gray-600">142 of 156 claims auto-coded successfully</p>
+        <p className="text-gray-600 dark:text-gray-400">142 of 156 claims auto-coded successfully</p>
       </div>
     </div>
   );

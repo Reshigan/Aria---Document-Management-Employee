@@ -111,11 +111,11 @@ const BotTestingDashboard: React.FC = () => {
   const getStatusIcon = (status: BotTestResult['status']) => {
     switch (status) {
       case 'passed':
-        return <CheckCircle className="w-5 h-5 text-green-600" />;
+        return <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400" />;
       case 'failed':
-        return <XCircle className="w-5 h-5 text-red-600" />;
+        return <XCircle className="w-5 h-5 text-red-600 dark:text-red-400" />;
       case 'running':
-        return <Clock className="w-5 h-5 text-blue-600 animate-spin" />;
+        return <Clock className="w-5 h-5 text-blue-600 dark:text-blue-400 animate-spin" />;
       default:
         return <PlayCircle className="w-5 h-5 text-gray-400" />;
     }
@@ -160,40 +160,40 @@ const BotTestingDashboard: React.FC = () => {
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 flex items-center">
-            <Agent className="w-8 h-8 mr-3 text-blue-600" />
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center">
+            <Agent className="w-8 h-8 mr-3 text-blue-600 dark:text-blue-400" />
             AI Agent Testing Dashboard
           </h1>
-          <p className="text-gray-500 mt-1">Day 6: Test all 8 AI agents - THE CRITICAL DIFFERENTIATOR ⭐</p>
+          <p className="text-gray-500 dark:text-gray-400 mt-1">Day 6: Test all 8 AI agents - THE CRITICAL DIFFERENTIATOR ⭐</p>
         </div>
       </div>
 
       {/* Summary */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <div className="bg-white p-4 rounded-lg shadow">
-          <div className="text-sm text-gray-500 mb-1">Agents Tested</div>
-          <div className="text-2xl font-bold text-gray-900">{completedBots} / {agents.length}</div>
+        <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+          <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">Agents Tested</div>
+          <div className="text-2xl font-bold text-gray-900 dark:text-white">{completedBots} / {agents.length}</div>
         </div>
-        <div className="bg-white p-4 rounded-lg shadow">
-          <div className="text-sm text-gray-500 mb-1">Overall Accuracy</div>
+        <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+          <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">Overall Accuracy</div>
           <div className={`text-2xl font-bold ${overallAccuracy >= 85 ? 'text-green-600' : 'text-yellow-600'}`}>
             {formatPercentage(overallAccuracy)}
           </div>
         </div>
-        <div className="bg-white p-4 rounded-lg shadow">
-          <div className="text-sm text-gray-500 mb-1">Tests Passed</div>
-          <div className="text-2xl font-bold text-green-600">{totalPassed} / {totalTests}</div>
+        <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+          <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">Tests Passed</div>
+          <div className="text-2xl font-bold text-green-600 dark:text-green-400">{totalPassed} / {totalTests}</div>
         </div>
-        <div className="bg-white p-4 rounded-lg shadow">
-          <div className="text-sm text-gray-500 mb-1">Unique Agents</div>
-          <div className="text-2xl font-bold text-purple-600">{agents.filter(b => b.unique_feature).length}</div>
+        <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+          <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">Unique Agents</div>
+          <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">{agents.filter(b => b.unique_feature).length}</div>
         </div>
       </div>
 
       {/* Agent Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {agents.map((agent) => (
-          <div key={agent.bot_id} className="bg-white rounded-lg shadow p-4">
+          <div key={agent.bot_id} className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
             <div className="flex items-center justify-between mb-3">
               <div className={`p-2 rounded-lg ${agent.unique_feature ? 'bg-purple-100 text-purple-600' : 'bg-blue-100 text-blue-600'}`}>
                 {agent.icon}
@@ -202,12 +202,12 @@ const BotTestingDashboard: React.FC = () => {
             </div>
             <h3 className="text-sm font-medium mb-2">{agent.bot_name}</h3>
             {agent.unique_feature && (
-              <span className="inline-flex px-2 py-1 rounded text-xs font-medium bg-purple-100 text-purple-800 mb-2">
+              <span className="inline-flex px-2 py-1 rounded text-xs font-medium bg-purple-100 dark:bg-purple-900/30 text-purple-800 mb-2">
                 ⭐ UNIQUE
               </span>
             )}
             {agent.accuracy !== null && (
-              <div className="text-sm text-gray-600 mb-2">
+              <div className="text-sm text-gray-600 dark:text-gray-400 mb-2">
                 Accuracy: <span className="font-bold">{formatPercentage(agent.accuracy)}</span>
               </div>
             )}

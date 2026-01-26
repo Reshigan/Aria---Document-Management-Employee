@@ -15,20 +15,20 @@ export default function PayrollActivityReportPage() {
         Payroll Activity Report
       </h1>
       <div className="grid grid-cols-3 gap-6 mb-8">
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="text-sm font-medium text-gray-600">Total Employees</div>
-          <div className="text-3xl font-bold text-gray-900 mt-2">45</div>
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+          <div className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Employees</div>
+          <div className="text-3xl font-bold text-gray-900 dark:text-white mt-2">45</div>
         </div>
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="text-sm font-medium text-gray-600">Monthly Cost</div>
-          <div className="text-3xl font-bold text-gray-900 mt-2">R 450K</div>
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+          <div className="text-sm font-medium text-gray-600 dark:text-gray-400">Monthly Cost</div>
+          <div className="text-3xl font-bold text-gray-900 dark:text-white mt-2">R 450K</div>
         </div>
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="text-sm font-medium text-gray-600">SARS Submissions</div>
-          <div className="text-3xl font-bold text-green-600 mt-2">Up to date</div>
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+          <div className="text-sm font-medium text-gray-600 dark:text-gray-400">SARS Submissions</div>
+          <div className="text-3xl font-bold text-green-600 dark:text-green-400 mt-2">Up to date</div>
         </div>
       </div>
-      <div className="bg-white rounded-lg shadow">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
         <DataTable data={runs} columns={[
           { key: 'period', label: 'Period' },
           { key: 'employees', label: 'Employees' },

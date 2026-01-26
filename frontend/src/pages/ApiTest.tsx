@@ -140,15 +140,15 @@ export default function ApiTest() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-8">
       <div className="max-w-4xl mx-auto">
-        <div className="bg-white rounded-lg shadow-lg p-8">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8">
           <div className="flex items-center justify-between mb-8">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
                 API Connection Test
               </h1>
-              <p className="text-gray-600">
+              <p className="text-gray-600 dark:text-gray-400">
                 Test connection between frontend and backend API
               </p>
             </div>
@@ -170,12 +170,12 @@ export default function ApiTest() {
             {tests.map((test, index) => (
               <div
                 key={index}
-                className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
+                className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:shadow-md transition-shadow"
               >
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-3">
                     {getStatusIcon(test.status)}
-                    <h3 className="text-lg font-semibold text-gray-900">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                       {test.name}
                     </h3>
                   </div>
@@ -192,10 +192,10 @@ export default function ApiTest() {
 
                 {test.data && (
                   <details className="mt-2">
-                    <summary className="cursor-pointer text-sm text-blue-600 hover:text-blue-800">
+                    <summary className="cursor-pointer text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:text-blue-200">
                       View Response Data
                     </summary>
-                    <pre className="mt-2 p-3 bg-gray-50 rounded text-xs overflow-auto max-h-60">
+                    <pre className="mt-2 p-3 bg-gray-50 dark:bg-gray-900 rounded text-xs overflow-auto max-h-60">
                       {JSON.stringify(test.data, null, 2)}
                     </pre>
                   </details>
@@ -204,9 +204,9 @@ export default function ApiTest() {
             ))}
           </div>
 
-          <div className="mt-8 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-            <h3 className="font-semibold text-blue-900 mb-2">API Configuration</h3>
-            <div className="text-sm text-blue-800 space-y-1">
+          <div className="mt-8 p-4 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-lg">
+            <h3 className="font-semibold text-blue-900 dark:text-blue-100 mb-2">API Configuration</h3>
+            <div className="text-sm text-blue-800 dark:text-blue-200 space-y-1">
               <p><strong>API URL:</strong> {import.meta.env.VITE_API_URL || 'http://localhost:8000'}</p>
               <p><strong>Environment:</strong> {import.meta.env.MODE}</p>
             </div>
@@ -217,7 +217,7 @@ export default function ApiTest() {
               href="http://localhost:8000/docs"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-blue-600 hover:text-blue-800 underline"
+              className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:text-blue-200 underline"
             >
               Open Interactive API Docs →
             </a>
@@ -225,7 +225,7 @@ export default function ApiTest() {
               href="http://localhost:8000/health"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-blue-600 hover:text-blue-800 underline"
+              className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:text-blue-200 underline"
             >
               Health Check Endpoint →
             </a>

@@ -17,61 +17,61 @@ export default function CashFlowStatementPage() {
         Cash Flow Statement
       </h1>
 
-      <div className="bg-white rounded-lg shadow p-6 space-y-6">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 space-y-6">
         <div>
-          <h3 className="text-lg font-bold text-gray-900 mb-3">Operating Activities</h3>
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-3">Operating Activities</h3>
           <div className="space-y-2">
             <div className="flex justify-between">
               <span>Cash receipts from customers</span>
-              <span className="text-green-600">R {data.operating.receipts.toLocaleString()}</span>
+              <span className="text-green-600 dark:text-green-400">R {data.operating.receipts.toLocaleString()}</span>
             </div>
             <div className="flex justify-between">
               <span>Cash paid to suppliers and employees</span>
-              <span className="text-red-600">R {data.operating.payments.toLocaleString()}</span>
+              <span className="text-red-600 dark:text-red-400">R {data.operating.payments.toLocaleString()}</span>
             </div>
             <div className="flex justify-between pt-2 border-t font-bold">
               <span>Net Operating Cash Flow</span>
-              <span className="text-green-600">R {data.operating.net.toLocaleString()}</span>
+              <span className="text-green-600 dark:text-green-400">R {data.operating.net.toLocaleString()}</span>
             </div>
           </div>
         </div>
 
         <div>
-          <h3 className="text-lg font-bold text-gray-900 mb-3">Investing Activities</h3>
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-3">Investing Activities</h3>
           <div className="space-y-2">
             <div className="flex justify-between">
               <span>Purchase of fixed assets</span>
-              <span className="text-red-600">R {data.investing.assetPurchase.toLocaleString()}</span>
+              <span className="text-red-600 dark:text-red-400">R {data.investing.assetPurchase.toLocaleString()}</span>
             </div>
             <div className="flex justify-between">
               <span>Proceeds from asset sales</span>
-              <span className="text-green-600">R {data.investing.assetSale.toLocaleString()}</span>
+              <span className="text-green-600 dark:text-green-400">R {data.investing.assetSale.toLocaleString()}</span>
             </div>
             <div className="flex justify-between pt-2 border-t font-bold">
               <span>Net Investing Cash Flow</span>
-              <span className="text-red-600">R {data.investing.net.toLocaleString()}</span>
+              <span className="text-red-600 dark:text-red-400">R {data.investing.net.toLocaleString()}</span>
             </div>
           </div>
         </div>
 
         <div>
-          <h3 className="text-lg font-bold text-gray-900 mb-3">Financing Activities</h3>
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-3">Financing Activities</h3>
           <div className="space-y-2">
             <div className="flex justify-between">
               <span>Loan receipts</span>
-              <span className="text-green-600">R {data.financing.loanReceipts.toLocaleString()}</span>
+              <span className="text-green-600 dark:text-green-400">R {data.financing.loanReceipts.toLocaleString()}</span>
             </div>
             <div className="flex justify-between">
               <span>Loan repayments</span>
-              <span className="text-red-600">R {data.financing.loanRepayments.toLocaleString()}</span>
+              <span className="text-red-600 dark:text-red-400">R {data.financing.loanRepayments.toLocaleString()}</span>
             </div>
             <div className="flex justify-between">
               <span>Dividends paid</span>
-              <span className="text-red-600">R {data.financing.dividends.toLocaleString()}</span>
+              <span className="text-red-600 dark:text-red-400">R {data.financing.dividends.toLocaleString()}</span>
             </div>
             <div className="flex justify-between pt-2 border-t font-bold">
               <span>Net Financing Cash Flow</span>
-              <span className="text-green-600">R {data.financing.net.toLocaleString()}</span>
+              <span className="text-green-600 dark:text-green-400">R {data.financing.net.toLocaleString()}</span>
             </div>
           </div>
         </div>
@@ -79,7 +79,7 @@ export default function CashFlowStatementPage() {
         <div className="pt-4 border-t-2">
           <div className="flex justify-between text-xl font-bold">
             <span>Net Increase in Cash</span>
-            <span className="text-green-600">R {netChange.toLocaleString()}</span>
+            <span className="text-green-600 dark:text-green-400">R {netChange.toLocaleString()}</span>
           </div>
         </div>
       </div>

@@ -24,11 +24,11 @@ export default function BalanceSheetPage() {
       </h1>
 
       <div className="grid grid-cols-2 gap-6">
-        <div className="bg-white rounded-lg shadow p-6" data-testid="section-assets">
-          <h3 className="text-xl font-bold text-gray-900 mb-4">Assets</h3>
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6" data-testid="section-assets">
+          <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Assets</h3>
           <div className="space-y-4">
             <div data-testid="current-assets">
-              <h4 className="font-medium text-gray-700 mb-2">Current Assets</h4>
+              <h4 className="font-medium text-gray-700 dark:text-gray-300 mb-2">Current Assets</h4>
               {Object.entries(assets.current).map(([key, value]) => (
                 <div key={key} className="flex justify-between py-1">
                   <span className="capitalize text-sm">{key}</span>
@@ -37,7 +37,7 @@ export default function BalanceSheetPage() {
               ))}
             </div>
             <div data-testid="fixed-assets">
-              <h4 className="font-medium text-gray-700 mb-2">Fixed Assets</h4>
+              <h4 className="font-medium text-gray-700 dark:text-gray-300 mb-2">Fixed Assets</h4>
               {Object.entries(assets.fixed).map(([key, value]) => (
                 <div key={key} className="flex justify-between py-1">
                   <span className="capitalize text-sm">{key}</span>
@@ -47,16 +47,16 @@ export default function BalanceSheetPage() {
             </div>
             <div className="pt-3 border-t font-bold flex justify-between" data-testid="total-assets">
               <span>Total Assets</span>
-              <span className="text-blue-600">R {totalAssets.toLocaleString()}</span>
+              <span className="text-blue-600 dark:text-blue-400">R {totalAssets.toLocaleString()}</span>
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow p-6">
-          <h3 className="text-xl font-bold text-gray-900 mb-4">Liabilities & Equity</h3>
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+          <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Liabilities & Equity</h3>
           <div className="space-y-4">
             <div data-testid="section-liabilities">
-              <h4 className="font-medium text-gray-700 mb-2">Current Liabilities</h4>
+              <h4 className="font-medium text-gray-700 dark:text-gray-300 mb-2">Current Liabilities</h4>
               {Object.entries(liabilities.current).map(([key, value]) => (
                 <div key={key} className="flex justify-between py-1">
                   <span className="capitalize text-sm">{key}</span>
@@ -65,7 +65,7 @@ export default function BalanceSheetPage() {
               ))}
             </div>
             <div>
-              <h4 className="font-medium text-gray-700 mb-2">Long-term Liabilities</h4>
+              <h4 className="font-medium text-gray-700 dark:text-gray-300 mb-2">Long-term Liabilities</h4>
               {Object.entries(liabilities.longTerm).map(([key, value]) => (
                 <div key={key} className="flex justify-between py-1">
                   <span className="capitalize text-sm">{key}</span>
@@ -80,7 +80,7 @@ export default function BalanceSheetPage() {
               </div>
               <div className="flex justify-between py-1 font-bold text-lg" data-testid="section-equity">
                 <span>Equity</span>
-                <span className="text-green-600" data-testid="total-equity">R {equity.toLocaleString()}</span>
+                <span className="text-green-600 dark:text-green-400" data-testid="total-equity">R {equity.toLocaleString()}</span>
               </div>
             </div>
           </div>

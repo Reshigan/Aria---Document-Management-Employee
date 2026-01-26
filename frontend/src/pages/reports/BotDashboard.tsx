@@ -40,51 +40,51 @@ export default function BotDashboardPage() {
 
   return (
     <div className="container mx-auto p-6">
-      <h1 className="text-3xl font-bold text-gray-900 mb-6 flex items-center gap-3">
+      <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-3">
         <Bot className="h-8 w-8" />
         Bot Dashboard
       </h1>
 
       <div className="grid grid-cols-4 gap-6 mb-8">
-        <div className="bg-white rounded-lg shadow p-6" data-testid="metric-total-actions">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6" data-testid="metric-total-actions">
           <div className="flex items-center justify-between mb-2">
-            <div className="text-sm font-medium text-gray-600">Total Actions</div>
-            <BarChart3 className="h-5 w-5 text-blue-600" />
+            <div className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Actions</div>
+            <BarChart3 className="h-5 w-5 text-blue-600 dark:text-blue-400" />
           </div>
-          <div className="text-3xl font-bold text-gray-900">{stats.total_actions}</div>
-          <div className="text-sm text-green-600 mt-2">↑ 12% from last month</div>
+          <div className="text-3xl font-bold text-gray-900 dark:text-white">{stats.total_actions}</div>
+          <div className="text-sm text-green-600 dark:text-green-400 mt-2">↑ 12% from last month</div>
         </div>
 
-        <div className="bg-white rounded-lg shadow p-6" data-testid="metric-success-rate">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6" data-testid="metric-success-rate">
           <div className="flex items-center justify-between mb-2">
-            <div className="text-sm font-medium text-gray-600">Success Rate</div>
-            <CheckCircle className="h-5 w-5 text-green-600" />
+            <div className="text-sm font-medium text-gray-600 dark:text-gray-400">Success Rate</div>
+            <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400" />
           </div>
-          <div className="text-3xl font-bold text-gray-900">{stats.success_rate}%</div>
-          <div className="text-sm text-green-600 mt-2">↑ 2% from last month</div>
+          <div className="text-3xl font-bold text-gray-900 dark:text-white">{stats.success_rate}%</div>
+          <div className="text-sm text-green-600 dark:text-green-400 mt-2">↑ 2% from last month</div>
         </div>
 
-        <div className="bg-white rounded-lg shadow p-6" data-testid="metric-time-saved">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6" data-testid="metric-time-saved">
           <div className="flex items-center justify-between mb-2">
-            <div className="text-sm font-medium text-gray-600">Time Saved</div>
-            <Clock className="h-5 w-5 text-purple-600" />
+            <div className="text-sm font-medium text-gray-600 dark:text-gray-400">Time Saved</div>
+            <Clock className="h-5 w-5 text-purple-600 dark:text-purple-400" />
           </div>
-          <div className="text-3xl font-bold text-gray-900">{stats.time_saved_hours}h</div>
-          <div className="text-sm text-gray-600 mt-2">This month</div>
+          <div className="text-3xl font-bold text-gray-900 dark:text-white">{stats.time_saved_hours}h</div>
+          <div className="text-sm text-gray-600 dark:text-gray-400 mt-2">This month</div>
         </div>
 
-        <div className="bg-white rounded-lg shadow p-6" data-testid="metric-cost-saved">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6" data-testid="metric-cost-saved">
           <div className="flex items-center justify-between mb-2">
-            <div className="text-sm font-medium text-gray-600">Cost Saved</div>
+            <div className="text-sm font-medium text-gray-600 dark:text-gray-400">Cost Saved</div>
             <TrendingUp className="h-5 w-5 text-orange-600" />
           </div>
-          <div className="text-3xl font-bold text-gray-900">R {(stats.time_saved_hours * 500).toLocaleString()}</div>
-          <div className="text-sm text-gray-600 mt-2">Based on R500/hour</div>
+          <div className="text-3xl font-bold text-gray-900 dark:text-white">R {(stats.time_saved_hours * 500).toLocaleString()}</div>
+          <div className="text-sm text-gray-600 dark:text-gray-400 mt-2">Based on R500/hour</div>
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow p-6 mb-8" data-testid="activity-chart">
-        <h3 className="text-lg font-bold text-gray-900 mb-4">Activity Last 7 Days</h3>
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-8" data-testid="activity-chart">
+        <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Activity Last 7 Days</h3>
         <ResponsiveContainer width="100%" height={300}>
           <LineChart data={chartData}>
             <CartesianGrid strokeDasharray="3 3" />
@@ -97,8 +97,8 @@ export default function BotDashboardPage() {
       </div>
 
       <div className="grid grid-cols-2 gap-6">
-        <div className="bg-white rounded-lg shadow p-6">
-          <h3 className="text-lg font-bold text-gray-900 mb-4">Agent Performance</h3>
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Agent Performance</h3>
           <div className="space-y-4">
             {[
               { name: 'Invoice Reconciliation', success: 95, actions: 234 },
@@ -109,18 +109,18 @@ export default function BotDashboardPage() {
               <div key={agent.name}>
                 <div className="flex justify-between text-sm mb-1">
                   <span className="font-medium">{agent.name}</span>
-                  <span className="text-gray-600">{agent.success}% success</span>
+                  <span className="text-gray-600 dark:text-gray-400">{agent.success}% success</span>
                 </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div className="bg-blue-600 h-2 rounded-full" style={{ width: `${agent.success}%` }}></div>
+                <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2">
+                  <div className="bg-blue-600 dark:bg-blue-500 h-2 rounded-full" style={{ width: `${agent.success}%` }}></div>
                 </div>
               </div>
             ))}
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow p-6" data-testid="recent-activities">
-          <h3 className="text-lg font-bold text-gray-900 mb-4">Recent Actions</h3>
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6" data-testid="recent-activities">
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Recent Actions</h3>
           <div className="space-y-3">
             {[
               { agent: 'Invoice Agent', action: 'Matched invoice #INV-1234', time: '2 min ago' },
@@ -128,12 +128,12 @@ export default function BotDashboardPage() {
               { agent: 'Payroll Agent', action: 'Processed payroll for 45 employees', time: '1 hour ago' },
               { agent: 'Expense Agent', action: 'Auto-coded 12 expense claims', time: '2 hours ago' }
             ].map((item, idx) => (
-              <div key={idx} className="flex items-start gap-3 p-3 bg-gray-50 rounded">
-                <Bot className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
+              <div key={idx} className="flex items-start gap-3 p-3 bg-gray-50 dark:bg-gray-900 rounded">
+                <Bot className="h-5 w-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
                 <div className="flex-1">
-                  <div className="text-sm font-medium text-gray-900">{item.agent}</div>
-                  <div className="text-sm text-gray-600">{item.action}</div>
-                  <div className="text-xs text-gray-500 mt-1">{item.time}</div>
+                  <div className="text-sm font-medium text-gray-900 dark:text-white">{item.agent}</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">{item.action}</div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">{item.time}</div>
                 </div>
               </div>
             ))}

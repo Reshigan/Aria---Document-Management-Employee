@@ -21,7 +21,7 @@ export default function WorkflowManagementPage() {
         </h1>
         <button
           onClick={() => setShowStartModal(true)}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          className="px-4 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-lg hover:bg-blue-700"
         >
           <Play className="h-4 w-4 inline mr-2" />
           Start Workflow
@@ -30,14 +30,14 @@ export default function WorkflowManagementPage() {
 
       <div className="grid grid-cols-3 gap-6 mb-8">
         {workflowTypes.map((wf) => (
-          <div key={wf.id} className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow cursor-pointer">
+          <div key={wf.id} className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 hover:shadow-lg transition-shadow cursor-pointer">
             <h3 className="text-lg font-bold mb-2">{wf.name}</h3>
-            <p className="text-gray-600 text-sm">{wf.description}</p>
+            <p className="text-gray-600 dark:text-gray-400 text-sm">{wf.description}</p>
           </div>
         ))}
       </div>
 
-      <div className="bg-white rounded-lg shadow p-6">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
         <h3 className="text-lg font-bold mb-4">Active Workflows</h3>
         <DataTable
           data={[
@@ -58,22 +58,22 @@ export default function WorkflowManagementPage() {
 
       {showStartModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full p-6">
             <h2 className="text-2xl font-bold mb-4">Start New Workflow</h2>
             <div className="space-y-3">
               {workflowTypes.map((wf) => (
                 <button
                   key={wf.id}
-                  className="w-full p-4 border-2 border-gray-200 rounded-lg text-left hover:border-blue-500"
+                  className="w-full p-4 border-2 border-gray-200 dark:border-gray-700 rounded-lg text-left hover:border-blue-500"
                 >
                   <div className="font-medium">{wf.name}</div>
-                  <div className="text-sm text-gray-600">{wf.description}</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">{wf.description}</div>
                 </button>
               ))}
             </div>
             <button
               onClick={() => setShowStartModal(false)}
-              className="mt-4 w-full px-4 py-2 border border-gray-300 rounded-lg"
+              className="mt-4 w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg"
             >
               Cancel
             </button>

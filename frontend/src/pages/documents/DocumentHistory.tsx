@@ -16,7 +16,7 @@ export default function DocumentHistoryPage() {
         Document History
       </h1>
 
-      <div className="bg-white rounded-lg shadow">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
         <DataTable
           data={documents}
           columns={[
@@ -31,9 +31,9 @@ export default function DocumentHistoryPage() {
               label: 'Actions',
               render: (row: any) => (
                 <div className="flex gap-2">
-                  <button className="p-2 text-blue-600 hover:bg-blue-50 rounded"><Eye className="h-4 w-4" /></button>
-                  <button className="p-2 text-gray-600 hover:bg-gray-50 rounded"><Download className="h-4 w-4" /></button>
-                  <button className="p-2 text-green-600 hover:bg-green-50 rounded"><Mail className="h-4 w-4" /></button>
+                  <button className="p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:bg-blue-900/30 rounded"><Eye className="h-4 w-4" /></button>
+                  <button className="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900 rounded"><Download className="h-4 w-4" /></button>
+                  <button className="p-2 text-green-600 dark:text-green-400 hover:bg-green-50 dark:bg-green-900/30 rounded"><Mail className="h-4 w-4" /></button>
                 </div>
               )
             }

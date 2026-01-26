@@ -186,35 +186,35 @@ export default function Timesheets() {
   return (
     <div className="p-6">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
           <Clock size={28} className="text-indigo-500" />
           Timesheets
         </h1>
-        <p className="text-gray-600 mt-1">Track time spent on projects for billing and reporting</p>
+        <p className="text-gray-600 dark:text-gray-400 mt-1">Track time spent on projects for billing and reporting</p>
       </div>
 
       <div className="grid grid-cols-4 gap-4 mb-6">
-        <div className="bg-white rounded-lg shadow p-4">
-          <div className="text-sm text-gray-500">Total Entries</div>
-          <div className="text-2xl font-bold text-indigo-600">{timesheets.length}</div>
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+          <div className="text-sm text-gray-500 dark:text-gray-400">Total Entries</div>
+          <div className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">{timesheets.length}</div>
         </div>
-        <div className="bg-white rounded-lg shadow p-4">
-          <div className="text-sm text-gray-500">Total Hours</div>
-          <div className="text-2xl font-bold text-blue-600">{totalHours.toFixed(1)}</div>
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+          <div className="text-sm text-gray-500 dark:text-gray-400">Total Hours</div>
+          <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{totalHours.toFixed(1)}</div>
         </div>
-        <div className="bg-white rounded-lg shadow p-4">
-          <div className="text-sm text-gray-500">Billable Hours</div>
-          <div className="text-2xl font-bold text-green-600">{billableHours.toFixed(1)}</div>
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+          <div className="text-sm text-gray-500 dark:text-gray-400">Billable Hours</div>
+          <div className="text-2xl font-bold text-green-600 dark:text-green-400">{billableHours.toFixed(1)}</div>
         </div>
-        <div className="bg-white rounded-lg shadow p-4">
-          <div className="text-sm text-gray-500">Total Billing</div>
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+          <div className="text-sm text-gray-500 dark:text-gray-400">Total Billing</div>
           <div className="text-2xl font-bold text-orange-600">
             R {totalBilling.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
           </div>
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
         <div className="p-4 border-b flex gap-4 flex-wrap">
           <div className="flex-1 min-w-[200px] relative">
             <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
@@ -253,25 +253,25 @@ export default function Timesheets() {
 
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gray-50">
+            <thead className="bg-gray-50 dark:bg-gray-900">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Project</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Employee</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Description</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Hours</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Amount</th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Status</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Date</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Project</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Employee</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Description</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Hours</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Amount</th>
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Status</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200">
+            <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
               {filteredTimesheets.map((timesheet) => (
-                <tr key={timesheet.id} className="hover:bg-gray-50">
+                <tr key={timesheet.id} className="hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900">
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-2">
                       <Calendar size={16} className="text-gray-400" />
-                      <span className="text-sm text-gray-900">
+                      <span className="text-sm text-gray-900 dark:text-white">
                         {new Date(timesheet.date).toLocaleDateString()}
                       </span>
                     </div>
@@ -279,24 +279,24 @@ export default function Timesheets() {
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-2">
                       <Briefcase size={16} className="text-gray-400" />
-                      <span className="text-sm text-gray-900">{timesheet.project_name || '-'}</span>
+                      <span className="text-sm text-gray-900 dark:text-white">{timesheet.project_name || '-'}</span>
                     </div>
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-2">
                       <User size={16} className="text-gray-400" />
-                      <span className="text-sm text-gray-600">{timesheet.employee_name || 'Current User'}</span>
+                      <span className="text-sm text-gray-600 dark:text-gray-400">{timesheet.employee_name || 'Current User'}</span>
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-600 max-w-xs truncate">
+                  <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400 max-w-xs truncate">
                     {timesheet.description || '-'}
                   </td>
                   <td className="px-6 py-4 text-right">
-                    <span className="font-medium text-gray-900">{timesheet.hours.toFixed(1)}h</span>
+                    <span className="font-medium text-gray-900 dark:text-white">{timesheet.hours.toFixed(1)}h</span>
                   </td>
                   <td className="px-6 py-4 text-right">
                     {timesheet.billable ? (
-                      <span className="text-sm font-medium text-green-600">
+                      <span className="text-sm font-medium text-green-600 dark:text-green-400">
                         R {(timesheet.billing_amount || 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
                       </span>
                     ) : (
@@ -312,7 +312,7 @@ export default function Timesheets() {
                                       {timesheet.billable && timesheet.status !== 'invoiced' && (
                                         <button
                                           onClick={() => createInvoiceLine(timesheet)}
-                                          className="text-green-600 hover:text-green-900 mr-2"
+                                          className="text-green-600 dark:text-green-400 hover:text-green-900 mr-2"
                                           title="Create Invoice Line"
                                         >
                                           <FileText size={16} />
@@ -320,13 +320,13 @@ export default function Timesheets() {
                                       )}
                                       <button
                                         onClick={() => handleEdit(timesheet)}
-                                        className="text-blue-600 hover:text-blue-900 mr-2"
+                                        className="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:text-blue-100 mr-2"
                                       >
                                         <Edit size={16} />
                                       </button>
                                       <button
                                         onClick={() => handleDelete(timesheet.id)}
-                                        className="text-red-600 hover:text-red-900"
+                                        className="text-red-600 dark:text-red-400 hover:text-red-900"
                                       >
                                         <Trash2 size={16} />
                                       </button>
@@ -336,7 +336,7 @@ export default function Timesheets() {
             </tbody>
           </table>
           {filteredTimesheets.length === 0 && (
-            <div className="p-8 text-center text-gray-500">
+            <div className="p-8 text-center text-gray-500 dark:text-gray-400">
               {searchTerm || filterProject || filterDate 
                 ? 'No timesheets found matching your criteria' 
                 : 'No timesheets yet. Log your first time entry!'}
@@ -347,13 +347,13 @@ export default function Timesheets() {
 
       {showForm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-md p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md p-6">
             <h2 className="text-xl font-bold mb-4">
               {editingTimesheet ? 'Edit Time Entry' : 'Log Time'}
             </h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Project *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Project *</label>
                 <select
                   required
                   value={formData.project_id}
@@ -368,7 +368,7 @@ export default function Timesheets() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Date *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Date *</label>
                   <input
                     type="date"
                     required
@@ -378,7 +378,7 @@ export default function Timesheets() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Hours *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Hours *</label>
                   <input
                     type="number"
                     required
@@ -392,7 +392,7 @@ export default function Timesheets() {
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description</label>
                 <textarea
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
@@ -407,14 +407,14 @@ export default function Timesheets() {
                     type="checkbox"
                     checked={formData.billable}
                     onChange={(e) => setFormData({ ...formData, billable: e.target.checked })}
-                    className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                    className="h-4 w-4 text-indigo-600 dark:text-indigo-400 focus:ring-indigo-500 border-gray-300 dark:border-gray-600 rounded"
                   />
-                  <span className="ml-2 text-sm text-gray-900">Billable</span>
+                  <span className="ml-2 text-sm text-gray-900 dark:text-white">Billable</span>
                 </label>
               </div>
               {formData.billable && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Billing Rate (R/hour)</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Billing Rate (R/hour)</label>
                   <input
                     type="number"
                     step="0.01"
@@ -423,7 +423,7 @@ export default function Timesheets() {
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500"
                   />
                   {formData.hours > 0 && formData.billing_rate > 0 && (
-                    <p className="text-sm text-green-600 mt-1">
+                    <p className="text-sm text-green-600 dark:text-green-400 mt-1">
                       Total: R {(formData.hours * formData.billing_rate).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
                     </p>
                   )}
@@ -433,7 +433,7 @@ export default function Timesheets() {
                 <button
                   type="button"
                   onClick={() => { setShowForm(false); setEditingTimesheet(null); resetForm(); }}
-                  className="px-4 py-2 border rounded-lg hover:bg-gray-50"
+                  className="px-4 py-2 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900"
                 >
                   Cancel
                 </button>

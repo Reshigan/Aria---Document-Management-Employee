@@ -92,7 +92,7 @@ const RBACManagement: React.FC = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen">
-        <div className="text-xl text-gray-600">Loading RBAC settings...</div>
+        <div className="text-xl text-gray-600 dark:text-gray-400">Loading RBAC settings...</div>
       </div>
     );
   }
@@ -100,23 +100,23 @@ const RBACManagement: React.FC = () => {
   return (
     <div className="p-6 max-w-7xl mx-auto">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
-          <Shield size={32} className="text-blue-600" />
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
+          <Shield size={32} className="text-blue-600 dark:text-blue-400" />
           RBAC Management
         </h1>
-        <p className="text-gray-600 mt-2">
+        <p className="text-gray-600 dark:text-gray-400 mt-2">
           Manage roles and permissions for your organization
         </p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="bg-white rounded-lg shadow-md p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-semibold flex items-center gap-2">
               <Users size={20} />
               Roles
             </h2>
-            <button className="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+            <button className="p-2 bg-blue-600 dark:bg-blue-500 text-white rounded-lg hover:bg-blue-700">
               <Plus size={20} />
             </button>
           </div>
@@ -132,9 +132,9 @@ const RBACManagement: React.FC = () => {
                     : 'bg-gray-50 hover:bg-gray-100 border-2 border-transparent'
                 }`}
               >
-                <div className="font-medium text-gray-900">{role.name}</div>
-                <div className="text-sm text-gray-600">{role.description}</div>
-                <div className="text-xs text-gray-500 mt-1">
+                <div className="font-medium text-gray-900 dark:text-white">{role.name}</div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">{role.description}</div>
+                <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                   {role.permissions.length} permissions
                 </div>
               </button>
@@ -142,7 +142,7 @@ const RBACManagement: React.FC = () => {
           </div>
         </div>
 
-        <div className="lg:col-span-2 bg-white rounded-lg shadow-md p-6">
+        <div className="lg:col-span-2 bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
           {selectedRole ? (
             <>
               <div className="flex items-center justify-between mb-6">
@@ -151,7 +151,7 @@ const RBACManagement: React.FC = () => {
                     <Lock size={20} />
                     {selectedRole.name} Permissions
                   </h2>
-                  <p className="text-sm text-gray-600 mt-1">{selectedRole.description}</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{selectedRole.description}</p>
                 </div>
                 <div className="flex gap-2">
                   {editMode ? (
@@ -174,7 +174,7 @@ const RBACManagement: React.FC = () => {
                   ) : (
                     <button
                       onClick={() => setEditMode(true)}
-                      className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2"
+                      className="px-4 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2"
                     >
                       <Edit size={16} />
                       Edit
@@ -185,8 +185,8 @@ const RBACManagement: React.FC = () => {
 
               <div className="space-y-6">
                 {Object.entries(groupedPermissions).map(([module, perms]) => (
-                  <div key={module} className="border-b border-gray-200 pb-4">
-                    <h3 className="font-semibold text-gray-900 mb-3 uppercase text-sm">
+                  <div key={module} className="border-b border-gray-200 dark:border-gray-700 pb-4">
+                    <h3 className="font-semibold text-gray-900 dark:text-white mb-3 uppercase text-sm">
                       {module}
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -208,18 +208,18 @@ const RBACManagement: React.FC = () => {
                               checked={isSelected}
                               onChange={() => handlePermissionToggle(permId)}
                               disabled={!editMode}
-                              className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+                              className="w-4 h-4 text-blue-600 dark:text-blue-400 rounded focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
                             />
                             <div className="flex-1">
-                              <div className="font-medium text-gray-900 text-sm">
+                              <div className="font-medium text-gray-900 dark:text-white text-sm">
                                 {perm.action}
                                 {perm.is_high_risk && (
-                                  <span className="ml-2 text-xs bg-red-100 text-red-800 px-2 py-1 rounded">
+                                  <span className="ml-2 text-xs bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300 px-2 py-1 rounded">
                                     High Risk
                                   </span>
                                 )}
                               </div>
-                              <div className="text-xs text-gray-600">{perm.description}</div>
+                              <div className="text-xs text-gray-600 dark:text-gray-400">{perm.description}</div>
                             </div>
                           </label>
                         );
@@ -230,7 +230,7 @@ const RBACManagement: React.FC = () => {
               </div>
             </>
           ) : (
-            <div className="flex items-center justify-center h-64 text-gray-500">
+            <div className="flex items-center justify-center h-64 text-gray-500 dark:text-gray-400">
               Select a role to view and manage permissions
             </div>
           )}

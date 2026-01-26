@@ -39,7 +39,7 @@ export default function AgedReportsPage() {
       </div>
 
       {reportType === 'debtors' && (
-        <div className="bg-white rounded-lg shadow">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
           <DataTable
             data={debtors}
             columns={[
@@ -58,7 +58,7 @@ export default function AgedReportsPage() {
       )}
 
       {reportType === 'creditors' && (
-        <div className="bg-white rounded-lg shadow">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
           <DataTable
             data={creditors}
             columns={[

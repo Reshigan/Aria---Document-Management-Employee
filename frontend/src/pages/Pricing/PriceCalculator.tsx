@@ -149,11 +149,11 @@ export default function PriceCalculator() {
   return (
     <div className="p-6">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
           <Calculator size={28} className="text-green-500" />
           Price Calculator
         </h1>
-        <p className="text-gray-600 mt-1">Calculate prices with pricelist rules and see price breakdown</p>
+        <p className="text-gray-600 dark:text-gray-400 mt-1">Calculate prices with pricelist rules and see price breakdown</p>
       </div>
 
       <div className="flex gap-4 mb-6">
@@ -181,12 +181,12 @@ export default function PriceCalculator() {
 
       <div className="grid grid-cols-3 gap-6">
         {/* Input Form */}
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
           <h2 className="text-lg font-semibold mb-4">Calculation Parameters</h2>
           <div className="space-y-4">
             {mode === 'single' && (
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Product *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Product *</label>
                 <select
                   value={formData.product_id}
                   onChange={(e) => setFormData({ ...formData, product_id: e.target.value })}
@@ -202,7 +202,7 @@ export default function PriceCalculator() {
               </div>
             )}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Pricelist</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Pricelist</label>
               <select
                 value={formData.pricelist_id}
                 onChange={(e) => setFormData({ ...formData, pricelist_id: e.target.value })}
@@ -215,7 +215,7 @@ export default function PriceCalculator() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Customer</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Customer</label>
               <select
                 value={formData.customer_id}
                 onChange={(e) => setFormData({ ...formData, customer_id: e.target.value })}
@@ -228,7 +228,7 @@ export default function PriceCalculator() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Quantity</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Quantity</label>
               <input
                 type="number"
                 min="1"
@@ -238,7 +238,7 @@ export default function PriceCalculator() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Date</label>
               <input
                 type="date"
                 value={formData.date}
@@ -260,22 +260,22 @@ export default function PriceCalculator() {
         <div className="col-span-2">
           {mode === 'single' ? (
             result ? (
-              <div className="bg-white rounded-lg shadow p-6">
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
                 <h2 className="text-lg font-semibold mb-4">Price Breakdown</h2>
                 <div className="grid grid-cols-2 gap-4 mb-6">
-                  <div className="p-4 bg-gray-50 rounded-lg">
-                    <div className="text-sm text-gray-500">Product</div>
+                  <div className="p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
+                    <div className="text-sm text-gray-500 dark:text-gray-400">Product</div>
                     <div className="text-lg font-medium">{result.product_name}</div>
                   </div>
-                  <div className="p-4 bg-gray-50 rounded-lg">
-                    <div className="text-sm text-gray-500">Pricelist</div>
+                  <div className="p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
+                    <div className="text-sm text-gray-500 dark:text-gray-400">Pricelist</div>
                     <div className="text-lg font-medium">{result.pricelist_name || 'Default'}</div>
                   </div>
                 </div>
                 <div className="grid grid-cols-3 gap-4 mb-6">
-                  <div className="p-4 bg-blue-50 rounded-lg text-center">
-                    <div className="text-sm text-blue-600">Base Price</div>
-                    <div className="text-2xl font-bold text-blue-700">
+                  <div className="p-4 bg-blue-50 dark:bg-blue-900/30 rounded-lg text-center">
+                    <div className="text-sm text-blue-600 dark:text-blue-400">Base Price</div>
+                    <div className="text-2xl font-bold text-blue-700 dark:text-blue-300">
                       R {result.base_price.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
                     </div>
                   </div>
@@ -288,22 +288,22 @@ export default function PriceCalculator() {
                       -R {result.discount_amount.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
                     </div>
                   </div>
-                  <div className="p-4 bg-green-50 rounded-lg text-center">
-                    <div className="text-sm text-green-600">Final Price</div>
-                    <div className="text-2xl font-bold text-green-700">
+                  <div className="p-4 bg-green-50 dark:bg-green-900/30 rounded-lg text-center">
+                    <div className="text-sm text-green-600 dark:text-green-400">Final Price</div>
+                    <div className="text-2xl font-bold text-green-700 dark:text-green-300">
                       R {result.final_price.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
                     </div>
                   </div>
                 </div>
                 {result.applied_rules && result.applied_rules.length > 0 && (
                   <div>
-                    <h3 className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+                    <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-2">
                       <Info size={16} />
                       Applied Rules
                     </h3>
                     <div className="space-y-2">
                       {result.applied_rules.map((rule, idx) => (
-                        <div key={idx} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div key={idx} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-900 rounded-lg">
                           <div className="flex items-center gap-2">
                             <TrendingDown size={16} className="text-orange-500" />
                             <span className="text-sm font-medium">{rule.rule_name}</span>
@@ -320,27 +320,27 @@ export default function PriceCalculator() {
                 )}
               </div>
             ) : (
-              <div className="bg-white rounded-lg shadow p-6 text-center text-gray-500">
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 text-center text-gray-500 dark:text-gray-400">
                 <Calculator size={48} className="mx-auto mb-4 text-gray-300" />
                 <p>Select a product and click Calculate to see the price breakdown</p>
               </div>
             )
           ) : (
             <div className="space-y-4">
-              <div className="bg-white rounded-lg shadow p-4">
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
                 <h3 className="font-medium mb-3">Select Products ({bulkProductIds.length} selected)</h3>
                 <div className="max-h-48 overflow-y-auto space-y-2">
                   {products.map(p => (
-                    <label key={p.id} className="flex items-center gap-2 p-2 hover:bg-gray-50 rounded cursor-pointer">
+                    <label key={p.id} className="flex items-center gap-2 p-2 hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900 rounded cursor-pointer">
                       <input
                         type="checkbox"
                         checked={bulkProductIds.includes(p.id)}
                         onChange={() => toggleBulkProduct(p.id)}
-                        className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
+                        className="h-4 w-4 text-green-600 dark:text-green-400 focus:ring-green-500 border-gray-300 dark:border-gray-600 rounded"
                       />
                       <Package size={16} className="text-gray-400" />
                       <span className="text-sm">{p.name}</span>
-                      <span className="text-sm text-gray-500 ml-auto">
+                      <span className="text-sm text-gray-500 dark:text-gray-400 ml-auto">
                         R {p.list_price?.toLocaleString('en-ZA', { minimumFractionDigits: 2 }) || '0.00'}
                       </span>
                     </label>
@@ -348,27 +348,27 @@ export default function PriceCalculator() {
                 </div>
               </div>
               {bulkResults.length > 0 && (
-                <div className="bg-white rounded-lg shadow overflow-hidden">
+                <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
                   <table className="w-full">
-                    <thead className="bg-gray-50">
+                    <thead className="bg-gray-50 dark:bg-gray-900">
                       <tr>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Product</th>
-                        <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Base</th>
-                        <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Discount</th>
-                        <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Final</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Product</th>
+                        <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Base</th>
+                        <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Discount</th>
+                        <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Final</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y">
                       {bulkResults.map((r, idx) => (
-                        <tr key={idx} className="hover:bg-gray-50">
+                        <tr key={idx} className="hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900">
                           <td className="px-4 py-3 text-sm font-medium">{r.product_name}</td>
-                          <td className="px-4 py-3 text-sm text-right text-gray-600">
+                          <td className="px-4 py-3 text-sm text-right text-gray-600 dark:text-gray-400">
                             R {r.base_price.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
                           </td>
                           <td className="px-4 py-3 text-sm text-right text-orange-600">
                             {r.discount_percentage.toFixed(1)}%
                           </td>
-                          <td className="px-4 py-3 text-sm text-right font-medium text-green-600">
+                          <td className="px-4 py-3 text-sm text-right font-medium text-green-600 dark:text-green-400">
                             R {r.final_price.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
                           </td>
                         </tr>
