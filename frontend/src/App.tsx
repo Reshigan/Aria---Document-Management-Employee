@@ -84,6 +84,7 @@ import Scheduling from './pages/FieldService/Scheduling';
 import Bills from './pages/AP/Bills';
 import Payments from './pages/AP/Payments';
 import Receipts from './pages/AR/Receipts';
+import CustomerDetail from './pages/AR/CustomerDetail';
 import BankAccounts from './pages/Banking/BankAccounts';
 import Reconciliation from './pages/Banking/Reconciliation';
 import Warehouses from './pages/Inventory/Warehouses';
@@ -213,8 +214,8 @@ function App() {
                     <Route path="/erp/deliveries/:id" element={<DeliveryDetail />} />
                     <Route path="/erp/invoices" element={<InvoiceList />} />
                     <Route path="/erp/invoices/:id" element={<InvoiceForm />} />
-                    <Route path="/erp/customers" element={<Customers />} />
-                    <Route path="/erp/customers/:id" element={<Customers />} />
+                                        <Route path="/erp/customers" element={<Customers />} />
+                                        <Route path="/erp/customers/:id" element={<CustomerDetail />} />
           
                     {/* General Ledger */}
                     <Route path="/gl" element={<GeneralLedger />} />
@@ -237,12 +238,13 @@ function App() {
                     <Route path="/ap/payments" element={<Payments />} />
                     <Route path="/ap/suppliers" element={<Suppliers />} />
           
-                    {/* Accounts Receivable */}
-                    <Route path="/ar" element={<AccountsReceivable />} />
-                    <Route path="/ar/customers" element={<Customers />} />
-                    <Route path="/ar/invoices" element={<InvoiceList />} />
-                    <Route path="/ar/invoices/new" element={<InvoiceForm />} />
-                    <Route path="/ar/receipts" element={<Receipts />} />
+                                        {/* Accounts Receivable */}
+                                        <Route path="/ar" element={<AccountsReceivable />} />
+                                        <Route path="/ar/customers" element={<Customers />} />
+                                        <Route path="/ar/customers/:id" element={<CustomerDetail />} />
+                                        <Route path="/ar/invoices" element={<InvoiceList />} />
+                                        <Route path="/ar/invoices/new" element={<InvoiceForm />} />
+                                        <Route path="/ar/receipts" element={<Receipts />} />
           
           {/* Banking */}
           <Route path="/banking" element={<BankingDashboard />} />
