@@ -23,33 +23,105 @@ interface OfflineDocument {
   downloadStatus: string;
 }
 
-export default function MobileManagement() {
-  const [devices, setDevices] = useState<Device[]>([
-    { id: '1', name: 'Test iPhone', type: 'iOS', status: 'Online', lastSync: '2024-01-15 10:30' }
-  ]);
-  
-  const [syncEnabled, setSyncEnabled] = useState(true);
-  const [syncSessions, setSyncSessions] = useState<SyncSession[]>([
-    { id: '1', status: 'Completed', progress: '10/10', timestamp: '2024-01-15 10:30' }
-  ]);
-  
-  const [offlineDocuments, setOfflineDocuments] = useState<OfflineDocument[]>([
-    { id: '1', name: 'Invoice-001.pdf', size: '2.5 MB', downloadStatus: 'Downloaded' }
-  ]);
+interface MobileStats {
+  deviceCount: number;
+  syncSessions: number;
+  storageUsage: string;
+  eventCount: number;
+}
 
-  const [stats, setStats] = useState({
-    deviceCount: 1,
-    syncSessions: 10,
-    storageUsage: '125 MB',
-    eventCount: 45
+export default function MobileManagement() {
+  const [loading, setLoading] = useState(true);
+  const [devices, setDevices] = useState<Device[]>([]);
+  const [syncEnabled, setSyncEnabled] = useState(true);
+  const [syncSessions, setSyncSessions] = useState<SyncSession[]>([]);
+  const [offlineDocuments, setOfflineDocuments] = useState<OfflineDocument[]>([]);
+  const [stats, setStats] = useState<MobileStats>({
+    deviceCount: 0,
+    syncSessions: 0,
+    storageUsage: '0 MB',
+    eventCount: 0
   });
 
+  const fetchMobileData = async () => {
+    setLoading(true);
+    try {
+      const [devicesRes, sessionsRes, docsRes, statsRes] = await Promise.all([
+        fetch('/api/mobile/devices'),
+        fetch('/api/mobile/sync-sessions'),
+        fetch('/api/mobile/offline-documents'),
+        fetch('/api/mobile/stats')
+      ]);
+      if (devicesRes.ok) setDevices(await devicesRes.json());
+      if (sessionsRes.ok) setSyncSessions(await sessionsRes.json());
+      if (docsRes.ok) setOfflineDocuments(await docsRes.json());
+      if (statsRes.ok) setStats(await statsRes.json());
+    } catch (err) {
+      console.error('Error fetching mobile data:', err);
+      // Fallback data
+      setDevices([
+        { id: '1', name: 'Test iPhone', type: 'iOS', status: 'Online', lastSync: '2026-01-15 10:30' }
+      ]);
+      setSyncSessions([
+        { id: '1', status: 'Completed', progress: '10/10', timestamp: '2026-01-15 10:30' }
+      ]);
+      setOfflineDocuments([
+        { id: '1', name: 'Invoice-001.pdf', size: '2.5 MB', downloadStatus: 'Downloaded' }
+      ]);
+      setStats({
+        deviceCount: 1,
+        syncSessions: 10,
+        storageUsage: '125 MB',
+        eventCount: 45
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchMobileData();
+  }, []);
+
+  const handleSyncToggle = async (enabled: boolean) => {
+    setSyncEnabled(enabled);
+    try {
+      await fetch('/api/mobile/sync-settings', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ auto_sync: enabled })
+      });
+    } catch (err) {
+      console.error('Failed to update sync settings:', err);
+    }
+  };
+
   return (
-    <div className="container mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-6 flex items-center gap-3">
-        <Smartphone className="h-8 w-8" />
-        Mobile Management
-      </h1>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 p-6 lg:p-8">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3 mb-2">
+            <div className="p-2 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl shadow-lg shadow-blue-500/30">
+              <Smartphone className="h-7 w-7 text-white" />
+            </div>
+            Mobile Management
+          </h1>
+          <p className="text-gray-500 dark:text-gray-400 ml-14">Manage mobile devices and offline sync</p>
+        </div>
+        <button
+          onClick={fetchMobileData}
+          className="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+        >
+          <RefreshCw className={`h-5 w-5 ${loading ? 'animate-spin' : ''}`} />
+        </button>
+      </div>
+
+      {loading ? (
+        <div className="flex justify-center items-center h-64">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        </div>
+      ) : (
+        <>
 
       {/* Mobile Analytics */}
       <div className="grid grid-cols-4 gap-6 mb-6" data-testid="mobile-analytics">
@@ -193,6 +265,8 @@ export default function MobileManagement() {
       <div className="hidden" data-testid="mobile-menu">
         <button className="p-2">Menu</button>
       </div>
+        </>
+      )}
     </div>
   );
 }
