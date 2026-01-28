@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 import api from '../../lib/api';
 import { LineItemsTable, LineItem } from '../../components/LineItemsTable';
 import { ConfirmDialog } from '../../components/ConfirmDialog';
-import { Plus, Search, Eye, Edit, Trash2, Check, Send, X, FileText, RefreshCw, FileCheck, Clock, CheckCircle, AlertCircle, TrendingUp } from 'lucide-react';
+import { Plus, Search, Eye, Edit, Trash2, Check, Send, X, FileText, RefreshCw, FileCheck, Clock, CheckCircle, AlertCircle, TrendingUp, Download, Printer, Mail, ArrowRight } from 'lucide-react';
+import { documentGenerationService, auditTrailService, emailNotificationService, workflowService } from '../../services';
 
 interface Quote {
   id: string;
@@ -214,19 +215,132 @@ export default function Quotes() {
     }
   };
 
-  const acceptQuote = async (quoteId: string) => {
-    try {
-      const response = await api.post(`/erp/order-to-cash/quotes/${quoteId}/accept`);
-      alert(`Quote accepted! Sales Order ${response.data.sales_order_number} created.`);
-      loadQuotes();
-    } catch (err: unknown) {
-      console.error('Error accepting quote:', err);
-      const error = err as { response?: { data?: { detail?: string } } };
-      setError(error.response?.data?.detail || 'Failed to accept quote');
-    }
-  };
+    const acceptQuote = async (quoteId: string) => {
+      try {
+        const response = await api.post(`/erp/order-to-cash/quotes/${quoteId}/accept`);
+        await auditTrailService.log({
+          eventType: 'status_change',
+          resourceType: 'quote',
+          resourceId: quoteId,
+          description: `Quote accepted and converted to Sales Order ${response.data.sales_order_number}`
+        });
+        alert(`Quote accepted! Sales Order ${response.data.sales_order_number} created.`);
+        loadQuotes();
+      } catch (err: unknown) {
+        console.error('Error accepting quote:', err);
+        const error = err as { response?: { data?: { detail?: string } } };
+        setError(error.response?.data?.detail || 'Failed to accept quote');
+      }
+    };
 
-  const getStatusConfig = (status: string) => {
+    const handleDownloadPDF = async (quote: Quote) => {
+      try {
+        const documentData = {
+          id: quote.id,
+          number: quote.quote_number,
+          date: quote.quote_date,
+          validUntil: quote.valid_until,
+          customer: {
+            name: quote.customer_name || '',
+            email: quote.customer_email || ''
+          },
+          items: (quote.lines || []).map(line => ({
+            description: line.description,
+            quantity: line.quantity,
+            unitPrice: line.unit_price,
+            total: line.quantity * line.unit_price
+          })),
+          subtotal: quote.subtotal,
+          tax: quote.tax_amount,
+          total: quote.total_amount,
+          notes: quote.notes
+        };
+        await documentGenerationService.downloadDocument('quote', documentData, `Quote-${quote.quote_number}.pdf`);
+        await auditTrailService.log({
+          eventType: 'export',
+          resourceType: 'quote',
+          resourceId: quote.id,
+          description: `Quote ${quote.quote_number} downloaded as PDF`
+        });
+      } catch (err) {
+        console.error('Error downloading PDF:', err);
+        setError('Failed to download PDF');
+      }
+    };
+
+    const handlePrintQuote = async (quote: Quote) => {
+      try {
+        const documentData = {
+          id: quote.id,
+          number: quote.quote_number,
+          date: quote.quote_date,
+          validUntil: quote.valid_until,
+          customer: {
+            name: quote.customer_name || '',
+            email: quote.customer_email || ''
+          },
+          items: (quote.lines || []).map(line => ({
+            description: line.description,
+            quantity: line.quantity,
+            unitPrice: line.unit_price,
+            total: line.quantity * line.unit_price
+          })),
+          subtotal: quote.subtotal,
+          tax: quote.tax_amount,
+          total: quote.total_amount,
+          notes: quote.notes
+        };
+        await documentGenerationService.printDocument('quote', documentData);
+        await auditTrailService.log({
+          eventType: 'view',
+          resourceType: 'quote',
+          resourceId: quote.id,
+          description: `Quote ${quote.quote_number} printed`
+        });
+      } catch (err) {
+        console.error('Error printing quote:', err);
+        setError('Failed to print quote');
+      }
+    };
+
+    const handleEmailQuote = async (quote: Quote) => {
+      if (!quote.customer_email) {
+        setError('No customer email address available');
+        return;
+      }
+      try {
+        await emailNotificationService.sendQuoteEmail(quote.id, [quote.customer_email]);
+        await auditTrailService.log({
+          eventType: 'email_sent',
+          resourceType: 'quote',
+          resourceId: quote.id,
+          description: `Quote ${quote.quote_number} emailed to ${quote.customer_email}`
+        });
+        alert(`Quote emailed to ${quote.customer_email}!`);
+      } catch (err) {
+        console.error('Error emailing quote:', err);
+        setError('Failed to email quote');
+      }
+    };
+
+    const handleConvertToOrder = async (quote: Quote) => {
+      try {
+        const result = await workflowService.convertQuoteToOrder(quote.id);
+        await auditTrailService.log({
+          eventType: 'workflow_completed',
+          resourceType: 'quote',
+          resourceId: quote.id,
+          description: `Quote ${quote.quote_number} converted to Sales Order`
+        });
+        alert(`Quote converted to Sales Order successfully!`);
+        loadQuotes();
+      } catch (err) {
+        console.error('Error converting quote to order:', err);
+        setError('Failed to convert quote to order');
+      }
+    };
+
+    const getStatusConfig= (status: string) => {
     const configs: Record<string, { bg: string; text: string; border: string }> = {
       draft: { bg: 'bg-gray-100 dark:bg-gray-800', text: 'text-gray-700 dark:text-gray-300', border: 'border-gray-200 dark:border-gray-700' },
       approved: { bg: 'bg-blue-100 dark:bg-blue-900/30', text: 'text-blue-700 dark:text-blue-300', border: 'border-blue-200 dark:border-blue-800' },
@@ -364,17 +478,25 @@ export default function Quotes() {
                           <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${statusConfig.bg} ${statusConfig.text} border ${statusConfig.border} capitalize`}>{quote.status}</span>
                         </td>
                         <td className="px-6 py-4">
-                          <div className="flex items-center justify-end gap-2">
-                            {quote.status === 'draft' && (
-                              <button onClick={() => approveQuote(quote.id)} className="flex items-center gap-1 px-3 py-2 bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-lg text-xs font-medium hover:from-blue-600 hover:to-indigo-600 transition-all"><Check className="h-3.5 w-3.5" />Approve</button>
-                            )}
-                            {quote.status === 'approved' && (
-                              <button onClick={() => sendQuote(quote.id)} className="flex items-center gap-1 px-3 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-lg text-xs font-medium hover:from-amber-600 hover:to-orange-600 transition-all"><Send className="h-3.5 w-3.5" />Send</button>
-                            )}
-                            {quote.status === 'sent' && (
-                              <button onClick={() => acceptQuote(quote.id)} className="flex items-center gap-1 px-3 py-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-lg text-xs font-medium hover:from-green-600 hover:to-emerald-600 transition-all"><CheckCircle className="h-3.5 w-3.5" />Accept</button>
-                            )}
-                          </div>
+                                                    <div className="flex items-center justify-end gap-1">
+                                                      <button onClick={() => handleDownloadPDF(quote)} title="Download PDF" className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-lg transition-colors"><Download className="h-4 w-4" /></button>
+                                                      <button onClick={() => handlePrintQuote(quote)} title="Print" className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-lg transition-colors"><Printer className="h-4 w-4" /></button>
+                                                      {quote.customer_email && (
+                                                        <button onClick={() => handleEmailQuote(quote)} title="Email Quote" className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-lg transition-colors"><Mail className="h-4 w-4" /></button>
+                                                      )}
+                                                      {quote.status === 'draft' && (
+                                                        <button onClick={() => approveQuote(quote.id)} className="flex items-center gap-1 px-3 py-2 bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-lg text-xs font-medium hover:from-blue-600 hover:to-indigo-600 transition-all"><Check className="h-3.5 w-3.5" />Approve</button>
+                                                      )}
+                                                      {quote.status === 'approved' && (
+                                                        <button onClick={() => sendQuote(quote.id)} className="flex items-center gap-1 px-3 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-lg text-xs font-medium hover:from-amber-600 hover:to-orange-600 transition-all"><Send className="h-3.5 w-3.5" />Send</button>
+                                                      )}
+                                                      {quote.status === 'sent' && (
+                                                        <>
+                                                          <button onClick={() => acceptQuote(quote.id)} className="flex items-center gap-1 px-3 py-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-lg text-xs font-medium hover:from-green-600 hover:to-emerald-600 transition-all"><CheckCircle className="h-3.5 w-3.5" />Accept</button>
+                                                          <button onClick={() => handleConvertToOrder(quote)} title="Convert to Sales Order" className="flex items-center gap-1 px-3 py-2 bg-gradient-to-r from-purple-500 to-violet-500 text-white rounded-lg text-xs font-medium hover:from-purple-600 hover:to-violet-600 transition-all"><ArrowRight className="h-3.5 w-3.5" />To Order</button>
+                                                        </>
+                                                      )}
+                                                    </div>
                         </td>
                       </tr>
                     );

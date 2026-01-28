@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 import api from '../../lib/api';
 import { LineItemsTable, LineItem } from '../../components/LineItemsTable';
 import { ConfirmDialog } from '../../components/ConfirmDialog';
-import { Plus, Search, Edit, Trash2, Check, Truck, X, FileText, RefreshCw, ShoppingBag, Clock, CheckCircle, AlertCircle, TrendingUp } from 'lucide-react';
+import { Plus, Search, Edit, Trash2, Check, Truck, X, FileText, RefreshCw, ShoppingBag, Clock, CheckCircle, AlertCircle, TrendingUp, Download, Printer, Mail, ArrowRight } from 'lucide-react';
+import { documentGenerationService, auditTrailService, emailNotificationService, workflowService } from '../../services';
 
 interface SalesOrder {
   id: string;
@@ -245,21 +246,139 @@ export default function SalesOrders() {
     }
   };
 
-  const handleCreateDelivery = async (order: SalesOrder) => {
-    try {
-      const response = await api.post('/erp/order-to-cash/deliveries', {
-        sales_order_id: order.id
-      });
-      alert(`Delivery ${response.data.delivery_number} created successfully!`);
-      loadOrders();
-    } catch (err: unknown) {
-      console.error('Error creating delivery:', err);
-      const error = err as { response?: { data?: { detail?: string } } };
-      setError(error.response?.data?.detail || 'Failed to create delivery');
-    }
-  };
+    const handleCreateDelivery = async (order: SalesOrder) => {
+      try {
+        const response = await api.post('/erp/order-to-cash/deliveries', {
+          sales_order_id: order.id
+        });
+        await auditTrailService.log({
+          eventType: 'workflow_completed',
+          resourceType: 'sales_order',
+          resourceId: order.id,
+          description: `Delivery ${response.data.delivery_number} created from Sales Order ${order.order_number}`
+        });
+        alert(`Delivery ${response.data.delivery_number} created successfully!`);
+        loadOrders();
+      } catch (err: unknown) {
+        console.error('Error creating delivery:', err);
+        const error = err as { response?: { data?: { detail?: string } } };
+        setError(error.response?.data?.detail || 'Failed to create delivery');
+      }
+    };
 
-  const getStatusConfig = (status: string) => {
+    const handleDownloadPDF = async (order: SalesOrder) => {
+      try {
+        const documentData = {
+          id: order.id,
+          number: order.order_number,
+          date: order.order_date,
+          requiredDate: order.required_date,
+          customer: {
+            name: order.customer_name || '',
+            email: order.customer_email || ''
+          },
+          items: (order.lines || []).map(line => ({
+            description: line.description,
+            quantity: line.quantity,
+            unitPrice: line.unit_price,
+            total: line.quantity * line.unit_price
+          })),
+          subtotal: order.subtotal,
+          tax: order.tax_amount,
+          total: order.total_amount,
+          notes: order.notes
+        };
+        await documentGenerationService.downloadDocument('sales_order', documentData, `SO-${order.order_number}.pdf`);
+        await auditTrailService.log({
+          eventType: 'export',
+          resourceType: 'sales_order',
+          resourceId: order.id,
+          description: `Sales Order ${order.order_number} downloaded as PDF`
+        });
+      } catch (err) {
+        console.error('Error downloading PDF:', err);
+        setError('Failed to download PDF');
+      }
+    };
+
+    const handlePrintOrder = async (order: SalesOrder) => {
+      try {
+        const documentData = {
+          id: order.id,
+          number: order.order_number,
+          date: order.order_date,
+          requiredDate: order.required_date,
+          customer: {
+            name: order.customer_name || '',
+            email: order.customer_email || ''
+          },
+          items: (order.lines || []).map(line => ({
+            description: line.description,
+            quantity: line.quantity,
+            unitPrice: line.unit_price,
+            total: line.quantity * line.unit_price
+          })),
+          subtotal: order.subtotal,
+          tax: order.tax_amount,
+          total: order.total_amount,
+          notes: order.notes
+        };
+        await documentGenerationService.printDocument('sales_order', documentData);
+        await auditTrailService.log({
+          eventType: 'view',
+          resourceType: 'sales_order',
+          resourceId: order.id,
+          description: `Sales Order ${order.order_number} printed`
+        });
+      } catch (err) {
+        console.error('Error printing order:', err);
+        setError('Failed to print sales order');
+      }
+    };
+
+    const handleEmailOrder = async (order: SalesOrder) => {
+      if (!order.customer_email) {
+        setError('No customer email address available');
+        return;
+      }
+      try {
+        await emailNotificationService.sendEmail({
+          templateType: 'sales_order',
+          to: [order.customer_email],
+          subject: `Sales Order ${order.order_number}`,
+          data: { orderNumber: order.order_number, customerName: order.customer_name, total: order.total_amount }
+        });
+        await auditTrailService.log({
+          eventType: 'email_sent',
+          resourceType: 'sales_order',
+          resourceId: order.id,
+          description: `Sales Order ${order.order_number} emailed to ${order.customer_email}`
+        });
+        alert(`Sales Order emailed to ${order.customer_email}!`);
+      } catch (err) {
+        console.error('Error emailing order:', err);
+        setError('Failed to email sales order');
+      }
+    };
+
+    const handleConvertToInvoice = async (order: SalesOrder) => {
+      try {
+        await workflowService.convertOrderToInvoice(order.id);
+        await auditTrailService.log({
+          eventType: 'workflow_completed',
+          resourceType: 'sales_order',
+          resourceId: order.id,
+          description: `Sales Order ${order.order_number} converted to Invoice`
+        });
+        alert(`Sales Order converted to Invoice successfully!`);
+        loadOrders();
+      } catch (err) {
+        console.error('Error converting to invoice:', err);
+        setError('Failed to convert to invoice');
+      }
+    };
+
+    const getStatusConfig= (status: string) => {
     const configs: Record<string, { bg: string; text: string; border: string }> = {
       draft: { bg: 'bg-gray-100 dark:bg-gray-800', text: 'text-gray-700 dark:text-gray-300', border: 'border-gray-200 dark:border-gray-700' },
       approved: { bg: 'bg-blue-100 dark:bg-blue-900/30', text: 'text-blue-700 dark:text-blue-300', border: 'border-blue-200 dark:border-blue-800' },
@@ -488,20 +607,28 @@ export default function SalesOrders() {
                         <td className="px-6 py-4">
                           <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${statusConfig.bg} ${statusConfig.text} border ${statusConfig.border}`}>{order.status.replace('_', ' ')}</span>
                         </td>
-                        <td className="px-6 py-4">
-                          <div className="flex items-center justify-end gap-2">
-                            {order.status === 'draft' && (
-                              <>
-                                <button onClick={() => handleEdit(order)} className="p-2 hover:bg-blue-100 dark:hover:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg transition-colors"><Edit className="h-4 w-4" /></button>
-                                <button onClick={() => handleApprove(order)} className="flex items-center gap-1 px-3 py-2 bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-lg text-xs font-medium hover:from-blue-600 hover:to-indigo-600 transition-all"><Check className="h-3.5 w-3.5" />Approve</button>
-                                <button onClick={() => handleDelete(order)} className="p-2 hover:bg-red-100 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg transition-colors"><Trash2 className="h-4 w-4" /></button>
-                              </>
-                            )}
-                            {order.status === 'approved' && (
-                              <button onClick={() => handleCreateDelivery(order)} className="flex items-center gap-1 px-3 py-2 bg-gradient-to-r from-purple-500 to-violet-500 text-white rounded-lg text-xs font-medium hover:from-purple-600 hover:to-violet-600 transition-all"><Truck className="h-3.5 w-3.5" />Deliver</button>
-                            )}
-                          </div>
-                        </td>
+                                                <td className="px-6 py-4">
+                                                  <div className="flex items-center justify-end gap-1">
+                                                    <button onClick={() => handleDownloadPDF(order)} title="Download PDF" className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-lg transition-colors"><Download className="h-4 w-4" /></button>
+                                                    <button onClick={() => handlePrintOrder(order)} title="Print" className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-lg transition-colors"><Printer className="h-4 w-4" /></button>
+                                                    {order.customer_email && (
+                                                      <button onClick={() => handleEmailOrder(order)} title="Email Order" className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-lg transition-colors"><Mail className="h-4 w-4" /></button>
+                                                    )}
+                                                    {order.status === 'draft' && (
+                                                      <>
+                                                        <button onClick={() => handleEdit(order)} className="p-2 hover:bg-blue-100 dark:hover:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg transition-colors"><Edit className="h-4 w-4" /></button>
+                                                        <button onClick={() => handleApprove(order)} className="flex items-center gap-1 px-3 py-2 bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-lg text-xs font-medium hover:from-blue-600 hover:to-indigo-600 transition-all"><Check className="h-3.5 w-3.5" />Approve</button>
+                                                        <button onClick={() => handleDelete(order)} className="p-2 hover:bg-red-100 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg transition-colors"><Trash2 className="h-4 w-4" /></button>
+                                                      </>
+                                                    )}
+                                                    {order.status === 'approved' && (
+                                                      <>
+                                                        <button onClick={() => handleCreateDelivery(order)} className="flex items-center gap-1 px-3 py-2 bg-gradient-to-r from-purple-500 to-violet-500 text-white rounded-lg text-xs font-medium hover:from-purple-600 hover:to-violet-600 transition-all"><Truck className="h-3.5 w-3.5" />Deliver</button>
+                                                        <button onClick={() => handleConvertToInvoice(order)} title="Convert to Invoice" className="flex items-center gap-1 px-3 py-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-lg text-xs font-medium hover:from-green-600 hover:to-emerald-600 transition-all"><ArrowRight className="h-3.5 w-3.5" />Invoice</button>
+                                                      </>
+                                                    )}
+                                                  </div>
+                                                </td>
                       </tr>
                     );
                   })}

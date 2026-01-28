@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../../lib/api';
-import { Plus, Search, Eye, Check, Truck, FileText, RefreshCw, Package, Clock, CheckCircle, AlertCircle, X, ShoppingCart } from 'lucide-react';
+import { Plus, Search, Eye, Check, Truck, FileText, RefreshCw, Package, Clock, CheckCircle, AlertCircle, X, ShoppingCart, Download, Printer, Mail } from 'lucide-react';
+import { documentGenerationService, auditTrailService, emailNotificationService } from '../../services';
 
 interface PurchaseOrder {
   id: string;
@@ -108,18 +109,118 @@ export default function PurchaseOrders() {
     }
   };
 
-  const approvePO = async (poId: string) => {
-    try {
-      await api.post(`/erp/procure-to-pay/purchase-orders/${poId}/approve`);
-      loadOrders();
-    } catch (err: unknown) {
-      console.error('Error approving PO:', err);
-      const error = err as { response?: { data?: { detail?: string } } };
-      setError(error.response?.data?.detail || 'Failed to approve purchase order');
-    }
-  };
+    const approvePO = async (poId: string) => {
+      try {
+        await api.post(`/erp/procure-to-pay/purchase-orders/${poId}/approve`);
+        await auditTrailService.log({
+          eventType: 'approval',
+          resourceType: 'purchase_order',
+          resourceId: poId,
+          description: `Purchase Order approved`
+        });
+        loadOrders();
+      } catch (err: unknown) {
+        console.error('Error approving PO:', err);
+        const error = err as { response?: { data?: { detail?: string } } };
+        setError(error.response?.data?.detail || 'Failed to approve purchase order');
+      }
+    };
 
-  const getStatusConfig = (status: string) => {
+    const handleDownloadPDF = async (order: PurchaseOrder) => {
+      try {
+        const documentData = {
+          id: order.id,
+          number: order.po_number,
+          date: order.po_date,
+          expectedDeliveryDate: order.expected_delivery_date,
+          supplier: {
+            name: order.supplier_name || '',
+            id: order.supplier_id
+          },
+          items: (order.lines || []).map(line => ({
+            description: line.description,
+            quantity: line.quantity,
+            unitPrice: line.unit_price,
+            total: line.line_total
+          })),
+          subtotal: order.subtotal,
+          tax: order.tax_amount,
+          total: order.total_amount
+        };
+        await documentGenerationService.downloadDocument('purchase_order', documentData, `PO-${order.po_number}.pdf`);
+        await auditTrailService.log({
+          eventType: 'export',
+          resourceType: 'purchase_order',
+          resourceId: order.id,
+          description: `Purchase Order ${order.po_number} downloaded as PDF`
+        });
+      } catch (err) {
+        console.error('Error downloading PDF:', err);
+        setError('Failed to download PDF');
+      }
+    };
+
+    const handlePrintPO = async (order: PurchaseOrder) => {
+      try {
+        const documentData = {
+          id: order.id,
+          number: order.po_number,
+          date: order.po_date,
+          expectedDeliveryDate: order.expected_delivery_date,
+          supplier: {
+            name: order.supplier_name || '',
+            id: order.supplier_id
+          },
+          items: (order.lines || []).map(line => ({
+            description: line.description,
+            quantity: line.quantity,
+            unitPrice: line.unit_price,
+            total: line.line_total
+          })),
+          subtotal: order.subtotal,
+          tax: order.tax_amount,
+          total: order.total_amount
+        };
+        await documentGenerationService.printDocument('purchase_order', documentData);
+        await auditTrailService.log({
+          eventType: 'view',
+          resourceType: 'purchase_order',
+          resourceId: order.id,
+          description: `Purchase Order ${order.po_number} printed`
+        });
+      } catch (err) {
+        console.error('Error printing PO:', err);
+        setError('Failed to print purchase order');
+      }
+    };
+
+    const handleEmailPO = async (order: PurchaseOrder) => {
+      const supplier = suppliers.find(s => s.id === order.supplier_id);
+      if (!supplier?.email) {
+        setError('No supplier email address available');
+        return;
+      }
+      try {
+        await emailNotificationService.sendEmail({
+          templateType: 'purchase_order',
+          to: [supplier.email],
+          subject: `Purchase Order ${order.po_number}`,
+          data: { poNumber: order.po_number, supplierName: supplier.name, total: order.total_amount }
+        });
+        await auditTrailService.log({
+          eventType: 'email_sent',
+          resourceType: 'purchase_order',
+          resourceId: order.id,
+          description: `Purchase Order ${order.po_number} emailed to ${supplier.email}`
+        });
+        alert(`Purchase Order emailed to ${supplier.email}!`);
+      } catch (err) {
+        console.error('Error emailing PO:', err);
+        setError('Failed to email purchase order');
+      }
+    };
+
+    const getStatusConfig= (status: string) => {
     const configs: Record<string, { bg: string; text: string; border: string }> = {
       draft: { bg: 'bg-gray-100 dark:bg-gray-800', text: 'text-gray-700 dark:text-gray-300', border: 'border-gray-200 dark:border-gray-700' },
       approved: { bg: 'bg-blue-100 dark:bg-blue-900/30', text: 'text-blue-700 dark:text-blue-300', border: 'border-blue-200 dark:border-blue-800' },
@@ -350,12 +451,15 @@ export default function PurchaseOrders() {
                           <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${statusConfig.bg} ${statusConfig.text} border ${statusConfig.border} capitalize`}>{order.status}</span>
                         </td>
                         <td className="px-6 py-4">
-                          <div className="flex items-center justify-end gap-2">
-                            {order.status === 'draft' && (
-                              <button onClick={() => approvePO(order.id)} className="flex items-center gap-1 px-3 py-2 bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-lg text-xs font-medium hover:from-blue-600 hover:to-indigo-600 transition-all"><Check className="h-3.5 w-3.5" />Approve</button>
-                            )}
-                            <button onClick={() => setSelectedOrder(order)} className="flex items-center gap-1 px-3 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg text-xs font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition-all"><Eye className="h-3.5 w-3.5" />View</button>
-                          </div>
+                                                    <div className="flex items-center justify-end gap-1">
+                                                      <button onClick={() => handleDownloadPDF(order)} title="Download PDF" className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-lg transition-colors"><Download className="h-4 w-4" /></button>
+                                                      <button onClick={() => handlePrintPO(order)} title="Print" className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-lg transition-colors"><Printer className="h-4 w-4" /></button>
+                                                      <button onClick={() => handleEmailPO(order)} title="Email PO" className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-lg transition-colors"><Mail className="h-4 w-4" /></button>
+                                                      {order.status === 'draft' && (
+                                                        <button onClick={() => approvePO(order.id)} className="flex items-center gap-1 px-3 py-2 bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-lg text-xs font-medium hover:from-blue-600 hover:to-indigo-600 transition-all"><Check className="h-3.5 w-3.5" />Approve</button>
+                                                      )}
+                                                      <button onClick={() => setSelectedOrder(order)} className="flex items-center gap-1 px-3 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg text-xs font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition-all"><Eye className="h-3.5 w-3.5" />View</button>
+                                                    </div>
                         </td>
                       </tr>
                     );
