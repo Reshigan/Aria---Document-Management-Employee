@@ -9,10 +9,10 @@ export default function Invoices() {
   }, [navigate]);
   
   return (
-    <div className="space-y-6">
-      <h1 className="text-3xl font-bold text-gray-900">Invoices</h1>
-      <div className="bg-white rounded-lg shadow p-12 text-center">
-        <p className="text-gray-600">Redirecting to Invoice Management...</p>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6 space-y-6">
+      <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Invoices</h1>
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-12 text-center">
+        <p className="text-gray-600 dark:text-gray-400">Redirecting to Invoice Management...</p>
       </div>
     </div>
   );

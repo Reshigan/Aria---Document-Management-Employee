@@ -32,22 +32,22 @@ export default function GenerateDocumentPage() {
   };
 
   return (
-    <div className="container mx-auto p-6 max-w-4xl">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 container mx-auto p-6 max-w-4xl">
       <h1 className="text-3xl font-bold mb-6 flex items-center gap-3">
         <FileText className="h-8 w-8" />
         Generate Document
       </h1>
 
-      <div className="bg-white rounded-lg shadow p-6 space-y-6" data-testid="invoice-form">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6 space-y-6" data-testid="invoice-form">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Document Type *
           </label>
           <select
             name="document_type"
             value={docType}
             onChange={(e) => setDocType(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-md"
+            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md"
           >
             <option value="">Select document type...</option>
             {documentTypes.map((type) => (
@@ -59,19 +59,19 @@ export default function GenerateDocumentPage() {
         {docType && (
           <>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Customer/Supplier *</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Customer/Supplier *</label>
               <input 
                 type="text" 
                 name="customer_search"
                 value={customerSearch}
                 onChange={(e) => setCustomerSearch(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md" 
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md" 
                 placeholder="Start typing to search..." 
               />
               {customerSearch && (
-                <div className="mt-2 space-y-1 border border-gray-200 rounded-md p-2">
+                <div className="mt-2 space-y-1 border border-gray-200 dark:border-gray-700 rounded-md p-2">
                   <div 
-                    className="p-2 hover:bg-gray-50 cursor-pointer rounded" 
+                    className="p-2 hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900 cursor-pointer rounded" 
                     data-testid="customer-abc-manufacturing"
                     onClick={() => handleCustomerSelect('ABC Manufacturing Ltd.')}
                   >
@@ -84,25 +84,25 @@ export default function GenerateDocumentPage() {
                 name="customer_name"
                 value={customerName}
                 onChange={(e) => setCustomerName(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md mt-2" 
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md mt-2" 
                 placeholder="Or enter customer name directly..."
               />
             </div>
 
             <div className="grid grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Document Number</label>
-                <input type="text" className="w-full px-4 py-2 border border-gray-300 rounded-md" defaultValue="AUTO" />
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Document Number</label>
+                <input type="text" className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md" defaultValue="AUTO" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Date *</label>
-                <input type="date" className="w-full px-4 py-2 border border-gray-300 rounded-md" defaultValue={new Date().toISOString().split('T')[0]} />
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Date *</label>
+                <input type="date" className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md" defaultValue={new Date().toISOString().split('T')[0]} />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Line Items</label>
-              <div className="border border-gray-300 rounded-md p-4 space-y-3">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Line Items</label>
+              <div className="border border-gray-300 dark:border-gray-600 rounded-md p-4 space-y-3">
                 {lineItems.map((item, index) => (
                   <div key={index} className="flex gap-3 items-center">
                     <input 
@@ -135,7 +135,7 @@ export default function GenerateDocumentPage() {
                   </div>
                 ))}
                 <button 
-                  className="text-blue-600 hover:underline text-sm" 
+                  className="text-blue-600 dark:text-blue-400 hover:underline text-sm" 
                   data-testid="button-add-line-item"
                   onClick={() => setLineItems([...lineItems, { description: '', quantity: 1, unitPrice: 0 }])}
                 >
@@ -143,13 +143,13 @@ export default function GenerateDocumentPage() {
                 </button>
                 <div className="border-t pt-3 space-y-2">
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Subtotal:</span>
+                    <span className="text-gray-600 dark:text-gray-400">Subtotal:</span>
                     <span className="font-medium" data-testid="subtotal">
                       R {lineItems.reduce((sum, item) => sum + (item.quantity * item.unitPrice), 0).toFixed(2)}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">VAT (15%):</span>
+                    <span className="text-gray-600 dark:text-gray-400">VAT (15%):</span>
                     <span className="font-medium" data-testid="vat">
                       R {(lineItems.reduce((sum, item) => sum + (item.quantity * item.unitPrice), 0) * 0.15).toFixed(2)}
                     </span>
@@ -166,22 +166,22 @@ export default function GenerateDocumentPage() {
 
             <div className="flex gap-3 pt-4 border-t">
               <button 
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50" 
+                className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900" 
                 data-testid="button-preview"
                 onClick={() => setShowPreview(true)}
               >
                 <FileText className="h-4 w-4 inline mr-2" />
                 Preview
               </button>
-              <button className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700" data-testid="button-download">
+              <button className="flex-1 px-4 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-lg hover:bg-blue-700" data-testid="button-download">
                 <Download className="h-4 w-4 inline mr-2" />
                 Generate & Download
               </button>
-              <button className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
+              <button className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900">
                 <Mail className="h-4 w-4 inline mr-2" />
                 Send Email
               </button>
-              <button className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
+              <button className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900">
                 <MessageSquare className="h-4 w-4 inline mr-2" />
                 WhatsApp
               </button>
@@ -193,16 +193,16 @@ export default function GenerateDocumentPage() {
       {/* PDF Preview Modal */}
       {showPreview && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6">
               <h2 className="text-2xl font-bold mb-4">Document Preview</h2>
-              <div className="border rounded p-8 bg-gray-50 min-h-[500px]" data-testid="pdf-preview">
-                <div className="text-center text-gray-500">PDF Preview would render here</div>
+              <div className="border rounded p-8 bg-gray-50 dark:bg-gray-900 min-h-[500px]" data-testid="pdf-preview">
+                <div className="text-center text-gray-500 dark:text-gray-400">PDF Preview would render here</div>
               </div>
               <div className="flex justify-end gap-3 mt-6">
                 <button
                   onClick={() => setShowPreview(false)}
-                  className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                  className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900"
                 >
                   Close
                 </button>

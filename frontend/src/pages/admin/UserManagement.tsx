@@ -61,7 +61,7 @@ export default function UserManagementPage() {
       // Show success message
       const successDiv = document.createElement('div');
       successDiv.setAttribute('data-testid', 'success-message');
-      successDiv.className = 'fixed top-4 right-4 bg-green-50 border border-green-200 text-green-700 px-6 py-3 rounded-lg shadow-lg z-50';
+      successDiv.className = 'fixed top-4 right-4 bg-green-50 border border-green-200 text-green-700 px-6 py-3 rounded-2xl shadow-lg z-50';
       successDiv.textContent = 'Invitation sent successfully!';
       document.body.appendChild(successDiv);
       setTimeout(() => successDiv.remove(), 3000);
@@ -165,21 +165,21 @@ export default function UserManagementPage() {
   const getStatusBadge = (status: string) => {
     if (status === 'active') {
       return (
-        <span className="flex items-center gap-1 text-green-600">
+        <span className="flex items-center gap-1 text-green-600 dark:text-green-400">
           <CheckCircle className="h-4 w-4" />
           Active
         </span>
       );
     } else if (status === 'invited') {
       return (
-        <span className="flex items-center gap-1 text-blue-600">
+        <span className="flex items-center gap-1 text-blue-600 dark:text-blue-400">
           <Clock className="h-4 w-4" />
           Invited
         </span>
       );
     } else {
       return (
-        <span className="flex items-center gap-1 text-red-600">
+        <span className="flex items-center gap-1 text-red-600 dark:text-red-400">
           <XCircle className="h-4 w-4" />
           Inactive
         </span>
@@ -193,16 +193,16 @@ export default function UserManagementPage() {
       label: 'Name',
       render: (user: User) => (
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
-            <span className="text-blue-600 font-medium">
+          <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
+            <span className="text-blue-600 dark:text-blue-400 font-medium">
               {user.first_name?.[0]}{user.last_name?.[0]}
             </span>
           </div>
           <div>
-            <div className="font-medium text-gray-900">
+            <div className="font-medium text-gray-900 dark:text-white">
               {user.first_name} {user.last_name}
             </div>
-            <div className="text-sm text-gray-500">{user.email}</div>
+            <div className="text-sm text-gray-500 dark:text-gray-400">{user.email}</div>
           </div>
         </div>
       )
@@ -234,14 +234,14 @@ export default function UserManagementPage() {
               setSelectedUser(user);
               setEditRoleModal(true);
             }}
-            className="p-2 text-blue-600 hover:bg-blue-50 rounded"
+            className="p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:bg-blue-900/30 rounded"
             title="Edit Role"
           >
             <Shield className="h-4 w-4" />
           </button>
           <button
             onClick={() => handleResetPassword(user.id)}
-            className="p-2 text-gray-600 hover:bg-gray-50 rounded"
+            className="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900 rounded"
             title="Reset Password"
           >
             <RotateCcw className="h-4 w-4" />
@@ -249,7 +249,7 @@ export default function UserManagementPage() {
           {user.status === 'active' ? (
             <button
               onClick={() => handleDeactivateUser(user.id)}
-              className="p-2 text-red-600 hover:bg-red-50 rounded"
+              className="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:bg-red-900/30 rounded"
               title="Deactivate User"
             >
               <Trash2 className="h-4 w-4" />
@@ -257,7 +257,7 @@ export default function UserManagementPage() {
           ) : (
             <button
               onClick={() => handleReactivateUser(user.id)}
-              className="p-2 text-green-600 hover:bg-green-50 rounded"
+              className="p-2 text-green-600 dark:text-green-400 hover:bg-green-50 dark:bg-green-900/30 rounded"
               title="Reactivate User"
             >
               <CheckCircle className="h-4 w-4" />
@@ -277,19 +277,19 @@ export default function UserManagementPage() {
   }
 
   return (
-    <div className="container mx-auto p-6 max-w-7xl">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 container mx-auto p-6 max-w-7xl">
       {/* Header */}
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent flex items-center gap-3">
             <Users className="h-8 w-8" />
             User Management
           </h1>
-          <p className="text-gray-600 mt-2">Manage team members and their permissions</p>
+          <p className="text-gray-600 dark:text-gray-400 mt-2">Manage team members and their permissions</p>
         </div>
         <Button
           onClick={() => setInviteModal({ ...inviteModal, isOpen: true })}
-          className="bg-blue-600 hover:bg-blue-700 text-white"
+          className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-lg shadow-indigo-500/30"
           data-testid="button-invite-user"
         >
           <UserPlus className="h-4 w-4 mr-2" />
@@ -305,27 +305,27 @@ export default function UserManagementPage() {
           { label: 'Invited', value: users.filter(u => u.status === 'invited').length, color: 'yellow', testId: 'stat-invited' },
           { label: 'Inactive', value: users.filter(u => u.status === 'inactive').length, color: 'red', testId: 'stat-inactive' }
         ].map((stat, idx) => (
-          <div key={idx} className="bg-white rounded-lg shadow p-6" data-testid={stat.testId}>
-            <div className="text-sm font-medium text-gray-600">{stat.label}</div>
+          <div key={idx} className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6" data-testid={stat.testId}>
+            <div className="text-sm font-medium text-gray-600 dark:text-gray-400">{stat.label}</div>
             <div className={`text-3xl font-bold mt-2 text-${stat.color}-600`}>{stat.value}</div>
           </div>
         ))}
       </div>
 
       {/* Search Bar */}
-      <div className="bg-white rounded-lg shadow p-4 mb-4">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-4 mb-4">
         <input
           type="text"
           name="search"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="Search users..."
-          className="w-full px-4 py-2 border border-gray-300 rounded-md"
+          className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md"
         />
       </div>
 
       {/* Users Table */}
-      <div className="bg-white rounded-lg shadow" data-testid="user-table">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700" data-testid="user-table">
         <DataTable
           data={users.filter(user => {
             if (!searchQuery) return true;
@@ -347,8 +347,8 @@ export default function UserManagementPage() {
       {/* Invite User Modal */}
       {inviteModal.isOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6" data-testid="modal-invite-user">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700-xl max-w-md w-full p-6" data-testid="modal-invite-user">
+            <h2 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-4 flex items-center gap-2">
               <UserPlus className="h-6 w-6" />
               Invite New User
             </h2>
@@ -356,33 +356,33 @@ export default function UserManagementPage() {
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     First Name *
                   </label>
                   <input
                     type="text"
                     value={inviteModal.firstName}
                     onChange={(e) => setInviteModal({ ...inviteModal, firstName: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md"
                     placeholder="John"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Last Name *
                   </label>
                   <input
                     type="text"
                     value={inviteModal.lastName}
                     onChange={(e) => setInviteModal({ ...inviteModal, lastName: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md"
                     placeholder="Doe"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Email Address *
                 </label>
                 <input
@@ -390,20 +390,20 @@ export default function UserManagementPage() {
                   name="email"
                   value={inviteModal.email}
                   onChange={(e) => setInviteModal({ ...inviteModal, email: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md"
                   placeholder="john.doe@company.com"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Role *
                 </label>
                 <select
                   name="role"
                   value={inviteModal.role}
                   onChange={(e) => setInviteModal({ ...inviteModal, role: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md"
                 >
                   <option value="employee">Employee</option>
                   <option value="manager">Manager</option>
@@ -411,7 +411,7 @@ export default function UserManagementPage() {
                   <option value="hr">HR</option>
                   <option value="admin">Admin</option>
                 </select>
-                <p className="text-sm text-gray-500 mt-1">
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                   {inviteModal.role === 'admin' && 'Full system access'}
                   {inviteModal.role === 'manager' && 'Can approve workflows and view reports'}
                   {inviteModal.role === 'finance' && 'Access to financial data and reports'}
@@ -431,7 +431,7 @@ export default function UserManagementPage() {
               <Button
                 onClick={handleInviteUser}
                 disabled={!inviteModal.email || !inviteModal.firstName || !inviteModal.lastName}
-                className="bg-blue-600 hover:bg-blue-700 text-white"
+                className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-lg shadow-indigo-500/30"
                 data-testid="button-send-invitation"
               >
                 <Mail className="h-4 w-4 mr-2" />
@@ -445,14 +445,14 @@ export default function UserManagementPage() {
       {/* Edit Role Modal */}
       {editRoleModal && selectedUser && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700-xl max-w-md w-full p-6">
+            <h2 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-4 flex items-center gap-2">
               <Shield className="h-6 w-6" />
               Change User Role
             </h2>
 
             <div className="mb-4">
-              <p className="text-gray-600">
+              <p className="text-gray-600 dark:text-gray-400">
                 Change role for <strong>{selectedUser.first_name} {selectedUser.last_name}</strong>
               </p>
             </div>
@@ -466,8 +466,8 @@ export default function UserManagementPage() {
                     selectedUser.role === role ? 'border-blue-500 bg-blue-50' : 'border-gray-200'
                   }`}
                 >
-                  <div className="font-medium text-gray-900 capitalize">{role}</div>
-                  <div className="text-sm text-gray-500 mt-1">
+                  <div className="font-medium text-gray-900 dark:text-white capitalize">{role}</div>
+                  <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                     {role === 'admin' && 'Full system access and configuration'}
                     {role === 'manager' && 'Approve workflows, view reports'}
                     {role === 'finance' && 'Access financial data and reports'}

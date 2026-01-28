@@ -4,20 +4,20 @@ import { MainLayout } from '../components/layout/MainLayout';
 const ThemePreview: React.FC = () => {
   return (
     <MainLayout>
-      <div className="p-8">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-8">
         <div className="max-w-6xl mx-auto">
           {/* Header */}
           <div className="mb-8">
             <h1 className="text-4xl font-bold mb-2" style={{ color: 'var(--color-primary)' }}>
               Vanta X Theme Preview
             </h1>
-            <p className="text-xl text-gray-600">
+            <p className="text-xl text-gray-600 dark:text-gray-400">
               Professional corporate design matching vantax.co.za
             </p>
           </div>
 
           {/* Color Palette */}
-          <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700-md p-6 mb-6">
             <h2 className="text-2xl font-semibold mb-4" style={{ color: 'var(--color-primary)' }}>
               Color Palette
             </h2>
@@ -30,7 +30,7 @@ const ThemePreview: React.FC = () => {
                   Navy Blue
                 </div>
                 <p className="text-sm font-mono">#1a1f3a</p>
-                <p className="text-xs text-gray-600">Primary Color</p>
+                <p className="text-xs text-gray-600 dark:text-gray-400">Primary Color</p>
               </div>
               <div className="text-center">
                 <div 
@@ -40,7 +40,7 @@ const ThemePreview: React.FC = () => {
                   Gold
                 </div>
                 <p className="text-sm font-mono">#f5b800</p>
-                <p className="text-xs text-gray-600">Accent Color</p>
+                <p className="text-xs text-gray-600 dark:text-gray-400">Accent Color</p>
               </div>
               <div className="text-center">
                 <div 
@@ -50,13 +50,13 @@ const ThemePreview: React.FC = () => {
                   Light Gray
                 </div>
                 <p className="text-sm font-mono">#f8f9fa</p>
-                <p className="text-xs text-gray-600">Background</p>
+                <p className="text-xs text-gray-600 dark:text-gray-400">Background</p>
               </div>
             </div>
           </div>
 
           {/* Theme Features */}
-          <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700-md p-6 mb-6">
             <h2 className="text-2xl font-semibold mb-4" style={{ color: 'var(--color-primary)' }}>
               Theme Features
             </h2>
@@ -70,7 +70,7 @@ const ThemePreview: React.FC = () => {
                   <h3 className="font-semibold" style={{ color: 'var(--color-primary)' }}>
                     Navy Blue Sidebar
                   </h3>
-                  <p className="text-gray-600">
+                  <p className="text-gray-600 dark:text-gray-400">
                     Professional dark sidebar with navy blue background matching Vanta X branding
                   </p>
                 </div>
@@ -84,7 +84,7 @@ const ThemePreview: React.FC = () => {
                   <h3 className="font-semibold" style={{ color: 'var(--color-primary)' }}>
                     Gold Accents
                   </h3>
-                  <p className="text-gray-600">
+                  <p className="text-gray-600 dark:text-gray-400">
                     Gold highlighting for active menu items and important elements
                   </p>
                 </div>
@@ -98,7 +98,7 @@ const ThemePreview: React.FC = () => {
                   <h3 className="font-semibold" style={{ color: 'var(--color-primary)' }}>
                     Smooth Transitions
                   </h3>
-                  <p className="text-gray-600">
+                  <p className="text-gray-600 dark:text-gray-400">
                     Hover effects with 250ms transitions for professional feel
                   </p>
                 </div>
@@ -112,7 +112,7 @@ const ThemePreview: React.FC = () => {
                   <h3 className="font-semibold" style={{ color: 'var(--color-primary)' }}>
                     Brand Consistency
                   </h3>
-                  <p className="text-gray-600">
+                  <p className="text-gray-600 dark:text-gray-400">
                     Colors and design match vantax.co.za corporate identity
                   </p>
                 </div>
@@ -121,7 +121,7 @@ const ThemePreview: React.FC = () => {
           </div>
 
           {/* Buttons */}
-          <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700-md p-6 mb-6">
             <h2 className="text-2xl font-semibold mb-4" style={{ color: 'var(--color-primary)' }}>
               Button Styles
             </h2>
@@ -156,18 +156,18 @@ const ThemePreview: React.FC = () => {
 
           {/* Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-            <div className="bg-white rounded-lg shadow-md p-6 border-l-4" style={{ borderColor: 'var(--color-accent)' }}>
-              <h3 className="text-sm font-semibold text-gray-600 mb-2">Total Agents</h3>
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700-md p-6 border-l-4" style={{ borderColor: 'var(--color-accent)' }}>
+              <h3 className="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-2">Total Agents</h3>
               <p className="text-3xl font-bold" style={{ color: 'var(--color-primary)' }}>67</p>
               <p className="text-sm" style={{ color: 'var(--color-accent)' }}>+12% this month</p>
             </div>
-            <div className="bg-white rounded-lg shadow-md p-6 border-l-4" style={{ borderColor: 'var(--color-accent)' }}>
-              <h3 className="text-sm font-semibold text-gray-600 mb-2">ERP Modules</h3>
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700-md p-6 border-l-4" style={{ borderColor: 'var(--color-accent)' }}>
+              <h3 className="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-2">ERP Modules</h3>
               <p className="text-3xl font-bold" style={{ color: 'var(--color-primary)' }}>8</p>
               <p className="text-sm" style={{ color: 'var(--color-accent)' }}>All Active</p>
             </div>
-            <div className="bg-white rounded-lg shadow-md p-6 border-l-4" style={{ borderColor: 'var(--color-accent)' }}>
-              <h3 className="text-sm font-semibold text-gray-600 mb-2">Confidence</h3>
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700-md p-6 border-l-4" style={{ borderColor: 'var(--color-accent)' }}>
+              <h3 className="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-2">Confidence</h3>
               <p className="text-3xl font-bold" style={{ color: 'var(--color-primary)' }}>94%</p>
               <p className="text-sm" style={{ color: 'var(--color-accent)' }}>Excellent</p>
             </div>
@@ -175,7 +175,7 @@ const ThemePreview: React.FC = () => {
 
           {/* Sidebar Instructions */}
           <div 
-            className="rounded-lg shadow-md p-6 text-white"
+            className="rounded-xl shadow-lg p-6 text-white"
             style={{ backgroundColor: 'var(--color-primary)' }}
           >
             <h2 className="text-2xl font-semibold mb-4">

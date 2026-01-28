@@ -115,9 +115,9 @@ export default function MigrationValidation() {
   };
 
   const statusIcons: Record<string, React.ReactNode> = {
-    valid: <CheckCircle size={16} className="text-green-600" />,
-    warning: <AlertTriangle size={16} className="text-yellow-600" />,
-    error: <XCircle size={16} className="text-red-600" />
+    valid: <CheckCircle size={16} className="text-green-600 dark:text-green-400" />,
+    warning: <AlertTriangle size={16} className="text-yellow-600 dark:text-yellow-400" />,
+    error: <XCircle size={16} className="text-red-600 dark:text-red-400" />
   };
 
   const validCount = results.filter(r => r.validation_status === 'valid').length;
@@ -125,41 +125,41 @@ export default function MigrationValidation() {
   const errorCount = results.filter(r => r.validation_status === 'error').length;
 
   return (
-    <div className="p-6">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
+        <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent flex items-center gap-3">
           <ShieldCheck size={28} className="text-purple-500" />
           Data Validation
         </h1>
-        <p className="text-gray-600 mt-1">Review and fix data quality issues before migration</p>
+        <p className="text-gray-600 dark:text-gray-400 mt-1">Review and fix data quality issues before migration</p>
       </div>
 
       <div className="grid grid-cols-4 gap-4 mb-6">
-        <div className="bg-white rounded-lg shadow p-4">
-          <div className="text-sm text-gray-500">Total Records</div>
-          <div className="text-2xl font-bold text-purple-600">{results.length}</div>
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-4">
+          <div className="text-sm text-gray-500 dark:text-gray-400">Total Records</div>
+          <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">{results.length}</div>
         </div>
-        <div className="bg-white rounded-lg shadow p-4">
-          <div className="text-sm text-gray-500 flex items-center gap-1">
-            <CheckCircle size={14} className="text-green-600" /> Valid
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-4">
+          <div className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-1">
+            <CheckCircle size={14} className="text-green-600 dark:text-green-400" /> Valid
           </div>
-          <div className="text-2xl font-bold text-green-600">{validCount}</div>
+          <div className="text-2xl font-bold text-green-600 dark:text-green-400">{validCount}</div>
         </div>
-        <div className="bg-white rounded-lg shadow p-4">
-          <div className="text-sm text-gray-500 flex items-center gap-1">
-            <AlertTriangle size={14} className="text-yellow-600" /> Warnings
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-4">
+          <div className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-1">
+            <AlertTriangle size={14} className="text-yellow-600 dark:text-yellow-400" /> Warnings
           </div>
-          <div className="text-2xl font-bold text-yellow-600">{warningCount}</div>
+          <div className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">{warningCount}</div>
         </div>
-        <div className="bg-white rounded-lg shadow p-4">
-          <div className="text-sm text-gray-500 flex items-center gap-1">
-            <XCircle size={14} className="text-red-600" /> Errors
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-4">
+          <div className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-1">
+            <XCircle size={14} className="text-red-600 dark:text-red-400" /> Errors
           </div>
-          <div className="text-2xl font-bold text-red-600">{errorCount}</div>
+          <div className="text-2xl font-bold text-red-600 dark:text-red-400">{errorCount}</div>
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700">
         <div className="p-4 border-b flex gap-4 flex-wrap">
           <div className="flex-1 min-w-[200px] relative">
             <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
@@ -194,7 +194,7 @@ export default function MigrationValidation() {
           {errorCount > 0 && (
             <button
               onClick={handleExportErrors}
-              className="px-4 py-2 border border-red-300 text-red-600 rounded-lg flex items-center gap-2 hover:bg-red-50"
+              className="px-4 py-2 border border-red-300 text-red-600 dark:text-red-400 rounded-lg flex items-center gap-2 hover:bg-red-50 dark:bg-red-900/30"
             >
               <Download size={16} />
               Export Errors
@@ -204,22 +204,22 @@ export default function MigrationValidation() {
 
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gray-50">
+            <thead className="bg-gray-50 dark:bg-gray-900">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Record</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Job</th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Status</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Issues</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Record</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Job</th>
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Status</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Issues</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200">
+            <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
               {filteredResults.map((result) => (
-                <tr key={result.id} className="hover:bg-gray-50">
+                <tr key={result.id} className="hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900">
                   <td className="px-6 py-4">
-                    <div className="font-medium text-gray-900">#{result.record_number}</div>
+                    <div className="font-medium text-gray-900 dark:text-white">#{result.record_number}</div>
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-600">
+                  <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
                     {result.job_name || result.job_id}
                   </td>
                   <td className="px-6 py-4 text-center">
@@ -230,23 +230,23 @@ export default function MigrationValidation() {
                   </td>
                   <td className="px-6 py-4">
                     {result.errors && result.errors.length > 0 && (
-                      <div className="text-sm text-red-600">
+                      <div className="text-sm text-red-600 dark:text-red-400">
                         {result.errors.length} error{result.errors.length > 1 ? 's' : ''}
                       </div>
                     )}
                     {result.warnings && result.warnings.length > 0 && (
-                      <div className="text-sm text-yellow-600">
+                      <div className="text-sm text-yellow-600 dark:text-yellow-400">
                         {result.warnings.length} warning{result.warnings.length > 1 ? 's' : ''}
                       </div>
                     )}
                     {(!result.errors || result.errors.length === 0) && (!result.warnings || result.warnings.length === 0) && (
-                      <span className="text-sm text-green-600">No issues</span>
+                      <span className="text-sm text-green-600 dark:text-green-400">No issues</span>
                     )}
                   </td>
                   <td className="px-6 py-4 text-right">
                     <button
                       onClick={() => setSelectedResult(result)}
-                      className="text-purple-600 hover:text-purple-900"
+                      className="text-purple-600 dark:text-purple-400 hover:text-purple-900"
                     >
                       <FileText size={16} />
                     </button>
@@ -256,7 +256,7 @@ export default function MigrationValidation() {
             </tbody>
           </table>
           {filteredResults.length === 0 && (
-            <div className="p-8 text-center text-gray-500">
+            <div className="p-8 text-center text-gray-500 dark:text-gray-400">
               {searchTerm || filterJob || filterStatus 
                 ? 'No validation results found matching your criteria' 
                 : 'No validation results yet. Run a migration job to see results.'}
@@ -267,11 +267,11 @@ export default function MigrationValidation() {
 
       {selectedResult && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl p-6 max-h-[80vh] overflow-y-auto">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700-xl w-full max-w-2xl p-6 max-h-[80vh] overflow-y-auto">
             <div className="flex justify-between items-start mb-4">
               <div>
                 <h2 className="text-xl font-bold">Record #{selectedResult.record_number}</h2>
-                <p className="text-sm text-gray-500">{selectedResult.job_name}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">{selectedResult.job_name}</p>
               </div>
               <span className={`inline-flex items-center gap-1 px-2 py-1 text-xs rounded-full ${statusColors[selectedResult.validation_status]}`}>
                 {statusIcons[selectedResult.validation_status]}
@@ -281,14 +281,14 @@ export default function MigrationValidation() {
 
             {selectedResult.errors && selectedResult.errors.length > 0 && (
               <div className="mb-4">
-                <h3 className="text-sm font-medium text-red-600 mb-2 flex items-center gap-1">
+                <h3 className="text-sm font-medium text-red-600 dark:text-red-400 mb-2 flex items-center gap-1">
                   <XCircle size={14} /> Errors ({selectedResult.errors.length})
                 </h3>
                 <div className="space-y-2">
                   {selectedResult.errors.map((error, idx) => (
-                    <div key={idx} className="bg-red-50 border border-red-200 rounded p-3">
-                      <div className="font-medium text-red-800">{error.field}</div>
-                      <div className="text-sm text-red-600">{error.message}</div>
+                    <div key={idx} className="bg-red-50 dark:bg-red-900/30 border border-red-200 rounded p-3">
+                      <div className="font-medium text-red-800 dark:text-red-300">{error.field}</div>
+                      <div className="text-sm text-red-600 dark:text-red-400">{error.message}</div>
                       {error.value && (
                         <div className="text-xs text-red-500 mt-1">Value: {error.value}</div>
                       )}
@@ -300,14 +300,14 @@ export default function MigrationValidation() {
 
             {selectedResult.warnings && selectedResult.warnings.length > 0 && (
               <div className="mb-4">
-                <h3 className="text-sm font-medium text-yellow-600 mb-2 flex items-center gap-1">
+                <h3 className="text-sm font-medium text-yellow-600 dark:text-yellow-400 mb-2 flex items-center gap-1">
                   <AlertTriangle size={14} /> Warnings ({selectedResult.warnings.length})
                 </h3>
                 <div className="space-y-2">
                   {selectedResult.warnings.map((warning, idx) => (
-                    <div key={idx} className="bg-yellow-50 border border-yellow-200 rounded p-3">
-                      <div className="font-medium text-yellow-800">{warning.field}</div>
-                      <div className="text-sm text-yellow-600">{warning.message}</div>
+                    <div key={idx} className="bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-200 rounded p-3">
+                      <div className="font-medium text-yellow-800 dark:text-yellow-300">{warning.field}</div>
+                      <div className="text-sm text-yellow-600 dark:text-yellow-400">{warning.message}</div>
                       {warning.value && (
                         <div className="text-xs text-yellow-500 mt-1">Value: {warning.value}</div>
                       )}
@@ -319,8 +319,8 @@ export default function MigrationValidation() {
 
             {selectedResult.source_data && (
               <div className="mb-4">
-                <h3 className="text-sm font-medium text-gray-700 mb-2">Source Data</h3>
-                <pre className="bg-gray-50 border rounded p-3 text-xs overflow-x-auto">
+                <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Source Data</h3>
+                <pre className="bg-gray-50 dark:bg-gray-900 border rounded p-3 text-xs overflow-x-auto">
                   {JSON.stringify(selectedResult.source_data, null, 2)}
                 </pre>
               </div>
@@ -329,7 +329,7 @@ export default function MigrationValidation() {
             <div className="flex justify-end pt-4">
               <button
                 onClick={() => setSelectedResult(null)}
-                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200"
+                className="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 dark:bg-gray-600"
               >
                 Close
               </button>

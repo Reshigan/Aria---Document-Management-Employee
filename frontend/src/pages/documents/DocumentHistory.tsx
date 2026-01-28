@@ -10,13 +10,13 @@ export default function DocumentHistoryPage() {
   ];
 
   return (
-    <div className="container mx-auto p-6">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 container mx-auto p-6">
       <h1 className="text-3xl font-bold mb-6 flex items-center gap-3">
         <FileText className="h-8 w-8" />
         Document History
       </h1>
 
-      <div className="bg-white rounded-lg shadow">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700">
         <DataTable
           data={documents}
           columns={[
@@ -31,9 +31,9 @@ export default function DocumentHistoryPage() {
               label: 'Actions',
               render: (row: any) => (
                 <div className="flex gap-2">
-                  <button className="p-2 text-blue-600 hover:bg-blue-50 rounded"><Eye className="h-4 w-4" /></button>
-                  <button className="p-2 text-gray-600 hover:bg-gray-50 rounded"><Download className="h-4 w-4" /></button>
-                  <button className="p-2 text-green-600 hover:bg-green-50 rounded"><Mail className="h-4 w-4" /></button>
+                  <button className="p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:bg-blue-900/30 rounded"><Eye className="h-4 w-4" /></button>
+                  <button className="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900 rounded"><Download className="h-4 w-4" /></button>
+                  <button className="p-2 text-green-600 dark:text-green-400 hover:bg-green-50 dark:bg-green-900/30 rounded"><Mail className="h-4 w-4" /></button>
                 </div>
               )
             }

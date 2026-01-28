@@ -112,11 +112,11 @@ const QualityInspections: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6">
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-6">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Quality Inspections</h1>
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Quality Inspections</h1>
             <p className="text-gray-600 dark:text-gray-400 mt-1">Track quality control inspections</p>
           </div>
           <button onClick={handleCreate} className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
@@ -128,7 +128,7 @@ const QualityInspections: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
           <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border">
             <p className="text-sm text-gray-600 dark:text-gray-400">Total Inspections</p>
-            <p className="text-2xl font-bold text-gray-900 dark:text-white">{inspections.length}</p>
+            <p className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{inspections.length}</p>
           </div>
           <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border">
             <p className="text-sm text-gray-600 dark:text-gray-400">Passed</p>
@@ -208,7 +208,7 @@ const QualityInspections: React.FC = () => {
 
         {showModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-lg mx-4">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700-xl w-full max-w-lg mx-4">
               <div className="flex items-center justify-between p-4 border-b dark:border-gray-700">
                 <h2 className="text-xl font-semibold dark:text-white">
                   {editingInspection ? 'Edit Inspection' : 'New Inspection'}

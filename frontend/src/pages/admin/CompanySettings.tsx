@@ -236,30 +236,30 @@ export default function CompanySettingsPage() {
   // This ensures tests can find elements even if API calls are slow
   if (!settings) {
     return (
-      <div className="container mx-auto p-6">
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-center gap-3">
-          <AlertCircle className="h-5 w-5 text-red-600" />
-          <p className="text-red-800">Error loading company settings</p>
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 container mx-auto p-6">
+        <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 rounded-lg p-4 flex items-center gap-3">
+          <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400" />
+          <p className="text-red-800 dark:text-red-300">Error loading company settings</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto p-6 max-w-6xl">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 container mx-auto p-6 max-w-6xl">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Company Settings</h1>
-        <p className="text-gray-600 mt-2">Configure your company details and preferences</p>
+        <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Company Settings</h1>
+        <p className="text-gray-600 dark:text-gray-400 mt-2">Configure your company details and preferences</p>
       </div>
 
       {successMessage && (
-        <div data-testid="success-message" className="mb-6 bg-green-50 border border-green-200 rounded-lg p-4 flex items-center gap-3">
-          <div className="h-5 w-5 text-green-600">✓</div>
-          <p className="text-green-800">{successMessage}</p>
+        <div data-testid="success-message" className="mb-6 bg-green-50 dark:bg-green-900/30 border border-green-200 rounded-lg p-4 flex items-center gap-3">
+          <div className="h-5 w-5 text-green-600 dark:text-green-400">✓</div>
+          <p className="text-green-800 dark:text-green-300">{successMessage}</p>
         </div>
       )}
 
-      <div className="border-b border-gray-200 mb-6">
+      <div className="border-b border-gray-100 dark:border-gray-700 mb-6">
         <nav className="flex space-x-8">
           {[
             { id: 'company', label: 'Company Details', icon: Building2 },
@@ -284,12 +284,12 @@ export default function CompanySettingsPage() {
         </nav>
       </div>
 
-      <div className="bg-white rounded-lg shadow p-6">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
         {activeTab === 'company' && (
-          <div className="space-y-6">
+          <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6 space-y-6">
             <div className="grid grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Company Name *
                 </label>
                 <input
@@ -305,7 +305,7 @@ export default function CompanySettingsPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Registration Number *
                 </label>
                 <input
@@ -319,31 +319,31 @@ export default function CompanySettingsPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">VAT Number *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">VAT Number *</label>
                 <input
                   type="text"
                   value={settings.vat_number}
                   onChange={(e) => setSettings({ ...settings, vat_number: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Tax Number *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Tax Number *</label>
                 <input
                   type="text"
                   value={settings.tax_number}
                   onChange={(e) => setSettings({ ...settings, tax_number: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
                 />
               </div>
             </div>
 
             <div className="border-t pt-6">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">Physical Address</h3>
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Physical Address</h3>
               <div className="grid grid-cols-2 gap-6">
                 <div className="col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Street Address *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Street Address *</label>
                   <input
                     type="text"
                     value={settings.address.street}
@@ -351,12 +351,12 @@ export default function CompanySettingsPage() {
                       ...settings,
                       address: { ...settings.address, street: e.target.value }
                     })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">City *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">City *</label>
                   <input
                     type="text"
                     value={settings.address.city}
@@ -364,19 +364,19 @@ export default function CompanySettingsPage() {
                       ...settings,
                       address: { ...settings.address, city: e.target.value }
                     })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Province *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Province *</label>
                   <select
                     value={settings.address.province}
                     onChange={(e) => setSettings({
                       ...settings,
                       address: { ...settings.address, province: e.target.value }
                     })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md"
                   >
                     <option>Gauteng</option>
                     <option>Western Cape</option>
@@ -391,7 +391,7 @@ export default function CompanySettingsPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Postal Code *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Postal Code *</label>
                   <input
                     type="text"
                     value={settings.address.postal_code}
@@ -399,27 +399,27 @@ export default function CompanySettingsPage() {
                       ...settings,
                       address: { ...settings.address, postal_code: e.target.value }
                     })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Country</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Country</label>
                   <input
                     type="text"
                     value={settings.address.country}
                     disabled
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md bg-gray-50"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-900"
                   />
                 </div>
               </div>
             </div>
 
             <div className="border-t pt-6">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">Contact Information</h3>
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Contact Information</h3>
               <div className="grid grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Phone *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Phone *</label>
                   <input
                     type="tel"
                     value={settings.contact.phone}
@@ -427,12 +427,12 @@ export default function CompanySettingsPage() {
                       ...settings,
                       contact: { ...settings.contact, phone: e.target.value }
                     })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Email *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Email *</label>
                   <input
                     type="email"
                     value={settings.contact.email}
@@ -440,12 +440,12 @@ export default function CompanySettingsPage() {
                       ...settings,
                       contact: { ...settings.contact, email: e.target.value }
                     })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md"
                   />
                 </div>
 
                 <div className="col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Website</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Website</label>
                   <input
                     type="url"
                     value={settings.contact.website || ''}
@@ -454,7 +454,7 @@ export default function CompanySettingsPage() {
                       contact: { ...settings.contact, website: e.target.value }
                     })}
                     placeholder="https://example.com"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md"
                   />
                 </div>
               </div>
@@ -463,12 +463,12 @@ export default function CompanySettingsPage() {
         )}
 
         {activeTab === 'compliance' && (
-          <div className="space-y-6">
+          <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6 space-y-6">
             <div>
-              <h3 className="text-lg font-medium text-gray-900 mb-4">BBBEE Settings</h3>
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">BBBEE Settings</h3>
               <div className="grid grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">BBBEE Level *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">BBBEE Level *</label>
                   <input
                     type="number"
                     name="bbbee_level"
@@ -476,104 +476,104 @@ export default function CompanySettingsPage() {
                     max="8"
                     value={settings.bbbee_level}
                     onChange={(e) => setSettings({ ...settings, bbbee_level: parseInt(e.target.value) })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md"
                   />
-                  <p className="text-sm text-gray-500 mt-1">Enter 1-8 for BBBEE Level, or 0 for Non-Compliant</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Enter 1-8 for BBBEE Level, or 0 for Non-Compliant</p>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Certificate Expiry Date
                   </label>
                   <input
                     type="date"
                     value={settings.bbbee_expiry_date || ''}
                     onChange={(e) => setSettings({ ...settings, bbbee_expiry_date: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md"
                   />
                 </div>
               </div>
             </div>
 
             <div className="border-t pt-6">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">SARS Registration</h3>
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">SARS Registration</h3>
               <div className="grid grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     SARS Tax Number *
                   </label>
                   <input
                     type="text"
                     value={settings.sars_tax_number}
                     onChange={(e) => setSettings({ ...settings, sars_tax_number: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">PAYE Number</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">PAYE Number</label>
                   <input
                     type="text"
                     value={settings.sars_paye_number || ''}
                     onChange={(e) => setSettings({ ...settings, sars_paye_number: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">UIF Reference</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">UIF Reference</label>
                   <input
                     type="text"
                     value={settings.sars_uif_number || ''}
                     onChange={(e) => setSettings({ ...settings, sars_uif_number: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">SDL Reference</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">SDL Reference</label>
                   <input
                     type="text"
                     value={settings.sars_sdl_number || ''}
                     onChange={(e) => setSettings({ ...settings, sars_sdl_number: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md"
                   />
                 </div>
               </div>
             </div>
 
             <div className="border-t pt-6">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">Financial Settings</h3>
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Financial Settings</h3>
               <div className="grid grid-cols-3 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Financial Year End *
                   </label>
                   <input
                     type="date"
                     value={settings.financial_year_end}
                     onChange={(e) => setSettings({ ...settings, financial_year_end: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">VAT Rate (%)</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">VAT Rate (%)</label>
                   <input
                     type="number"
                     step="0.01"
                     value={settings.vat_rate}
                     onChange={(e) => setSettings({ ...settings, vat_rate: parseFloat(e.target.value) })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Currency</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Currency</label>
                   <select
                     value={settings.currency}
                     onChange={(e) => setSettings({ ...settings, currency: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md"
                   >
                     <option value="ZAR">ZAR - South African Rand</option>
                     <option value="USD">USD - US Dollar</option>
@@ -587,19 +587,19 @@ export default function CompanySettingsPage() {
         )}
 
         {activeTab === 'branding' && (
-          <div className="space-y-6">
+          <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6 space-y-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Company Logo</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Company Logo</label>
               <div className="flex items-start gap-6">
                 <div className="flex-shrink-0">
                   {settings.logo_url ? (
                     <img
                       src={settings.logo_url}
                       alt="Company logo"
-                      className="w-32 h-32 object-contain border-2 border-gray-200 rounded-lg"
+                      className="w-32 h-32 object-contain border-2 border-gray-200 dark:border-gray-700 rounded-lg"
                     />
                   ) : (
-                    <div className="w-32 h-32 bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center">
+                    <div className="w-32 h-32 bg-gray-100 dark:bg-gray-700 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg flex items-center justify-center">
                       <Upload className="h-8 w-8 text-gray-400" />
                     </div>
                   )}
@@ -611,7 +611,7 @@ export default function CompanySettingsPage() {
                     onChange={handleLogoUpload}
                     className="mb-2"
                   />
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
                     Recommended: PNG or SVG, max 2MB, square aspect ratio
                   </p>
                 </div>
@@ -619,47 +619,47 @@ export default function CompanySettingsPage() {
             </div>
 
             <div className="border-t pt-6">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">Brand Colors</h3>
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Brand Colors</h3>
               <div className="grid grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Primary Color</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Primary Color</label>
                   <div className="flex items-center gap-4">
                     <input
                       type="color"
                       value={settings.primary_color || '#1e40af'}
                       onChange={(e) => setSettings({ ...settings, primary_color: e.target.value })}
-                      className="h-12 w-20 border border-gray-300 rounded cursor-pointer"
+                      className="h-12 w-20 border border-gray-300 dark:border-gray-600 rounded cursor-pointer"
                     />
                     <input
                       type="text"
                       value={settings.primary_color || '#1e40af'}
                       onChange={(e) => setSettings({ ...settings, primary_color: e.target.value })}
-                      className="flex-1 px-4 py-2 border border-gray-300 rounded-md font-mono"
+                      className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md font-mono"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Secondary Color</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Secondary Color</label>
                   <div className="flex items-center gap-4">
                     <input
                       type="color"
                       value={settings.secondary_color || '#64748b'}
                       onChange={(e) => setSettings({ ...settings, secondary_color: e.target.value })}
-                      className="h-12 w-20 border border-gray-300 rounded cursor-pointer"
+                      className="h-12 w-20 border border-gray-300 dark:border-gray-600 rounded cursor-pointer"
                     />
                     <input
                       type="text"
                       value={settings.secondary_color || '#64748b'}
                       onChange={(e) => setSettings({ ...settings, secondary_color: e.target.value })}
-                      className="flex-1 px-4 py-2 border border-gray-300 rounded-md font-mono"
+                      className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md font-mono"
                     />
                   </div>
                 </div>
               </div>
 
-              <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-                <p className="text-sm font-medium text-gray-700 mb-3">Preview</p>
+              <div className="mt-6 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
+                <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Preview</p>
                 <div className="flex gap-4">
                   <button
                     style={{ backgroundColor: settings.primary_color || '#1e40af' }}
@@ -680,18 +680,18 @@ export default function CompanySettingsPage() {
         )}
 
         {activeTab === 'banking' && (
-          <div className="space-y-6">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">Bank Account Details</h3>
+          <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6 space-y-6">
+            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Bank Account Details</h3>
             <div className="grid grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Bank Name *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Bank Name *</label>
                 <select
                   value={settings.bank_details.bank_name}
                   onChange={(e) => setSettings({
                     ...settings,
                     bank_details: { ...settings.bank_details, bank_name: e.target.value }
                   })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md"
                 >
                   <option>FNB</option>
                   <option>Standard Bank</option>
@@ -704,14 +704,14 @@ export default function CompanySettingsPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Account Type *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Account Type *</label>
                 <select
                   value={settings.bank_details.account_type}
                   onChange={(e) => setSettings({
                     ...settings,
                     bank_details: { ...settings.bank_details, account_type: e.target.value }
                   })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md"
                 >
                   <option>Current</option>
                   <option>Savings</option>
@@ -720,7 +720,7 @@ export default function CompanySettingsPage() {
               </div>
 
               <div className="col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-2">Account Holder *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Account Holder *</label>
                 <input
                   type="text"
                   value={settings.bank_details.account_holder}
@@ -728,12 +728,12 @@ export default function CompanySettingsPage() {
                     ...settings,
                     bank_details: { ...settings.bank_details, account_holder: e.target.value }
                   })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Account Number *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Account Number *</label>
                 <input
                   type="text"
                   value={settings.bank_details.account_number}
@@ -741,12 +741,12 @@ export default function CompanySettingsPage() {
                     ...settings,
                     bank_details: { ...settings.bank_details, account_number: e.target.value }
                   })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Branch Code *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Branch Code *</label>
                 <input
                   type="text"
                   value={settings.bank_details.branch_code}
@@ -754,12 +754,12 @@ export default function CompanySettingsPage() {
                     ...settings,
                     bank_details: { ...settings.bank_details, branch_code: e.target.value }
                   })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   SWIFT Code (for international payments)
                 </label>
                 <input
@@ -769,13 +769,13 @@ export default function CompanySettingsPage() {
                     ...settings,
                     bank_details: { ...settings.bank_details, swift_code: e.target.value }
                   })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md"
                 />
               </div>
             </div>
 
-            <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-              <p className="text-sm text-blue-800">
+            <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-lg">
+              <p className="text-sm text-blue-800 dark:text-blue-200">
                 <strong>Note:</strong> These bank details will appear on all generated invoices, 
                 quotes, and statements sent to customers.
               </p>
@@ -795,7 +795,7 @@ export default function CompanySettingsPage() {
           type="submit"
           onClick={handleSave}
           disabled={saving}
-          className="bg-blue-600 hover:bg-blue-700 text-white"
+          className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-lg shadow-indigo-500/30"
         >
           {saving ? (
             <>

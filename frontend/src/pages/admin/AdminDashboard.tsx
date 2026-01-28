@@ -74,63 +74,63 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="container mx-auto p-6 max-w-7xl">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 container mx-auto p-6 max-w-7xl">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
-          <Activity className="h-8 w-8 text-blue-600" />
+        <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent flex items-center gap-3">
+          <Activity className="h-8 w-8 text-blue-600 dark:text-blue-400" />
           Admin Dashboard
         </h1>
-        <p className="text-gray-600 mt-2">System overview and performance metrics</p>
+        <p className="text-gray-600 dark:text-gray-400 mt-2">System overview and performance metrics</p>
       </div>
 
       {/* Master Data Overview */}
       <div className="mb-6">
-        <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
           <Database className="h-5 w-5" />
           Master Data
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Companies</p>
-                <p className="text-3xl font-bold text-gray-900">{metrics?.master_data.companies || 0}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Companies</p>
+                <p className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{metrics?.master_data.companies || 0}</p>
               </div>
-              <div className="bg-blue-100 rounded-full p-3">
-                <Server className="h-6 w-6 text-blue-600" />
+              <div className="bg-blue-100 dark:bg-blue-900/30 rounded-full p-3">
+                <Server className="h-6 w-6 text-blue-600 dark:text-blue-400" />
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Customers</p>
-                <p className="text-3xl font-bold text-gray-900">{metrics?.master_data.customers || 0}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Customers</p>
+                <p className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{metrics?.master_data.customers || 0}</p>
               </div>
-              <div className="bg-green-100 rounded-full p-3">
-                <Users className="h-6 w-6 text-green-600" />
+              <div className="bg-green-100 dark:bg-green-900/30 rounded-full p-3">
+                <Users className="h-6 w-6 text-green-600 dark:text-green-400" />
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Suppliers</p>
-                <p className="text-3xl font-bold text-gray-900">{metrics?.master_data.suppliers || 0}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Suppliers</p>
+                <p className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{metrics?.master_data.suppliers || 0}</p>
               </div>
-              <div className="bg-purple-100 rounded-full p-3">
-                <Users className="h-6 w-6 text-purple-600" />
+              <div className="bg-purple-100 dark:bg-purple-900/30 rounded-full p-3">
+                <Users className="h-6 w-6 text-purple-600 dark:text-purple-400" />
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Products</p>
-                <p className="text-3xl font-bold text-gray-900">{metrics?.master_data.products || 0}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Products</p>
+                <p className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{metrics?.master_data.products || 0}</p>
               </div>
               <div className="bg-orange-100 rounded-full p-3">
                 <HardDrive className="h-6 w-6 text-orange-600" />
@@ -142,43 +142,43 @@ export default function AdminDashboard() {
 
       {/* Transactions Overview */}
       <div className="mb-6">
-        <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
           <TrendingUp className="h-5 w-5" />
           Transactions
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Quotes</p>
-                <p className="text-3xl font-bold text-gray-900">{metrics?.transactions.quotes || 0}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Quotes</p>
+                <p className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{metrics?.transactions.quotes || 0}</p>
               </div>
-              <div className="bg-blue-100 rounded-full p-3">
-                <CheckCircle className="h-6 w-6 text-blue-600" />
+              <div className="bg-blue-100 dark:bg-blue-900/30 rounded-full p-3">
+                <CheckCircle className="h-6 w-6 text-blue-600 dark:text-blue-400" />
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Sales Orders</p>
-                <p className="text-3xl font-bold text-gray-900">{metrics?.transactions.sales_orders || 0}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Sales Orders</p>
+                <p className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{metrics?.transactions.sales_orders || 0}</p>
               </div>
-              <div className="bg-green-100 rounded-full p-3">
-                <CheckCircle className="h-6 w-6 text-green-600" />
+              <div className="bg-green-100 dark:bg-green-900/30 rounded-full p-3">
+                <CheckCircle className="h-6 w-6 text-green-600 dark:text-green-400" />
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Deliveries</p>
-                <p className="text-3xl font-bold text-gray-900">{metrics?.transactions.deliveries || 0}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Deliveries</p>
+                <p className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{metrics?.transactions.deliveries || 0}</p>
               </div>
-              <div className="bg-purple-100 rounded-full p-3">
-                <CheckCircle className="h-6 w-6 text-purple-600" />
+              <div className="bg-purple-100 dark:bg-purple-900/30 rounded-full p-3">
+                <CheckCircle className="h-6 w-6 text-purple-600 dark:text-purple-400" />
               </div>
             </div>
           </div>
@@ -187,43 +187,43 @@ export default function AdminDashboard() {
 
       {/* Automation Overview */}
       <div className="mb-6">
-        <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
           <Agent className="h-5 w-5" />
           Automation
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Total Agents</p>
-                <p className="text-3xl font-bold text-gray-900">{metrics?.automation.total_bots || 67}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Total Agents</p>
+                <p className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{metrics?.automation.total_bots || 67}</p>
               </div>
-              <div className="bg-indigo-100 rounded-full p-3">
-                <Agent className="h-6 w-6 text-indigo-600" />
+              <div className="bg-indigo-100 dark:bg-indigo-900/30 rounded-full p-3">
+                <Agent className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Enabled Agents</p>
-                <p className="text-3xl font-bold text-gray-900">{metrics?.automation.enabled_bots || 67}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Enabled Agents</p>
+                <p className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{metrics?.automation.enabled_bots || 67}</p>
               </div>
-              <div className="bg-green-100 rounded-full p-3">
-                <CheckCircle className="h-6 w-6 text-green-600" />
+              <div className="bg-green-100 dark:bg-green-900/30 rounded-full p-3">
+                <CheckCircle className="h-6 w-6 text-green-600 dark:text-green-400" />
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Executions Today</p>
-                <p className="text-3xl font-bold text-gray-900">{performance?.bot_executions_today || 0}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Executions Today</p>
+                <p className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{performance?.bot_executions_today || 0}</p>
               </div>
-              <div className="bg-yellow-100 rounded-full p-3">
-                <Zap className="h-6 w-6 text-yellow-600" />
+              <div className="bg-yellow-100 dark:bg-yellow-900/30 rounded-full p-3">
+                <Zap className="h-6 w-6 text-yellow-600 dark:text-yellow-400" />
               </div>
             </div>
           </div>
@@ -232,55 +232,55 @@ export default function AdminDashboard() {
 
       {/* System Performance */}
       <div className="mb-6">
-        <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
           <Cpu className="h-5 w-5" />
           System Performance
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Uptime</p>
-                <p className="text-3xl font-bold text-green-600">{performance?.uptime_percent || 99.9}%</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Uptime</p>
+                <p className="text-3xl font-bold text-green-600 dark:text-green-400">{performance?.uptime_percent || 99.9}%</p>
               </div>
-              <div className="bg-green-100 rounded-full p-3">
-                <CheckCircle className="h-6 w-6 text-green-600" />
+              <div className="bg-green-100 dark:bg-green-900/30 rounded-full p-3">
+                <CheckCircle className="h-6 w-6 text-green-600 dark:text-green-400" />
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Avg Response</p>
-                <p className="text-3xl font-bold text-blue-600">{performance?.avg_response_time_ms || 250}ms</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Avg Response</p>
+                <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">{performance?.avg_response_time_ms || 250}ms</p>
               </div>
-              <div className="bg-blue-100 rounded-full p-3">
-                <Clock className="h-6 w-6 text-blue-600" />
+              <div className="bg-blue-100 dark:bg-blue-900/30 rounded-full p-3">
+                <Clock className="h-6 w-6 text-blue-600 dark:text-blue-400" />
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Error Rate</p>
-                <p className="text-3xl font-bold text-yellow-600">{performance?.error_rate_percent || 0.5}%</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Error Rate</p>
+                <p className="text-3xl font-bold text-yellow-600 dark:text-yellow-400">{performance?.error_rate_percent || 0.5}%</p>
               </div>
-              <div className="bg-yellow-100 rounded-full p-3">
-                <AlertCircle className="h-6 w-6 text-yellow-600" />
+              <div className="bg-yellow-100 dark:bg-yellow-900/30 rounded-full p-3">
+                <AlertCircle className="h-6 w-6 text-yellow-600 dark:text-yellow-400" />
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Active Users</p>
-                <p className="text-3xl font-bold text-purple-600">{performance?.active_users_today || 0}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Active Users</p>
+                <p className="text-3xl font-bold text-purple-600 dark:text-purple-400">{performance?.active_users_today || 0}</p>
               </div>
-              <div className="bg-purple-100 rounded-full p-3">
-                <Users className="h-6 w-6 text-purple-600" />
+              <div className="bg-purple-100 dark:bg-purple-900/30 rounded-full p-3">
+                <Users className="h-6 w-6 text-purple-600 dark:text-purple-400" />
               </div>
             </div>
           </div>
@@ -288,39 +288,39 @@ export default function AdminDashboard() {
       </div>
 
       {/* Quick Actions */}
-      <div className="bg-white rounded-lg shadow p-6">
-        <h2 className="text-xl font-bold text-gray-900 mb-4">Quick Actions</h2>
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Quick Actions</h2>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <a
             href="/admin/agents"
-            className="flex items-center gap-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+            className="flex items-center gap-3 p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900 transition-colors"
           >
-            <Agent className="h-5 w-5 text-blue-600" />
-            <span className="font-medium text-gray-900">Configure Agents</span>
+            <Agent className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+            <span className="font-medium text-gray-900 dark:text-white">Configure Agents</span>
           </a>
 
           <a
             href="/admin/users"
-            className="flex items-center gap-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+            className="flex items-center gap-3 p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900 transition-colors"
           >
-            <Users className="h-5 w-5 text-green-600" />
-            <span className="font-medium text-gray-900">Manage Users</span>
+            <Users className="h-5 w-5 text-green-600 dark:text-green-400" />
+            <span className="font-medium text-gray-900 dark:text-white">Manage Users</span>
           </a>
 
           <a
             href="/admin/system"
-            className="flex items-center gap-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+            className="flex items-center gap-3 p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900 transition-colors"
           >
-            <Server className="h-5 w-5 text-purple-600" />
-            <span className="font-medium text-gray-900">System Settings</span>
+            <Server className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+            <span className="font-medium text-gray-900 dark:text-white">System Settings</span>
           </a>
 
           <a
             href="/admin/company"
-            className="flex items-center gap-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+            className="flex items-center gap-3 p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900 transition-colors"
           >
             <Database className="h-5 w-5 text-orange-600" />
-            <span className="font-medium text-gray-900">Company Settings</span>
+            <span className="font-medium text-gray-900 dark:text-white">Company Settings</span>
           </a>
         </div>
       </div>

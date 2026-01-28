@@ -168,41 +168,41 @@ export default function ProductTemplates() {
   };
 
   return (
-    <div className="p-6">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
+        <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent flex items-center gap-3">
           <Package size={28} className="text-purple-500" />
           Product Templates
         </h1>
-        <p className="text-gray-600 mt-1">Manage product templates with configurable attributes and variants</p>
+        <p className="text-gray-600 dark:text-gray-400 mt-1">Manage product templates with configurable attributes and variants</p>
       </div>
 
       <div className="grid grid-cols-4 gap-4 mb-6">
-        <div className="bg-white rounded-lg shadow p-4">
-          <div className="text-sm text-gray-500">Total Templates</div>
-          <div className="text-2xl font-bold text-purple-600">{templates.length}</div>
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-4">
+          <div className="text-sm text-gray-500 dark:text-gray-400">Total Templates</div>
+          <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">{templates.length}</div>
         </div>
-        <div className="bg-white rounded-lg shadow p-4">
-          <div className="text-sm text-gray-500">Physical Products</div>
-          <div className="text-2xl font-bold text-blue-600">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-4">
+          <div className="text-sm text-gray-500 dark:text-gray-400">Physical Products</div>
+          <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
             {templates.filter(t => t.product_type === 'physical').length}
           </div>
         </div>
-        <div className="bg-white rounded-lg shadow p-4">
-          <div className="text-sm text-gray-500">Services</div>
-          <div className="text-2xl font-bold text-green-600">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-4">
+          <div className="text-sm text-gray-500 dark:text-gray-400">Services</div>
+          <div className="text-2xl font-bold text-green-600 dark:text-green-400">
             {templates.filter(t => t.product_type === 'service').length}
           </div>
         </div>
-        <div className="bg-white rounded-lg shadow p-4">
-          <div className="text-sm text-gray-500">Total Variants</div>
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-4">
+          <div className="text-sm text-gray-500 dark:text-gray-400">Total Variants</div>
           <div className="text-2xl font-bold text-orange-600">
             {templates.reduce((sum, t) => sum + (t.variant_count || 0), 0)}
           </div>
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700">
         <div className="p-4 border-b flex gap-4">
           <div className="flex-1 relative">
             <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
@@ -225,28 +225,28 @@ export default function ProductTemplates() {
 
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gray-50">
+            <thead className="bg-gray-50 dark:bg-gray-900">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Template</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Category</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">List Price</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Cost</th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Variants</th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Status</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Template</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Category</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Type</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">List Price</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Cost</th>
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Variants</th>
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Status</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200">
+            <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
               {filteredTemplates.map((template) => (
-                <tr key={template.id} className="hover:bg-gray-50">
+                <tr key={template.id} className="hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900">
                   <td className="px-6 py-4">
-                    <div className="font-medium text-gray-900">{template.name}</div>
+                    <div className="font-medium text-gray-900 dark:text-white">{template.name}</div>
                     {template.sku_prefix && (
-                      <div className="text-sm text-gray-500">SKU: {template.sku_prefix}</div>
+                      <div className="text-sm text-gray-500 dark:text-gray-400">SKU: {template.sku_prefix}</div>
                     )}
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-600">
+                  <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
                     {template.category_name || '-'}
                   </td>
                   <td className="px-6 py-4">
@@ -262,11 +262,11 @@ export default function ProductTemplates() {
                   <td className="px-6 py-4 text-right text-sm">
                     R {template.list_price.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
                   </td>
-                  <td className="px-6 py-4 text-right text-sm text-gray-600">
+                  <td className="px-6 py-4 text-right text-sm text-gray-600 dark:text-gray-400">
                     R {template.cost_price.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
                   </td>
                   <td className="px-6 py-4 text-center">
-                    <span className="px-2 py-1 bg-gray-100 text-gray-800 text-xs rounded-full">
+                    <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-100 text-xs rounded-full">
                       {template.variant_count || 0}
                     </span>
                   </td>
@@ -280,20 +280,20 @@ export default function ProductTemplates() {
                   <td className="px-6 py-4 text-right">
                     <button
                       onClick={() => handleGenerateVariants(template.id)}
-                      className="text-purple-600 hover:text-purple-900 mr-2"
+                      className="text-purple-600 dark:text-purple-400 hover:text-purple-900 mr-2"
                       title="Generate Variants"
                     >
                       <Copy size={16} />
                     </button>
                     <button
                       onClick={() => handleEdit(template)}
-                      className="text-blue-600 hover:text-blue-900 mr-2"
+                      className="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:text-blue-100 mr-2"
                     >
                       <Edit size={16} />
                     </button>
                     <button
                       onClick={() => handleDelete(template.id)}
-                      className="text-red-600 hover:text-red-900"
+                      className="text-red-600 dark:text-red-400 hover:text-red-900"
                     >
                       <Trash2 size={16} />
                     </button>
@@ -303,7 +303,7 @@ export default function ProductTemplates() {
             </tbody>
           </table>
           {filteredTemplates.length === 0 && (
-            <div className="p-8 text-center text-gray-500">
+            <div className="p-8 text-center text-gray-500 dark:text-gray-400">
               {searchTerm ? 'No templates found matching your search' : 'No templates yet. Create your first one!'}
             </div>
           )}
@@ -312,14 +312,14 @@ export default function ProductTemplates() {
 
       {showForm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6">
             <h2 className="text-xl font-bold mb-4">
               {editingTemplate ? 'Edit Template' : 'Add Template'}
             </h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Name *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Name *</label>
                   <input
                     type="text"
                     required
@@ -329,7 +329,7 @@ export default function ProductTemplates() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">SKU Prefix</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">SKU Prefix</label>
                   <input
                     type="text"
                     value={formData.sku_prefix}
@@ -338,7 +338,7 @@ export default function ProductTemplates() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Category</label>
                   <select
                     value={formData.category_id}
                     onChange={(e) => setFormData({ ...formData, category_id: e.target.value })}
@@ -351,7 +351,7 @@ export default function ProductTemplates() {
                   </select>
                 </div>
                 <div className="col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description</label>
                   <textarea
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
@@ -360,7 +360,7 @@ export default function ProductTemplates() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Product Type</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Product Type</label>
                   <select
                     value={formData.product_type}
                     onChange={(e) => setFormData({ ...formData, product_type: e.target.value })}
@@ -373,7 +373,7 @@ export default function ProductTemplates() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">List Price (R)</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">List Price (R)</label>
                   <input
                     type="number"
                     step="0.01"
@@ -383,7 +383,7 @@ export default function ProductTemplates() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Cost Price (R)</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Cost Price (R)</label>
                   <input
                     type="number"
                     step="0.01"
@@ -393,7 +393,7 @@ export default function ProductTemplates() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Weight (kg)</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Weight (kg)</label>
                   <input
                     type="number"
                     step="0.01"
@@ -409,43 +409,43 @@ export default function ProductTemplates() {
                     type="checkbox"
                     checked={formData.can_be_sold}
                     onChange={(e) => setFormData({ ...formData, can_be_sold: e.target.checked })}
-                    className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                    className="h-4 w-4 text-purple-600 dark:text-purple-400 focus:ring-purple-500 border-gray-300 dark:border-gray-600 rounded"
                   />
-                  <span className="ml-2 text-sm text-gray-900">Can be Sold</span>
+                  <span className="ml-2 text-sm text-gray-900 dark:text-white">Can be Sold</span>
                 </label>
                 <label className="flex items-center">
                   <input
                     type="checkbox"
                     checked={formData.can_be_purchased}
                     onChange={(e) => setFormData({ ...formData, can_be_purchased: e.target.checked })}
-                    className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                    className="h-4 w-4 text-purple-600 dark:text-purple-400 focus:ring-purple-500 border-gray-300 dark:border-gray-600 rounded"
                   />
-                  <span className="ml-2 text-sm text-gray-900">Can be Purchased</span>
+                  <span className="ml-2 text-sm text-gray-900 dark:text-white">Can be Purchased</span>
                 </label>
                 <label className="flex items-center">
                   <input
                     type="checkbox"
                     checked={formData.track_inventory}
                     onChange={(e) => setFormData({ ...formData, track_inventory: e.target.checked })}
-                    className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                    className="h-4 w-4 text-purple-600 dark:text-purple-400 focus:ring-purple-500 border-gray-300 dark:border-gray-600 rounded"
                   />
-                  <span className="ml-2 text-sm text-gray-900">Track Inventory</span>
+                  <span className="ml-2 text-sm text-gray-900 dark:text-white">Track Inventory</span>
                 </label>
                 <label className="flex items-center">
                   <input
                     type="checkbox"
                     checked={formData.is_active}
                     onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
-                    className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                    className="h-4 w-4 text-purple-600 dark:text-purple-400 focus:ring-purple-500 border-gray-300 dark:border-gray-600 rounded"
                   />
-                  <span className="ml-2 text-sm text-gray-900">Active</span>
+                  <span className="ml-2 text-sm text-gray-900 dark:text-white">Active</span>
                 </label>
               </div>
               <div className="flex justify-end gap-3 pt-4">
                 <button
                   type="button"
                   onClick={() => { setShowForm(false); setEditingTemplate(null); resetForm(); }}
-                  className="px-4 py-2 border rounded-lg hover:bg-gray-50"
+                  className="px-4 py-2 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900"
                 >
                   Cancel
                 </button>

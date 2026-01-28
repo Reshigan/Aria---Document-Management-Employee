@@ -182,18 +182,18 @@ export default function ProductAttributes() {
   };
 
   return (
-    <div className="p-6">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
+        <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent flex items-center gap-3">
           <Sliders size={28} className="text-purple-500" />
           Product Attributes
         </h1>
-        <p className="text-gray-600 mt-1">Define product attributes like Size, Color, Material for variant generation</p>
+        <p className="text-gray-600 dark:text-gray-400 mt-1">Define product attributes like Size, Color, Material for variant generation</p>
       </div>
 
       <div className="grid grid-cols-2 gap-6">
         {/* Attributes List */}
-        <div className="bg-white rounded-lg shadow">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700">
           <div className="p-4 border-b flex gap-4">
             <div className="flex-1 relative">
               <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
@@ -215,9 +215,9 @@ export default function ProductAttributes() {
           </div>
 
           {loading ? (
-            <div className="p-8 text-center text-gray-500">Loading attributes...</div>
+            <div className="p-8 text-center text-gray-500 dark:text-gray-400">Loading attributes...</div>
           ) : filteredAttributes.length === 0 ? (
-            <div className="p-8 text-center text-gray-500">
+            <div className="p-8 text-center text-gray-500 dark:text-gray-400">
               {searchTerm ? 'No attributes found' : 'No attributes yet. Create your first one!'}
             </div>
           ) : (
@@ -232,13 +232,13 @@ export default function ProductAttributes() {
                 >
                   <div className="flex items-center justify-between">
                     <div>
-                      <div className="font-medium text-gray-900">{attr.name}</div>
-                      <div className="text-sm text-gray-500">
+                      <div className="font-medium text-gray-900 dark:text-white">{attr.name}</div>
+                      <div className="text-sm text-gray-500 dark:text-gray-400">
                         {displayTypeLabels[attr.display_type]} | {variantLabels[attr.create_variant]}
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="px-2 py-1 bg-gray-100 text-gray-800 text-xs rounded-full">
+                      <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-100 text-xs rounded-full">
                         {attr.value_count || 0} values
                       </span>
                       <button
@@ -249,13 +249,13 @@ export default function ProductAttributes() {
                           sequence: attr.sequence,
                           is_active: attr.is_active
                         }); setShowAttrForm(true); }}
-                        className="text-blue-600 hover:text-blue-900"
+                        className="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:text-blue-100"
                       >
                         <Edit size={16} />
                       </button>
                       <button
                         onClick={(e) => { e.stopPropagation(); handleDeleteAttribute(attr.id); }}
-                        className="text-red-600 hover:text-red-900"
+                        className="text-red-600 dark:text-red-400 hover:text-red-900"
                       >
                         <Trash2 size={16} />
                       </button>
@@ -268,9 +268,9 @@ export default function ProductAttributes() {
         </div>
 
         {/* Attribute Values */}
-        <div className="bg-white rounded-lg shadow">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700">
           <div className="p-4 border-b flex justify-between items-center">
-            <h2 className="font-semibold text-gray-900">
+            <h2 className="font-semibold text-gray-900 dark:text-white">
               {selectedAttribute ? `Values for "${selectedAttribute.name}"` : 'Select an Attribute'}
             </h2>
             {selectedAttribute && (
@@ -285,17 +285,17 @@ export default function ProductAttributes() {
           </div>
 
           {!selectedAttribute ? (
-            <div className="p-8 text-center text-gray-500">
+            <div className="p-8 text-center text-gray-500 dark:text-gray-400">
               Select an attribute to view and manage its values
             </div>
           ) : values.length === 0 ? (
-            <div className="p-8 text-center text-gray-500">
+            <div className="p-8 text-center text-gray-500 dark:text-gray-400">
               No values yet. Add values to this attribute.
             </div>
           ) : (
             <div className="divide-y">
               {values.map((value) => (
-                <div key={value.id} className="p-4 flex items-center justify-between hover:bg-gray-50">
+                <div key={value.id} className="p-4 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900">
                   <div className="flex items-center gap-3">
                     {value.html_color && (
                       <div
@@ -304,7 +304,7 @@ export default function ProductAttributes() {
                       />
                     )}
                     <Tag size={16} className="text-gray-400" />
-                    <span className="font-medium text-gray-900">{value.name}</span>
+                    <span className="font-medium text-gray-900 dark:text-white">{value.name}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <span className={`px-2 py-1 text-xs rounded-full ${
@@ -319,13 +319,13 @@ export default function ProductAttributes() {
                         sequence: value.sequence,
                         is_active: value.is_active
                       }); setShowValueForm(true); }}
-                      className="text-blue-600 hover:text-blue-900"
+                      className="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:text-blue-100"
                     >
                       <Edit size={16} />
                     </button>
                     <button
                       onClick={() => handleDeleteValue(value.id)}
-                      className="text-red-600 hover:text-red-900"
+                      className="text-red-600 dark:text-red-400 hover:text-red-900"
                     >
                       <Trash2 size={16} />
                     </button>
@@ -340,13 +340,13 @@ export default function ProductAttributes() {
       {/* Attribute Form Modal */}
       {showAttrForm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-md p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700-xl w-full max-w-md p-6">
             <h2 className="text-xl font-bold mb-4">
               {editingAttribute ? 'Edit Attribute' : 'Add Attribute'}
             </h2>
             <form onSubmit={handleAttrSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Name *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Name *</label>
                 <input
                   type="text"
                   required
@@ -357,7 +357,7 @@ export default function ProductAttributes() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Display Type</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Display Type</label>
                 <select
                   value={attrFormData.display_type}
                   onChange={(e) => setAttrFormData({ ...attrFormData, display_type: e.target.value })}
@@ -370,7 +370,7 @@ export default function ProductAttributes() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Variant Creation</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Variant Creation</label>
                 <select
                   value={attrFormData.create_variant}
                   onChange={(e) => setAttrFormData({ ...attrFormData, create_variant: e.target.value })}
@@ -382,7 +382,7 @@ export default function ProductAttributes() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Sequence</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Sequence</label>
                 <input
                   type="number"
                   value={attrFormData.sequence}
@@ -395,15 +395,15 @@ export default function ProductAttributes() {
                   type="checkbox"
                   checked={attrFormData.is_active}
                   onChange={(e) => setAttrFormData({ ...attrFormData, is_active: e.target.checked })}
-                  className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                  className="h-4 w-4 text-purple-600 dark:text-purple-400 focus:ring-purple-500 border-gray-300 dark:border-gray-600 rounded"
                 />
-                <label className="ml-2 text-sm text-gray-900">Active</label>
+                <label className="ml-2 text-sm text-gray-900 dark:text-white">Active</label>
               </div>
               <div className="flex justify-end gap-3 pt-4">
                 <button
                   type="button"
                   onClick={() => { setShowAttrForm(false); setEditingAttribute(null); resetAttrForm(); }}
-                  className="px-4 py-2 border rounded-lg hover:bg-gray-50"
+                  className="px-4 py-2 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900"
                 >
                   Cancel
                 </button>
@@ -422,13 +422,13 @@ export default function ProductAttributes() {
       {/* Value Form Modal */}
       {showValueForm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-md p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700-xl w-full max-w-md p-6">
             <h2 className="text-xl font-bold mb-4">
               {editingValue ? 'Edit Value' : 'Add Value'}
             </h2>
             <form onSubmit={handleValueSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Value Name *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Value Name *</label>
                 <input
                   type="text"
                   required
@@ -440,7 +440,7 @@ export default function ProductAttributes() {
               </div>
               {selectedAttribute?.display_type === 'color' && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Color</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Color</label>
                   <div className="flex gap-2">
                     <input
                       type="color"
@@ -459,7 +459,7 @@ export default function ProductAttributes() {
                 </div>
               )}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Sequence</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Sequence</label>
                 <input
                   type="number"
                   value={valueFormData.sequence}
@@ -472,15 +472,15 @@ export default function ProductAttributes() {
                   type="checkbox"
                   checked={valueFormData.is_active}
                   onChange={(e) => setValueFormData({ ...valueFormData, is_active: e.target.checked })}
-                  className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                  className="h-4 w-4 text-purple-600 dark:text-purple-400 focus:ring-purple-500 border-gray-300 dark:border-gray-600 rounded"
                 />
-                <label className="ml-2 text-sm text-gray-900">Active</label>
+                <label className="ml-2 text-sm text-gray-900 dark:text-white">Active</label>
               </div>
               <div className="flex justify-end gap-3 pt-4">
                 <button
                   type="button"
                   onClick={() => { setShowValueForm(false); setEditingValue(null); resetValueForm(); }}
-                  className="px-4 py-2 border rounded-lg hover:bg-gray-50"
+                  className="px-4 py-2 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900"
                 >
                   Cancel
                 </button>

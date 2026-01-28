@@ -203,41 +203,41 @@ export default function Deliverables() {
   };
 
   return (
-    <div className="p-6">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
+        <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent flex items-center gap-3">
           <Package size={28} className="text-indigo-500" />
           Project Deliverables
         </h1>
-        <p className="text-gray-600 mt-1">Track and manage project deliverables with customer acceptance</p>
+        <p className="text-gray-600 dark:text-gray-400 mt-1">Track and manage project deliverables with customer acceptance</p>
       </div>
 
       <div className="grid grid-cols-4 gap-4 mb-6">
-        <div className="bg-white rounded-lg shadow p-4">
-          <div className="text-sm text-gray-500">Total Deliverables</div>
-          <div className="text-2xl font-bold text-indigo-600">{deliverables.length}</div>
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-4">
+          <div className="text-sm text-gray-500 dark:text-gray-400">Total Deliverables</div>
+          <div className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">{deliverables.length}</div>
         </div>
-        <div className="bg-white rounded-lg shadow p-4">
-          <div className="text-sm text-gray-500">Pending</div>
-          <div className="text-2xl font-bold text-gray-600">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-4">
+          <div className="text-sm text-gray-500 dark:text-gray-400">Pending</div>
+          <div className="text-2xl font-bold text-gray-600 dark:text-gray-400">
             {deliverables.filter(d => d.status === 'pending' || d.status === 'in_progress').length}
           </div>
         </div>
-        <div className="bg-white rounded-lg shadow p-4">
-          <div className="text-sm text-gray-500">Accepted</div>
-          <div className="text-2xl font-bold text-green-600">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-4">
+          <div className="text-sm text-gray-500 dark:text-gray-400">Accepted</div>
+          <div className="text-2xl font-bold text-green-600 dark:text-green-400">
             {deliverables.filter(d => d.status === 'accepted').length}
           </div>
         </div>
-        <div className="bg-white rounded-lg shadow p-4">
-          <div className="text-sm text-gray-500">Rejected</div>
-          <div className="text-2xl font-bold text-red-600">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-4">
+          <div className="text-sm text-gray-500 dark:text-gray-400">Rejected</div>
+          <div className="text-2xl font-bold text-red-600 dark:text-red-400">
             {deliverables.filter(d => d.status === 'rejected').length}
           </div>
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700">
         <div className="p-4 border-b flex gap-4 flex-wrap">
           <div className="flex-1 min-w-[200px] relative">
             <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
@@ -282,39 +282,39 @@ export default function Deliverables() {
 
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gray-50">
+            <thead className="bg-gray-50 dark:bg-gray-900">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Deliverable</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Project</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Milestone</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Due Date</th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Status</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Deliverable</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Project</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Milestone</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Due Date</th>
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Status</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200">
+            <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
               {filteredDeliverables.map((deliverable) => (
-                <tr key={deliverable.id} className="hover:bg-gray-50">
+                <tr key={deliverable.id} className="hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900">
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-2">
                       <FileText size={16} className="text-gray-400" />
                       <div>
-                        <div className="font-medium text-gray-900">{deliverable.name}</div>
+                        <div className="font-medium text-gray-900 dark:text-white">{deliverable.name}</div>
                         {deliverable.description && (
-                          <div className="text-sm text-gray-500 truncate max-w-xs">{deliverable.description}</div>
+                          <div className="text-sm text-gray-500 dark:text-gray-400 truncate max-w-xs">{deliverable.description}</div>
                         )}
                       </div>
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-600">
+                  <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
                     {deliverable.project_name || '-'}
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-600">
+                  <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
                     {deliverable.milestone_name || '-'}
                   </td>
                   <td className="px-6 py-4">
                     {deliverable.due_date ? (
-                      <div className="flex items-center gap-2 text-sm text-gray-600">
+                      <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                         <Calendar size={14} className="text-gray-400" />
                         {new Date(deliverable.due_date).toLocaleDateString()}
                       </div>
@@ -337,14 +337,14 @@ export default function Deliverables() {
                       <>
                         <button
                           onClick={() => handleAccept(deliverable)}
-                          className="text-green-600 hover:text-green-900 mr-2"
+                          className="text-green-600 dark:text-green-400 hover:text-green-900 mr-2"
                           title="Accept"
                         >
                           <CheckCircle size={16} />
                         </button>
                         <button
                           onClick={() => handleReject(deliverable)}
-                          className="text-red-600 hover:text-red-900 mr-2"
+                          className="text-red-600 dark:text-red-400 hover:text-red-900 mr-2"
                           title="Reject"
                         >
                           <XCircle size={16} />
@@ -353,13 +353,13 @@ export default function Deliverables() {
                     )}
                     <button
                       onClick={() => handleEdit(deliverable)}
-                      className="text-blue-600 hover:text-blue-900 mr-2"
+                      className="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:text-blue-100 mr-2"
                     >
                       <Edit size={16} />
                     </button>
                     <button
                       onClick={() => handleDelete(deliverable.id)}
-                      className="text-red-600 hover:text-red-900"
+                      className="text-red-600 dark:text-red-400 hover:text-red-900"
                     >
                       <Trash2 size={16} />
                     </button>
@@ -369,7 +369,7 @@ export default function Deliverables() {
             </tbody>
           </table>
           {filteredDeliverables.length === 0 && (
-            <div className="p-8 text-center text-gray-500">
+            <div className="p-8 text-center text-gray-500 dark:text-gray-400">
               {searchTerm || filterProject || filterStatus 
                 ? 'No deliverables found matching your criteria' 
                 : 'No deliverables yet. Add your first one!'}
@@ -380,13 +380,13 @@ export default function Deliverables() {
 
       {showForm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-md p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700-xl w-full max-w-md p-6">
             <h2 className="text-xl font-bold mb-4">
               {editingDeliverable ? 'Edit Deliverable' : 'Add Deliverable'}
             </h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Project *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Project *</label>
                 <select
                   required
                   value={formData.project_id}
@@ -400,7 +400,7 @@ export default function Deliverables() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Milestone</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Milestone</label>
                 <select
                   value={formData.milestone_id}
                   onChange={(e) => setFormData({ ...formData, milestone_id: e.target.value })}
@@ -413,7 +413,7 @@ export default function Deliverables() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Deliverable Name *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Deliverable Name *</label>
                 <input
                   type="text"
                   required
@@ -424,7 +424,7 @@ export default function Deliverables() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Due Date</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Due Date</label>
                 <input
                   type="date"
                   value={formData.due_date}
@@ -434,7 +434,7 @@ export default function Deliverables() {
               </div>
               {editingDeliverable && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Status</label>
                   <select
                     value={formData.status}
                     onChange={(e) => setFormData({ ...formData, status: e.target.value })}
@@ -449,7 +449,7 @@ export default function Deliverables() {
                 </div>
               )}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description</label>
                 <textarea
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
@@ -461,7 +461,7 @@ export default function Deliverables() {
                 <button
                   type="button"
                   onClick={() => { setShowForm(false); setEditingDeliverable(null); resetForm(); }}
-                  className="px-4 py-2 border rounded-lg hover:bg-gray-50"
+                  className="px-4 py-2 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900"
                 >
                   Cancel
                 </button>

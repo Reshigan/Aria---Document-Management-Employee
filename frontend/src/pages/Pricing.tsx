@@ -177,7 +177,7 @@ export const Pricing: React.FC = () => {
               </span>
               <button
                 onClick={() => setBillingPeriod(billingPeriod === 'monthly' ? 'annual' : 'monthly')}
-                className="relative w-16 h-8 bg-white/20 rounded-full transition"
+                className="relative w-16 h-8 bg-white dark:bg-gray-800/20 rounded-full transition"
               >
                 <div className={`absolute top-1 ${billingPeriod === 'annual' ? 'right-1' : 'left-1'} w-6 h-6 bg-white rounded-full transition-all`} />
               </button>
@@ -197,16 +197,16 @@ export const Pricing: React.FC = () => {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white rounded-2xl shadow-2xl p-8 mb-12"
+          className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 mb-12"
         >
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
-              <Calculator size={32} className="text-indigo-600" />
-              <h2 className="text-2xl font-bold text-gray-900">Calculate Your Price</h2>
+              <Calculator size={32} className="text-indigo-600 dark:text-indigo-400" />
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Calculate Your Price</h2>
             </div>
             <button
               onClick={() => setShowCalculator(!showCalculator)}
-              className="text-indigo-600 hover:text-indigo-700 font-medium"
+              className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:text-indigo-300 font-medium"
             >
               {showCalculator ? 'Hide' : 'Show'} Calculator
             </button>
@@ -215,7 +215,7 @@ export const Pricing: React.FC = () => {
           {showCalculator && (
             <div className="space-y-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Number of Users: {userCount}
                 </label>
                 <input
@@ -224,9 +224,9 @@ export const Pricing: React.FC = () => {
                   max="200"
                   value={userCount}
                   onChange={(e) => setUserCount(parseInt(e.target.value))}
-                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
+                  className="w-full h-2 bg-gray-200 dark:bg-gray-600 rounded-lg appearance-none cursor-pointer accent-indigo-600"
                 />
-                <div className="flex justify-between text-xs text-gray-500 mt-1">
+                <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
                   <span>10 users</span>
                   <span>200 users</span>
                 </div>
@@ -234,27 +234,27 @@ export const Pricing: React.FC = () => {
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="bg-gradient-to-br from-indigo-50 to-purple-50 p-6 rounded-xl">
-                  <div className="text-sm text-indigo-600 font-medium mb-2">Your Plan</div>
+                  <div className="text-sm text-indigo-600 dark:text-indigo-400 font-medium mb-2">Your Plan</div>
                   <div className="text-3xl font-bold text-indigo-900">{selectedPlan.name}</div>
-                  <div className="text-sm text-gray-600 mt-2">{selectedPlan.agents} AI Agents Included</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400 mt-2">{selectedPlan.agents} AI Agents Included</div>
                 </div>
 
                 <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-6 rounded-xl">
-                  <div className="text-sm text-green-600 font-medium mb-2">Monthly Cost</div>
+                  <div className="text-sm text-green-600 dark:text-green-400 font-medium mb-2">Monthly Cost</div>
                   <div className="text-3xl font-bold text-green-900">
                     R{displayPrice.toLocaleString()}
                   </div>
-                  <div className="text-sm text-gray-600 mt-2">
+                  <div className="text-sm text-gray-600 dark:text-gray-400 mt-2">
                     {billingPeriod === 'annual' ? 'Billed annually' : 'Billed monthly'}
                   </div>
                 </div>
 
                 <div className="bg-gradient-to-br from-blue-50 to-cyan-50 p-6 rounded-xl">
-                  <div className="text-sm text-blue-600 font-medium mb-2">Per User/Month</div>
-                  <div className="text-3xl font-bold text-blue-900">
+                  <div className="text-sm text-blue-600 dark:text-blue-400 font-medium mb-2">Per User/Month</div>
+                  <div className="text-3xl font-bold text-blue-900 dark:text-blue-100">
                     R{selectedPlan.price}
                   </div>
-                  <div className="text-sm text-gray-600 mt-2">
+                  <div className="text-sm text-gray-600 dark:text-gray-400 mt-2">
                     {billingPeriod === 'annual' ? 'R' + (selectedPlan.price * 0.9).toFixed(0) + ' with annual' : 'Save 10% annually'}
                   </div>
                 </div>
@@ -262,15 +262,15 @@ export const Pricing: React.FC = () => {
 
               {/* Savings Comparison */}
               <div className="bg-gradient-to-r from-yellow-50 to-orange-50 p-6 rounded-xl">
-                <h3 className="text-lg font-bold text-gray-900 mb-4">💰 Your Savings vs Competitors</h3>
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">💰 Your Savings vs Competitors</h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   {COMPETITORS.slice(0, 3).map((comp, idx) => (
-                    <div key={idx} className="bg-white p-4 rounded-lg">
-                      <div className="text-sm text-gray-600 mb-1">{comp.name}</div>
-                      <div className="text-lg font-bold text-gray-900 line-through">
+                    <div key={idx} className="bg-white dark:bg-gray-800 p-4 rounded-lg">
+                      <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">{comp.name}</div>
+                      <div className="text-lg font-bold text-gray-900 dark:text-white line-through">
                         R{comp.price.toLocaleString()}/mo
                       </div>
-                      <div className="text-green-600 font-bold text-sm mt-1">
+                      <div className="text-green-600 dark:text-green-400 font-bold text-sm mt-1">
                         Save {(comp.savings * 100).toFixed(0)}% (R{(comp.price - displayPrice).toLocaleString()}/mo)
                       </div>
                     </div>
@@ -283,7 +283,7 @@ export const Pricing: React.FC = () => {
                   Start Free Trial
                   <ArrowRight size={20} />
                 </button>
-                <button className="flex-1 bg-white border-2 border-indigo-600 text-indigo-600 py-4 px-6 rounded-xl hover:bg-indigo-50 transition text-lg font-bold">
+                <button className="flex-1 bg-white dark:bg-gray-800 border-2 border-indigo-600 text-indigo-600 dark:text-indigo-400 py-4 px-6 rounded-xl hover:bg-indigo-50 dark:bg-indigo-900/30 transition text-lg font-bold">
                   Schedule Demo
                 </button>
               </div>
@@ -306,7 +306,7 @@ export const Pricing: React.FC = () => {
                 }`}
               >
                 {plan.popular && (
-                  <div className="absolute top-0 right-0 bg-indigo-500 text-white px-4 py-1 text-sm font-bold flex items-center gap-1">
+                  <div className="absolute top-0 right-0 bg-indigo-50 dark:bg-indigo-900/300 text-white px-4 py-1 text-sm font-bold flex items-center gap-1">
                     <Star size={14} fill="currentColor" />
                     MOST POPULAR
                   </div>
@@ -328,23 +328,23 @@ export const Pricing: React.FC = () => {
                   <div className="space-y-3 mb-6">
                     <div className="flex items-center gap-2 text-sm">
                       <Users size={16} className="text-gray-400" />
-                      <span className="text-gray-600">{plan.minUsers}-{plan.maxUsers} users</span>
+                      <span className="text-gray-600 dark:text-gray-400">{plan.minUsers}-{plan.maxUsers} users</span>
                     </div>
                     <div className="flex items-center gap-2 text-sm">
                       <Zap size={16} className="text-gray-400" />
-                      <span className="text-gray-600">{plan.agents} AI Agents</span>
+                      <span className="text-gray-600 dark:text-gray-400">{plan.agents} AI Agents</span>
                     </div>
                     <div className="flex items-center gap-2 text-sm">
                       <Package size={16} className="text-gray-400" />
-                      <span className="text-gray-600">{plan.storage} storage</span>
+                      <span className="text-gray-600 dark:text-gray-400">{plan.storage} storage</span>
                     </div>
                     <div className="flex items-center gap-2 text-sm">
                       <Clock size={16} className="text-gray-400" />
-                      <span className="text-gray-600">{plan.support}</span>
+                      <span className="text-gray-600 dark:text-gray-400">{plan.support}</span>
                     </div>
                     <div className="flex items-center gap-2 text-sm">
                       <Shield size={16} className="text-gray-400" />
-                      <span className="text-gray-600">{plan.sla}</span>
+                      <span className="text-gray-600 dark:text-gray-400">{plan.sla}</span>
                     </div>
                   </div>
 
@@ -353,11 +353,11 @@ export const Pricing: React.FC = () => {
                       {plan.features.slice(0, 5).map((feature, idx) => (
                         <li key={idx} className="flex items-start gap-2 text-sm">
                           <Check size={16} className="text-green-500 flex-shrink-0 mt-0.5" />
-                          <span className="text-gray-600">{feature}</span>
+                          <span className="text-gray-600 dark:text-gray-400">{feature}</span>
                         </li>
                       ))}
                       {plan.features.length > 5 && (
-                        <li className="text-sm text-indigo-600 font-medium">
+                        <li className="text-sm text-indigo-600 dark:text-indigo-400 font-medium">
                           +{plan.features.length - 5} more features
                         </li>
                       )}
@@ -378,32 +378,32 @@ export const Pricing: React.FC = () => {
         </div>
 
         {/* Agent Packages */}
-        <div className="bg-white rounded-2xl shadow-xl p-8 mb-12">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">Individual Agent Packages</h2>
-          <p className="text-gray-600 mb-8">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 mb-12">
+          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">Individual Agent Packages</h2>
+          <p className="text-gray-600 dark:text-gray-400 mb-8">
             Already have an ERP? Add AI automation with individual agents or bundles
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             <div className="bg-gradient-to-br from-blue-50 to-cyan-50 p-6 rounded-xl">
-              <h3 className="text-xl font-bold text-blue-900 mb-2">Finance Pack</h3>
-              <div className="text-3xl font-bold text-blue-600 mb-3">R10,000<span className="text-lg">/mo</span></div>
-              <ul className="space-y-1 text-sm text-gray-700">
+              <h3 className="text-xl font-bold text-blue-900 dark:text-blue-100 mb-2">Finance Pack</h3>
+              <div className="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-3">R10,000<span className="text-lg">/mo</span></div>
+              <ul className="space-y-1 text-sm text-gray-700 dark:text-gray-300">
                 <li>• Invoice Reconciliation Agent</li>
                 <li>• Accounts Payable Agent</li>
                 <li>• Bank Reconciliation Agent</li>
                 <li>• General Ledger Agent</li>
                 <li>• Expense Approval Agent</li>
               </ul>
-              <button className="w-full mt-4 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition">
+              <button className="w-full mt-4 bg-blue-600 dark:bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-700 transition">
                 Add to Cart
               </button>
             </div>
 
             <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-6 rounded-xl">
               <h3 className="text-xl font-bold text-green-900 mb-2">Sales Pack</h3>
-              <div className="text-3xl font-bold text-green-600 mb-3">R7,500<span className="text-lg">/mo</span></div>
-              <ul className="space-y-1 text-sm text-gray-700">
+              <div className="text-3xl font-bold text-green-600 dark:text-green-400 mb-3">R7,500<span className="text-lg">/mo</span></div>
+              <ul className="space-y-1 text-sm text-gray-700 dark:text-gray-300">
                 <li>• Lead Qualification Agent</li>
                 <li>• Quote Generation Agent</li>
                 <li>• Sales Order Agent</li>
@@ -415,8 +415,8 @@ export const Pricing: React.FC = () => {
 
             <div className="bg-gradient-to-br from-purple-50 to-pink-50 p-6 rounded-xl">
               <h3 className="text-xl font-bold text-purple-900 mb-2">Operations Pack</h3>
-              <div className="text-3xl font-bold text-purple-600 mb-3">R8,500<span className="text-lg">/mo</span></div>
-              <ul className="space-y-1 text-sm text-gray-700">
+              <div className="text-3xl font-bold text-purple-600 dark:text-purple-400 mb-3">R8,500<span className="text-lg">/mo</span></div>
+              <ul className="space-y-1 text-sm text-gray-700 dark:text-gray-300">
                 <li>• Inventory Reorder Agent</li>
                 <li>• Purchasing Agent</li>
                 <li>• Warehouse Management Agent</li>
@@ -429,7 +429,7 @@ export const Pricing: React.FC = () => {
             <div className="bg-gradient-to-br from-orange-50 to-red-50 p-6 rounded-xl">
               <h3 className="text-xl font-bold text-orange-900 mb-2">HR Pack</h3>
               <div className="text-3xl font-bold text-orange-600 mb-3">R12,000<span className="text-lg">/mo</span></div>
-              <ul className="space-y-1 text-sm text-gray-700">
+              <ul className="space-y-1 text-sm text-gray-700 dark:text-gray-300">
                 <li>• Payroll Agent</li>
                 <li>• Leave Management Agent</li>
                 <li>• Recruitment Agent</li>
@@ -444,30 +444,30 @@ export const Pricing: React.FC = () => {
         </div>
 
         {/* FAQ Section */}
-        <div className="bg-white rounded-2xl shadow-xl p-8">
-          <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Frequently Asked Questions</h2>
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8">
+          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-8 text-center">Frequently Asked Questions</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <h3 className="font-bold text-gray-900 mb-2">What's included in the free trial?</h3>
-              <p className="text-gray-600 text-sm">
+              <h3 className="font-bold text-gray-900 dark:text-white mb-2">What's included in the free trial?</h3>
+              <p className="text-gray-600 dark:text-gray-400 text-sm">
                 14-day free trial with full access to your plan's features. No credit card required to start.
               </p>
             </div>
             <div>
-              <h3 className="font-bold text-gray-900 mb-2">Can I change plans later?</h3>
-              <p className="text-gray-600 text-sm">
+              <h3 className="font-bold text-gray-900 dark:text-white mb-2">Can I change plans later?</h3>
+              <p className="text-gray-600 dark:text-gray-400 text-sm">
                 Yes! Upgrade or downgrade anytime. Changes take effect immediately, and we'll prorate the difference.
               </p>
             </div>
             <div>
-              <h3 className="font-bold text-gray-900 mb-2">What if I need more than 200 users?</h3>
-              <p className="text-gray-600 text-sm">
+              <h3 className="font-bold text-gray-900 dark:text-white mb-2">What if I need more than 200 users?</h3>
+              <p className="text-gray-600 dark:text-gray-400 text-sm">
                 Contact our sales team for custom enterprise pricing. We support organizations of any size.
               </p>
             </div>
             <div>
-              <h3 className="font-bold text-gray-900 mb-2">How does billing work?</h3>
-              <p className="text-gray-600 text-sm">
+              <h3 className="font-bold text-gray-900 dark:text-white mb-2">How does billing work?</h3>
+              <p className="text-gray-600 dark:text-gray-400 text-sm">
                 Monthly or annual billing. Annual plans get 10% discount. Add or remove users anytime.
               </p>
             </div>

@@ -94,24 +94,24 @@ export default function ERPDashboard() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen bg-gray-50">
+      <div className="flex items-center justify-center h-screen bg-gray-50 dark:bg-gray-900">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading ERP Dashboard...</p>
+          <p className="mt-4 text-gray-600 dark:text-gray-400">Loading ERP Dashboard...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800">
       {/* Header */}
-      <header className="bg-white shadow-sm">
+      <header className="bg-white dark:bg-gray-800 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">ARIA ERP</h1>
-              <p className="text-sm text-gray-500">Production-Grade Enterprise Resource Planning</p>
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">ARIA ERP</h1>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Production-Grade Enterprise Resource Planning</p>
             </div>
             <div className="flex items-center space-x-2">
               <div className={`px-3 py-1 rounded-full text-sm font-medium ${
@@ -121,7 +121,7 @@ export default function ERPDashboard() {
               }`}>
                 {health?.database === 'connected' ? '● Online' : '● Offline'}
               </div>
-              <div className="text-xs text-gray-500">
+              <div className="text-xs text-gray-500 dark:text-gray-400">
                 v{health?.version}
               </div>
             </div>
@@ -130,7 +130,7 @@ export default function ERPDashboard() {
       </header>
 
       {/* Navigation Tabs */}
-      <div className="bg-white border-b">
+      <div className="bg-white dark:bg-gray-800 border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <nav className="flex space-x-8">
             {[
@@ -161,35 +161,35 @@ export default function ERPDashboard() {
           <div className="space-y-6">
             {/* Module Status Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="bg-white rounded-lg shadow p-6">
-                <h3 className="text-sm font-medium text-gray-500">Total Payables</h3>
-                <p className="text-3xl font-bold text-red-600 mt-2">
+              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
+                <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Payables</h3>
+                <p className="text-3xl font-bold text-red-600 dark:text-red-400 mt-2">
                   {apAging ? formatCurrency(apAging.summary.total_outstanding) : '...'}
                 </p>
-                <p className="text-xs text-gray-500 mt-1">Outstanding to suppliers</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Outstanding to suppliers</p>
               </div>
 
-              <div className="bg-white rounded-lg shadow p-6">
-                <h3 className="text-sm font-medium text-gray-500">Total Receivables</h3>
-                <p className="text-3xl font-bold text-green-600 mt-2">
+              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
+                <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Receivables</h3>
+                <p className="text-3xl font-bold text-green-600 dark:text-green-400 mt-2">
                   {arAging ? formatCurrency(arAging.summary.total_outstanding) : '...'}
                 </p>
-                <p className="text-xs text-gray-500 mt-1">Outstanding from customers</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Outstanding from customers</p>
               </div>
 
-              <div className="bg-white rounded-lg shadow p-6">
-                <h3 className="text-sm font-medium text-gray-500">Active Modules</h3>
-                <p className="text-3xl font-bold text-blue-600 mt-2">
+              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
+                <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Active Modules</h3>
+                <p className="text-3xl font-bold text-blue-600 dark:text-blue-400 mt-2">
                   {health ? Object.keys(health.modules).length : '...'}
                 </p>
-                <p className="text-xs text-gray-500 mt-1">All systems operational</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">All systems operational</p>
               </div>
             </div>
 
             {/* Modules Grid */}
-            <div className="bg-white rounded-lg shadow">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700">
               <div className="px-6 py-4 border-b">
-                <h2 className="text-lg font-semibold text-gray-900">ERP Modules</h2>
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-white">ERP Modules</h2>
               </div>
               <div className="p-6">
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -199,7 +199,7 @@ export default function ERPDashboard() {
                         <div className={`w-2 h-2 rounded-full ${
                           status === 'active' ? 'bg-green-500' : 'bg-gray-300'
                         }`} />
-                        <span className="text-xs text-gray-500">{status}</span>
+                        <span className="text-xs text-gray-500 dark:text-gray-400">{status}</span>
                       </div>
                       <h4 className="font-medium text-sm capitalize">
                         {module.replace(/_/g, ' ')}
@@ -211,10 +211,10 @@ export default function ERPDashboard() {
             </div>
 
             {/* Automation Agents */}
-            <div className="bg-white rounded-lg shadow">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700">
               <div className="px-6 py-4 border-b">
-                <h2 className="text-lg font-semibold text-gray-900">Automation Agents</h2>
-                <p className="text-sm text-gray-500">15 intelligent agents working 24/7</p>
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Automation Agents</h2>
+                <p className="text-sm text-gray-500 dark:text-gray-400">15 intelligent agents working 24/7</p>
               </div>
               <div className="p-6">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -225,9 +225,9 @@ export default function ERPDashboard() {
                     'Customer Churn', 'Revenue Forecasting', 'Cashflow Prediction',
                     'Anomaly Detection', 'Document Classification', 'Multi-currency'
                   ].map((agent, idx) => (
-                    <div key={idx} className="flex items-center p-3 bg-gray-50 rounded-lg">
-                      <div className="w-2 h-2 bg-green-500 rounded-full mr-3 animate-pulse" />
-                      <span className="text-sm text-gray-700">{agent}</span>
+                    <div key={idx} className="flex items-center p-3 bg-gray-50 dark:bg-gray-900 rounded-lg">
+                      <div className="w-2 h-2 bg-green-50 dark:bg-green-900/300 rounded-full mr-3 animate-pulse" />
+                      <span className="text-sm text-gray-700 dark:text-gray-300">{agent}</span>
                     </div>
                   ))}
                 </div>
@@ -240,67 +240,67 @@ export default function ERPDashboard() {
           <div className="space-y-6">
             {/* AP Summary Cards */}
             <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-              <div className="bg-white rounded-lg shadow p-4">
-                <h4 className="text-xs font-medium text-gray-500">Total</h4>
-                <p className="text-xl font-bold text-gray-900 mt-1">
+              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-4">
+                <h4 className="text-xs font-medium text-gray-500 dark:text-gray-400">Total</h4>
+                <p className="text-xl font-bold text-gray-900 dark:text-white mt-1">
                   {apAging && formatCurrency(apAging.summary.total_outstanding)}
                 </p>
               </div>
-              <div className="bg-white rounded-lg shadow p-4">
-                <h4 className="text-xs font-medium text-gray-500">Current</h4>
-                <p className="text-xl font-bold text-green-600 mt-1">
+              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-4">
+                <h4 className="text-xs font-medium text-gray-500 dark:text-gray-400">Current</h4>
+                <p className="text-xl font-bold text-green-600 dark:text-green-400 mt-1">
                   {apAging && formatCurrency(apAging.summary.current)}
                 </p>
               </div>
-              <div className="bg-white rounded-lg shadow p-4">
-                <h4 className="text-xs font-medium text-gray-500">30 Days</h4>
-                <p className="text-xl font-bold text-yellow-600 mt-1">
+              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-4">
+                <h4 className="text-xs font-medium text-gray-500 dark:text-gray-400">30 Days</h4>
+                <p className="text-xl font-bold text-yellow-600 dark:text-yellow-400 mt-1">
                   {apAging && formatCurrency(apAging.summary.days_30)}
                 </p>
               </div>
-              <div className="bg-white rounded-lg shadow p-4">
-                <h4 className="text-xs font-medium text-gray-500">60 Days</h4>
+              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-4">
+                <h4 className="text-xs font-medium text-gray-500 dark:text-gray-400">60 Days</h4>
                 <p className="text-xl font-bold text-orange-600 mt-1">
                   {apAging && formatCurrency(apAging.summary.days_60)}
                 </p>
               </div>
-              <div className="bg-white rounded-lg shadow p-4">
-                <h4 className="text-xs font-medium text-gray-500">90+ Days</h4>
-                <p className="text-xl font-bold text-red-600 mt-1">
+              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-4">
+                <h4 className="text-xs font-medium text-gray-500 dark:text-gray-400">90+ Days</h4>
+                <p className="text-xl font-bold text-red-600 dark:text-red-400 mt-1">
                   {apAging && formatCurrency(apAging.summary.days_90_plus)}
                 </p>
               </div>
             </div>
 
             {/* AP Invoices Table */}
-            <div className="bg-white rounded-lg shadow">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700">
               <div className="px-6 py-4 border-b">
-                <h2 className="text-lg font-semibold text-gray-900">Outstanding Payables</h2>
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Outstanding Payables</h2>
               </div>
               <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
+                <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                  <thead className="bg-gray-50 dark:bg-gray-900">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Supplier</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Invoice</th>
-                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Amount</th>
-                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Outstanding</th>
-                      <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Status</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Supplier</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Invoice</th>
+                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Amount</th>
+                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Outstanding</th>
+                      <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Status</th>
                     </tr>
                   </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
+                  <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                     {apAging?.invoices.slice(0, 10).map((invoice, idx) => (
-                      <tr key={idx} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <tr key={idx} className="hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                           {invoice.supplier_name}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                           {invoice.invoice_number}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900 dark:text-white">
                           {formatCurrency(invoice.total_amount)}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-right font-medium text-gray-900">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-right font-medium text-gray-900 dark:text-white">
                           {formatCurrency(invoice.amount_outstanding)}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-center">
@@ -326,67 +326,67 @@ export default function ERPDashboard() {
           <div className="space-y-6">
             {/* AR Summary Cards */}
             <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-              <div className="bg-white rounded-lg shadow p-4">
-                <h4 className="text-xs font-medium text-gray-500">Total</h4>
-                <p className="text-xl font-bold text-gray-900 mt-1">
+              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-4">
+                <h4 className="text-xs font-medium text-gray-500 dark:text-gray-400">Total</h4>
+                <p className="text-xl font-bold text-gray-900 dark:text-white mt-1">
                   {arAging && formatCurrency(arAging.summary.total_outstanding)}
                 </p>
               </div>
-              <div className="bg-white rounded-lg shadow p-4">
-                <h4 className="text-xs font-medium text-gray-500">Current</h4>
-                <p className="text-xl font-bold text-green-600 mt-1">
+              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-4">
+                <h4 className="text-xs font-medium text-gray-500 dark:text-gray-400">Current</h4>
+                <p className="text-xl font-bold text-green-600 dark:text-green-400 mt-1">
                   {arAging && formatCurrency(arAging.summary.current)}
                 </p>
               </div>
-              <div className="bg-white rounded-lg shadow p-4">
-                <h4 className="text-xs font-medium text-gray-500">30 Days</h4>
-                <p className="text-xl font-bold text-yellow-600 mt-1">
+              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-4">
+                <h4 className="text-xs font-medium text-gray-500 dark:text-gray-400">30 Days</h4>
+                <p className="text-xl font-bold text-yellow-600 dark:text-yellow-400 mt-1">
                   {arAging && formatCurrency(arAging.summary.days_30)}
                 </p>
               </div>
-              <div className="bg-white rounded-lg shadow p-4">
-                <h4 className="text-xs font-medium text-gray-500">60 Days</h4>
+              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-4">
+                <h4 className="text-xs font-medium text-gray-500 dark:text-gray-400">60 Days</h4>
                 <p className="text-xl font-bold text-orange-600 mt-1">
                   {arAging && formatCurrency(arAging.summary.days_60)}
                 </p>
               </div>
-              <div className="bg-white rounded-lg shadow p-4">
-                <h4 className="text-xs font-medium text-gray-500">90+ Days</h4>
-                <p className="text-xl font-bold text-red-600 mt-1">
+              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-4">
+                <h4 className="text-xs font-medium text-gray-500 dark:text-gray-400">90+ Days</h4>
+                <p className="text-xl font-bold text-red-600 dark:text-red-400 mt-1">
                   {arAging && formatCurrency(arAging.summary.days_90_plus)}
                 </p>
               </div>
             </div>
 
             {/* AR Invoices Table */}
-            <div className="bg-white rounded-lg shadow">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700">
               <div className="px-6 py-4 border-b">
-                <h2 className="text-lg font-semibold text-gray-900">Outstanding Receivables</h2>
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Outstanding Receivables</h2>
               </div>
               <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
+                <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                  <thead className="bg-gray-50 dark:bg-gray-900">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Customer</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Invoice</th>
-                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Amount</th>
-                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Outstanding</th>
-                      <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Status</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Customer</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Invoice</th>
+                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Amount</th>
+                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Outstanding</th>
+                      <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Status</th>
                     </tr>
                   </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
+                  <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                     {arAging?.invoices.slice(0, 10).map((invoice, idx) => (
-                      <tr key={idx} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <tr key={idx} className="hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                           {invoice.customer_name}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                           {invoice.invoice_number}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900 dark:text-white">
                           {formatCurrency(invoice.total_amount)}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-right font-medium text-gray-900">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-right font-medium text-gray-900 dark:text-white">
                           {formatCurrency(invoice.amount_outstanding)}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-center">
@@ -409,9 +409,9 @@ export default function ERPDashboard() {
         )}
 
         {activeTab === 'gl' && (
-          <div className="bg-white rounded-lg shadow p-8 text-center">
-            <h2 className="text-xl font-semibold text-gray-900 mb-2">General Ledger</h2>
-            <p className="text-gray-500">Coming soon: Trial Balance, Balance Sheet, P&L Statement</p>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-8 text-center">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">General Ledger</h2>
+            <p className="text-gray-500 dark:text-gray-400">Coming soon: Trial Balance, Balance Sheet, P&L Statement</p>
           </div>
         )}
       </main>

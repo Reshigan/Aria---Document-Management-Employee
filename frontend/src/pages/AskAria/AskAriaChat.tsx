@@ -265,7 +265,7 @@ const AskAriaChat: React.FC = () => {
           </div>
           <button
             onClick={startNewSession}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-all duration-200 border border-white/10"
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white dark:bg-gray-800/10 hover:bg-white/20 text-white transition-all duration-200 border border-white/10"
           >
             <RefreshCw className="w-4 h-4" />
             New Chat
@@ -285,7 +285,7 @@ const AskAriaChat: React.FC = () => {
                   <button
                     key={index}
                     onClick={() => handleQuickAction(action.prompt)}
-                    className="group relative overflow-hidden rounded-2xl p-4 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 transition-all duration-300 text-left hover:scale-[1.02] hover:shadow-xl"
+                    className="group relative overflow-hidden rounded-2xl p-4 bg-white dark:bg-gray-800/5 hover:bg-white/10 border border-white/10 hover:border-white/20 transition-all duration-300 text-left hover:scale-[1.02] hover:shadow-xl"
                   >
                     <div className={`absolute inset-0 bg-gradient-to-br ${action.color} opacity-0 group-hover:opacity-10 transition-opacity duration-300`} />
                     <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${action.color} flex items-center justify-center mb-3 shadow-lg group-hover:scale-110 transition-transform duration-300`}>
@@ -337,7 +337,7 @@ const AskAriaChat: React.FC = () => {
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-lg">
                 <Bot className="w-5 h-5 text-white" />
               </div>
-              <div className="bg-white/10 backdrop-blur-sm rounded-2xl px-5 py-4 border border-white/10">
+              <div className="bg-white dark:bg-gray-800/10 backdrop-blur-sm rounded-2xl px-5 py-4 border border-white/10">
                 <div className="flex gap-1.5">
                   <div className="w-2.5 h-2.5 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
                   <div className="w-2.5 h-2.5 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
@@ -365,7 +365,7 @@ const AskAriaChat: React.FC = () => {
             <button
               onClick={() => fileInputRef.current?.click()}
               disabled={loading}
-              className="flex-shrink-0 w-12 h-12 rounded-xl bg-white/10 hover:bg-white/20 border border-white/10 flex items-center justify-center text-purple-300 hover:text-white transition-all duration-200 disabled:opacity-50 hover:scale-105"
+              className="flex-shrink-0 w-12 h-12 rounded-xl bg-white dark:bg-gray-800/10 hover:bg-white/20 border border-white/10 flex items-center justify-center text-purple-300 hover:text-white transition-all duration-200 disabled:opacity-50 hover:scale-105"
             >
               <Paperclip className="w-5 h-5" />
             </button>
@@ -377,7 +377,7 @@ const AskAriaChat: React.FC = () => {
                 disabled={loading}
                 placeholder="Ask Aria anything about your business..."
                 rows={1}
-                className="w-full px-5 py-3.5 rounded-xl bg-white/10 border border-white/10 text-white placeholder-purple-300/50 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 resize-none transition-all duration-200 text-base"
+                className="w-full px-5 py-3.5 rounded-xl bg-white dark:bg-gray-800/10 border border-white/10 text-white placeholder-purple-300/50 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 resize-none transition-all duration-200 text-base"
                 style={{ minHeight: '52px', maxHeight: '120px' }}
               />
             </div>
