@@ -115,8 +115,8 @@ export const refreshAccessToken = async (): Promise<string | null> => {
   }
 };
 
-// Parse JWT token to get expiry (if needed)
-export const parseJwt = (token: string): { exp?: number; [key: string]: unknown } | null => {
+// Parse JWT token to get payload
+export const parseJwt = (token: string): { exp?: number; sub?: string; email?: string; name?: string; role?: string; [key: string]: unknown } | null => {
   try {
     const base64Url = token.split('.')[1];
     const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
