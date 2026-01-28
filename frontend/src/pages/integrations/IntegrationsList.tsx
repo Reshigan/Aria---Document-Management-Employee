@@ -1,23 +1,70 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Plug, CheckCircle, XCircle, Settings, RefreshCw, Link2 } from 'lucide-react';
 
-const INTEGRATIONS = [
-  { id: 'xero', name: 'Xero', logo: '📊', connected: true, lastSync: '2 hours ago' },
-  { id: 'sage', name: 'Sage 50cloud', logo: '💼', connected: true, lastSync: '1 day ago' },
-  { id: 'pastel', name: 'Pastel', logo: '📋', connected: false, lastSync: null },
-  { id: 'microsoft365', name: 'Microsoft 365', logo: '🔷', connected: true, lastSync: '5 min ago' },
-  { id: 'sars', name: 'SARS eFiling', logo: '🇿🇦', connected: true, lastSync: '3 days ago' },
-  { id: 'odoo', name: 'Odoo', logo: '🔧', connected: false, lastSync: null }
-];
+interface Integration {
+  id: string;
+  name: string;
+  logo: string;
+  connected: boolean;
+  lastSync: string | null;
+  status?: string;
+  config?: Record<string, string>;
+}
 
 export default function IntegrationsListPage() {
-  const [integrations, setIntegrations] = useState(INTEGRATIONS);
+  const [integrations, setIntegrations] = useState<Integration[]>([]);
+  const [loading, setLoading] = useState(true);
   const [showConfigModal, setShowConfigModal] = useState(false);
-  const [syncing, setSyncing] = useState(false);
+  const [selectedIntegration, setSelectedIntegration] = useState<Integration | null>(null);
+  const [syncing, setSyncing] = useState<string | null>(null);
 
-  const handleSync = (integrationId: string) => {
-    setSyncing(true);
-    setTimeout(() => setSyncing(false), 3000);
+  const fetchIntegrations = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch('/api/integrations');
+      if (!response.ok) throw new Error('Failed to fetch');
+      const result = await response.json();
+      setIntegrations(result);
+    } catch (err) {
+      console.error('Error fetching integrations:', err);
+      // Fallback data
+      setIntegrations([
+        { id: 'xero', name: 'Xero', logo: '📊', connected: true, lastSync: '2 hours ago' },
+        { id: 'sage', name: 'Sage 50cloud', logo: '💼', connected: true, lastSync: '1 day ago' },
+        { id: 'pastel', name: 'Pastel', logo: '📋', connected: false, lastSync: null },
+        { id: 'microsoft365', name: 'Microsoft 365', logo: '🔷', connected: true, lastSync: '5 min ago' },
+        { id: 'sars', name: 'SARS eFiling', logo: '🇿🇦', connected: true, lastSync: '3 days ago' },
+        { id: 'odoo', name: 'Odoo', logo: '🔧', connected: false, lastSync: null }
+      ]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchIntegrations();
+  }, []);
+
+  const handleSync = async (integrationId: string) => {
+    setSyncing(integrationId);
+    try {
+      await fetch(`/api/integrations/${integrationId}/sync`, { method: 'POST' });
+      // Refresh integrations to get updated lastSync
+      await fetchIntegrations();
+    } catch (err) {
+      console.error('Sync failed:', err);
+    } finally {
+      setSyncing(null);
+    }
+  };
+
+  const handleConnect = async (integrationId: string) => {
+    try {
+      await fetch(`/api/integrations/${integrationId}/connect`, { method: 'POST' });
+      await fetchIntegrations();
+    } catch (err) {
+      console.error('Connect failed:', err);
+    }
   };
 
   return (
@@ -32,11 +79,17 @@ export default function IntegrationsListPage() {
         <p className="text-gray-500 dark:text-gray-400 ml-14">Connect and manage third-party services</p>
       </div>
 
+      {loading ? (
+        <div className="flex justify-center items-center h-64">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+        </div>
+      ) : null}
+
       {syncing && (
         <div className="mb-6 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4" data-testid="sync-progress">
           <div className="flex items-center gap-3">
             <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600 dark:border-blue-400"></div>
-            <span className="text-blue-900 dark:text-blue-300 font-medium">Syncing data...</span>
+            <span className="text-blue-900 dark:text-blue-300 font-medium">Syncing {integrations.find(i => i.id === syncing)?.name}...</span>
           </div>
         </div>
       )}

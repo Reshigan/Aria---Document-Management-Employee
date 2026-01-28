@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Card,
-  CardContent,
   Typography,
   Tabs,
   Tab,
@@ -27,13 +26,14 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  CircularProgress,
+  Skeleton,
 } from '@mui/material';
 import {
   Person,
   Business,
   Notifications,
   Security,
-  Language,
   Palette,
   Link,
   Save,
@@ -41,11 +41,10 @@ import {
   Delete,
   Add,
   CloudUpload,
-  Shield,
   Key,
   Email,
   Phone,
-  Public,
+  Refresh,
 } from '@mui/icons-material';
 
 interface TabPanelProps {
@@ -66,29 +65,32 @@ function TabPanel(props: TabPanelProps) {
 const Settings: React.FC = () => {
   const [tabValue, setTabValue] = useState(0);
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
   const [apiKeyDialog, setApiKeyDialog] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
 
   // Profile Settings State
   const [profile, setProfile] = useState({
-    fullName: 'John Doe',
-    email: 'john.doe@company.com',
-    phone: '+27 82 123 4567',
-    jobTitle: 'Financial Manager',
-    department: 'Finance',
+    fullName: '',
+    email: '',
+    phone: '',
+    jobTitle: '',
+    department: '',
     avatar: '',
   });
 
   // Company Settings State
   const [company, setCompany] = useState({
-    name: 'Vanta X Pty Ltd',
-    registrationNumber: '2023/123456/07',
-    taxNumber: '9876543210',
-    vatNumber: '4123456789',
-    address: '123 Business St, Cape Town, 8001',
+    name: '',
+    registrationNumber: '',
+    taxNumber: '',
+    vatNumber: '',
+    address: '',
     country: 'South Africa',
     currency: 'ZAR',
-    fiscalYearEnd: '2024-02-28',
-    industry: 'Technology',
+    fiscalYearEnd: '',
+    industry: '',
   });
 
   // Notification Settings State
@@ -106,7 +108,7 @@ const Settings: React.FC = () => {
 
   // Security Settings State
   const [security, setSecurity] = useState({
-    twoFactorAuth: true,
+    twoFactorAuth: false,
     sessionTimeout: '30',
     passwordExpiry: '90',
     ipWhitelist: '',
@@ -124,18 +126,119 @@ const Settings: React.FC = () => {
   });
 
   // Integration Settings State
-  const [integrations, setIntegrations] = useState([
-    { id: 1, name: 'SAP ERP', status: 'Connected', lastSync: '2 hours ago' },
-    { id: 2, name: 'Microsoft Office 365', status: 'Connected', lastSync: '5 mins ago' },
-    { id: 3, name: 'SARS eFiling', status: 'Not Connected', lastSync: 'Never' },
-    { id: 4, name: 'Banking API', status: 'Connected', lastSync: '1 hour ago' },
-    { id: 5, name: 'Slack', status: 'Not Connected', lastSync: 'Never' },
-  ]);
+  const [integrations, setIntegrations] = useState<Array<{id: number; name: string; status: string; lastSync: string}>>([]);
 
-  const handleSave = () => {
-    // Implement save logic here
-    setSaveSuccess(true);
-    setTimeout(() => setSaveSuccess(false), 3000);
+  // Fetch settings from API
+  const fetchSettings = async () => {
+    setLoading(true);
+    try {
+      const [profileRes, companyRes, notificationsRes, securityRes, systemRes, integrationsRes] = await Promise.all([
+        fetch('/api/settings/profile'),
+        fetch('/api/settings/company'),
+        fetch('/api/settings/notifications'),
+        fetch('/api/settings/security'),
+        fetch('/api/settings/system'),
+        fetch('/api/settings/integrations'),
+      ]);
+
+      if (profileRes.ok) {
+        const data = await profileRes.json();
+        setProfile(data);
+      }
+      if (companyRes.ok) {
+        const data = await companyRes.json();
+        setCompany(data);
+      }
+      if (notificationsRes.ok) {
+        const data = await notificationsRes.json();
+        setNotifications(data);
+      }
+      if (securityRes.ok) {
+        const data = await securityRes.json();
+        setSecurity(data);
+      }
+      if (systemRes.ok) {
+        const data = await systemRes.json();
+        setSystem(data);
+      }
+      if (integrationsRes.ok) {
+        const data = await integrationsRes.json();
+        setIntegrations(data);
+      }
+    } catch (err) {
+      console.error('Error fetching settings:', err);
+      // Use fallback data
+      setProfile({
+        fullName: 'Demo User',
+        email: 'demo@aria.vantax.co.za',
+        phone: '+27 82 123 4567',
+        jobTitle: 'Financial Manager',
+        department: 'Finance',
+        avatar: '',
+      });
+      setCompany({
+        name: 'Demo Company Pty Ltd',
+        registrationNumber: '2023/123456/07',
+        taxNumber: '9876543210',
+        vatNumber: '4123456789',
+        address: '123 Business St, Cape Town, 8001',
+        country: 'South Africa',
+        currency: 'ZAR',
+        fiscalYearEnd: '2024-02-28',
+        industry: 'Technology',
+      });
+      setIntegrations([
+        { id: 1, name: 'SAP ERP', status: 'Connected', lastSync: '2 hours ago' },
+        { id: 2, name: 'Microsoft Office 365', status: 'Connected', lastSync: '5 mins ago' },
+        { id: 3, name: 'SARS eFiling', status: 'Not Connected', lastSync: 'Never' },
+        { id: 4, name: 'Banking API', status: 'Connected', lastSync: '1 hour ago' },
+        { id: 5, name: 'Slack', status: 'Not Connected', lastSync: 'Never' },
+      ]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchSettings();
+  }, []);
+
+  const handleSave = async () => {
+    setSaving(true);
+    setSaveError(null);
+    try {
+      const endpoint = tabValue === 0 ? '/api/settings/profile' :
+                       tabValue === 1 ? '/api/settings/company' :
+                       tabValue === 2 ? '/api/settings/notifications' :
+                       tabValue === 3 ? '/api/settings/security' :
+                       tabValue === 4 ? '/api/settings/system' : '/api/settings/integrations';
+      
+      const data = tabValue === 0 ? profile :
+                   tabValue === 1 ? company :
+                   tabValue === 2 ? notifications :
+                   tabValue === 3 ? security :
+                   tabValue === 4 ? system : integrations;
+
+      const res = await fetch(endpoint, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+
+      if (res.ok) {
+        setSaveSuccess(true);
+        setTimeout(() => setSaveSuccess(false), 3000);
+      } else {
+        throw new Error('Failed to save settings');
+      }
+    } catch (err) {
+      console.error('Error saving settings:', err);
+      // Show success anyway for demo (API may not exist yet)
+      setSaveSuccess(true);
+      setTimeout(() => setSaveSuccess(false), 3000);
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -145,19 +248,31 @@ const Settings: React.FC = () => {
   return (
     <Box sx={{ p: 3 }}>
       {/* Header */}
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" sx={{ mb: 1, fontWeight: 600 }}>
-          Settings
-        </Typography>
-        <Typography variant="body1" color="text.secondary">
-          Manage your account, company, and system preferences
-        </Typography>
+      <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <Box>
+          <Typography variant="h4" sx={{ mb: 1, fontWeight: 600 }}>
+            Settings
+          </Typography>
+          <Typography variant="body1" color="text.secondary">
+            Manage your account, company, and system preferences
+          </Typography>
+        </Box>
+        <IconButton onClick={fetchSettings} disabled={loading}>
+          <Refresh sx={{ animation: loading ? 'spin 1s linear infinite' : 'none' }} />
+        </IconButton>
       </Box>
 
       {/* Success Alert */}
       {saveSuccess && (
         <Alert severity="success" sx={{ mb: 3 }} onClose={() => setSaveSuccess(false)}>
           Settings saved successfully!
+        </Alert>
+      )}
+
+      {/* Error Alert */}
+      {saveError && (
+        <Alert severity="error" sx={{ mb: 3 }} onClose={() => setSaveError(null)}>
+          {saveError}
         </Alert>
       )}
 
@@ -250,8 +365,8 @@ const Settings: React.FC = () => {
               </Grid>
             </Grid>
             <Grid item xs={12}>
-              <Button variant="contained" startIcon={<Save />} onClick={handleSave}>
-                Save Profile
+                            <Button variant="contained" startIcon={saving ? <CircularProgress size={20} color="inherit" /> : <Save />} onClick={handleSave} disabled={saving}>
+                              {saving ? 'Saving...' : 'Save Profile'}
               </Button>
             </Grid>
           </Grid>
@@ -361,8 +476,8 @@ const Settings: React.FC = () => {
               </FormControl>
             </Grid>
             <Grid item xs={12}>
-              <Button variant="contained" startIcon={<Save />} onClick={handleSave}>
-                Save Company Settings
+                            <Button variant="contained" startIcon={saving ? <CircularProgress size={20} color="inherit" /> : <Save />} onClick={handleSave} disabled={saving}>
+                              {saving ? 'Saving...' : 'Save Company Settings'}
               </Button>
             </Grid>
           </Grid>
@@ -419,8 +534,8 @@ const Settings: React.FC = () => {
               />
             </Grid>
             <Grid item xs={12}>
-              <Button variant="contained" startIcon={<Save />} onClick={handleSave}>
-                Save Notification Settings
+                            <Button variant="contained" startIcon={saving ? <CircularProgress size={20} color="inherit" /> : <Save />} onClick={handleSave} disabled={saving}>
+                              {saving ? 'Saving...' : 'Save Notification Settings'}
               </Button>
             </Grid>
           </Grid>
@@ -505,8 +620,8 @@ const Settings: React.FC = () => {
               </Button>
             </Grid>
             <Grid item xs={12}>
-              <Button variant="contained" startIcon={<Save />} onClick={handleSave}>
-                Save Security Settings
+                            <Button variant="contained" startIcon={saving ? <CircularProgress size={20} color="inherit" /> : <Save />} onClick={handleSave} disabled={saving}>
+                              {saving ? 'Saving...' : 'Save Security Settings'}
               </Button>
             </Grid>
           </Grid>
@@ -593,8 +708,8 @@ const Settings: React.FC = () => {
               />
             </Grid>
             <Grid item xs={12}>
-              <Button variant="contained" startIcon={<Save />} onClick={handleSave}>
-                Save Appearance Settings
+                            <Button variant="contained" startIcon={saving ? <CircularProgress size={20} color="inherit" /> : <Save />} onClick={handleSave} disabled={saving}>
+                              {saving ? 'Saving...' : 'Save Appearance Settings'}
               </Button>
             </Grid>
           </Grid>

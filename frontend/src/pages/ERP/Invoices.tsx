@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import api from '../../lib/api';
 import { LineItemsTable, LineItem } from '../../components/LineItemsTable';
 import { ConfirmDialog } from '../../components/ConfirmDialog';
-import { Plus, Search, Edit, Trash2, Send, DollarSign, FileText, X, RefreshCw, TrendingUp, Clock, CheckCircle, AlertCircle } from 'lucide-react';
+import { Plus, Search, Edit, Trash2, Send, DollarSign, FileText, X, RefreshCw, TrendingUp, Clock, CheckCircle, AlertCircle, Download, Printer, Mail } from 'lucide-react';
+import { documentGenerationService, auditTrailService, emailNotificationService } from '../../services';
 
 interface Invoice {
   id: string;
@@ -198,19 +199,141 @@ export default function Invoices() {
     }
   };
 
-  const handleSend = async (invoice: Invoice) => {
-    try {
-      await api.post(`/erp/order-to-cash/invoices/${invoice.id}/send`);
-      alert(`Invoice sent to ${invoice.customer_email}!`);
-      loadInvoices();
-    } catch (err: unknown) {
-      console.error('Error sending invoice:', err);
-      const error = err as { response?: { data?: { detail?: string } } };
-      setError(error.response?.data?.detail || 'Failed to send invoice');
-    }
-  };
+    const handleSend = async (invoice: Invoice) => {
+      try {
+        await api.post(`/erp/order-to-cash/invoices/${invoice.id}/send`);
+        await auditTrailService.log({
+          eventType: 'email_sent',
+          resourceType: 'invoice',
+          resourceId: invoice.id,
+          description: `Invoice ${invoice.invoice_number} sent to ${invoice.customer_email}`,
+          metadata: { recipient: invoice.customer_email }
+        });
+        alert(`Invoice sent to ${invoice.customer_email}!`);
+        loadInvoices();
+      } catch (err: unknown) {
+        console.error('Error sending invoice:', err);
+        const error = err as { response?: { data?: { detail?: string } } };
+        setError(error.response?.data?.detail || 'Failed to send invoice');
+      }
+    };
 
-  const getStatusConfig = (status: string) => {
+    const handleDownloadPDF = async (invoice: Invoice) => {
+      try {
+        const documentData = {
+          id: invoice.id,
+          number: invoice.invoice_number,
+          date: invoice.invoice_date,
+          dueDate: invoice.due_date,
+          customer: {
+            name: invoice.customer_name || '',
+            email: invoice.customer_email || ''
+          },
+          items: (invoice.lines || []).map(line => ({
+            description: line.description,
+            quantity: line.quantity,
+            unitPrice: line.unit_price,
+            total: line.quantity * line.unit_price
+          })),
+          subtotal: invoice.subtotal,
+          tax: invoice.tax_amount,
+          total: invoice.total_amount,
+          notes: invoice.notes
+        };
+        await documentGenerationService.downloadDocument('invoice', documentData, `Invoice-${invoice.invoice_number}.pdf`);
+        await auditTrailService.log({
+          eventType: 'export',
+          resourceType: 'invoice',
+          resourceId: invoice.id,
+          description: `Invoice ${invoice.invoice_number} downloaded as PDF`
+        });
+      } catch (err) {
+        console.error('Error downloading PDF:', err);
+        setError('Failed to download PDF');
+      }
+    };
+
+    const handlePrintInvoice = async (invoice: Invoice) => {
+      try {
+        const documentData = {
+          id: invoice.id,
+          number: invoice.invoice_number,
+          date: invoice.invoice_date,
+          dueDate: invoice.due_date,
+          customer: {
+            name: invoice.customer_name || '',
+            email: invoice.customer_email || ''
+          },
+          items: (invoice.lines || []).map(line => ({
+            description: line.description,
+            quantity: line.quantity,
+            unitPrice: line.unit_price,
+            total: line.quantity * line.unit_price
+          })),
+          subtotal: invoice.subtotal,
+          tax: invoice.tax_amount,
+          total: invoice.total_amount,
+          notes: invoice.notes
+        };
+        await documentGenerationService.printDocument('invoice', documentData);
+        await auditTrailService.log({
+          eventType: 'view',
+          resourceType: 'invoice',
+          resourceId: invoice.id,
+          description: `Invoice ${invoice.invoice_number} printed`
+        });
+      } catch (err) {
+        console.error('Error printing invoice:', err);
+        setError('Failed to print invoice');
+      }
+    };
+
+    const handleEmailInvoice = async (invoice: Invoice) => {
+      if (!invoice.customer_email) {
+        setError('No customer email address available');
+        return;
+      }
+      try {
+        const documentData = {
+          id: invoice.id,
+          number: invoice.invoice_number,
+          date: invoice.invoice_date,
+          dueDate: invoice.due_date,
+          customer: {
+            name: invoice.customer_name || '',
+            email: invoice.customer_email || ''
+          },
+          items: (invoice.lines || []).map(line => ({
+            description: line.description,
+            quantity: line.quantity,
+            unitPrice: line.unit_price,
+            total: line.quantity * line.unit_price
+          })),
+          subtotal: invoice.subtotal,
+          tax: invoice.tax_amount,
+          total: invoice.total_amount,
+          notes: invoice.notes
+        };
+        await emailNotificationService.sendInvoiceEmail(invoice.id, [invoice.customer_email]);
+        await documentGenerationService.emailDocument('invoice', documentData, {
+          to: [invoice.customer_email],
+          subject: `Invoice ${invoice.invoice_number} from ARIA`,
+          body: `Please find attached invoice ${invoice.invoice_number} for R ${invoice.total_amount.toLocaleString()}.`
+        });
+        await auditTrailService.log({
+          eventType: 'email_sent',
+          resourceType: 'invoice',
+          resourceId: invoice.id,
+          description: `Invoice ${invoice.invoice_number} emailed to ${invoice.customer_email}`
+        });
+        alert(`Invoice emailed to ${invoice.customer_email}!`);
+      } catch (err) {
+        console.error('Error emailing invoice:', err);
+        setError('Failed to email invoice');
+      }
+    };
+
+    const getStatusConfig= (status: string) => {
     const configs: Record<string, { bg: string; text: string; border: string }> = {
       draft: { bg: 'bg-gray-100 dark:bg-gray-800', text: 'text-gray-700 dark:text-gray-300', border: 'border-gray-200 dark:border-gray-700' },
       posted: { bg: 'bg-blue-100 dark:bg-blue-900/30', text: 'text-blue-700 dark:text-blue-300', border: 'border-blue-200 dark:border-blue-800' },
@@ -427,18 +550,23 @@ export default function Invoices() {
                         <td className="px-6 py-4 text-right font-semibold text-gray-900 dark:text-white">R {invoice.total_amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
                         <td className={`px-6 py-4 text-right font-semibold ${balance > 0 ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'}`}>R {balance.toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
                         <td className="px-6 py-4">
-                          <div className="flex items-center justify-end gap-2">
-                            {invoice.status === 'draft' && (
-                              <>
-                                <button onClick={() => handleEdit(invoice)} title="Edit" className="p-2 hover:bg-blue-100 dark:hover:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg transition-colors"><Edit className="h-4 w-4" /></button>
-                                <button onClick={() => handlePost(invoice)} title="Post to AR" className="flex items-center gap-1 px-3 py-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-lg text-xs font-medium hover:from-green-600 hover:to-emerald-600 transition-all"><DollarSign className="h-3.5 w-3.5" />Post</button>
-                                <button onClick={() => handleDelete(invoice)} title="Delete" className="p-2 hover:bg-red-100 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg transition-colors"><Trash2 className="h-4 w-4" /></button>
-                              </>
-                            )}
-                            {(invoice.status === 'posted' || invoice.status === 'sent') && invoice.customer_email && (
-                              <button onClick={() => handleSend(invoice)} title="Send to Customer" className="flex items-center gap-1 px-3 py-2 bg-gradient-to-r from-purple-500 to-violet-500 text-white rounded-lg text-xs font-medium hover:from-purple-600 hover:to-violet-600 transition-all"><Send className="h-3.5 w-3.5" />Send</button>
-                            )}
-                          </div>
+                                                    <div className="flex items-center justify-end gap-1">
+                                                      <button onClick={() => handleDownloadPDF(invoice)} title="Download PDF" className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-lg transition-colors"><Download className="h-4 w-4" /></button>
+                                                      <button onClick={() => handlePrintInvoice(invoice)} title="Print" className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-lg transition-colors"><Printer className="h-4 w-4" /></button>
+                                                      {invoice.customer_email && (
+                                                        <button onClick={() => handleEmailInvoice(invoice)} title="Email Invoice" className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-lg transition-colors"><Mail className="h-4 w-4" /></button>
+                                                      )}
+                                                      {invoice.status === 'draft' && (
+                                                        <>
+                                                          <button onClick={() => handleEdit(invoice)} title="Edit" className="p-2 hover:bg-blue-100 dark:hover:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg transition-colors"><Edit className="h-4 w-4" /></button>
+                                                          <button onClick={() => handlePost(invoice)} title="Post to AR" className="flex items-center gap-1 px-3 py-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-lg text-xs font-medium hover:from-green-600 hover:to-emerald-600 transition-all"><DollarSign className="h-3.5 w-3.5" />Post</button>
+                                                          <button onClick={() => handleDelete(invoice)} title="Delete" className="p-2 hover:bg-red-100 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg transition-colors"><Trash2 className="h-4 w-4" /></button>
+                                                        </>
+                                                      )}
+                                                      {(invoice.status === 'posted' || invoice.status === 'sent') && invoice.customer_email && (
+                                                        <button onClick={() => handleSend(invoice)} title="Send to Customer" className="flex items-center gap-1 px-3 py-2 bg-gradient-to-r from-purple-500 to-violet-500 text-white rounded-lg text-xs font-medium hover:from-purple-600 hover:to-violet-600 transition-all"><Send className="h-3.5 w-3.5" />Send</button>
+                                                      )}
+                                                    </div>
                         </td>
                       </tr>
                     );

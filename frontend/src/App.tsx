@@ -1,8 +1,12 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { MainLayout } from './components/layout/MainLayout';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { ThemeProvider } from './contexts/ThemeContext';
+import { NotificationProvider } from './components/NotificationSystem';
+import ErrorBoundary from './components/ErrorBoundary';
+import SessionTimeout from './components/SessionTimeout';
 import Login from './pages/auth/Login';
+import NotFound from './pages/NotFound';
 import ExecutiveDashboard from './pages/Dashboard/ExecutiveDashboard';
 import Quotes from './pages/ERP/Quotes';
 import SalesOrders from './pages/ERP/SalesOrders';
@@ -181,6 +185,8 @@ import './styles/dark-mode.css';
 function App() {
   return (
     <ThemeProvider>
+    <ErrorBoundary>
+    <NotificationProvider>
     <BrowserRouter>
       <Routes>
         {/* Public routes */}
@@ -540,14 +546,17 @@ function App() {
                     {/* Mobile */}
           <Route path="/mobile" element={<MobileManagement />} />
           
-          {/* Catch-all: redirect to dashboard for 404 pages */}
-          <Route path="*" element={<Navigate to="/dashboard" replace />} />
+          {/* Catch-all: 404 Not Found page */}
+          <Route path="*" element={<NotFound />} />
               </Routes>
             </MainLayout>
+            <SessionTimeout />
           </ProtectedRoute>
         } />
       </Routes>
     </BrowserRouter>
+    </NotificationProvider>
+    </ErrorBoundary>
     </ThemeProvider>
   );
 }
