@@ -179,6 +179,7 @@ import PaymentTerms from './pages/admin/PaymentTerms';
 import TaxRates from './pages/admin/TaxRates';
 import EmailTemplates from './pages/admin/EmailTemplates';
 import TrackingCategories from './pages/admin/TrackingCategories';
+import ComingSoon from './pages/ComingSoon';
 import './styles/design-system.css';
 import './styles/dark-mode.css';
 
@@ -543,11 +544,113 @@ function App() {
                     <Route path="/admin/email-templates" element={<EmailTemplates />} />
                     <Route path="/admin/tracking-categories" element={<TrackingCategories />} />
           
-                    {/* Mobile */}
-          <Route path="/mobile" element={<MobileManagement />} />
+                              {/* Mobile */}
+                    <Route path="/mobile" element={<MobileManagement />} />
           
-          {/* Catch-all: 404 Not Found page */}
-          <Route path="*" element={<NotFound />} />
+                    {/* Missing Routes - Admin */}
+                    <Route path="/admin/audit-trail" element={<AuditTrail />} />
+                    <Route path="/admin/compliance" element={<ComplianceDashboard />} />
+          
+                    {/* Missing Routes - Compliance */}
+                    <Route path="/compliance/b-bbee" element={<BBBEE />} />
+                    <Route path="/compliance/documents" element={<DocumentControl />} />
+                    <Route path="/compliance/risks" element={<RiskRegister />} />
+          
+                    {/* Missing Routes - CRM */}
+                    <Route path="/crm/leads" element={<ComingSoon />} />
+                    <Route path="/crm/opportunities" element={<ComingSoon />} />
+          
+                    {/* Missing Routes - Field Service */}
+                    <Route path="/field-service/contracts" element={<ServiceContracts />} />
+                    <Route path="/field-service/equipment" element={<ComingSoon />} />
+                    <Route path="/field-service/routes" element={<RoutePlanning />} />
+          
+                    {/* Missing Routes - Fixed Assets */}
+                    <Route path="/fixed-assets/depreciation" element={<ComingSoon />} />
+          
+                    {/* Missing Routes - Help */}
+                    <Route path="/help/compliance" element={<ComingSoon />} />
+                    <Route path="/help/compliance/faqs" element={<ComingSoon />} />
+                    <Route path="/help/financial" element={<ComingSoon />} />
+                    <Route path="/help/financial/faqs" element={<ComingSoon />} />
+                    <Route path="/help/financial/month-end" element={<ComingSoon />} />
+                    <Route path="/help/operations" element={<ComingSoon />} />
+                    <Route path="/help/operations/faqs" element={<ComingSoon />} />
+                    <Route path="/help/people" element={<ComingSoon />} />
+                    <Route path="/help/people/faqs" element={<ComingSoon />} />
+                    <Route path="/help/services" element={<ComingSoon />} />
+                    <Route path="/help/services/faqs" element={<ComingSoon />} />
+          
+                    {/* Missing Routes - HR */}
+                    <Route path="/hr/applicants" element={<Applicants />} />
+                    <Route path="/hr/job-postings" element={<JobPostings />} />
+                    <Route path="/hr/leave-calendar" element={<LeaveManagement />} />
+                    <Route path="/hr/onboarding" element={<OnboardingTasks />} />
+                    <Route path="/hr/org-chart" element={<ComingSoon />} />
+                    <Route path="/hr/performance" element={<PerformanceReviews />} />
+                    <Route path="/hr/recruitment" element={<ComingSoon />} />
+                    <Route path="/hr/skills" element={<EmployeeSkills />} />
+          
+                    {/* Missing Routes - Inventory */}
+                    <Route path="/inventory/adjustments" element={<StockAdjustments />} />
+                    <Route path="/inventory/barcode" element={<ComingSoon />} />
+                    <Route path="/inventory/categories" element={<ProductCategories />} />
+                    <Route path="/inventory/transfers" element={<StockTransfers />} />
+          
+                    {/* Missing Routes - Legal */}
+                    <Route path="/legal/contracts" element={<ComingSoon />} />
+          
+                    {/* Missing Routes - Payroll */}
+                    <Route path="/payroll/paye" element={<PAYEReturns />} />
+                    <Route path="/payroll/uif" element={<UIFReturns />} />
+          
+                    {/* Missing Routes - Procurement */}
+                    <Route path="/procurement/contracts" element={<ComingSoon />} />
+                    <Route path="/procurement/supplier-portal" element={<ComingSoon />} />
+          
+                    {/* Missing Routes - Projects */}
+                    <Route path="/projects/gantt" element={<ComingSoon />} />
+                    <Route path="/projects/resources" element={<ComingSoon />} />
+          
+                    {/* Missing Routes - Quality */}
+                    <Route path="/quality/inspections" element={<ComingSoon />} />
+          
+                    {/* Missing Routes - Support */}
+                    <Route path="/support/customer-portal" element={<ComingSoon />} />
+                    <Route path="/support/escalations" element={<ComingSoon />} />
+                    <Route path="/support/sla" element={<ComingSoon />} />
+          
+                    {/* Missing Routes - Tax */}
+                    <Route path="/tax/vat" element={<VATReturns />} />
+          
+                    {/* Missing Routes - Training */}
+                    <Route path="/training/compliance/assets" element={<ComingSoon />} />
+                    <Route path="/training/compliance/audit" element={<ComingSoon />} />
+                    <Route path="/training/compliance/b-bbee" element={<ComingSoon />} />
+                    <Route path="/training/compliance/tax" element={<ComingSoon />} />
+                    <Route path="/training/compliance/videos" element={<ComingSoon />} />
+                    <Route path="/training/financial/ap-ar" element={<ComingSoon />} />
+                    <Route path="/training/financial/gl" element={<ComingSoon />} />
+                    <Route path="/training/financial/reconciliation" element={<ComingSoon />} />
+                    <Route path="/training/financial/videos" element={<ComingSoon />} />
+                    <Route path="/training/operations/inventory" element={<ComingSoon />} />
+                    <Route path="/training/operations/manufacturing" element={<ComingSoon />} />
+                    <Route path="/training/operations/procurement" element={<ComingSoon />} />
+                    <Route path="/training/operations/sales" element={<ComingSoon />} />
+                    <Route path="/training/operations/videos" element={<ComingSoon />} />
+                    <Route path="/training/people/employees" element={<ComingSoon />} />
+                    <Route path="/training/people/labour-law" element={<ComingSoon />} />
+                    <Route path="/training/people/leave" element={<ComingSoon />} />
+                    <Route path="/training/people/payroll" element={<ComingSoon />} />
+                    <Route path="/training/people/videos" element={<ComingSoon />} />
+                    <Route path="/training/services/field-service" element={<ComingSoon />} />
+                    <Route path="/training/services/projects" element={<ComingSoon />} />
+                    <Route path="/training/services/support" element={<ComingSoon />} />
+                    <Route path="/training/services/timesheets" element={<ComingSoon />} />
+                    <Route path="/training/services/videos" element={<ComingSoon />} />
+          
+                    {/* Catch-all: 404 Not Found page */}
+                    <Route path="*" element={<NotFound />} />
               </Routes>
             </MainLayout>
             <SessionTimeout />
