@@ -179,6 +179,70 @@ import PaymentTerms from './pages/admin/PaymentTerms';
 import TaxRates from './pages/admin/TaxRates';
 import EmailTemplates from './pages/admin/EmailTemplates';
 import TrackingCategories from './pages/admin/TrackingCategories';
+import ComingSoon from './pages/ComingSoon';
+// CRM Pages
+import CRMLeads from './pages/CRM/Leads';
+import CRMOpportunities from './pages/CRM/Opportunities';
+// Field Service Pages
+import FieldServiceEquipment from './pages/FieldService/Equipment';
+// Fixed Assets Pages
+import FixedAssetsDepreciation from './pages/FixedAssets/Depreciation';
+// HR Pages
+import HROrgChart from './pages/HR/OrgChart';
+import HRRecruitment from './pages/HR/Recruitment';
+// Inventory Pages
+import InventoryBarcode from './pages/Inventory/Barcode';
+// Legal Pages
+import LegalContracts from './pages/Legal/Contracts';
+// Procurement Pages
+import ProcurementContracts from './pages/Procurement/Contracts';
+import ProcurementSupplierPortal from './pages/Procurement/SupplierPortal';
+// Projects Pages
+import ProjectsGantt from './pages/Projects/Gantt';
+import ProjectsResources from './pages/Projects/Resources';
+// Quality Pages
+import QualityInspections from './pages/Quality/Inspections';
+// Support Pages
+import SupportCustomerPortal from './pages/Support/CustomerPortal';
+import SupportEscalations from './pages/Support/Escalations';
+import SupportSLA from './pages/Support/SLA';
+// Help Pages
+import HelpComplianceFAQs from './pages/Help/ComplianceFAQs';
+import HelpComplianceMonthEnd from './pages/Help/ComplianceMonthEnd';
+import HelpFinancialFAQs from './pages/Help/FinancialFAQs';
+import HelpFinancialMonthEnd from './pages/Help/FinancialMonthEnd';
+import HelpOperationsFAQs from './pages/Help/OperationsFAQs';
+import HelpOperationsMonthEnd from './pages/Help/OperationsMonthEnd';
+import HelpPeopleFAQs from './pages/Help/PeopleFAQs';
+import HelpPeopleMonthEnd from './pages/Help/PeopleMonthEnd';
+import HelpServicesFAQs from './pages/Help/ServicesFAQs';
+import HelpServicesMonthEnd from './pages/Help/ServicesMonthEnd';
+// Training Pages - Compliance
+import TrainingComplianceBasics from './pages/Training/ComplianceBasics';
+import TrainingComplianceAdvanced from './pages/Training/ComplianceAdvanced';
+import TrainingComplianceCertification from './pages/Training/ComplianceCertification';
+import TrainingComplianceRefresher from './pages/Training/ComplianceRefresher';
+// Training Pages - Financial
+import TrainingFinancialBasics from './pages/Training/FinancialBasics';
+import TrainingFinancialAdvanced from './pages/Training/FinancialAdvanced';
+import TrainingFinancialCertification from './pages/Training/FinancialCertification';
+import TrainingFinancialRefresher from './pages/Training/FinancialRefresher';
+// Training Pages - Operations
+import TrainingOperationsBasics from './pages/Training/OperationsBasics';
+import TrainingOperationsAdvanced from './pages/Training/OperationsAdvanced';
+import TrainingOperationsCertification from './pages/Training/OperationsCertification';
+import TrainingOperationsRefresher from './pages/Training/OperationsRefresher';
+// Training Pages - People
+import TrainingPeopleBasics from './pages/Training/PeopleBasics';
+import TrainingPeopleAdvanced from './pages/Training/PeopleAdvanced';
+import TrainingPeopleCertification from './pages/Training/PeopleCertification';
+import TrainingPeopleRefresher from './pages/Training/PeopleRefresher';
+// Training Pages - Services
+import TrainingServicesBasics from './pages/Training/ServicesBasics';
+import TrainingServicesAdvanced from './pages/Training/ServicesAdvanced';
+import TrainingServicesCertification from './pages/Training/ServicesCertification';
+import TrainingServicesRefresher from './pages/Training/ServicesRefresher';
+import SetupWizard from './pages/SetupWizard';
 import './styles/design-system.css';
 import './styles/dark-mode.css';
 
@@ -189,10 +253,11 @@ function App() {
     <NotificationProvider>
     <BrowserRouter>
       <Routes>
-        {/* Public routes */}
-        <Route path="/login" element={<Login />} />
+                {/* Public routes */}
+                <Route path="/login" element={<Login />} />
+                <Route path="/setup" element={<SetupWizard />} />
         
-        {/* Protected routes */}
+                {/* Protected routes */}
         <Route path="/*" element={
           <ProtectedRoute>
             <MainLayout>
@@ -543,11 +608,113 @@ function App() {
                     <Route path="/admin/email-templates" element={<EmailTemplates />} />
                     <Route path="/admin/tracking-categories" element={<TrackingCategories />} />
           
-                    {/* Mobile */}
-          <Route path="/mobile" element={<MobileManagement />} />
+                              {/* Mobile */}
+                    <Route path="/mobile" element={<MobileManagement />} />
           
-          {/* Catch-all: 404 Not Found page */}
-          <Route path="*" element={<NotFound />} />
+                    {/* Missing Routes - Admin */}
+                    <Route path="/admin/audit-trail" element={<AuditTrail />} />
+                    <Route path="/admin/compliance" element={<ComplianceDashboard />} />
+          
+                    {/* Missing Routes - Compliance */}
+                    <Route path="/compliance/b-bbee" element={<BBBEE />} />
+                    <Route path="/compliance/documents" element={<DocumentControl />} />
+                    <Route path="/compliance/risks" element={<RiskRegister />} />
+          
+                                        {/* Missing Routes - CRM */}
+                                        <Route path="/crm/leads" element={<CRMLeads />} />
+                                        <Route path="/crm/opportunities" element={<CRMOpportunities />} />
+          
+                    {/* Missing Routes - Field Service */}
+                    <Route path="/field-service/contracts" element={<ServiceContracts />} />
+                    <Route path="/field-service/equipment" element={<FieldServiceEquipment />} />
+                    <Route path="/field-service/routes" element={<RoutePlanning />} />
+          
+                                        {/* Missing Routes - Fixed Assets */}
+                                        <Route path="/fixed-assets/depreciation" element={<FixedAssetsDepreciation />} />
+          
+                                        {/* Missing Routes - Help */}
+                                        <Route path="/help/compliance" element={<HelpComplianceMonthEnd />} />
+                                        <Route path="/help/compliance/faqs" element={<HelpComplianceFAQs />} />
+                                        <Route path="/help/financial" element={<HelpFinancialMonthEnd />} />
+                                        <Route path="/help/financial/faqs" element={<HelpFinancialFAQs />} />
+                                        <Route path="/help/financial/month-end" element={<HelpFinancialMonthEnd />} />
+                                        <Route path="/help/operations" element={<HelpOperationsMonthEnd />} />
+                                        <Route path="/help/operations/faqs" element={<HelpOperationsFAQs />} />
+                                        <Route path="/help/people" element={<HelpPeopleMonthEnd />} />
+                                        <Route path="/help/people/faqs" element={<HelpPeopleFAQs />} />
+                                        <Route path="/help/services" element={<HelpServicesMonthEnd />} />
+                                        <Route path="/help/services/faqs" element={<HelpServicesFAQs />} />
+          
+                    {/* Missing Routes - HR */}
+                    <Route path="/hr/applicants" element={<Applicants />} />
+                    <Route path="/hr/job-postings" element={<JobPostings />} />
+                    <Route path="/hr/leave-calendar" element={<LeaveManagement />} />
+                    <Route path="/hr/onboarding" element={<OnboardingTasks />} />
+                    <Route path="/hr/org-chart" element={<HROrgChart />} />
+                    <Route path="/hr/performance" element={<PerformanceReviews />} />
+                    <Route path="/hr/recruitment" element={<HRRecruitment />} />
+                    <Route path="/hr/skills" element={<EmployeeSkills />} />
+          
+                    {/* Missing Routes - Inventory */}
+                    <Route path="/inventory/adjustments" element={<StockAdjustments />} />
+                    <Route path="/inventory/barcode" element={<InventoryBarcode />} />
+                    <Route path="/inventory/categories" element={<ProductCategories />} />
+                    <Route path="/inventory/transfers" element={<StockTransfers />} />
+          
+                                        {/* Missing Routes - Legal */}
+                                        <Route path="/legal/contracts" element={<LegalContracts />} />
+          
+                    {/* Missing Routes - Payroll */}
+                    <Route path="/payroll/paye" element={<PAYEReturns />} />
+                    <Route path="/payroll/uif" element={<UIFReturns />} />
+          
+                                        {/* Missing Routes - Procurement */}
+                                        <Route path="/procurement/contracts" element={<ProcurementContracts />} />
+                                        <Route path="/procurement/supplier-portal" element={<ProcurementSupplierPortal />} />
+          
+                                        {/* Missing Routes - Projects */}
+                                        <Route path="/projects/gantt" element={<ProjectsGantt />} />
+                                        <Route path="/projects/resources" element={<ProjectsResources />} />
+          
+                                        {/* Missing Routes - Quality */}
+                                        <Route path="/quality/inspections" element={<QualityInspections />} />
+          
+                                        {/* Missing Routes - Support */}
+                                        <Route path="/support/customer-portal" element={<SupportCustomerPortal />} />
+                                        <Route path="/support/escalations" element={<SupportEscalations />} />
+                                        <Route path="/support/sla" element={<SupportSLA />} />
+          
+                    {/* Missing Routes - Tax */}
+                    <Route path="/tax/vat" element={<VATReturns />} />
+          
+                                        {/* Missing Routes - Training */}
+                                        <Route path="/training/compliance/assets" element={<TrainingComplianceBasics />} />
+                                        <Route path="/training/compliance/audit" element={<TrainingComplianceAdvanced />} />
+                                        <Route path="/training/compliance/b-bbee" element={<TrainingComplianceCertification />} />
+                                        <Route path="/training/compliance/tax" element={<TrainingComplianceRefresher />} />
+                                        <Route path="/training/compliance/videos" element={<TrainingComplianceBasics />} />
+                                        <Route path="/training/financial/ap-ar" element={<TrainingFinancialBasics />} />
+                                        <Route path="/training/financial/gl" element={<TrainingFinancialAdvanced />} />
+                                        <Route path="/training/financial/reconciliation" element={<TrainingFinancialCertification />} />
+                                        <Route path="/training/financial/videos" element={<TrainingFinancialRefresher />} />
+                                        <Route path="/training/operations/inventory" element={<TrainingOperationsBasics />} />
+                                        <Route path="/training/operations/manufacturing" element={<TrainingOperationsAdvanced />} />
+                                        <Route path="/training/operations/procurement" element={<TrainingOperationsCertification />} />
+                                        <Route path="/training/operations/sales" element={<TrainingOperationsRefresher />} />
+                                        <Route path="/training/operations/videos" element={<TrainingOperationsBasics />} />
+                                        <Route path="/training/people/employees" element={<TrainingPeopleBasics />} />
+                                        <Route path="/training/people/labour-law" element={<TrainingPeopleAdvanced />} />
+                                        <Route path="/training/people/leave" element={<TrainingPeopleCertification />} />
+                                        <Route path="/training/people/payroll" element={<TrainingPeopleRefresher />} />
+                                        <Route path="/training/people/videos" element={<TrainingPeopleBasics />} />
+                                        <Route path="/training/services/field-service" element={<TrainingServicesBasics />} />
+                                        <Route path="/training/services/projects" element={<TrainingServicesAdvanced />} />
+                                        <Route path="/training/services/support" element={<TrainingServicesCertification />} />
+                                        <Route path="/training/services/timesheets" element={<TrainingServicesRefresher />} />
+                                        <Route path="/training/services/videos" element={<TrainingServicesBasics />} />
+          
+                    {/* Catch-all: 404 Not Found page */}
+                    <Route path="*" element={<NotFound />} />
               </Routes>
             </MainLayout>
             <SessionTimeout />
