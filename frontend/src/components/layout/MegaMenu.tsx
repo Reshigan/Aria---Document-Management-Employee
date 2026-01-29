@@ -452,12 +452,22 @@ export const MegaMenu: React.FC<MegaMenuProps> = ({ onSearchClick }) => {
     fetchMenuStructure();
   }, []);
 
+const leaveTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+
   const handleMouseEnter = (menu: string) => {
+    // Cancel any pending close timeout when entering a menu
+    if (leaveTimeoutRef.current) {
+      clearTimeout(leaveTimeoutRef.current);
+      leaveTimeoutRef.current = null;
+    }
     setActiveDropdown(menu);
   };
 
   const handleMouseLeave = () => {
-    setActiveDropdown(null);
+    // Add a delay to prevent accidental closing when moving to submenu
+    leaveTimeoutRef.current = setTimeout(() => {
+      setActiveDropdown(null);
+    }, 150);
   };
 
   const isActive = (path: string) => {
