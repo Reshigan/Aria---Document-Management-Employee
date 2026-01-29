@@ -242,6 +242,7 @@ import TrainingServicesBasics from './pages/Training/ServicesBasics';
 import TrainingServicesAdvanced from './pages/Training/ServicesAdvanced';
 import TrainingServicesCertification from './pages/Training/ServicesCertification';
 import TrainingServicesRefresher from './pages/Training/ServicesRefresher';
+import SetupWizard from './pages/SetupWizard';
 import './styles/design-system.css';
 import './styles/dark-mode.css';
 
@@ -252,10 +253,11 @@ function App() {
     <NotificationProvider>
     <BrowserRouter>
       <Routes>
-        {/* Public routes */}
-        <Route path="/login" element={<Login />} />
+                {/* Public routes */}
+                <Route path="/login" element={<Login />} />
+                <Route path="/setup" element={<SetupWizard />} />
         
-        {/* Protected routes */}
+                {/* Protected routes */}
         <Route path="/*" element={
           <ProtectedRoute>
             <MainLayout>
