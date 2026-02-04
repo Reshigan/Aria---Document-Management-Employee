@@ -365,16 +365,29 @@ def get_all_bots(token: str) -> List[Dict]:
     return []
 
 
-def execute_bot(token: str, bot_id: str, data: Dict[str, Any]) -> Tuple[bool, Dict]:
+def execute_bot(token: str, bot_id: str, data: Dict[str, Any], max_retries: int = 3) -> Tuple[bool, Dict]:
     """Execute a bot and return success status and response"""
     headers = {"Authorization": f"Bearer {token}"}
     payload = {"bot_id": bot_id, "data": data}
     
-    try:
-        response = requests.post(BOT_EXECUTE_URL, json=payload, headers=headers, timeout=30)
-        return response.status_code == 200, response.json() if response.status_code == 200 else {"error": response.text, "status_code": response.status_code}
-    except Exception as e:
-        return False, {"error": str(e)}
+    for attempt in range(max_retries):
+        try:
+            response = requests.post(BOT_EXECUTE_URL, json=payload, headers=headers, timeout=30)
+            
+            # Handle rate limiting
+            if response.status_code == 429:
+                retry_after = response.json().get("retry_after", 5)
+                if attempt < max_retries - 1:
+                    print(f"  Rate limited, waiting {retry_after}s...")
+                    time.sleep(retry_after)
+                    continue
+                return False, {"error": "Rate limit exceeded after retries", "status_code": 429}
+            
+            return response.status_code == 200, response.json() if response.status_code == 200 else {"error": response.text, "status_code": response.status_code}
+        except Exception as e:
+            return False, {"error": str(e)}
+    
+    return False, {"error": "Max retries exceeded"}
 
 
 def run_positive_tests(token: str, bots: List[Dict]) -> Dict:
@@ -385,7 +398,10 @@ def run_positive_tests(token: str, bots: List[Dict]) -> Dict:
     print("POSITIVE TESTS - Testing with valid data")
     print("=" * 60)
     
-    for bot in bots:
+    for i, bot in enumerate(bots):
+        # Add delay between requests to avoid rate limiting
+        if i > 0:
+            time.sleep(0.5)
         bot_id = bot.get("id")
         bot_name = bot.get("name", bot_id)
         
@@ -423,6 +439,7 @@ def run_negative_tests(token: str, bots: List[Dict]) -> Dict:
     print("NEGATIVE TESTS - Testing with invalid/missing data")
     print("=" * 60)
     
+    test_count = 0
     for bot in bots:
         bot_id = bot.get("id")
         bot_name = bot.get("name", bot_id)
@@ -431,6 +448,10 @@ def run_negative_tests(token: str, bots: List[Dict]) -> Dict:
         test_cases = NEGATIVE_TEST_DATA.get(bot_id, [{}])
         
         for i, test_data in enumerate(test_cases):
+            # Add delay between requests to avoid rate limiting
+            if test_count > 0:
+                time.sleep(0.5)
+            test_count += 1
             success, response = execute_bot(token, bot_id, test_data)
             
             # For negative tests, we expect the bot to handle gracefully (not crash)
