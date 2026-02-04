@@ -526,28 +526,135 @@ class LoyaltyProgramBot:
 
 # ==================== BOT REGISTRY ====================
 
+# Import additional bots from production_main
+try:
+    from production_main import (
+        CustomerSupportBot,
+        # Financial/Accounting Bots
+        AccountsPayableBot, AccountsReceivableBot, BankReconciliationBot,
+        InvoiceReconciliationBot, ExpenseManagementBot, PayrollSABot,
+        GeneralLedgerBot, FinancialReportingBot, TaxFilingBot,
+        AssetManagementBot, CashFlowForecastingBot, BudgetPlanningBot,
+        # SA Compliance Bots
+        BBBEEComplianceBot, PAYEComplianceBot, UIFComplianceBot,
+        VATComplianceBot, AuditTrailBot,
+        # CRM/Sales Bots
+        LeadQualificationBot, LeadManagementBot, SalesPipelineBot,
+        QuoteGenerationBot, EmailCampaignBot, SalesForecastingBot,
+        ContractManagementBot, CustomerOnboardingBot,
+        # HR Bots
+        RecruitmentBot, EmployeeOnboardingBot, LeaveManagementBot,
+        PerformanceReviewBot, TrainingManagementBot, TimeAttendanceBot,
+        BenefitsManagementBot, EmployeeExitBot,
+        # Procurement Bots
+        PurchaseOrderBot, SupplierManagementBot, RFQManagementBot,
+        GoodsReceiptBot, SupplierEvaluationBot, ProcurementContractBot,
+        SpendAnalyticsBot,
+        # Document Management Bots
+        DocumentClassificationBot, DocumentExtractionBot, DocumentApprovalBot,
+        VersionControlBot, ArchiveManagementBot, SearchRetrievalBot,
+        # Communication Bots
+        EmailBot, SMSBot, WhatsAppBot, TeamsIntegrationBot, SlackIntegrationBot
+    )
+    PRODUCTION_BOTS_AVAILABLE = True
+except ImportError as e:
+    print(f"Note: Some production bots not available for import: {e}")
+    PRODUCTION_BOTS_AVAILABLE = False
+
 ADVANCED_BOTS = {
-    # Manufacturing Bots
+    # Manufacturing Bots (5)
     "mrp_bot": MRPBot,
     "production_scheduler": ProductionSchedulerBot,
     "quality_predictor": QualityPredictorBot,
     "predictive_maintenance": PredictiveMaintenanceBot,
     "inventory_optimizer": InventoryOptimizerBot,
     
-    # Healthcare Bots
+    # Healthcare Bots (5)
     "patient_scheduling": PatientSchedulingBot,
     "medical_records": MedicalRecordsBot,
     "insurance_claims": InsuranceClaimsBot,
     "lab_results": LabResultsBot,
     "prescription_management": PrescriptionManagementBot,
     
-    # Retail Bots
+    # Retail Bots (5)
     "demand_forecasting": DemandForecastingBot,
     "price_optimization": PriceOptimizationBot,
     "customer_segmentation": CustomerSegmentationBot,
     "store_performance": StorePerformanceBot,
     "loyalty_program": LoyaltyProgramBot
 }
+
+# Add production bots if available
+if PRODUCTION_BOTS_AVAILABLE:
+    ADVANCED_BOTS.update({
+        # Customer Support (1)
+        "customer_support": CustomerSupportBot,
+        
+        # Financial/Accounting Bots (12)
+        "accounts_payable": AccountsPayableBot,
+        "accounts_receivable": AccountsReceivableBot,
+        "bank_reconciliation": BankReconciliationBot,
+        "invoice_reconciliation": InvoiceReconciliationBot,
+        "expense_management": ExpenseManagementBot,
+        "payroll_sa": PayrollSABot,
+        "general_ledger": GeneralLedgerBot,
+        "financial_reporting": FinancialReportingBot,
+        "tax_filing": TaxFilingBot,
+        "asset_management": AssetManagementBot,
+        "cash_flow_forecasting": CashFlowForecastingBot,
+        "budget_planning": BudgetPlanningBot,
+        
+        # SA Compliance Bots (5)
+        "bbbee_compliance": BBBEEComplianceBot,
+        "paye_compliance": PAYEComplianceBot,
+        "uif_compliance": UIFComplianceBot,
+        "vat_compliance": VATComplianceBot,
+        "audit_trail": AuditTrailBot,
+        
+        # CRM/Sales Bots (8)
+        "lead_qualification": LeadQualificationBot,
+        "lead_management": LeadManagementBot,
+        "sales_pipeline": SalesPipelineBot,
+        "quote_generation": QuoteGenerationBot,
+        "email_campaign": EmailCampaignBot,
+        "sales_forecasting": SalesForecastingBot,
+        "contract_management": ContractManagementBot,
+        "customer_onboarding": CustomerOnboardingBot,
+        
+        # HR Bots (8)
+        "recruitment": RecruitmentBot,
+        "employee_onboarding": EmployeeOnboardingBot,
+        "leave_management": LeaveManagementBot,
+        "performance_review": PerformanceReviewBot,
+        "training_management": TrainingManagementBot,
+        "time_attendance": TimeAttendanceBot,
+        "benefits_management": BenefitsManagementBot,
+        "employee_exit": EmployeeExitBot,
+        
+        # Procurement Bots (7)
+        "purchase_order": PurchaseOrderBot,
+        "supplier_management": SupplierManagementBot,
+        "rfq_management": RFQManagementBot,
+        "goods_receipt": GoodsReceiptBot,
+        "supplier_evaluation": SupplierEvaluationBot,
+        "procurement_contract": ProcurementContractBot,
+        "spend_analytics": SpendAnalyticsBot,
+        
+        # Document Management Bots (6)
+        "document_classification": DocumentClassificationBot,
+        "document_extraction": DocumentExtractionBot,
+        "document_approval": DocumentApprovalBot,
+        "version_control": VersionControlBot,
+        "archive_management": ArchiveManagementBot,
+        "search_retrieval": SearchRetrievalBot,
+        
+        # Communication Bots (5)
+        "email_bot": EmailBot,
+        "sms_bot": SMSBot,
+        "whatsapp_bot": WhatsAppBot,
+        "teams_integration": TeamsIntegrationBot,
+        "slack_integration": SlackIntegrationBot
+    })
 
 def get_bot_info(bot_id: str) -> Dict[str, Any]:
     """Get bot information"""
