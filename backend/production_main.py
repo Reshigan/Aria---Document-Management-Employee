@@ -599,6 +599,13 @@ except Exception as e:
     print(f"⚠️ Quality Admin Configuration API not loaded: {e}")
 
 try:
+    from app.routers.multi_country import router as multi_country_router
+    app.include_router(multi_country_router)
+    print("✅ Multi-Country Support API loaded (50+ countries with tax rules, statutory compliance, document formats)")
+except Exception as e:
+    print(f"⚠️ Multi-Country Support API not loaded: {e}")
+
+try:
     from app.api.payroll_hr_admin_config import router as payroll_hr_admin_config_router
     app.include_router(payroll_hr_admin_config_router)
     print("✅ Payroll/HR Admin Configuration API loaded")
