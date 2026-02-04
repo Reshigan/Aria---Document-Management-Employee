@@ -60,7 +60,7 @@ export default function BotsHub() {
       'HR': ['Recruitment', 'Onboarding', 'Performance Review', 'Leave Management', 'Training Scheduler', 'Payroll Processing', 'Benefits Administration', 'Offboarding'],
       'Manufacturing': ['MRP', 'Production Scheduling', 'Quality Control', 'Inventory Optimizer', 'Quality Predictor'],
       'Procurement': ['RFQ Management', 'PO Processing', 'Supplier Evaluation', 'Contract Management', 'Supplier Onboarding', 'Tender Management', 'RFQ Response'],
-      'Compliance': ['BBBEE Tracking', 'PAYE Compliance', 'UIF Compliance', 'VAT Returns', 'Audit Trail'],
+      'Compliance': ['Tax Compliance', 'Payroll Tax', 'Social Security', 'VAT/GST Returns', 'Audit Trail', 'Data Protection', 'Labor Law'],
       'Documents': ['OCR Processing', 'Document Classification', 'Workflow Automation', 'E-Signature', 'Document Templates', 'Document History'],
       'Retail': ['Demand Forecasting', 'Pricing Optimization', 'Loyalty Programs', 'Returns Management', 'Shipping Logistics', 'Inventory Replenishment'],
       'Healthcare': ['Patient Records', 'Appointment Scheduling', 'Lab Results', 'Prescription Management', 'Insurance Claims'],

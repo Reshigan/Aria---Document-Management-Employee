@@ -31,12 +31,21 @@ class Company(BaseModel):
     state_province = Column(String(100))
     postal_code = Column(String(20))
     country = Column(String(100), default="South Africa")
+    country_code = Column(String(2), default="ZA", index=True)  # ISO 3166-1 alpha-2
     
     # Settings
     base_currency = Column(String(3), default="ZAR")
+    currency_symbol = Column(String(10), default="R")
     fiscal_year_start = Column(Date)
-    date_format = Column(String(20), default="YYYY-MM-DD")
+    date_format = Column(String(20), default="DD/MM/YYYY")
+    number_format = Column(String(20), default="1 234,56")
     time_zone = Column(String(50), default="Africa/Johannesburg")
+    language_code = Column(String(5), default="en")
+    
+    # Tax settings (populated from country selection)
+    tax_system = Column(String(20), default="VAT")
+    default_tax_code = Column(String(20), default="VAT_STD")
+    tax_registration_number = Column(String(100))  # VAT/GST/Sales Tax number
     
     # Subscription
     subscription_plan = Column(String(50), default="starter")

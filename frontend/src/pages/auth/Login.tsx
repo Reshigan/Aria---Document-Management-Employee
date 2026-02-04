@@ -50,7 +50,7 @@ const Login: React.FC = () => {
                 <Sparkles className="w-5 h-5 text-amber-400" />
               </div>
               <div>
-                <h3 className="font-semibold text-white mb-1">109 AI Automation Agents</h3>
+                <h3 className="font-semibold text-white mb-1">67 AI Automation Agents</h3>
                 <p className="text-sm text-gray-400">Intelligent automation for every business process</p>
               </div>
             </div>
@@ -60,8 +60,8 @@ const Login: React.FC = () => {
                 <Shield className="w-5 h-5 text-emerald-400" />
               </div>
               <div>
-                <h3 className="font-semibold text-white mb-1">South African Compliance</h3>
-                <p className="text-sm text-gray-400">B-BBEE, SARS, UIF, SDL, and PAYE built-in</p>
+                <h3 className="font-semibold text-white mb-1">Multi-Country Compliance</h3>
+                <p className="text-sm text-gray-400">56 countries with local tax and statutory rules</p>
               </div>
             </div>
             

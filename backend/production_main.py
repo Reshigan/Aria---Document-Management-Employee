@@ -599,6 +599,13 @@ except Exception as e:
     print(f"⚠️ Quality Admin Configuration API not loaded: {e}")
 
 try:
+    from app.routers.multi_country import router as multi_country_router
+    app.include_router(multi_country_router)
+    print("✅ Multi-Country Support API loaded (50+ countries with tax rules, statutory compliance, document formats)")
+except Exception as e:
+    print(f"⚠️ Multi-Country Support API not loaded: {e}")
+
+try:
     from app.api.payroll_hr_admin_config import router as payroll_hr_admin_config_router
     app.include_router(payroll_hr_admin_config_router)
     print("✅ Payroll/HR Admin Configuration API loaded")
@@ -1720,115 +1727,184 @@ class BudgetPlanningBot(BotBase):
 
 # ==================== COMPLIANCE BOTS (5) ====================
 
-class BBBEEComplianceBot(BotBase):
-    name = "BBBEE Compliance"
-    description = "South African BBBEE compliance tracking"
+class TaxComplianceBot(BotBase):
+    name = "Tax Compliance"
+    description = "Country-specific tax compliance tracking based on company location"
     category = "compliance"
-    icon = "🇿🇦"
+    icon = "📊"
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
         company_id = data.get("company_id")
+        country_code = data.get("country_code", "ZA")
         if not company_id or not bot_data_pg:
-            return {"status": "error", "bot": "BBBEE Compliance", "message": "Company ID required"}
+            return {"status": "error", "bot": "Tax Compliance", "message": "Company ID required"}
         
         try:
-            employees = bot_data_pg.fetch_employees(company_id, limit=100)
+            invoices = bot_data_pg.fetch_invoices(company_id, limit=100)
+            
+            # Country-specific tax rules
+            tax_rules = {
+                "ZA": {"name": "South Africa", "vat_rate": 15, "tax_type": "VAT", "filing": "Bi-monthly"},
+                "US": {"name": "United States", "vat_rate": 0, "tax_type": "Sales Tax", "filing": "Quarterly"},
+                "GB": {"name": "United Kingdom", "vat_rate": 20, "tax_type": "VAT", "filing": "Quarterly"},
+                "DE": {"name": "Germany", "vat_rate": 19, "tax_type": "VAT/USt", "filing": "Monthly"},
+                "AU": {"name": "Australia", "vat_rate": 10, "tax_type": "GST", "filing": "Quarterly"},
+                "IN": {"name": "India", "vat_rate": 18, "tax_type": "GST", "filing": "Monthly"},
+            }
+            
+            country_rules = tax_rules.get(country_code, {"name": "Unknown", "vat_rate": 15, "tax_type": "VAT", "filing": "Monthly"})
             
             return {
                 "status": "success",
-                "bot": "BBBEE Compliance",
-                "total_employees": len(employees),
-                "message": "BBBEE compliance requires bbbee_scorecard table"
+                "bot": "Tax Compliance",
+                "country": country_rules["name"],
+                "country_code": country_code,
+                "tax_type": country_rules["tax_type"],
+                "tax_rate": country_rules["vat_rate"],
+                "filing_frequency": country_rules["filing"],
+                "total_invoices": len(invoices),
+                "message": f"Tax compliance for {country_rules['name']} ({country_rules['tax_type']} at {country_rules['vat_rate']}%)"
             }
         except Exception as e:
-            return {"status": "error", "bot": "BBBEE Compliance", "message": f"Error: {str(e)}"}
+            return {"status": "error", "bot": "Tax Compliance", "message": f"Error: {str(e)}"}
 
-class PAYEComplianceBot(BotBase):
-    name = "PAYE Compliance"
-    description = "PAYE tax compliance and filing"
+class PayrollTaxBot(BotBase):
+    name = "Payroll Tax Compliance"
+    description = "Country-specific payroll tax compliance (PAYE, Income Tax Withholding, etc.)"
     category = "compliance"
     icon = "💼"
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
         company_id = data.get("company_id")
+        country_code = data.get("country_code", "ZA")
         if not company_id or not bot_data_pg:
-            return {"status": "error", "bot": "PAYE Compliance", "message": "Company ID required"}
+            return {"status": "error", "bot": "Payroll Tax Compliance", "message": "Company ID required"}
         
         try:
             payroll_runs = bot_data_pg.fetch_payroll_runs(company_id, limit=12)
-            
             total_gross = sum(float(pr.get('total_gross', 0)) for pr in payroll_runs)
+            
+            # Country-specific payroll tax rules
+            payroll_tax_rules = {
+                "ZA": {"name": "PAYE", "rate": "18-45%", "filing": "Monthly EMP201"},
+                "US": {"name": "Federal Income Tax", "rate": "10-37%", "filing": "Quarterly 941"},
+                "GB": {"name": "PAYE", "rate": "20-45%", "filing": "RTI Monthly"},
+                "DE": {"name": "Lohnsteuer", "rate": "14-45%", "filing": "Monthly"},
+                "AU": {"name": "PAYG Withholding", "rate": "19-45%", "filing": "Quarterly BAS"},
+                "IN": {"name": "TDS", "rate": "5-30%", "filing": "Monthly"},
+            }
+            
+            country_rules = payroll_tax_rules.get(country_code, {"name": "Income Tax", "rate": "Variable", "filing": "Monthly"})
             
             return {
                 "status": "success",
-                "bot": "PAYE Compliance",
+                "bot": "Payroll Tax Compliance",
+                "country_code": country_code,
+                "tax_name": country_rules["name"],
+                "tax_rate": country_rules["rate"],
+                "filing_requirement": country_rules["filing"],
                 "period": data.get("period", datetime.now().strftime("%Y-%m")),
                 "total_payroll_runs": len(payroll_runs),
                 "total_gross_salaries": round(total_gross, 2),
-                "message": "PAYE compliance based on payroll runs"
+                "message": f"{country_rules['name']} compliance - {country_rules['filing']}"
             }
         except Exception as e:
-            return {"status": "error", "bot": "PAYE Compliance", "message": f"Error: {str(e)}"}
+            return {"status": "error", "bot": "Payroll Tax Compliance", "message": f"Error: {str(e)}"}
 
-class UIFComplianceBot(BotBase):
-    name = "UIF Compliance"
-    description = "Unemployment Insurance Fund compliance"
+class SocialSecurityBot(BotBase):
+    name = "Social Security Compliance"
+    description = "Country-specific social security/unemployment insurance compliance (UIF, FICA, NI, etc.)"
     category = "compliance"
     icon = "🛡️"
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
         company_id = data.get("company_id")
+        country_code = data.get("country_code", "ZA")
         if not company_id or not bot_data_pg:
-            return {"status": "error", "bot": "UIF Compliance", "message": "Company ID required"}
+            return {"status": "error", "bot": "Social Security Compliance", "message": "Company ID required"}
         
         try:
             payroll_runs = bot_data_pg.fetch_payroll_runs(company_id, limit=12)
-            
             total_gross = sum(float(pr.get('total_gross', 0)) for pr in payroll_runs)
-            uif_contribution = total_gross * 0.02
+            
+            # Country-specific social security rules
+            social_security_rules = {
+                "ZA": {"name": "UIF", "rate": 2.0, "employer_rate": 1.0, "employee_rate": 1.0},
+                "US": {"name": "FICA (Social Security + Medicare)", "rate": 15.3, "employer_rate": 7.65, "employee_rate": 7.65},
+                "GB": {"name": "National Insurance", "rate": 25.8, "employer_rate": 13.8, "employee_rate": 12.0},
+                "DE": {"name": "Sozialversicherung", "rate": 40.0, "employer_rate": 20.0, "employee_rate": 20.0},
+                "AU": {"name": "Superannuation", "rate": 11.5, "employer_rate": 11.5, "employee_rate": 0.0},
+                "IN": {"name": "PF + ESI", "rate": 24.0, "employer_rate": 12.0, "employee_rate": 12.0},
+            }
+            
+            country_rules = social_security_rules.get(country_code, {"name": "Social Security", "rate": 10.0, "employer_rate": 5.0, "employee_rate": 5.0})
+            contribution = total_gross * (country_rules["rate"] / 100)
             
             return {
                 "status": "success",
-                "bot": "UIF Compliance",
+                "bot": "Social Security Compliance",
+                "country_code": country_code,
+                "program_name": country_rules["name"],
+                "total_rate": country_rules["rate"],
+                "employer_rate": country_rules["employer_rate"],
+                "employee_rate": country_rules["employee_rate"],
                 "period": data.get("period", datetime.now().strftime("%Y-%m")),
                 "total_payroll_runs": len(payroll_runs),
                 "total_gross_salaries": round(total_gross, 2),
-                "total_uif_contribution": round(uif_contribution, 2),
-                "message": "UIF compliance based on payroll runs"
+                "total_contribution": round(contribution, 2),
+                "message": f"{country_rules['name']} compliance - Total rate: {country_rules['rate']}%"
             }
         except Exception as e:
-            return {"status": "error", "bot": "UIF Compliance", "message": f"Error: {str(e)}"}
+            return {"status": "error", "bot": "Social Security Compliance", "message": f"Error: {str(e)}"}
 
-class VATComplianceBot(BotBase):
-    name = "VAT Compliance"
-    description = "VAT return preparation and filing"
+class VATGSTComplianceBot(BotBase):
+    name = "VAT/GST Compliance"
+    description = "Country-specific VAT/GST/Sales Tax return preparation and filing"
     category = "compliance"
     icon = "📋"
     
     @staticmethod
     def execute(data: Dict[str, Any]) -> Dict[str, Any]:
         company_id = data.get("company_id")
+        country_code = data.get("country_code", "ZA")
         if not company_id or not bot_data_pg:
-            return {"status": "error", "bot": "VAT Compliance", "message": "Company ID required"}
+            return {"status": "error", "bot": "VAT/GST Compliance", "message": "Company ID required"}
         
         try:
             invoices = bot_data_pg.fetch_invoices(company_id, limit=100)
             
-            output_vat = sum(float(inv.get('tax_amount', 0)) for inv in invoices)
+            # Country-specific VAT/GST rules
+            vat_gst_rules = {
+                "ZA": {"name": "VAT", "rate": 15.0, "filing": "Bi-monthly VAT201"},
+                "US": {"name": "Sales Tax", "rate": 0.0, "filing": "State-specific (varies)"},
+                "GB": {"name": "VAT", "rate": 20.0, "filing": "Quarterly MTD"},
+                "DE": {"name": "USt (Umsatzsteuer)", "rate": 19.0, "filing": "Monthly UStVA"},
+                "AU": {"name": "GST", "rate": 10.0, "filing": "Quarterly BAS"},
+                "IN": {"name": "GST", "rate": 18.0, "filing": "Monthly GSTR-1/3B"},
+                "CA": {"name": "GST/HST", "rate": 5.0, "filing": "Quarterly/Annual"},
+                "NZ": {"name": "GST", "rate": 15.0, "filing": "Bi-monthly/6-monthly"},
+            }
+            
+            country_rules = vat_gst_rules.get(country_code, {"name": "VAT/GST", "rate": 15.0, "filing": "Monthly"})
+            output_tax = sum(float(inv.get('tax_amount', 0)) for inv in invoices)
             
             return {
                 "status": "success",
-                "bot": "VAT Compliance",
+                "bot": "VAT/GST Compliance",
+                "country_code": country_code,
+                "tax_name": country_rules["name"],
+                "standard_rate": country_rules["rate"],
+                "filing_requirement": country_rules["filing"],
                 "period": data.get("period", datetime.now().strftime("%Y-%m")),
                 "total_invoices": len(invoices),
-                "output_vat": round(output_vat, 2),
-                "message": "VAT compliance based on invoice tax amounts"
+                "output_tax": round(output_tax, 2),
+                "message": f"{country_rules['name']} compliance - {country_rules['filing']}"
             }
         except Exception as e:
-            return {"status": "error", "bot": "VAT Compliance", "message": f"Error: {str(e)}"}
+            return {"status": "error", "bot": "VAT/GST Compliance", "message": f"Error: {str(e)}"}
 
 class AuditTrailBot(BotBase):
     name = "Audit Trail"
