@@ -535,9 +535,9 @@ try:
         InvoiceReconciliationBot, ExpenseManagementBot, PayrollSABot,
         GeneralLedgerBot, FinancialReportingBot, TaxFilingBot,
         AssetManagementBot, CashFlowForecastingBot, BudgetPlanningBot,
-        # SA Compliance Bots
-        BBBEEComplianceBot, PAYEComplianceBot, UIFComplianceBot,
-        VATComplianceBot, AuditTrailBot,
+        # Country-Specific Compliance Bots
+        TaxComplianceBot, PayrollTaxBot, SocialSecurityBot,
+        VATGSTComplianceBot, AuditTrailBot,
         # CRM/Sales Bots
         LeadQualificationBot, LeadManagementBot, SalesPipelineBot,
         QuoteGenerationBot, EmailCampaignBot, SalesForecastingBot,
@@ -604,11 +604,11 @@ if PRODUCTION_BOTS_AVAILABLE:
         "cash_flow_forecasting": CashFlowForecastingBot,
         "budget_planning": BudgetPlanningBot,
         
-        # SA Compliance Bots (5)
-        "bbbee_compliance": BBBEEComplianceBot,
-        "paye_compliance": PAYEComplianceBot,
-        "uif_compliance": UIFComplianceBot,
-        "vat_compliance": VATComplianceBot,
+        # Country-Specific Compliance Bots (5)
+        "tax_compliance": TaxComplianceBot,
+        "payroll_tax": PayrollTaxBot,
+        "social_security": SocialSecurityBot,
+        "vat_gst_compliance": VATGSTComplianceBot,
         "audit_trail": AuditTrailBot,
         
         # CRM/Sales Bots (8)
