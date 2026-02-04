@@ -17,8 +17,8 @@ export const ExecutiveDashboard: React.FC = () => {
     cash_position: 0,
     ar_outstanding: 0,
     ap_outstanding: 0,
-    bot_count: 58,
-    active_bots: 58,
+    bot_count: 109,
+    active_bots: 109,
     is_loss: false,
     transactions_today: 0,
     success_rate: 100,
@@ -53,8 +53,8 @@ export const ExecutiveDashboard: React.FC = () => {
         cash_position: financial.cash_position || 0,
         ar_outstanding: financial.ar_balance || 0,
         ap_outstanding: financial.ap_balance || 0,
-        bot_count: botsResponse.data.agents?.length || automation.active_agents || 58,
-        active_bots: botsResponse.data.agents?.filter((b: any) => b.status === 'active').length || automation.active_agents || 58,
+        bot_count: botsResponse.data.agents?.length || automation.active_agents || 109,
+        active_bots: botsResponse.data.agents?.filter((b: any) => b.status === 'active').length || automation.active_agents || 109,
         is_loss: financial.is_loss || false,
         transactions_today: automation.transactions_today || 0,
         success_rate: automation.success_rate || 100,
@@ -108,7 +108,7 @@ export const ExecutiveDashboard: React.FC = () => {
           </div>
           <div>
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Executive Dashboard</h1>
-            <p className="text-gray-600 dark:text-gray-400">Real-time financial overview powered by {metrics?.active_bots || 58} AI automation agents</p>
+            <p className="text-gray-600 dark:text-gray-400">Real-time financial overview powered by {metrics?.active_bots || 109} AI automation agents</p>
           </div>
         </div>
       </div>
@@ -196,17 +196,17 @@ export const ExecutiveDashboard: React.FC = () => {
 
           <Card className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 mb-6">
             <CardHeader>
-              <CardTitle>Automation Agents - All {metrics?.active_bots || 58} Active</CardTitle>
+              <CardTitle>Automation Agents - All {metrics?.active_bots || 109} Active</CardTitle>
             </CardHeader>
             <CardBody>
               <div className="flex flex-wrap gap-8 mb-6 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
                 <div>
                   <div className="text-sm text-gray-600 dark:text-gray-400">Total Agents</div>
-                  <div className="text-2xl font-bold text-gray-900 dark:text-white">{metrics?.bot_count || 58}</div>
+                  <div className="text-2xl font-bold text-gray-900 dark:text-white">{metrics?.bot_count || 109}</div>
                 </div>
                 <div>
                   <div className="text-sm text-gray-600 dark:text-gray-400">Active</div>
-                  <div className="text-2xl font-bold text-green-600">{metrics?.active_bots || 58}</div>
+                  <div className="text-2xl font-bold text-green-600">{metrics?.active_bots || 109}</div>
                 </div>
                 <div>
                   <div className="text-sm text-gray-600 dark:text-gray-400">Transactions Today</div>

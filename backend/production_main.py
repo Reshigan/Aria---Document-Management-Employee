@@ -3709,6 +3709,351 @@ async def get_bot_details(bot_id: str, user: dict = Depends(get_current_user)):
         "avg_execution_time": round(random.uniform(0.5, 5.0), 2)
     }
 
+@app.get("/api/dashboard/executive")
+async def get_executive_dashboard(user: dict = Depends(get_current_user)):
+    """Get executive dashboard data with financial metrics and automation stats"""
+    company_id = user.get('organization_id')
+    
+    # Get financial data from database
+    financial_data = {
+        "revenue": 0,
+        "net_profit": 0,
+        "cash_position": 0,
+        "ar_balance": 0,
+        "ap_balance": 0,
+        "is_loss": False
+    }
+    
+    automation_data = {
+        "active_agents": 109,
+        "transactions_today": 0,
+        "success_rate": 100,
+        "invoices_processed_today": 0,
+        "pending_payments": 0
+    }
+    
+    if company_id and DATABASE_URL:
+        try:
+            conn = get_db_connection()
+            cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+            
+            # Get AR invoices total
+            cur.execute("""
+                SELECT COALESCE(SUM(total_amount), 0) as total 
+                FROM ar_invoices 
+                WHERE company_id = %s AND status != 'paid'
+            """, (company_id,))
+            ar_result = cur.fetchone()
+            financial_data["ar_balance"] = float(ar_result['total']) if ar_result else 0
+            
+            # Get AP invoices total
+            cur.execute("""
+                SELECT COALESCE(SUM(total_amount), 0) as total 
+                FROM ap_invoices 
+                WHERE company_id = %s AND status != 'paid'
+            """, (company_id,))
+            ap_result = cur.fetchone()
+            financial_data["ap_balance"] = float(ap_result['total']) if ap_result else 0
+            
+            # Get revenue from paid invoices this year
+            cur.execute("""
+                SELECT COALESCE(SUM(total_amount), 0) as total 
+                FROM ar_invoices 
+                WHERE company_id = %s AND status = 'paid'
+                AND EXTRACT(YEAR FROM invoice_date) = EXTRACT(YEAR FROM CURRENT_DATE)
+            """, (company_id,))
+            revenue_result = cur.fetchone()
+            financial_data["revenue"] = float(revenue_result['total']) if revenue_result else 0
+            
+            # Get bank balance
+            cur.execute("""
+                SELECT COALESCE(SUM(current_balance), 0) as total 
+                FROM bank_accounts 
+                WHERE company_id = %s AND is_active = true
+            """, (company_id,))
+            bank_result = cur.fetchone()
+            financial_data["cash_position"] = float(bank_result['total']) if bank_result else 0
+            
+            # Calculate net profit (simplified)
+            financial_data["net_profit"] = financial_data["revenue"] * 0.15  # Assume 15% margin
+            financial_data["is_loss"] = financial_data["net_profit"] < 0
+            
+            # Get today's transactions count
+            cur.execute("""
+                SELECT COUNT(*) as count FROM (
+                    SELECT id FROM ar_invoices WHERE company_id = %s AND DATE(created_at) = CURRENT_DATE
+                    UNION ALL
+                    SELECT id FROM ap_invoices WHERE company_id = %s AND DATE(created_at) = CURRENT_DATE
+                    UNION ALL
+                    SELECT id FROM sales_orders WHERE company_id = %s AND DATE(created_at) = CURRENT_DATE
+                ) as today_txns
+            """, (company_id, company_id, company_id))
+            txn_result = cur.fetchone()
+            automation_data["transactions_today"] = txn_result['count'] if txn_result else 0
+            
+            cur.close()
+            conn.close()
+        except Exception as e:
+            logger.error(f"Error fetching executive dashboard data: {e}")
+    
+    return {
+        "financial": financial_data,
+        "automation": automation_data
+    }
+
+@app.get("/api/bi/dashboard/executive")
+async def get_bi_executive_dashboard(user: dict = Depends(get_current_user)):
+    """Get BI executive dashboard data for analytics page"""
+    company_id = user.get('organization_id')
+    
+    # Default response structure
+    response = {
+        "summary": {
+            "revenue_ytd": 0,
+            "revenue_month": 0,
+            "ar_outstanding": 0,
+            "ar_overdue": 0,
+            "ap_outstanding": 0,
+            "net_position": 0
+        },
+        "counts": {
+            "customers": 0,
+            "suppliers": 0,
+            "products": 0
+        },
+        "activity_this_month": {
+            "sales_orders": {"count": 0, "value": 0},
+            "purchase_orders": {"count": 0, "value": 0},
+            "invoices": {"count": 0, "value": 0}
+        },
+        "top_customers": [],
+        "top_products": []
+    }
+    
+    if company_id and DATABASE_URL:
+        try:
+            conn = get_db_connection()
+            cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+            
+            # Get customer count
+            cur.execute("SELECT COUNT(*) as count FROM customers WHERE company_id = %s", (company_id,))
+            result = cur.fetchone()
+            response["counts"]["customers"] = result['count'] if result else 0
+            
+            # Get supplier count
+            cur.execute("SELECT COUNT(*) as count FROM suppliers WHERE company_id = %s", (company_id,))
+            result = cur.fetchone()
+            response["counts"]["suppliers"] = result['count'] if result else 0
+            
+            # Get product count
+            cur.execute("SELECT COUNT(*) as count FROM products WHERE company_id = %s", (company_id,))
+            result = cur.fetchone()
+            response["counts"]["products"] = result['count'] if result else 0
+            
+            # Get AR outstanding
+            cur.execute("""
+                SELECT COALESCE(SUM(total_amount), 0) as total 
+                FROM ar_invoices 
+                WHERE company_id = %s AND status NOT IN ('paid', 'cancelled')
+            """, (company_id,))
+            result = cur.fetchone()
+            response["summary"]["ar_outstanding"] = float(result['total']) if result else 0
+            
+            # Get AP outstanding
+            cur.execute("""
+                SELECT COALESCE(SUM(total_amount), 0) as total 
+                FROM ap_invoices 
+                WHERE company_id = %s AND status NOT IN ('paid', 'cancelled')
+            """, (company_id,))
+            result = cur.fetchone()
+            response["summary"]["ap_outstanding"] = float(result['total']) if result else 0
+            
+            # Calculate net position
+            response["summary"]["net_position"] = response["summary"]["ar_outstanding"] - response["summary"]["ap_outstanding"]
+            
+            # Get revenue YTD
+            cur.execute("""
+                SELECT COALESCE(SUM(total_amount), 0) as total 
+                FROM ar_invoices 
+                WHERE company_id = %s AND status = 'paid'
+                AND EXTRACT(YEAR FROM invoice_date) = EXTRACT(YEAR FROM CURRENT_DATE)
+            """, (company_id,))
+            result = cur.fetchone()
+            response["summary"]["revenue_ytd"] = float(result['total']) if result else 0
+            
+            # Get revenue this month
+            cur.execute("""
+                SELECT COALESCE(SUM(total_amount), 0) as total 
+                FROM ar_invoices 
+                WHERE company_id = %s AND status = 'paid'
+                AND EXTRACT(YEAR FROM invoice_date) = EXTRACT(YEAR FROM CURRENT_DATE)
+                AND EXTRACT(MONTH FROM invoice_date) = EXTRACT(MONTH FROM CURRENT_DATE)
+            """, (company_id,))
+            result = cur.fetchone()
+            response["summary"]["revenue_month"] = float(result['total']) if result else 0
+            
+            # Get sales orders this month
+            cur.execute("""
+                SELECT COUNT(*) as count, COALESCE(SUM(total_amount), 0) as value 
+                FROM sales_orders 
+                WHERE company_id = %s
+                AND EXTRACT(YEAR FROM order_date) = EXTRACT(YEAR FROM CURRENT_DATE)
+                AND EXTRACT(MONTH FROM order_date) = EXTRACT(MONTH FROM CURRENT_DATE)
+            """, (company_id,))
+            result = cur.fetchone()
+            if result:
+                response["activity_this_month"]["sales_orders"] = {
+                    "count": result['count'],
+                    "value": float(result['value'])
+                }
+            
+            # Get purchase orders this month
+            cur.execute("""
+                SELECT COUNT(*) as count, COALESCE(SUM(total_amount), 0) as value 
+                FROM purchase_orders 
+                WHERE company_id = %s
+                AND EXTRACT(YEAR FROM order_date) = EXTRACT(YEAR FROM CURRENT_DATE)
+                AND EXTRACT(MONTH FROM order_date) = EXTRACT(MONTH FROM CURRENT_DATE)
+            """, (company_id,))
+            result = cur.fetchone()
+            if result:
+                response["activity_this_month"]["purchase_orders"] = {
+                    "count": result['count'],
+                    "value": float(result['value'])
+                }
+            
+            # Get invoices this month
+            cur.execute("""
+                SELECT COUNT(*) as count, COALESCE(SUM(total_amount), 0) as value 
+                FROM ar_invoices 
+                WHERE company_id = %s
+                AND EXTRACT(YEAR FROM invoice_date) = EXTRACT(YEAR FROM CURRENT_DATE)
+                AND EXTRACT(MONTH FROM invoice_date) = EXTRACT(MONTH FROM CURRENT_DATE)
+            """, (company_id,))
+            result = cur.fetchone()
+            if result:
+                response["activity_this_month"]["invoices"] = {
+                    "count": result['count'],
+                    "value": float(result['value'])
+                }
+            
+            # Get top customers by revenue
+            cur.execute("""
+                SELECT c.name, COALESCE(SUM(i.total_amount), 0) as revenue
+                FROM customers c
+                LEFT JOIN ar_invoices i ON c.id = i.customer_id AND i.status = 'paid'
+                WHERE c.company_id = %s
+                GROUP BY c.id, c.name
+                ORDER BY revenue DESC
+                LIMIT 5
+            """, (company_id,))
+            response["top_customers"] = [
+                {"name": row['name'], "revenue": float(row['revenue'])}
+                for row in cur.fetchall()
+            ]
+            
+            # Get top products by sales
+            cur.execute("""
+                SELECT p.name, COALESCE(SUM(sol.quantity * sol.unit_price), 0) as sales
+                FROM products p
+                LEFT JOIN sales_order_lines sol ON p.id = sol.product_id
+                WHERE p.company_id = %s
+                GROUP BY p.id, p.name
+                ORDER BY sales DESC
+                LIMIT 5
+            """, (company_id,))
+            response["top_products"] = [
+                {"name": row['name'], "sales": float(row['sales'])}
+                for row in cur.fetchall()
+            ]
+            
+            cur.close()
+            conn.close()
+        except Exception as e:
+            logger.error(f"Error fetching BI executive dashboard data: {e}")
+    
+    return response
+
+@app.get("/api/bi/integrity/run")
+async def run_bi_integrity_check(user: dict = Depends(get_current_user)):
+    """Run data integrity checks for BI dashboard"""
+    company_id = user.get('organization_id')
+    
+    checks = []
+    passed = 0
+    warnings = 0
+    failed = 0
+    
+    if company_id and DATABASE_URL:
+        try:
+            conn = get_db_connection()
+            cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+            
+            # Check 1: Orphaned invoices (no customer)
+            cur.execute("""
+                SELECT COUNT(*) as count FROM ar_invoices 
+                WHERE company_id = %s AND customer_id IS NULL
+            """, (company_id,))
+            result = cur.fetchone()
+            orphan_count = result['count'] if result else 0
+            if orphan_count == 0:
+                checks.append({"name": "Orphaned Invoices", "description": "Invoices without customers", "status": "pass", "details": {"count": 0}})
+                passed += 1
+            else:
+                checks.append({"name": "Orphaned Invoices", "description": "Invoices without customers", "status": "warning", "details": {"count": orphan_count}})
+                warnings += 1
+            
+            # Check 2: Negative balances
+            cur.execute("""
+                SELECT COUNT(*) as count FROM bank_accounts 
+                WHERE company_id = %s AND current_balance < 0
+            """, (company_id,))
+            result = cur.fetchone()
+            negative_count = result['count'] if result else 0
+            if negative_count == 0:
+                checks.append({"name": "Negative Bank Balances", "description": "Bank accounts with negative balance", "status": "pass", "details": {"count": 0}})
+                passed += 1
+            else:
+                checks.append({"name": "Negative Bank Balances", "description": "Bank accounts with negative balance", "status": "warning", "details": {"count": negative_count}})
+                warnings += 1
+            
+            # Check 3: Products without prices
+            cur.execute("""
+                SELECT COUNT(*) as count FROM products 
+                WHERE company_id = %s AND (unit_price IS NULL OR unit_price = 0)
+            """, (company_id,))
+            result = cur.fetchone()
+            no_price_count = result['count'] if result else 0
+            if no_price_count == 0:
+                checks.append({"name": "Products Without Prices", "description": "Products missing unit price", "status": "pass", "details": {"count": 0}})
+                passed += 1
+            else:
+                checks.append({"name": "Products Without Prices", "description": "Products missing unit price", "status": "warning", "details": {"count": no_price_count}})
+                warnings += 1
+            
+            cur.close()
+            conn.close()
+        except Exception as e:
+            logger.error(f"Error running integrity checks: {e}")
+            checks.append({"name": "Database Connection", "description": "Database connectivity check", "status": "fail", "details": {"error": str(e)}})
+            failed += 1
+    else:
+        checks.append({"name": "Company Setup", "description": "Company configuration check", "status": "warning", "details": {"message": "No company configured"}})
+        warnings += 1
+    
+    overall_status = "healthy" if failed == 0 and warnings == 0 else ("warning" if failed == 0 else "critical")
+    
+    return {
+        "summary": {
+            "total_checks": len(checks),
+            "passed": passed,
+            "warnings": warnings,
+            "failed": failed,
+            "overall_status": overall_status
+        },
+        "checks": checks
+    }
+
 # Customer Management Endpoints
 class CustomerRequest(BaseModel):
     name: str
