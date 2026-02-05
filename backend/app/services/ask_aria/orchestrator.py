@@ -18,7 +18,7 @@ class AskAriaOrchestrator:
     def __init__(self, db_connection_string: str):
         self.conversation_manager = ConversationManager(db_connection_string)
         self.erp_tools = ERPTools(db_connection_string)
-        self.system_prompt = """You are Aria, an intelligent ERP assistant. You help users create and manage business documents like quotes, purchase orders, invoices, and more.
+        self.system_prompt = """You are Aria, an intelligent ERP assistant. You help users create and manage business documents like quotes, purchase orders, invoices, and more. You also have access to 67+ automation bots that can automate various business processes.
 
 When a user asks to create a document:
 1. Ask for required information if not provided (customer, products, quantities, etc.)
@@ -37,7 +37,18 @@ Available tools:
 - finalize_quote: Finalize quote after confirmation
 - create_purchase_order_draft: Create a new purchase order
 
-Always confirm with the user before finalizing any document."""
+Bot Controller Tools:
+- list_available_bots: List all automation bots (can filter by category: financial, sales, purchasing, inventory, hr, manufacturing, documents, compliance, integration, analytics, service, workflow)
+- execute_bot: Execute a specific automation bot
+- get_bot_status: Get status and recent activity of a bot
+
+Sales-to-Invoice Reconciliation Tools:
+- run_sales_invoice_reconciliation: Run reconciliation to match sales orders with invoices
+- get_reconciliation_summary: Get current reconciliation summary
+- approve_reconciliation_exception: Approve a reconciliation variance
+- post_reconciliation_variance: Post approved variance to general ledger
+
+Always confirm with the user before finalizing any document or posting to the general ledger."""
     
     def process_message(
         self,
@@ -188,6 +199,7 @@ Always confirm with the user before finalizing any document."""
     
     def _execute_tool(self, tool_name: str, tool_args: Dict[str, Any]) -> Any:
         """Execute a tool by name"""
+        # ERP Document Tools
         if tool_name == "list_customers":
             return self.erp_tools.list_customers(**tool_args)
         elif tool_name == "list_products":
@@ -204,5 +216,34 @@ Always confirm with the user before finalizing any document."""
             return self.erp_tools.list_suppliers(**tool_args)
         elif tool_name == "create_purchase_order_draft":
             return self.erp_tools.create_purchase_order_draft(**tool_args)
+        
+        # Workflow Tools
+        elif tool_name == "start_quote_to_cash_workflow":
+            return self.erp_tools.start_quote_to_cash_workflow(**tool_args)
+        elif tool_name == "get_workflow_status":
+            return self.erp_tools.get_workflow_status(**tool_args)
+        elif tool_name == "approve_workflow_step":
+            return self.erp_tools.approve_workflow_step(**tool_args)
+        elif tool_name == "reject_workflow_step":
+            return self.erp_tools.reject_workflow_step(**tool_args)
+        
+        # Bot Controller Tools
+        elif tool_name == "list_available_bots":
+            return self.erp_tools.list_available_bots(**tool_args)
+        elif tool_name == "execute_bot":
+            return self.erp_tools.execute_bot(**tool_args)
+        elif tool_name == "get_bot_status":
+            return self.erp_tools.get_bot_status(**tool_args)
+        
+        # Sales-to-Invoice Reconciliation Tools
+        elif tool_name == "run_sales_invoice_reconciliation":
+            return self.erp_tools.run_sales_invoice_reconciliation(**tool_args)
+        elif tool_name == "get_reconciliation_summary":
+            return self.erp_tools.get_reconciliation_summary(**tool_args)
+        elif tool_name == "approve_reconciliation_exception":
+            return self.erp_tools.approve_reconciliation_exception(**tool_args)
+        elif tool_name == "post_reconciliation_variance":
+            return self.erp_tools.post_reconciliation_variance(**tool_args)
+        
         else:
             raise ValueError(f"Unknown tool: {tool_name}")

@@ -267,6 +267,10 @@ app.include_router(aria_chat_router)
 from app.api.workflows import router as workflows_router
 app.include_router(workflows_router)
 
+# Include Sales Invoice Reconciliation Module
+from app.api.sales_invoice_reconciliation import router as sales_recon_router
+app.include_router(sales_recon_router)
+
 # Pydantic models
 class UserLogin(PydanticBaseModel):
     username: str
