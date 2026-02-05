@@ -15,7 +15,8 @@ logger = logging.getLogger(__name__)
 
 # Cloudflare Workers AI Configuration
 CLOUDFLARE_ACCOUNT_ID = os.getenv("CLOUDFLARE_ACCOUNT_ID", "08596e523c096f04b56d7ae43f7821f4")
-CLOUDFLARE_API_TOKEN = os.getenv("CLOUDFLARE_API_TOKEN", "21fff817fa4a851d0ddc3975c7f8c1a31fbc4")
+CLOUDFLARE_API_KEY = os.getenv("CLOUDFLARE_API_KEY", "21fff817fa4a851d0ddc3975c7f8c1a31fbc4")
+CLOUDFLARE_API_EMAIL = os.getenv("CLOUDFLARE_API_EMAIL", "reshigan@vantax.co.za")
 CLOUDFLARE_AI_MODEL = os.getenv("CLOUDFLARE_AI_MODEL", "@cf/meta/llama-3.1-8b-instruct")
 
 # System prompt for ARIA ERP assistant
@@ -318,21 +319,23 @@ class CloudflareAIClient:
     
     def __init__(self):
         self.account_id = CLOUDFLARE_ACCOUNT_ID
-        self.api_token = CLOUDFLARE_API_TOKEN
+        self.api_key = CLOUDFLARE_API_KEY
+        self.api_email = CLOUDFLARE_API_EMAIL
         self.model = CLOUDFLARE_AI_MODEL
         self.base_url = f"https://api.cloudflare.com/client/v4/accounts/{self.account_id}/ai/run"
         self.timeout = 60
-        self._available = bool(self.api_token)
+        self._available = bool(self.api_key and self.api_email)
         
         if self._available:
             logger.info(f"Cloudflare Workers AI configured with model {self.model}")
         else:
-            logger.warning("Cloudflare API token not configured, using intelligent fallback")
+            logger.warning("Cloudflare API credentials not configured, using intelligent fallback")
     
     def _get_headers(self) -> Dict[str, str]:
-        """Get headers for Cloudflare API requests"""
+        """Get headers for Cloudflare API requests using Global API Key"""
         return {
-            "Authorization": f"Bearer {self.api_token}",
+            "X-Auth-Email": self.api_email,
+            "X-Auth-Key": self.api_key,
             "Content-Type": "application/json"
         }
     
@@ -476,7 +479,7 @@ class CloudflareAIClient:
     
     def is_available(self) -> bool:
         """Check if Cloudflare AI service is available"""
-        return self._available and bool(self.api_token)
+        return self._available and bool(self.api_key and self.api_email)
     
     def chat_stream(
         self,
