@@ -27,7 +27,7 @@ export default function InvoiceList() {
         setLoading(true);
         const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev/api';
         const companyId = localStorage.getItem('aria_company_id') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
-        const response = await fetch(`${API_BASE}/ar/invoices?company_id=${companyId}`, {
+        const response = await fetch(`${API_BASE}/ar/invoices/customer?company_id=${companyId}`, {
           headers: { 
             'Authorization': `Bearer ${localStorage.getItem('token')}`,
             'X-Company-ID': companyId
@@ -35,7 +35,12 @@ export default function InvoiceList() {
         });
         if (response.ok) {
           const data = await response.json();
-          setInvoices(Array.isArray(data) ? data : data.data || []);
+          const invoiceData = Array.isArray(data) ? data : data.data || [];
+          // Map balance_due to balance for display
+          setInvoices(invoiceData.map((inv: any) => ({
+            ...inv,
+            balance: inv.balance_due ?? inv.balance ?? 0
+          })));
         } else {
           setInvoices([]);
         }
