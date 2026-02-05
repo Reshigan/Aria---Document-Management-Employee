@@ -540,6 +540,56 @@ app.route('/xero', xeroParity);
 app.route('/api/admin-config', adminConfig);
 app.route('/admin-config', adminConfig);
 
+// Data Seeding endpoint (for generating test data)
+import { seedFullYear, seedMonth } from './services/data-seeding-service';
+
+app.post('/api/seed/full-year', async (c) => {
+  try {
+    const body = await c.req.json<{ company_id?: string; year?: number }>().catch(() => ({ company_id: undefined, year: undefined }));
+    const companyId = body.company_id || 'b0598135-52fd-4f67-ac56-8f0237e6355e'; // Demo company
+    const year = body.year || 2025;
+    
+    console.log(`Starting full year seeding for company ${companyId}, year ${year}`);
+    const result = await seedFullYear(c.env.DB, companyId, year);
+    
+    return c.json({
+      success: result.success,
+      message: `Seeded ${result.total_records} records across ${Object.keys(result.modules).length} modules`,
+      total_records: result.total_records,
+      duration_seconds: Math.round(result.duration_ms / 1000),
+      modules: result.modules,
+      errors: result.errors,
+    });
+  } catch (error) {
+    console.error('Seeding error:', error);
+    return c.json({ error: String(error) }, 500);
+  }
+});
+
+app.post('/api/seed/month', async (c) => {
+  try {
+    const body = await c.req.json<{ company_id?: string; year?: number; month?: number }>().catch(() => ({ company_id: undefined, year: undefined, month: undefined }));
+    const companyId = body.company_id || 'b0598135-52fd-4f67-ac56-8f0237e6355e'; // Demo company
+    const year = body.year || 2025;
+    const month = body.month || new Date().getMonth() + 1;
+    
+    console.log(`Starting month seeding for company ${companyId}, ${year}-${month}`);
+    const result = await seedMonth(c.env.DB, companyId, year, month);
+    
+    return c.json({
+      success: result.success,
+      message: `Seeded ${result.total_records} records for ${year}-${String(month).padStart(2, '0')}`,
+      total_records: result.total_records,
+      duration_seconds: Math.round(result.duration_ms / 1000),
+      modules: result.modules,
+      errors: result.errors,
+    });
+  } catch (error) {
+    console.error('Seeding error:', error);
+    return c.json({ error: String(error) }, 500);
+  }
+});
+
 // Simple password hashing(for demo - use proper bcrypt in production)
 async function hashPassword(password: string): Promise<string> {
   const encoder = new TextEncoder();
