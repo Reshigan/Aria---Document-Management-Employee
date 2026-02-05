@@ -1482,7 +1482,7 @@ app.post('/message/stream', async (c) => {
       return c.json({ error: 'conversation_id and message are required' }, 400);
     }
     
-    // Get conversation
+    // Get conversation with context
     const conversation = await c.env.DB.prepare(
       'SELECT * FROM aria_conversations WHERE id = ?'
     ).bind(conversation_id).first<Conversation>();
@@ -1491,11 +1491,29 @@ app.post('/message/stream', async (c) => {
       return c.json({ error: 'Conversation not found' }, 404);
     }
     
+    // Parse conversation state
+    let conversationState: ConversationState = {};
+    if (conversation.context) {
+      try {
+        conversationState = JSON.parse(conversation.context);
+      } catch (e) {
+        // Invalid JSON, start fresh
+      }
+    }
+    
     // Store user message
     await c.env.DB.prepare(`
       INSERT INTO aria_messages (id, conversation_id, role, content, created_at)
       VALUES (?, ?, 'user', ?, datetime('now'))
     `).bind(generateUUID(), conversation_id, message).run();
+    
+    // Function to update conversation state
+    const updateState = async (newState: ConversationState) => {
+      conversationState = newState;
+      await c.env.DB.prepare(
+        'UPDATE aria_conversations SET context = ? WHERE id = ?'
+      ).bind(JSON.stringify(newState), conversation_id).run();
+    };
     
     // Find and execute skill
     const skill = findSkill(message);
@@ -1509,10 +1527,379 @@ app.post('/message/stream', async (c) => {
         message,
         slots: {},
         conversationId: conversation_id,
+        conversationState,
+        updateState,
       };
       result = await skill.execute(context);
     } else {
-      result = getDefaultResponse();
+      // Check if we're in a flow and handle number input
+      if (conversationState.currentFlow === 'create_sales_order' && conversationState.step === 'select_products') {
+        const match = message.match(/^(\d+)$/);
+        if (match) {
+          const productIndex = parseInt(match[1]) - 1;
+          const productsResult = await c.env.DB.prepare(
+            'SELECT id, product_name, product_code, unit_price FROM products WHERE company_id = ? ORDER BY product_name LIMIT 20'
+          ).bind(conversation.company_id).all();
+          
+          const products = productsResult.results || [];
+          if (productIndex >= 0 && productIndex < products.length) {
+            const selectedProduct = products[productIndex] as any;
+            const currentProducts = conversationState.selectedProducts || [];
+            
+            currentProducts.push({
+              id: selectedProduct.id,
+              name: selectedProduct.product_name,
+              quantity: 1,
+              price: selectedProduct.unit_price || 0,
+            });
+            
+            const total = currentProducts.reduce((sum, p) => sum + (p.quantity * p.price), 0);
+            
+            await updateState({
+              ...conversationState,
+              selectedProducts: currentProducts,
+              orderTotal: total,
+            });
+            
+            const orderItems = currentProducts.map((p, i) => 
+              `${i + 1}. ${p.name} x ${p.quantity} = R${(p.quantity * p.price).toFixed(2)}`
+            ).join('\n');
+            
+            result = {
+              response: `**Product Added:** ${selectedProduct.product_name}\n\n**Current Order:**\n${orderItems}\n\n**Total:** R${total.toFixed(2)}\n\n_Add more products by number, or type "done" to complete the order_`,
+              data: { products: currentProducts, total },
+            };
+          } else {
+            result = { response: `Invalid product number. Please enter a number between 1 and ${products.length}.` };
+          }
+        } else if (message.toLowerCase() === 'done') {
+          // Complete the sales order
+          if (!conversationState.selectedProducts || conversationState.selectedProducts.length === 0) {
+            result = { response: 'No products selected. Please add at least one product before completing the order.' };
+          } else {
+            const orderId = generateUUID();
+            const orderNumber = `SO-${Math.floor(Math.random() * 100000000)}`;
+            const total = conversationState.orderTotal || 0;
+            
+            await c.env.DB.prepare(`
+              INSERT INTO sales_orders (id, company_id, order_number, customer_id, order_date, status, subtotal, total_amount, created_at)
+              VALUES (?, ?, ?, ?, date('now'), 'draft', ?, ?, datetime('now'))
+            `).bind(orderId, conversation.company_id, orderNumber, conversationState.selectedCustomerId, total, total).run();
+            
+            for (const product of conversationState.selectedProducts) {
+              await c.env.DB.prepare(`
+                INSERT INTO sales_order_items (id, sales_order_id, product_id, description, quantity, unit_price, line_total)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+              `).bind(generateUUID(), orderId, product.id, product.name, product.quantity, product.price, product.quantity * product.price).run();
+            }
+            
+            const orderItems = conversationState.selectedProducts.map((p, i) => 
+              `${i + 1}. ${p.name} x ${p.quantity} = R${(p.quantity * p.price).toFixed(2)}`
+            ).join('\n');
+            
+            await updateState({});
+            
+            result = {
+              response: `**Sales Order Created Successfully!**\n\n**Order Number:** ${orderNumber}\n**Customer:** ${conversationState.selectedCustomerName}\n**Status:** Draft\n\n**Items:**\n${orderItems}\n\n**Total:** R${total.toFixed(2)}\n\nThe order has been posted to the ERP. View it at **Sales > Sales Orders**.`,
+              action: 'order_created',
+              data: { orderId, orderNumber },
+            };
+          }
+        } else {
+          result = getDefaultResponse();
+        }
+      } else if (conversationState.currentFlow === 'create_sales_order' && conversationState.step === 'select_customer') {
+        const match = message.match(/^(\d+)$/);
+        if (match) {
+          const customerIndex = parseInt(match[1]) - 1;
+          const customersResult = await c.env.DB.prepare(
+            'SELECT id, customer_name, customer_code FROM customers WHERE company_id = ? ORDER BY customer_name LIMIT 20'
+          ).bind(conversation.company_id).all();
+          
+          const customers = customersResult.results || [];
+          if (customerIndex >= 0 && customerIndex < customers.length) {
+            const selectedCustomer = customers[customerIndex] as any;
+            
+            const productsResult = await c.env.DB.prepare(
+              'SELECT id, product_name, product_code, unit_price FROM products WHERE company_id = ? ORDER BY product_name LIMIT 20'
+            ).bind(conversation.company_id).all();
+            
+            const products = productsResult.results || [];
+            if (products.length === 0) {
+              result = {
+                response: `**Customer Selected:** ${selectedCustomer.customer_name}\n\n**No products found.** Please add products first.`,
+                action: 'no_products',
+              };
+            } else {
+              const productList = products.map((p: any, i: number) => 
+                `**${i + 1}.** ${p.product_name} (${p.product_code}) - R${(p.unit_price || 0).toFixed(2)}`
+              ).join('\n');
+              
+              await updateState({
+                currentFlow: 'create_sales_order',
+                step: 'select_products',
+                selectedCustomerId: selectedCustomer.id,
+                selectedCustomerName: selectedCustomer.customer_name,
+                selectedProducts: [],
+              });
+              
+              result = {
+                response: `**Create Sales Order - Step 2: Select Products**\n\n**Customer:** ${selectedCustomer.customer_name}\n\nSelect products to add:\n\n${productList}\n\n_Type a product number to add it, or type "done" when finished_`,
+                action: 'select_products',
+                data: { products, customer: selectedCustomer },
+              };
+            }
+          } else {
+            result = { response: `Invalid customer number. Please enter a number between 1 and ${customers.length}.` };
+          }
+        } else {
+          result = getDefaultResponse();
+        }
+      } else if (conversationState.currentFlow === 'create_quote' && conversationState.step === 'select_customer') {
+        const match = message.match(/^(\d+)$/);
+        if (match) {
+          const customerIndex = parseInt(match[1]) - 1;
+          const customersResult = await c.env.DB.prepare(
+            'SELECT id, customer_name, customer_code FROM customers WHERE company_id = ? ORDER BY customer_name LIMIT 20'
+          ).bind(conversation.company_id).all();
+          
+          const customers = customersResult.results || [];
+          if (customerIndex >= 0 && customerIndex < customers.length) {
+            const selectedCustomer = customers[customerIndex] as any;
+            
+            const productsResult = await c.env.DB.prepare(
+              'SELECT id, product_name, product_code, unit_price FROM products WHERE company_id = ? ORDER BY product_name LIMIT 20'
+            ).bind(conversation.company_id).all();
+            
+            const products = productsResult.results || [];
+            if (products.length === 0) {
+              result = {
+                response: `**Customer Selected:** ${selectedCustomer.customer_name}\n\n**No products found.** Please add products first.`,
+                action: 'no_products',
+              };
+            } else {
+              const productList = products.map((p: any, i: number) => 
+                `**${i + 1}.** ${p.product_name} (${p.product_code}) - R${(p.unit_price || 0).toFixed(2)}`
+              ).join('\n');
+              
+              await updateState({
+                currentFlow: 'create_quote',
+                step: 'select_products',
+                selectedCustomerId: selectedCustomer.id,
+                selectedCustomerName: selectedCustomer.customer_name,
+                selectedProducts: [],
+              });
+              
+              result = {
+                response: `**Create Quote - Step 2: Select Products**\n\n**Customer:** ${selectedCustomer.customer_name}\n\nSelect products to add:\n\n${productList}\n\n_Type a product number to add it, or type "done" when finished_`,
+                action: 'select_products',
+                data: { products, customer: selectedCustomer },
+              };
+            }
+          } else {
+            result = { response: `Invalid customer number. Please enter a number between 1 and ${customers.length}.` };
+          }
+        } else {
+          result = getDefaultResponse();
+        }
+      } else if (conversationState.currentFlow === 'create_quote' && conversationState.step === 'select_products') {
+        const match = message.match(/^(\d+)$/);
+        if (match) {
+          const productIndex = parseInt(match[1]) - 1;
+          const productsResult = await c.env.DB.prepare(
+            'SELECT id, product_name, product_code, unit_price FROM products WHERE company_id = ? ORDER BY product_name LIMIT 20'
+          ).bind(conversation.company_id).all();
+          
+          const products = productsResult.results || [];
+          if (productIndex >= 0 && productIndex < products.length) {
+            const selectedProduct = products[productIndex] as any;
+            const currentProducts = conversationState.selectedProducts || [];
+            
+            currentProducts.push({
+              id: selectedProduct.id,
+              name: selectedProduct.product_name,
+              quantity: 1,
+              price: selectedProduct.unit_price || 0,
+            });
+            
+            const total = currentProducts.reduce((sum, p) => sum + (p.quantity * p.price), 0);
+            
+            await updateState({
+              ...conversationState,
+              selectedProducts: currentProducts,
+              orderTotal: total,
+            });
+            
+            const orderItems = currentProducts.map((p, i) => 
+              `${i + 1}. ${p.name} x ${p.quantity} = R${(p.quantity * p.price).toFixed(2)}`
+            ).join('\n');
+            
+            result = {
+              response: `**Product Added:** ${selectedProduct.product_name}\n\n**Current Quote:**\n${orderItems}\n\n**Total:** R${total.toFixed(2)}\n\n_Add more products by number, or type "done" to complete the quote_`,
+              data: { products: currentProducts, total },
+            };
+          } else {
+            result = { response: `Invalid product number. Please enter a number between 1 and ${products.length}.` };
+          }
+        } else if (message.toLowerCase() === 'done') {
+          if (!conversationState.selectedProducts || conversationState.selectedProducts.length === 0) {
+            result = { response: 'No products selected. Please add at least one product before completing the quote.' };
+          } else {
+            const quoteId = generateUUID();
+            const quoteNumber = `QT-${Math.floor(Math.random() * 100000000)}`;
+            const total = conversationState.orderTotal || 0;
+            
+            await c.env.DB.prepare(`
+              INSERT INTO quotes (id, company_id, quote_number, customer_id, quote_date, valid_until, status, subtotal, total_amount, created_at)
+              VALUES (?, ?, ?, ?, date('now'), date('now', '+30 days'), 'draft', ?, ?, datetime('now'))
+            `).bind(quoteId, conversation.company_id, quoteNumber, conversationState.selectedCustomerId, total, total).run();
+            
+            for (const product of conversationState.selectedProducts) {
+              await c.env.DB.prepare(`
+                INSERT INTO quote_items (id, quote_id, product_id, description, quantity, unit_price, line_total)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+              `).bind(generateUUID(), quoteId, product.id, product.name, product.quantity, product.price, product.quantity * product.price).run();
+            }
+            
+            const orderItems = conversationState.selectedProducts.map((p, i) => 
+              `${i + 1}. ${p.name} x ${p.quantity} = R${(p.quantity * p.price).toFixed(2)}`
+            ).join('\n');
+            
+            await updateState({});
+            
+            result = {
+              response: `**Quote Created Successfully!**\n\n**Quote Number:** ${quoteNumber}\n**Customer:** ${conversationState.selectedCustomerName}\n**Status:** Draft\n**Valid Until:** 30 days\n\n**Items:**\n${orderItems}\n\n**Total:** R${total.toFixed(2)}\n\nThe quote has been posted to the ERP. View it at **Sales > Quotes**.`,
+              action: 'quote_created',
+              data: { quoteId, quoteNumber },
+            };
+          }
+        } else {
+          result = getDefaultResponse();
+        }
+      } else if (conversationState.currentFlow === 'create_po' && conversationState.step === 'select_supplier') {
+        const match = message.match(/^(\d+)$/);
+        if (match) {
+          const supplierIndex = parseInt(match[1]) - 1;
+          const suppliersResult = await c.env.DB.prepare(
+            'SELECT id, supplier_name, supplier_code FROM suppliers WHERE company_id = ? ORDER BY supplier_name LIMIT 20'
+          ).bind(conversation.company_id).all();
+          
+          const suppliers = suppliersResult.results || [];
+          if (supplierIndex >= 0 && supplierIndex < suppliers.length) {
+            const selectedSupplier = suppliers[supplierIndex] as any;
+            
+            const productsResult = await c.env.DB.prepare(
+              'SELECT id, product_name, product_code, cost_price FROM products WHERE company_id = ? ORDER BY product_name LIMIT 20'
+            ).bind(conversation.company_id).all();
+            
+            const products = productsResult.results || [];
+            if (products.length === 0) {
+              result = {
+                response: `**Supplier Selected:** ${selectedSupplier.supplier_name}\n\n**No products found.** Please add products first.`,
+                action: 'no_products',
+              };
+            } else {
+              const productList = products.map((p: any, i: number) => 
+                `**${i + 1}.** ${p.product_name} (${p.product_code}) - R${(p.cost_price || 0).toFixed(2)}`
+              ).join('\n');
+              
+              await updateState({
+                currentFlow: 'create_po',
+                step: 'select_products',
+                selectedSupplierId: selectedSupplier.id,
+                selectedSupplierName: selectedSupplier.supplier_name,
+                selectedProducts: [],
+              });
+              
+              result = {
+                response: `**Create Purchase Order - Step 2: Select Products**\n\n**Supplier:** ${selectedSupplier.supplier_name}\n\nSelect products to order:\n\n${productList}\n\n_Type a product number to add it, or type "done" when finished_`,
+                action: 'select_products',
+                data: { products, supplier: selectedSupplier },
+              };
+            }
+          } else {
+            result = { response: `Invalid supplier number. Please enter a number between 1 and ${suppliers.length}.` };
+          }
+        } else {
+          result = getDefaultResponse();
+        }
+      } else if (conversationState.currentFlow === 'create_po' && conversationState.step === 'select_products') {
+        const match = message.match(/^(\d+)$/);
+        if (match) {
+          const productIndex = parseInt(match[1]) - 1;
+          const productsResult = await c.env.DB.prepare(
+            'SELECT id, product_name, product_code, cost_price FROM products WHERE company_id = ? ORDER BY product_name LIMIT 20'
+          ).bind(conversation.company_id).all();
+          
+          const products = productsResult.results || [];
+          if (productIndex >= 0 && productIndex < products.length) {
+            const selectedProduct = products[productIndex] as any;
+            const currentProducts = conversationState.selectedProducts || [];
+            
+            currentProducts.push({
+              id: selectedProduct.id,
+              name: selectedProduct.product_name,
+              quantity: 1,
+              price: selectedProduct.cost_price || 0,
+            });
+            
+            const total = currentProducts.reduce((sum, p) => sum + (p.quantity * p.price), 0);
+            
+            await updateState({
+              ...conversationState,
+              selectedProducts: currentProducts,
+              orderTotal: total,
+            });
+            
+            const orderItems = currentProducts.map((p, i) => 
+              `${i + 1}. ${p.name} x ${p.quantity} = R${(p.quantity * p.price).toFixed(2)}`
+            ).join('\n');
+            
+            result = {
+              response: `**Product Added:** ${selectedProduct.product_name}\n\n**Current PO:**\n${orderItems}\n\n**Total:** R${total.toFixed(2)}\n\n_Add more products by number, or type "done" to complete the PO_`,
+              data: { products: currentProducts, total },
+            };
+          } else {
+            result = { response: `Invalid product number. Please enter a number between 1 and ${products.length}.` };
+          }
+        } else if (message.toLowerCase() === 'done') {
+          if (!conversationState.selectedProducts || conversationState.selectedProducts.length === 0) {
+            result = { response: 'No products selected. Please add at least one product before completing the PO.' };
+          } else {
+            const poId = generateUUID();
+            const poNumber = `PO-${Math.floor(Math.random() * 100000000)}`;
+            const total = conversationState.orderTotal || 0;
+            
+            await c.env.DB.prepare(`
+              INSERT INTO purchase_orders (id, company_id, po_number, supplier_id, po_date, status, subtotal, total_amount, created_at)
+              VALUES (?, ?, ?, ?, date('now'), 'pending', ?, ?, datetime('now'))
+            `).bind(poId, conversation.company_id, poNumber, conversationState.selectedSupplierId, total, total).run();
+            
+            for (const product of conversationState.selectedProducts) {
+              await c.env.DB.prepare(`
+                INSERT INTO purchase_order_items (id, purchase_order_id, product_id, description, quantity, unit_price, line_total)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+              `).bind(generateUUID(), poId, product.id, product.name, product.quantity, product.price, product.quantity * product.price).run();
+            }
+            
+            const orderItems = conversationState.selectedProducts.map((p, i) => 
+              `${i + 1}. ${p.name} x ${p.quantity} = R${(p.quantity * p.price).toFixed(2)}`
+            ).join('\n');
+            
+            await updateState({});
+            
+            result = {
+              response: `**Purchase Order Created Successfully!**\n\n**PO Number:** ${poNumber}\n**Supplier:** ${conversationState.selectedSupplierName}\n**Status:** Pending\n\n**Items:**\n${orderItems}\n\n**Total:** R${total.toFixed(2)}\n\nThe PO has been posted to the ERP. View it at **Procurement > Purchase Orders**.`,
+              action: 'po_created',
+              data: { poId, poNumber },
+            };
+          }
+        } else {
+          result = getDefaultResponse();
+        }
+      } else {
+        result = getDefaultResponse();
+      }
     }
     
     // Store assistant response
