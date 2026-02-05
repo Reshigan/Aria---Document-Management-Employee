@@ -1,14 +1,17 @@
 /**
- * Ask ARIA - Skill-based ERP Assistant
- * A rule-based command assistant that can query ERP data and perform actions
+ * Ask ARIA - AI-Powered ERP Assistant
+ * Uses Cloudflare Workers AI for intelligent intent classification
+ * with rule-based fallback for reliability
  */
 
 import { Hono } from 'hono';
+import { orchestrate, classifyIntent, BOT_CATALOG } from '../services/ai-orchestrator';
 
 interface Env {
   DB: D1Database;
   DOCUMENTS: R2Bucket;
   JWT_SECRET: string;
+  AI?: any; // Cloudflare Workers AI binding (optional for fallback)
 }
 
 interface Skill {
@@ -1344,25 +1347,64 @@ app.post('/message', async (c) => {
       ).bind(JSON.stringify(newState), conversation_id).run();
     };
     
-    // Find and execute skill
-    const skill = findSkill(message);
-    let result: SkillResult;
+    // First, try AI orchestrator if available (for intelligent intent classification)
+    let result: SkillResult = getDefaultResponse(); // Default fallback
+    let usedAI = false;
     
-    if (skill) {
-      const context: SkillContext = {
-        db: c.env.DB,
-        companyId: conversation.company_id,
-        userId: conversation.user_id,
-        message,
-        slots: {},
-        conversationId: conversation_id,
-        conversationState,
-        updateState,
-      };
-      result = await skill.execute(context);
-    } else {
-      // Check if we're in a flow and handle number input for product selection
-      if (conversationState.currentFlow === 'create_sales_order' && conversationState.step === 'select_products') {
+    // Check if we're in a multi-step flow first (these need special handling)
+    const inMultiStepFlow = conversationState.currentFlow && conversationState.step;
+    
+    if (!inMultiStepFlow && c.env.AI) {
+      // Use AI orchestrator for intelligent intent classification
+      try {
+        // Get recent conversation history for context
+        const historyResult = await c.env.DB.prepare(
+          'SELECT role, content FROM aria_messages WHERE conversation_id = ? ORDER BY created_at DESC LIMIT 10'
+        ).bind(conversation_id).all();
+        
+        const conversationHistory = (historyResult.results || [])
+          .reverse()
+          .map((m: any) => ({ role: m.role, content: m.content }));
+        
+        const aiResult = await orchestrate(
+          message,
+          conversation.company_id,
+          conversation.user_id,
+          conversationHistory,
+          { DB: c.env.DB, AI: c.env.AI }
+        );
+        
+        if (aiResult.success || aiResult.action_taken !== 'unknown') {
+          result = {
+            response: aiResult.response,
+            data: aiResult.data,
+            action: aiResult.action_taken,
+          };
+          usedAI = true;
+        }
+      } catch (aiError) {
+        console.error('AI orchestrator error, falling back to rule-based:', aiError);
+        // Fall through to rule-based system
+      }
+    }
+    
+    // Fall back to rule-based skill matching if AI didn't handle it
+    if (!usedAI) {
+      const skill = findSkill(message);
+      
+      if (skill) {
+        const context: SkillContext = {
+          db: c.env.DB,
+          companyId: conversation.company_id,
+          userId: conversation.user_id,
+          message,
+          slots: {},
+          conversationId: conversation_id,
+          conversationState,
+          updateState,
+        };
+        result = await skill.execute(context);
+      } else if (conversationState.currentFlow === 'create_sales_order' && conversationState.step === 'select_products') {
         const match = message.match(/^(\d+)$/);
         if (match) {
           // Handle product selection by number
@@ -1897,10 +1939,10 @@ app.post('/message', async (c) => {
                   data: { productId, productCode },
                 };
               }
-            }else {
+            } else {
         result = getDefaultResponse();
       }
-    }
+    } // End of if (!usedAI) block
     
     // Store assistant response
     await c.env.DB.prepare(`

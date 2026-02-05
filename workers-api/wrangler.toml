@@ -19,6 +19,10 @@ database_id = "fedd74aa-749e-42a3-ba7a-2eaf3d53315b"
 binding = "DOCUMENTS"
 bucket_name = "aria-documents"
 
+# Workers AI binding for intelligent bot orchestration
+[ai]
+binding = "AI"
+
 # KV Namespace for sessions/cache (optional)
 # [[kv_namespaces]]
 # binding = "SESSIONS"
