@@ -91,6 +91,7 @@ import Receipts from './pages/AR/Receipts';
 import CustomerDetail from './pages/AR/CustomerDetail';
 import BankAccounts from './pages/Banking/BankAccounts';
 import Reconciliation from './pages/Banking/Reconciliation';
+import SalesInvoiceReconciliation from './pages/Financial/SalesInvoiceReconciliation';
 import Warehouses from './pages/Inventory/Warehouses';
 import StockMovements from './pages/Inventory/StockMovements';
 import BOMs from './pages/Manufacturing/BOMs';
@@ -321,6 +322,7 @@ function App() {
           <Route path="/banking" element={<BankingDashboard />} />
           <Route path="/banking/accounts" element={<BankAccounts />} />
           <Route path="/banking/reconciliation" element={<Reconciliation />} />
+          <Route path="/financial/sales-reconciliation" element={<SalesInvoiceReconciliation />} />
           
           {/* HR */}
           <Route path="/hr" element={<HRDashboard />} />

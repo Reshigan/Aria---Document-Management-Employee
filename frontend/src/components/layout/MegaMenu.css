@@ -117,8 +117,10 @@
   top: 100%;
   left: 50%;
   transform: translateX(-50%);
-  padding-top: 0.5rem;
-  background: transparent;
+  margin-top: 0.5rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
   min-width: 800px;
   max-width: 1000px;
   animation: slideDown 0.2s ease;
@@ -126,10 +128,24 @@
   pointer-events: auto;
 }
 
-.mega-menu-panel-inner {
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+/* Dark mode support for mega menu panel */
+.dark .mega-menu-panel {
+  background: #1f2937;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+}
+
+.dark .mega-menu-link {
+  color: #d1d5db;
+}
+
+.dark .mega-menu-link:hover {
+  background: #374151;
+  color: white;
+}
+
+.dark .mega-menu-link.active {
+  background: #374151;
+  color: white;
 }
 
 @keyframes slideDown {
