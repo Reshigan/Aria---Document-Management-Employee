@@ -1,16 +1,37 @@
 """
-Ollama LLM Client for Ask Aria
-Handles communication with local Ollama instance for conversational AI
-Falls back to intelligent rule-based responses when Ollama is not available
+Cloudflare Workers AI Client for Ask Aria
+Handles communication with Cloudflare Workers AI for conversational AI
+Uses Llama 3.1 model via Cloudflare's AI REST API
 """
 import json
 import requests
 import os
 import re
-from typing import Dict, List, Any, Optional
+from typing import Dict, List, Any, Optional, Generator
 import logging
 
 logger = logging.getLogger(__name__)
+
+# Cloudflare Workers AI Configuration
+CLOUDFLARE_ACCOUNT_ID = os.getenv("CLOUDFLARE_ACCOUNT_ID", "08596e523c096f04b56d7ae43f7821f4")
+CLOUDFLARE_API_TOKEN = os.getenv("CLOUDFLARE_API_TOKEN", "")
+CLOUDFLARE_AI_MODEL = os.getenv("CLOUDFLARE_AI_MODEL", "@cf/meta/llama-3.1-8b-instruct")
+
+# System prompt for ARIA ERP assistant
+ARIA_SYSTEM_PROMPT = """You are ARIA, an intelligent AI assistant for a comprehensive ERP (Enterprise Resource Planning) system. You help users with:
+
+- **Sales & Quotes**: Creating quotes, sales orders, tracking deliveries, managing customers
+- **Purchasing**: Creating purchase orders, managing suppliers, procurement workflows
+- **Finance**: Invoices (AR/AP), payments, receipts, bank reconciliation, general ledger
+- **Inventory**: Stock levels, products, warehouses, stock movements
+- **HR & Payroll**: Employee management, leave, payroll processing
+- **Reports**: Financial reports, sales analytics, aged receivables/payables
+
+You are helpful, concise, and guide users to the right features. When users want to create documents, ask for the necessary details. Always be professional and knowledgeable about ERP processes.
+
+The system has 67 AI automation bots that handle tasks like invoice processing, reconciliation, and compliance. You can help users understand and configure these bots.
+
+Keep responses concise but helpful. Use markdown formatting for clarity."""
 
 # Intelligent response templates for when LLM is not available
 INTELLIGENT_RESPONSES = {
@@ -172,38 +193,38 @@ def generate_intelligent_response(messages: List[Dict[str, str]], query: str = "
     return response
 
 
-class OllamaClient:
-    """Client for interacting with Ollama local LLM with intelligent fallback"""
+class CloudflareAIClient:
+    """Client for interacting with Cloudflare Workers AI for LLM capabilities"""
     
-    def __init__(self, base_url: str = "http://localhost:11434", model: str = "tinyllama:latest"):
-        self.base_url = os.getenv("OLLAMA_BASE_URL", base_url)
-        self.model = os.getenv("OLLAMA_MODEL", model)
-        self.timeout = 120
-        self._available = None
-        self._check_availability()
+    def __init__(self):
+        self.account_id = CLOUDFLARE_ACCOUNT_ID
+        self.api_token = CLOUDFLARE_API_TOKEN
+        self.model = CLOUDFLARE_AI_MODEL
+        self.base_url = f"https://api.cloudflare.com/client/v4/accounts/{self.account_id}/ai/run"
+        self.timeout = 60
+        self._available = bool(self.api_token)
+        
+        if self._available:
+            logger.info(f"Cloudflare Workers AI configured with model {self.model}")
+        else:
+            logger.warning("Cloudflare API token not configured, using intelligent fallback")
     
-    def _check_availability(self):
-        """Check if Ollama service is available on startup"""
-        try:
-            response = requests.get(f"{self.base_url}/api/tags", timeout=3)
-            self._available = response.status_code == 200
-            if self._available:
-                logger.info(f"Ollama is available at {self.base_url}")
-            else:
-                logger.warning(f"Ollama returned status {response.status_code}, using intelligent fallback")
-        except Exception as e:
-            self._available = False
-            logger.warning(f"Ollama not available ({str(e)}), using intelligent fallback responses")
+    def _get_headers(self) -> Dict[str, str]:
+        """Get headers for Cloudflare API requests"""
+        return {
+            "Authorization": f"Bearer {self.api_token}",
+            "Content-Type": "application/json"
+        }
     
     def chat(
         self,
         messages: List[Dict[str, str]],
         tools: Optional[List[Dict[str, Any]]] = None,
-        temperature: float = 0.2,
+        temperature: float = 0.7,
         stream: bool = False
     ) -> Dict[str, Any]:
         """
-        Send chat completion request to Ollama with intelligent fallback
+        Send chat completion request to Cloudflare Workers AI
         
         Args:
             messages: List of message dicts with 'role' and 'content'
@@ -225,39 +246,55 @@ class OllamaClient:
             }
         
         try:
+            # Prepare messages with system prompt
+            cf_messages = [{"role": "system", "content": ARIA_SYSTEM_PROMPT}]
+            for msg in messages:
+                cf_messages.append({
+                    "role": msg.get("role", "user"),
+                    "content": msg.get("content", "")
+                })
+            
             payload = {
-                "model": self.model,
-                "messages": messages,
-                "temperature": temperature,
-                "stream": stream,
-                "keep_alive": "1h",
-                "options": {
-                    "num_predict": 150,
-                    "num_ctx": 2048,
-                    "temperature": 0.2,
-                    "top_k": 40,
-                    "top_p": 0.9,
-                    "repeat_penalty": 1.1
-                }
+                "messages": cf_messages,
+                "max_tokens": 1024,
+                "temperature": temperature
             }
             
-            if tools:
-                payload["tools"] = tools
-            
             response = requests.post(
-                f"{self.base_url}/api/chat",
+                f"{self.base_url}/{self.model}",
+                headers=self._get_headers(),
                 json=payload,
                 timeout=self.timeout
             )
             response.raise_for_status()
             
             result = response.json()
-            logger.info(f"Ollama chat response: {result.get('message', {}).get('role')}")
             
-            return result
+            # Extract response from Cloudflare AI format
+            if result.get("success") and result.get("result"):
+                response_content = result["result"].get("response", "")
+                logger.info("Cloudflare AI chat response received successfully")
+                return {
+                    "message": {
+                        "role": "assistant",
+                        "content": response_content
+                    },
+                    "done": True
+                }
+            else:
+                error_msg = result.get("errors", [{"message": "Unknown error"}])[0].get("message", "Unknown error")
+                logger.warning(f"Cloudflare AI error: {error_msg}, using fallback")
+                response_text = generate_intelligent_response(messages)
+                return {
+                    "message": {
+                        "role": "assistant",
+                        "content": response_text
+                    },
+                    "done": True
+                }
             
         except requests.exceptions.RequestException as e:
-            logger.warning(f"Ollama request failed: {str(e)}, using intelligent fallback")
+            logger.warning(f"Cloudflare AI request failed: {str(e)}, using intelligent fallback")
             response_text = generate_intelligent_response(messages)
             return {
                 "message": {
@@ -267,9 +304,9 @@ class OllamaClient:
                 "done": True
             }
     
-    def generate(self, prompt: str, temperature: float = 0.2) -> str:
+    def generate(self, prompt: str, temperature: float = 0.7) -> str:
         """
-        Simple text generation (non-chat mode)
+        Simple text generation using Cloudflare Workers AI
         
         Args:
             prompt: Text prompt
@@ -278,82 +315,58 @@ class OllamaClient:
         Returns:
             Generated text
         """
+        if not self._available:
+            return generate_intelligent_response([{"role": "user", "content": prompt}])
+        
         try:
             payload = {
-                "model": self.model,
-                "prompt": prompt,
-                "temperature": temperature,
-                "stream": False,
-                "keep_alive": "1h",
-                "options": {
-                    "num_predict": 150,  # Increased from 80 for better responses
-                    "num_ctx": 2048,  # Increased from 768 to prevent truncation
-                    "temperature": 0.2,
-                    "top_k": 40,
-                    "top_p": 0.9,
-                    "repeat_penalty": 1.1
-                }
+                "messages": [
+                    {"role": "system", "content": ARIA_SYSTEM_PROMPT},
+                    {"role": "user", "content": prompt}
+                ],
+                "max_tokens": 512,
+                "temperature": temperature
             }
             
             response = requests.post(
-                f"{self.base_url}/api/generate",
+                f"{self.base_url}/{self.model}",
+                headers=self._get_headers(),
                 json=payload,
                 timeout=self.timeout
             )
             response.raise_for_status()
             
             result = response.json()
-            return result.get("response", "")
+            if result.get("success") and result.get("result"):
+                return result["result"].get("response", "")
+            return ""
             
         except requests.exceptions.RequestException as e:
-            logger.error(f"Ollama generate failed: {str(e)}")
-            raise Exception(f"Failed to generate text: {str(e)}")
+            logger.error(f"Cloudflare AI generate failed: {str(e)}")
+            return generate_intelligent_response([{"role": "user", "content": prompt}])
     
     def list_models(self) -> List[str]:
-        """List available models in Ollama"""
-        try:
-            response = requests.get(f"{self.base_url}/api/tags", timeout=10)
-            response.raise_for_status()
-            
-            result = response.json()
-            models = [m["name"] for m in result.get("models", [])]
-            return models
-            
-        except requests.exceptions.RequestException as e:
-            logger.error(f"Failed to list Ollama models: {str(e)}")
-            return []
-    
-    def pull_model(self, model_name: str) -> bool:
-        """Pull/download a model from Ollama registry"""
-        try:
-            response = requests.post(
-                f"{self.base_url}/api/pull",
-                json={"name": model_name},
-                timeout=600  # 10 minutes for model download
-            )
-            response.raise_for_status()
-            return True
-            
-        except requests.exceptions.RequestException as e:
-            logger.error(f"Failed to pull model {model_name}: {str(e)}")
-            return False
+        """List available Cloudflare AI models"""
+        return [
+            "@cf/meta/llama-3.1-8b-instruct",
+            "@cf/meta/llama-3-8b-instruct",
+            "@cf/mistral/mistral-7b-instruct-v0.1",
+            "@cf/microsoft/phi-2"
+        ]
     
     def is_available(self) -> bool:
-        """Check if Ollama service is available"""
-        try:
-            response = requests.get(f"{self.base_url}/api/tags", timeout=5)
-            return response.status_code == 200
-        except:
-            return False
+        """Check if Cloudflare AI service is available"""
+        return self._available and bool(self.api_token)
     
     def chat_stream(
         self,
         messages: List[Dict[str, str]],
         tools: Optional[List[Dict[str, Any]]] = None,
-        temperature: float = 0.2
-    ):
+        temperature: float = 0.7
+    ) -> Generator[str, None, None]:
         """
-        Stream chat completion from Ollama (generator) with intelligent fallback
+        Stream chat completion from Cloudflare Workers AI
+        Note: Cloudflare AI doesn't support true streaming, so we simulate it
         
         Args:
             messages: List of message dicts with 'role' and 'content'
@@ -361,7 +374,7 @@ class OllamaClient:
             temperature: Sampling temperature (0-1)
             
         Yields:
-            Chunks of response text as they arrive
+            Chunks of response text
         """
         if not self._available:
             response_text = generate_intelligent_response(messages)
@@ -370,59 +383,53 @@ class OllamaClient:
             return
         
         try:
+            # Prepare messages with system prompt
+            cf_messages = [{"role": "system", "content": ARIA_SYSTEM_PROMPT}]
+            for msg in messages:
+                cf_messages.append({
+                    "role": msg.get("role", "user"),
+                    "content": msg.get("content", "")
+                })
+            
             payload = {
-                "model": self.model,
-                "messages": messages,
+                "messages": cf_messages,
+                "max_tokens": 1024,
                 "temperature": temperature,
-                "stream": True,
-                "keep_alive": "1h",
-                "options": {
-                    "num_predict": 150,
-                    "num_ctx": 2048,
-                    "temperature": 0.2,
-                    "top_k": 40,
-                    "top_p": 0.9,
-                    "repeat_penalty": 1.1
-                }
+                "stream": True
             }
             
-            if tools:
-                payload["tools"] = tools
-            
             response = requests.post(
-                f"{self.base_url}/api/chat",
+                f"{self.base_url}/{self.model}",
+                headers=self._get_headers(),
                 json=payload,
                 timeout=self.timeout,
                 stream=True
             )
             response.raise_for_status()
             
+            # Handle streaming response
             for line in response.iter_lines():
                 if line:
                     try:
-                        chunk = json.loads(line)
-                        if chunk.get("message", {}).get("content"):
-                            yield chunk["message"]["content"]
-                        
-                        if chunk.get("done"):
+                        # Remove 'data: ' prefix if present
+                        line_str = line.decode('utf-8') if isinstance(line, bytes) else line
+                        if line_str.startswith('data: '):
+                            line_str = line_str[6:]
+                        if line_str == '[DONE]':
                             break
+                        
+                        chunk = json.loads(line_str)
+                        if chunk.get("response"):
+                            yield chunk["response"]
                     except json.JSONDecodeError:
                         continue
                         
         except requests.exceptions.RequestException as e:
-            logger.warning(f"Ollama streaming failed: {str(e)}, using intelligent fallback")
+            logger.warning(f"Cloudflare AI streaming failed: {str(e)}, using intelligent fallback")
             response_text = generate_intelligent_response(messages)
             for word in response_text.split(' '):
                 yield word + ' '
-    
-    def _warmup(self):
-        """Warmup the model on initialization to reduce first-call latency"""
-        try:
-            logger.info(f"Warming up Ollama model {self.model}...")
-            self.generate("Hello", temperature=0.1)
-            logger.info("Ollama model warmed up successfully")
-        except Exception as e:
-            logger.warning(f"Failed to warmup Ollama model: {str(e)}")
 
 
-ollama_client = OllamaClient()
+# Create client instance - maintains backward compatibility with ollama_client name
+ollama_client = CloudflareAIClient()
