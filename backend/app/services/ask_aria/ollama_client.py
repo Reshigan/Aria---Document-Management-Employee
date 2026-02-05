@@ -181,19 +181,44 @@ INTELLIGENT_RESPONSES = {
     ],
     "help": [
         "Here's how I can help you:\n\n"
-        "- **Create documents**: Say 'create quote', 'create PO', 'create invoice'\n"
+        "- **Create documents**: Say 'create quote', 'create sales order', 'create PO', 'create invoice'\n"
         "- **Find information**: Say 'show customers', 'check inventory', 'view reports'\n"
         "- **Navigate**: Say 'go to dashboard', 'open sales orders'\n"
         "- **Get help**: Say 'how do I...' for guidance on any feature\n\n"
         "What would you like to do?"
     ],
+    "sales_order": [
+        "I can help you create a sales order! To get started, I'll need:\n\n"
+        "1. **Customer name** - Who is this order for?\n"
+        "2. **Products** - What items are being ordered?\n"
+        "3. **Quantities** - How many of each item?\n"
+        "4. **Delivery date** - When should it be delivered?\n\n"
+        "You can also navigate to **Sales > Sales Orders** to create one directly, or tell me the customer name to begin."
+    ],
+    "delivery": [
+        "I can help with deliveries! Here's what you can do:\n\n"
+        "- **View deliveries**: Go to Sales > Deliveries\n"
+        "- **Create delivery**: From a sales order, click 'Create Delivery'\n"
+        "- **Track shipments**: View delivery status in the Deliveries page\n"
+        "- **Print delivery notes**: Generate delivery documentation\n\n"
+        "What delivery action would you like to take?"
+    ],
+    "supplier": [
+        "I can help you manage suppliers! You can:\n\n"
+        "- **View all suppliers**: Go to Purchasing > Suppliers\n"
+        "- **Add new supplier**: Click 'New Supplier' in the Suppliers page\n"
+        "- **Search suppliers**: Use the search bar to find specific suppliers\n"
+        "- **View supplier history**: See purchase orders and payments\n\n"
+        "Would you like me to show you the supplier list?"
+    ],
     "default": [
-        "I understand you're asking about '{query}'. Here's how I can help:\n\n"
-        "- For **sales tasks**: Try 'create quote' or 'view sales orders'\n"
-        "- For **purchasing**: Try 'create purchase order' or 'view suppliers'\n"
-        "- For **finance**: Try 'view invoices' or 'check payments'\n"
-        "- For **reports**: Try 'generate sales report' or 'show dashboard'\n\n"
-        "Could you be more specific about what you'd like to do?"
+        "I can help you with that! Here are some options:\n\n"
+        "- **Sales**: Create quotes, sales orders, deliveries - go to **Sales** menu\n"
+        "- **Purchasing**: Create purchase orders, manage suppliers - go to **Purchasing** menu\n"
+        "- **Finance**: Invoices, payments, reconciliation - go to **Financial** menu\n"
+        "- **Inventory**: Stock levels, products - go to **Operations** menu\n"
+        "- **Reports**: Financial and operational reports - go to **Reports** menu\n\n"
+        "Try saying 'create sales order', 'list bots', or 'show dashboard' for specific actions."
     ]
 }
 
@@ -214,6 +239,10 @@ def detect_intent(message: str) -> str:
     if any(phrase in message_lower for phrase in ['reconcil', 'sales-to-invoice', 'sales to invoice', 'match sales', 'invoice matching']):
         return "reconciliation"
     
+    # Sales order patterns (must come before general sales patterns)
+    if any(phrase in message_lower for phrase in ['sales order', 'sale order', 'create order', 'new order', 'order for customer']):
+        return "sales_order"
+    
     # Quote patterns
     if any(word in message_lower for word in ['quote', 'quotation', 'estimate', 'proposal']):
         return "quote"
@@ -222,6 +251,10 @@ def detect_intent(message: str) -> str:
     if any(phrase in message_lower for phrase in ['purchase order', 'po', 'buy', 'order from supplier', 'procurement']):
         return "purchase_order"
     
+    # Delivery patterns
+    if any(word in message_lower for word in ['delivery', 'deliveries', 'shipment', 'shipping', 'dispatch']):
+        return "delivery"
+    
     # Invoice patterns
     if any(word in message_lower for word in ['invoice', 'bill', 'payment', 'receipt', 'ar', 'ap']):
         return "invoice"
@@ -229,6 +262,10 @@ def detect_intent(message: str) -> str:
     # Customer patterns
     if any(word in message_lower for word in ['customer', 'client', 'buyer']):
         return "customer"
+    
+    # Supplier patterns
+    if any(word in message_lower for word in ['supplier', 'vendor', 'vendors']):
+        return "supplier"
     
     # Inventory patterns
     if any(word in message_lower for word in ['inventory', 'stock', 'product', 'warehouse', 'item']):
@@ -239,7 +276,7 @@ def detect_intent(message: str) -> str:
         return "report"
     
     # Dashboard patterns
-    if any(word in message_lower for word in ['dashboard', 'overview', 'summary', 'metrics', 'kpi']):
+    if any(word in message_lower for word in ['dashboard', 'overview', 'metrics', 'kpi']):
         return "dashboard"
     
     # Bot patterns
