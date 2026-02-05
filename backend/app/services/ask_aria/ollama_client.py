@@ -1,23 +1,22 @@
 """
-Local Ollama Client for Ask Aria
-Handles communication with local Ollama for conversational AI with function calling
-Uses Llama 3.1 model which supports native function calling
+Cloudflare Workers AI Client for Ask Aria
+Handles communication with Cloudflare Workers AI for conversational AI
+Uses Llama 3.1 model via Cloudflare's AI REST API
+Bot commands are handled directly via hybrid intent detection in orchestrator.py
 """
 import json
 import requests
 import os
 import re
-import threading
-import time
 from typing import Dict, List, Any, Optional, Generator
 import logging
 
 logger = logging.getLogger(__name__)
 
-# Ollama Configuration
-OLLAMA_HOST = os.getenv("OLLAMA_HOST", "http://localhost:11434")
-OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama3.1:8b")
-OLLAMA_KEEP_ALIVE = os.getenv("OLLAMA_KEEP_ALIVE", "24h")  # Keep model warm for 24 hours
+# Cloudflare Workers AI Configuration
+CLOUDFLARE_ACCOUNT_ID = os.getenv("CLOUDFLARE_ACCOUNT_ID", "08596e523c096f04b56d7ae43f7821f4")
+CLOUDFLARE_API_TOKEN = os.getenv("CLOUDFLARE_API_TOKEN", "21fff817fa4a851d0ddc3975c7f8c1a31fbc4")
+CLOUDFLARE_AI_MODEL = os.getenv("CLOUDFLARE_AI_MODEL", "@cf/meta/llama-3.1-8b-instruct")
 
 # System prompt for ARIA ERP assistant
 ARIA_SYSTEM_PROMPT = """You are ARIA, an intelligent AI assistant for a comprehensive ERP (Enterprise Resource Planning) system. You help users with:
@@ -277,78 +276,26 @@ def generate_intelligent_response(messages: List[Dict[str, str]], query: str = "
     return response
 
 
-class OllamaClient:
-    """Client for interacting with local Ollama for LLM capabilities with function calling"""
+class CloudflareAIClient:
+    """Client for interacting with Cloudflare Workers AI for LLM capabilities"""
     
     def __init__(self):
-        self.host = OLLAMA_HOST
-        self.model = OLLAMA_MODEL
-        self.keep_alive = OLLAMA_KEEP_ALIVE
-        self.timeout = 120  # Longer timeout for local inference
-        self._available = False
-        self._warm_thread = None
-        self._stop_warm = False
+        self.account_id = CLOUDFLARE_ACCOUNT_ID
+        self.api_token = CLOUDFLARE_API_TOKEN
+        self.model = CLOUDFLARE_AI_MODEL
+        self.base_url = f"https://api.cloudflare.com/client/v4/accounts/{self.account_id}/ai/run"
+        self.timeout = 60
+        self._available = bool(self.api_token)
         
-        # Check if Ollama is available
-        self._check_availability()
-        
-        # Start keep-warm thread
         if self._available:
-            self._start_keep_warm()
-    
-    def _check_availability(self):
-        """Check if Ollama is running and model is available"""
-        try:
-            response = requests.get(f"{self.host}/api/tags", timeout=5)
-            if response.status_code == 200:
-                models = response.json().get("models", [])
-                model_names = [m.get("name", "") for m in models]
-                if any(self.model in name or name in self.model for name in model_names):
-                    self._available = True
-                    logger.info(f"Ollama available with model {self.model}")
-                else:
-                    logger.warning(f"Ollama running but model {self.model} not found. Available: {model_names}")
-                    self._available = False
-            else:
-                logger.warning(f"Ollama not responding properly: {response.status_code}")
-                self._available = False
-        except requests.exceptions.RequestException as e:
-            logger.warning(f"Ollama not available: {str(e)}, using intelligent fallback")
-            self._available = False
-    
-    def _start_keep_warm(self):
-        """Start a background thread to keep the model warm"""
-        def keep_warm():
-            while not self._stop_warm:
-                try:
-                    # Send a simple request to keep the model loaded
-                    requests.post(
-                        f"{self.host}/api/generate",
-                        json={
-                            "model": self.model,
-                            "prompt": "ping",
-                            "keep_alive": self.keep_alive,
-                            "stream": False
-                        },
-                        timeout=30
-                    )
-                    logger.debug("Model keep-warm ping sent")
-                except Exception as e:
-                    logger.debug(f"Keep-warm ping failed: {str(e)}")
-                
-                # Wait 5 minutes before next ping
-                for _ in range(300):
-                    if self._stop_warm:
-                        break
-                    time.sleep(1)
-        
-        self._warm_thread = threading.Thread(target=keep_warm, daemon=True)
-        self._warm_thread.start()
-        logger.info("Model keep-warm thread started")
+            logger.info(f"Cloudflare Workers AI configured with model {self.model}")
+        else:
+            logger.warning("Cloudflare API token not configured, using intelligent fallback")
     
     def _get_headers(self) -> Dict[str, str]:
-        """Get headers for Ollama API requests"""
+        """Get headers for Cloudflare API requests"""
         return {
+            "Authorization": f"Bearer {self.api_token}",
             "Content-Type": "application/json"
         }
     
@@ -360,93 +307,18 @@ class OllamaClient:
         stream: bool = False
     ) -> Dict[str, Any]:
         """
-        Send chat completion request to local Ollama with function calling support
+        Send chat completion request to Cloudflare Workers AI
         
         Args:
             messages: List of message dicts with 'role' and 'content'
-            tools: Optional list of tool/function definitions
+            tools: Optional list of tool/function definitions (not used by Cloudflare AI)
             temperature: Sampling temperature (0-1)
             stream: Whether to stream the response
             
         Returns:
-            Response dict with 'message' and optional 'tool_calls'
+            Response dict with 'message'
         """
         if not self._available:
-            # Re-check availability
-            self._check_availability()
-            
-            if not self._available:
-                response_text = generate_intelligent_response(messages)
-                return {
-                    "message": {
-                        "role": "assistant",
-                        "content": response_text
-                    },
-                    "done": True
-                }
-        
-        try:
-            # Prepare messages with system prompt
-            ollama_messages = [{"role": "system", "content": ARIA_SYSTEM_PROMPT}]
-            for msg in messages:
-                ollama_messages.append({
-                    "role": msg.get("role", "user"),
-                    "content": msg.get("content", "")
-                })
-            
-            payload = {
-                "model": self.model,
-                "messages": ollama_messages,
-                "stream": False,
-                "keep_alive": self.keep_alive,
-                "options": {
-                    "temperature": temperature
-                }
-            }
-            
-            # Add tools if provided (Llama 3.1 supports function calling)
-            if tools:
-                payload["tools"] = tools
-            
-            logger.info(f"Sending chat request to Ollama with {len(ollama_messages)} messages" + 
-                       (f" and {len(tools)} tools" if tools else ""))
-            
-            response = requests.post(
-                f"{self.host}/api/chat",
-                headers=self._get_headers(),
-                json=payload,
-                timeout=self.timeout
-            )
-            response.raise_for_status()
-            
-            result = response.json()
-            
-            # Extract response from Ollama format
-            message = result.get("message", {})
-            tool_calls = message.get("tool_calls", [])
-            
-            if tool_calls:
-                logger.info(f"Ollama returned {len(tool_calls)} tool calls")
-                return {
-                    "message": {
-                        "role": "assistant",
-                        "content": message.get("content", ""),
-                        "tool_calls": tool_calls
-                    },
-                    "done": result.get("done", True)
-                }
-            else:
-                logger.info("Ollama chat response received successfully")
-                return {
-                    "message": {
-                        "role": "assistant",
-                        "content": message.get("content", "")
-                    },
-                    "done": result.get("done", True)
-                }
-            
-        except requests.exceptions.Timeout:
-            logger.warning("Ollama request timed out, using intelligent fallback")
             response_text = generate_intelligent_response(messages)
             return {
                 "message": {
@@ -455,9 +327,57 @@ class OllamaClient:
                 },
                 "done": True
             }
+        
+        try:
+            # Prepare messages with system prompt
+            cf_messages = [{"role": "system", "content": ARIA_SYSTEM_PROMPT}]
+            for msg in messages:
+                cf_messages.append({
+                    "role": msg.get("role", "user"),
+                    "content": msg.get("content", "")
+                })
+            
+            payload = {
+                "messages": cf_messages,
+                "max_tokens": 1024,
+                "temperature": temperature
+            }
+            
+            response = requests.post(
+                f"{self.base_url}/{self.model}",
+                headers=self._get_headers(),
+                json=payload,
+                timeout=self.timeout
+            )
+            response.raise_for_status()
+            
+            result = response.json()
+            
+            # Extract response from Cloudflare AI format
+            if result.get("success") and result.get("result"):
+                response_content = result["result"].get("response", "")
+                logger.info("Cloudflare AI chat response received successfully")
+                return {
+                    "message": {
+                        "role": "assistant",
+                        "content": response_content
+                    },
+                    "done": True
+                }
+            else:
+                error_msg = result.get("errors", [{"message": "Unknown error"}])[0].get("message", "Unknown error")
+                logger.warning(f"Cloudflare AI error: {error_msg}, using fallback")
+                response_text = generate_intelligent_response(messages)
+                return {
+                    "message": {
+                        "role": "assistant",
+                        "content": response_text
+                    },
+                    "done": True
+                }
+            
         except requests.exceptions.RequestException as e:
-            logger.warning(f"Ollama request failed: {str(e)}, using intelligent fallback")
-            self._available = False  # Mark as unavailable
+            logger.warning(f"Cloudflare AI request failed: {str(e)}, using intelligent fallback")
             response_text = generate_intelligent_response(messages)
             return {
                 "message": {
@@ -467,14 +387,13 @@ class OllamaClient:
                 "done": True
             }
     
-    def generate(self, prompt: str, temperature: float = 0.7, max_tokens: int = 1024) -> str:
+    def generate(self, prompt: str, temperature: float = 0.7) -> str:
         """
-        Generate text completion
+        Simple text generation using Cloudflare Workers AI
         
         Args:
-            prompt: The prompt to complete
+            prompt: Text prompt
             temperature: Sampling temperature
-            max_tokens: Maximum tokens to generate
             
         Returns:
             Generated text
@@ -484,18 +403,16 @@ class OllamaClient:
         
         try:
             payload = {
-                "model": self.model,
-                "prompt": prompt,
-                "stream": False,
-                "keep_alive": self.keep_alive,
-                "options": {
-                    "temperature": temperature,
-                    "num_predict": max_tokens
-                }
+                "messages": [
+                    {"role": "system", "content": ARIA_SYSTEM_PROMPT},
+                    {"role": "user", "content": prompt}
+                ],
+                "max_tokens": 512,
+                "temperature": temperature
             }
             
             response = requests.post(
-                f"{self.host}/api/generate",
+                f"{self.base_url}/{self.model}",
                 headers=self._get_headers(),
                 json=payload,
                 timeout=self.timeout
@@ -503,114 +420,99 @@ class OllamaClient:
             response.raise_for_status()
             
             result = response.json()
-            return result.get("response", "")
+            if result.get("success") and result.get("result"):
+                return result["result"].get("response", "")
+            return ""
             
-        except Exception as e:
-            logger.error(f"Ollama generate failed: {str(e)}")
+        except requests.exceptions.RequestException as e:
+            logger.error(f"Cloudflare AI generate failed: {str(e)}")
             return generate_intelligent_response([{"role": "user", "content": prompt}])
     
     def list_models(self) -> List[str]:
-        """List available models"""
-        try:
-            response = requests.get(f"{self.host}/api/tags", timeout=10)
-            response.raise_for_status()
-            models = response.json().get("models", [])
-            return [m.get("name", "") for m in models]
-        except Exception as e:
-            logger.error(f"Failed to list models: {str(e)}")
-            return []
+        """List available Cloudflare AI models"""
+        return [
+            "@cf/meta/llama-3.1-8b-instruct",
+            "@cf/meta/llama-3-8b-instruct",
+            "@cf/mistral/mistral-7b-instruct-v0.1",
+            "@cf/microsoft/phi-2"
+        ]
     
     def is_available(self) -> bool:
-        """Check if Ollama is available"""
-        return self._available
+        """Check if Cloudflare AI service is available"""
+        return self._available and bool(self.api_token)
     
     def chat_stream(
         self,
         messages: List[Dict[str, str]],
         tools: Optional[List[Dict[str, Any]]] = None,
         temperature: float = 0.7
-    ) -> Generator[Dict[str, Any], None, None]:
+    ) -> Generator[str, None, None]:
         """
-        Stream chat completion from Ollama
+        Stream chat completion from Cloudflare Workers AI
+        Note: Cloudflare AI doesn't support true streaming, so we simulate it
         
         Args:
-            messages: List of message dicts
-            tools: Optional list of tool definitions
-            temperature: Sampling temperature
+            messages: List of message dicts with 'role' and 'content'
+            tools: Optional list of tool/function definitions
+            temperature: Sampling temperature (0-1)
             
         Yields:
-            Response chunks
+            Chunks of response text
         """
         if not self._available:
-            yield {
-                "message": {
-                    "role": "assistant",
-                    "content": generate_intelligent_response(messages)
-                },
-                "done": True
-            }
+            response_text = generate_intelligent_response(messages)
+            for word in response_text.split(' '):
+                yield word + ' '
             return
         
         try:
-            ollama_messages = [{"role": "system", "content": ARIA_SYSTEM_PROMPT}]
+            # Prepare messages with system prompt
+            cf_messages = [{"role": "system", "content": ARIA_SYSTEM_PROMPT}]
             for msg in messages:
-                ollama_messages.append({
+                cf_messages.append({
                     "role": msg.get("role", "user"),
                     "content": msg.get("content", "")
                 })
             
             payload = {
-                "model": self.model,
-                "messages": ollama_messages,
-                "stream": True,
-                "keep_alive": self.keep_alive,
-                "options": {
-                    "temperature": temperature
-                }
+                "messages": cf_messages,
+                "max_tokens": 1024,
+                "temperature": temperature,
+                "stream": True
             }
             
-            if tools:
-                payload["tools"] = tools
-            
             response = requests.post(
-                f"{self.host}/api/chat",
+                f"{self.base_url}/{self.model}",
                 headers=self._get_headers(),
                 json=payload,
-                stream=True,
-                timeout=self.timeout
+                timeout=self.timeout,
+                stream=True
             )
             response.raise_for_status()
             
+            # Handle streaming response
             for line in response.iter_lines():
                 if line:
                     try:
-                        chunk = json.loads(line)
-                        message = chunk.get("message", {})
-                        yield {
-                            "message": {
-                                "role": "assistant",
-                                "content": message.get("content", ""),
-                                "tool_calls": message.get("tool_calls", [])
-                            },
-                            "done": chunk.get("done", False)
-                        }
+                        # Remove 'data: ' prefix if present
+                        line_str = line.decode('utf-8') if isinstance(line, bytes) else line
+                        if line_str.startswith('data: '):
+                            line_str = line_str[6:]
+                        if line_str == '[DONE]':
+                            break
+                        
+                        chunk = json.loads(line_str)
+                        if chunk.get("response"):
+                            yield chunk["response"]
                     except json.JSONDecodeError:
                         continue
                         
-        except Exception as e:
-            logger.error(f"Ollama stream failed: {str(e)}")
-            yield {
-                "message": {
-                    "role": "assistant",
-                    "content": generate_intelligent_response(messages)
-                },
-                "done": True
-            }
-    
-    def __del__(self):
-        """Cleanup on destruction"""
-        self._stop_warm = True
+        except requests.exceptions.RequestException as e:
+            logger.warning(f"Cloudflare AI streaming failed: {str(e)}, using intelligent fallback")
+            response_text = generate_intelligent_response(messages)
+            for word in response_text.split(' '):
+                yield word + ' '
 
 
-# Create singleton instance
-ollama_client = OllamaClient()
+# Create client instance - maintains backward compatibility with ollama_client name
+ollama_client = CloudflareAIClient()
