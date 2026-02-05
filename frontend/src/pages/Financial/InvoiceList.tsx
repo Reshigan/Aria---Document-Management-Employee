@@ -25,9 +25,9 @@ export default function InvoiceList() {
     const fetchInvoices = async () => {
       try {
         setLoading(true);
-        const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
+        const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev/api';
         const companyId = localStorage.getItem('aria_company_id') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
-        const response = await fetch(`${API_BASE}/api/ar/invoices?company_id=${companyId}`, {
+        const response = await fetch(`${API_BASE}/ar/invoices?company_id=${companyId}`, {
           headers: { 
             'Authorization': `Bearer ${localStorage.getItem('token')}`,
             'X-Company-ID': companyId

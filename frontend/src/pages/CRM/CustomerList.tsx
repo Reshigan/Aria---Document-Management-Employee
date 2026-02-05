@@ -47,9 +47,9 @@ export default function CustomerList() {
   const fetchCustomers = async () => {
     try {
       setLoading(true);
-      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev/api';
       const companyId = localStorage.getItem('aria_company_id') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
-      const response = await fetch(`${API_BASE}/api/erp/master-data/customers?company_id=${companyId}`, {
+      const response = await fetch(`${API_BASE}/erp/master-data/customers?company_id=${companyId}`, {
         headers: { 
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
           'X-Company-ID': companyId
@@ -110,9 +110,9 @@ export default function CustomerList() {
   const handleDelete = async (customerId: number) => {
     if (!confirm('Are you sure you want to delete this customer?')) return;
     try {
-      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev/api';
       const companyId = localStorage.getItem('aria_company_id') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
-      await fetch(`${API_BASE}/api/erp/master-data/customers/${customerId}`, {
+      await fetch(`${API_BASE}/erp/master-data/customers/${customerId}`, {
         method: 'DELETE',
         headers: { 
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -128,11 +128,11 @@ export default function CustomerList() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev/api';
       const companyId = localStorage.getItem('aria_company_id') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
       const url = editingCustomer 
-        ? `${API_BASE}/api/erp/master-data/customers/${editingCustomer.id}`
-        : `${API_BASE}/api/erp/master-data/customers`;
+        ? `${API_BASE}/erp/master-data/customers/${editingCustomer.id}`
+        : `${API_BASE}/erp/master-data/customers`;
       const method = editingCustomer ? 'PUT' : 'POST';
       
       await fetch(url, {

@@ -24,9 +24,9 @@ const ProductCatalog: React.FC = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
+        const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev/api';
         const companyId = localStorage.getItem('aria_company_id') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
-        const response = await fetch(`${API_BASE}/api/erp/order-to-cash/products?company_id=${companyId}`, {
+        const response = await fetch(`${API_BASE}/erp/order-to-cash/products?company_id=${companyId}`, {
           headers: { 
             'Authorization': `Bearer ${localStorage.getItem('token')}`,
             'X-Company-ID': companyId

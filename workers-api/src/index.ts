@@ -105,7 +105,7 @@ app.use('*', cors({
     return null;
   },
   allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowHeaders: ['Content-Type', 'Authorization'],
+  allowHeaders: ['Content-Type', 'Authorization', 'X-Company-ID'],
   credentials: true,
 }));
 
