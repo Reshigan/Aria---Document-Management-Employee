@@ -48,14 +48,20 @@ interface Conversation {
 }
 
 interface ConversationState {
-  currentFlow?: string; // 'create_sales_order' | 'create_quote' | 'create_po' | 'reconciliation'
-  step?: string; // 'select_customer' | 'select_products' | 'confirm' | 'complete'
+  currentFlow?: string; // 'create_sales_order' | 'create_quote' | 'create_po' | 'create_invoice' | 'create_customer' | 'create_supplier' | 'create_product' | 'reconciliation'
+  step?: string; // 'select_customer' | 'select_products' | 'enter_name' | 'enter_email' | 'enter_price' | 'confirm' | 'complete'
   selectedCustomerId?: string;
   selectedCustomerName?: string;
   selectedSupplierId?: string;
   selectedSupplierName?: string;
   selectedProducts?: Array<{ id: string; name: string; quantity: number; price: number }>;
   orderTotal?: number;
+  // For create_customer flow
+  customerName?: string;
+  // For create_supplier flow
+  supplierName?: string;
+  // For create_product flow
+  productName?: string;
 }
 
 interface Message {
@@ -912,6 +918,52 @@ const skills: Skill[] = [
         }
       }
       
+      // Handle Invoice completion
+      if (state.currentFlow === 'create_invoice') {
+        if (!state.selectedProducts || state.selectedProducts.length === 0) {
+          return { response: `Your invoice is empty. Please add at least one product before completing.` };
+        }
+        
+        const invoiceNumber = `INV-${Math.floor(Math.random() * 100000000).toString().padStart(8, '0')}`;
+        const invoiceId = generateUUID();
+        const subtotal = state.orderTotal || 0;
+        const taxAmount = subtotal * 0.15;
+        const totalAmount = subtotal + taxAmount;
+        const today = new Date().toISOString().split('T')[0];
+        const dueDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+        
+        try {
+          await ctx.db.prepare(`
+            INSERT INTO customer_invoices (id, company_id, invoice_number, customer_id, invoice_date, due_date, status, subtotal, tax_amount, total_amount, balance_due, created_at, updated_at)
+            VALUES (?, ?, ?, ?, ?, ?, 'draft', ?, ?, ?, ?, datetime('now'), datetime('now'))
+          `).bind(invoiceId, ctx.companyId, invoiceNumber, state.selectedCustomerId, today, dueDate, subtotal, taxAmount, totalAmount, totalAmount).run();
+          
+          for (const product of state.selectedProducts) {
+            const lineId = generateUUID();
+            const lineTotal = product.quantity * product.price;
+            await ctx.db.prepare(`
+              INSERT INTO customer_invoice_items (id, invoice_id, product_id, description, quantity, unit_price, line_total, created_at)
+              VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'))
+            `).bind(lineId, invoiceId, product.id, product.name, product.quantity, product.price, lineTotal).run();
+          }
+          
+          if (ctx.updateState) await ctx.updateState({});
+          
+          const orderItems = state.selectedProducts.map((p, i) => 
+            `${i + 1}. ${p.name} x ${p.quantity} = R${(p.quantity * p.price).toFixed(2)}`
+          ).join('\n');
+          
+          return {
+            response: `**Invoice Created Successfully!**\n\n**Invoice #:** ${invoiceNumber}\n**Customer:** ${state.selectedCustomerName}\n**Status:** Draft\n\n**Items:**\n${orderItems}\n\n**Subtotal:** R${subtotal.toFixed(2)}\n**VAT (15%):** R${taxAmount.toFixed(2)}\n**Total:** R${totalAmount.toFixed(2)}\n**Due Date:** ${dueDate}\n\nView in **Financial > AR Invoices**`,
+            action: 'invoice_created',
+            data: { invoiceId, invoiceNumber, total: totalAmount },
+          };
+        } catch (error) {
+          console.error('Error creating invoice:', error);
+          return { response: `**Error creating invoice.** Please try again or create manually.` };
+        }
+      }
+      
       // Handle Sales Order completion (existing code)
       if (state.currentFlow !== 'create_sales_order') {
         return {
@@ -1039,10 +1091,145 @@ const skills: Skill[] = [
       return {
         response: `Hello! I'm ARIA, your intelligent ERP assistant. I'm here to help you with:\n\n` +
           `- **View Data**: Show customers, suppliers, products, invoices, orders\n` +
-          `- **Create Records**: Create quotes, purchase orders, sales orders\n` +
+          `- **Create Records**: Create quotes, purchase orders, sales orders, invoices\n` +
           `- **Automation**: List and run 67+ automation bots\n` +
           `- **Reports**: Dashboard summaries and analytics\n\n` +
           `What would you like to do today?`,
+      };
+    },
+  },
+  
+  // Create Invoice - End-to-End with Database Integration
+  {
+    name: 'create_invoice',
+    description: 'Create a customer invoice',
+    patterns: [
+      /create\s+(a\s+)?(new\s+)?(customer\s+)?invoice/i,
+      /new\s+invoice/i,
+      /generate\s+invoice/i,
+      /make\s+(a\s+)?invoice/i,
+    ],
+    slots: [],
+    execute: async (ctx) => {
+      try {
+        // Get customers for selection
+        const customersResult = await ctx.db.prepare(
+          'SELECT id, customer_name, customer_code, email FROM customers WHERE company_id = ? ORDER BY customer_name LIMIT 20'
+        ).bind(ctx.companyId).all();
+        
+        const customers = customersResult.results || [];
+        
+        if (customers.length === 0) {
+          return {
+            response: `**No customers found in the system.**\n\nTo create an invoice, you need customers first. Would you like me to create demo data?\n\nReply "yes" to create demo data, or navigate to **Sales > Customers** to add customers manually.`,
+            action: 'no_customers',
+          };
+        }
+        
+        const customerList = customers.map((c: any, i: number) => 
+          `**${i + 1}.** ${c.customer_name} (${c.customer_code}) - ${c.email || 'No email'}`
+        ).join('\n');
+        
+        // Update conversation state
+        if (ctx.updateState) {
+          await ctx.updateState({
+            currentFlow: 'create_invoice',
+            step: 'select_customer',
+            selectedProducts: [],
+          });
+        }
+        
+        return {
+          response: `**Create Invoice - Step 1: Select Customer**\n\nPlease select a customer by typing their number:\n\n${customerList}\n\n_Type a number (1-${customers.length}) to select a customer_`,
+          action: 'select_customer',
+          data: { customers, step: 'select_customer' },
+        };
+      } catch (error) {
+        console.error('Error in create_invoice:', error);
+        return { response: 'Error loading customers. Please try again.' };
+      }
+    },
+  },
+  
+  // Create Customer - End-to-End with Database Integration
+  {
+    name: 'create_customer',
+    description: 'Create a new customer',
+    patterns: [
+      /create\s+(a\s+)?(new\s+)?customer/i,
+      /add\s+(a\s+)?(new\s+)?customer/i,
+      /new\s+customer/i,
+    ],
+    slots: [],
+    execute: async (ctx) => {
+      // Update conversation state to collect customer details
+      if (ctx.updateState) {
+        await ctx.updateState({
+          currentFlow: 'create_customer',
+          step: 'enter_name',
+        });
+      }
+      
+      return {
+        response: `**Create Customer - Step 1: Enter Customer Name**\n\nPlease enter the customer's name (company or individual):\n\n_Type the customer name and press Enter_`,
+        action: 'enter_name',
+      };
+    },
+  },
+  
+  // Create Supplier - End-to-End with Database Integration
+  {
+    name: 'create_supplier',
+    description: 'Create a new supplier',
+    patterns: [
+      /create\s+(a\s+)?(new\s+)?supplier/i,
+      /add\s+(a\s+)?(new\s+)?supplier/i,
+      /new\s+supplier/i,
+      /create\s+(a\s+)?(new\s+)?vendor/i,
+      /add\s+(a\s+)?(new\s+)?vendor/i,
+    ],
+    slots: [],
+    execute: async (ctx) => {
+      // Update conversation state to collect supplier details
+      if (ctx.updateState) {
+        await ctx.updateState({
+          currentFlow: 'create_supplier',
+          step: 'enter_name',
+        });
+      }
+      
+      return {
+        response: `**Create Supplier - Step 1: Enter Supplier Name**\n\nPlease enter the supplier's name (company):\n\n_Type the supplier name and press Enter_`,
+        action: 'enter_name',
+      };
+    },
+  },
+  
+  // Create Product - End-to-End with Database Integration
+  {
+    name: 'create_product',
+    description: 'Create a new product or service',
+    patterns: [
+      /create\s+(a\s+)?(new\s+)?product/i,
+      /add\s+(a\s+)?(new\s+)?product/i,
+      /new\s+product/i,
+      /create\s+(a\s+)?(new\s+)?item/i,
+      /add\s+(a\s+)?(new\s+)?item/i,
+      /create\s+(a\s+)?(new\s+)?service/i,
+    ],
+    slots: [],
+    execute: async (ctx) => {
+      // Update conversation state to collect product details
+      if (ctx.updateState) {
+        await ctx.updateState({
+          currentFlow: 'create_product',
+          step: 'enter_name',
+        });
+      }
+      
+      return {
+        response: `**Create Product - Step 1: Enter Product Name**\n\nPlease enter the product or service name:\n\n_Type the product name and press Enter_`,
+        action: 'enter_name',
       };
     },
   },
@@ -1449,7 +1636,268 @@ app.post('/message', async (c) => {
         } else {
           result = getDefaultResponse();
         }
-      } else {
+      } else if (conversationState.currentFlow === 'create_invoice' && conversationState.step === 'select_customer') {
+        // Handle invoice customer selection
+        const match = message.match(/^(\d+)$/);
+        if (match) {
+          const customerIndex = parseInt(match[1]) - 1;
+          const customersResult = await c.env.DB.prepare(
+            'SELECT id, customer_name, customer_code FROM customers WHERE company_id = ? ORDER BY customer_name LIMIT 20'
+          ).bind(conversation.company_id).all();
+          
+          const customers = customersResult.results || [];
+          if (customerIndex >= 0 && customerIndex < customers.length) {
+            const selectedCustomer = customers[customerIndex] as any;
+            
+            const productsResult = await c.env.DB.prepare(
+              'SELECT id, product_name, product_code, unit_price FROM products WHERE company_id = ? ORDER BY product_name LIMIT 20'
+            ).bind(conversation.company_id).all();
+            
+            const products = productsResult.results || [];
+            if (products.length === 0) {
+              result = {
+                response: `**Customer Selected:** ${selectedCustomer.customer_name}\n\n**No products found.** Please add products first.`,
+                action: 'no_products',
+              };
+            } else {
+              const productList = products.map((p: any, i: number) => 
+                `**${i + 1}.** ${p.product_name} (${p.product_code}) - R${(p.unit_price || 0).toFixed(2)}`
+              ).join('\n');
+              
+              await updateState({
+                currentFlow: 'create_invoice',
+                step: 'select_products',
+                selectedCustomerId: selectedCustomer.id,
+                selectedCustomerName: selectedCustomer.customer_name,
+                selectedProducts: [],
+              });
+              
+              result = {
+                response: `**Create Invoice - Step 2: Select Products**\n\n**Customer:** ${selectedCustomer.customer_name}\n\nSelect products to add:\n\n${productList}\n\n_Type a product number to add it, or type "done" when finished_`,
+                action: 'select_products',
+                data: { products, customer: selectedCustomer },
+              };
+            }
+          } else {
+            result = { response: `Invalid customer number. Please enter a number between 1 and ${customers.length}.` };
+          }
+        } else {
+          result = getDefaultResponse();
+        }
+      } else if (conversationState.currentFlow === 'create_invoice' && conversationState.step === 'select_products') {
+        // Handle invoice product selection or done
+        if (message.toLowerCase() === 'done') {
+          const currentProducts = conversationState.selectedProducts || [];
+          if (currentProducts.length === 0) {
+            result = { response: `**No products added.** Please add at least one product before completing the invoice.` };
+          } else {
+            // Create the invoice in the database
+            const invoiceId = generateUUID();
+            const invoiceNumber = `INV-${Math.floor(Math.random() * 100000000).toString().padStart(8, '0')}`;
+            const subtotal = currentProducts.reduce((sum, p) => sum + (p.quantity * p.price), 0);
+            const taxAmount = subtotal * 0.15;
+            const totalAmount = subtotal + taxAmount;
+            const today = new Date().toISOString().split('T')[0];
+            const dueDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+            
+            await c.env.DB.prepare(`
+              INSERT INTO customer_invoices (id, company_id, invoice_number, customer_id, invoice_date, due_date, status, subtotal, tax_amount, total_amount, balance_due, created_at, updated_at)
+              VALUES (?, ?, ?, ?, ?, ?, 'draft', ?, ?, ?, ?, datetime('now'), datetime('now'))
+            `).bind(invoiceId, conversation.company_id, invoiceNumber, conversationState.selectedCustomerId, today, dueDate, subtotal, taxAmount, totalAmount, totalAmount).run();
+            
+            // Add invoice items
+            for (const product of currentProducts) {
+              const itemId = generateUUID();
+              const lineTotal = product.quantity * product.price;
+              await c.env.DB.prepare(`
+                INSERT INTO customer_invoice_items (id, invoice_id, product_id, description, quantity, unit_price, line_total, created_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'))
+              `).bind(itemId, invoiceId, product.id, product.name, product.quantity, product.price, lineTotal).run();
+            }
+            
+            // Clear conversation state
+            await updateState({});
+            
+            const orderItems = currentProducts.map((p, i) => 
+              `${i + 1}. ${p.name} x ${p.quantity} = R${(p.quantity * p.price).toFixed(2)}`
+            ).join('\n');
+            
+            result = {
+              response: `**Invoice Created Successfully!**\n\n**Invoice #:** ${invoiceNumber}\n**Customer:** ${conversationState.selectedCustomerName}\n**Status:** Draft\n\n**Items:**\n${orderItems}\n\n**Subtotal:** R${subtotal.toFixed(2)}\n**VAT (15%):** R${taxAmount.toFixed(2)}\n**Total:** R${totalAmount.toFixed(2)}\n**Due Date:** ${dueDate}\n\nView in **Financial > AR Invoices**`,
+              action: 'invoice_created',
+              data: { invoiceId, invoiceNumber, total: totalAmount },
+            };
+          }
+        } else {
+          const match = message.match(/^(\d+)$/);
+          if (match) {
+            const productIndex = parseInt(match[1]) - 1;
+            const productsResult = await c.env.DB.prepare(
+              'SELECT id, product_name, product_code, unit_price FROM products WHERE company_id = ? ORDER BY product_name LIMIT 20'
+            ).bind(conversation.company_id).all();
+            
+            const products = productsResult.results || [];
+            if (productIndex >= 0 && productIndex < products.length) {
+              const selectedProduct = products[productIndex] as any;
+              const currentProducts = conversationState.selectedProducts || [];
+              
+              currentProducts.push({
+                id: selectedProduct.id,
+                name: selectedProduct.product_name,
+                quantity: 1,
+                price: selectedProduct.unit_price || 0,
+              });
+              
+              const total = currentProducts.reduce((sum, p) => sum + (p.quantity * p.price), 0);
+              
+              await updateState({
+                ...conversationState,
+                selectedProducts: currentProducts,
+                orderTotal: total,
+              });
+              
+              const orderItems = currentProducts.map((p, i) => 
+                `${i + 1}. ${p.name} x ${p.quantity} = R${(p.quantity * p.price).toFixed(2)}`
+              ).join('\n');
+              
+              result = {
+                response: `**Product Added:** ${selectedProduct.product_name}\n\n**Current Invoice:**\n${orderItems}\n\n**Subtotal:** R${total.toFixed(2)}\n\n_Add more products by number, or type "done" to complete the invoice_`,
+                data: { products: currentProducts, total },
+              };
+            } else {
+              result = { response: `Invalid product number. Please enter a number between 1 and ${products.length}.` };
+            }
+          } else {
+            result = getDefaultResponse();
+          }
+        }
+      } else if (conversationState.currentFlow === 'create_customer' && conversationState.step === 'enter_name') {
+        // Handle customer name entry
+        const customerName = message.trim();
+        if (customerName.length < 2) {
+          result = { response: `**Invalid name.** Please enter a valid customer name (at least 2 characters).` };
+        } else {
+          await updateState({
+            currentFlow: 'create_customer',
+            step: 'enter_email',
+            customerName: customerName,
+          });
+          
+          result = {
+            response: `**Create Customer - Step 2: Enter Email**\n\n**Customer Name:** ${customerName}\n\nPlease enter the customer's email address (or type "skip" to skip):\n\n_Type the email and press Enter_`,
+            action: 'enter_email',
+          };
+        }
+      } else if (conversationState.currentFlow === 'create_customer' && conversationState.step === 'enter_email') {
+        // Handle customer email entry
+        const email = message.toLowerCase() === 'skip' ? null : message.trim();
+        
+        // Save customer name before clearing state
+        const savedCustomerName = conversationState.customerName || 'Unknown';
+        
+        // Create the customer in the database
+        const customerId = generateUUID();
+        const customerCode = `CUST-${Math.floor(Math.random() * 100000).toString().padStart(5, '0')}`;
+        
+        await c.env.DB.prepare(`
+          INSERT INTO customers (id, company_id, customer_code, customer_name, email, is_active, created_at, updated_at)
+          VALUES (?, ?, ?, ?, ?, 1, datetime('now'), datetime('now'))
+        `).bind(customerId, conversation.company_id, customerCode, savedCustomerName, email).run();
+        
+        // Clear conversation state
+        await updateState({});
+        
+        result = {
+          response: `**Customer Created Successfully!**\n\n**Customer Code:** ${customerCode}\n**Name:** ${savedCustomerName}\n**Email:** ${email || 'Not provided'}\n\nView in **Sales > Customers**`,
+          action: 'customer_created',
+          data: { customerId, customerCode },
+        };
+      }else if (conversationState.currentFlow === 'create_supplier' && conversationState.step === 'enter_name') {
+        // Handle supplier name entry
+        const supplierName = message.trim();
+        if (supplierName.length < 2) {
+          result = { response: `**Invalid name.** Please enter a valid supplier name (at least 2 characters).` };
+        } else {
+          await updateState({
+            currentFlow: 'create_supplier',
+            step: 'enter_email',
+            supplierName: supplierName,
+          });
+          
+          result = {
+            response: `**Create Supplier - Step 2: Enter Email**\n\n**Supplier Name:** ${supplierName}\n\nPlease enter the supplier's email address (or type "skip" to skip):\n\n_Type the email and press Enter_`,
+            action: 'enter_email',
+          };
+        }
+      }      else if (conversationState.currentFlow === 'create_supplier' && conversationState.step === 'enter_email') {
+              // Handle supplier email entry
+              const email = message.toLowerCase() === 'skip' ? null : message.trim();
+        
+              // Save supplier name before clearing state
+              const savedSupplierName = conversationState.supplierName || 'Unknown';
+        
+              // Create the supplier in the database
+              const supplierId = generateUUID();
+              const supplierCode = `SUPP-${Math.floor(Math.random() * 100000).toString().padStart(5, '0')}`;
+        
+              await c.env.DB.prepare(`
+                INSERT INTO suppliers (id, company_id, supplier_code, supplier_name, email, is_active, created_at, updated_at)
+                VALUES (?, ?, ?, ?, ?, 1, datetime('now'), datetime('now'))
+              `).bind(supplierId, conversation.company_id, supplierCode, savedSupplierName, email).run();
+        
+              // Clear conversation state
+              await updateState({});
+        
+              result = {
+                response: `**Supplier Created Successfully!**\n\n**Supplier Code:** ${supplierCode}\n**Name:** ${savedSupplierName}\n**Email:** ${email || 'Not provided'}\n\nView in **Purchasing > Suppliers**`,
+                action: 'supplier_created',
+                data: { supplierId, supplierCode },
+              };
+            }else if (conversationState.currentFlow === 'create_product' && conversationState.step === 'enter_name') {
+        // Handle product name entry
+        const productName = message.trim();
+        if (productName.length < 2) {
+          result = { response: `**Invalid name.** Please enter a valid product name (at least 2 characters).` };
+        } else {
+          await updateState({
+            currentFlow: 'create_product',
+            step: 'enter_price',
+            productName: productName,
+          });
+          
+          result = {
+            response: `**Create Product - Step 2: Enter Price**\n\n**Product Name:** ${productName}\n\nPlease enter the unit price (e.g., 99.99):\n\n_Type the price and press Enter_`,
+            action: 'enter_price',
+          };
+        }
+      }      else if (conversationState.currentFlow === 'create_product' && conversationState.step === 'enter_price') {
+              // Handle product price entry
+              const price = parseFloat(message.trim());
+              if (isNaN(price) || price < 0) {
+                result = { response: `**Invalid price.** Please enter a valid price (e.g., 99.99).` };
+              } else {
+                // Save product name before clearing state
+                const savedProductName = conversationState.productName || 'Unknown';
+          
+                // Create the product in the database
+                const productId = generateUUID();
+                const productCode = `PROD-${Math.floor(Math.random() * 100000).toString().padStart(5, '0')}`;
+          
+                await c.env.DB.prepare(`
+                  INSERT INTO products (id, company_id, product_code, product_name, unit_price, is_active, created_at, updated_at)
+                  VALUES (?, ?, ?, ?, ?, 1, datetime('now'), datetime('now'))
+                `).bind(productId, conversation.company_id, productCode, savedProductName, price).run();
+          
+                // Clear conversation state
+                await updateState({});
+          
+                result = {
+                  response: `**Product Created Successfully!**\n\n**Product Code:** ${productCode}\n**Name:** ${savedProductName}\n**Price:** R${price.toFixed(2)}\n\nView in **Inventory > Products**`,
+                  action: 'product_created',
+                  data: { productId, productCode },
+                };
+              }
+            }else {
         result = getDefaultResponse();
       }
     }
@@ -1897,7 +2345,259 @@ app.post('/message/stream', async (c) => {
         } else {
           result = getDefaultResponse();
         }
-      } else {
+      } else if (conversationState.currentFlow === 'create_invoice' && conversationState.step === 'select_customer') {
+        // Handle invoice customer selection (streaming)
+        const match = message.match(/^(\d+)$/);
+        if (match) {
+          const customerIndex = parseInt(match[1]) - 1;
+          const customersResult = await c.env.DB.prepare(
+            'SELECT id, customer_name, customer_code FROM customers WHERE company_id = ? ORDER BY customer_name LIMIT 20'
+          ).bind(conversation.company_id).all();
+          
+          const customers = customersResult.results || [];
+          if (customerIndex >= 0 && customerIndex < customers.length) {
+            const selectedCustomer = customers[customerIndex] as any;
+            
+            const productsResult = await c.env.DB.prepare(
+              'SELECT id, product_name, product_code, unit_price FROM products WHERE company_id = ? ORDER BY product_name LIMIT 20'
+            ).bind(conversation.company_id).all();
+            
+            const products = productsResult.results || [];
+            if (products.length === 0) {
+              result = {
+                response: `**Customer Selected:** ${selectedCustomer.customer_name}\n\n**No products found.** Please add products first.`,
+                action: 'no_products',
+              };
+            } else {
+              const productList = products.map((p: any, i: number) => 
+                `**${i + 1}.** ${p.product_name} (${p.product_code}) - R${(p.unit_price || 0).toFixed(2)}`
+              ).join('\n');
+              
+              await updateState({
+                currentFlow: 'create_invoice',
+                step: 'select_products',
+                selectedCustomerId: selectedCustomer.id,
+                selectedCustomerName: selectedCustomer.customer_name,
+                selectedProducts: [],
+              });
+              
+              result = {
+                response: `**Create Invoice - Step 2: Select Products**\n\n**Customer:** ${selectedCustomer.customer_name}\n\nSelect products to add:\n\n${productList}\n\n_Type a product number to add it, or type "done" when finished_`,
+                action: 'select_products',
+                data: { products, customer: selectedCustomer },
+              };
+            }
+          } else {
+            result = { response: `Invalid customer number. Please enter a number between 1 and ${customers.length}.` };
+          }
+        } else {
+          result = getDefaultResponse();
+        }
+      } else if (conversationState.currentFlow === 'create_invoice' && conversationState.step === 'select_products') {
+        // Handle invoice product selection or done (streaming)
+        if (message.toLowerCase() === 'done') {
+          const currentProducts = conversationState.selectedProducts || [];
+          if (currentProducts.length === 0) {
+            result = { response: `**No products added.** Please add at least one product before completing the invoice.` };
+          } else {
+            const invoiceId = generateUUID();
+            const invoiceNumber = `INV-${Math.floor(Math.random() * 100000000).toString().padStart(8, '0')}`;
+            const subtotal = currentProducts.reduce((sum, p) => sum + (p.quantity * p.price), 0);
+            const taxAmount = subtotal * 0.15;
+            const totalAmount = subtotal + taxAmount;
+            const today = new Date().toISOString().split('T')[0];
+            const dueDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+            
+            await c.env.DB.prepare(`
+              INSERT INTO customer_invoices (id, company_id, invoice_number, customer_id, invoice_date, due_date, status, subtotal, tax_amount, total_amount, balance_due, created_at, updated_at)
+              VALUES (?, ?, ?, ?, ?, ?, 'draft', ?, ?, ?, ?, datetime('now'), datetime('now'))
+            `).bind(invoiceId, conversation.company_id, invoiceNumber, conversationState.selectedCustomerId, today, dueDate, subtotal, taxAmount, totalAmount, totalAmount).run();
+            
+            for (const product of currentProducts) {
+              const itemId = generateUUID();
+              const lineTotal = product.quantity * product.price;
+              await c.env.DB.prepare(`
+                INSERT INTO customer_invoice_items (id, invoice_id, product_id, description, quantity, unit_price, line_total, created_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'))
+              `).bind(itemId, invoiceId, product.id, product.name, product.quantity, product.price, lineTotal).run();
+            }
+            
+            await updateState({});
+            
+            const orderItems = currentProducts.map((p, i) => 
+              `${i + 1}. ${p.name} x ${p.quantity} = R${(p.quantity * p.price).toFixed(2)}`
+            ).join('\n');
+            
+            result = {
+              response: `**Invoice Created Successfully!**\n\n**Invoice #:** ${invoiceNumber}\n**Customer:** ${conversationState.selectedCustomerName}\n**Status:** Draft\n\n**Items:**\n${orderItems}\n\n**Subtotal:** R${subtotal.toFixed(2)}\n**VAT (15%):** R${taxAmount.toFixed(2)}\n**Total:** R${totalAmount.toFixed(2)}\n**Due Date:** ${dueDate}\n\nView in **Financial > AR Invoices**`,
+              action: 'invoice_created',
+              data: { invoiceId, invoiceNumber, total: totalAmount },
+            };
+          }
+        } else {
+          const match = message.match(/^(\d+)$/);
+          if (match) {
+            const productIndex = parseInt(match[1]) - 1;
+            const productsResult = await c.env.DB.prepare(
+              'SELECT id, product_name, product_code, unit_price FROM products WHERE company_id = ? ORDER BY product_name LIMIT 20'
+            ).bind(conversation.company_id).all();
+            
+            const products = productsResult.results || [];
+            if (productIndex >= 0 && productIndex < products.length) {
+              const selectedProduct = products[productIndex] as any;
+              const currentProducts = conversationState.selectedProducts || [];
+              
+              currentProducts.push({
+                id: selectedProduct.id,
+                name: selectedProduct.product_name,
+                quantity: 1,
+                price: selectedProduct.unit_price || 0,
+              });
+              
+              const total = currentProducts.reduce((sum, p) => sum + (p.quantity * p.price), 0);
+              
+              await updateState({
+                ...conversationState,
+                selectedProducts: currentProducts,
+                orderTotal: total,
+              });
+              
+              const orderItems = currentProducts.map((p, i) => 
+                `${i + 1}. ${p.name} x ${p.quantity} = R${(p.quantity * p.price).toFixed(2)}`
+              ).join('\n');
+              
+              result = {
+                response: `**Product Added:** ${selectedProduct.product_name}\n\n**Current Invoice:**\n${orderItems}\n\n**Subtotal:** R${total.toFixed(2)}\n\n_Add more products by number, or type "done" to complete the invoice_`,
+                data: { products: currentProducts, total },
+              };
+            } else {
+              result = { response: `Invalid product number. Please enter a number between 1 and ${products.length}.` };
+            }
+          } else {
+            result = getDefaultResponse();
+          }
+        }
+      } else if (conversationState.currentFlow === 'create_customer' && conversationState.step === 'enter_name') {
+        // Handle customer name entry (streaming)
+        const customerName = message.trim();
+        if (customerName.length < 2) {
+          result = { response: `**Invalid name.** Please enter a valid customer name (at least 2 characters).` };
+        } else {
+          await updateState({
+            currentFlow: 'create_customer',
+            step: 'enter_email',
+            customerName: customerName,
+          });
+          
+          result = {
+            response: `**Create Customer - Step 2: Enter Email**\n\n**Customer Name:** ${customerName}\n\nPlease enter the customer's email address (or type "skip" to skip):\n\n_Type the email and press Enter_`,
+            action: 'enter_email',
+          };
+        }
+      } else if (conversationState.currentFlow === 'create_customer' && conversationState.step === 'enter_email') {
+        // Handle customer email entry (streaming)
+        const email = message.toLowerCase() === 'skip' ? null : message.trim();
+        
+        // Save customer name before clearing state
+        const savedCustomerName = conversationState.customerName || 'Unknown';
+        
+        const customerId = generateUUID();
+        const customerCode = `CUST-${Math.floor(Math.random() * 100000).toString().padStart(5, '0')}`;
+        
+        await c.env.DB.prepare(`
+          INSERT INTO customers (id, company_id, customer_code, customer_name, email, is_active, created_at, updated_at)
+          VALUES (?, ?, ?, ?, ?, 1, datetime('now'), datetime('now'))
+        `).bind(customerId, conversation.company_id, customerCode, savedCustomerName, email).run();
+        
+        await updateState({});
+        
+        result = {
+          response: `**Customer Created Successfully!**\n\n**Customer Code:** ${customerCode}\n**Name:** ${savedCustomerName}\n**Email:** ${email || 'Not provided'}\n\nView in **Sales > Customers**`,
+          action: 'customer_created',
+          data: { customerId, customerCode },
+        };
+      }else if (conversationState.currentFlow === 'create_supplier' && conversationState.step === 'enter_name') {
+        // Handle supplier name entry (streaming)
+        const supplierName = message.trim();
+        if (supplierName.length < 2) {
+          result = { response: `**Invalid name.** Please enter a valid supplier name (at least 2 characters).` };
+        } else {
+          await updateState({
+            currentFlow: 'create_supplier',
+            step: 'enter_email',
+            supplierName: supplierName,
+          });
+          
+          result = {
+            response: `**Create Supplier - Step 2: Enter Email**\n\n**Supplier Name:** ${supplierName}\n\nPlease enter the supplier's email address (or type "skip" to skip):\n\n_Type the email and press Enter_`,
+            action: 'enter_email',
+          };
+        }
+      } else if (conversationState.currentFlow === 'create_supplier' && conversationState.step === 'enter_email') {
+        // Handle supplier email entry (streaming)
+        const email = message.toLowerCase() === 'skip' ? null : message.trim();
+        
+        // Save supplier name before clearing state
+        const savedSupplierName = conversationState.supplierName || 'Unknown';
+        
+        const supplierId = generateUUID();
+        const supplierCode = `SUPP-${Math.floor(Math.random() * 100000).toString().padStart(5, '0')}`;
+        
+        await c.env.DB.prepare(`
+          INSERT INTO suppliers (id, company_id, supplier_code, supplier_name, email, is_active, created_at, updated_at)
+          VALUES (?, ?, ?, ?, ?, 1, datetime('now'), datetime('now'))
+        `).bind(supplierId, conversation.company_id, supplierCode, savedSupplierName, email).run();
+        
+        await updateState({});
+        
+        result = {
+          response: `**Supplier Created Successfully!**\n\n**Supplier Code:** ${supplierCode}\n**Name:** ${savedSupplierName}\n**Email:** ${email || 'Not provided'}\n\nView in **Purchasing > Suppliers**`,
+          action: 'supplier_created',
+          data: { supplierId, supplierCode },
+        };
+      }else if (conversationState.currentFlow === 'create_product' && conversationState.step === 'enter_name') {
+        // Handle product name entry (streaming)
+        const productName = message.trim();
+        if (productName.length < 2) {
+          result = { response: `**Invalid name.** Please enter a valid product name (at least 2 characters).` };
+        } else {
+          await updateState({
+            currentFlow: 'create_product',
+            step: 'enter_price',
+            productName: productName,
+          });
+          
+          result = {
+            response: `**Create Product - Step 2: Enter Price**\n\n**Product Name:** ${productName}\n\nPlease enter the unit price (e.g., 99.99):\n\n_Type the price and press Enter_`,
+            action: 'enter_price',
+          };
+        }
+      } else if (conversationState.currentFlow === 'create_product' && conversationState.step === 'enter_price') {
+        // Handle product price entry (streaming)
+        const price = parseFloat(message.trim());
+        if (isNaN(price) || price < 0) {
+          result = { response: `**Invalid price.** Please enter a valid price (e.g., 99.99).` };
+        } else {
+          // Save product name before clearing state
+          const savedProductName = conversationState.productName || 'Unknown';
+          
+          const productId = generateUUID();
+          const productCode = `PROD-${Math.floor(Math.random() * 100000).toString().padStart(5, '0')}`;
+          
+          await c.env.DB.prepare(`
+            INSERT INTO products (id, company_id, product_code, product_name, unit_price, is_active, created_at, updated_at)
+            VALUES (?, ?, ?, ?, ?, 1, datetime('now'), datetime('now'))
+          `).bind(productId, conversation.company_id, productCode, savedProductName, price).run();
+          
+          await updateState({});
+          
+          result = {
+            response: `**Product Created Successfully!**\n\n**Product Code:** ${productCode}\n**Name:** ${savedProductName}\n**Price:** R${price.toFixed(2)}\n\nView in **Inventory > Products**`,
+            action: 'product_created',
+            data: { productId, productCode },
+          };
+        }
+      }else {
         result = getDefaultResponse();
       }
     }
