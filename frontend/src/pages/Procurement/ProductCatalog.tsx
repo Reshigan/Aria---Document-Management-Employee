@@ -24,13 +24,30 @@ const ProductCatalog: React.FC = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
-        const response = await fetch(`${API_BASE}/api/products`, {
-          headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+        const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev/api';
+        const companyId = localStorage.getItem('aria_company_id') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+        const response = await fetch(`${API_BASE}/erp/order-to-cash/products?company_id=${companyId}`, {
+          headers: { 
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+            'X-Company-ID': companyId
+          }
         });
         if (response.ok) {
           const data = await response.json();
-          setProducts(Array.isArray(data) ? data : data.data || []);
+          // Map API response fields to component fields
+          const mappedProducts = (Array.isArray(data) ? data : data.data || []).map((p: any) => ({
+            id: p.id,
+            product_code: p.product_code || p.code,
+            product_name: p.product_name || p.name,
+            description: p.description,
+            cost_price: p.cost_price || p.standard_cost || 0,
+            selling_price: p.selling_price || p.unit_price || 0,
+            stock_on_hand: p.quantity_on_hand || p.stock_on_hand || 0,
+            reorder_level: p.reorder_level || 0,
+            reorder_quantity: p.reorder_quantity || 0,
+            is_active: p.is_active !== false
+          }));
+          setProducts(mappedProducts);
         } else {
           setProducts([]);
         }

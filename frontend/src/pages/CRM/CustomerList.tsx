@@ -47,9 +47,28 @@ export default function CustomerList() {
   const fetchCustomers = async () => {
     try {
       setLoading(true);
-      const response = await fetch('https://aria.vantax.co.za/api/customers');
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev/api';
+      const companyId = localStorage.getItem('aria_company_id') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+      const response = await fetch(`${API_BASE}/erp/master-data/customers?company_id=${companyId}`, {
+        headers: { 
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'X-Company-ID': companyId
+        }
+      });
       const data = await response.json();
-      setCustomers(data.customers || []);
+      // Map API response fields to component fields
+      const mappedCustomers = (Array.isArray(data) ? data : data.data || []).map((c: any) => ({
+        id: c.id,
+        customer_code: c.customer_code || c.code || `CUS-${c.id}`,
+        customer_name: c.customer_name || c.name,
+        contact_person: c.contact_person,
+        email: c.email,
+        phone: c.phone,
+        bbbee_level: c.bbbee_level,
+        credit_limit: c.credit_limit || 0,
+        is_active: c.is_active !== false
+      }));
+      setCustomers(mappedCustomers);
     } catch (error) {
       console.error('Error:', error);
     } finally {
@@ -91,8 +110,14 @@ export default function CustomerList() {
   const handleDelete = async (customerId: number) => {
     if (!confirm('Are you sure you want to delete this customer?')) return;
     try {
-      await fetch(`https://aria.vantax.co.za/api/customers/${customerId}`, {
-        method: 'DELETE'
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev/api';
+      const companyId = localStorage.getItem('aria_company_id') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+      await fetch(`${API_BASE}/erp/master-data/customers/${customerId}`, {
+        method: 'DELETE',
+        headers: { 
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'X-Company-ID': companyId
+        }
       });
       fetchCustomers();
     } catch (error) {
@@ -103,15 +128,21 @@ export default function CustomerList() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev/api';
+      const companyId = localStorage.getItem('aria_company_id') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
       const url = editingCustomer 
-        ? `https://aria.vantax.co.za/api/customers/${editingCustomer.id}`
-        : 'https://aria.vantax.co.za/api/customers';
+        ? `${API_BASE}/erp/master-data/customers/${editingCustomer.id}`
+        : `${API_BASE}/erp/master-data/customers`;
       const method = editingCustomer ? 'PUT' : 'POST';
       
       await fetch(url, {
         method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'X-Company-ID': companyId
+        },
+        body: JSON.stringify({ ...formData, company_id: companyId })
       });
       
       setShowModal(false);
