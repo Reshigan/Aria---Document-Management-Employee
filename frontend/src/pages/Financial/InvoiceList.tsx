@@ -26,8 +26,12 @@ export default function InvoiceList() {
       try {
         setLoading(true);
         const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
-        const response = await fetch(`${API_BASE}/api/invoices`, {
-          headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+        const companyId = localStorage.getItem('aria_company_id') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+        const response = await fetch(`${API_BASE}/api/ar/invoices?company_id=${companyId}`, {
+          headers: { 
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+            'X-Company-ID': companyId
+          }
         });
         if (response.ok) {
           const data = await response.json();

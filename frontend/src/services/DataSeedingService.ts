@@ -268,7 +268,7 @@ class DataSeedingService {
     try {
       const customers = this.generateDemoCustomers(count.customers);
       for (const customer of customers) {
-        await apiClient.post('/api/customers', customer);
+        await apiClient.post('/api/erp/master-data/customers', customer);
         totalRecordsCreated++;
       }
       modulesSeeded.push('customers');
@@ -280,7 +280,7 @@ class DataSeedingService {
     try {
       const suppliers = this.generateDemoSuppliers(count.suppliers);
       for (const supplier of suppliers) {
-        await apiClient.post('/api/suppliers', supplier);
+        await apiClient.post('/api/erp/master-data/suppliers', supplier);
         totalRecordsCreated++;
       }
       modulesSeeded.push('suppliers');
@@ -292,7 +292,7 @@ class DataSeedingService {
     try {
       const products = this.generateDemoProducts(count.products);
       for (const product of products) {
-        await apiClient.post('/api/products', product);
+        await apiClient.post('/api/erp/order-to-cash/products', product);
         totalRecordsCreated++;
       }
       modulesSeeded.push('products');
