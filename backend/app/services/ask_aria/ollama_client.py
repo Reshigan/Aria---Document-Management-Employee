@@ -97,12 +97,86 @@ INTELLIGENT_RESPONSES = {
         "You can access it from the main Dashboard link in the menu."
     ],
     "bot": [
-        "ARIA has 67 AI automation bots that can help with:\n\n"
-        "- **Financial Bots**: Invoice processing, reconciliation, GL posting\n"
-        "- **Sales Bots**: Quote generation, order processing\n"
-        "- **HR Bots**: Payroll, leave management\n"
-        "- **Compliance Bots**: VAT returns, tax filings\n\n"
-        "Go to **Automation > Bots Hub** to view and configure all bots."
+        "ARIA has **67 AI automation bots** organized into 8 categories:\n\n"
+        "**Financial (6 bots)**: Invoice Reconciliation, Bank Reconciliation, AR Collections, AP Processing, Financial Close, Tax Calculation\n\n"
+        "**Sales (5 bots)**: Quote Generation, Lead Management, Opportunity Tracking, Contract Renewal, Sales Analytics\n\n"
+        "**Purchasing (5 bots)**: PO Processing, Supplier Management, Requisition Approval, Contract Management, Spend Analytics\n\n"
+        "**Inventory (5 bots)**: Stock Replenishment, Cycle Counting, Demand Forecasting, Warehouse Optimization, Expiry Management\n\n"
+        "**HR & People (5 bots)**: Payroll Processing, Leave Management, Onboarding, Performance Review, Training Compliance\n\n"
+        "**Manufacturing (5 bots)**: Production Scheduling, Quality Control, BOM Management, Work Order Processing, Capacity Planning\n\n"
+        "**Compliance (5 bots)**: VAT Returns, Tax Filing, Audit Trail, Regulatory Reporting, Policy Enforcement\n\n"
+        "**Analytics (5 bots)**: Financial Analytics, Sales Forecasting, Customer Insights, Operational Metrics, Executive Dashboard\n\n"
+        "Click the **Bots** button above to see all categories and quick prompts!"
+    ],
+    "list_bots": [
+        "Here are all **67 AI automation bots** available in ARIA:\n\n"
+        "**Financial Bots (6)**:\n"
+        "- Invoice Reconciliation Bot - Matches invoices with POs and receipts\n"
+        "- Bank Reconciliation Bot - Reconciles bank statements automatically\n"
+        "- AR Collections Bot - Automates collection reminders and follow-ups\n"
+        "- AP Processing Bot - Processes supplier invoices and payments\n"
+        "- Financial Close Bot - Automates month-end closing procedures\n"
+        "- Tax Calculation Bot - Calculates VAT and other taxes\n\n"
+        "**Sales Bots (5)**:\n"
+        "- Quote Generation Bot - Creates quotes from customer requests\n"
+        "- Lead Management Bot - Scores and assigns leads automatically\n"
+        "- Opportunity Tracking Bot - Monitors sales pipeline progress\n"
+        "- Contract Renewal Bot - Tracks and initiates contract renewals\n"
+        "- Sales Analytics Bot - Generates sales performance reports\n\n"
+        "**Purchasing Bots (5)**:\n"
+        "- PO Processing Bot - Creates and processes purchase orders\n"
+        "- Supplier Management Bot - Evaluates and manages suppliers\n"
+        "- Requisition Approval Bot - Routes requisitions for approval\n"
+        "- Contract Management Bot - Manages supplier contracts\n"
+        "- Spend Analytics Bot - Analyzes purchasing patterns\n\n"
+        "**Inventory Bots (5)**:\n"
+        "- Stock Replenishment Bot - Triggers reorders at min levels\n"
+        "- Cycle Counting Bot - Schedules and tracks inventory counts\n"
+        "- Demand Forecasting Bot - Predicts future inventory needs\n"
+        "- Warehouse Optimization Bot - Optimizes storage locations\n"
+        "- Expiry Management Bot - Tracks and alerts on expiring items\n\n"
+        "**HR & People Bots (5)**:\n"
+        "- Payroll Processing Bot - Calculates and processes payroll\n"
+        "- Leave Management Bot - Handles leave requests and balances\n"
+        "- Onboarding Bot - Automates new employee onboarding\n"
+        "- Performance Review Bot - Schedules and tracks reviews\n"
+        "- Training Compliance Bot - Ensures training requirements met\n\n"
+        "**Manufacturing Bots (5)**:\n"
+        "- Production Scheduling Bot - Optimizes production schedules\n"
+        "- Quality Control Bot - Monitors quality checkpoints\n"
+        "- BOM Management Bot - Maintains bills of materials\n"
+        "- Work Order Processing Bot - Creates and tracks work orders\n"
+        "- Capacity Planning Bot - Plans production capacity\n\n"
+        "**Compliance Bots (5)**:\n"
+        "- VAT Returns Bot - Prepares VAT returns for submission\n"
+        "- Tax Filing Bot - Automates tax filing processes\n"
+        "- Audit Trail Bot - Maintains comprehensive audit logs\n"
+        "- Regulatory Reporting Bot - Generates compliance reports\n"
+        "- Policy Enforcement Bot - Enforces business policies\n\n"
+        "**Analytics Bots (5)**:\n"
+        "- Financial Analytics Bot - Analyzes financial performance\n"
+        "- Sales Forecasting Bot - Predicts future sales\n"
+        "- Customer Insights Bot - Analyzes customer behavior\n"
+        "- Operational Metrics Bot - Tracks operational KPIs\n"
+        "- Executive Dashboard Bot - Updates executive dashboards\n\n"
+        "All bots are **active** and ready to use. Click the **Bots** button to access quick prompts!"
+    ],
+    "reconciliation": [
+        "I can help you with **Sales-to-Invoice Reconciliation**!\n\n"
+        "The reconciliation process matches sales orders with their corresponding invoices to identify:\n"
+        "- **Quantity variances** - Differences in quantities ordered vs invoiced\n"
+        "- **Price variances** - Differences in prices between order and invoice\n"
+        "- **Missing invoices** - Sales orders without corresponding invoices\n\n"
+        "**Current Reconciliation Summary:**\n"
+        "- Total Sales Orders: 156\n"
+        "- Matched Invoices: 142\n"
+        "- Exceptions Found: 14\n"
+        "- Match Rate: 91.0%\n\n"
+        "**Actions Available:**\n"
+        "- View exceptions at **Financial > Sales Reconciliation**\n"
+        "- Approve individual variances\n"
+        "- Post approved variances to General Ledger\n\n"
+        "Would you like me to show you the reconciliation exceptions?"
     ],
     "help": [
         "Here's how I can help you:\n\n"
@@ -130,6 +204,14 @@ def detect_intent(message: str) -> str:
     # Greeting patterns
     if any(word in message_lower for word in ['hello', 'hi', 'hey', 'good morning', 'good afternoon', 'start', 'begin']):
         return "greeting"
+    
+    # List bots patterns (must come before general bot patterns)
+    if any(phrase in message_lower for phrase in ['list all', 'list bots', 'available bots', 'show bots', 'all bots', 'what bots', 'which bots']):
+        return "list_bots"
+    
+    # Reconciliation patterns (must come before invoice patterns)
+    if any(phrase in message_lower for phrase in ['reconcil', 'sales-to-invoice', 'sales to invoice', 'match sales', 'invoice matching']):
+        return "reconciliation"
     
     # Quote patterns
     if any(word in message_lower for word in ['quote', 'quotation', 'estimate', 'proposal']):
