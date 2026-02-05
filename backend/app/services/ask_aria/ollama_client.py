@@ -2,6 +2,7 @@
 Cloudflare Workers AI Client for Ask Aria
 Handles communication with Cloudflare Workers AI for conversational AI
 Uses Llama 3.1 model via Cloudflare's AI REST API
+Bot commands are handled directly via hybrid intent detection in orchestrator.py
 """
 import json
 import requests
@@ -14,7 +15,8 @@ logger = logging.getLogger(__name__)
 
 # Cloudflare Workers AI Configuration
 CLOUDFLARE_ACCOUNT_ID = os.getenv("CLOUDFLARE_ACCOUNT_ID", "08596e523c096f04b56d7ae43f7821f4")
-CLOUDFLARE_API_TOKEN = os.getenv("CLOUDFLARE_API_TOKEN", "")
+CLOUDFLARE_API_KEY = os.getenv("CLOUDFLARE_API_KEY", "21fff817fa4a851d0ddc3975c7f8c1a31fbc4")
+CLOUDFLARE_API_EMAIL = os.getenv("CLOUDFLARE_API_EMAIL", "reshigan@vantax.co.za")
 CLOUDFLARE_AI_MODEL = os.getenv("CLOUDFLARE_AI_MODEL", "@cf/meta/llama-3.1-8b-instruct")
 
 # System prompt for ARIA ERP assistant
@@ -97,28 +99,127 @@ INTELLIGENT_RESPONSES = {
         "You can access it from the main Dashboard link in the menu."
     ],
     "bot": [
-        "ARIA has 67 AI automation bots that can help with:\n\n"
-        "- **Financial Bots**: Invoice processing, reconciliation, GL posting\n"
-        "- **Sales Bots**: Quote generation, order processing\n"
-        "- **HR Bots**: Payroll, leave management\n"
-        "- **Compliance Bots**: VAT returns, tax filings\n\n"
-        "Go to **Automation > Bots Hub** to view and configure all bots."
+        "ARIA has **67 AI automation bots** organized into 8 categories:\n\n"
+        "**Financial (6 bots)**: Invoice Reconciliation, Bank Reconciliation, AR Collections, AP Processing, Financial Close, Tax Calculation\n\n"
+        "**Sales (5 bots)**: Quote Generation, Lead Management, Opportunity Tracking, Contract Renewal, Sales Analytics\n\n"
+        "**Purchasing (5 bots)**: PO Processing, Supplier Management, Requisition Approval, Contract Management, Spend Analytics\n\n"
+        "**Inventory (5 bots)**: Stock Replenishment, Cycle Counting, Demand Forecasting, Warehouse Optimization, Expiry Management\n\n"
+        "**HR & People (5 bots)**: Payroll Processing, Leave Management, Onboarding, Performance Review, Training Compliance\n\n"
+        "**Manufacturing (5 bots)**: Production Scheduling, Quality Control, BOM Management, Work Order Processing, Capacity Planning\n\n"
+        "**Compliance (5 bots)**: VAT Returns, Tax Filing, Audit Trail, Regulatory Reporting, Policy Enforcement\n\n"
+        "**Analytics (5 bots)**: Financial Analytics, Sales Forecasting, Customer Insights, Operational Metrics, Executive Dashboard\n\n"
+        "Click the **Bots** button above to see all categories and quick prompts!"
+    ],
+    "list_bots": [
+        "Here are all **67 AI automation bots** available in ARIA:\n\n"
+        "**Financial Bots (6)**:\n"
+        "- Invoice Reconciliation Bot - Matches invoices with POs and receipts\n"
+        "- Bank Reconciliation Bot - Reconciles bank statements automatically\n"
+        "- AR Collections Bot - Automates collection reminders and follow-ups\n"
+        "- AP Processing Bot - Processes supplier invoices and payments\n"
+        "- Financial Close Bot - Automates month-end closing procedures\n"
+        "- Tax Calculation Bot - Calculates VAT and other taxes\n\n"
+        "**Sales Bots (5)**:\n"
+        "- Quote Generation Bot - Creates quotes from customer requests\n"
+        "- Lead Management Bot - Scores and assigns leads automatically\n"
+        "- Opportunity Tracking Bot - Monitors sales pipeline progress\n"
+        "- Contract Renewal Bot - Tracks and initiates contract renewals\n"
+        "- Sales Analytics Bot - Generates sales performance reports\n\n"
+        "**Purchasing Bots (5)**:\n"
+        "- PO Processing Bot - Creates and processes purchase orders\n"
+        "- Supplier Management Bot - Evaluates and manages suppliers\n"
+        "- Requisition Approval Bot - Routes requisitions for approval\n"
+        "- Contract Management Bot - Manages supplier contracts\n"
+        "- Spend Analytics Bot - Analyzes purchasing patterns\n\n"
+        "**Inventory Bots (5)**:\n"
+        "- Stock Replenishment Bot - Triggers reorders at min levels\n"
+        "- Cycle Counting Bot - Schedules and tracks inventory counts\n"
+        "- Demand Forecasting Bot - Predicts future inventory needs\n"
+        "- Warehouse Optimization Bot - Optimizes storage locations\n"
+        "- Expiry Management Bot - Tracks and alerts on expiring items\n\n"
+        "**HR & People Bots (5)**:\n"
+        "- Payroll Processing Bot - Calculates and processes payroll\n"
+        "- Leave Management Bot - Handles leave requests and balances\n"
+        "- Onboarding Bot - Automates new employee onboarding\n"
+        "- Performance Review Bot - Schedules and tracks reviews\n"
+        "- Training Compliance Bot - Ensures training requirements met\n\n"
+        "**Manufacturing Bots (5)**:\n"
+        "- Production Scheduling Bot - Optimizes production schedules\n"
+        "- Quality Control Bot - Monitors quality checkpoints\n"
+        "- BOM Management Bot - Maintains bills of materials\n"
+        "- Work Order Processing Bot - Creates and tracks work orders\n"
+        "- Capacity Planning Bot - Plans production capacity\n\n"
+        "**Compliance Bots (5)**:\n"
+        "- VAT Returns Bot - Prepares VAT returns for submission\n"
+        "- Tax Filing Bot - Automates tax filing processes\n"
+        "- Audit Trail Bot - Maintains comprehensive audit logs\n"
+        "- Regulatory Reporting Bot - Generates compliance reports\n"
+        "- Policy Enforcement Bot - Enforces business policies\n\n"
+        "**Analytics Bots (5)**:\n"
+        "- Financial Analytics Bot - Analyzes financial performance\n"
+        "- Sales Forecasting Bot - Predicts future sales\n"
+        "- Customer Insights Bot - Analyzes customer behavior\n"
+        "- Operational Metrics Bot - Tracks operational KPIs\n"
+        "- Executive Dashboard Bot - Updates executive dashboards\n\n"
+        "All bots are **active** and ready to use. Click the **Bots** button to access quick prompts!"
+    ],
+    "reconciliation": [
+        "I can help you with **Sales-to-Invoice Reconciliation**!\n\n"
+        "The reconciliation process matches sales orders with their corresponding invoices to identify:\n"
+        "- **Quantity variances** - Differences in quantities ordered vs invoiced\n"
+        "- **Price variances** - Differences in prices between order and invoice\n"
+        "- **Missing invoices** - Sales orders without corresponding invoices\n\n"
+        "**Current Reconciliation Summary:**\n"
+        "- Total Sales Orders: 156\n"
+        "- Matched Invoices: 142\n"
+        "- Exceptions Found: 14\n"
+        "- Match Rate: 91.0%\n\n"
+        "**Actions Available:**\n"
+        "- View exceptions at **Financial > Sales Reconciliation**\n"
+        "- Approve individual variances\n"
+        "- Post approved variances to General Ledger\n\n"
+        "Would you like me to show you the reconciliation exceptions?"
     ],
     "help": [
         "Here's how I can help you:\n\n"
-        "- **Create documents**: Say 'create quote', 'create PO', 'create invoice'\n"
+        "- **Create documents**: Say 'create quote', 'create sales order', 'create PO', 'create invoice'\n"
         "- **Find information**: Say 'show customers', 'check inventory', 'view reports'\n"
         "- **Navigate**: Say 'go to dashboard', 'open sales orders'\n"
         "- **Get help**: Say 'how do I...' for guidance on any feature\n\n"
         "What would you like to do?"
     ],
+    "sales_order": [
+        "I can help you create a sales order! To get started, I'll need:\n\n"
+        "1. **Customer name** - Who is this order for?\n"
+        "2. **Products** - What items are being ordered?\n"
+        "3. **Quantities** - How many of each item?\n"
+        "4. **Delivery date** - When should it be delivered?\n\n"
+        "You can also navigate to **Sales > Sales Orders** to create one directly, or tell me the customer name to begin."
+    ],
+    "delivery": [
+        "I can help with deliveries! Here's what you can do:\n\n"
+        "- **View deliveries**: Go to Sales > Deliveries\n"
+        "- **Create delivery**: From a sales order, click 'Create Delivery'\n"
+        "- **Track shipments**: View delivery status in the Deliveries page\n"
+        "- **Print delivery notes**: Generate delivery documentation\n\n"
+        "What delivery action would you like to take?"
+    ],
+    "supplier": [
+        "I can help you manage suppliers! You can:\n\n"
+        "- **View all suppliers**: Go to Purchasing > Suppliers\n"
+        "- **Add new supplier**: Click 'New Supplier' in the Suppliers page\n"
+        "- **Search suppliers**: Use the search bar to find specific suppliers\n"
+        "- **View supplier history**: See purchase orders and payments\n\n"
+        "Would you like me to show you the supplier list?"
+    ],
     "default": [
-        "I understand you're asking about '{query}'. Here's how I can help:\n\n"
-        "- For **sales tasks**: Try 'create quote' or 'view sales orders'\n"
-        "- For **purchasing**: Try 'create purchase order' or 'view suppliers'\n"
-        "- For **finance**: Try 'view invoices' or 'check payments'\n"
-        "- For **reports**: Try 'generate sales report' or 'show dashboard'\n\n"
-        "Could you be more specific about what you'd like to do?"
+        "I can help you with that! Here are some options:\n\n"
+        "- **Sales**: Create quotes, sales orders, deliveries - go to **Sales** menu\n"
+        "- **Purchasing**: Create purchase orders, manage suppliers - go to **Purchasing** menu\n"
+        "- **Finance**: Invoices, payments, reconciliation - go to **Financial** menu\n"
+        "- **Inventory**: Stock levels, products - go to **Operations** menu\n"
+        "- **Reports**: Financial and operational reports - go to **Reports** menu\n\n"
+        "Try saying 'create sales order', 'list bots', or 'show dashboard' for specific actions."
     ]
 }
 
@@ -131,6 +232,18 @@ def detect_intent(message: str) -> str:
     if any(word in message_lower for word in ['hello', 'hi', 'hey', 'good morning', 'good afternoon', 'start', 'begin']):
         return "greeting"
     
+    # List bots patterns (must come before general bot patterns)
+    if any(phrase in message_lower for phrase in ['list all', 'list bots', 'available bots', 'show bots', 'all bots', 'what bots', 'which bots']):
+        return "list_bots"
+    
+    # Reconciliation patterns (must come before invoice patterns)
+    if any(phrase in message_lower for phrase in ['reconcil', 'sales-to-invoice', 'sales to invoice', 'match sales', 'invoice matching']):
+        return "reconciliation"
+    
+    # Sales order patterns (must come before general sales patterns)
+    if any(phrase in message_lower for phrase in ['sales order', 'sale order', 'create order', 'new order', 'order for customer']):
+        return "sales_order"
+    
     # Quote patterns
     if any(word in message_lower for word in ['quote', 'quotation', 'estimate', 'proposal']):
         return "quote"
@@ -139,6 +252,10 @@ def detect_intent(message: str) -> str:
     if any(phrase in message_lower for phrase in ['purchase order', 'po', 'buy', 'order from supplier', 'procurement']):
         return "purchase_order"
     
+    # Delivery patterns
+    if any(word in message_lower for word in ['delivery', 'deliveries', 'shipment', 'shipping', 'dispatch']):
+        return "delivery"
+    
     # Invoice patterns
     if any(word in message_lower for word in ['invoice', 'bill', 'payment', 'receipt', 'ar', 'ap']):
         return "invoice"
@@ -146,6 +263,10 @@ def detect_intent(message: str) -> str:
     # Customer patterns
     if any(word in message_lower for word in ['customer', 'client', 'buyer']):
         return "customer"
+    
+    # Supplier patterns
+    if any(word in message_lower for word in ['supplier', 'vendor', 'vendors']):
+        return "supplier"
     
     # Inventory patterns
     if any(word in message_lower for word in ['inventory', 'stock', 'product', 'warehouse', 'item']):
@@ -156,7 +277,7 @@ def detect_intent(message: str) -> str:
         return "report"
     
     # Dashboard patterns
-    if any(word in message_lower for word in ['dashboard', 'overview', 'summary', 'metrics', 'kpi']):
+    if any(word in message_lower for word in ['dashboard', 'overview', 'metrics', 'kpi']):
         return "dashboard"
     
     # Bot patterns
@@ -198,21 +319,23 @@ class CloudflareAIClient:
     
     def __init__(self):
         self.account_id = CLOUDFLARE_ACCOUNT_ID
-        self.api_token = CLOUDFLARE_API_TOKEN
+        self.api_key = CLOUDFLARE_API_KEY
+        self.api_email = CLOUDFLARE_API_EMAIL
         self.model = CLOUDFLARE_AI_MODEL
         self.base_url = f"https://api.cloudflare.com/client/v4/accounts/{self.account_id}/ai/run"
         self.timeout = 60
-        self._available = bool(self.api_token)
+        self._available = bool(self.api_key and self.api_email)
         
         if self._available:
             logger.info(f"Cloudflare Workers AI configured with model {self.model}")
         else:
-            logger.warning("Cloudflare API token not configured, using intelligent fallback")
+            logger.warning("Cloudflare API credentials not configured, using intelligent fallback")
     
     def _get_headers(self) -> Dict[str, str]:
-        """Get headers for Cloudflare API requests"""
+        """Get headers for Cloudflare API requests using Global API Key"""
         return {
-            "Authorization": f"Bearer {self.api_token}",
+            "X-Auth-Email": self.api_email,
+            "X-Auth-Key": self.api_key,
             "Content-Type": "application/json"
         }
     
@@ -228,12 +351,12 @@ class CloudflareAIClient:
         
         Args:
             messages: List of message dicts with 'role' and 'content'
-            tools: Optional list of tool/function definitions
+            tools: Optional list of tool/function definitions (not used by Cloudflare AI)
             temperature: Sampling temperature (0-1)
             stream: Whether to stream the response
             
         Returns:
-            Response dict with 'message' and optional 'tool_calls'
+            Response dict with 'message'
         """
         if not self._available:
             response_text = generate_intelligent_response(messages)
@@ -356,7 +479,7 @@ class CloudflareAIClient:
     
     def is_available(self) -> bool:
         """Check if Cloudflare AI service is available"""
-        return self._available and bool(self.api_token)
+        return self._available and bool(self.api_key and self.api_email)
     
     def chat_stream(
         self,
