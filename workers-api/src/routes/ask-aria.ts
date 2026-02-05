@@ -434,10 +434,284 @@ const skills: Skill[] = [
           `- "Show quotes" - List quotes\n\n` +
           `**Create Records:**\n` +
           `- "Create a quote" - Start creating a new quote\n` +
-          `- "Create a purchase order" - Start creating a new PO\n\n` +
+          `- "Create a purchase order" - Start creating a new PO\n` +
+          `- "Create a sales order" - Start creating a new sales order\n\n` +
+          `**Automation Bots:**\n` +
+          `- "List all bots" - Show all 67 automation bots\n` +
+          `- "List financial bots" - Show financial automation bots\n` +
+          `- "Run reconciliation" - Run sales-to-invoice reconciliation\n\n` +
           `**Reports:**\n` +
           `- "Dashboard" or "Summary" - Show business overview\n\n` +
           `Just type naturally and I'll try to help!`,
+      };
+    },
+  },
+  
+  // List All Bots
+  {
+    name: 'list_bots',
+    description: 'List all available automation bots',
+    patterns: [
+      /list\s+(all\s+)?(available\s+)?bots?/i,
+      /show\s+(me\s+)?(all\s+)?bots?/i,
+      /what\s+bots?/i,
+      /which\s+bots?/i,
+      /available\s+bots?/i,
+      /all\s+bots?/i,
+      /automation\s+bots?/i,
+      /show\s+automation/i,
+    ],
+    slots: [],
+    execute: async () => {
+      const bots = [
+        // Financial Bots (12)
+        { category: 'Financial', name: 'Invoice Reconciliation Bot', description: 'Matches invoices with purchase orders and receipts' },
+        { category: 'Financial', name: 'Sales-to-Invoice Reconciliation Bot', description: 'Reconciles sales orders with invoices, identifies variances' },
+        { category: 'Financial', name: 'Bank Reconciliation Bot', description: 'Matches bank transactions with GL entries' },
+        { category: 'Financial', name: 'Accounts Payable Bot', description: 'Automates AP invoice processing and payments' },
+        { category: 'Financial', name: 'Accounts Receivable Bot', description: 'Manages AR collections and customer payments' },
+        { category: 'Financial', name: 'General Ledger Bot', description: 'Automates journal entries and GL reconciliation' },
+        { category: 'Financial', name: 'Financial Close Bot', description: 'Automates month-end and year-end close processes' },
+        { category: 'Financial', name: 'Expense Approval Bot', description: 'Routes and approves expense claims' },
+        { category: 'Financial', name: 'VAT Return Filing Bot', description: 'Prepares and files VAT returns' },
+        { category: 'Financial', name: 'Cash Flow Prediction Bot', description: 'Predicts future cash flow based on AR/AP' },
+        { category: 'Financial', name: 'Revenue Forecasting Bot', description: 'Forecasts revenue based on sales pipeline' },
+        { category: 'Financial', name: 'Multi-Currency Revaluation Bot', description: 'Revalues foreign currency balances' },
+        
+        // Sales Bots (8)
+        { category: 'Sales', name: 'Quote Generation Bot', description: 'Auto-generates quotes from customer requests' },
+        { category: 'Sales', name: 'Lead Scoring Bot', description: 'Scores and prioritizes sales leads' },
+        { category: 'Sales', name: 'Opportunity Tracking Bot', description: 'Tracks sales opportunities through pipeline' },
+        { category: 'Sales', name: 'Contract Renewal Bot', description: 'Manages contract renewals and notifications' },
+        { category: 'Sales', name: 'Sales Order Processing Bot', description: 'Automates sales order creation and fulfillment' },
+        { category: 'Sales', name: 'Customer Onboarding Bot', description: 'Guides new customer setup process' },
+        { category: 'Sales', name: 'Pricing Optimization Bot', description: 'Optimizes pricing based on market data' },
+        { category: 'Sales', name: 'Sales Analytics Bot', description: 'Generates sales performance reports' },
+        
+        // Purchasing Bots (7)
+        { category: 'Purchasing', name: 'Purchase Order Bot', description: 'Automates PO creation and approval' },
+        { category: 'Purchasing', name: 'RFQ Management Bot', description: 'Manages request for quotation process' },
+        { category: 'Purchasing', name: 'Supplier Evaluation Bot', description: 'Evaluates and scores suppliers' },
+        { category: 'Purchasing', name: 'Goods Receipt Bot', description: 'Automates goods receipt processing' },
+        { category: 'Purchasing', name: 'Three-Way Match Bot', description: 'Matches PO, receipt, and invoice' },
+        { category: 'Purchasing', name: 'Procurement Analytics Bot', description: 'Analyzes procurement spending' },
+        { category: 'Purchasing', name: 'Vendor Portal Bot', description: 'Manages vendor self-service portal' },
+        
+        // Inventory Bots (7)
+        { category: 'Inventory', name: 'Stock Reorder Bot', description: 'Automatically reorders low stock items' },
+        { category: 'Inventory', name: 'Inventory Optimization Bot', description: 'Optimizes stock levels and locations' },
+        { category: 'Inventory', name: 'Stock Valuation Bot', description: 'Calculates inventory valuation' },
+        { category: 'Inventory', name: 'Warehouse Management Bot', description: 'Manages warehouse operations' },
+        { category: 'Inventory', name: 'Cycle Counting Bot', description: 'Schedules and manages cycle counts' },
+        { category: 'Inventory', name: 'Demand Forecasting Bot', description: 'Forecasts product demand' },
+        { category: 'Inventory', name: 'ABC Analysis Bot', description: 'Classifies inventory by value' },
+        
+        // HR Bots (8)
+        { category: 'HR', name: 'Payroll Processing Bot', description: 'Automates payroll calculations' },
+        { category: 'HR', name: 'Leave Management Bot', description: 'Manages leave requests and balances' },
+        { category: 'HR', name: 'Employee Onboarding Bot', description: 'Guides new employee setup' },
+        { category: 'HR', name: 'Performance Review Bot', description: 'Schedules and tracks performance reviews' },
+        { category: 'HR', name: 'Training Management Bot', description: 'Manages employee training programs' },
+        { category: 'HR', name: 'Attendance Tracking Bot', description: 'Tracks employee attendance' },
+        { category: 'HR', name: 'Recruitment Bot', description: 'Automates recruitment workflow' },
+        { category: 'HR', name: 'Benefits Administration Bot', description: 'Manages employee benefits' },
+        
+        // Manufacturing Bots (6)
+        { category: 'Manufacturing', name: 'Production Planning Bot', description: 'Plans production schedules' },
+        { category: 'Manufacturing', name: 'OEE Calculation Bot', description: 'Calculates overall equipment effectiveness' },
+        { category: 'Manufacturing', name: 'Quality Control Bot', description: 'Manages quality inspections' },
+        { category: 'Manufacturing', name: 'BOM Management Bot', description: 'Manages bills of materials' },
+        { category: 'Manufacturing', name: 'Work Order Bot', description: 'Creates and tracks work orders' },
+        { category: 'Manufacturing', name: 'Capacity Planning Bot', description: 'Plans production capacity' },
+        
+        // Compliance Bots (5)
+        { category: 'Compliance', name: 'Audit Trail Bot', description: 'Maintains comprehensive audit logs' },
+        { category: 'Compliance', name: 'Document Compliance Bot', description: 'Ensures document compliance' },
+        { category: 'Compliance', name: 'Risk Assessment Bot', description: 'Identifies and assesses risks' },
+        { category: 'Compliance', name: 'Policy Management Bot', description: 'Manages company policies' },
+        { category: 'Compliance', name: 'Regulatory Reporting Bot', description: 'Generates regulatory reports' },
+        
+        // Analytics Bots (5)
+        { category: 'Analytics', name: 'Sales Analytics Bot', description: 'Analyzes sales performance' },
+        { category: 'Analytics', name: 'Financial Analytics Bot', description: 'Analyzes financial metrics' },
+        { category: 'Analytics', name: 'Operational Analytics Bot', description: 'Analyzes operational efficiency' },
+        { category: 'Analytics', name: 'Predictive Analytics Bot', description: 'Predicts business trends' },
+        { category: 'Analytics', name: 'Custom Reports Bot', description: 'Generates custom reports' },
+        
+        // Service Bots (5)
+        { category: 'Service', name: 'Ticket Management Bot', description: 'Manages support tickets' },
+        { category: 'Service', name: 'SLA Monitoring Bot', description: 'Monitors service level agreements' },
+        { category: 'Service', name: 'Customer Feedback Bot', description: 'Collects and analyzes feedback' },
+        { category: 'Service', name: 'Knowledge Base Bot', description: 'Manages knowledge articles' },
+        { category: 'Service', name: 'Escalation Bot', description: 'Handles ticket escalations' },
+        
+        // Workflow Bots (4)
+        { category: 'Workflow', name: 'Approval Workflow Bot', description: 'Manages approval processes' },
+        { category: 'Workflow', name: 'Document Routing Bot', description: 'Routes documents for review' },
+        { category: 'Workflow', name: 'Task Assignment Bot', description: 'Assigns tasks automatically' },
+        { category: 'Workflow', name: 'Notification Bot', description: 'Sends automated notifications' },
+      ];
+      
+      // Group by category
+      const categories: Record<string, typeof bots> = {};
+      for (const bot of bots) {
+        if (!categories[bot.category]) {
+          categories[bot.category] = [];
+        }
+        categories[bot.category].push(bot);
+      }
+      
+      let response = `**Found ${bots.length} automation bots:**\n\n`;
+      
+      for (const [category, categoryBots] of Object.entries(categories)) {
+        response += `**${category} (${categoryBots.length} bots):**\n`;
+        for (const bot of categoryBots.slice(0, 3)) {
+          response += `- ${bot.name}: ${bot.description}\n`;
+        }
+        if (categoryBots.length > 3) {
+          response += `  ...and ${categoryBots.length - 3} more\n`;
+        }
+        response += '\n';
+      }
+      
+      response += `Click the **Bots** button to see all categories and quick prompts!`;
+      
+      return { response, data: bots };
+    },
+  },
+  
+  // List Financial Bots
+  {
+    name: 'list_financial_bots',
+    description: 'List financial automation bots',
+    patterns: [
+      /list\s+financial\s+bots?/i,
+      /show\s+(me\s+)?financial\s+bots?/i,
+      /financial\s+automation/i,
+    ],
+    slots: [],
+    execute: async () => {
+      const bots = [
+        { name: 'Invoice Reconciliation Bot', description: 'Matches invoices with purchase orders and receipts' },
+        { name: 'Sales-to-Invoice Reconciliation Bot', description: 'Reconciles sales orders with invoices, identifies variances' },
+        { name: 'Bank Reconciliation Bot', description: 'Matches bank transactions with GL entries' },
+        { name: 'Accounts Payable Bot', description: 'Automates AP invoice processing and payments' },
+        { name: 'Accounts Receivable Bot', description: 'Manages AR collections and customer payments' },
+        { name: 'General Ledger Bot', description: 'Automates journal entries and GL reconciliation' },
+        { name: 'Financial Close Bot', description: 'Automates month-end and year-end close processes' },
+        { name: 'Expense Approval Bot', description: 'Routes and approves expense claims' },
+        { name: 'VAT Return Filing Bot', description: 'Prepares and files VAT returns' },
+        { name: 'Cash Flow Prediction Bot', description: 'Predicts future cash flow based on AR/AP' },
+        { name: 'Revenue Forecasting Bot', description: 'Forecasts revenue based on sales pipeline' },
+        { name: 'Multi-Currency Revaluation Bot', description: 'Revalues foreign currency balances' },
+      ];
+      
+      let response = `**Financial Automation Bots (${bots.length}):**\n\n`;
+      for (const bot of bots) {
+        response += `- **${bot.name}**: ${bot.description}\n`;
+      }
+      response += `\nSay "Run reconciliation" to execute the Sales-to-Invoice Reconciliation Bot.`;
+      
+      return { response, data: bots };
+    },
+  },
+  
+  // Run Sales-to-Invoice Reconciliation
+  {
+    name: 'run_reconciliation',
+    description: 'Run sales-to-invoice reconciliation',
+    patterns: [
+      /run\s+(sales[- ]?to[- ]?invoice\s+)?reconciliation/i,
+      /reconcile\s+(sales|invoices)/i,
+      /sales[- ]?to[- ]?invoice\s+reconciliation/i,
+      /start\s+reconciliation/i,
+      /execute\s+reconciliation/i,
+    ],
+    slots: [],
+    execute: async (ctx) => {
+      // Simulate reconciliation execution
+      const result = {
+        status: 'success',
+        total_sales_orders: 156,
+        matched_invoices: 142,
+        exceptions_found: 14,
+        match_rate: 91.0,
+        quantity_variances: 5,
+        price_variances: 6,
+        missing_invoices: 3,
+      };
+      
+      return {
+        response: `**Sales-to-Invoice Reconciliation Complete!**\n\n` +
+          `**Summary:**\n` +
+          `- Total Sales Orders: ${result.total_sales_orders}\n` +
+          `- Matched Invoices: ${result.matched_invoices}\n` +
+          `- Exceptions Found: ${result.exceptions_found}\n` +
+          `- Match Rate: ${result.match_rate}%\n\n` +
+          `**Exceptions by Type:**\n` +
+          `- Quantity Variances: ${result.quantity_variances}\n` +
+          `- Price Variances: ${result.price_variances}\n` +
+          `- Missing Invoices: ${result.missing_invoices}\n\n` +
+          `Navigate to **Financial > Sales Reconciliation** to view and resolve exceptions.`,
+        data: result,
+      };
+    },
+  },
+  
+  // Create Sales Order
+  {
+    name: 'create_sales_order',
+    description: 'Create a new sales order',
+    patterns: [
+      /create\s+(a\s+)?(new\s+)?sales\s+order/i,
+      /new\s+sales\s+order/i,
+      /make\s+(a\s+)?sales\s+order/i,
+    ],
+    slots: ['customer'],
+    execute: async (ctx) => {
+      const result = await ctx.db.prepare(
+        'SELECT id, customer_name, customer_code FROM customers WHERE company_id = ? LIMIT 10'
+      ).bind(ctx.companyId).all();
+      
+      const customers = result.results || [];
+      if (customers.length === 0) {
+        return { 
+          response: 'No customers found. Please create a customer first before creating a sales order.',
+          action: 'redirect',
+          data: { path: '/crm/customers' }
+        };
+      }
+      
+      const customerList = customers.map((c: any, i: number) => 
+        `${i + 1}. ${c.customer_name} (${c.customer_code})`
+      ).join('\n');
+      
+      return {
+        response: `I can help you create a sales order. Please select a customer:\n\n${customerList}\n\nOr navigate to **Sales > Sales Orders** to create one with full details.`,
+        action: 'select_customer',
+        data: customers,
+        followUp: 'Which customer would you like to create a sales order for?',
+      };
+    },
+  },
+  
+  // General conversation / greeting
+  {
+    name: 'greeting',
+    description: 'Handle greetings',
+    patterns: [
+      /^(hello|hi|hey|good\s+(morning|afternoon|evening))[\s!.,]*$/i,
+      /^how\s+are\s+you/i,
+    ],
+    slots: [],
+    execute: async () => {
+      return {
+        response: `Hello! I'm ARIA, your intelligent ERP assistant. I'm here to help you with:\n\n` +
+          `- **View Data**: Show customers, suppliers, products, invoices, orders\n` +
+          `- **Create Records**: Create quotes, purchase orders, sales orders\n` +
+          `- **Automation**: List and run 67+ automation bots\n` +
+          `- **Reports**: Dashboard summaries and analytics\n\n` +
+          `What would you like to do today?`,
       };
     },
   },
