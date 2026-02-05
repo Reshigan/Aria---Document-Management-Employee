@@ -3,13 +3,65 @@ Ask Aria Orchestrator
 Coordinates conversation flow, LLM calls, and tool execution
 """
 import json
-from typing import Dict, List, Any, Optional
+import re
+from typing import Dict, List, Any, Optional, Tuple
 import logging
 from .ollama_client import ollama_client
 from .conversation_manager import ConversationManager
 from .tools import ERPTools, TOOL_DEFINITIONS
 
 logger = logging.getLogger(__name__)
+
+
+def detect_bot_intent(message: str) -> Tuple[Optional[str], Optional[Dict[str, Any]]]:
+    """
+    Detect if the user message is a bot-related command that should be handled directly.
+    Returns (tool_name, tool_args) if a bot command is detected, otherwise (None, None).
+    """
+    message_lower = message.lower().strip()
+    
+    # List bots patterns
+    if any(phrase in message_lower for phrase in [
+        'list all available bots', 'list available bots', 'list bots', 'show bots',
+        'what bots', 'which bots', 'available bots', 'all bots', 'show me bots',
+        'list all bots', 'what automation', 'show automation'
+    ]):
+        # Check for category filter
+        category = None
+        for cat in ['financial', 'sales', 'purchasing', 'inventory', 'hr', 'manufacturing', 'compliance', 'analytics', 'documents', 'integration', 'service', 'workflow']:
+            if cat in message_lower:
+                category = cat
+                break
+        return ('list_available_bots', {'category': category})
+    
+    # Run reconciliation patterns
+    if any(phrase in message_lower for phrase in [
+        'run reconciliation', 'run invoice reconciliation', 'run sales reconciliation',
+        'sales-to-invoice reconciliation', 'sales to invoice reconciliation',
+        'reconcile sales', 'reconcile invoices', 'start reconciliation'
+    ]):
+        return ('run_sales_invoice_reconciliation', {})
+    
+    # Get reconciliation summary patterns
+    if any(phrase in message_lower for phrase in [
+        'reconciliation summary', 'reconciliation status', 'reconciliation results',
+        'show reconciliation', 'get reconciliation'
+    ]):
+        return ('get_reconciliation_summary', {})
+    
+    # Execute specific bot patterns
+    bot_execute_match = re.search(r'(?:run|execute|start|trigger)\s+(?:the\s+)?(\w+(?:\s+\w+)*)\s+bot', message_lower)
+    if bot_execute_match:
+        bot_name = bot_execute_match.group(1).replace(' ', '_')
+        return ('execute_bot', {'bot_id': bot_name})
+    
+    # Get bot status patterns
+    bot_status_match = re.search(r'(?:status|check)\s+(?:of\s+)?(?:the\s+)?(\w+(?:\s+\w+)*)\s+bot', message_lower)
+    if bot_status_match:
+        bot_name = bot_status_match.group(1).replace(' ', '_')
+        return ('get_bot_status', {'bot_id': bot_name})
+    
+    return (None, None)
 
 
 class AskAriaOrchestrator:
@@ -75,6 +127,28 @@ Always confirm with the user before finalizing any document or posting to the ge
                 role="user",
                 content=user_message
             )
+            
+            # Check for bot-related commands that should be handled directly
+            tool_name, tool_args = detect_bot_intent(user_message)
+            if tool_name:
+                logger.info(f"Detected bot intent: {tool_name} with args: {tool_args}")
+                tool_args = tool_args or {}
+                tool_args["company_id"] = company_id
+                
+                try:
+                    tool_result = self._execute_tool(tool_name, tool_args)
+                    response = self._format_bot_response(tool_name, tool_result)
+                    
+                    self.conversation_manager.add_message(
+                        conversation_id,
+                        role="assistant",
+                        content=response
+                    )
+                    
+                    return response
+                except Exception as e:
+                    logger.error(f"Bot tool execution failed: {str(e)}")
+                    # Fall through to LLM if tool execution fails
             
             messages = self._build_message_history(conversation_id)
             
@@ -196,6 +270,114 @@ Always confirm with the user before finalizing any document or posting to the ge
             return tool_result
         
         return tool_result
+    
+    def _format_bot_response(self, tool_name: str, tool_result: Any) -> str:
+        """Format bot tool results as a human-readable response"""
+        
+        if tool_name == "list_available_bots":
+            bots = tool_result if isinstance(tool_result, list) else []
+            if not bots:
+                return "No bots found matching your criteria."
+            
+            # Group bots by category
+            categories = {}
+            for bot in bots:
+                cat = bot.get("category", "other")
+                if cat not in categories:
+                    categories[cat] = []
+                categories[cat].append(bot)
+            
+            response = f"**Found {len(bots)} automation bots:**\n\n"
+            
+            category_names = {
+                "financial": "Financial",
+                "sales": "Sales & CRM",
+                "purchasing": "Purchasing & Procurement",
+                "inventory": "Inventory & Warehouse",
+                "hr": "HR & Payroll",
+                "manufacturing": "Manufacturing",
+                "documents": "Document Management",
+                "compliance": "Compliance & Audit",
+                "integration": "Integration",
+                "analytics": "Analytics",
+                "service": "Service & Support",
+                "workflow": "Workflow & Automation"
+            }
+            
+            for cat, cat_bots in categories.items():
+                cat_name = category_names.get(cat, cat.title())
+                response += f"**{cat_name} ({len(cat_bots)} bots):**\n"
+                for bot in cat_bots[:5]:  # Show first 5 per category
+                    response += f"- {bot['name']}: {bot['description']}\n"
+                if len(cat_bots) > 5:
+                    response += f"  ...and {len(cat_bots) - 5} more\n"
+                response += "\n"
+            
+            response += "Click the **Bots** button to see all categories and quick prompts!"
+            return response
+        
+        elif tool_name == "run_sales_invoice_reconciliation":
+            result = tool_result if isinstance(tool_result, dict) else {}
+            status = result.get("status", "unknown")
+            
+            if status == "success":
+                data = result.get("result", {})
+                return f"""**Sales-to-Invoice Reconciliation Complete!**
+
+**Summary:**
+- Total Sales Orders: {data.get('total_sales_orders', 0)}
+- Matched Invoices: {data.get('matched_invoices', 0)}
+- Exceptions Found: {data.get('exceptions_found', 0)}
+- Match Rate: {data.get('match_rate', 0):.1f}%
+
+**Exceptions by Type:**
+- Quantity Variances: {data.get('quantity_variances', 0)}
+- Price Variances: {data.get('price_variances', 0)}
+- Missing Invoices: {data.get('missing_invoices', 0)}
+
+Navigate to **Financial > Sales Reconciliation** to view and resolve exceptions."""
+            else:
+                return f"Reconciliation encountered an issue: {result.get('error', 'Unknown error')}"
+        
+        elif tool_name == "get_reconciliation_summary":
+            result = tool_result if isinstance(tool_result, dict) else {}
+            return f"""**Reconciliation Summary:**
+
+- Total Sales Orders: {result.get('total_sales_orders', 0)}
+- Matched Invoices: {result.get('matched_invoices', 0)}
+- Pending Exceptions: {result.get('pending_exceptions', 0)}
+- Match Rate: {result.get('match_rate', 0):.1f}%
+
+Navigate to **Financial > Sales Reconciliation** to view details."""
+        
+        elif tool_name == "execute_bot":
+            result = tool_result if isinstance(tool_result, dict) else {}
+            status = result.get("status", "unknown")
+            bot_name = result.get("bot_name", result.get("bot_id", "Bot"))
+            
+            if status == "success":
+                exec_result = result.get("result", {})
+                return f"""**{bot_name} Executed Successfully!**
+
+**Results:**
+- Processed Items: {exec_result.get('processed_items', 0)}
+- Successful: {exec_result.get('success_count', 0)}
+- Errors: {exec_result.get('error_count', 0)}
+- Execution Time: {exec_result.get('execution_time_seconds', 0):.1f}s"""
+            else:
+                return f"Bot execution failed: {result.get('error', 'Unknown error')}"
+        
+        elif tool_name == "get_bot_status":
+            result = tool_result if isinstance(tool_result, dict) else {}
+            return f"""**Bot Status: {result.get('bot_id', 'Unknown')}**
+
+- Status: {result.get('status', 'unknown').title()}
+- Last Execution: {result.get('last_execution', 'Never')}
+- Success Rate: {result.get('success_rate', 0):.1f}%
+- Executions Today: {result.get('total_executions_today', 0)}"""
+        
+        # Default: return JSON representation
+        return f"Tool result: {json.dumps(tool_result, indent=2, default=str)}"
     
     def _execute_tool(self, tool_name: str, tool_args: Dict[str, Any]) -> Any:
         """Execute a tool by name"""
