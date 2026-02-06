@@ -828,11 +828,11 @@ const skills: Skill[] = [
           totalNet += netSalary;
         }
         
-        // Insert using actual table columns: id, company_id, payroll_period, run_date, status, total_gross, total_deductions, total_net, employee_count, created_by
+        // Insert using actual table columns - created_by is nullable, so we use NULL to avoid FK constraint issues with anonymous users
         await ctx.db.prepare(`
-          INSERT INTO payroll_runs (id, company_id, payroll_period, run_date, status, total_gross, total_deductions, total_net, employee_count, created_by, created_at)
-          VALUES (?, ?, ?, date('now'), 'completed', ?, ?, ?, ?, ?, datetime('now'))
-        `).bind(payrollId, ctx.companyId, currentMonth, totalGross, totalGross - totalNet, totalNet, employees.results.length, ctx.userId).run();
+          INSERT INTO payroll_runs (id, company_id, payroll_period, run_date, status, total_gross, total_deductions, total_net, employee_count, created_at)
+          VALUES (?, ?, ?, date('now'), 'completed', ?, ?, ?, ?, datetime('now'))
+        `).bind(payrollId, ctx.companyId, currentMonth, totalGross, totalGross - totalNet, totalNet, employees.results.length).run();
 
         return {
           response: `**Payroll Processed Successfully!**\n\n` +
