@@ -178,22 +178,59 @@ async function seedMasterData(
     }
   }
 
-  // Seed 20 employees per month
+  // First, ensure departments exist for this company
+  const departmentNames = ['Sales', 'Finance', 'Operations', 'HR', 'IT', 'Manufacturing', 'Procurement'];
+  const departmentIds: Record<string, string> = {};
+  
+  for (const deptName of departmentNames) {
+    const deptCode = deptName.toUpperCase().substring(0, 10);
+    // Check if department exists
+    const existing = await db.prepare(
+      'SELECT id FROM departments WHERE company_id = ? AND department_name = ?'
+    ).bind(companyId, deptName).first();
+    
+    if (existing) {
+      departmentIds[deptName] = (existing as any).id;
+    } else {
+      // Create department
+      const deptId = generateUUID();
+      try {
+        await db.prepare(`
+          INSERT INTO departments (id, company_id, department_code, department_name, is_active, created_at, updated_at)
+          VALUES (?, ?, ?, ?, 1, ?, ?)
+        `).bind(deptId, companyId, deptCode, deptName, getDateForMonth(year, month), getDateForMonth(year, month)).run();
+        departmentIds[deptName] = deptId;
+        count++;
+      } catch (e) {
+        // Department might already exist
+      }
+    }
+  }
+
+  // Seed 20 employees per month with proper department_id and job_title
+  const jobTitles = ['Manager', 'Analyst', 'Specialist', 'Coordinator', 'Director', 'Associate', 'Consultant'];
+  const jobLevels = ['Senior', 'Junior', 'Lead', 'Principal', ''];
+  const employmentTypes = ['permanent', 'contract', 'temporary'];
+  
   for (let i = 0; i < 20; i++) {
     const id = generateUUID();
     const person = generatePersonName();
     const code = `EMP-${year}${String(month).padStart(2, '0')}-${String(i + 1).padStart(4, '0')}`;
-    const departments = ['Sales', 'Finance', 'Operations', 'HR', 'IT', 'Manufacturing', 'Procurement'];
+    const deptName = randomElement(departmentNames);
+    const departmentId = departmentIds[deptName] || null;
+    const jobTitle = `${randomElement(jobLevels)} ${randomElement(jobTitles)}`.trim();
+    const employmentType = randomElement(employmentTypes);
+    const basicSalary = randomFloat(15000, 150000);
     
     try {
       await db.prepare(`
-        INSERT INTO employees (id, company_id, employee_code, first_name, last_name, email, phone, department, position, hire_date, salary, is_active, created_at)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?)
+        INSERT INTO employees (id, company_id, employee_code, first_name, last_name, email, phone, department_id, job_title, employment_type, hire_date, basic_salary, is_active, created_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?)
       `).bind(
         id, companyId, code, person.first, person.last,
         generateEmail(person.full, 'company.co.za'), generatePhone(),
-        randomElement(departments), `${randomElement(['Senior', 'Junior', 'Lead', ''])} ${randomElement(['Manager', 'Analyst', 'Specialist', 'Coordinator'])}`.trim(),
-        getDateForMonth(year, month), randomFloat(15000, 150000),
+        departmentId, jobTitle, employmentType,
+        getDateForMonth(year, month), basicSalary,
         getDateForMonth(year, month)
       ).run();
       employees.push(id);

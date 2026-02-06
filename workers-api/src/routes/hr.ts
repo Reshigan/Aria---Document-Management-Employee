@@ -61,8 +61,10 @@ app.get('/employees', async (c) => {
       email: emp.email,
       phone: emp.phone,
       department: emp.department_name || emp.department_id,
-      position: emp.position,
+      position: emp.job_title || emp.position,
       employment_type: emp.employment_type || 'PERMANENT',
+      salary: emp.basic_salary || 0,
+      basic_salary: emp.basic_salary || 0,
       hire_date: emp.hire_date,
       is_active: emp.is_active === 1,
       created_at: emp.created_at
