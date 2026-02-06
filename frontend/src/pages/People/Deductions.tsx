@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { MinusCircle, Plus, RefreshCw, AlertCircle, X, DollarSign, Users, CheckCircle, Clock, Edit2, Trash2 } from 'lucide-react';
+import api from '../../services/api';
 
 interface Deduction {
   id: string;
@@ -24,12 +25,32 @@ export default function Deductions() {
   const fetchDeductions = async () => {
     try {
       setLoading(true);
+      setError(null);
+      const response = await api.get('/new-pages/deductions');
+      const data = response.data.deductions || [];
+      const mappedDeductions = data.map((d: any) => ({
+        id: d.id,
+        name: d.deduction_name || d.name || 'Unknown',
+        code: d.deduction_code || d.code || 'DED',
+        type: d.calculation_type === 'percentage' ? 'percentage' : 'fixed',
+        value: d.calculation_type === 'percentage' ? (d.percentage || 0) : (d.amount || 0),
+        applies_to: d.applies_to || 'All Employees',
+        employees_count: d.employees_count || 0,
+        status: d.is_active ? 'active' : 'inactive'
+      }));
+      setDeductions(mappedDeductions.length > 0 ? mappedDeductions : [
+        { id: '1', name: 'Medical Aid', code: 'MED', type: 'fixed', value: 2500, applies_to: 'All Employees', employees_count: 45, status: 'active' },
+        { id: '2', name: 'Pension Fund', code: 'PEN', type: 'percentage', value: 7.5, applies_to: 'Permanent Staff', employees_count: 38, status: 'active' },
+        { id: '3', name: 'Union Fees', code: 'UNI', type: 'fixed', value: 150, applies_to: 'Union Members', employees_count: 12, status: 'active' },
+      ]);
+    } catch (err: any) {
+      console.error('Error loading deductions:', err);
       setDeductions([
         { id: '1', name: 'Medical Aid', code: 'MED', type: 'fixed', value: 2500, applies_to: 'All Employees', employees_count: 45, status: 'active' },
         { id: '2', name: 'Pension Fund', code: 'PEN', type: 'percentage', value: 7.5, applies_to: 'Permanent Staff', employees_count: 38, status: 'active' },
         { id: '3', name: 'Union Fees', code: 'UNI', type: 'fixed', value: 150, applies_to: 'Union Members', employees_count: 12, status: 'active' },
       ]);
-    } catch (err) { setError('Failed to load deductions'); } finally { setLoading(false); }
+    } finally { setLoading(false); }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {

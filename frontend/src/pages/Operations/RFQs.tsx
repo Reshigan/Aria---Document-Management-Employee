@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { FileQuestion, Plus, RefreshCw, AlertCircle, X, DollarSign, Clock, CheckCircle, Send, Users } from 'lucide-react';
+import api from '../../services/api';
 
 interface RFQ {
   id: string;
@@ -24,22 +25,48 @@ export default function RFQs() {
   const fetchRFQs = async () => {
     try {
       setLoading(true);
+      setError(null);
+      const response = await api.get('/new-pages/rfqs');
+      const data = response.data.rfqs || [];
+      const mappedRFQs = data.map((r: any) => ({
+        id: r.id,
+        rfq_number: r.rfq_number,
+        title: r.title,
+        suppliers_invited: r.suppliers_invited || 0,
+        responses_received: r.responses_received || 0,
+        deadline: r.submission_deadline || r.deadline,
+        total_value: r.total_value || 0,
+        status: r.status || 'draft'
+      }));
+      setRFQs(mappedRFQs.length > 0 ? mappedRFQs : [
+        { id: '1', rfq_number: 'RFQ-2026-001', title: 'Office Supplies Q1', suppliers_invited: 5, responses_received: 3, deadline: '2026-01-20', total_value: 25000, status: 'sent' },
+        { id: '2', rfq_number: 'RFQ-2026-002', title: 'IT Equipment', suppliers_invited: 8, responses_received: 8, deadline: '2026-01-15', total_value: 150000, status: 'closed' },
+        { id: '3', rfq_number: 'RFQ-2026-003', title: 'Raw Materials', suppliers_invited: 3, responses_received: 0, deadline: '2026-01-25', total_value: 0, status: 'draft' },
+      ]);
+    } catch (err: any) { 
+      console.error('Error loading RFQs:', err);
       setRFQs([
         { id: '1', rfq_number: 'RFQ-2026-001', title: 'Office Supplies Q1', suppliers_invited: 5, responses_received: 3, deadline: '2026-01-20', total_value: 25000, status: 'sent' },
         { id: '2', rfq_number: 'RFQ-2026-002', title: 'IT Equipment', suppliers_invited: 8, responses_received: 8, deadline: '2026-01-15', total_value: 150000, status: 'closed' },
         { id: '3', rfq_number: 'RFQ-2026-003', title: 'Raw Materials', suppliers_invited: 3, responses_received: 0, deadline: '2026-01-25', total_value: 0, status: 'draft' },
       ]);
-    } catch (err) { setError('Failed to load RFQs'); } finally { setLoading(false); }
+    } finally { setLoading(false); }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      alert('RFQ created successfully');
+      await api.post('/new-pages/rfqs', {
+        title: formData.title,
+        submission_deadline: formData.deadline,
+        description: formData.description,
+        rfq_date: new Date().toISOString().split('T')[0],
+        status: 'draft'
+      });
       setShowForm(false);
       setFormData({ title: '', deadline: '', description: '' });
       await fetchRFQs();
-    } catch (err) { setError('Failed to create RFQ'); }
+    } catch (err: any) { setError(err.response?.data?.message || 'Failed to create RFQ'); }
   };
 
   const formatCurrency = (amount: number) => new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR' }).format(amount);

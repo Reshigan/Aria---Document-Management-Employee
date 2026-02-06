@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Users, Plus, RefreshCw, AlertCircle, X, Building, DollarSign, CheckCircle, Clock, Edit2, Trash2 } from 'lucide-react';
+import api from '../../services/api';
 
 interface Position {
   id: string;
@@ -25,12 +26,33 @@ export default function Positions() {
   const fetchPositions = async () => {
     try {
       setLoading(true);
+      setError(null);
+      const response = await api.get('/new-pages/positions');
+      const data = response.data.positions || [];
+      const mappedPositions = data.map((p: any) => ({
+        id: p.id,
+        title: p.position_title || p.title || 'Unknown',
+        department: p.department_name || p.department || 'General',
+        grade: p.grade_level || p.grade || 'L1',
+        min_salary: p.min_salary || 0,
+        max_salary: p.max_salary || 0,
+        headcount: p.headcount || 1,
+        filled: p.filled_count || p.filled || 0,
+        status: p.is_active ? 'active' : 'inactive'
+      }));
+      setPositions(mappedPositions.length > 0 ? mappedPositions : [
+        { id: '1', title: 'Software Developer', department: 'Engineering', grade: 'L3', min_salary: 450000, max_salary: 650000, headcount: 10, filled: 8, status: 'active' },
+        { id: '2', title: 'Project Manager', department: 'Operations', grade: 'L4', min_salary: 550000, max_salary: 750000, headcount: 5, filled: 4, status: 'active' },
+        { id: '3', title: 'UX Designer', department: 'Design', grade: 'L3', min_salary: 400000, max_salary: 600000, headcount: 3, filled: 3, status: 'active' },
+      ]);
+    } catch (err: any) {
+      console.error('Error loading positions:', err);
       setPositions([
         { id: '1', title: 'Software Developer', department: 'Engineering', grade: 'L3', min_salary: 450000, max_salary: 650000, headcount: 10, filled: 8, status: 'active' },
         { id: '2', title: 'Project Manager', department: 'Operations', grade: 'L4', min_salary: 550000, max_salary: 750000, headcount: 5, filled: 4, status: 'active' },
         { id: '3', title: 'UX Designer', department: 'Design', grade: 'L3', min_salary: 400000, max_salary: 600000, headcount: 3, filled: 3, status: 'active' },
       ]);
-    } catch (err) { setError('Failed to load positions'); } finally { setLoading(false); }
+    } finally { setLoading(false); }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {

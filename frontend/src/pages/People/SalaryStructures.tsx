@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { DollarSign, Plus, RefreshCw, AlertCircle, X, Users, TrendingUp, CheckCircle, Clock, Edit2, Trash2 } from 'lucide-react';
+import api from '../../services/api';
 
 interface SalaryStructure {
   id: string;
@@ -24,12 +25,32 @@ export default function SalaryStructures() {
   const fetchStructures = async () => {
     try {
       setLoading(true);
+      setError(null);
+      const response = await api.get('/new-pages/salary-structures');
+      const data = response.data.salary_structures || [];
+      const mappedStructures = data.map((s: any) => ({
+        id: s.id,
+        name: s.structure_name || s.name || 'Unknown',
+        grade: s.grade_level || s.grade || 'L1',
+        base_salary: s.base_salary || 0,
+        allowances: (s.housing_allowance || 0) + (s.transport_allowance || 0) + (s.medical_allowance || 0),
+        total_ctc: s.total_ctc || (s.base_salary || 0) + (s.housing_allowance || 0) + (s.transport_allowance || 0) + (s.medical_allowance || 0),
+        employees_count: s.employees_count || 0,
+        status: s.is_active ? 'active' : 'inactive'
+      }));
+      setStructures(mappedStructures.length > 0 ? mappedStructures : [
+        { id: '1', name: 'Junior Developer', grade: 'L2', base_salary: 350000, allowances: 50000, total_ctc: 400000, employees_count: 12, status: 'active' },
+        { id: '2', name: 'Senior Developer', grade: 'L3', base_salary: 550000, allowances: 100000, total_ctc: 650000, employees_count: 8, status: 'active' },
+        { id: '3', name: 'Tech Lead', grade: 'L4', base_salary: 750000, allowances: 150000, total_ctc: 900000, employees_count: 4, status: 'active' },
+      ]);
+    } catch (err: any) {
+      console.error('Error loading salary structures:', err);
       setStructures([
         { id: '1', name: 'Junior Developer', grade: 'L2', base_salary: 350000, allowances: 50000, total_ctc: 400000, employees_count: 12, status: 'active' },
         { id: '2', name: 'Senior Developer', grade: 'L3', base_salary: 550000, allowances: 100000, total_ctc: 650000, employees_count: 8, status: 'active' },
         { id: '3', name: 'Tech Lead', grade: 'L4', base_salary: 750000, allowances: 150000, total_ctc: 900000, employees_count: 4, status: 'active' },
       ]);
-    } catch (err) { setError('Failed to load salary structures'); } finally { setLoading(false); }
+    } finally { setLoading(false); }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {

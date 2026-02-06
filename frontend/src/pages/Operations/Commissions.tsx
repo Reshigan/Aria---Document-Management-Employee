@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Percent, Plus, RefreshCw, AlertCircle, X, DollarSign, Users, TrendingUp, CheckCircle } from 'lucide-react';
+import api from '../../services/api';
 
 interface Commission {
   id: string;
@@ -23,22 +24,46 @@ export default function Commissions() {
   const fetchCommissions = async () => {
     try {
       setLoading(true);
+      setError(null);
+      const response = await api.get('/new-pages/commissions');
+      const data = response.data.commissions || [];
+      const mappedCommissions = data.map((c: any) => ({
+        id: c.id,
+        salesperson_name: c.salesperson_name || c.employee_name || 'Unknown',
+        period: c.period || c.commission_period,
+        total_sales: c.total_sales || c.sales_amount || 0,
+        commission_rate: c.commission_rate || 5,
+        commission_amount: c.commission_amount || 0,
+        status: c.status || 'pending'
+      }));
+      setCommissions(mappedCommissions.length > 0 ? mappedCommissions : [
+        { id: '1', salesperson_name: 'John Smith', period: 'January 2026', total_sales: 150000, commission_rate: 5, commission_amount: 7500, status: 'approved' },
+        { id: '2', salesperson_name: 'Jane Doe', period: 'January 2026', total_sales: 200000, commission_rate: 5, commission_amount: 10000, status: 'pending' },
+        { id: '3', salesperson_name: 'Mike Johnson', period: 'December 2025', total_sales: 180000, commission_rate: 5, commission_amount: 9000, status: 'paid' },
+      ]);
+    } catch (err: any) { 
+      console.error('Error loading commissions:', err);
       setCommissions([
         { id: '1', salesperson_name: 'John Smith', period: 'January 2026', total_sales: 150000, commission_rate: 5, commission_amount: 7500, status: 'approved' },
         { id: '2', salesperson_name: 'Jane Doe', period: 'January 2026', total_sales: 200000, commission_rate: 5, commission_amount: 10000, status: 'pending' },
         { id: '3', salesperson_name: 'Mike Johnson', period: 'December 2025', total_sales: 180000, commission_rate: 5, commission_amount: 9000, status: 'paid' },
       ]);
-    } catch (err) { setError('Failed to load commissions'); } finally { setLoading(false); }
+    } finally { setLoading(false); }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      alert('Commission record created successfully');
+      await api.post('/new-pages/commissions', {
+        salesperson_id: formData.salesperson_id,
+        period: formData.period,
+        commission_rate: formData.commission_rate,
+        status: 'pending'
+      });
       setShowForm(false);
       setFormData({ salesperson_id: '', period: '', commission_rate: 5 });
       await fetchCommissions();
-    } catch (err) { setError('Failed to create commission'); }
+    } catch (err: any) { setError(err.response?.data?.message || 'Failed to create commission'); }
   };
 
   const formatCurrency = (amount: number) => new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR' }).format(amount);

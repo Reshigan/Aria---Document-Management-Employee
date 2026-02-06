@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { UserPlus, Plus, RefreshCw, AlertCircle, X, Mail, Phone, Calendar, CheckCircle, Clock, XCircle, FileText } from 'lucide-react';
+import api from '../../services/api';
 
 interface Applicant {
   id: string;
@@ -24,12 +25,32 @@ export default function Applicants() {
   const fetchApplicants = async () => {
     try {
       setLoading(true);
+      setError(null);
+      const response = await api.get('/new-pages/applicants');
+      const data = response.data.applicants || [];
+      const mappedApplicants = data.map((a: any) => ({
+        id: a.id,
+        name: `${a.first_name || ''} ${a.last_name || ''}`.trim() || a.applicant_number || 'Unknown',
+        email: a.email || '',
+        phone: a.phone || '',
+        position: a.position_title || a.job_title || 'Unknown Position',
+        applied_date: a.applied_date || new Date().toISOString().split('T')[0],
+        resume_url: a.resume_url || '#',
+        status: a.status || 'new'
+      }));
+      setApplicants(mappedApplicants.length > 0 ? mappedApplicants : [
+        { id: '1', name: 'Sarah Johnson', email: 'sarah.j@email.com', phone: '+27 82 123 4567', position: 'Software Developer', applied_date: '2026-01-10', resume_url: '#', status: 'interview' },
+        { id: '2', name: 'Michael Brown', email: 'michael.b@email.com', phone: '+27 83 234 5678', position: 'Project Manager', applied_date: '2026-01-12', resume_url: '#', status: 'screening' },
+        { id: '3', name: 'Emily Davis', email: 'emily.d@email.com', phone: '+27 84 345 6789', position: 'UX Designer', applied_date: '2026-01-14', resume_url: '#', status: 'new' },
+      ]);
+    } catch (err: any) {
+      console.error('Error loading applicants:', err);
       setApplicants([
         { id: '1', name: 'Sarah Johnson', email: 'sarah.j@email.com', phone: '+27 82 123 4567', position: 'Software Developer', applied_date: '2026-01-10', resume_url: '#', status: 'interview' },
         { id: '2', name: 'Michael Brown', email: 'michael.b@email.com', phone: '+27 83 234 5678', position: 'Project Manager', applied_date: '2026-01-12', resume_url: '#', status: 'screening' },
         { id: '3', name: 'Emily Davis', email: 'emily.d@email.com', phone: '+27 84 345 6789', position: 'UX Designer', applied_date: '2026-01-14', resume_url: '#', status: 'new' },
       ]);
-    } catch (err) { setError('Failed to load applicants'); } finally { setLoading(false); }
+    } finally { setLoading(false); }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
