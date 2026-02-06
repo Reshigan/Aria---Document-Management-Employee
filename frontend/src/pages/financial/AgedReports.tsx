@@ -29,7 +29,8 @@ export default function AgedReportsPage() {
   const fetchAgedReports = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`/api/reports/aged?as_of_date=${asOfDate}`);
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
+      const response = await fetch(`${API_BASE}/api/reports/aged?as_of_date=${asOfDate}`, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } });
       if (!response.ok) throw new Error('Failed to fetch');
       const result = await response.json();
       setData(result);
@@ -65,7 +66,8 @@ export default function AgedReportsPage() {
 
   const handleExport = async (type: string) => {
     try {
-      const response = await fetch(`/api/reports/aged/export?type=${type}&as_of_date=${asOfDate}&format=csv`);
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
+      const response = await fetch(`${API_BASE}/api/reports/aged/export?type=${type}&as_of_date=${asOfDate}&format=csv`, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } });
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');

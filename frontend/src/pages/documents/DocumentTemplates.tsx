@@ -25,7 +25,8 @@ export default function DocumentTemplatesPage() {
   const fetchTemplates = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/documents/templates');
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
+      const response = await fetch(`${API_BASE}/api/documents/templates`, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } });
       if (!response.ok) throw new Error('Failed to fetch');
       const result = await response.json();
       setCategories(result);

@@ -39,7 +39,8 @@ export default function CashFlowStatementPage() {
   const fetchCashFlow = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`/api/reports/cash-flow?start_date=${startDate}&end_date=${endDate}`);
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
+      const response = await fetch(`${API_BASE}/api/reports/cash-flow?start_date=${startDate}&end_date=${endDate}`, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } });
       if (!response.ok) throw new Error('Failed to fetch');
       const result = await response.json();
       setData(result);
@@ -91,7 +92,8 @@ export default function CashFlowStatementPage() {
 
   const handleExport = async () => {
     try {
-      const response = await fetch(`/api/reports/cash-flow/export?start_date=${startDate}&end_date=${endDate}&format=pdf`);
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
+      const response = await fetch(`${API_BASE}/api/reports/cash-flow/export?start_date=${startDate}&end_date=${endDate}&format=pdf`, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } });
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');

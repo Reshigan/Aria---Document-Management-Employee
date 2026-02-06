@@ -28,9 +28,11 @@ export default function WorkflowManagementPage() {
   const fetchWorkflows = async () => {
     setLoading(true);
     try {
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
+      const headers = { 'Authorization': `Bearer ${localStorage.getItem('token')}` };
       const [instancesRes, typesRes] = await Promise.all([
-        fetch('/api/workflows/instances'),
-        fetch('/api/workflows/types')
+        fetch(`${API_BASE}/api/workflows/instances`, { headers }),
+        fetch(`${API_BASE}/api/workflows/types`, { headers })
       ]);
       if (instancesRes.ok) setWorkflows(await instancesRes.json());
       if (typesRes.ok) setWorkflowTypes(await typesRes.json());
@@ -57,9 +59,10 @@ export default function WorkflowManagementPage() {
 
   const handleStartWorkflow = async (typeId: string) => {
     try {
-      await fetch('/api/workflows/start', {
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
+      await fetch(`${API_BASE}/api/workflows/start`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` },
         body: JSON.stringify({ type_id: typeId })
       });
       setShowStartModal(false);
