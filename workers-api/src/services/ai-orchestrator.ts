@@ -160,13 +160,25 @@ Examples:
 }
 
 /**
- * Use Cloudflare Workers AI to classify intent
+ * Use hybrid approach: rule-based first for known commands, then AI for complex queries
+ * This ensures reliable bot execution while still supporting natural language
  */
 export async function classifyIntent(
   message: string,
   conversationHistory: Array<{role: string, content: string}>,
   env: Env
 ): Promise<IntentClassification> {
+  // STEP 1: Try rule-based classification FIRST for known commands
+  // This is faster and more reliable for common bot commands
+  const ruleBasedResult = enhancedRuleBasedClassification(message);
+  
+  // If rule-based found a high-confidence match, use it immediately
+  if (ruleBasedResult.confidence >= 0.7) {
+    console.log(`Rule-based match: ${ruleBasedResult.intent} (confidence: ${ruleBasedResult.confidence})`);
+    return ruleBasedResult;
+  }
+  
+  // STEP 2: Try AI classification for complex/ambiguous queries
   try {
     const systemPrompt = buildSystemPrompt();
     
@@ -191,7 +203,7 @@ export async function classifyIntent(
     if (jsonMatch) {
       try {
         const parsed = JSON.parse(jsonMatch[0]);
-        return {
+        const aiResult = {
           intent: parsed.intent || 'unknown',
           confidence: parsed.confidence || 0.5,
           bot_id: parsed.bot_id || null,
@@ -199,25 +211,208 @@ export async function classifyIntent(
           requires_confirmation: false, // Always autonomous
           response: parsed.response || 'Processing your request...',
         };
+        
+        // If AI found a valid intent, use it
+        if (aiResult.intent !== 'unknown' && aiResult.confidence > 0.4) {
+          console.log(`AI match: ${aiResult.intent} (confidence: ${aiResult.confidence})`);
+          return aiResult;
+        }
       } catch (e) {
-        // JSON parsing failed, use fallback
+        console.error('JSON parsing failed:', e);
       }
     }
 
-    // Fallback: try to understand the response
+    // STEP 3: If AI didn't find anything useful, return rule-based result (even if low confidence)
+    // This ensures we always try to do something helpful
+    if (ruleBasedResult.intent !== 'unknown') {
+      console.log(`Falling back to rule-based: ${ruleBasedResult.intent}`);
+      return ruleBasedResult;
+    }
+    
+    // Last resort: return unknown with AI response
     return {
       intent: 'unknown',
       confidence: 0.3,
       bot_id: null,
       parameters: {},
       requires_confirmation: false,
-      response: aiResponse || "I'm not sure what you'd like me to do. Could you please rephrase?",
+      response: aiResponse || "I'm not sure what you'd like me to do. Try saying 'help' to see available commands.",
     };
   } catch (error) {
     console.error('AI classification error:', error);
-    // Fallback to rule-based classification
-    return fallbackClassification(message);
+    // Return rule-based result on AI error
+    return ruleBasedResult.intent !== 'unknown' ? ruleBasedResult : fallbackClassification(message);
   }
+}
+
+/**
+ * Enhanced rule-based classification with fuzzy matching and keyword extraction
+ * This is the primary classification method for known commands
+ */
+function enhancedRuleBasedClassification(message: string): IntentClassification {
+  const lowerMessage = message.toLowerCase().trim();
+  const words = lowerMessage.split(/\s+/);
+  
+  // Direct command patterns with high confidence
+  const directCommands: Array<{patterns: RegExp[], bot_id: string, name: string, confidence: number}> = [
+    // O2C Commands
+    { patterns: [/create\s+(a\s+)?quote/i, /new\s+quote/i, /generate\s+quote/i, /make\s+(a\s+)?quote/i], bot_id: 'quote_generation', name: 'Quote Generation Bot', confidence: 0.95 },
+    { patterns: [/create\s+(a\s+)?sales\s+order/i, /new\s+sales\s+order/i, /convert\s+quote/i, /make\s+(a\s+)?sales\s+order/i], bot_id: 'sales_order', name: 'Sales Order Bot', confidence: 0.95 },
+    { patterns: [/create\s+(an?\s+)?invoice/i, /generate\s+invoice/i, /new\s+invoice/i, /bill\s+customer/i], bot_id: 'invoice_generation', name: 'Invoice Generation Bot', confidence: 0.95 },
+    { patterns: [/collect\s+overdue/i, /ar\s+collection/i, /send\s+reminder/i, /overdue\s+invoice/i], bot_id: 'ar_collections', name: 'AR Collections Bot', confidence: 0.9 },
+    { patterns: [/process\s+payment/i, /record\s+payment/i, /customer\s+paid/i, /receive\s+payment/i], bot_id: 'payment_processing', name: 'Payment Processing Bot', confidence: 0.9 },
+    
+    // P2P Commands
+    { patterns: [/create\s+(a\s+)?purchase\s+order/i, /new\s+purchase\s+order/i, /create\s+(a\s+)?po\b/i, /new\s+po\b/i, /order\s+from\s+supplier/i], bot_id: 'purchase_order', name: 'Purchase Order Bot', confidence: 0.95 },
+    { patterns: [/receive\s+goods/i, /goods\s+receipt/i, /stock\s+received/i, /grn/i], bot_id: 'goods_receipt', name: 'Goods Receipt Bot', confidence: 0.9 },
+    { patterns: [/supplier\s+invoice/i, /vendor\s+invoice/i, /ap\s+invoice/i, /supplier\s+bill/i], bot_id: 'supplier_invoice', name: 'Supplier Invoice Bot', confidence: 0.9 },
+    { patterns: [/pay\s+supplier/i, /vendor\s+payment/i, /ap\s+payment/i, /pay\s+vendor/i], bot_id: 'ap_payment', name: 'AP Payment Bot', confidence: 0.9 },
+    
+    // Financial Commands
+    { patterns: [/bank\s+reconcil/i, /reconcile\s+bank/i, /bank\s+recon/i, /match\s+transaction/i], bot_id: 'bank_reconciliation', name: 'Bank Reconciliation Bot', confidence: 0.9 },
+    { patterns: [/financial\s+close/i, /close\s+month/i, /month\s*-?\s*end\s+close/i, /period\s+end/i], bot_id: 'financial_close', name: 'Financial Close Bot', confidence: 0.9 },
+    { patterns: [/post\s+journal/i, /gl\s+entr/i, /general\s+ledger/i, /ledger\s+update/i], bot_id: 'general_ledger', name: 'General Ledger Bot', confidence: 0.9 },
+    { patterns: [/invoice\s+reconcil/i, /reconcile\s+invoice/i, /match\s+payment/i], bot_id: 'invoice_reconciliation', name: 'Invoice Reconciliation Bot', confidence: 0.9 },
+    { patterns: [/tax\s+compliance/i, /calculate\s+tax/i, /vat\s+return/i, /tax\s+filing/i], bot_id: 'tax_compliance', name: 'Tax Compliance Bot', confidence: 0.9 },
+    { patterns: [/financial\s+report/i, /generate\s+report/i, /trial\s+balance/i, /financial\s+statement/i], bot_id: 'financial_reporting', name: 'Financial Reporting Bot', confidence: 0.9 },
+    
+    // Inventory Commands
+    { patterns: [/check\s+stock/i, /inventory\s+level/i, /low\s+stock/i, /stock\s+status/i], bot_id: 'inventory', name: 'Inventory Bot', confidence: 0.9 },
+    { patterns: [/move\s+stock/i, /stock\s+movement/i, /transfer\s+inventory/i, /stock\s+adjustment/i], bot_id: 'stock_movement', name: 'Stock Movement Bot', confidence: 0.9 },
+    { patterns: [/reorder\s+stock/i, /auto\s+purchase/i, /replenish/i, /reorder\s+point/i], bot_id: 'reorder', name: 'Reorder Bot', confidence: 0.9 },
+    
+    // Manufacturing Commands
+    { patterns: [/create\s+work\s+order/i, /new\s+work\s+order/i, /production\s+order/i, /manufacture/i], bot_id: 'work_order', name: 'Work Order Bot', confidence: 0.9 },
+    { patterns: [/start\s+production/i, /production\s+status/i, /manufacturing\s+status/i], bot_id: 'production', name: 'Production Bot', confidence: 0.9 },
+    { patterns: [/quality\s+check/i, /qc\s+inspection/i, /quality\s+control/i], bot_id: 'quality_control', name: 'Quality Control Bot', confidence: 0.9 },
+    { patterns: [/update\s+bom/i, /bill\s+of\s+material/i, /bom\s+management/i], bot_id: 'bom_management', name: 'BOM Management Bot', confidence: 0.9 },
+    
+    // HR Commands
+    { patterns: [/run\s+payroll/i, /process\s+payroll/i, /process\s+salaries/i, /pay\s+employees/i], bot_id: 'payroll', name: 'Payroll Bot', confidence: 0.95 },
+    { patterns: [/approve\s+leave/i, /leave\s+request/i, /time\s+off/i, /leave\s+management/i], bot_id: 'leave_management', name: 'Leave Management Bot', confidence: 0.9 },
+    { patterns: [/process\s+expense/i, /expense\s+claim/i, /reimbursement/i], bot_id: 'expense_management', name: 'Expense Management Bot', confidence: 0.9 },
+    
+    // CRM Commands
+    { patterns: [/score\s+lead/i, /lead\s+scoring/i, /lead\s+priority/i, /hot\s+lead/i], bot_id: 'lead_scoring', name: 'Lead Scoring Bot', confidence: 0.9 },
+    { patterns: [/create\s+opportunity/i, /sales\s+pipeline/i, /new\s+deal/i], bot_id: 'opportunity', name: 'Opportunity Bot', confidence: 0.9 },
+    { patterns: [/onboard\s+customer/i, /customer\s+onboarding/i, /welcome\s+customer/i], bot_id: 'customer_onboarding', name: 'Customer Onboarding Bot', confidence: 0.9 },
+    
+    // Compliance Commands
+    { patterns: [/bbbee/i, /bee\s+compliance/i, /transformation/i], bot_id: 'bbbee_compliance', name: 'B-BBEE Compliance Bot', confidence: 0.9 },
+    { patterns: [/audit\s+log/i, /audit\s+trail/i, /compliance\s+audit/i], bot_id: 'audit_trail', name: 'Audit Trail Bot', confidence: 0.9 },
+    
+    // Workflow Commands
+    { patterns: [/process\s+approval/i, /workflow\s+task/i, /pending\s+approval/i], bot_id: 'workflow_automation', name: 'Workflow Automation Bot', confidence: 0.9 },
+    { patterns: [/process\s+document/i, /classify\s+document/i, /ocr/i], bot_id: 'document_processing', name: 'Document Processing Bot', confidence: 0.9 },
+    { patterns: [/send\s+email/i, /email\s+notification/i, /automated\s+email/i], bot_id: 'email_automation', name: 'Email Automation Bot', confidence: 0.9 },
+  ];
+  
+  // Check direct command patterns first
+  for (const cmd of directCommands) {
+    for (const pattern of cmd.patterns) {
+      if (pattern.test(lowerMessage)) {
+        return {
+          intent: cmd.bot_id,
+          confidence: cmd.confidence,
+          bot_id: cmd.bot_id,
+          parameters: extractParameters(message),
+          requires_confirmation: false,
+          response: `Executing ${cmd.name}...`,
+        };
+      }
+    }
+  }
+  
+  // Query patterns for data retrieval
+  const queryPatterns: Array<{patterns: RegExp[], intent: string, description: string}> = [
+    { patterns: [/show\s+(me\s+)?(all\s+)?customers?/i, /list\s+(all\s+)?customers?/i, /customer\s+list/i], intent: 'list_customers', description: 'customers' },
+    { patterns: [/show\s+(me\s+)?(all\s+)?suppliers?/i, /list\s+(all\s+)?suppliers?/i, /vendor\s+list/i], intent: 'list_suppliers', description: 'suppliers' },
+    { patterns: [/show\s+(me\s+)?(all\s+)?products?/i, /list\s+(all\s+)?products?/i, /inventory/i], intent: 'list_products', description: 'products' },
+    { patterns: [/show\s+(me\s+)?(all\s+)?invoices?/i, /list\s+(all\s+)?invoices?/i, /recent\s+invoices?/i], intent: 'list_invoices', description: 'invoices' },
+    { patterns: [/show\s+(me\s+)?(all\s+)?sales\s+orders?/i, /list\s+(all\s+)?sales\s+orders?/i], intent: 'list_sales_orders', description: 'sales orders' },
+    { patterns: [/show\s+(me\s+)?(all\s+)?purchase\s+orders?/i, /list\s+(all\s+)?purchase\s+orders?/i, /show\s+pos?/i], intent: 'list_purchase_orders', description: 'purchase orders' },
+    { patterns: [/show\s+(me\s+)?(all\s+)?quotes?/i, /list\s+(all\s+)?quotes?/i, /quotations?/i], intent: 'list_quotes', description: 'quotes' },
+    { patterns: [/dashboard/i, /summary/i, /overview/i, /business\s+status/i], intent: 'dashboard', description: 'dashboard' },
+    { patterns: [/show\s+(all\s+)?bots?/i, /list\s+(all\s+)?bots?/i, /what\s+bots/i, /available\s+bots?/i, /automation\s+agents?/i], intent: 'list_bots', description: 'available bots' },
+    { patterns: [/^help$/i, /what\s+can\s+you\s+do/i, /commands?/i, /capabilities/i], intent: 'help', description: 'help' },
+  ];
+  
+  for (const query of queryPatterns) {
+    for (const pattern of query.patterns) {
+      if (pattern.test(lowerMessage)) {
+        return {
+          intent: query.intent,
+          confidence: 0.85,
+          bot_id: null,
+          parameters: {},
+          requires_confirmation: false,
+          response: `Fetching ${query.description}...`,
+        };
+      }
+    }
+  }
+  
+  // Keyword-based matching as fallback (lower confidence)
+  const keywordMatches = [
+    { keywords: ['quote', 'quotation'], bot_id: 'quote_generation', name: 'Quote Generation Bot' },
+    { keywords: ['sales', 'order'], bot_id: 'sales_order', name: 'Sales Order Bot' },
+    { keywords: ['invoice', 'bill'], bot_id: 'invoice_generation', name: 'Invoice Generation Bot' },
+    { keywords: ['purchase', 'po'], bot_id: 'purchase_order', name: 'Purchase Order Bot' },
+    { keywords: ['payroll', 'salary'], bot_id: 'payroll', name: 'Payroll Bot' },
+    { keywords: ['inventory', 'stock'], bot_id: 'inventory', name: 'Inventory Bot' },
+    { keywords: ['reconcil'], bot_id: 'bank_reconciliation', name: 'Bank Reconciliation Bot' },
+  ];
+  
+  for (const match of keywordMatches) {
+    const hasKeyword = match.keywords.some(kw => lowerMessage.includes(kw));
+    const hasActionWord = ['create', 'run', 'execute', 'process', 'generate', 'make', 'start'].some(w => lowerMessage.includes(w));
+    if (hasKeyword && hasActionWord) {
+      return {
+        intent: match.bot_id,
+        confidence: 0.6,
+        bot_id: match.bot_id,
+        parameters: extractParameters(message),
+        requires_confirmation: false,
+        response: `Executing ${match.name}...`,
+      };
+    }
+  }
+  
+  return {
+    intent: 'unknown',
+    confidence: 0.2,
+    bot_id: null,
+    parameters: {},
+    requires_confirmation: false,
+    response: "I'm not sure what you'd like me to do. Try saying 'help' to see available commands.",
+  };
+}
+
+/**
+ * Extract parameters from message (customer names, amounts, etc.)
+ */
+function extractParameters(message: string): Record<string, any> {
+  const params: Record<string, any> = {};
+  
+  // Extract amounts (R1000, $500, 1000.00)
+  const amountMatch = message.match(/[R$]?\s*(\d+(?:,\d{3})*(?:\.\d{2})?)/);
+  if (amountMatch) {
+    params.amount = parseFloat(amountMatch[1].replace(/,/g, ''));
+  }
+  
+  // Extract quoted strings (customer names, product names)
+  const quotedMatch = message.match(/"([^"]+)"|'([^']+)'/);
+  if (quotedMatch) {
+    params.name = quotedMatch[1] || quotedMatch[2];
+  }
+  
+  // Extract "for X" patterns
+  const forMatch = message.match(/for\s+([A-Z][a-zA-Z\s]+?)(?:\s+with|\s+at|\s*$)/i);
+  if (forMatch) {
+    params.target = forMatch[1].trim();
+  }
+  
+  return params;
 }
 
 /**
