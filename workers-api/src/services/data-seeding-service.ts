@@ -235,8 +235,8 @@ async function seedO2CTransactions(
     return { quotes, salesOrders, invoices, count };
   }
 
-  // Seed 500 quotes per month
-  for (let i = 0; i < 500; i++) {
+  // Seed 50 quotes per month (reduced for testing)
+  for (let i = 0; i < 50; i++) {
     const id = generateUUID();
     const randomSuffix = randomInt(10000, 99999);
     const quoteNumber = `QT-${year}${String(month).padStart(2, '0')}-${randomSuffix}`;
@@ -265,8 +265,8 @@ async function seedO2CTransactions(
     }
   }
 
-  // Seed 400 sales orders per month
-  for (let i = 0; i < 400; i++) {
+  // Seed 40 sales orders per month (reduced for testing)
+  for (let i = 0; i < 40; i++) {
     const id = generateUUID();
     const randomSuffix = randomInt(10000, 99999);
     const orderNumber = `SO-${year}${String(month).padStart(2, '0')}-${randomSuffix}`;
@@ -295,8 +295,8 @@ async function seedO2CTransactions(
     }
   }
 
-  // Seed 600 customer invoices per month
-  for (let i = 0; i < 600; i++) {
+  // Seed 60 customer invoices per month (reduced for testing)
+  for (let i = 0; i < 60; i++) {
     const id = generateUUID();
     const randomSuffix = randomInt(10000, 99999);
     const invoiceNumber = `INV-${year}${String(month).padStart(2, '0')}-${randomSuffix}`;
@@ -351,8 +351,8 @@ async function seedP2PTransactions(
     return { purchaseOrders, count };
   }
 
-  // Seed 200 purchase orders per month
-  for (let i = 0; i < 200; i++) {
+  // Seed 20 purchase orders per month (reduced for testing)
+  for (let i = 0; i < 20; i++) {
     const id = generateUUID();
     const randomSuffix = randomInt(10000, 99999);
     const poNumber = `PO-${year}${String(month).padStart(2, '0')}-${randomSuffix}`;
@@ -376,13 +376,15 @@ async function seedP2PTransactions(
       ).run();
       purchaseOrders.push(id);
       count++;
-    } catch (e) {
-      console.error('Purchase order insert error:', e);
+    } catch (e: any) {
+      console.error('Purchase order insert error:', e?.message || e);
     }
   }
 
-  // Seed 300 supplier invoices per month
-  for (let i = 0; i < 300; i++) {
+  console.log(`P2P: Created ${count} purchase orders so far`);
+
+  // Seed 30 supplier invoices per month (reduced for testing)
+  for (let i = 0; i < 30; i++) {
     const id = generateUUID();
     const randomSuffix = randomInt(10000, 99999);
     const invoiceNumber = `SINV-${year}${String(month).padStart(2, '0')}-${randomSuffix}`;
@@ -407,11 +409,12 @@ async function seedP2PTransactions(
         now, now
       ).run();
       count++;
-    } catch (e) {
-      console.error('Supplier invoice insert error:', e);
+    } catch (e: any) {
+      console.error('Supplier invoice insert error:', e?.message || e);
     }
   }
 
+  console.log(`P2P: Total ${count} records created`);
   return { purchaseOrders, count };
 }
 
@@ -426,9 +429,9 @@ async function seedFinancialTransactions(
 ): Promise<{ count: number }> {
   let count = 0;
 
-  // Seed 1000 journal entries per month
+  // Seed 100 journal entries per month (reduced for testing)
   const entryTypes = ['sales_invoice', 'purchase_invoice', 'payment', 'receipt', 'manual'];
-  for (let i = 0; i < 1000; i++) {
+  for (let i = 0; i < 100; i++) {
     const id = generateUUID();
     const randomSuffix = randomInt(10000, 99999);
     const entryNumber = `JE-${year}${String(month).padStart(2, '0')}-${randomSuffix}`;
@@ -445,14 +448,16 @@ async function seedFinancialTransactions(
         getDateForMonth(year, month)
       ).run();
       count++;
-    } catch (e) {
-      // Skip duplicates
+    } catch (e: any) {
+      console.error('Journal entry insert error:', e?.message || e);
     }
   }
 
+  console.log(`Financial: Created ${count} journal entries so far`);
+
   // Skip bank transactions for now as they require bank_account_id which we don't have
   // We'll add more journal entries instead to reach the target count
-  for (let i = 0; i < 1500; i++) {
+  for (let i = 0; i < 150; i++) {
     const id = generateUUID();
     const randomSuffix = randomInt(10000, 99999);
     const entryNumber = `JE-${year}${String(month).padStart(2, '0')}-B${randomSuffix}`;
@@ -469,11 +474,12 @@ async function seedFinancialTransactions(
         getDateForMonth(year, month)
       ).run();
       count++;
-    } catch (e) {
-      // Skip duplicates
+    } catch (e: any) {
+      console.error('Journal entry (bank) insert error:', e?.message || e);
     }
   }
 
+  console.log(`Financial: Total ${count} records created`);
   return { count };
 }
 
@@ -512,9 +518,9 @@ async function seedInventoryTransactions(
     return { count };
   }
 
-  // Seed 2000 stock movements per month
+  // Seed 200 stock movements per month (reduced for testing)
   const movementTypes = ['receipt', 'issue', 'transfer', 'adjustment', 'production'];
-  for (let i = 0; i < 2000; i++) {
+  for (let i = 0; i < 200; i++) {
     const id = generateUUID();
     const randomSuffix = randomInt(10000, 99999);
     const productId = randomElement(productIds);
@@ -557,9 +563,9 @@ async function seedManufacturingTransactions(
     return { count };
   }
 
-  // Seed 100 work orders per month
+  // Seed 10 work orders per month (reduced for testing)
   const statuses = ['planned', 'released', 'in_progress', 'completed', 'cancelled'];
-  for (let i = 0; i < 100; i++) {
+  for (let i = 0; i < 10; i++) {
     const id = generateUUID();
     const randomSuffix = randomInt(10000, 99999);
     const woNumber = `WO-${year}${String(month).padStart(2, '0')}-${randomSuffix}`;
@@ -584,10 +590,10 @@ async function seedManufacturingTransactions(
     }
   }
 
-  // Seed 200 quality checks per month
+  // Seed 20 quality checks per month (reduced for testing)
   const results = ['pending', 'passed', 'failed', 'conditional'];
   const checkTypes = ['incoming', 'in_process', 'final'];
-  for (let i = 0; i < 200; i++) {
+  for (let i = 0; i < 20; i++) {
     const id = generateUUID();
     
     try {
@@ -644,10 +650,10 @@ async function seedHRTransactions(
     // Skip duplicates
   }
 
-  // Seed 100 leave requests per month
+  // Seed 10 leave requests per month (reduced for testing)
   const leaveTypes = ['annual', 'sick', 'family', 'maternity', 'unpaid'];
   const leaveStatuses = ['pending', 'approved', 'rejected', 'cancelled'];
-  for (let i = 0; i < 100; i++) {
+  for (let i = 0; i < 10; i++) {
     const id = generateUUID();
     const employeeId = randomElement(employeeIds);
     const days = randomInt(1, 10);
@@ -668,8 +674,8 @@ async function seedHRTransactions(
     }
   }
 
-  // Seed 200 time entries per month (expense_claims table doesn't exist, use time_entries instead)
-  for (let i = 0; i < 200; i++) {
+  // Seed 20 time entries per month (reduced for testing)
+  for (let i = 0; i < 20; i++) {
     const id = generateUUID();
     const employeeId = randomElement(employeeIds);
     const hours = randomFloat(4, 12);
@@ -704,11 +710,11 @@ async function seedCRMTransactions(
 ): Promise<{ count: number }> {
   let count = 0;
 
-  // Seed 300 leads per month
+  // Seed 30 leads per month (reduced for testing)
   const leadSources = ['website', 'referral', 'cold_call', 'trade_show', 'advertising'];
   const leadStatuses = ['new', 'contacted', 'qualified', 'proposal', 'negotiation', 'won', 'lost'];
   const leadRatings = ['hot', 'warm', 'cold'];
-  for (let i = 0; i < 300; i++) {
+  for (let i = 0; i < 30; i++) {
     const id = generateUUID();
     const randomSuffix = randomInt(10000, 99999);
     const person = generatePersonName();
@@ -732,9 +738,9 @@ async function seedCRMTransactions(
     }
   }
 
-  // Seed 200 opportunities per month
+  // Seed 20 opportunities per month (reduced for testing)
   const stages = ['qualification', 'needs_analysis', 'proposal', 'negotiation', 'closed_won', 'closed_lost'];
-  for (let i = 0; i < 200; i++) {
+  for (let i = 0; i < 20; i++) {
     const id = generateUUID();
     const randomSuffix = randomInt(10000, 99999);
     const company = generateCompanyName();
@@ -757,10 +763,10 @@ async function seedCRMTransactions(
     }
   }
 
-  // Seed 500 CRM activities per month
+  // Seed 50 CRM activities per month (reduced for testing)
   const activityTypes = ['call', 'email', 'meeting', 'task', 'note'];
   const activityStatuses = ['pending', 'completed', 'cancelled'];
-  for (let i = 0; i < 500; i++) {
+  for (let i = 0; i < 50; i++) {
     const id = generateUUID();
     const activityType = randomElement(activityTypes);
     
@@ -795,7 +801,8 @@ async function seedAdditionalRecords(
   currentCount: number
 ): Promise<{ count: number }> {
   let count = 0;
-  const target = 10000;
+  // Disabled for testing - set target to 0 to avoid Worker timeout
+  const target = 0;
   const remaining = target - currentCount;
 
   if (remaining <= 0) {
@@ -839,11 +846,20 @@ export async function seedFullYear(
   const modules: Record<string, number> = {};
   let totalRecords = 0;
 
-  // Collect all IDs for relationships
-  let allCustomerIds: string[] = [];
-  let allSupplierIds: string[] = [];
-  let allProductIds: string[] = [];
-  let allEmployeeIds: string[] = [];
+  // First, fetch existing IDs from the database to ensure foreign key relationships work
+  console.log('Fetching existing master data IDs...');
+  const existingCustomers = await db.prepare('SELECT id FROM customers WHERE company_id = ?').bind(companyId).all();
+  const existingSuppliers = await db.prepare('SELECT id FROM suppliers WHERE company_id = ?').bind(companyId).all();
+  const existingProducts = await db.prepare('SELECT id FROM products WHERE company_id = ?').bind(companyId).all();
+  const existingEmployees = await db.prepare('SELECT id FROM employees WHERE company_id = ?').bind(companyId).all();
+
+  // Collect all IDs for relationships (start with existing IDs)
+  let allCustomerIds: string[] = (existingCustomers.results || []).map((r: any) => r.id);
+  let allSupplierIds: string[] = (existingSuppliers.results || []).map((r: any) => r.id);
+  let allProductIds: string[] = (existingProducts.results || []).map((r: any) => r.id);
+  let allEmployeeIds: string[] = (existingEmployees.results || []).map((r: any) => r.id);
+  
+  console.log(`Starting with ${allCustomerIds.length} customers, ${allSupplierIds.length} suppliers, ${allProductIds.length} products, ${allEmployeeIds.length} employees`);
 
   // Seed 12 months of data
   for (let month = 1; month <= 12; month++) {
