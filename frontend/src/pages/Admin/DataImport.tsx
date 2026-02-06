@@ -43,7 +43,10 @@ const DataImport: React.FC = () => {
     if (!module) return;
 
     try {
-      const response = await fetch(`/api/data-import/template/${selectedModule}`);
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
+      const response = await fetch(`${API_BASE}/api/data-import/template/${selectedModule}`, {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      });
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -69,8 +72,10 @@ const DataImport: React.FC = () => {
     formData.append('module', selectedModule);
 
     try {
-      const response = await fetch('/api/data-import/upload', {
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
+      const response = await fetch(`${API_BASE}/api/data-import/upload`, {
         method: 'POST',
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` },
         body: formData,
       });
 

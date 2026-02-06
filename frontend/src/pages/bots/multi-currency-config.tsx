@@ -40,7 +40,10 @@ export default function MultiCurrencyConfig() {
 
   const loadConfiguration = async () => {
     try {
-      const response = await fetch('/api/agents/multi_currency/config');
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
+      const response = await fetch(`${API_BASE}/api/agents/multi_currency/config`, {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      });
       const data = await response.json();
       setConfig(data);
     } catch (error) {
@@ -53,9 +56,10 @@ export default function MultiCurrencyConfig() {
     setMessage(null);
     
     try {
-      const response = await fetch('/api/agents/multi_currency/config', {
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
+      const response = await fetch(`${API_BASE}/api/agents/multi_currency/config`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` },
         body: JSON.stringify(config)
       });
       
@@ -73,8 +77,10 @@ export default function MultiCurrencyConfig() {
 
   const handleExecute = async () => {
     try {
-      const response = await fetch('/api/agents/multi_currency/execute', {
-        method: 'POST'
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
+      const response = await fetch(`${API_BASE}/api/agents/multi_currency/execute`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
       
       if (response.ok) {

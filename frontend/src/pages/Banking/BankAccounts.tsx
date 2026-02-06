@@ -36,14 +36,27 @@ export default function BankAccounts() {
 
   const fetchAccounts = async () => {
     try {
-      const response = await fetch('/api/banking/accounts', {
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
+      const response = await fetch(`${API_BASE}/api/banking/accounts`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
       });
       if (response.ok) {
         const data = await response.json();
-        setAccounts(data);
+        const mappedData = (Array.isArray(data) ? data : data.accounts || data.data || []).map((a: any) => ({
+          id: a.id,
+          account_name: a.account_name || a.name || '',
+          account_number: a.account_number || '',
+          account_type: a.account_type || 'CHECKING',
+          bank_name: a.bank_name || '',
+          gl_account_code: a.gl_account_code || '',
+          current_balance: a.current_balance || a.balance || 0,
+          reconciled_balance: a.reconciled_balance || 0,
+          currency: a.currency || 'ZAR',
+          is_active: a.is_active !== false
+        }));
+        setAccounts(mappedData);
       }
     } catch (error) {
       console.error('Failed to fetch accounts:', error);
@@ -56,9 +69,10 @@ export default function BankAccounts() {
     e.preventDefault();
     
     try {
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
       const url = editingAccount 
-        ? `/api/banking/accounts/${editingAccount.id}`
-        : '/api/banking/accounts';
+        ? `${API_BASE}/api/banking/accounts/${editingAccount.id}`
+        : `${API_BASE}/api/banking/accounts`;
       
       const method = editingAccount ? 'PUT' : 'POST';
       
@@ -110,7 +124,8 @@ export default function BankAccounts() {
     if (!confirm('Are you sure you want to delete this account?')) return;
     
     try {
-      const response = await fetch(`/api/banking/accounts/${id}`, {
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
+      const response = await fetch(`${API_BASE}/api/banking/accounts/${id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`

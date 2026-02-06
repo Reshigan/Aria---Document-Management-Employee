@@ -39,14 +39,28 @@ export default function Bills() {
 
   const fetchBills = async () => {
     try {
-      const response = await fetch('/api/ap/bills', {
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
+      const response = await fetch(`${API_BASE}/api/ap/bills`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
       });
       if (response.ok) {
         const data = await response.json();
-        setBills(data);
+        const mappedData = (Array.isArray(data) ? data : data.bills || data.data || []).map((b: any) => ({
+          id: b.id,
+          bill_number: b.bill_number || `BILL-${b.id}`,
+          supplier_id: b.supplier_id || 0,
+          supplier_name: b.supplier_name || '',
+          bill_date: b.bill_date || '',
+          due_date: b.due_date || '',
+          total_amount: b.total_amount || 0,
+          amount_paid: b.amount_paid || 0,
+          amount_due: b.amount_due || b.total_amount - (b.amount_paid || 0) || 0,
+          status: b.status || 'DRAFT',
+          currency: b.currency || 'ZAR'
+        }));
+        setBills(mappedData);
       }
     } catch (error) {
       console.error('Failed to fetch bills:', error);
@@ -59,9 +73,10 @@ export default function Bills() {
     e.preventDefault();
     
     try {
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
       const url = editingBill 
-        ? `/api/ap/bills/${editingBill.id}`
-        : '/api/ap/bills';
+        ? `${API_BASE}/api/ap/bills/${editingBill.id}`
+        : `${API_BASE}/api/ap/bills`;
       
       const method = editingBill ? 'PUT' : 'POST';
       
@@ -97,7 +112,8 @@ export default function Bills() {
     if (!confirm('Are you sure you want to delete this bill?')) return;
     
     try {
-      const response = await fetch(`/api/ap/bills/${id}`, {
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
+      const response = await fetch(`${API_BASE}/api/ap/bills/${id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`

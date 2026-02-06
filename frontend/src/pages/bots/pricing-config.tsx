@@ -40,7 +40,10 @@ export default function PricingConfig() {
 
   const loadConfiguration = async () => {
     try {
-      const response = await fetch('/api/agents/pricing/config');
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
+      const response = await fetch(`${API_BASE}/api/agents/pricing/config`, {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      });
       const data = await response.json();
       setConfig(data);
     } catch (error) {
@@ -53,9 +56,10 @@ export default function PricingConfig() {
     setMessage(null);
     
     try {
-      const response = await fetch('/api/agents/pricing/config', {
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
+      const response = await fetch(`${API_BASE}/api/agents/pricing/config`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` },
         body: JSON.stringify(config)
       });
       
@@ -73,8 +77,10 @@ export default function PricingConfig() {
 
   const handleExecute = async () => {
     try {
-      const response = await fetch('/api/agents/pricing/execute', {
-        method: 'POST'
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
+      const response = await fetch(`${API_BASE}/api/agents/pricing/execute`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
       
       if (response.ok) {

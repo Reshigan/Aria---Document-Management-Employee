@@ -34,12 +34,35 @@ export default function VATReturns() {
   const fetchVATData = async () => {
     setLoading(true);
     try {
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
       const [returnsRes, summaryRes] = await Promise.all([
-        fetch('/api/tax/vat-returns'),
-        fetch('/api/tax/vat-summary')
+        fetch(`${API_BASE}/api/tax/vat-returns`, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }),
+        fetch(`${API_BASE}/api/tax/vat-summary`, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } })
       ]);
-      if (returnsRes.ok) setReturns(await returnsRes.json());
-      if (summaryRes.ok) setSummary(await summaryRes.json());
+      if (returnsRes.ok) {
+        const data = await returnsRes.json();
+        const mappedReturns = (Array.isArray(data) ? data : data.returns || data.data || []).map((r: any) => ({
+          id: r.id,
+          period: r.period || r.tax_period || '',
+          start_date: r.start_date || '',
+          end_date: r.end_date || '',
+          output_vat: r.output_vat || 0,
+          input_vat: r.input_vat || 0,
+          net_vat: r.net_vat || (r.output_vat || 0) - (r.input_vat || 0),
+          status: r.status || 'draft',
+          submission_date: r.submission_date
+        }));
+        setReturns(mappedReturns);
+      }
+      if (summaryRes.ok) {
+        const summaryData = await summaryRes.json();
+        setSummary({
+          output_vat: summaryData.output_vat || 0,
+          input_vat: summaryData.input_vat || 0,
+          net_vat: summaryData.net_vat || 0,
+          next_submission: summaryData.next_submission || '25 Feb 2026'
+        });
+      }
     } catch (err) {
       console.error('Error fetching VAT data:', err);
       // Fallback data

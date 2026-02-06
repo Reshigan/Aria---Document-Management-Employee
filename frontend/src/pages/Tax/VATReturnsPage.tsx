@@ -30,14 +30,27 @@ export default function VATReturnsPage() {
 
   const fetchReturns = async () => {
     try {
-      const response = await fetch('/api/vat/returns', {
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
+      const response = await fetch(`${API_BASE}/api/vat/returns`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
       });
       if (response.ok) {
         const data = await response.json();
-        setReturns(data);
+        const mappedData = (Array.isArray(data) ? data : data.returns || data.data || []).map((r: any) => ({
+          id: r.id,
+          return_number: r.return_number || r.returnNumber || '',
+          period_start: r.period_start || r.periodStart || '',
+          period_end: r.period_end || r.periodEnd || '',
+          output_tax: r.output_tax || r.outputTax || 0,
+          input_tax: r.input_tax || r.inputTax || 0,
+          net_vat: r.net_vat || r.netVat || 0,
+          status: r.status || 'DRAFT',
+          filing_date: r.filing_date || r.filingDate || '',
+          payment_date: r.payment_date || r.paymentDate || ''
+        }));
+        setReturns(mappedData);
       }
     } catch (error) {
       console.error('Failed to fetch VAT returns:', error);
@@ -50,7 +63,8 @@ export default function VATReturnsPage() {
     e.preventDefault();
     
     try {
-      const response = await fetch('/api/vat/returns', {
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
+      const response = await fetch(`${API_BASE}/api/vat/returns`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -75,7 +89,8 @@ export default function VATReturnsPage() {
 
   const handleFileReturn = async (id: number) => {
     try {
-      const response = await fetch(`/api/vat/returns/${id}/file`, {
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
+      const response = await fetch(`${API_BASE}/api/vat/returns/${id}/file`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`

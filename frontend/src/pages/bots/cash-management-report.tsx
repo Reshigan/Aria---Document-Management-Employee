@@ -41,13 +41,15 @@ export default function CashManagementReport() {
 
   const loadData = async () => {
     try {
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
+      const headers = { 'Authorization': `Bearer ${localStorage.getItem('token')}` };
       // Load statistics
-      const statsResponse = await fetch('/api/agents/cash_management/statistics');
+      const statsResponse = await fetch(`${API_BASE}/api/agents/cash_management/statistics`, { headers });
       const statsData = await statsResponse.json();
       setStats(statsData);
       
       // Load activities
-      const activitiesResponse = await fetch('/api/agents/cash_management/activities');
+      const activitiesResponse = await fetch(`${API_BASE}/api/agents/cash_management/activities`, { headers });
       const activitiesData = await activitiesResponse.json();
       setActivities(activitiesData);
     } catch (error) {

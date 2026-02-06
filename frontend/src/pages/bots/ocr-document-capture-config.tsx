@@ -40,7 +40,10 @@ export default function OcrDocumentCaptureConfig() {
 
   const loadConfiguration = async () => {
     try {
-      const response = await fetch('/api/agents/ocr_document_capture/config');
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
+      const response = await fetch(`${API_BASE}/api/agents/ocr_document_capture/config`, {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      });
       const data = await response.json();
       setConfig(data);
     } catch (error) {
@@ -53,9 +56,10 @@ export default function OcrDocumentCaptureConfig() {
     setMessage(null);
     
     try {
-      const response = await fetch('/api/agents/ocr_document_capture/config', {
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
+      const response = await fetch(`${API_BASE}/api/agents/ocr_document_capture/config`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` },
         body: JSON.stringify(config)
       });
       
@@ -73,8 +77,10 @@ export default function OcrDocumentCaptureConfig() {
 
   const handleExecute = async () => {
     try {
-      const response = await fetch('/api/agents/ocr_document_capture/execute', {
-        method: 'POST'
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
+      const response = await fetch(`${API_BASE}/api/agents/ocr_document_capture/execute`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
       
       if (response.ok) {

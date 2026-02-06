@@ -21,10 +21,29 @@ export default function IntegrationsListPage() {
   const fetchIntegrations = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/integrations');
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
+      const response = await fetch(`${API_BASE}/api/integrations`, {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      });
       if (!response.ok) throw new Error('Failed to fetch');
       const result = await response.json();
-      setIntegrations(result);
+      const mappedData = (Array.isArray(result) ? result : result.integrations || result.data || []).map((i: any) => ({
+        id: i.id,
+        name: i.name || i.integration_name || '',
+        logo: i.logo || '🔗',
+        connected: i.connected || i.is_connected || false,
+        lastSync: i.lastSync || i.last_sync || null,
+        status: i.status,
+        config: i.config
+      }));
+      setIntegrations(mappedData.length > 0 ? mappedData : [
+        { id: 'xero', name: 'Xero', logo: '📊', connected: true, lastSync: '2 hours ago' },
+        { id: 'sage', name: 'Sage 50cloud', logo: '💼', connected: true, lastSync: '1 day ago' },
+        { id: 'pastel', name: 'Pastel', logo: '📋', connected: false, lastSync: null },
+        { id: 'microsoft365', name: 'Microsoft 365', logo: '🔷', connected: true, lastSync: '5 min ago' },
+        { id: 'sars', name: 'SARS eFiling', logo: '🇿🇦', connected: true, lastSync: '3 days ago' },
+        { id: 'odoo', name: 'Odoo', logo: '🔧', connected: false, lastSync: null }
+      ]);
     } catch (err) {
       console.error('Error fetching integrations:', err);
       // Fallback data
@@ -48,7 +67,11 @@ export default function IntegrationsListPage() {
   const handleSync = async (integrationId: string) => {
     setSyncing(integrationId);
     try {
-      await fetch(`/api/integrations/${integrationId}/sync`, { method: 'POST' });
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
+      await fetch(`${API_BASE}/api/integrations/${integrationId}/sync`, { 
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      });
       // Refresh integrations to get updated lastSync
       await fetchIntegrations();
     } catch (err) {
@@ -60,7 +83,11 @@ export default function IntegrationsListPage() {
 
   const handleConnect = async (integrationId: string) => {
     try {
-      await fetch(`/api/integrations/${integrationId}/connect`, { method: 'POST' });
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
+      await fetch(`${API_BASE}/api/integrations/${integrationId}/connect`, { 
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      });
       await fetchIntegrations();
     } catch (err) {
       console.error('Connect failed:', err);

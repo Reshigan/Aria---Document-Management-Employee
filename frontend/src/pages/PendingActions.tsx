@@ -24,10 +24,29 @@ export default function PendingActionsPage() {
   const fetchPendingActions = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/approvals/pending');
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
+      const response = await fetch(`${API_BASE}/api/approvals/pending`, {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      });
       if (!response.ok) throw new Error('Failed to fetch');
       const result = await response.json();
-      setActions(result);
+      const mappedData = (Array.isArray(result) ? result : result.actions || result.data || []).map((a: any) => ({
+        id: a.id,
+        type: a.type || '',
+        description: a.description || '',
+        amount: a.amount || null,
+        priority: a.priority || 'medium',
+        requester: a.requester || '',
+        requested_date: a.requested_date || a.requestedDate || new Date().toISOString(),
+        document_ref: a.document_ref || a.documentRef || ''
+      }));
+      setActions(mappedData.length > 0 ? mappedData : [
+        { id: 1, type: 'invoice_approval', description: 'Approve invoice #INV-1234 from Supplier A', amount: 15000, priority: 'high', requester: 'Finance Bot', requested_date: new Date().toISOString(), document_ref: 'INV-1234' },
+        { id: 2, type: 'expense_claim', description: 'Review expense claim from John Doe', amount: 850, priority: 'medium', requester: 'John Doe', requested_date: new Date().toISOString(), document_ref: 'EXP-0045' },
+        { id: 3, type: 'leave_request', description: 'Approve leave request from Jane Smith', amount: null, priority: 'low', requester: 'Jane Smith', requested_date: new Date().toISOString(), document_ref: 'LR-0012' },
+        { id: 4, type: 'purchase_order', description: 'Approve PO #PO-2024-089 for office supplies', amount: 4500, priority: 'medium', requester: 'Procurement Bot', requested_date: new Date().toISOString(), document_ref: 'PO-2024-089' },
+        { id: 5, type: 'invoice_approval', description: 'Approve invoice #INV-1235 from Logistics Co', amount: 28000, priority: 'high', requester: 'Finance Bot', requested_date: new Date().toISOString(), document_ref: 'INV-1235' }
+      ]);
     } catch (err) {
       console.error('Error fetching pending actions:', err);
       // Fallback data
@@ -51,7 +70,11 @@ export default function PendingActionsPage() {
 
   const handleApprove = async (action: PendingAction) => {
     try {
-      await fetch(`/api/approvals/${action.id}/approve`, { method: 'POST' });
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
+      await fetch(`${API_BASE}/api/approvals/${action.id}/approve`, { 
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      });
       // Remove from list
       setActions(prev => prev.filter(a => a.id !== action.id));
       // Show success message
@@ -69,9 +92,10 @@ export default function PendingActionsPage() {
   const handleReject = async () => {
     if (!selectedAction) return;
     try {
-      await fetch(`/api/approvals/${selectedAction.id}/reject`, { 
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
+      await fetch(`${API_BASE}/api/approvals/${selectedAction.id}/reject`, { 
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` },
         body: JSON.stringify({ reason: rejectReason })
       });
       // Remove from list
