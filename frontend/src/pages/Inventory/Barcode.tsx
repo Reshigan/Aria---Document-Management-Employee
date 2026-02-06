@@ -27,7 +27,10 @@ const Barcode: React.FC = () => {
     if (!barcodeInput.trim()) return;
     
     try {
-      const response = await fetch(`/api/inventory/barcode/${barcodeInput}`);
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
+      const response = await fetch(`${API_BASE}/api/inventory/barcode/${barcodeInput}`, {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      });
       if (response.ok) {
         const data = await response.json();
         const newItem: ScannedItem = { ...data, barcode: barcodeInput, timestamp: new Date().toISOString(), status: data.quantity < 10 ? 'low_stock' : 'found' };
