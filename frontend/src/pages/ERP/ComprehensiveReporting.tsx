@@ -77,33 +77,37 @@ const ComprehensiveReporting: React.FC = () => {
 
       switch (activeTab) {
         case 'kpis':
-          const kpisRes = await fetch(`/api/erp/reporting/kpis?company_id=${companyId}`, { headers });
+          const API_BASE_KPIS = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
+          const kpisRes = await fetch(`${API_BASE_KPIS}/api/erp/reporting/kpis?company_id=${companyId}`, { headers });
           if (kpisRes.ok) {
             const data = await kpisRes.json();
             setKpis(data.kpis || []);
           }
           break;
         case 'dashboards':
-          const dashboardsRes = await fetch(`/api/erp/reporting/dashboards?company_id=${companyId}`, { headers });
+          const API_BASE_DASH = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
+          const dashboardsRes = await fetch(`${API_BASE_DASH}/api/erp/reporting/dashboards?company_id=${companyId}`, { headers });
           if (dashboardsRes.ok) {
             const data = await dashboardsRes.json();
             setDashboards(data.dashboards || []);
           }
           break;
         case 'scheduled-reports':
-          const reportsRes = await fetch(`/api/erp/reporting/scheduled-reports?company_id=${companyId}`, { headers });
+          const API_BASE_REPORTS = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
+          const reportsRes = await fetch(`${API_BASE_REPORTS}/api/erp/reporting/scheduled-reports?company_id=${companyId}`, { headers });
           if (reportsRes.ok) {
             const data = await reportsRes.json();
             setScheduledReports(data.scheduled_reports || []);
           }
           break;
         case 'analytics':
+          const API_BASE_ANALYTICS = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
           const today = new Date();
           const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
           const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
           
           const analyticsRes = await fetch(
-            `/api/erp/reporting/analytics/financial-summary?company_id=${companyId}&period_start=${firstDay.toISOString().split('T')[0]}&period_end=${lastDay.toISOString().split('T')[0]}`,
+            `${API_BASE_ANALYTICS}/api/erp/reporting/analytics/financial-summary?company_id=${companyId}&period_start=${firstDay.toISOString().split('T')[0]}&period_end=${lastDay.toISOString().split('T')[0]}`,
             { headers }
           );
           if (analyticsRes.ok) {

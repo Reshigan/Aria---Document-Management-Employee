@@ -61,22 +61,28 @@ export default function ERPDashboard() {
   const fetchData = async () => {
     try {
       setLoading(true);
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
+      const token = localStorage.getItem('token');
+      const headers = { 'Authorization': `Bearer ${token}` };
       
       // Fetch health status
-      const healthRes = await axios.get(`${API_BASE}/`);
+      const healthRes = await api.get('/');
       setHealth(healthRes.data);
 
       // Fetch AP Aging
-      const apRes = await axios.get(`${API_BASE}/api/reports/ar-ap/ap-aging?company_id=1&as_of_date=${new Date().toISOString().split('T')[0]}`, {
-        headers: { Authorization: 'Bearer test-token' }
-      });
-      setApAging(apRes.data);
+      const companyId = localStorage.getItem('selectedCompanyId') || '1';
+      const apRes = await fetch(`${API_BASE}/api/reports/ar-ap/ap-aging?company_id=${companyId}&as_of_date=${new Date().toISOString().split('T')[0]}`, { headers });
+      if (apRes.ok) {
+        const apData = await apRes.json();
+        setApAging(apData);
+      }
 
       // Fetch AR Aging
-      const arRes = await axios.get(`${API_BASE}/api/reports/ar-ap/ar-aging?company_id=1&as_of_date=${new Date().toISOString().split('T')[0]}`, {
-        headers: { Authorization: 'Bearer test-token' }
-      });
-      setArAging(arRes.data);
+      const arRes = await fetch(`${API_BASE}/api/reports/ar-ap/ar-aging?company_id=${companyId}&as_of_date=${new Date().toISOString().split('T')[0]}`, { headers });
+      if (arRes.ok) {
+        const arData = await arRes.json();
+        setArAging(arData);
+      }
 
       setLoading(false);
     } catch (error) {
