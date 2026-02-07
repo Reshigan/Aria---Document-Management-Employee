@@ -272,7 +272,7 @@ function enhancedRuleBasedClassification(message: string): IntentClassification 
     { patterns: [/bank\s+reconcil/i, /reconcile\s+bank/i, /bank\s+recon/i, /match\s+transaction/i], bot_id: 'bank_reconciliation', name: 'Bank Reconciliation Bot', confidence: 0.9 },
     { patterns: [/financial\s+close/i, /close\s+month/i, /month\s*-?\s*end\s+close/i, /period\s+end/i], bot_id: 'financial_close', name: 'Financial Close Bot', confidence: 0.9 },
     { patterns: [/post\s+journal/i, /gl\s+entr/i, /general\s+ledger/i, /ledger\s+update/i], bot_id: 'general_ledger', name: 'General Ledger Bot', confidence: 0.9 },
-    { patterns: [/invoice\s+reconcil/i, /reconcile\s+invoice/i, /match\s+payment/i], bot_id: 'invoice_reconciliation', name: 'Invoice Reconciliation Bot', confidence: 0.9 },
+    { patterns: [/invoice\s+reconcil/i, /reconcile\s+invoice/i, /match\s+payment/i, /run\s+.*reconcil/i, /sales.*invoice.*reconcil/i], bot_id: 'invoice_reconciliation', name: 'Invoice Reconciliation Bot', confidence: 0.9 },
     { patterns: [/tax\s+compliance/i, /calculate\s+tax/i, /vat\s+return/i, /tax\s+filing/i], bot_id: 'tax_compliance', name: 'Tax Compliance Bot', confidence: 0.9 },
     { patterns: [/financial\s+report/i, /generate\s+report/i, /trial\s+balance/i, /financial\s+statement/i], bot_id: 'financial_reporting', name: 'Financial Reporting Bot', confidence: 0.9 },
     
