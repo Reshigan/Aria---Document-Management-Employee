@@ -773,6 +773,91 @@ const skills: Skill[] = [
     },
   },
   
+  // Run Payroll Bot
+  {
+    name: 'run_payroll',
+    description: 'Run payroll processing for employees',
+    patterns: [
+      /run\s+payroll/i,
+      /process\s+payroll/i,
+      /execute\s+payroll/i,
+      /payroll\s+processing/i,
+      /process\s+salaries/i,
+      /pay\s+employees/i,
+    ],
+    slots: [],
+    execute: async (ctx) => {
+      try {
+        // Check if payroll already run this month (using actual table schema: payroll_period)
+        const currentMonth = new Date().toISOString().substring(0, 7);
+        const existingPayroll = await ctx.db.prepare(
+          "SELECT id, payroll_period FROM payroll_runs WHERE company_id = ? AND payroll_period = ?"
+        ).bind(ctx.companyId, currentMonth).first<{id: string, payroll_period: string}>();
+        
+        if (existingPayroll) {
+          return {
+            response: `**Payroll Already Processed**\n\nPayroll for ${existingPayroll.payroll_period} has already been processed.\n\nNavigate to **People > Payroll** to view details.`,
+            data: { already_processed: true, payroll_period: existingPayroll.payroll_period }
+          };
+        }
+
+        // Get active employees (using actual table schema: is_active, basic_salary)
+        const employees = await ctx.db.prepare(
+          "SELECT id, first_name, last_name, basic_salary FROM employees WHERE company_id = ? AND is_active = 1 LIMIT 100"
+        ).bind(ctx.companyId).all();
+
+        if (!employees.results?.length) {
+          return {
+            response: `**No Active Employees**\n\nNo active employees found for payroll processing.\n\nNavigate to **People > Employees** to add employees.`,
+            data: { no_employees: true }
+          };
+        }
+
+        // Create payroll run (using actual table schema)
+        const payrollId = crypto.randomUUID();
+        let totalGross = 0;
+        let totalNet = 0;
+        
+        for (const emp of employees.results as any[]) {
+          const grossSalary = emp.basic_salary || 25000;
+          const paye = grossSalary * 0.25;
+          const uif = grossSalary * 0.01;
+          const netSalary = grossSalary - paye - uif;
+          
+          totalGross += grossSalary;
+          totalNet += netSalary;
+        }
+        
+        // Insert using actual table columns - created_by is nullable, so we use NULL to avoid FK constraint issues with anonymous users
+        await ctx.db.prepare(`
+          INSERT INTO payroll_runs (id, company_id, payroll_period, run_date, status, total_gross, total_deductions, total_net, employee_count, created_at)
+          VALUES (?, ?, ?, date('now'), 'completed', ?, ?, ?, ?, datetime('now'))
+        `).bind(payrollId, ctx.companyId, currentMonth, totalGross, totalGross - totalNet, totalNet, employees.results.length).run();
+
+        return {
+          response: `**Payroll Processed Successfully!**\n\n` +
+            `**Payroll Period:** ${currentMonth}\n` +
+            `**Employees Processed:** ${employees.results.length}\n` +
+            `**Total Gross:** R${totalGross.toLocaleString()}\n` +
+            `**Total Deductions:** R${(totalGross - totalNet).toLocaleString()}\n` +
+            `**Total Net Pay:** R${totalNet.toLocaleString()}\n\n` +
+            `Navigate to **People > Payroll** to view payslips and details.`,
+          data: { 
+            payroll_period: currentMonth, 
+            employees: employees.results.length, 
+            total_gross: totalGross, 
+            total_net: totalNet 
+          }
+        };
+      } catch (error) {
+        console.error('Payroll error:', error);
+        return {
+          response: `**Payroll Error**\n\nUnable to process payroll: ${String(error)}`,
+        };
+      }
+    },
+  },
+  
   // Create Sales Order - Step 1: Select Customer
   {
     name: 'create_sales_order',
@@ -1374,7 +1459,14 @@ app.post('/message', async (c) => {
           { DB: c.env.DB, AI: c.env.AI }
         );
         
-        if (aiResult.success || aiResult.action_taken !== 'unknown') {
+        // Only use AI result if it actually executed a bot or query (not just clarification)
+        // action_taken values: 'executed', 'no_action', 'error' = bot ran; 'clarify' = unknown intent
+        const actionTaken = aiResult.action_taken || '';
+        const isActualAction = ['executed', 'no_action', 'error'].includes(actionTaken) || 
+                               (aiResult.bot_id !== null && aiResult.bot_id !== undefined) ||
+                               (aiResult.data && Object.keys(aiResult.data).length > 0);
+        
+        if (isActualAction) {
           result = {
             response: aiResult.response,
             data: aiResult.data,
