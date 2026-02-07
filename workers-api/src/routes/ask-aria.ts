@@ -2754,16 +2754,13 @@ app.post('/message/stream', async (c) => {
     const encoder = new TextEncoder();
     const stream = new ReadableStream({
       start(controller) {
-        // Stream the response in chunks to simulate typing
-        const words = result.response.split(' ');
-        let currentText = '';
-        
-        for (let i = 0; i < words.length; i++) {
-          currentText += (i > 0 ? ' ' : '') + words[i];
+        // SSE format requires each line of a multi-line message to be prefixed with "data: "
+        // Split the response by newlines and send each line as a separate data event
+        const lines = result.response.split('\n');
+        for (const line of lines) {
+          controller.enqueue(encoder.encode(`data: ${line}\n`));
         }
-        
-        // Send the full response
-        controller.enqueue(encoder.encode(`data: ${result.response}\n\n`));
+        controller.enqueue(encoder.encode('\n')); // End of message
         controller.enqueue(encoder.encode('data: [DONE]\n\n'));
         controller.close();
       },

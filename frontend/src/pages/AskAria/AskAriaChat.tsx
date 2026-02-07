@@ -354,6 +354,10 @@ const AskAriaChat: React.FC = () => {
                 throw new Error(data.slice(8));
               }
 
+              // Add newline between lines to preserve multi-line formatting
+              if (accumulatedContent.length > 0) {
+                accumulatedContent += '\n';
+              }
               accumulatedContent += data;
               
               setMessages((prev) =>
