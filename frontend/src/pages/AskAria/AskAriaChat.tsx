@@ -2,6 +2,142 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Send, Bot, User, Paperclip, Sparkles, FileText, ShoppingCart, Users, BarChart3, Settings, RefreshCw, Zap, TrendingUp, Package, HelpCircle, ChevronRight, DollarSign, Truck, Factory, UserCheck, FileCheck, Database, Workflow, MessageSquare, X, ChevronDown, Lightbulb } from 'lucide-react';
 import api from '@/lib/api';
 
+// Simple Markdown renderer for bot responses
+const renderMarkdown = (text: string): React.ReactNode => {
+  if (!text) return null;
+  
+  // Split by lines to handle lists and paragraphs
+  const lines = text.split('\n');
+  const elements: React.ReactNode[] = [];
+  let listItems: string[] = [];
+  let listType: 'ul' | 'ol' | null = null;
+  
+  const processInlineMarkdown = (line: string): React.ReactNode => {
+    // Process bold (**text** or __text__)
+    const parts: React.ReactNode[] = [];
+    let remaining = line;
+    let key = 0;
+    
+    while (remaining.length > 0) {
+      // Check for bold
+      const boldMatch = remaining.match(/\*\*(.+?)\*\*|__(.+?)__/);
+      if (boldMatch) {
+        const index = boldMatch.index || 0;
+        if (index > 0) {
+          parts.push(<span key={key++}>{remaining.slice(0, index)}</span>);
+        }
+        parts.push(<strong key={key++} className="font-semibold">{boldMatch[1] || boldMatch[2]}</strong>);
+        remaining = remaining.slice(index + boldMatch[0].length);
+        continue;
+      }
+      
+      // Check for italic (*text* or _text_)
+      const italicMatch = remaining.match(/\*(.+?)\*|_(.+?)_/);
+      if (italicMatch) {
+        const index = italicMatch.index || 0;
+        if (index > 0) {
+          parts.push(<span key={key++}>{remaining.slice(0, index)}</span>);
+        }
+        parts.push(<em key={key++}>{italicMatch[1] || italicMatch[2]}</em>);
+        remaining = remaining.slice(index + italicMatch[0].length);
+        continue;
+      }
+      
+      // Check for inline code (`code`)
+      const codeMatch = remaining.match(/`(.+?)`/);
+      if (codeMatch) {
+        const index = codeMatch.index || 0;
+        if (index > 0) {
+          parts.push(<span key={key++}>{remaining.slice(0, index)}</span>);
+        }
+        parts.push(<code key={key++} className="bg-white/20 px-1.5 py-0.5 rounded text-sm font-mono">{codeMatch[1]}</code>);
+        remaining = remaining.slice(index + codeMatch[0].length);
+        continue;
+      }
+      
+      // No more matches, add remaining text
+      parts.push(<span key={key++}>{remaining}</span>);
+      break;
+    }
+    
+    return parts.length > 0 ? parts : line;
+  };
+  
+  const flushList = () => {
+    if (listItems.length > 0 && listType) {
+      const ListTag = listType;
+      elements.push(
+        <ListTag key={elements.length} className={`${listType === 'ol' ? 'list-decimal' : 'list-disc'} list-inside space-y-1 my-2`}>
+          {listItems.map((item, i) => (
+            <li key={i} className="text-white/90">{processInlineMarkdown(item)}</li>
+          ))}
+        </ListTag>
+      );
+      listItems = [];
+      listType = null;
+    }
+  };
+  
+  lines.forEach((line, index) => {
+    // Check for unordered list items
+    const ulMatch = line.match(/^[\s]*[-*]\s+(.+)$/);
+    if (ulMatch) {
+      if (listType !== 'ul') {
+        flushList();
+        listType = 'ul';
+      }
+      listItems.push(ulMatch[1]);
+      return;
+    }
+    
+    // Check for ordered list items
+    const olMatch = line.match(/^[\s]*\d+\.\s+(.+)$/);
+    if (olMatch) {
+      if (listType !== 'ol') {
+        flushList();
+        listType = 'ol';
+      }
+      listItems.push(olMatch[1]);
+      return;
+    }
+    
+    // Not a list item, flush any pending list
+    flushList();
+    
+    // Check for headers
+    const h3Match = line.match(/^###\s+(.+)$/);
+    if (h3Match) {
+      elements.push(<h3 key={index} className="text-lg font-semibold text-white mt-3 mb-1">{processInlineMarkdown(h3Match[1])}</h3>);
+      return;
+    }
+    
+    const h2Match = line.match(/^##\s+(.+)$/);
+    if (h2Match) {
+      elements.push(<h2 key={index} className="text-xl font-bold text-white mt-4 mb-2">{processInlineMarkdown(h2Match[1])}</h2>);
+      return;
+    }
+    
+    const h1Match = line.match(/^#\s+(.+)$/);
+    if (h1Match) {
+      elements.push(<h1 key={index} className="text-2xl font-bold text-white mt-4 mb-2">{processInlineMarkdown(h1Match[1])}</h1>);
+      return;
+    }
+    
+    // Regular paragraph
+    if (line.trim()) {
+      elements.push(<p key={index} className="my-1">{processInlineMarkdown(line)}</p>);
+    } else if (index > 0 && index < lines.length - 1) {
+      // Empty line between content
+      elements.push(<br key={index} />);
+    }
+  });
+  
+  // Flush any remaining list
+  flushList();
+  
+  return <div className="space-y-1">{elements}</div>;
+};
+
 interface Message {
   id: string;
   role: 'user' | 'assistant' | 'system';
@@ -524,13 +660,17 @@ const AskAriaChat: React.FC = () => {
                   )}
                 </div>
                 <div className={`flex-1 max-w-[80%] ${message.role === 'user' ? 'text-right' : ''}`}>
-                  <div className={`inline-block rounded-2xl px-5 py-3 shadow-lg ${
-                    message.role === 'user'
-                      ? 'bg-gradient-to-br from-blue-500 to-blue-600 text-white'
-                      : 'bg-white/10 backdrop-blur-sm text-white border border-white/10'
-                  }`}>
-                    <p className="whitespace-pre-wrap leading-relaxed">{message.content}</p>
-                  </div>
+                                    <div className={`inline-block rounded-2xl px-5 py-3 shadow-lg ${
+                                      message.role === 'user'
+                                        ? 'bg-gradient-to-br from-blue-500 to-blue-600 text-white'
+                                        : 'bg-white/10 backdrop-blur-sm text-white border border-white/10'
+                                    }`}>
+                                      {message.role === 'assistant' ? (
+                                        <div className="leading-relaxed">{renderMarkdown(message.content)}</div>
+                                      ) : (
+                                        <p className="whitespace-pre-wrap leading-relaxed">{message.content}</p>
+                                      )}
+                                    </div>
                   <p className="text-purple-400/60 text-xs mt-2 px-2">
                     {new Date(message.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </p>
