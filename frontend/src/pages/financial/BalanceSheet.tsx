@@ -41,7 +41,8 @@ export default function BalanceSheetPage() {
     setError(null);
     
     try {
-      const response = await fetch(`/api/reports/balance-sheet?as_of_date=${asOfDate}`);
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
+      const response = await fetch(`${API_BASE}/api/reports/balance-sheet?as_of_date=${asOfDate}`, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } });
       if (!response.ok) throw new Error('Failed to fetch');
       const result = await response.json();
       setData(result);
@@ -98,7 +99,8 @@ export default function BalanceSheetPage() {
 
   const handleExport = async () => {
     try {
-      const response = await fetch(`/api/reports/balance-sheet/export?as_of_date=${asOfDate}&format=pdf`);
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
+      const response = await fetch(`${API_BASE}/api/reports/balance-sheet/export?as_of_date=${asOfDate}&format=pdf`, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } });
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');

@@ -45,6 +45,7 @@ export const CustomerDashboard: React.FC = () => {
 
   const loadDashboardData = async () => {
     try {
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
       const token = localStorage.getItem('token');
       const headers = {
         'Authorization': `Bearer ${token}`,
@@ -52,19 +53,19 @@ export const CustomerDashboard: React.FC = () => {
       };
 
       // Load metrics
-      const metricsRes = await fetch('/api/aria/growth/embedding-score', { headers });
+      const metricsRes = await fetch(`${API_BASE}/api/aria/growth/embedding-score`, { headers });
       const metricsData = await metricsRes.json();
       setMetrics(metricsData);
 
       // Load health
-      const healthRes = await fetch('/api/aria/growth/health', { headers });
+      const healthRes = await fetch(`${API_BASE}/api/aria/growth/health`, { headers });
       const healthData = await healthRes.json();
       setHealth(healthData);
 
       // Load opportunities
-      const oppRes = await fetch('/api/aria/growth/opportunities', { headers });
+      const oppRes = await fetch(`${API_BASE}/api/aria/growth/opportunities`, { headers });
       const oppData = await oppRes.json();
-      setOpportunities(oppData.opportunities);
+      setOpportunities(oppData.opportunities || []);
 
     } catch (error) {
       console.error('Failed to load dashboard:', error);

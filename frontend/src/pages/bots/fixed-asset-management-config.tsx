@@ -40,7 +40,10 @@ export default function FixedAssetManagementConfig() {
 
   const loadConfiguration = async () => {
     try {
-      const response = await fetch('/api/agents/fixed_asset_management/config');
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
+      const response = await fetch(`${API_BASE}/api/agents/fixed_asset_management/config`, {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      });
       const data = await response.json();
       setConfig(data);
     } catch (error) {
@@ -53,9 +56,10 @@ export default function FixedAssetManagementConfig() {
     setMessage(null);
     
     try {
-      const response = await fetch('/api/agents/fixed_asset_management/config', {
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
+      const response = await fetch(`${API_BASE}/api/agents/fixed_asset_management/config`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` },
         body: JSON.stringify(config)
       });
       
@@ -73,8 +77,10 @@ export default function FixedAssetManagementConfig() {
 
   const handleExecute = async () => {
     try {
-      const response = await fetch('/api/agents/fixed_asset_management/execute', {
-        method: 'POST'
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
+      const response = await fetch(`${API_BASE}/api/agents/fixed_asset_management/execute`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
       
       if (response.ok) {

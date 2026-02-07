@@ -59,12 +59,13 @@ export default function SalesInvoiceReconciliation() {
   const fetchData = async () => {
     setLoading(true);
     try {
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
       const token = localStorage.getItem('token');
       const headers = { 'Authorization': `Bearer ${token}` };
 
       const [summaryRes, exceptionsRes] = await Promise.all([
-        fetch('/api/sales-reconciliation/summary', { headers }),
-        fetch(`/api/sales-reconciliation/exceptions?${new URLSearchParams({
+        fetch(`${API_BASE}/api/sales-reconciliation/summary`, { headers }),
+        fetch(`${API_BASE}/api/sales-reconciliation/exceptions?${new URLSearchParams({
           ...(statusFilter && { status: statusFilter }),
           ...(typeFilter && { exception_type: typeFilter })
         })}`, { headers })
@@ -87,8 +88,9 @@ export default function SalesInvoiceReconciliation() {
   const runReconciliation = async () => {
     setRunningReconciliation(true);
     try {
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
       const token = localStorage.getItem('token');
-      const response = await fetch('/api/sales-reconciliation/run-reconciliation', {
+      const response = await fetch(`${API_BASE}/api/sales-reconciliation/run-reconciliation`, {
         method: 'POST',
         headers: { 
           'Authorization': `Bearer ${token}`,
@@ -110,8 +112,9 @@ export default function SalesInvoiceReconciliation() {
 
   const approveException = async (exceptionId: number) => {
     try {
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
       const token = localStorage.getItem('token');
-      const response = await fetch(`/api/sales-reconciliation/exceptions/${exceptionId}/approve`, {
+      const response = await fetch(`${API_BASE}/api/sales-reconciliation/exceptions/${exceptionId}/approve`, {
         method: 'PATCH',
         headers: { 
           'Authorization': `Bearer ${token}`,
@@ -131,8 +134,9 @@ export default function SalesInvoiceReconciliation() {
     if (!selectedException) return;
     
     try {
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
       const token = localStorage.getItem('token');
-      const response = await fetch(`/api/sales-reconciliation/exceptions/${selectedException.id}/post`, {
+      const response = await fetch(`${API_BASE}/api/sales-reconciliation/exceptions/${selectedException.id}/post`, {
         method: 'POST',
         headers: { 
           'Authorization': `Bearer ${token}`,

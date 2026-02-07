@@ -132,13 +132,15 @@ const Settings: React.FC = () => {
   const fetchSettings = async () => {
     setLoading(true);
     try {
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
+      const headers = { 'Authorization': `Bearer ${localStorage.getItem('token')}` };
       const [profileRes, companyRes, notificationsRes, securityRes, systemRes, integrationsRes] = await Promise.all([
-        fetch('/api/settings/profile'),
-        fetch('/api/settings/company'),
-        fetch('/api/settings/notifications'),
-        fetch('/api/settings/security'),
-        fetch('/api/settings/system'),
-        fetch('/api/settings/integrations'),
+        fetch(`${API_BASE}/api/settings/profile`, { headers }),
+        fetch(`${API_BASE}/api/settings/company`, { headers }),
+        fetch(`${API_BASE}/api/settings/notifications`, { headers }),
+        fetch(`${API_BASE}/api/settings/security`, { headers }),
+        fetch(`${API_BASE}/api/settings/system`, { headers }),
+        fetch(`${API_BASE}/api/settings/integrations`, { headers }),
       ]);
 
       if (profileRes.ok) {
@@ -207,11 +209,12 @@ const Settings: React.FC = () => {
     setSaving(true);
     setSaveError(null);
     try {
-      const endpoint = tabValue === 0 ? '/api/settings/profile' :
-                       tabValue === 1 ? '/api/settings/company' :
-                       tabValue === 2 ? '/api/settings/notifications' :
-                       tabValue === 3 ? '/api/settings/security' :
-                       tabValue === 4 ? '/api/settings/system' : '/api/settings/integrations';
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
+      const endpoint = tabValue === 0 ? `${API_BASE}/api/settings/profile` :
+                       tabValue === 1 ? `${API_BASE}/api/settings/company` :
+                       tabValue === 2 ? `${API_BASE}/api/settings/notifications` :
+                       tabValue === 3 ? `${API_BASE}/api/settings/security` :
+                       tabValue === 4 ? `${API_BASE}/api/settings/system` : `${API_BASE}/api/settings/integrations`;
       
       const data = tabValue === 0 ? profile :
                    tabValue === 1 ? company :
@@ -221,7 +224,7 @@ const Settings: React.FC = () => {
 
       const res = await fetch(endpoint, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` },
         body: JSON.stringify(data),
       });
 

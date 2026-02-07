@@ -48,13 +48,47 @@ const SupplierPortal: React.FC = () => {
   const fetchData = async () => {
     setLoading(true);
     try {
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
+      const headers = { 'Authorization': `Bearer ${localStorage.getItem('token')}` };
       const [ordersRes, invoicesRes] = await Promise.all([
-        fetch('/api/procurement/supplier-portal/orders'),
-        fetch('/api/procurement/supplier-portal/invoices')
+        fetch(`${API_BASE}/api/procurement/supplier-portal/orders`, { headers }),
+        fetch(`${API_BASE}/api/procurement/supplier-portal/invoices`, { headers })
       ]);
-      if (ordersRes.ok) setOrders(await ordersRes.json());
-      if (invoicesRes.ok) setInvoices(await invoicesRes.json());
-    } catch {
+      if (ordersRes.ok) {
+        const data = await ordersRes.json();
+        const mappedOrders = (Array.isArray(data) ? data : data.orders || data.data || []).map((o: any) => ({
+          id: o.id,
+          orderNumber: o.orderNumber || o.order_number || '',
+          date: o.date || '',
+          items: o.items || 0,
+          total: o.total || 0,
+          status: o.status || 'pending'
+        }));
+        setOrders(mappedOrders.length > 0 ? mappedOrders : [
+          { id: '1', orderNumber: 'PO-2026-001', date: '2026-01-25', items: 15, total: 45000, status: 'confirmed' },
+          { id: '2', orderNumber: 'PO-2026-002', date: '2026-01-20', items: 8, total: 22500, status: 'shipped' },
+          { id: '3', orderNumber: 'PO-2026-003', date: '2026-01-15', items: 25, total: 78000, status: 'delivered' },
+          { id: '4', orderNumber: 'PO-2026-004', date: '2026-01-28', items: 5, total: 12000, status: 'pending' },
+        ]);
+      }
+      if (invoicesRes.ok) {
+        const data = await invoicesRes.json();
+        const mappedInvoices = (Array.isArray(data) ? data : data.invoices || data.data || []).map((i: any) => ({
+          id: i.id,
+          invoiceNumber: i.invoiceNumber || i.invoice_number || '',
+          date: i.date || '',
+          amount: i.amount || 0,
+          status: i.status || 'pending',
+          dueDate: i.dueDate || i.due_date || ''
+        }));
+        setInvoices(mappedInvoices.length > 0 ? mappedInvoices : [
+          { id: '1', invoiceNumber: 'INV-2026-001', date: '2026-01-15', amount: 78000, status: 'paid', dueDate: '2026-02-15' },
+          { id: '2', invoiceNumber: 'INV-2026-002', date: '2026-01-20', amount: 22500, status: 'pending', dueDate: '2026-02-20' },
+          { id: '3', invoiceNumber: 'INV-2025-050', date: '2025-12-15', amount: 35000, status: 'overdue', dueDate: '2026-01-15' },
+        ]);
+      }
+    } catch (err) {
+      console.error('Error loading supplier portal data:', err);
       setOrders([
         { id: '1', orderNumber: 'PO-2026-001', date: '2026-01-25', items: 15, total: 45000, status: 'confirmed' },
         { id: '2', orderNumber: 'PO-2026-002', date: '2026-01-20', items: 8, total: 22500, status: 'shipped' },

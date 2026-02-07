@@ -25,9 +25,24 @@ export default function BankTransfers() {
   const fetchTransfers = async () => {
     try {
       setLoading(true);
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
       const token = localStorage.getItem('token');
-      const res = await fetch('/api/financial/bank-transfers', { headers: { 'Authorization': `Bearer ${token}` } });
-      if (res.ok) { const data = await res.json(); setTransfers(data.bank_transfers || []); }
+      const res = await fetch(`${API_BASE}/api/financial/bank-transfers`, { headers: { 'Authorization': `Bearer ${token}` } });
+      if (res.ok) {
+        const data = await res.json();
+        const mappedData = (Array.isArray(data) ? data : data.bank_transfers || data.data || []).map((t: any) => ({
+          id: t.id,
+          transfer_number: t.transfer_number || `TRF-${t.id}`,
+          transfer_date: t.transfer_date || '',
+          from_account_name: t.from_account_name || '',
+          to_account_name: t.to_account_name || '',
+          amount: t.amount || 0,
+          reference: t.reference || '',
+          status: t.status || 'pending',
+          created_at: t.created_at || ''
+        }));
+        setTransfers(mappedData);
+      }
       setError(null);
     } catch (err) { setError('Failed to load bank transfers'); } finally { setLoading(false); }
   };
@@ -35,8 +50,9 @@ export default function BankTransfers() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
       const token = localStorage.getItem('token');
-      await fetch('/api/financial/bank-transfers', { method: 'POST', headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }, body: JSON.stringify(formData) });
+      await fetch(`${API_BASE}/api/financial/bank-transfers`, { method: 'POST', headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }, body: JSON.stringify(formData) });
       setShowForm(false);
       setFormData({ transfer_date: '', from_account_id: '', to_account_id: '', amount: 0, reference: '' });
       fetchTransfers();

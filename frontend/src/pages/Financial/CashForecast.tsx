@@ -21,8 +21,9 @@ export default function CashForecast() {
   const fetchForecast = async () => {
     try {
       setLoading(true);
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
       const token = localStorage.getItem('token');
-      const res = await fetch(`/api/financial/cash-forecast?period=${period}`, { headers: { 'Authorization': `Bearer ${token}` } });
+      const res = await fetch(`${API_BASE}/api/financial/cash-forecast?period=${period}`, { headers: { 'Authorization': `Bearer ${token}` } });
       if (res.ok) { const data = await res.json(); setForecast(data.forecast || []); }
       setError(null);
     } catch (err) { setError('Failed to load cash forecast'); } finally { setLoading(false); }

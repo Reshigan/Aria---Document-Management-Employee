@@ -29,16 +29,32 @@ const RBACManagement: React.FC = () => {
 
   const fetchRolesAndPermissions = async () => {
     try {
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
       const [rolesRes, permsRes] = await Promise.all([
-        fetch('/api/rbac/roles'),
-        fetch('/api/rbac/permissions')
+        fetch(`${API_BASE}/api/rbac/roles`, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }),
+        fetch(`${API_BASE}/api/rbac/permissions`, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } })
       ]);
       
       const rolesData = await rolesRes.json();
       const permsData = await permsRes.json();
       
-      setRoles(rolesData);
-      setPermissions(permsData);
+      const mappedRoles = (Array.isArray(rolesData) ? rolesData : rolesData.roles || rolesData.data || []).map((r: any) => ({
+        id: r.id,
+        name: r.name || r.role_name || '',
+        description: r.description || '',
+        permissions: r.permissions || []
+      }));
+      
+      const mappedPerms = (Array.isArray(permsData) ? permsData : permsData.permissions || permsData.data || []).map((p: any) => ({
+        id: p.id,
+        module: p.module || '',
+        action: p.action || '',
+        description: p.description || '',
+        is_high_risk: p.is_high_risk || false
+      }));
+      
+      setRoles(mappedRoles);
+      setPermissions(mappedPerms);
     } catch (error) {
       console.error('Failed to fetch RBAC data:', error);
     } finally {
@@ -68,9 +84,10 @@ const RBACManagement: React.FC = () => {
     if (!selectedRole) return;
 
     try {
-      await fetch(`/api/rbac/roles/${selectedRole.id}`, {
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
+      await fetch(`${API_BASE}/api/rbac/roles/${selectedRole.id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` },
         body: JSON.stringify(selectedRole)
       });
 

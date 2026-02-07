@@ -41,13 +41,15 @@ export default function OcrDocumentCaptureReport() {
 
   const loadData = async () => {
     try {
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
+      const headers = { 'Authorization': `Bearer ${localStorage.getItem('token')}` };
       // Load statistics
-      const statsResponse = await fetch('/api/agents/ocr_document_capture/statistics');
+      const statsResponse = await fetch(`${API_BASE}/api/agents/ocr_document_capture/statistics`, { headers });
       const statsData = await statsResponse.json();
       setStats(statsData);
       
       // Load activities
-      const activitiesResponse = await fetch('/api/agents/ocr_document_capture/activities');
+      const activitiesResponse = await fetch(`${API_BASE}/api/agents/ocr_document_capture/activities`, { headers });
       const activitiesData = await activitiesResponse.json();
       setActivities(activitiesData);
     } catch (error) {

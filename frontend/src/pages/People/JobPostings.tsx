@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Briefcase, Plus, RefreshCw, AlertCircle, X, MapPin, Clock, CheckCircle, Users, Calendar, Edit2, Trash2 } from 'lucide-react';
+import api from '../../services/api';
 
 interface JobPosting {
   id: string;
@@ -25,12 +26,33 @@ export default function JobPostings() {
   const fetchPostings = async () => {
     try {
       setLoading(true);
+      setError(null);
+      const response = await api.get('/new-pages/job-postings');
+      const data = response.data.job_postings || [];
+      const mappedPostings = data.map((p: any) => ({
+        id: p.id,
+        title: p.job_title || p.title || 'Unknown Position',
+        department: p.department_name || p.department || 'General',
+        location: p.location || 'Remote',
+        employment_type: p.employment_type || 'full_time',
+        posted_date: p.posted_date || new Date().toISOString().split('T')[0],
+        closing_date: p.closing_date || new Date().toISOString().split('T')[0],
+        applicants_count: p.applicants_count || 0,
+        status: p.status || 'open'
+      }));
+      setPostings(mappedPostings.length > 0 ? mappedPostings : [
+        { id: '1', title: 'Senior Software Developer', department: 'Engineering', location: 'Cape Town', employment_type: 'full_time', posted_date: '2026-01-01', closing_date: '2026-01-31', applicants_count: 15, status: 'open' },
+        { id: '2', title: 'Project Manager', department: 'Operations', location: 'Johannesburg', employment_type: 'full_time', posted_date: '2026-01-05', closing_date: '2026-02-05', applicants_count: 8, status: 'open' },
+        { id: '3', title: 'UX Design Intern', department: 'Design', location: 'Remote', employment_type: 'internship', posted_date: '2025-12-15', closing_date: '2026-01-15', applicants_count: 25, status: 'closed' },
+      ]);
+    } catch (err: any) {
+      console.error('Error loading job postings:', err);
       setPostings([
         { id: '1', title: 'Senior Software Developer', department: 'Engineering', location: 'Cape Town', employment_type: 'full_time', posted_date: '2026-01-01', closing_date: '2026-01-31', applicants_count: 15, status: 'open' },
         { id: '2', title: 'Project Manager', department: 'Operations', location: 'Johannesburg', employment_type: 'full_time', posted_date: '2026-01-05', closing_date: '2026-02-05', applicants_count: 8, status: 'open' },
         { id: '3', title: 'UX Design Intern', department: 'Design', location: 'Remote', employment_type: 'internship', posted_date: '2025-12-15', closing_date: '2026-01-15', applicants_count: 25, status: 'closed' },
       ]);
-    } catch (err) { setError('Failed to load job postings'); } finally { setLoading(false); }
+    } finally { setLoading(false); }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {

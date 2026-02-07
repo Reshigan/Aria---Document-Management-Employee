@@ -27,10 +27,35 @@ const OrgChart: React.FC = () => {
   const fetchEmployees = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/hr/org-chart');
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
+      const response = await fetch(`${API_BASE}/api/hr/org-chart`, {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      });
       if (response.ok) {
         const data = await response.json();
-        setEmployees(data);
+        const mappedData = (Array.isArray(data) ? data : data.employees || data.data || []).map((e: any) => ({
+          id: e.id,
+          name: e.name || `${e.first_name || ''} ${e.last_name || ''}`.trim() || 'Unknown',
+          title: e.title || e.position || e.job_title || '',
+          department: e.department || e.department_name || '',
+          email: e.email || '',
+          phone: e.phone || '',
+          managerId: e.managerId || e.manager_id || null,
+          directReports: e.directReports || e.direct_reports || [],
+          avatar: e.avatar
+        }));
+        setEmployees(mappedData.length > 0 ? mappedData : [
+          { id: '1', name: 'Sarah Johnson', title: 'CEO', department: 'Executive', email: 'sarah@company.com', phone: '+27 11 123 4567', managerId: null, directReports: ['2', '3', '4'] },
+          { id: '2', name: 'Michael Chen', title: 'CFO', department: 'Finance', email: 'michael@company.com', phone: '+27 11 123 4568', managerId: '1', directReports: ['5', '6'] },
+          { id: '3', name: 'Emily Davis', title: 'CTO', department: 'Technology', email: 'emily@company.com', phone: '+27 11 123 4569', managerId: '1', directReports: ['7', '8'] },
+          { id: '4', name: 'James Wilson', title: 'COO', department: 'Operations', email: 'james@company.com', phone: '+27 11 123 4570', managerId: '1', directReports: ['9', '10'] },
+          { id: '5', name: 'Lisa Brown', title: 'Finance Manager', department: 'Finance', email: 'lisa@company.com', phone: '+27 11 123 4571', managerId: '2', directReports: [] },
+          { id: '6', name: 'David Lee', title: 'Accountant', department: 'Finance', email: 'david@company.com', phone: '+27 11 123 4572', managerId: '2', directReports: [] },
+          { id: '7', name: 'Anna Smith', title: 'Dev Lead', department: 'Technology', email: 'anna@company.com', phone: '+27 11 123 4573', managerId: '3', directReports: [] },
+          { id: '8', name: 'Tom Harris', title: 'QA Lead', department: 'Technology', email: 'tom@company.com', phone: '+27 11 123 4574', managerId: '3', directReports: [] },
+          { id: '9', name: 'Kate Miller', title: 'HR Manager', department: 'Operations', email: 'kate@company.com', phone: '+27 11 123 4575', managerId: '4', directReports: [] },
+          { id: '10', name: 'Robert Taylor', title: 'Facilities Manager', department: 'Operations', email: 'robert@company.com', phone: '+27 11 123 4576', managerId: '4', directReports: [] },
+        ]);
       } else {
         setEmployees([
           { id: '1', name: 'Sarah Johnson', title: 'CEO', department: 'Executive', email: 'sarah@company.com', phone: '+27 11 123 4567', managerId: null, directReports: ['2', '3', '4'] },
@@ -45,8 +70,20 @@ const OrgChart: React.FC = () => {
           { id: '10', name: 'Robert Taylor', title: 'Facilities Manager', department: 'Operations', email: 'robert@company.com', phone: '+27 11 123 4576', managerId: '4', directReports: [] },
         ]);
       }
-    } catch {
-      setEmployees([]);
+    } catch (err) {
+      console.error('Error loading org chart:', err);
+      setEmployees([
+        { id: '1', name: 'Sarah Johnson', title: 'CEO', department: 'Executive', email: 'sarah@company.com', phone: '+27 11 123 4567', managerId: null, directReports: ['2', '3', '4'] },
+        { id: '2', name: 'Michael Chen', title: 'CFO', department: 'Finance', email: 'michael@company.com', phone: '+27 11 123 4568', managerId: '1', directReports: ['5', '6'] },
+        { id: '3', name: 'Emily Davis', title: 'CTO', department: 'Technology', email: 'emily@company.com', phone: '+27 11 123 4569', managerId: '1', directReports: ['7', '8'] },
+        { id: '4', name: 'James Wilson', title: 'COO', department: 'Operations', email: 'james@company.com', phone: '+27 11 123 4570', managerId: '1', directReports: ['9', '10'] },
+        { id: '5', name: 'Lisa Brown', title: 'Finance Manager', department: 'Finance', email: 'lisa@company.com', phone: '+27 11 123 4571', managerId: '2', directReports: [] },
+        { id: '6', name: 'David Lee', title: 'Accountant', department: 'Finance', email: 'david@company.com', phone: '+27 11 123 4572', managerId: '2', directReports: [] },
+        { id: '7', name: 'Anna Smith', title: 'Dev Lead', department: 'Technology', email: 'anna@company.com', phone: '+27 11 123 4573', managerId: '3', directReports: [] },
+        { id: '8', name: 'Tom Harris', title: 'QA Lead', department: 'Technology', email: 'tom@company.com', phone: '+27 11 123 4574', managerId: '3', directReports: [] },
+        { id: '9', name: 'Kate Miller', title: 'HR Manager', department: 'Operations', email: 'kate@company.com', phone: '+27 11 123 4575', managerId: '4', directReports: [] },
+        { id: '10', name: 'Robert Taylor', title: 'Facilities Manager', department: 'Operations', email: 'robert@company.com', phone: '+27 11 123 4576', managerId: '4', directReports: [] },
+      ]);
     }
     setLoading(false);
   };

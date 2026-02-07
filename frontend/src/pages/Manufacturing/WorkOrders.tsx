@@ -81,7 +81,10 @@ const WorkOrders: React.FC = () => {
 
   const fetchOrders = async () => {
     try {
-      const response = await fetch('https://aria.vantax.co.za/api/erp/manufacturing/work-orders');
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
+      const response = await fetch(`${API_BASE}/api/erp/manufacturing/work-orders`, {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      });
       const data = await response.json();
       setOrders(data.work_orders || []);
     } catch (error) {
@@ -131,8 +134,10 @@ const WorkOrders: React.FC = () => {
   const handleDelete = async (orderId: string) => {
     if (!confirm('Are you sure you want to delete this work order?')) return;
     try {
-      await fetch(`https://aria.vantax.co.za/api/erp/manufacturing/work-orders/${orderId}`, {
-        method: 'DELETE'
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
+      await fetch(`${API_BASE}/api/erp/manufacturing/work-orders/${orderId}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
       setSuccess('Work order deleted successfully');
       fetchOrders();
@@ -148,9 +153,10 @@ const WorkOrders: React.FC = () => {
       return;
     }
     try {
-      await fetch(`https://aria.vantax.co.za/api/erp/manufacturing/work-orders/${order.order_id}`, {
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
+      await fetch(`${API_BASE}/api/erp/manufacturing/work-orders/${order.order_id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` },
         body: JSON.stringify({ 
           ...order, 
           status: 'in_progress',
@@ -171,9 +177,10 @@ const WorkOrders: React.FC = () => {
       return;
     }
     try {
-      await fetch(`https://aria.vantax.co.za/api/erp/manufacturing/work-orders/${order.order_id}`, {
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
+      await fetch(`${API_BASE}/api/erp/manufacturing/work-orders/${order.order_id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` },
         body: JSON.stringify({ ...order, status: 'on_hold' })
       });
       setSuccess('Work order put on hold');
@@ -190,9 +197,10 @@ const WorkOrders: React.FC = () => {
       return;
     }
     try {
-      await fetch(`https://aria.vantax.co.za/api/erp/manufacturing/work-orders/${order.order_id}`, {
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
+      await fetch(`${API_BASE}/api/erp/manufacturing/work-orders/${order.order_id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` },
         body: JSON.stringify({ ...order, status: 'in_progress' })
       });
       setSuccess('Work order resumed');
@@ -209,9 +217,10 @@ const WorkOrders: React.FC = () => {
       return;
     }
     try {
-      await fetch(`https://aria.vantax.co.za/api/erp/manufacturing/work-orders/${order.order_id}`, {
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
+      await fetch(`${API_BASE}/api/erp/manufacturing/work-orders/${order.order_id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` },
         body: JSON.stringify({ 
           ...order, 
           status: 'completed',
@@ -234,9 +243,10 @@ const WorkOrders: React.FC = () => {
     }
     if (!confirm('Are you sure you want to cancel this work order?')) return;
     try {
-      await fetch(`https://aria.vantax.co.za/api/erp/manufacturing/work-orders/${order.order_id}`, {
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
+      await fetch(`${API_BASE}/api/erp/manufacturing/work-orders/${order.order_id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` },
         body: JSON.stringify({ ...order, status: 'cancelled' })
       });
       setSuccess('Work order cancelled');
@@ -253,9 +263,10 @@ const WorkOrders: React.FC = () => {
       return;
     }
     try {
-      await fetch(`https://aria.vantax.co.za/api/erp/manufacturing/work-orders/${order.order_id}`, {
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
+      await fetch(`${API_BASE}/api/erp/manufacturing/work-orders/${order.order_id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` },
         body: JSON.stringify({ ...order, quantity_completed: completedQty })
       });
       setSuccess('Progress updated');
@@ -268,9 +279,10 @@ const WorkOrders: React.FC = () => {
   // Business Logic: Create Quality Inspection
   const handleCreateInspection = async (order: WorkOrder) => {
     try {
-      await fetch('https://aria.vantax.co.za/api/erp/quality/inspections', {
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
+      await fetch(`${API_BASE}/api/erp/quality/inspections`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` },
         body: JSON.stringify({
           work_order_id: order.order_id,
           product_name: order.product_name,
@@ -297,14 +309,15 @@ const WorkOrders: React.FC = () => {
       return;
     }
     try {
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
       const url = editingOrder 
-        ? `https://aria.vantax.co.za/api/erp/manufacturing/work-orders/${editingOrder.order_id}`
-        : 'https://aria.vantax.co.za/api/erp/manufacturing/work-orders';
+        ? `${API_BASE}/api/erp/manufacturing/work-orders/${editingOrder.order_id}`
+        : `${API_BASE}/api/erp/manufacturing/work-orders`;
       const method = editingOrder ? 'PUT' : 'POST';
       
       await fetch(url, {
         method,
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` },
         body: JSON.stringify({
           ...formData,
           status: editingOrder?.status || 'planned',

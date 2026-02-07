@@ -110,7 +110,8 @@ const DocumentProcessing: React.FC = () => {
   const loadProcessingJobs = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/documents/processing/jobs', {
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
+      const response = await fetch(`${API_BASE}/api/documents/processing/jobs`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
@@ -134,7 +135,8 @@ const DocumentProcessing: React.FC = () => {
 
   const loadJobResults = async (jobId: number) => {
     try {
-      const response = await fetch(`/api/documents/processing/job/${jobId}/status`, {
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
+      const response = await fetch(`${API_BASE}/api/documents/processing/job/${jobId}/status`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }

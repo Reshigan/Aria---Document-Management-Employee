@@ -41,13 +41,15 @@ export default function RfqResponseReport() {
 
   const loadData = async () => {
     try {
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
+      const headers = { 'Authorization': `Bearer ${localStorage.getItem('token')}` };
       // Load statistics
-      const statsResponse = await fetch('/api/agents/rfq_response/statistics');
+      const statsResponse = await fetch(`${API_BASE}/api/agents/rfq_response/statistics`, { headers });
       const statsData = await statsResponse.json();
       setStats(statsData);
       
       // Load activities
-      const activitiesResponse = await fetch('/api/agents/rfq_response/activities');
+      const activitiesResponse = await fetch(`${API_BASE}/api/agents/rfq_response/activities`, { headers });
       const activitiesData = await activitiesResponse.json();
       setActivities(activitiesData);
     } catch (error) {

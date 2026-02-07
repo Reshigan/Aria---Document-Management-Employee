@@ -35,7 +35,8 @@ const BotTestingDashboard: React.FC = () => {
   const fetchAgents = async () => {
     setLoading(true);
     try {
-      const res = await fetch('/api/bots/test-results');
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
+      const res = await fetch(`${API_BASE}/api/bots/test-results`, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } });
       if (res.ok) {
         const data = await res.json();
         setBots(data);
@@ -83,7 +84,8 @@ const BotTestingDashboard: React.FC = () => {
     ));
 
     try {
-      const res = await fetch(`/api/bots/${botId}/test`, { method: 'POST' });
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
+      const res = await fetch(`${API_BASE}/api/bots/${botId}/test`, { method: 'POST', headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } });
       if (res.ok) {
         const result = await res.json();
         setBots(prev => prev.map(agent =>

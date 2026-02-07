@@ -92,7 +92,8 @@ export default function DocumentUpload() {
       if (vendorId) formData.append('vendor_id', vendorId.toString());
       if (instruction) formData.append('instruction', instruction);
 
-      const response = await fetch('/api/documents/process', {
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
+      const response = await fetch(`${API_BASE}/api/documents/process`, {
         method: 'POST',
         body: formData,
         headers: {
@@ -135,7 +136,8 @@ export default function DocumentUpload() {
       formData.append('vat_amount', processedDoc.header.vat_amount.toString());
       formData.append('lines', JSON.stringify(processedDoc.lines));
 
-      const response = await fetch('/api/documents/post', {
+      const API_BASE_POST = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
+      const response = await fetch(`${API_BASE_POST}/api/documents/post`, {
         method: 'POST',
         body: formData,
         headers: {
@@ -202,7 +204,8 @@ export default function DocumentUpload() {
         formData.append('sap_posting', JSON.stringify(processedDoc.sap_posting));
       }
 
-      const response = await fetch('/api/documents/export-excel', {
+      const API_BASE_EXPORT = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
+      const response = await fetch(`${API_BASE_EXPORT}/api/documents/export-excel`, {
         method: 'POST',
         body: formData,
         headers: {
