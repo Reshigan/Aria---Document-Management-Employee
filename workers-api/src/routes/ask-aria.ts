@@ -1338,11 +1338,19 @@ function findSkill(message: string): Skill | null {
 // Default response for unmatched messages
 function getDefaultResponse(): SkillResult {
   return {
-    response: `I'm not sure how to help with that. Here are some things I can do:\n\n` +
-      `- Show customers, suppliers, products, invoices, orders, quotes\n` +
-      `- Create quotes or purchase orders\n` +
-      `- Show dashboard summary\n\n` +
-      `Type "help" for more details.`,
+    response: `**I couldn't understand that command.**\n\n` +
+      `Here are some things you can try:\n\n` +
+      `**View Data:**\n` +
+      `- "Show customers" or "List suppliers"\n` +
+      `- "Show products" or "Check inventory"\n` +
+      `- "Show invoices" or "List orders"\n\n` +
+      `**Create Records:**\n` +
+      `- "Create a quote" or "Create purchase order"\n` +
+      `- "Create sales order" or "Generate invoice"\n\n` +
+      `**Run Bots:**\n` +
+      `- "Run payroll" or "Run reconciliation"\n` +
+      `- "List all available bots"\n\n` +
+      `Type **"help"** for the full list of commands.`,
   };
 }
 
@@ -2742,20 +2750,13 @@ app.post('/message/stream', async (c) => {
       VALUES (?, ?, 'assistant', ?, datetime('now'))
     `).bind(generateUUID(), conversation_id, result.response).run();
     
-    // Create streaming response
+    // Create streaming response - send as JSON to preserve newlines
     const encoder = new TextEncoder();
     const stream = new ReadableStream({
       start(controller) {
-        // Stream the response in chunks to simulate typing
-        const words = result.response.split(' ');
-        let currentText = '';
-        
-        for (let i = 0; i < words.length; i++) {
-          currentText += (i > 0 ? ' ' : '') + words[i];
-        }
-        
-        // Send the full response
-        controller.enqueue(encoder.encode(`data: ${result.response}\n\n`));
+        // Send the response as JSON to preserve newlines exactly
+        const jsonResponse = JSON.stringify({ content: result.response });
+        controller.enqueue(encoder.encode(`data: ${jsonResponse}\n\n`));
         controller.enqueue(encoder.encode('data: [DONE]\n\n'));
         controller.close();
       },

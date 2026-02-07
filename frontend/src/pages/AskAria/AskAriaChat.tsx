@@ -343,8 +343,8 @@ const AskAriaChat: React.FC = () => {
           const lines = chunk.split('\n');
 
           for (const line of lines) {
-            if (line.startsWith('data: ')) {
-              const data = line.slice(6);
+            if (line.startsWith('data:')) {
+              const data = line.startsWith('data: ') ? line.slice(6) : line.slice(5);
               
               if (data === '[DONE]') {
                 break;
@@ -354,7 +354,13 @@ const AskAriaChat: React.FC = () => {
                 throw new Error(data.slice(8));
               }
 
-              accumulatedContent += data;
+              // Parse JSON response from backend - v2
+              try {
+                const jsonData = JSON.parse(data);
+                accumulatedContent = jsonData.content || data;
+              } catch {
+                accumulatedContent = data;
+              }
               
               setMessages((prev) =>
                 prev.map((msg) =>
