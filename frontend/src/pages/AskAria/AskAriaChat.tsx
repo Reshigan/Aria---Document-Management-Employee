@@ -340,13 +340,10 @@ const AskAriaChat: React.FC = () => {
           if (done) break;
 
           const chunk = decoder.decode(value, { stream: true });
-          // Split by newline but filter out empty strings from consecutive newlines
           const lines = chunk.split('\n');
 
           for (const line of lines) {
-            // Check if line starts with 'data:' (with or without space after)
             if (line.startsWith('data:')) {
-              // Extract content after 'data:' - handle both 'data: content' and 'data:content'
               const data = line.startsWith('data: ') ? line.slice(6) : line.slice(5);
               
               if (data === '[DONE]') {
@@ -357,13 +354,13 @@ const AskAriaChat: React.FC = () => {
                 throw new Error(data.slice(8));
               }
 
-              // Add newline between lines to preserve multi-line formatting
-              // Each data: line represents one line of the original message
-              if (accumulatedContent.length > 0) {
-                accumulatedContent += '\n';
+              // Parse JSON response from backend - v2
+              try {
+                const jsonData = JSON.parse(data);
+                accumulatedContent = jsonData.content || data;
+              } catch {
+                accumulatedContent = data;
               }
-              // Add the content (even if empty, to preserve paragraph breaks)
-              accumulatedContent += data;
               
               setMessages((prev) =>
                 prev.map((msg) =>

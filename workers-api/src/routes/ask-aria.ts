@@ -2750,17 +2750,13 @@ app.post('/message/stream', async (c) => {
       VALUES (?, ?, 'assistant', ?, datetime('now'))
     `).bind(generateUUID(), conversation_id, result.response).run();
     
-    // Create streaming response
+    // Create streaming response - send as JSON to preserve newlines
     const encoder = new TextEncoder();
     const stream = new ReadableStream({
       start(controller) {
-        // SSE format requires each line of a multi-line message to be prefixed with "data: "
-        // Split the response by newlines and send each line as a separate data event
-        const lines = result.response.split('\n');
-        for (const line of lines) {
-          controller.enqueue(encoder.encode(`data: ${line}\n`));
-        }
-        controller.enqueue(encoder.encode('\n')); // End of message
+        // Send the response as JSON to preserve newlines exactly
+        const jsonResponse = JSON.stringify({ content: result.response });
+        controller.enqueue(encoder.encode(`data: ${jsonResponse}\n\n`));
         controller.enqueue(encoder.encode('data: [DONE]\n\n'));
         controller.close();
       },
