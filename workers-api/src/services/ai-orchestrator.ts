@@ -229,14 +229,15 @@ export async function classifyIntent(
       return ruleBasedResult;
     }
     
-    // Last resort: return unknown with AI response
+    // Last resort: return unknown with our formatted fallback message
+    // Always use our helpful message, not the AI's generic response
     return {
       intent: 'unknown',
       confidence: 0.3,
       bot_id: null,
       parameters: {},
       requires_confirmation: false,
-      response: aiResponse || "**I couldn't understand that command.** Try saying **'help'** to see available commands, or try one of the quick actions below.",
+      response: "**I couldn't understand that command.**\n\nHere are some things you can try:\n\n**View Data:**\n- \"Show customers\" or \"List suppliers\"\n- \"Show products\" or \"Check inventory\"\n\n**Create Records:**\n- \"Create a quote\" or \"Create purchase order\"\n\n**Run Bots:**\n- \"Run payroll\" or \"Run reconciliation\"\n- \"List all available bots\"\n\nType **\"help\"** for the full list of commands.",
     };
   } catch (error) {
     console.error('AI classification error:', error);
@@ -384,7 +385,7 @@ function enhancedRuleBasedClassification(message: string): IntentClassification 
     bot_id: null,
     parameters: {},
     requires_confirmation: false,
-    response: "**I couldn't understand that command.** Try saying **'help'** to see available commands, or try one of the quick actions below.",
+    response: "**I couldn't understand that command.**\n\nHere are some things you can try:\n\n**View Data:**\n- \"Show customers\" or \"List suppliers\"\n- \"Show products\" or \"Check inventory\"\n\n**Create Records:**\n- \"Create a quote\" or \"Create purchase order\"\n\n**Run Bots:**\n- \"Run payroll\" or \"Run reconciliation\"\n- \"List all available bots\"\n\nType **\"help\"** for the full list of commands.",
   };
 }
 
@@ -459,7 +460,7 @@ function fallbackClassification(message: string): IntentClassification {
     bot_id: null,
     parameters: {},
     requires_confirmation: false,
-    response: "**I couldn't understand that command.** Try saying **'help'** to see available commands, or try one of the quick actions below.",
+    response: "**I couldn't understand that command.**\n\nHere are some things you can try:\n\n**View Data:**\n- \"Show customers\" or \"List suppliers\"\n- \"Show products\" or \"Check inventory\"\n\n**Create Records:**\n- \"Create a quote\" or \"Create purchase order\"\n\n**Run Bots:**\n- \"Run payroll\" or \"Run reconciliation\"\n- \"List all available bots\"\n\nType **\"help\"** for the full list of commands.",
   };
 }
 
@@ -779,7 +780,7 @@ export async function executeQuery(
           intent,
           bot_id: null,
           action_taken: 'unknown',
-          response: "**I couldn't process that query.** Try saying **'help'** to see available commands, or try one of the quick actions below.",
+          response: "**I couldn't process that query.**\n\nHere are some things you can try:\n\n**View Data:**\n- \"Show customers\" or \"List suppliers\"\n- \"Show products\" or \"Check inventory\"\n\n**Create Records:**\n- \"Create a quote\" or \"Create purchase order\"\n\n**Run Bots:**\n- \"Run payroll\" or \"Run reconciliation\"\n- \"List all available bots\"\n\nType **\"help\"** for the full list of commands.",
         };
     }
   } catch (error) {
