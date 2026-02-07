@@ -340,11 +340,14 @@ const AskAriaChat: React.FC = () => {
           if (done) break;
 
           const chunk = decoder.decode(value, { stream: true });
+          // Split by newline but filter out empty strings from consecutive newlines
           const lines = chunk.split('\n');
 
           for (const line of lines) {
-            if (line.startsWith('data: ')) {
-              const data = line.slice(6);
+            // Check if line starts with 'data:' (with or without space after)
+            if (line.startsWith('data:')) {
+              // Extract content after 'data:' - handle both 'data: content' and 'data:content'
+              const data = line.startsWith('data: ') ? line.slice(6) : line.slice(5);
               
               if (data === '[DONE]') {
                 break;
@@ -355,9 +358,11 @@ const AskAriaChat: React.FC = () => {
               }
 
               // Add newline between lines to preserve multi-line formatting
+              // Each data: line represents one line of the original message
               if (accumulatedContent.length > 0) {
                 accumulatedContent += '\n';
               }
+              // Add the content (even if empty, to preserve paragraph breaks)
               accumulatedContent += data;
               
               setMessages((prev) =>
