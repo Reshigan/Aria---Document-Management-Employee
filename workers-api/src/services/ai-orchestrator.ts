@@ -272,7 +272,7 @@ function enhancedRuleBasedClassification(message: string): IntentClassification 
     { patterns: [/bank\s+reconcil/i, /reconcile\s+bank/i, /bank\s+recon/i, /match\s+transaction/i, /run\s+bank/i], bot_id: 'bank_reconciliation', name: 'Bank Reconciliation Bot', confidence: 0.9 },
     { patterns: [/financial\s+close/i, /close\s+month/i, /month\s*-?\s*end\s+close/i, /period\s+end/i], bot_id: 'financial_close', name: 'Financial Close Bot', confidence: 0.9 },
     { patterns: [/post\s+journal/i, /gl\s+entr/i, /general\s+ledger/i, /ledger\s+update/i], bot_id: 'general_ledger', name: 'General Ledger Bot', confidence: 0.9 },
-    { patterns: [/invoice\s+reconcil/i, /reconcile\s+invoice/i, /match\s+payment/i, /run\s+.*reconcil/i, /sales.*invoice.*reconcil/i], bot_id: 'invoice_reconciliation', name: 'Invoice Reconciliation Bot', confidence: 0.9 },
+    { patterns: [/invoice\s+reconcil/i, /reconcile\s+invoice/i, /match\s+payment/i, /run\s+invoice\s+reconcil/i, /run\s+.*reconcil/i, /sales.*invoice.*reconcil/i], bot_id: 'invoice_reconciliation', name: 'Invoice Reconciliation Bot', confidence: 0.9 },
     { patterns: [/tax\s+compliance/i, /calculate\s+tax/i, /vat\s+return/i, /tax\s+filing/i], bot_id: 'tax_compliance', name: 'Tax Compliance Bot', confidence: 0.9 },
     { patterns: [/financial\s+report/i, /generate\s+report/i, /trial\s+balance/i, /financial\s+statement/i], bot_id: 'financial_reporting', name: 'Financial Reporting Bot', confidence: 0.9 },
     
@@ -282,7 +282,7 @@ function enhancedRuleBasedClassification(message: string): IntentClassification 
     { patterns: [/reorder\s+stock/i, /auto\s+purchase/i, /replenish/i, /reorder\s+point/i], bot_id: 'reorder', name: 'Reorder Bot', confidence: 0.9 },
     
     // Manufacturing Commands
-    { patterns: [/create\s+work\s+order/i, /new\s+work\s+order/i, /production\s+order/i, /manufacture/i], bot_id: 'work_order', name: 'Work Order Bot', confidence: 0.9 },
+    { patterns: [/create\s+work\s*order/i, /new\s+work\s*order/i, /production\s+order/i, /manufacture/i, /work\s*order/i], bot_id: 'work_order', name: 'Work Order Bot', confidence: 0.9 },
     { patterns: [/start\s+production/i, /production\s+status/i, /manufacturing\s+status/i], bot_id: 'production', name: 'Production Bot', confidence: 0.9 },
     { patterns: [/quality\s+check/i, /qc\s+inspection/i, /quality\s+control/i], bot_id: 'quality_control', name: 'Quality Control Bot', confidence: 0.9 },
     { patterns: [/update\s+bom/i, /bill\s+of\s+material/i, /bom\s+management/i], bot_id: 'bom_management', name: 'BOM Management Bot', confidence: 0.9 },
