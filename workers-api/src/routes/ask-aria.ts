@@ -1338,11 +1338,19 @@ function findSkill(message: string): Skill | null {
 // Default response for unmatched messages
 function getDefaultResponse(): SkillResult {
   return {
-    response: `I'm not sure how to help with that. Here are some things I can do:\n\n` +
-      `- Show customers, suppliers, products, invoices, orders, quotes\n` +
-      `- Create quotes or purchase orders\n` +
-      `- Show dashboard summary\n\n` +
-      `Type "help" for more details.`,
+    response: `**I couldn't understand that command.**\n\n` +
+      `Here are some things you can try:\n\n` +
+      `**View Data:**\n` +
+      `- "Show customers" or "List suppliers"\n` +
+      `- "Show products" or "Check inventory"\n` +
+      `- "Show invoices" or "List orders"\n\n` +
+      `**Create Records:**\n` +
+      `- "Create a quote" or "Create purchase order"\n` +
+      `- "Create sales order" or "Generate invoice"\n\n` +
+      `**Run Bots:**\n` +
+      `- "Run payroll" or "Run reconciliation"\n` +
+      `- "List all available bots"\n\n` +
+      `Type **"help"** for the full list of commands.`,
   };
 }
 

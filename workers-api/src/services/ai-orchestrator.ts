@@ -236,7 +236,7 @@ export async function classifyIntent(
       bot_id: null,
       parameters: {},
       requires_confirmation: false,
-      response: aiResponse || "I'm not sure what you'd like me to do. Try saying 'help' to see available commands.",
+      response: aiResponse || "**I couldn't understand that command.** Try saying **'help'** to see available commands, or try one of the quick actions below.",
     };
   } catch (error) {
     console.error('AI classification error:', error);
@@ -384,7 +384,7 @@ function enhancedRuleBasedClassification(message: string): IntentClassification 
     bot_id: null,
     parameters: {},
     requires_confirmation: false,
-    response: "I'm not sure what you'd like me to do. Try saying 'help' to see available commands.",
+    response: "**I couldn't understand that command.** Try saying **'help'** to see available commands, or try one of the quick actions below.",
   };
 }
 
@@ -459,7 +459,7 @@ function fallbackClassification(message: string): IntentClassification {
     bot_id: null,
     parameters: {},
     requires_confirmation: false,
-    response: "I'm not sure what you'd like me to do. Try saying 'help' to see available commands.",
+    response: "**I couldn't understand that command.** Try saying **'help'** to see available commands, or try one of the quick actions below.",
   };
 }
 
@@ -779,7 +779,7 @@ export async function executeQuery(
           intent,
           bot_id: null,
           action_taken: 'unknown',
-          response: "I'm not sure how to handle that query. Try 'help' for available commands.",
+          response: "**I couldn't process that query.** Try saying **'help'** to see available commands, or try one of the quick actions below.",
         };
     }
   } catch (error) {
