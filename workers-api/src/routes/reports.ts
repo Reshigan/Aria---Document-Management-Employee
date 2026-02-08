@@ -262,4 +262,157 @@ app.get('/balance-sheet', async (c) => {
   }
 });
 
+// ==================== AGENT/BOT DASHBOARD ====================
+
+app.get('/agents/dashboard', async (c) => {
+  const companyId = await getAuthenticatedCompanyId(c);
+  if (!companyId) {
+    return c.json({ error: 'Authentication required' }, 401);
+  }
+
+  try {
+    // Get bot execution stats from bot_executions table
+    const statsResult = await c.env.DB.prepare(`
+      SELECT 
+        COUNT(*) as total_actions,
+        ROUND(AVG(CASE WHEN status = 'completed' THEN 100.0 ELSE 0.0 END), 1) as success_rate,
+        COUNT(DISTINCT bot_id) as active_bots
+      FROM bot_executions 
+      WHERE company_id = ?
+    `).bind(companyId).first();
+    
+    // Calculate time saved (estimate 5 minutes per action)
+    const totalActions = (statsResult as any)?.total_actions || 0;
+    const timeSavedHours = Math.round((totalActions * 5) / 60);
+    
+    return c.json({
+      total_actions: totalActions,
+      success_rate: (statsResult as any)?.success_rate || 0,
+      time_saved_hours: timeSavedHours,
+      active_bots: (statsResult as any)?.active_bots || 0
+    });
+  } catch (error) {
+    console.error('Error fetching agent dashboard:', error);
+    return c.json({
+      total_actions: 0,
+      success_rate: 0,
+      time_saved_hours: 0,
+      active_bots: 0
+    });
+  }
+});
+
+app.get('/agents/activity-chart', async (c) => {
+  const companyId = await getAuthenticatedCompanyId(c);
+  if (!companyId) {
+    return c.json({ error: 'Authentication required' }, 401);
+  }
+
+  try {
+    // Get activity for last 7 days
+    const result = await c.env.DB.prepare(`
+      SELECT 
+        strftime('%w', created_at) as day_num,
+        COUNT(*) as actions
+      FROM bot_executions 
+      WHERE company_id = ? 
+        AND created_at >= datetime('now', '-7 days')
+      GROUP BY strftime('%w', created_at)
+      ORDER BY day_num
+    `).bind(companyId).all();
+    
+    const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const chartData = dayNames.map((day, idx) => {
+      const found = (result.results || []).find((r: any) => parseInt(r.day_num) === idx);
+      return {
+        day,
+        actions: found ? (found as any).actions : 0
+      };
+    });
+    
+    return c.json({ chart_data: chartData });
+  } catch (error) {
+    console.error('Error fetching activity chart:', error);
+    return c.json({ chart_data: [] });
+  }
+});
+
+app.get('/agents/performance', async (c) => {
+  const companyId = await getAuthenticatedCompanyId(c);
+  if (!companyId) {
+    return c.json({ error: 'Authentication required' }, 401);
+  }
+
+  try {
+    const result = await c.env.DB.prepare(`
+      SELECT 
+        bot_id as name,
+        COUNT(*) as actions,
+        ROUND(AVG(CASE WHEN status = 'completed' THEN 100.0 ELSE 0.0 END), 0) as success
+      FROM bot_executions 
+      WHERE company_id = ?
+      GROUP BY bot_id
+      ORDER BY actions DESC
+      LIMIT 10
+    `).bind(companyId).all();
+    
+    const agents = (result.results || []).map((r: any) => ({
+      name: r.name?.replace(/_/g, ' ').replace(/\b\w/g, (l: string) => l.toUpperCase()) || 'Unknown',
+      success: r.success || 0,
+      actions: r.actions || 0
+    }));
+    
+    return c.json({ agents });
+  } catch (error) {
+    console.error('Error fetching agent performance:', error);
+    return c.json({ agents: [] });
+  }
+});
+
+app.get('/agents/recent-actions', async (c) => {
+  const companyId = await getAuthenticatedCompanyId(c);
+  if (!companyId) {
+    return c.json({ error: 'Authentication required' }, 401);
+  }
+
+  try {
+    const result = await c.env.DB.prepare(`
+      SELECT 
+        bot_id,
+        action_type,
+        created_at
+      FROM bot_executions 
+      WHERE company_id = ?
+      ORDER BY created_at DESC
+      LIMIT 10
+    `).bind(companyId).all();
+    
+    const now = new Date();
+    const actions = (result.results || []).map((r: any) => {
+      const createdAt = new Date(r.created_at);
+      const diffMs = now.getTime() - createdAt.getTime();
+      const diffMins = Math.floor(diffMs / 60000);
+      const diffHours = Math.floor(diffMins / 60);
+      const diffDays = Math.floor(diffHours / 24);
+      
+      let time = '';
+      if (diffDays > 0) time = `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+      else if (diffHours > 0) time = `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+      else if (diffMins > 0) time = `${diffMins} min${diffMins > 1 ? 's' : ''} ago`;
+      else time = 'Just now';
+      
+      return {
+        agent: r.bot_id?.replace(/_/g, ' ').replace(/\b\w/g, (l: string) => l.toUpperCase()) || 'Unknown Agent',
+        action: r.action_type || 'Executed task',
+        time
+      };
+    });
+    
+    return c.json({ actions });
+  } catch (error) {
+    console.error('Error fetching recent actions:', error);
+    return c.json({ actions: [] });
+  }
+});
+
 export default app;

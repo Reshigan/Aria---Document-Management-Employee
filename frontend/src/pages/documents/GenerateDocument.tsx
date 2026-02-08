@@ -1,12 +1,103 @@
-import React, { useState } from 'react';
-import { FileText, Download, Mail, MessageSquare } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { FileText, Download, Mail, MessageSquare, Loader2, CheckCircle } from 'lucide-react';
+
+interface Customer {
+  id: string;
+  name: string;
+  email?: string;
+  phone?: string;
+  address?: string;
+}
 
 export default function GenerateDocumentPage() {
   const [docType, setDocType] = useState('');
   const [customerSearch, setCustomerSearch] = useState('');
   const [customerName, setCustomerName] = useState('');
+  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
+  const [customers, setCustomers] = useState<Customer[]>([]);
   const [lineItems, setLineItems] = useState([{ description: '', quantity: 1, unitPrice: 0 }]);
   const [showPreview, setShowPreview] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [documentDate, setDocumentDate] = useState(new Date().toISOString().split('T')[0]);
+
+  useEffect(() => {
+    if (customerSearch.length >= 2) {
+      searchCustomers(customerSearch);
+    }
+  }, [customerSearch]);
+
+  const searchCustomers = async (query: string) => {
+    try {
+      const token = localStorage.getItem('token');
+      const companyId = localStorage.getItem('selectedCompanyId');
+      const response = await fetch(`/api/customers?search=${encodeURIComponent(query)}&company_id=${companyId}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setCustomers(data.customers || data || []);
+      }
+    } catch (error) {
+      console.error('Error searching customers:', error);
+    }
+  };
+
+  const handleGenerateDocument = async () => {
+    if (!docType || !customerName) {
+      alert('Please select document type and customer');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const token = localStorage.getItem('token');
+      const companyId = localStorage.getItem('selectedCompanyId');
+      
+      const response = await fetch('/api/documents/generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          company_id: companyId,
+          document_type: docType,
+          customer_name: customerName,
+          customer_id: selectedCustomer?.id,
+          document_date: documentDate,
+          line_items: lineItems.map(item => ({
+            description: item.description,
+            quantity: item.quantity,
+            unit_price: item.unitPrice
+          })),
+          vat_rate: 15
+        })
+      });
+
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${docType}-${Date.now()}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+        setSuccess(true);
+        setTimeout(() => setSuccess(false), 3000);
+      } else {
+        const error = await response.json();
+        alert(error.message || 'Failed to generate document');
+      }
+    } catch (error) {
+      console.error('Error generating document:', error);
+      alert('Failed to generate document');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const documentTypes = [
     { value: 'quote', label: 'Quote' },
@@ -26,9 +117,11 @@ export default function GenerateDocumentPage() {
     setLineItems(newLineItems);
   };
 
-  const handleCustomerSelect = (name: string) => {
-    setCustomerName(name);
+  const handleCustomerSelect = (customer: Customer) => {
+    setSelectedCustomer(customer);
+    setCustomerName(customer.name);
     setCustomerSearch('');
+    setCustomers([]);
   };
 
   return (
@@ -68,15 +161,18 @@ export default function GenerateDocumentPage() {
                 className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md" 
                 placeholder="Start typing to search..." 
               />
-              {customerSearch && (
-                <div className="mt-2 space-y-1 border border-gray-200 dark:border-gray-700 rounded-md p-2">
-                  <div 
-                    className="p-2 hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900 cursor-pointer rounded" 
-                    data-testid="customer-abc-manufacturing"
-                    onClick={() => handleCustomerSelect('ABC Manufacturing Ltd.')}
-                  >
-                    ABC Manufacturing Ltd.
-                  </div>
+              {customers.length > 0 && (
+                <div className="mt-2 space-y-1 border border-gray-200 dark:border-gray-700 rounded-md p-2 max-h-48 overflow-y-auto">
+                  {customers.map((customer) => (
+                    <div 
+                      key={customer.id}
+                      className="p-2 hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900 cursor-pointer rounded" 
+                      onClick={() => handleCustomerSelect(customer)}
+                    >
+                      {customer.name}
+                      {customer.email && <span className="text-sm text-gray-500 ml-2">({customer.email})</span>}
+                    </div>
+                  ))}
                 </div>
               )}
               <input 
@@ -173,9 +269,20 @@ export default function GenerateDocumentPage() {
                 <FileText className="h-4 w-4 inline mr-2" />
                 Preview
               </button>
-              <button className="flex-1 px-4 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-lg hover:bg-blue-700" data-testid="button-download">
-                <Download className="h-4 w-4 inline mr-2" />
-                Generate & Download
+              <button 
+                className="flex-1 px-4 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 flex items-center justify-center gap-2" 
+                data-testid="button-download"
+                onClick={handleGenerateDocument}
+                disabled={loading}
+              >
+                {loading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : success ? (
+                  <CheckCircle className="h-4 w-4" />
+                ) : (
+                  <Download className="h-4 w-4" />
+                )}
+                {loading ? 'Generating...' : success ? 'Downloaded!' : 'Generate & Download'}
               </button>
               <button className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900">
                 <Mail className="h-4 w-4 inline mr-2" />

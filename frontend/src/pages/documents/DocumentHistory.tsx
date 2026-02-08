@@ -1,13 +1,44 @@
-import React from 'react';
-import { FileText, Download, Mail, Eye } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { FileText, Download, Mail, Eye, RefreshCw } from 'lucide-react';
 import { DataTable } from '../../components/shared/DataTable';
 
+interface Document {
+  id: string;
+  type: string;
+  customer: string;
+  date: string;
+  amount: number;
+  status: string;
+}
+
 export default function DocumentHistoryPage() {
-  const documents = [
-    { id: 'INV-1234', type: 'Tax Invoice', customer: 'ABC Corp', date: '2025-10-20', amount: 15000, status: 'Sent' },
-    { id: 'QTE-5678', type: 'Quote', customer: 'XYZ Ltd', date: '2025-10-19', amount: 25000, status: 'Draft' },
-    { id: 'PO-9012', type: 'Purchase Order', customer: 'Supplier A', date: '2025-10-18', amount: 8500, status: 'Approved' }
-  ];
+  const [documents, setDocuments] = useState<Document[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchDocuments();
+  }, []);
+
+  const fetchDocuments = async () => {
+    try {
+      setLoading(true);
+      const token = localStorage.getItem('token');
+      const companyId = localStorage.getItem('selectedCompanyId');
+      
+      const response = await fetch(`/api/documents/history?company_id=${companyId}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setDocuments(data.documents || []);
+      }
+    } catch (error) {
+      console.error('Error fetching documents:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 container mx-auto p-6">

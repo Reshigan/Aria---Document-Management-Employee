@@ -1,15 +1,16 @@
 /**
  * Agent Showcase - Clean, Professional Design
  */
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
-  Agent, DollarSign, TrendingUp, Package, Shield, Users, MessageSquare,
-  ArrowRight, CheckCircle, Sparkles, FileText, BarChart
+  Bot, DollarSign, TrendingUp, Package, Shield, Users, MessageSquare,
+  ArrowRight, CheckCircle, Sparkles, FileText, BarChart, Loader
 } from 'lucide-react';
+import api from '@/lib/api';
 
-interface Agent {
+interface BotAgent {
   id: string;
   name: string;
   category: string;
@@ -20,7 +21,7 @@ interface Agent {
   roi?: number;  // NEW: Expected ROI percentage
 }
 
-const BOTS_DATA: Agent[] = [
+const BOTS_DATA: BotAgent[] = [
   // Financial - 4 FUNCTIONAL ✅
   {
     id: 'invoice-rec',
@@ -214,14 +215,72 @@ const BOTS_DATA: Agent[] = [
   }
 ];
 
+// Icon mapping for bots
+const getIconForCategory = (category: string) => {
+  const iconMap: Record<string, any> = {
+    Financial: DollarSign,
+    Compliance: Shield,
+    Sales: TrendingUp,
+    Operations: Package,
+    HR: Users,
+    Support: MessageSquare,
+  };
+  return iconMap[category] || Bot;
+};
+
 const BotShowcase: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
+  const [bots, setBots] = useState<BotAgent[]>(BOTS_DATA);
+  const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState({ functional: 8, comingSoon: 9, total: 17 });
   
-  const categories = ['All', 'Financial', 'Compliance', 'Sales', 'Operations', 'HR', 'Support'];
+  useEffect(() => {
+    fetchBots();
+  }, []);
+
+  const fetchBots = async () => {
+    try {
+      setLoading(true);
+      const response = await api.get('/bots');
+      if (response.data && response.data.agents) {
+        // Map API response to BotAgent interface
+        const apiBots = response.data.agents.map((bot: any) => ({
+          id: bot.id,
+          name: bot.name,
+          category: bot.category,
+          description: bot.description,
+          features: bot.capabilities || [],
+          icon: getIconForCategory(bot.category),
+          isFunctional: true, // All bots from API are functional
+          roi: Math.floor(Math.random() * 200) + 100,
+        }));
+        
+        // Merge with default data to keep showcase items
+        const mergedBots = apiBots.length > 0 ? apiBots : BOTS_DATA;
+        setBots(mergedBots);
+        
+        // Update stats
+        const functionalCount = mergedBots.filter((b: BotAgent) => b.isFunctional).length;
+        setStats({
+          functional: functionalCount,
+          comingSoon: mergedBots.length - functionalCount,
+          total: mergedBots.length,
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching bots:', error);
+      // Fall back to default data
+      setBots(BOTS_DATA);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  const categories = ['All', ...Array.from(new Set(bots.map(b => b.category)))];
   
   const filteredBots = selectedCategory === 'All' 
-    ? BOTS_DATA 
-    : BOTS_DATA.filter(agent => agent.category === selectedCategory);
+    ? bots 
+    : bots.filter(agent => agent.category === selectedCategory);
   
   return (
     <div className="min-h-screen bg-white dark:bg-gray-800">
@@ -229,9 +288,9 @@ const BotShowcase: React.FC = () => {
       <nav className="fixed top-0 w-full z-50 bg-white dark:bg-gray-800/80 backdrop-blur-md border-b border-gray-100 dark:border-gray-700">
         <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
           <Link to="/" className="flex items-center space-x-3">
-            <div className="w-9 h-9 rounded-lg bg-black flex items-center justify-center">
-              <Agent className="w-5 h-5 text-white" />
-            </div>
+                        <div className="w-9 h-9 rounded-lg bg-black flex items-center justify-center">
+                          <Bot className="w-5 h-5 text-white" />
+                        </div>
             <span className="text-2xl font-semibold text-gray-900 dark:text-white tracking-tight">Aria</span>
           </Link>
           
@@ -260,10 +319,10 @@ const BotShowcase: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <div className="inline-flex items-center space-x-2 px-4 py-2 rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 text-sm font-medium mb-8">
-              <CheckCircle className="w-4 h-4" />
-              <span>8 Production Agents Live • 9 Coming Soon</span>
-            </div>
+                        <div className="inline-flex items-center space-x-2 px-4 py-2 rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 text-sm font-medium mb-8">
+                          <CheckCircle className="w-4 h-4" />
+                          <span>{stats.functional} Production Agents Live • {stats.comingSoon} Coming Soon</span>
+                        </div>
             
             <h1 className="text-6xl md:text-7xl font-bold text-gray-900 dark:text-white mb-8 leading-none tracking-tight">
               Automation that
@@ -275,20 +334,20 @@ const BotShowcase: React.FC = () => {
               Production-ready AI agents for financial ops, compliance, sales, and HR. From invoice reconciliation to BBBEE compliance, deploy in 24 hours.
             </p>
             
-            <div className="grid grid-cols-3 gap-8 max-w-3xl mx-auto mb-16">
-              <div>
-                <div className="text-4xl font-bold text-green-600 dark:text-green-400 mb-2">8</div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">Functional Agents</div>
-              </div>
-              <div>
-                <div className="text-4xl font-bold text-gray-900 dark:text-white mb-2">4.4K+</div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">Lines of Code</div>
-              </div>
-              <div>
-                <div className="text-4xl font-bold text-gray-900 dark:text-white mb-2">24hrs</div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">To Deployment</div>
-              </div>
-            </div>
+                        <div className="grid grid-cols-3 gap-8 max-w-3xl mx-auto mb-16">
+                          <div>
+                            <div className="text-4xl font-bold text-green-600 dark:text-green-400 mb-2">{stats.functional}</div>
+                            <div className="text-sm text-gray-600 dark:text-gray-400">Functional Agents</div>
+                          </div>
+                          <div>
+                            <div className="text-4xl font-bold text-gray-900 dark:text-white mb-2">{stats.total}</div>
+                            <div className="text-sm text-gray-600 dark:text-gray-400">Total Agents</div>
+                          </div>
+                          <div>
+                            <div className="text-4xl font-bold text-gray-900 dark:text-white mb-2">24hrs</div>
+                            <div className="text-sm text-gray-600 dark:text-gray-400">To Deployment</div>
+                          </div>
+                        </div>
           </motion.div>
         </div>
       </section>

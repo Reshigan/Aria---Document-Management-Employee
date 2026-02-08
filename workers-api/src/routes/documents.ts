@@ -1320,4 +1320,88 @@ app.post('/from-transaction', async (c) => {
   }
 });
 
+// Get document history - all documents for a company
+app.get('/history', async (c) => {
+  try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) {
+      return c.json({ error: 'Company ID required' }, 400);
+    }
+    
+    const db = c.env.DB;
+    
+    // Get documents from various sources
+    const [invoices, quotes, purchaseOrders, salesOrders] = await Promise.all([
+      db.prepare(`
+        SELECT 
+          invoice_number as id,
+          'Tax Invoice' as type,
+          customer_name as customer,
+          invoice_date as date,
+          total_amount as amount,
+          status
+        FROM invoices 
+        WHERE company_id = ?
+        ORDER BY created_at DESC
+        LIMIT 50
+      `).bind(companyId).all(),
+      
+      db.prepare(`
+        SELECT 
+          quote_number as id,
+          'Quote' as type,
+          customer_name as customer,
+          quote_date as date,
+          total_amount as amount,
+          status
+        FROM quotes 
+        WHERE company_id = ?
+        ORDER BY created_at DESC
+        LIMIT 50
+      `).bind(companyId).all(),
+      
+      db.prepare(`
+        SELECT 
+          po_number as id,
+          'Purchase Order' as type,
+          supplier_name as customer,
+          order_date as date,
+          total_amount as amount,
+          status
+        FROM purchase_orders 
+        WHERE company_id = ?
+        ORDER BY created_at DESC
+        LIMIT 50
+      `).bind(companyId).all(),
+      
+      db.prepare(`
+        SELECT 
+          order_number as id,
+          'Sales Order' as type,
+          customer_name as customer,
+          order_date as date,
+          total_amount as amount,
+          status
+        FROM sales_orders 
+        WHERE company_id = ?
+        ORDER BY created_at DESC
+        LIMIT 50
+      `).bind(companyId).all()
+    ]);
+    
+    // Combine and sort all documents
+    const allDocuments = [
+      ...(invoices.results || []),
+      ...(quotes.results || []),
+      ...(purchaseOrders.results || []),
+      ...(salesOrders.results || [])
+    ].sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    
+    return c.json({ documents: allDocuments.slice(0, 100) });
+  } catch (error: any) {
+    console.error('Document history error:', error);
+    return c.json({ error: error.message || 'Failed to fetch document history' }, 500);
+  }
+});
+
 export default app;
