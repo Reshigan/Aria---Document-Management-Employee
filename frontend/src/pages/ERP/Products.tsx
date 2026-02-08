@@ -14,6 +14,7 @@ interface Product {
   selling_price: number;
   tax_rate: number;
   is_active: boolean;
+  is_service: boolean;
   track_inventory: boolean;
   reorder_level?: number;
   reorder_quantity?: number;
@@ -66,11 +67,11 @@ export default function Products() {
   const [priceHistory, setPriceHistory] = useState<PriceHistory[]>([]);
   const [error, setError] = useState<string | null>(null);
   
-  const [formData, setFormData] = useState<Partial<Product>>({
-    name: '', description: '', category: '', unit_of_measure: 'EA',
-    cost_price: 0, selling_price: 0, tax_rate: 15, is_active: true,
-    track_inventory: true, reorder_level: 0, reorder_quantity: 0
-  });
+    const [formData, setFormData] = useState<Partial<Product>>({
+      name: '', description: '', category: '', unit_of_measure: 'EA',
+      cost_price: 0, selling_price: 0, tax_rate: 15, is_active: true,
+      is_service: false, track_inventory: true, reorder_level: 0, reorder_quantity: 0
+    });
 
   useEffect(() => {
     loadProducts();
@@ -116,14 +117,14 @@ export default function Products() {
     }
   };
 
-  const handleCreate = () => {
-    setFormData({
-      name: '', description: '', category: '', unit_of_measure: 'EA',
-      cost_price: 0, selling_price: 0, tax_rate: 15, is_active: true,
-      track_inventory: true, reorder_level: 0, reorder_quantity: 0
-    });
-    setShowCreateModal(true);
-  };
+    const handleCreate = () => {
+      setFormData({
+        name: '', description: '', category: '', unit_of_measure: 'EA',
+        cost_price: 0, selling_price: 0, tax_rate: 15, is_active: true,
+        is_service: false, track_inventory: true, reorder_level: 0, reorder_quantity: 0
+      });
+      setShowCreateModal(true);
+    };
 
   const handleEdit = (product: Product) => {
     setSelectedProduct(product);
@@ -314,16 +315,35 @@ export default function Products() {
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Reorder Quantity</label>
                     <input type="number" value={formData.reorder_quantity || 0} onChange={(e) => setFormData({ ...formData, reorder_quantity: parseFloat(e.target.value) })} step="1" className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all" />
                   </div>
-                  <div className="md:col-span-2 flex flex-wrap gap-6">
-                    <label className="flex items-center gap-3 cursor-pointer">
-                      <input type="checkbox" checked={formData.track_inventory ?? true} onChange={(e) => setFormData({ ...formData, track_inventory: e.target.checked })} className="w-5 h-5 text-rose-600 border-gray-300 rounded focus:ring-rose-500" />
-                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Track Inventory</span>
-                    </label>
-                    <label className="flex items-center gap-3 cursor-pointer">
-                      <input type="checkbox" checked={formData.is_active ?? true} onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })} className="w-5 h-5 text-rose-600 border-gray-300 rounded focus:ring-rose-500" />
-                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Active Product</span>
-                    </label>
-                  </div>
+                                    <div className="md:col-span-2">
+                                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Item Type</label>
+                                      <div className="flex gap-4">
+                                        <label className={`flex-1 flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all ${!formData.is_service ? 'border-rose-500 bg-rose-50 dark:bg-rose-900/20' : 'border-gray-200 dark:border-gray-600 hover:border-gray-300'}`}>
+                                          <input type="radio" name="item_type" checked={!formData.is_service} onChange={() => setFormData({ ...formData, is_service: false, track_inventory: true })} className="w-5 h-5 text-rose-600 border-gray-300 focus:ring-rose-500" />
+                                          <div>
+                                            <span className="text-sm font-medium text-gray-900 dark:text-white">Stock Item</span>
+                                            <p className="text-xs text-gray-500 dark:text-gray-400">Physical inventory that is tracked</p>
+                                          </div>
+                                        </label>
+                                        <label className={`flex-1 flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all ${formData.is_service ? 'border-rose-500 bg-rose-50 dark:bg-rose-900/20' : 'border-gray-200 dark:border-gray-600 hover:border-gray-300'}`}>
+                                          <input type="radio" name="item_type" checked={formData.is_service ?? false} onChange={() => setFormData({ ...formData, is_service: true, track_inventory: false })} className="w-5 h-5 text-rose-600 border-gray-300 focus:ring-rose-500" />
+                                          <div>
+                                            <span className="text-sm font-medium text-gray-900 dark:text-white">Service Item</span>
+                                            <p className="text-xs text-gray-500 dark:text-gray-400">Non-physical service or labor</p>
+                                          </div>
+                                        </label>
+                                      </div>
+                                    </div>
+                                    <div className="md:col-span-2 flex flex-wrap gap-6">
+                                      <label className={`flex items-center gap-3 cursor-pointer ${formData.is_service ? 'opacity-50' : ''}`}>
+                                        <input type="checkbox" checked={formData.track_inventory ?? true} onChange={(e) => setFormData({ ...formData, track_inventory: e.target.checked })} disabled={formData.is_service} className="w-5 h-5 text-rose-600 border-gray-300 rounded focus:ring-rose-500 disabled:opacity-50" />
+                                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Track Inventory</span>
+                                      </label>
+                                      <label className="flex items-center gap-3 cursor-pointer">
+                                        <input type="checkbox" checked={formData.is_active ?? true} onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })} className="w-5 h-5 text-rose-600 border-gray-300 rounded focus:ring-rose-500" />
+                                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Active Product</span>
+                                      </label>
+                                    </div>
                 </div>
               </div>
             </div>
