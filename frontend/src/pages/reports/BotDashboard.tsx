@@ -2,6 +2,23 @@ import React, { useState, useEffect } from 'react';
 import { Bot, TrendingUp, Clock, CheckCircle, BarChart3 } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
+interface AgentPerformance {
+  name: string;
+  success: number;
+  actions: number;
+}
+
+interface RecentAction {
+  agent: string;
+  action: string;
+  time: string;
+}
+
+interface ChartDataPoint {
+  day: string;
+  actions: number;
+}
+
 export default function BotDashboardPage() {
   const [stats, setStats] = useState({
     total_actions: 0,
@@ -9,9 +26,15 @@ export default function BotDashboardPage() {
     time_saved_hours: 0,
     active_bots: 0
   });
+  const [chartData, setChartData] = useState<ChartDataPoint[]>([]);
+  const [agentPerformance, setAgentPerformance] = useState<AgentPerformance[]>([]);
+  const [recentActions, setRecentActions] = useState<RecentAction[]>([]);
 
   useEffect(() => {
     fetchStats();
+    fetchChartData();
+    fetchAgentPerformance();
+    fetchRecentActions();
   }, []);
 
   const fetchStats = async () => {
@@ -28,15 +51,47 @@ export default function BotDashboardPage() {
     }
   };
 
-  const chartData = [
-    { day: 'Mon', actions: 45 },
-    { day: 'Tue', actions: 52 },
-    { day: 'Wed', actions: 48 },
-    { day: 'Thu', actions: 61 },
-    { day: 'Fri', actions: 55 },
-    { day: 'Sat', actions: 25 },
-    { day: 'Sun', actions: 18 }
-  ];
+  const fetchChartData = async () => {
+    try {
+      const response = await fetch('/api/reports/agents/activity-chart', {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setChartData(data.chart_data || []);
+      }
+    } catch (error) {
+      console.error('Error fetching chart data:', error);
+    }
+  };
+
+  const fetchAgentPerformance = async () => {
+    try {
+      const response = await fetch('/api/reports/agents/performance', {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setAgentPerformance(data.agents || []);
+      }
+    } catch (error) {
+      console.error('Error fetching agent performance:', error);
+    }
+  };
+
+  const fetchRecentActions = async () => {
+    try {
+      const response = await fetch('/api/reports/agents/recent-actions', {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setRecentActions(data.actions || []);
+      }
+    } catch (error) {
+      console.error('Error fetching recent actions:', error);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 container mx-auto p-6">
@@ -100,12 +155,7 @@ export default function BotDashboardPage() {
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
           <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Agent Performance</h3>
           <div className="space-y-4">
-            {[
-              { name: 'Invoice Reconciliation', success: 95, actions: 234 },
-              { name: 'BBBEE Compliance', success: 98, actions: 156 },
-              { name: 'Payroll Automation', success: 100, actions: 89 },
-              { name: 'Expense Management', success: 92, actions: 178 }
-            ].map((agent) => (
+            {agentPerformance.length > 0 ? agentPerformance.map((agent) => (
               <div key={agent.name}>
                 <div className="flex justify-between text-sm mb-1">
                   <span className="font-medium">{agent.name}</span>
@@ -115,19 +165,16 @@ export default function BotDashboardPage() {
                   <div className="bg-blue-600 dark:bg-blue-500 h-2 rounded-full" style={{ width: `${agent.success}%` }}></div>
                 </div>
               </div>
-            ))}
+            )) : (
+              <div className="text-gray-500 dark:text-gray-400 text-center py-4">No agent performance data available</div>
+            )}
           </div>
         </div>
 
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6" data-testid="recent-activities">
           <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Recent Actions</h3>
           <div className="space-y-3">
-            {[
-              { agent: 'Invoice Agent', action: 'Matched invoice #INV-1234', time: '2 min ago' },
-              { agent: 'BBBEE Agent', action: 'Verified supplier certificate', time: '15 min ago' },
-              { agent: 'Payroll Agent', action: 'Processed payroll for 45 employees', time: '1 hour ago' },
-              { agent: 'Expense Agent', action: 'Auto-coded 12 expense claims', time: '2 hours ago' }
-            ].map((item, idx) => (
+            {recentActions.length > 0 ? recentActions.map((item, idx) => (
               <div key={idx} className="flex items-start gap-3 p-3 bg-gray-50 dark:bg-gray-900 rounded">
                 <Bot className="h-5 w-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
                 <div className="flex-1">
@@ -136,7 +183,9 @@ export default function BotDashboardPage() {
                   <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">{item.time}</div>
                 </div>
               </div>
-            ))}
+            )) : (
+              <div className="text-gray-500 dark:text-gray-400 text-center py-4">No recent actions available</div>
+            )}
           </div>
         </div>
       </div>
