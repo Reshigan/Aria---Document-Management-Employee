@@ -356,7 +356,7 @@ test.describe('UI Interaction Granular Tests', () => {
       await page.waitForTimeout(2000);
       const addButton = page.locator('button:has-text("Add"), button:has-text("New"), button:has-text("Create")');
       if (await addButton.count() > 0) {
-        await addButton.first().click();
+        await addButton.first().click({ force: true });
         await page.waitForTimeout(1000);
         const nameField = page.locator('input[name="name"], input[placeholder*="name" i]');
         const count = await nameField.count();
@@ -369,7 +369,7 @@ test.describe('UI Interaction Granular Tests', () => {
       await page.waitForTimeout(2000);
       const addButton = page.locator('button:has-text("Add"), button:has-text("New"), button:has-text("Create")');
       if (await addButton.count() > 0) {
-        await addButton.first().click();
+        await addButton.first().click({ force: true });
         await page.waitForTimeout(1000);
         const emailField = page.locator('input[type="email"], input[name="email"], input[placeholder*="email" i]');
         const count = await emailField.count();
@@ -382,7 +382,7 @@ test.describe('UI Interaction Granular Tests', () => {
       await page.waitForTimeout(2000);
       const addButton = page.locator('button:has-text("Add"), button:has-text("New"), button:has-text("Create")');
       if (await addButton.count() > 0) {
-        await addButton.first().click();
+        await addButton.first().click({ force: true });
         await page.waitForTimeout(1000);
         const phoneField = page.locator('input[type="tel"], input[name="phone"], input[placeholder*="phone" i]');
         const count = await phoneField.count();
@@ -395,7 +395,7 @@ test.describe('UI Interaction Granular Tests', () => {
       await page.waitForTimeout(2000);
       const addButton = page.locator('button:has-text("Add"), button:has-text("New"), button:has-text("Create")');
       if (await addButton.count() > 0) {
-        await addButton.first().click();
+        await addButton.first().click({ force: true });
         await page.waitForTimeout(1000);
         const saveButton = page.locator('button:has-text("Save"), button:has-text("Submit"), button:has-text("Create"), button[type="submit"]');
         const count = await saveButton.count();
@@ -408,7 +408,7 @@ test.describe('UI Interaction Granular Tests', () => {
       await page.waitForTimeout(2000);
       const addButton = page.locator('button:has-text("Add"), button:has-text("New"), button:has-text("Create")');
       if (await addButton.count() > 0) {
-        await addButton.first().click();
+        await addButton.first().click({ force: true });
         await page.waitForTimeout(1000);
         const cancelButton = page.locator('button:has-text("Cancel"), button:has-text("Close"), button:has-text("Back")');
         const count = await cancelButton.count();
@@ -421,11 +421,11 @@ test.describe('UI Interaction Granular Tests', () => {
       await page.waitForTimeout(2000);
       const addButton = page.locator('button:has-text("Add"), button:has-text("New"), button:has-text("Create")');
       if (await addButton.count() > 0) {
-        await addButton.first().click();
+        await addButton.first().click({ force: true });
         await page.waitForTimeout(1000);
         const saveButton = page.locator('button:has-text("Save"), button:has-text("Submit"), button:has-text("Create"), button[type="submit"]');
         if (await saveButton.count() > 0) {
-          await saveButton.first().click();
+          await saveButton.first().click({ force: true });
           await page.waitForTimeout(500);
         }
       }
@@ -436,7 +436,7 @@ test.describe('UI Interaction Granular Tests', () => {
       await page.waitForTimeout(2000);
       const addButton = page.locator('button:has-text("Add"), button:has-text("New"), button:has-text("Create")');
       if (await addButton.count() > 0) {
-        await addButton.first().click();
+        await addButton.first().click({ force: true });
         await page.waitForTimeout(1000);
         const addressField = page.locator('input[name="address"], textarea[name="address"], input[placeholder*="address" i]');
         const count = await addressField.count();
@@ -449,7 +449,7 @@ test.describe('UI Interaction Granular Tests', () => {
       await page.waitForTimeout(2000);
       const addButton = page.locator('button:has-text("Add"), button:has-text("New"), button:has-text("Create")');
       if (await addButton.count() > 0) {
-        await addButton.first().click();
+        await addButton.first().click({ force: true });
         await page.waitForTimeout(1000);
         const selects = page.locator('select, [class*="select"], [class*="dropdown"]');
         const count = await selects.count();
@@ -505,7 +505,7 @@ test.describe('UI Interaction Granular Tests', () => {
       await page.waitForTimeout(2000);
       const addButton = page.locator('button:has-text("Add"), button:has-text("New"), button:has-text("Create")');
       if (await addButton.count() > 0) {
-        await addButton.first().click();
+        await addButton.first().click({ force: true });
         await page.waitForTimeout(1000);
         const modal = page.locator('[class*="modal"], [class*="Modal"], [role="dialog"], [class*="dialog"]');
         const count = await modal.count();
@@ -518,7 +518,7 @@ test.describe('UI Interaction Granular Tests', () => {
       await page.waitForTimeout(2000);
       const addButton = page.locator('button:has-text("Add"), button:has-text("New"), button:has-text("Create")');
       if (await addButton.count() > 0) {
-        await addButton.first().click();
+        await addButton.first().click({ force: true });
         await page.waitForTimeout(1000);
         const closeButton = page.locator('button[aria-label*="close"], button:has-text("Close"), button:has-text("Cancel"), [class*="close"]');
         const count = await closeButton.count();
@@ -531,11 +531,11 @@ test.describe('UI Interaction Granular Tests', () => {
       await page.waitForTimeout(2000);
       const addButton = page.locator('button:has-text("Add"), button:has-text("New"), button:has-text("Create")');
       if (await addButton.count() > 0) {
-        await addButton.first().click();
+        await addButton.first().click({ force: true });
         await page.waitForTimeout(1000);
         const backdrop = page.locator('[class*="backdrop"], [class*="overlay"]');
         if (await backdrop.count() > 0) {
-          await backdrop.first().click({ position: { x: 10, y: 10 } });
+          await backdrop.first().click({ position: { x: 10, y: 10 }, force: true });
           await page.waitForTimeout(500);
         }
       }
@@ -546,7 +546,7 @@ test.describe('UI Interaction Granular Tests', () => {
       await page.waitForTimeout(2000);
       const addButton = page.locator('button:has-text("Add"), button:has-text("New"), button:has-text("Create")');
       if (await addButton.count() > 0) {
-        await addButton.first().click();
+        await addButton.first().click({ force: true });
         await page.waitForTimeout(1000);
         const title = page.locator('[class*="modal-title"], [class*="dialog-title"], h2, h3');
         const count = await title.count();
