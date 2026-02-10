@@ -403,6 +403,10 @@ app.route('/dashboard', dashboard);
 app.route('/erp/procurement/suppliers', suppliers);
 app.route('/erp/procurement/purchase-orders', purchaseOrders);
 
+// Route aliases for procure-to-pay paths (used by granular tests)
+app.route('/erp/procure-to-pay/suppliers', suppliers);
+app.route('/api/erp/procure-to-pay/suppliers', suppliers);
+
 // Route aliases with /api prefix for procurement pages (frontend uses /api baseURL)
 app.route('/api/erp/procurement/suppliers', suppliers);
 app.route('/api/erp/procurement/purchase-orders', purchaseOrders);
