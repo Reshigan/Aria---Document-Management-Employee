@@ -430,11 +430,48 @@ app.post('/pricing/calculate', async (c) => {
   const companyId = getCompanyId(c);
   const body = await c.req.json();
   
-  const result = await pricing.calculatePrice(
-    db, companyId, body.variant_id, body.quantity, body.customer_id, body.pricelist_id
-  );
+  // Accept both variant_id and product_id from frontend
+  const variantId = body.variant_id || body.product_id;
   
-  return c.json({ success: true, data: result });
+  if (!variantId) {
+    return c.json({ 
+      success: true, 
+      data: { 
+        final_price: body.base_price || 0, 
+        discount_percentage: 0,
+        explanation: 'No product ID provided, using base price'
+      } 
+    });
+  }
+  
+  try {
+    const result = await pricing.calculatePrice(
+      db, companyId, variantId, body.quantity || 1, body.customer_id, body.pricelist_id
+    );
+    
+    // Map result to expected frontend format
+    return c.json({ 
+      success: true, 
+      data: {
+        final_price: result?.unit_price || body.base_price || 0,
+        original_price: result?.original_price || body.base_price || 0,
+        discount_percentage: result?.discount_percent || 0,
+        rule_applied: result?.rule_applied,
+        explanation: result?.explanation || 'Price calculated'
+      }
+    });
+  } catch (error) {
+    console.error('Price calculation error:', error);
+    // Return base price on error instead of failing
+    return c.json({ 
+      success: true, 
+      data: { 
+        final_price: body.base_price || 0, 
+        discount_percentage: 0,
+        explanation: 'Using base price (calculation unavailable)'
+      } 
+    });
+  }
 });
 
 app.post('/pricing/calculate-bulk', async (c) => {

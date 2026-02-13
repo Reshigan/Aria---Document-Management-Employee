@@ -82,6 +82,40 @@ function generateUUID(): string {
   return crypto.randomUUID();
 }
 
+// Demo company ID constant
+const DEMO_COMPANY_ID = 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+
+// Ensure demo company exists in database before any transaction
+async function ensureDemoCompanyExists(db: D1Database, companyId: string): Promise<boolean> {
+  try {
+    // Check if company exists
+    const existing = await db.prepare(
+      'SELECT id FROM companies WHERE id = ?'
+    ).bind(companyId).first();
+    
+    if (existing) {
+      return true;
+    }
+    
+    // Create the demo company if it doesn't exist
+    const result = await db.prepare(`
+      INSERT INTO companies (id, name, trading_name, email, phone, country, currency, is_active, settings, created_at, updated_at)
+      VALUES (?, 'Demo Company', 'ARIA Demo', 'demo@aria.vantax.co.za', '+27 11 000 0000', 'South Africa', 'ZAR', 1, '{}', datetime('now'), datetime('now'))
+    `).bind(companyId).run();
+    
+    if (!result.success) {
+      console.error('Failed to create demo company:', result.error);
+      return false;
+    }
+    
+    console.log('Created demo company:', companyId);
+    return true;
+  } catch (error) {
+    console.error('Error ensuring demo company exists:', error);
+    return false;
+  }
+}
+
 // Skills registry
 const skills: Skill[] = [
   // List Customers
@@ -1178,18 +1212,41 @@ const skills: Skill[] = [
         const total = state.orderTotal || 0;
         
         try {
-          await ctx.db.prepare(`
+          // Ensure company exists before creating quote
+          const companyExists = await ensureDemoCompanyExists(ctx.db, ctx.companyId);
+          if (!companyExists) {
+            console.error('Failed to ensure company exists for quote:', ctx.companyId);
+            return { response: `**Error:** Company setup incomplete. Please contact support or try again later.` };
+          }
+          
+          // Insert quote and check result
+          const quoteResult = await ctx.db.prepare(`
             INSERT INTO quotes (id, company_id, customer_id, quote_number, quote_date, valid_until, status, subtotal, total_amount, created_at, updated_at)
             VALUES (?, ?, ?, ?, date('now'), date('now', '+30 days'), 'draft', ?, ?, datetime('now'), datetime('now'))
           `).bind(quoteId, ctx.companyId, state.selectedCustomerId, quoteNumber, total, total).run();
           
+          if (!quoteResult.success) {
+            console.error('Quote INSERT failed:', quoteResult.error);
+            return { response: `**Error creating quote.** Database error: ${quoteResult.error || 'Unknown error'}. Please try again.` };
+          }
+          
+          // Insert quote items and track success
+          let itemsInserted = 0;
           for (const product of state.selectedProducts) {
             const lineId = generateUUID();
-            await ctx.db.prepare(`
+            const itemResult = await ctx.db.prepare(`
               INSERT INTO quote_items (id, quote_id, product_id, description, quantity, unit_price, line_total, created_at)
               VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'))
             `).bind(lineId, quoteId, product.id, product.name, product.quantity, product.price, product.quantity * product.price).run();
+            
+            if (!itemResult.success) {
+              console.error('Quote item INSERT failed:', itemResult.error, 'for product:', product.id);
+            } else {
+              itemsInserted++;
+            }
           }
+          
+          console.log(`Quote ${quoteNumber} created with ${itemsInserted}/${state.selectedProducts.length} items`);
           
           if (ctx.updateState) await ctx.updateState({});
           
@@ -1219,18 +1276,41 @@ const skills: Skill[] = [
         const total = state.orderTotal || 0;
         
         try {
-          await ctx.db.prepare(`
+          // Ensure company exists before creating PO
+          const companyExists = await ensureDemoCompanyExists(ctx.db, ctx.companyId);
+          if (!companyExists) {
+            console.error('Failed to ensure company exists for PO:', ctx.companyId);
+            return { response: `**Error:** Company setup incomplete. Please contact support or try again later.` };
+          }
+          
+          // Insert PO and check result
+          const poResult = await ctx.db.prepare(`
             INSERT INTO purchase_orders (id, company_id, supplier_id, po_number, po_date, status, subtotal, total_amount, created_at, updated_at)
             VALUES (?, ?, ?, ?, date('now'), 'pending', ?, ?, datetime('now'), datetime('now'))
           `).bind(poId, ctx.companyId, state.selectedSupplierId, poNumber, total, total).run();
           
+          if (!poResult.success) {
+            console.error('PO INSERT failed:', poResult.error);
+            return { response: `**Error creating purchase order.** Database error: ${poResult.error || 'Unknown error'}. Please try again.` };
+          }
+          
+          // Insert PO items and track success
+          let itemsInserted = 0;
           for (const product of state.selectedProducts) {
             const lineId = generateUUID();
-            await ctx.db.prepare(`
+            const itemResult = await ctx.db.prepare(`
               INSERT INTO purchase_order_items (id, purchase_order_id, product_id, description, quantity, unit_price, line_total, created_at)
               VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'))
             `).bind(lineId, poId, product.id, product.name, product.quantity, product.price, product.quantity * product.price).run();
+            
+            if (!itemResult.success) {
+              console.error('PO item INSERT failed:', itemResult.error, 'for product:', product.id);
+            } else {
+              itemsInserted++;
+            }
           }
+          
+          console.log(`PO ${poNumber} created with ${itemsInserted}/${state.selectedProducts.length} items`);
           
           if (ctx.updateState) await ctx.updateState({});
           
@@ -1264,19 +1344,42 @@ const skills: Skill[] = [
         const dueDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
         
         try {
-          await ctx.db.prepare(`
+          // Ensure company exists before creating invoice
+          const companyExists = await ensureDemoCompanyExists(ctx.db, ctx.companyId);
+          if (!companyExists) {
+            console.error('Failed to ensure company exists for invoice:', ctx.companyId);
+            return { response: `**Error:** Company setup incomplete. Please contact support or try again later.` };
+          }
+          
+          // Insert invoice and check result
+          const invoiceResult = await ctx.db.prepare(`
             INSERT INTO customer_invoices (id, company_id, invoice_number, customer_id, invoice_date, due_date, status, subtotal, tax_amount, total_amount, balance_due, created_at, updated_at)
             VALUES (?, ?, ?, ?, ?, ?, 'draft', ?, ?, ?, ?, datetime('now'), datetime('now'))
           `).bind(invoiceId, ctx.companyId, invoiceNumber, state.selectedCustomerId, today, dueDate, subtotal, taxAmount, totalAmount, totalAmount).run();
           
+          if (!invoiceResult.success) {
+            console.error('Invoice INSERT failed:', invoiceResult.error);
+            return { response: `**Error creating invoice.** Database error: ${invoiceResult.error || 'Unknown error'}. Please try again.` };
+          }
+          
+          // Insert invoice items and track success
+          let itemsInserted = 0;
           for (const product of state.selectedProducts) {
             const lineId = generateUUID();
             const lineTotal = product.quantity * product.price;
-            await ctx.db.prepare(`
+            const itemResult = await ctx.db.prepare(`
               INSERT INTO customer_invoice_items (id, invoice_id, product_id, description, quantity, unit_price, line_total, created_at)
               VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'))
             `).bind(lineId, invoiceId, product.id, product.name, product.quantity, product.price, lineTotal).run();
+            
+            if (!itemResult.success) {
+              console.error('Invoice item INSERT failed:', itemResult.error, 'for product:', product.id);
+            } else {
+              itemsInserted++;
+            }
           }
+          
+          console.log(`Invoice ${invoiceNumber} created with ${itemsInserted}/${state.selectedProducts.length} items`);
           
           if (ctx.updateState) await ctx.updateState({});
           
@@ -1314,20 +1417,45 @@ const skills: Skill[] = [
       const total = state.orderTotal || 0;
       
       try {
-        // Insert sales order into database
-        await ctx.db.prepare(`
+        // Ensure company exists before creating order
+        const companyExists = await ensureDemoCompanyExists(ctx.db, ctx.companyId);
+        if (!companyExists) {
+          console.error('Failed to ensure company exists for sales order:', ctx.companyId);
+          return {
+            response: `**Error:** Company setup incomplete. Please contact support or try again later.`,
+          };
+        }
+        
+        // Insert sales order into database and check result
+        const orderResult = await ctx.db.prepare(`
           INSERT INTO sales_orders (id, company_id, customer_id, order_number, order_date, status, subtotal, total_amount, created_at, updated_at)
           VALUES (?, ?, ?, ?, date('now'), 'confirmed', ?, ?, datetime('now'), datetime('now'))
         `).bind(orderId, ctx.companyId, state.selectedCustomerId, orderNumber, total, total).run();
         
+        if (!orderResult.success) {
+          console.error('Sales order INSERT failed:', orderResult.error);
+          return {
+            response: `**Error creating sales order.** Database error: ${orderResult.error || 'Unknown error'}. Please try again.`,
+          };
+        }
+        
         // Insert order items (using sales_order_items table with description field)
+        let itemsInserted = 0;
         for (const product of state.selectedProducts) {
           const lineId = generateUUID();
-          await ctx.db.prepare(`
+          const itemResult = await ctx.db.prepare(`
             INSERT INTO sales_order_items (id, sales_order_id, product_id, description, quantity, unit_price, line_total, created_at)
             VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'))
           `).bind(lineId, orderId, product.id, product.name, product.quantity, product.price, product.quantity * product.price).run();
+          
+          if (!itemResult.success) {
+            console.error('Sales order item INSERT failed:', itemResult.error, 'for product:', product.id);
+          } else {
+            itemsInserted++;
+          }
         }
+        
+        console.log(`Sales order ${orderNumber} created with ${itemsInserted}/${state.selectedProducts.length} items`);
         
         // Clear conversation state
         if (ctx.updateState) {
