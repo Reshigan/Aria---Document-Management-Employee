@@ -475,7 +475,10 @@ const skills: Skill[] = [
           `**Automation Bots:**\n` +
           `- "List all bots" - Show all 67 automation bots\n` +
           `- "List financial bots" - Show financial automation bots\n` +
-          `- "Run reconciliation" - Run sales-to-invoice reconciliation\n\n` +
+          `- "Run reconciliation" - Run sales-to-invoice reconciliation\n` +
+          `- "Run bank reconciliation" - Run bank statement reconciliation\n` +
+          `- "Run invoice reconciliation" - Run 3-way invoice matching\n` +
+          `- "Run payroll" - Process employee payroll\n\n` +
           `**Reports:**\n` +
           `- "Dashboard" or "Summary" - Show business overview\n\n` +
           `Just type naturally and I'll try to help!`,
@@ -646,7 +649,7 @@ const skills: Skill[] = [
       for (const bot of bots) {
         response += `- **${bot.name}**: ${bot.description}\n`;
       }
-      response += `\nSay "Run reconciliation" to execute the Sales-to-Invoice Reconciliation Bot.`;
+      response += `\nTry these commands:\n- "Run reconciliation" - Sales-to-Invoice Reconciliation\n- "Run bank reconciliation" - Bank Statement Reconciliation\n- "Run invoice reconciliation" - 3-Way Invoice Matching`;
       
       return { response, data: bots };
     },
@@ -768,6 +771,246 @@ const skills: Skill[] = [
         console.error('Reconciliation error:', error);
         return {
           response: `**Reconciliation Error**\n\nUnable to complete reconciliation. Please try again or check the system logs.`,
+        };
+      }
+    },
+  },
+  
+  // Run Bank Reconciliation Bot
+  {
+    name: 'run_bank_reconciliation',
+    description: 'Run bank reconciliation to match bank transactions with GL entries',
+    patterns: [
+      /run\s+bank\s+reconciliation/i,
+      /bank\s+reconciliation/i,
+      /reconcile\s+bank/i,
+      /match\s+bank\s+transactions?/i,
+      /bank\s+statement\s+reconciliation/i,
+    ],
+    slots: [],
+    execute: async (ctx) => {
+      try {
+        // Get bank transactions
+        const bankTxResult = await ctx.db.prepare(
+          'SELECT id, transaction_date, description, amount, transaction_type, reconciled FROM bank_transactions WHERE company_id = ? ORDER BY transaction_date DESC LIMIT 100'
+        ).bind(ctx.companyId).all();
+        
+        const bankTransactions = bankTxResult.results || [];
+        
+        // Get GL entries for matching
+        const glEntriesResult = await ctx.db.prepare(
+          'SELECT id, entry_date, description, debit_amount, credit_amount FROM journal_entries WHERE company_id = ? ORDER BY entry_date DESC LIMIT 100'
+        ).bind(ctx.companyId).all();
+        
+        const glEntries = glEntriesResult.results || [];
+        
+        let matchedCount = 0;
+        let unmatchedBankTx = 0;
+        let unmatchedGLEntries = 0;
+        const exceptions: Array<{ type: string; details: string }> = [];
+        
+        // Simple matching logic based on amount and date proximity
+        for (const tx of bankTransactions as any[]) {
+          if (tx.reconciled) {
+            matchedCount++;
+            continue;
+          }
+          
+          const txAmount = Math.abs(tx.amount || 0);
+          const matchingGL = glEntries.find((gl: any) => {
+            const glAmount = Math.abs((gl.debit_amount || 0) - (gl.credit_amount || 0));
+            return Math.abs(txAmount - glAmount) < 0.01;
+          });
+          
+          if (matchingGL) {
+            matchedCount++;
+          } else {
+            unmatchedBankTx++;
+            exceptions.push({
+              type: 'Unmatched Bank Transaction',
+              details: `${tx.description} - R${txAmount.toFixed(2)} on ${tx.transaction_date}`,
+            });
+          }
+        }
+        
+        // Count unmatched GL entries
+        unmatchedGLEntries = Math.max(0, glEntries.length - matchedCount);
+        
+        const totalTransactions = bankTransactions.length;
+        const matchRate = totalTransactions > 0 ? ((matchedCount / totalTransactions) * 100).toFixed(1) : 0;
+        
+        let exceptionDetails = '';
+        if (exceptions.length > 0) {
+          exceptionDetails = '\n\n**Exception Details:**\n' + exceptions.slice(0, 5).map(e => 
+            `- **${e.type}**: ${e.details}`
+          ).join('\n');
+          if (exceptions.length > 5) {
+            exceptionDetails += `\n  ...and ${exceptions.length - 5} more`;
+          }
+        }
+        
+        const result = {
+          status: 'success',
+          total_bank_transactions: totalTransactions,
+          matched_entries: matchedCount,
+          unmatched_bank_tx: unmatchedBankTx,
+          unmatched_gl_entries: unmatchedGLEntries,
+          match_rate: parseFloat(matchRate as string),
+        };
+        
+        return {
+          response: `**Bank Reconciliation Complete!**\n\n` +
+            `**Summary:**\n` +
+            `- Total Bank Transactions: ${result.total_bank_transactions}\n` +
+            `- Matched Entries: ${result.matched_entries}\n` +
+            `- Unmatched Bank Transactions: ${result.unmatched_bank_tx}\n` +
+            `- Unmatched GL Entries: ${result.unmatched_gl_entries}\n` +
+            `- Match Rate: ${result.match_rate}%` +
+            exceptionDetails +
+            `\n\nNavigate to **Financial > Bank Reconciliation** to view and resolve exceptions.`,
+          data: result,
+        };
+      } catch (error) {
+        console.error('Bank reconciliation error:', error);
+        return {
+          response: `**Bank Reconciliation Error**\n\nUnable to complete bank reconciliation. Please try again or check the system logs.`,
+        };
+      }
+    },
+  },
+  
+  // Run Invoice Reconciliation Bot
+  {
+    name: 'run_invoice_reconciliation',
+    description: 'Run invoice reconciliation to match invoices with purchase orders and receipts',
+    patterns: [
+      /run\s+invoice\s+reconciliation/i,
+      /invoice\s+reconciliation/i,
+      /reconcile\s+invoices?/i,
+      /match\s+invoices?/i,
+      /three[- ]?way\s+match/i,
+      /po\s+invoice\s+match/i,
+    ],
+    slots: [],
+    execute: async (ctx) => {
+      try {
+        // Get supplier invoices
+        const invoicesResult = await ctx.db.prepare(
+          'SELECT id, invoice_number, supplier_id, total_amount, status, po_number FROM supplier_invoices WHERE company_id = ? ORDER BY created_at DESC LIMIT 100'
+        ).bind(ctx.companyId).all();
+        
+        const invoices = invoicesResult.results || [];
+        
+        // Get purchase orders for matching
+        const posResult = await ctx.db.prepare(
+          'SELECT id, po_number, supplier_id, total_amount, status FROM purchase_orders WHERE company_id = ? ORDER BY created_at DESC LIMIT 100'
+        ).bind(ctx.companyId).all();
+        
+        const purchaseOrders = posResult.results || [];
+        
+        // Get goods receipts
+        const receiptsResult = await ctx.db.prepare(
+          'SELECT id, receipt_number, po_id, received_quantity FROM goods_receipts WHERE company_id = ? ORDER BY created_at DESC LIMIT 100'
+        ).bind(ctx.companyId).all();
+        
+        const receipts = receiptsResult.results || [];
+        
+        let fullyMatched = 0;
+        let partialMatch = 0;
+        let noMatch = 0;
+        let priceVariances = 0;
+        let quantityVariances = 0;
+        const exceptions: Array<{ type: string; invoiceNumber: string; details: string }> = [];
+        
+        for (const invoice of invoices as any[]) {
+          // Find matching PO
+          const matchingPO = purchaseOrders.find((po: any) => 
+            po.po_number === invoice.po_number || 
+            (po.supplier_id === invoice.supplier_id && Math.abs(po.total_amount - invoice.total_amount) < 0.01)
+          );
+          
+          if (!matchingPO) {
+            noMatch++;
+            exceptions.push({
+              type: 'No Matching PO',
+              invoiceNumber: invoice.invoice_number,
+              details: `No purchase order found for invoice R${invoice.total_amount?.toFixed(2)}`,
+            });
+            continue;
+          }
+          
+          // Find matching receipt
+          const matchingReceipt = receipts.find((r: any) => r.po_id === (matchingPO as any).id);
+          
+          if (!matchingReceipt) {
+            partialMatch++;
+            exceptions.push({
+              type: 'No Goods Receipt',
+              invoiceNumber: invoice.invoice_number,
+              details: `PO matched but no goods receipt found`,
+            });
+            continue;
+          }
+          
+          // Check for price variance
+          if (Math.abs((matchingPO as any).total_amount - invoice.total_amount) > 0.01) {
+            priceVariances++;
+            exceptions.push({
+              type: 'Price Variance',
+              invoiceNumber: invoice.invoice_number,
+              details: `PO: R${(matchingPO as any).total_amount?.toFixed(2)}, Invoice: R${invoice.total_amount?.toFixed(2)}`,
+            });
+          }
+          
+          fullyMatched++;
+        }
+        
+        const totalInvoices = invoices.length;
+        const matchRate = totalInvoices > 0 ? ((fullyMatched / totalInvoices) * 100).toFixed(1) : 0;
+        const exceptionsFound = noMatch + partialMatch + priceVariances + quantityVariances;
+        
+        let exceptionDetails = '';
+        if (exceptions.length > 0) {
+          exceptionDetails = '\n\n**Exception Details:**\n' + exceptions.slice(0, 5).map(e => 
+            `- **${e.type}** - ${e.invoiceNumber}: ${e.details}`
+          ).join('\n');
+          if (exceptions.length > 5) {
+            exceptionDetails += `\n  ...and ${exceptions.length - 5} more`;
+          }
+        }
+        
+        const result = {
+          status: 'success',
+          total_invoices: totalInvoices,
+          fully_matched: fullyMatched,
+          partial_match: partialMatch,
+          no_match: noMatch,
+          price_variances: priceVariances,
+          quantity_variances: quantityVariances,
+          exceptions_found: exceptionsFound,
+          match_rate: parseFloat(matchRate as string),
+        };
+        
+        return {
+          response: `**Invoice Reconciliation Complete!**\n\n` +
+            `**Summary:**\n` +
+            `- Total Invoices: ${result.total_invoices}\n` +
+            `- Fully Matched (3-Way): ${result.fully_matched}\n` +
+            `- Partial Match: ${result.partial_match}\n` +
+            `- No Match: ${result.no_match}\n` +
+            `- Match Rate: ${result.match_rate}%\n\n` +
+            `**Exceptions by Type:**\n` +
+            `- Price Variances: ${result.price_variances}\n` +
+            `- Quantity Variances: ${result.quantity_variances}\n` +
+            `- Missing PO/Receipt: ${result.no_match + result.partial_match}` +
+            exceptionDetails +
+            `\n\nNavigate to **Financial > Invoice Reconciliation** to view and resolve exceptions.`,
+          data: result,
+        };
+      } catch (error) {
+        console.error('Invoice reconciliation error:', error);
+        return {
+          response: `**Invoice Reconciliation Error**\n\nUnable to complete invoice reconciliation. Please try again or check the system logs.`,
         };
       }
     },
