@@ -116,7 +116,7 @@ export default function Quotes() {
 
   const loadPricelists = async () => {
     try {
-      const response = await api.get('/pricing/pricelists');
+      const response = await api.get('/odoo/pricing/pricelists');
       const data = response.data?.data || response.data || [];
       setPricelists(Array.isArray(data) ? data : []);
     } catch (err) {

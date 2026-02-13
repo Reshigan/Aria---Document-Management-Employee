@@ -77,11 +77,14 @@ export default function DeliveryDetail() {
       const [customersRes, productsRes, warehousesRes] = await Promise.all([
         api.get('/erp/master-data/customers'),
         api.get('/erp/order-to-cash/products'),
-        api.get('/erp/order-to-cash/warehouses')
+        api.get('/odoo/inventory/warehouses').catch(() => ({ data: [] }))
       ]);
-      setCustomers(customersRes.data);
-      setProducts(productsRes.data);
-      setWarehouses(warehousesRes.data);
+      const customersData = customersRes.data?.data || customersRes.data || [];
+      const productsData = productsRes.data?.data || productsRes.data || [];
+      const warehousesData = warehousesRes.data?.data || warehousesRes.data || [];
+      setCustomers(Array.isArray(customersData) ? customersData : []);
+      setProducts(Array.isArray(productsData) ? productsData : []);
+      setWarehouses(Array.isArray(warehousesData) ? warehousesData : []);
     } catch (err) {
       console.error('Error loading master data:', err);
     }
