@@ -91,10 +91,36 @@ export default function Customers() {
 
   const loadCustomerDetails = async (customerId: string) => {
     try {
-      const transactionsResponse = await api.get(`/api/erp/order-to-cash/customers/${customerId}/transactions`);
-      setCustomerTransactions(transactionsResponse.data || []);
-      const statsResponse = await api.get(`/api/erp/order-to-cash/customers/${customerId}/stats`);
-      setCustomerStats(statsResponse.data || null);
+      // Load transactions from sales orders, quotes, and invoices for this customer
+      const [ordersRes, quotesRes, invoicesRes] = await Promise.all([
+        api.get('/erp/order-to-cash/sales-orders', { params: { customer_id: customerId } }).catch(() => ({ data: [] })),
+        api.get('/erp/order-to-cash/quotes', { params: { customer_id: customerId } }).catch(() => ({ data: [] })),
+        api.get('/ar/invoices', { params: { customer_id: customerId } }).catch(() => ({ data: [] }))
+      ]);
+      
+      const orders = (ordersRes.data?.data || ordersRes.data || []).map((o: { id: string; order_number: string; order_date: string; total_amount: number; status: string }) => ({
+        id: o.id, type: 'sales_order' as const, number: o.order_number, date: o.order_date, amount: o.total_amount, status: o.status
+      }));
+      const quotes = (quotesRes.data?.data || quotesRes.data || []).map((q: { id: string; quote_number: string; quote_date: string; total_amount: number; status: string }) => ({
+        id: q.id, type: 'quote' as const, number: q.quote_number, date: q.quote_date, amount: q.total_amount, status: q.status
+      }));
+      const invoices = (invoicesRes.data?.data || invoicesRes.data || []).map((i: { id: string; invoice_number: string; invoice_date: string; total_amount: number; status: string }) => ({
+        id: i.id, type: 'invoice' as const, number: i.invoice_number, date: i.invoice_date, amount: i.total_amount, status: i.status
+      }));
+      
+      setCustomerTransactions([...orders, ...quotes, ...invoices].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
+      
+      // Calculate stats from the loaded data
+      const totalRevenue = invoices.filter((i: { status: string }) => i.status === 'paid').reduce((sum: number, i: { amount: number }) => sum + i.amount, 0);
+      const outstandingBalance = invoices.filter((i: { status: string }) => i.status !== 'paid').reduce((sum: number, i: { amount: number }) => sum + i.amount, 0);
+      setCustomerStats({
+        total_quotes: quotes.length,
+        total_orders: orders.length,
+        total_invoices: invoices.length,
+        total_revenue: totalRevenue,
+        outstanding_balance: outstandingBalance,
+        last_order_date: orders.length > 0 ? orders[0].date : undefined
+      });
     } catch (err) {
       console.error('Failed to load customer details:', err);
       setCustomerTransactions([]);
@@ -130,7 +156,7 @@ export default function Customers() {
   const confirmDelete = async () => {
     if (!selectedCustomer) return;
     try {
-      await api.delete(`/api/erp/order-to-cash/customers/${selectedCustomer.id}`);
+      await api.delete(`/erp/order-to-cash/customers/${selectedCustomer.id}`);
       setShowDeleteDialog(false);
       setSelectedCustomer(null);
       loadCustomers();

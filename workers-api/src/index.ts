@@ -15,6 +15,7 @@ import suppliers from './routes/suppliers';
 import products from './routes/products';
 import quotes from './routes/quotes';
 import salesOrders from './routes/sales-orders';
+import deliveries from './routes/deliveries';
 import purchaseOrders from './routes/purchase-orders';
 import invoices from './routes/invoices';
 import dashboard from './routes/dashboard';
@@ -416,6 +417,8 @@ app.route('/api/erp/order-to-cash/customers', customers);
 app.route('/erp/order-to-cash/customers', customers);
 app.route('/api/erp/order-to-cash/invoices', invoices);
 app.route('/erp/order-to-cash/invoices', invoices);
+app.route('/api/erp/order-to-cash/deliveries', deliveries);
+app.route('/erp/order-to-cash/deliveries', deliveries);
 
 // Route aliases for AR/AP invoice paths
 app.route('/api/ar/invoices', invoices);

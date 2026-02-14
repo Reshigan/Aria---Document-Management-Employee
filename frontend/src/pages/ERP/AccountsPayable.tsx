@@ -93,8 +93,9 @@ export default function AccountsPayable() {
       setLoading(true);
       const params: Record<string, string> = {};
       if (searchTerm) params.search = searchTerm;
-      const response = await api.get('/erp/ap/vendors', { params });
-      setVendors(response.data.vendors || response.data || []);
+      const response = await api.get('/erp/master-data/suppliers', { params });
+      const data = response.data?.data || response.data || [];
+      setVendors(Array.isArray(data) ? data : []);
       setError(null);
     } catch (err: unknown) {
       console.error('Error loading vendors:', err);
@@ -109,8 +110,9 @@ export default function AccountsPayable() {
       const params: Record<string, string> = {};
       if (searchTerm) params.search = searchTerm;
       if (statusFilter) params.status = statusFilter;
-      const response = await api.get('/erp/ap/invoices', { params });
-      setInvoices(response.data.invoices || response.data || []);
+      const response = await api.get('/ap/invoices', { params });
+      const data = response.data?.data || response.data || [];
+      setInvoices(Array.isArray(data) ? data : []);
       setError(null);
     } catch (err: unknown) {
       console.error('Error loading invoices:', err);
@@ -122,8 +124,9 @@ export default function AccountsPayable() {
   const loadPayments = async () => {
     try {
       setLoading(true);
-      const response = await api.get('/erp/ap/payments');
-      setPayments(response.data.payments || response.data || []);
+      const response = await api.get('/payments');
+      const data = response.data?.data || response.data || [];
+      setPayments(Array.isArray(data) ? data : []);
       setError(null);
     } catch (err: unknown) {
       console.error('Error loading payments:', err);
@@ -135,8 +138,9 @@ export default function AccountsPayable() {
   const loadAging = async () => {
     try {
       setLoading(true);
-      const response = await api.get('/erp/reports/ap-aging');
-      setAging(response.data.aging || response.data || []);
+      const response = await api.get('/reports/ap-aging');
+      const data = response.data?.data || response.data || [];
+      setAging(Array.isArray(data) ? data : []);
       setError(null);
     } catch (err: unknown) {
       console.error('Error loading aging report:', err);
@@ -164,7 +168,7 @@ export default function AccountsPayable() {
   const confirmDeleteVendor = async () => {
     if (!selectedVendor) return;
     try {
-      await api.delete(`/erp/ap/vendors/${selectedVendor.id}`);
+      await api.delete(`/erp/master-data/suppliers/${selectedVendor.id}`);
       loadVendors();
       setSelectedVendor(null);
     } catch (err: unknown) {
@@ -178,8 +182,8 @@ export default function AccountsPayable() {
     e.preventDefault();
     if (!vendorFormData.vendor_code || !vendorFormData.vendor_name) { setError('Please fill in all required fields'); return; }
     try {
-      if (showEditVendorModal && selectedVendor) await api.put(`/erp/ap/vendors/${selectedVendor.id}`, vendorFormData);
-      else await api.post('/erp/ap/vendors', vendorFormData);
+      if (showEditVendorModal && selectedVendor) await api.put(`/erp/master-data/suppliers/${selectedVendor.id}`, vendorFormData);
+      else await api.post('/erp/master-data/suppliers', vendorFormData);
       loadVendors();
       setShowCreateVendorModal(false);
       setShowEditVendorModal(false);
@@ -201,7 +205,7 @@ export default function AccountsPayable() {
     e.preventDefault();
     if (!invoiceFormData.invoice_number || !invoiceFormData.vendor_id) { setError('Please fill in all required fields'); return; }
     try {
-      await api.post('/erp/ap/invoices', invoiceFormData);
+      await api.post('/ap/invoices', invoiceFormData);
       loadInvoices();
       setShowCreateInvoiceModal(false);
       setError(null);
@@ -221,7 +225,7 @@ export default function AccountsPayable() {
     e.preventDefault();
     if (!paymentFormData.vendor_id || !paymentFormData.amount) { setError('Please fill in all required fields'); return; }
     try {
-      await api.post('/erp/ap/payments', paymentFormData);
+      await api.post('/payments', paymentFormData);
       loadPayments();
       setShowCreatePaymentModal(false);
       setError(null);
