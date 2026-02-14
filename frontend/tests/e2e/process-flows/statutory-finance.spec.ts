@@ -13,20 +13,28 @@ async function loginAndNavigate(page: Page, route: string) {
   await dismissOverlays(page);
   await page.goto(`${BASE_URL}${route}`);
   await page.waitForLoadState('networkidle');
-  await page.waitForTimeout(2000);
+  await page.waitForTimeout(3000);
+  await dismissOverlays(page);
+  await page.waitForTimeout(500);
   await dismissOverlays(page);
 }
 
 async function dismissOverlays(page: Page) {
-  const skipTour = page.locator('text=Skip tour').first();
-  if (await skipTour.isVisible().catch(() => false)) await skipTour.click();
+  await page.evaluate(() => {
+    document.querySelectorAll('.fixed.inset-0').forEach(el => {
+      if (el.textContent?.includes('Welcome to ARIA') || el.textContent?.includes('Skip tour')) {
+        (el as HTMLElement).remove();
+      }
+    });
+  });
   await page.waitForTimeout(300);
-  const overlay = page.locator('.fixed.inset-0.z-\\[100\\]');
-  if (await overlay.isVisible().catch(() => false)) {
-    const closeBtn = overlay.locator('button').first();
-    if (await closeBtn.isVisible().catch(() => false)) await closeBtn.click({ force: true });
-  }
-  await page.waitForTimeout(300);
+  try {
+    const skipBtn = page.locator('text=Skip tour');
+    if (await skipBtn.count() > 0 && await skipBtn.first().isVisible()) {
+      await skipBtn.first().click({ force: true });
+      await page.waitForTimeout(500);
+    }
+  } catch { /* ignore */ }
 }
 
 async function clickGlTab(page: Page, tabText: string) {
