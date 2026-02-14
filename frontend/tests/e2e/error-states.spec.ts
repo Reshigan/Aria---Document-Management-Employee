@@ -95,10 +95,10 @@ test.describe('Error States & Edge Cases', () => {
 
   test.describe('Loading States', () => {
     test('should show loading indicator during page load', async ({ page }) => {
-      const loadingPromise = page.goto(FRONTEND_URL)
+      await page.goto(FRONTEND_URL)
+      await page.waitForLoadState('domcontentloaded')
       const content = await page.content()
       expect(content.length).toBeGreaterThan(0)
-      await loadingPromise
     })
 
     test('should complete loading within acceptable time', async ({ page }) => {
