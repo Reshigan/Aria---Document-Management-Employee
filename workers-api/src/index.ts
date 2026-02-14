@@ -48,6 +48,7 @@ import microfeatures from './routes/microfeatures';
 import newPages from './routes/new-pages';
 import xeroParity from './routes/xero-parity';
 import adminConfig from './routes/admin-config';
+import inventory from './routes/inventory';
 import { executeScheduledBots as runScheduledBots } from './services/bot-executor';
 import { processPendingDeliveries } from './services/webhook-service';
 import { processDueScheduledReports } from './services/report-builder-service';
@@ -546,6 +547,10 @@ app.route('/xero', xeroParity);
 // Admin Configuration routes (Chart of Accounts, Invoice Templates, Lock Dates, Payment Terms, Tax Rates, Email Templates, Tracking Categories)
 app.route('/api/admin-config', adminConfig);
 app.route('/admin-config', adminConfig);
+
+// Inventory routes (Warehouses, Stock Movements, Items)
+app.route('/api/inventory', inventory);
+app.route('/inventory', inventory);
 
 // Data Seeding endpoint (for generating test data)
 import { seedFullYear, seedMonth } from './services/data-seeding-service';
