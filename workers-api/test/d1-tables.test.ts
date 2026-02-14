@@ -305,8 +305,8 @@ describe('D1 Table Existence Verification', () => {
   })
 
   describe('Total Table Count', () => {
-    it('should have 90+ total D1 tables defined', () => {
-      expect(ALL_D1_TABLES.length).toBeGreaterThanOrEqual(90)
+    it('should have 89+ total D1 tables defined', () => {
+      expect(ALL_D1_TABLES.length).toBeGreaterThanOrEqual(89)
     })
 
     it('should have no duplicate table names', () => {

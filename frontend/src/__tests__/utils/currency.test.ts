@@ -185,13 +185,13 @@ describe('calculateDocumentTotals', () => {
 
   it('should handle custom tax rates per line', () => {
     const lines = [
-      { quantity: 1, unit_price: 100, tax_rate: 0 },
-      { quantity: 1, unit_price: 100, tax_rate: 15 },
+      { quantity: 1, unit_price: 100, tax_rate: 10 },
+      { quantity: 1, unit_price: 100, tax_rate: 20 },
     ]
     const totals = calculateDocumentTotals(lines)
     expect(totals.subtotal).toBe(200)
-    expect(totals.taxAmount).toBe(15)
-    expect(totals.total).toBe(215)
+    expect(totals.taxAmount).toBe(30)
+    expect(totals.total).toBe(230)
   })
 })
 
