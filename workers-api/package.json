@@ -3,22 +3,27 @@
   "version": "1.0.0",
   "description": "ARIA ERP API on Cloudflare Workers",
   "main": "src/index.ts",
-  "scripts": {
-    "dev": "wrangler dev",
-    "deploy": "wrangler deploy",
-    "build": "tsc",
-    "db:create": "wrangler d1 create aria-erp-db",
-    "db:migrate": "wrangler d1 execute aria-erp-db --file=./migrations/001_auth_tables.sql",
-    "db:migrate:local": "wrangler d1 execute aria-erp-db --local --file=./migrations/001_auth_tables.sql"
-  },
+    "scripts": {
+      "dev": "wrangler dev",
+      "deploy": "wrangler deploy",
+      "build": "tsc",
+      "test": "vitest run",
+      "test:watch": "vitest",
+      "test:coverage": "vitest run --coverage",
+      "db:create": "wrangler d1 create aria-erp-db",
+      "db:migrate": "wrangler d1 execute aria-erp-db --file=./migrations/001_auth_tables.sql",
+      "db:migrate:local": "wrangler d1 execute aria-erp-db --local --file=./migrations/001_auth_tables.sql"
+    },
   "dependencies": {
     "hono": "^4.0.0",
     "jose": "^5.2.0",
     "stripe": "^20.1.2"
   },
   "devDependencies": {
+    "@cloudflare/vitest-pool-workers": "^0.12.12",
     "@cloudflare/workers-types": "^4.20241205.0",
     "typescript": "^5.3.0",
+    "vitest": "^4.0.18",
     "wrangler": "^3.91.0"
   }
 }
