@@ -17,7 +17,7 @@ const deliveries = new Hono<{ Bindings: Env }>();
 // Get all deliveries
 deliveries.get('/', async (c) => {
   const db = c.env.DB;
-  const companyId = getSecureCompanyId(c);
+  const companyId = await getSecureCompanyId(c);
   
   try {
     const url = new URL(c.req.url);
@@ -81,7 +81,7 @@ deliveries.get('/', async (c) => {
 // Get single delivery by ID
 deliveries.get('/:id', async (c) => {
   const db = c.env.DB;
-  const companyId = getSecureCompanyId(c);
+  const companyId = await getSecureCompanyId(c);
   const id = c.req.param('id');
   
   try {
@@ -127,7 +127,7 @@ deliveries.get('/:id', async (c) => {
 // Create new delivery
 deliveries.post('/', async (c) => {
   const db = c.env.DB;
-  const companyId = getSecureCompanyId(c);
+  const companyId = await getSecureCompanyId(c);
   const body = await c.req.json();
   
   try {
@@ -199,7 +199,7 @@ deliveries.post('/', async (c) => {
 // Update delivery
 deliveries.put('/:id', async (c) => {
   const db = c.env.DB;
-  const companyId = getSecureCompanyId(c);
+  const companyId = await getSecureCompanyId(c);
   const id = c.req.param('id');
   const body = await c.req.json();
   
@@ -269,7 +269,7 @@ deliveries.put('/:id', async (c) => {
 // Ship delivery
 deliveries.post('/:id/ship', async (c) => {
   const db = c.env.DB;
-  const companyId = getSecureCompanyId(c);
+  const companyId = await getSecureCompanyId(c);
   const id = c.req.param('id');
   const body = await c.req.json();
   
@@ -315,7 +315,7 @@ deliveries.post('/:id/ship', async (c) => {
 // Complete delivery
 deliveries.post('/:id/complete', async (c) => {
   const db = c.env.DB;
-  const companyId = getSecureCompanyId(c);
+  const companyId = await getSecureCompanyId(c);
   const id = c.req.param('id');
   
   try {
@@ -346,7 +346,7 @@ deliveries.post('/:id/complete', async (c) => {
 // Delete delivery
 deliveries.delete('/:id', async (c) => {
   const db = c.env.DB;
-  const companyId = getSecureCompanyId(c);
+  const companyId = await getSecureCompanyId(c);
   const id = c.req.param('id');
   
   try {
