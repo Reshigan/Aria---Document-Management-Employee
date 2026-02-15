@@ -380,49 +380,31 @@ export default function Invoices() {
                 </div>
               )}
 
-              <div className="bg-gray-50 dark:bg-gray-900/50 rounded-xl p-5">
-                <h3 className="text-xs font-semibold text-gray-600 dark:text-gray-300 mb-4 flex items-center gap-2">
-                  <span className="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 flex items-center justify-center text-xs">1</span>
-                  Customer Information
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+              <div className="bg-gray-50 dark:bg-gray-900/50 rounded-lg p-2">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Customer Name *</label>
-                    <input type="text" value={formData.customer_name || ''} onChange={(e) => setFormData({ ...formData, customer_name: e.target.value })} required className="w-full px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" placeholder="Enter customer name" />
+                    <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-0.5">Customer Name *</label>
+                    <input type="text" value={formData.customer_name || ''} onChange={(e) => setFormData({ ...formData, customer_name: e.target.value })} required className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Customer name" />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Customer Email *</label>
-                    <input type="email" value={formData.customer_email || ''} onChange={(e) => setFormData({ ...formData, customer_email: e.target.value })} required className="w-full px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" placeholder="customer@example.com" />
+                    <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-0.5">Customer Email *</label>
+                    <input type="email" value={formData.customer_email || ''} onChange={(e) => setFormData({ ...formData, customer_email: e.target.value })} required className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="customer@example.com" />
                   </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-0.5">Invoice Date *</label>
+                    <input type="date" value={formData.invoice_date || ''} onChange={(e) => setFormData({ ...formData, invoice_date: e.target.value })} required className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-0.5">Due Date</label>
+                    <input type="date" value={formData.due_date || ''} onChange={(e) => setFormData({ ...formData, due_date: e.target.value })} className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                  </div>
+                </div>
+                <div className="mt-1">
+                  <input type="text" value={formData.notes || ''} onChange={(e) => setFormData({ ...formData, notes: e.target.value })} placeholder="Notes (optional)" className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
                 </div>
               </div>
 
-              <div className="bg-gray-50 dark:bg-gray-900/50 rounded-xl p-5">
-                <h3 className="text-xs font-semibold text-gray-600 dark:text-gray-300 mb-4 flex items-center gap-2">
-                  <span className="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 flex items-center justify-center text-xs">2</span>
-                  Invoice Details
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Invoice Date *</label>
-                    <input type="date" value={formData.invoice_date || ''} onChange={(e) => setFormData({ ...formData, invoice_date: e.target.value })} required className="w-full px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Due Date</label>
-                    <input type="date" value={formData.due_date || ''} onChange={(e) => setFormData({ ...formData, due_date: e.target.value })} className="w-full px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" />
-                  </div>
-                </div>
-                <div className="mt-4">
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Notes</label>
-                  <textarea value={formData.notes || ''} onChange={(e) => setFormData({ ...formData, notes: e.target.value })} rows={1} className="w-full px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none" placeholder="Add any notes or special instructions..." />
-                </div>
-              </div>
-
-              <div className="bg-gray-50 dark:bg-gray-900/50 rounded-xl p-5">
-                <h3 className="text-xs font-semibold text-gray-600 dark:text-gray-300 mb-4 flex items-center gap-2">
-                  <span className="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 flex items-center justify-center text-xs">3</span>
-                  Line Items
-                </h3>
+              <div className="bg-gray-50 dark:bg-gray-900/50 rounded-lg p-2">
                 <LineItemsTable items={lineItems} onChange={setLineItems} products={products} />
               </div>
             </div>

@@ -425,55 +425,37 @@ export default function SalesOrders() {
                 </div>
               )}
 
-              <div className="bg-gray-50 dark:bg-gray-900/50 rounded-lg p-3">
-                <h3 className="text-xs font-semibold text-gray-600 dark:text-gray-300 mb-3 flex items-center gap-2">
-                  
-                  Customer Information
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+              <div className="bg-gray-50 dark:bg-gray-900/50 rounded-lg p-2">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Customer *</label>
-                    <select value={selectedCustomerId} onChange={(e) => handleCustomerChange(e.target.value)} required className="w-full px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all">
+                    <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-0.5">Customer *</label>
+                    <select value={selectedCustomerId} onChange={(e) => handleCustomerChange(e.target.value)} required className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent">
                       <option value="">Select a customer...</option>
                       {customers.map(customer => (<option key={customer.id} value={customer.id}>{customer.name} ({customer.email})</option>))}
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Pricelist</label>
-                    <select value={selectedPricelistId} onChange={(e) => setSelectedPricelistId(e.target.value)} className="w-full px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all">
+                    <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-0.5">Pricelist</label>
+                    <select value={selectedPricelistId} onChange={(e) => setSelectedPricelistId(e.target.value)} className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent">
                       <option value="">Default pricing</option>
                       {pricelists.map(pricelist => (<option key={pricelist.id} value={pricelist.id}>{pricelist.name} ({pricelist.currency})</option>))}
                     </select>
                   </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-0.5">Order Date *</label>
+                    <input type="date" value={formData.order_date || ''} onChange={(e) => setFormData({ ...formData, order_date: e.target.value })} required className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-0.5">Required Date</label>
+                    <input type="date" value={formData.required_date || ''} onChange={(e) => setFormData({ ...formData, required_date: e.target.value })} className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent" />
+                  </div>
+                </div>
+                <div className="mt-1">
+                  <input type="text" value={formData.notes || ''} onChange={(e) => setFormData({ ...formData, notes: e.target.value })} placeholder="Notes (optional)" className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent" />
                 </div>
               </div>
 
-              <div className="bg-gray-50 dark:bg-gray-900/50 rounded-lg p-3">
-                <h3 className="text-xs font-semibold text-gray-600 dark:text-gray-300 mb-3 flex items-center gap-2">
-                  
-                  Order Details
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Order Date *</label>
-                    <input type="date" value={formData.order_date || ''} onChange={(e) => setFormData({ ...formData, order_date: e.target.value })} required className="w-full px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all" />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Required Date</label>
-                    <input type="date" value={formData.required_date || ''} onChange={(e) => setFormData({ ...formData, required_date: e.target.value })} className="w-full px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all" />
-                  </div>
-                </div>
-                <div className="mt-3">
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Notes</label>
-                  <textarea value={formData.notes || ''} onChange={(e) => setFormData({ ...formData, notes: e.target.value })} rows={1}className="w-full px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all resize-none" placeholder="Add any notes..." />
-                </div>
-              </div>
-
-              <div className="bg-gray-50 dark:bg-gray-900/50 rounded-lg p-3">
-                <h3 className="text-xs font-semibold text-gray-600 dark:text-gray-300 mb-3 flex items-center gap-2">
-                  
-                  Line Items
-                </h3>
+              <div className="bg-gray-50 dark:bg-gray-900/50 rounded-lg p-2">
                 <LineItemsTable items={lineItems} onChange={setLineItems} products={products} pricingContext={{ customer_id: selectedCustomerId || undefined, pricelist_id: selectedPricelistId || undefined, date: formData.order_date }} />
               </div>
             </div>

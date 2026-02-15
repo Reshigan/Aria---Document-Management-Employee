@@ -533,55 +533,37 @@ export default function Quotes() {
                   </div>
                 )}
 
-                <div className="bg-gray-50 dark:bg-gray-900/50 rounded-xl p-5">
-                  <h3 className="text-xs font-semibold text-gray-600 dark:text-gray-300 mb-4 flex items-center gap-2">
-                    <span className="w-6 h-6 rounded-full bg-violet-100 dark:bg-violet-900/50 text-violet-600 dark:text-violet-400 flex items-center justify-center text-xs">1</span>
-                    Customer Information
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                <div className="bg-gray-50 dark:bg-gray-900/50 rounded-lg p-2">
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Customer *</label>
-                      <select value={selectedCustomerId} onChange={(e) => handleCustomerChange(e.target.value)} required className="w-full px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all">
+                      <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-0.5">Customer *</label>
+                      <select value={selectedCustomerId} onChange={(e) => handleCustomerChange(e.target.value)} required className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-violet-500 focus:border-transparent">
                         <option value="">Select a customer...</option>
                         {customers.map(customer => (<option key={customer.id} value={customer.id}>{customer.name} ({customer.email})</option>))}
                       </select>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Pricelist</label>
-                      <select value={selectedPricelistId} onChange={(e) => setSelectedPricelistId(e.target.value)} className="w-full px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all">
+                      <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-0.5">Pricelist</label>
+                      <select value={selectedPricelistId} onChange={(e) => setSelectedPricelistId(e.target.value)} className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-violet-500 focus:border-transparent">
                         <option value="">Default pricing</option>
                         {pricelists.map(pricelist => (<option key={pricelist.id} value={pricelist.id}>{pricelist.name} ({pricelist.currency})</option>))}
                       </select>
                     </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-0.5">Quote Date *</label>
+                      <input type="date" value={formData.quote_date || ''} onChange={(e) => setFormData({ ...formData, quote_date: e.target.value })} required className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-violet-500 focus:border-transparent" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-0.5">Valid Until</label>
+                      <input type="date" value={formData.valid_until || ''} onChange={(e) => setFormData({ ...formData, valid_until: e.target.value })} className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-violet-500 focus:border-transparent" />
+                    </div>
+                  </div>
+                  <div className="mt-1">
+                    <input type="text" value={formData.notes || ''} onChange={(e) => setFormData({ ...formData, notes: e.target.value })} placeholder="Notes (optional)" className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-violet-500 focus:border-transparent" />
                   </div>
                 </div>
 
-                <div className="bg-gray-50 dark:bg-gray-900/50 rounded-xl p-5">
-                  <h3 className="text-xs font-semibold text-gray-600 dark:text-gray-300 mb-4 flex items-center gap-2">
-                    <span className="w-6 h-6 rounded-full bg-violet-100 dark:bg-violet-900/50 text-violet-600 dark:text-violet-400 flex items-center justify-center text-xs">2</span>
-                    Quote Details
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Quote Date *</label>
-                      <input type="date" value={formData.quote_date || ''} onChange={(e) => setFormData({ ...formData, quote_date: e.target.value })} required className="w-full px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all" />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Valid Until</label>
-                      <input type="date" value={formData.valid_until || ''} onChange={(e) => setFormData({ ...formData, valid_until: e.target.value })} className="w-full px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all" />
-                    </div>
-                  </div>
-                  <div className="mt-4">
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Notes</label>
-                    <textarea value={formData.notes || ''} onChange={(e) => setFormData({ ...formData, notes: e.target.value })} rows={1} className="w-full px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all resize-none" placeholder="Add any notes..." />
-                  </div>
-                </div>
-
-                <div className="bg-gray-50 dark:bg-gray-900/50 rounded-xl p-5">
-                  <h3 className="text-xs font-semibold text-gray-600 dark:text-gray-300 mb-4 flex items-center gap-2">
-                    <span className="w-6 h-6 rounded-full bg-violet-100 dark:bg-violet-900/50 text-violet-600 dark:text-violet-400 flex items-center justify-center text-xs">3</span>
-                    Line Items
-                  </h3>
+                <div className="bg-gray-50 dark:bg-gray-900/50 rounded-lg p-2">
                   <LineItemsTable items={lineItems} onChange={setLineItems} products={products} pricingContext={{ customer_id: selectedCustomerId || undefined, pricelist_id: selectedPricelistId || undefined, date: formData.quote_date }} />
                 </div>
               </div>
