@@ -415,4 +415,70 @@ app.get('/agents/recent-actions', async (c) => {
   }
 });
 
+// ==================== AR AGING REPORT ====================
+
+app.get('/ar-aging', async (c) => {
+  const companyId = await getAuthenticatedCompanyId(c);
+  if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+  try {
+    const aging = await c.env.DB.prepare(`
+      SELECT c.customer_name, c.customer_code, ci.invoice_number, ci.invoice_date, ci.due_date,
+             COALESCE(ci.total_amount, 0) as total_amount, COALESCE(ci.balance_due, 0) as balance_due,
+             CAST((julianday('now') - julianday(ci.due_date)) AS INTEGER) as days_overdue
+      FROM customer_invoices ci
+      JOIN customers c ON ci.customer_id = c.id
+      WHERE ci.company_id = ? AND ci.balance_due > 0
+      ORDER BY days_overdue DESC
+    `).bind(companyId).all();
+    let current = 0, days30 = 0, days60 = 0, days90 = 0, over90 = 0;
+    for (const inv of aging.results as any[]) {
+      const bal = inv.balance_due || 0;
+      if (inv.days_overdue <= 0) current += bal;
+      else if (inv.days_overdue <= 30) days30 += bal;
+      else if (inv.days_overdue <= 60) days60 += bal;
+      else if (inv.days_overdue <= 90) days90 += bal;
+      else over90 += bal;
+    }
+    return c.json({
+      summary: { current, '1-30_days': days30, '31-60_days': days60, '61-90_days': days90, 'over_90_days': over90, total: current + days30 + days60 + days90 + over90 },
+      details: aging.results
+    });
+  } catch (error) {
+    return c.json({ summary: { current: 0, '1-30_days': 0, '31-60_days': 0, '61-90_days': 0, 'over_90_days': 0, total: 0 }, details: [] });
+  }
+});
+
+// ==================== AP AGING REPORT ====================
+
+app.get('/ap-aging', async (c) => {
+  const companyId = await getAuthenticatedCompanyId(c);
+  if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+  try {
+    const aging = await c.env.DB.prepare(`
+      SELECT s.supplier_name, s.supplier_code, si.invoice_number, si.invoice_date, si.due_date,
+             COALESCE(si.total_amount, 0) as total_amount, COALESCE(si.balance_due, 0) as balance_due,
+             CAST((julianday('now') - julianday(si.due_date)) AS INTEGER) as days_overdue
+      FROM supplier_invoices si
+      JOIN suppliers s ON si.supplier_id = s.id
+      WHERE si.company_id = ? AND si.balance_due > 0
+      ORDER BY days_overdue DESC
+    `).bind(companyId).all();
+    let current = 0, days30 = 0, days60 = 0, days90 = 0, over90 = 0;
+    for (const inv of aging.results as any[]) {
+      const bal = inv.balance_due || 0;
+      if (inv.days_overdue <= 0) current += bal;
+      else if (inv.days_overdue <= 30) days30 += bal;
+      else if (inv.days_overdue <= 60) days60 += bal;
+      else if (inv.days_overdue <= 90) days90 += bal;
+      else over90 += bal;
+    }
+    return c.json({
+      summary: { current, '1-30_days': days30, '31-60_days': days60, '61-90_days': days90, 'over_90_days': over90, total: current + days30 + days60 + days90 + over90 },
+      details: aging.results
+    });
+  } catch (error) {
+    return c.json({ summary: { current: 0, '1-30_days': 0, '31-60_days': 0, '61-90_days': 0, 'over_90_days': 0, total: 0 }, details: [] });
+  }
+});
+
 export default app;

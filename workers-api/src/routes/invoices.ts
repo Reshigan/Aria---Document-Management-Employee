@@ -829,4 +829,122 @@ invoices.post('/invoice-lines', async (c) => {
   }
 });
 
+// ==================== AR/AP ALIAS ENDPOINTS ====================
+// These map frontend paths like /ar/invoices, /ar/receipts, /ap/payments, /ap/invoices
+// to the existing customer/supplier invoice handlers
+
+invoices.get('/invoices', async (c) => {
+  const url = new URL(c.req.url);
+  const path = url.pathname;
+  if (path.includes('/ap')) {
+    return invoices.fetch(new Request(url.toString().replace('/invoices', '/supplier'), c.req.raw), c.env);
+  }
+  return invoices.fetch(new Request(url.toString().replace('/invoices', '/customer'), c.req.raw), c.env);
+});
+
+invoices.get('/receipts', async (c) => {
+  try {
+    const authHeader = c.req.header('Authorization');
+    if (!authHeader?.startsWith('Bearer ')) return c.json({ error: 'Authentication required' }, 401);
+    const token = authHeader.substring(7);
+    const { jwtVerify } = await import('jose');
+    const secret = new TextEncoder().encode(c.env.JWT_SECRET);
+    const { payload } = await jwtVerify(token, secret);
+    const companyId = (payload as any).company_id;
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+
+    const result = await c.env.DB.prepare(`
+      SELECT cp.*, ci.invoice_number, c.customer_name
+      FROM customer_payments cp
+      LEFT JOIN customer_invoices ci ON cp.invoice_id = ci.id
+      LEFT JOIN customers c ON ci.customer_id = c.id
+      WHERE cp.company_id = ?
+      ORDER BY cp.payment_date DESC LIMIT 100
+    `).bind(companyId).all();
+    return c.json({ receipts: result.results || [], total: result.results?.length || 0 });
+  } catch (error) {
+    console.error('Error fetching receipts:', error);
+    return c.json({ receipts: [], total: 0 });
+  }
+});
+
+invoices.get('/payments', async (c) => {
+  try {
+    const authHeader = c.req.header('Authorization');
+    if (!authHeader?.startsWith('Bearer ')) return c.json({ error: 'Authentication required' }, 401);
+    const token = authHeader.substring(7);
+    const { jwtVerify } = await import('jose');
+    const secret = new TextEncoder().encode(c.env.JWT_SECRET);
+    const { payload } = await jwtVerify(token, secret);
+    const companyId = (payload as any).company_id;
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+
+    const result = await c.env.DB.prepare(`
+      SELECT sp.*, si.invoice_number, s.supplier_name
+      FROM supplier_payments sp
+      LEFT JOIN supplier_invoices si ON sp.invoice_id = si.id
+      LEFT JOIN suppliers s ON si.supplier_id = s.id
+      WHERE sp.company_id = ?
+      ORDER BY sp.payment_date DESC LIMIT 100
+    `).bind(companyId).all();
+    return c.json({ payments: result.results || [], total: result.results?.length || 0 });
+  } catch (error) {
+    console.error('Error fetching payments:', error);
+    return c.json({ payments: [], total: 0 });
+  }
+});
+
+invoices.get('/bills', async (c) => {
+  try {
+    const authHeader = c.req.header('Authorization');
+    if (!authHeader?.startsWith('Bearer ')) return c.json({ error: 'Authentication required' }, 401);
+    const token = authHeader.substring(7);
+    const { jwtVerify } = await import('jose');
+    const secret = new TextEncoder().encode(c.env.JWT_SECRET);
+    const { payload } = await jwtVerify(token, secret);
+    const companyId = (payload as any).company_id;
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+
+    const result = await c.env.DB.prepare(`
+      SELECT si.*, s.supplier_name, s.supplier_code
+      FROM supplier_invoices si
+      LEFT JOIN suppliers s ON si.supplier_id = s.id
+      WHERE si.company_id = ?
+      ORDER BY si.created_at DESC LIMIT 100
+    `).bind(companyId).all();
+    const bills = (result.results || []).map((inv: any) => ({
+      ...inv,
+      total_amount: inv.total_amount ?? 0,
+      balance_due: inv.balance_due ?? 0,
+      tax_amount: inv.tax_amount ?? 0,
+      subtotal: inv.subtotal ?? 0
+    }));
+    return c.json({ bills, total: bills.length });
+  } catch (error) {
+    console.error('Error fetching bills:', error);
+    return c.json({ bills: [], total: 0 });
+  }
+});
+
+// GET /customers - alias for AR customer list
+invoices.get('/customers', async (c) => {
+  try {
+    const authHeader = c.req.header('Authorization');
+    if (!authHeader?.startsWith('Bearer ')) return c.json({ error: 'Authentication required' }, 401);
+    const token = authHeader.substring(7);
+    const { jwtVerify } = await import('jose');
+    const secret = new TextEncoder().encode(c.env.JWT_SECRET);
+    const { payload } = await jwtVerify(token, secret);
+    const companyId = (payload as any).company_id;
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+
+    const result = await c.env.DB.prepare(
+      'SELECT id, customer_code, customer_name, email, phone, is_active, created_at FROM customers WHERE company_id = ? ORDER BY customer_name ASC'
+    ).bind(companyId).all();
+    return c.json({ customers: result.results || [], total: result.results?.length || 0 });
+  } catch (error) {
+    return c.json({ customers: [], total: 0 });
+  }
+});
+
 export default invoices;
