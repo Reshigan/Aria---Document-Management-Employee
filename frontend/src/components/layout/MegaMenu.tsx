@@ -426,7 +426,7 @@ export const MegaMenu: React.FC<MegaMenuProps> = ({ onSearchClick }) => {
   useEffect(() => {
     const fetchMenuStructure = async () => {
       try {
-        const response = await fetch(`${API_BASE_URL}/api/menu/structure`);
+        const response = await fetch(`${API_BASE_URL}/menu/structure`);
         if (response.ok) {
           const data = await response.json();
           
