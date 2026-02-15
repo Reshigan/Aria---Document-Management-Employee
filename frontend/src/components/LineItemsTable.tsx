@@ -150,10 +150,12 @@ export function LineItemsTable({
   const total = subtotal + taxAmount;
 
   const filteredProducts = searchTerm
-    ? products.filter(p => 
-        p.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        p.name.toLowerCase().includes(searchTerm.toLowerCase())
-      )
+    ? products.filter(p => {
+        const code = (p.code ?? '').toString().toLowerCase();
+        const name = (p.name ?? '').toString().toLowerCase();
+        const q = searchTerm.toLowerCase();
+        return code.includes(q) || name.includes(q);
+      })
     : products;
 
   return (
@@ -301,7 +303,7 @@ export function LineItemsTable({
                                   <div style={{ fontWeight: '500' }}>{product.code}</div>
                                   <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>{product.name}</div>
                                   <div style={{ fontSize: '0.75rem', color: '#2563eb' }}>
-                                    R {product.selling_price.toFixed(2)} / {product.unit_of_measure}
+                                    R {Number(product.selling_price ?? 0).toFixed(2)} / {product.unit_of_measure || ''}
                                   </div>
                                 </div>
                               ))}
