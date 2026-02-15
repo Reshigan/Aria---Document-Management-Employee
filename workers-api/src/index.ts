@@ -431,6 +431,11 @@ app.route('/ap/invoices', invoices);
 // Ask ARIA routes
 app.route('/api/ask-aria', askAria);
 app.route('/ask-aria', askAria);
+// Aliases for older /aria and /chat paths used by frontend
+app.route('/api/aria', askAria);
+app.route('/aria', askAria);
+app.route('/api/chat', askAria);
+app.route('/chat', askAria);
 
 // Bot/Agent routes
 app.route('/api/agents', bots);
@@ -448,6 +453,9 @@ app.route('/erp/gl', gl);
 // Admin routes (company settings)
 app.route('/api/admin', admin);
 app.route('/admin', admin);
+// RBAC alias
+app.route('/api/rbac', admin);
+app.route('/rbac', admin);
 
 // HR routes (employees, departments)
 app.route('/api/hr', hr);
@@ -460,6 +468,8 @@ app.route('/erp/reports', reports);
 // Onboarding routes (guided setup wizard)
 app.route('/api/onboarding', onboarding);
 app.route('/onboarding', onboarding);
+// Onboarding tasks alias
+app.route('/api/onboarding-tasks', onboarding);
 
 // Financial Period Management routes
 app.route('/api/erp/periods', periods);
@@ -468,6 +478,9 @@ app.route('/erp/periods', periods);
 // Approval Workflow routes
 app.route('/api/approvals', approvals);
 app.route('/approvals', approvals);
+// Singular alias used by some UIs
+app.route('/api/approval', approvals);
+app.route('/approval', approvals);
 
 // Country Localization routes (tax calculations, e-invoicing, payroll)
 app.route('/api/localization', localization);
@@ -476,6 +489,11 @@ app.route('/localization', localization);
 // Vertical Industry Packs (Distribution, Retail, Services/Projects)
 app.route('/api/verticals', verticals);
 app.route('/verticals', verticals);
+// Procurement/general aliases used by some UIs
+app.route('/api/procurement', newPages);
+app.route('/procurement', newPages);
+app.route('/api/customers', customers);
+app.route('/customers', customers);
 
 // Phase D Differentiators (WhatsApp, Mobile/Offline, Spreadsheet Migration)
 app.route('/api/differentiators', differentiators);
@@ -512,6 +530,9 @@ app.route('/erp/manufacturing', manufacturing);
 // Enterprise routes (API Keys, Webhooks, Audit Logs, Subscriptions, Reports, Multi-Currency, Inventory Valuation, Three-Way Match)
 app.route('/api/enterprise', enterprise);
 app.route('/enterprise', enterprise);
+// Integrations alias
+app.route('/api/integrations', criticalFeatures);
+app.route('/integrations', criticalFeatures);
 
 // Marketing Automation routes (Social Media, Content Generation, Influencer Tracking)
 app.route('/api/marketing', marketing);
@@ -536,6 +557,11 @@ app.route('/reseller', reseller);
 // Microfeatures routes (notifications, recent items, favorites, comments, tags, attachments, activity)
 app.route('/api/microfeatures', microfeatures);
 app.route('/microfeatures', microfeatures);
+// Aliases for top-level comments/attachments endpoints
+app.route('/api/comments', microfeatures);
+app.route('/comments', microfeatures);
+app.route('/api/attachments', microfeatures);
+app.route('/attachments', microfeatures);
 
 // New Pages routes (Financial, Operations, People, Services, Compliance modules)
 app.route('/api/new-pages', newPages);
@@ -544,6 +570,8 @@ app.route('/new-pages', newPages);
 // Xero Parity routes (Recurring Invoices, Reminders, Statements, Portal, Budgets, Bank Feeds)
 app.route('/api/xero', xeroParity);
 app.route('/xero', xeroParity);
+// Statements alias
+app.route('/api/customer-statements', xeroParity);
 
 // Admin Configuration routes (Chart of Accounts, Invoice Templates, Lock Dates, Payment Terms, Tax Rates, Email Templates, Tracking Categories)
 app.route('/api/admin-config', adminConfig);
@@ -552,6 +580,9 @@ app.route('/admin-config', adminConfig);
 // Inventory routes (Warehouses, Stock Movements, Items)
 app.route('/api/inventory', inventory);
 app.route('/inventory', inventory);
+// Operations alias
+app.route('/api/operations', inventory);
+app.route('/operations', inventory);
 
 // ============================================================================
 // CROSS-MODULE ROUTE ALIASES
@@ -658,6 +689,9 @@ app.route('/api/reports/agents', reports);
 app.route('/reports/agents', reports);
 app.route('/api/reports', reports);
 app.route('/reports', reports);
+// Additional reporting aliases
+app.route('/api/erp/reporting', reports);
+app.route('/erp/reporting', reports);
 
 // --- Tax aliases ---
 app.route('/api/tax', localization);
@@ -676,6 +710,9 @@ app.route('/api/crm', crossModule);
 app.route('/crm', crossModule);
 app.route('/api/quality', crossModule);
 app.route('/quality', crossModule);
+// ERP-scoped quality alias
+app.route('/api/erp/quality', crossModule);
+app.route('/erp/quality', crossModule);
 app.route('/api/compliance', crossModule);
 app.route('/compliance', crossModule);
 app.route('/api/email', crossModule);
