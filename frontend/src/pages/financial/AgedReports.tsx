@@ -158,11 +158,11 @@ export default function AgedReportsPage() {
                   data={debtors}
                   columns={[
                     { key: 'customer', label: 'Customer' },
-                    { key: 'current', label: 'Current', render: (r: any) => `R ${r.current.toLocaleString()}` },
-                    { key: 'days30', label: '30 Days', render: (r: any) => <span className={r.days30 > 0 ? 'text-yellow-600' : ''}>R {r.days30.toLocaleString()}</span> },
-                    { key: 'days60', label: '60 Days', render: (r: any) => <span className={r.days60 > 0 ? 'text-orange-600' : ''}>R {r.days60.toLocaleString()}</span> },
-                    { key: 'days90', label: '90+ Days', render: (r: any) => <span className={r.days90 > 0 ? 'text-red-600 font-medium' : ''}>R {r.days90.toLocaleString()}</span> },
-                    { key: 'total', label: 'Total', render: (r: any) => <strong className="text-indigo-600">R {r.total.toLocaleString()}</strong> }
+                    { key: 'current', label: 'Current', render: (r: any) => `R ${Number(r.current ?? 0).toLocaleString()}` },
+                    { key: 'days30', label: '30 Days', render: (r: any) => <span className={r.days30 > 0 ? 'text-yellow-600' : ''}>R {Number(r.days30 ?? 0).toLocaleString()}</span> },
+                    { key: 'days60', label: '60 Days', render: (r: any) => <span className={r.days60 > 0 ? 'text-orange-600' : ''}>R {Number(r.days60 ?? 0).toLocaleString()}</span> },
+                    { key: 'days90', label: '90+ Days', render: (r: any) => <span className={r.days90 > 0 ? 'text-red-600 font-medium' : ''}>R {Number(r.days90 ?? 0).toLocaleString()}</span> },
+                    { key: 'total', label: 'Total', render: (r: any) => <strong className="text-indigo-600">R {Number(r.total ?? 0).toLocaleString()}</strong> }
                   ]}
                   searchable={true}
                   exportable={true}
@@ -177,11 +177,11 @@ export default function AgedReportsPage() {
                   data={creditors}
                   columns={[
                     { key: 'supplier', label: 'Supplier' },
-                    { key: 'current', label: 'Current', render: (r: any) => `R ${r.current.toLocaleString()}` },
-                    { key: 'days30', label: '30 Days', render: (r: any) => <span className={r.days30 > 0 ? 'text-yellow-600' : ''}>R {r.days30.toLocaleString()}</span> },
-                    { key: 'days60', label: '60 Days', render: (r: any) => <span className={r.days60 > 0 ? 'text-orange-600' : ''}>R {r.days60.toLocaleString()}</span> },
-                    { key: 'days90', label: '90+ Days', render: (r: any) => <span className={r.days90 > 0 ? 'text-red-600 font-medium' : ''}>R {r.days90.toLocaleString()}</span> },
-                    { key: 'total', label: 'Total', render: (r: any) => <strong className="text-indigo-600">R {r.total.toLocaleString()}</strong> }
+                    { key: 'current', label: 'Current', render: (r: any) => `R ${Number(r.current ?? 0).toLocaleString()}` },
+                    { key: 'days30', label: '30 Days', render: (r: any) => <span className={r.days30 > 0 ? 'text-yellow-600' : ''}>R {Number(r.days30 ?? 0).toLocaleString()}</span> },
+                    { key: 'days60', label: '60 Days', render: (r: any) => <span className={r.days60 > 0 ? 'text-orange-600' : ''}>R {Number(r.days60 ?? 0).toLocaleString()}</span> },
+                    { key: 'days90', label: '90+ Days', render: (r: any) => <span className={r.days90 > 0 ? 'text-red-600 font-medium' : ''}>R {Number(r.days90 ?? 0).toLocaleString()}</span> },
+                    { key: 'total', label: 'Total', render: (r: any) => <strong className="text-indigo-600">R {Number(r.total ?? 0).toLocaleString()}</strong> }
                   ]}
                   searchable={true}
                   exportable={true}

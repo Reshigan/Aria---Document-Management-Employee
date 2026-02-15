@@ -191,7 +191,7 @@ const ProcureToPay: React.FC = () => {
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{new Date(rfq.rfq_date).toLocaleDateString()}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{new Date(rfq.required_date).toLocaleDateString()}</td>
                 <td className="px-6 py-4 whitespace-nowrap">{getStatusBadge(rfq.status)}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">R {rfq.total_amount.toLocaleString()}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">R {Number(rfq.total_amount ?? 0).toLocaleString()}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                   <button className="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:text-blue-100">View</button>
                 </td>
@@ -234,7 +234,7 @@ const ProcureToPay: React.FC = () => {
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{new Date(po.order_date).toLocaleDateString()}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{new Date(po.delivery_date).toLocaleDateString()}</td>
                 <td className="px-6 py-4 whitespace-nowrap">{getStatusBadge(po.status)}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">R {po.total_amount.toLocaleString()}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">R {Number(po.total_amount ?? 0).toLocaleString()}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                   <button className="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:text-blue-100">View</button>
                 </td>
@@ -318,7 +318,7 @@ const ProcureToPay: React.FC = () => {
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{new Date(invoice.invoice_date).toLocaleDateString()}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{new Date(invoice.due_date).toLocaleDateString()}</td>
                 <td className="px-6 py-4 whitespace-nowrap">{getStatusBadge(invoice.status)}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">R {invoice.total_amount.toLocaleString()}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">R {Number(invoice.total_amount ?? 0).toLocaleString()}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                   <button className="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:text-blue-100">View</button>
                 </td>
@@ -361,7 +361,7 @@ const ProcureToPay: React.FC = () => {
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{new Date(payment.payment_date).toLocaleDateString()}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{payment.payment_method}</td>
                 <td className="px-6 py-4 whitespace-nowrap">{getStatusBadge(payment.status)}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">R {payment.total_amount.toLocaleString()}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">R {Number(payment.total_amount ?? 0).toLocaleString()}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                   <button className="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:text-blue-100">View</button>
                 </td>

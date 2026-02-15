@@ -168,7 +168,7 @@ export default function ExpenseManagementReportPage() {
                 { key: 'employee', label: 'Employee' },
                 { key: 'department', label: 'Department' },
                 { key: 'category', label: 'Category' },
-                { key: 'amount', label: 'Amount', render: (r: any) => `R ${r.amount.toLocaleString()}` },
+                { key: 'amount', label: 'Amount', render: (r: any) => `R ${Number(r.amount ?? 0).toLocaleString()}` },
                 { key: 'submitted_date', label: 'Submitted', render: (r: any) => new Date(r.submitted_date).toLocaleDateString() },
                 { key: 'status', label: 'Status', render: (r: any) => (
                   <span className={`px-2 py-1 rounded-full text-xs font-medium ${

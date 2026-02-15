@@ -439,11 +439,11 @@ export default function Products() {
                         {product.unit_of_measure}
                       </td>
                       <td className="px-6 py-4 text-sm text-right text-gray-700 dark:text-gray-300">
-                        R {product.standard_cost.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
+                        R {Number(product.standard_cost ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
                       </td>
                       <td className="px-6 py-4 text-sm text-right">
                         <div className="font-medium text-gray-900 dark:text-white">
-                          R {product.selling_price.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
+                          R {Number(product.selling_price ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
                         </div>
                         <div className={`text-xs ${marginPercent > 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
                           {marginPercent > 0 ? '+' : ''}{marginPercent.toFixed(1)}% margin

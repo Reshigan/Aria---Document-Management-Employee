@@ -539,7 +539,7 @@ export default function SalesOrders() {
           <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
             <div className="flex items-center gap-4">
               <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg shadow-green-500/30"><TrendingUp className="h-6 w-6 text-white" /></div>
-              <div><p className="text-2xl font-bold text-gray-900 dark:text-white">R {stats.totalValue.toLocaleString()}</p><p className="text-sm text-gray-500 dark:text-gray-400">Total Value</p></div>
+              <div><p className="text-2xl font-bold text-gray-900 dark:text-white">R {Number(stats.totalValue ?? 0).toLocaleString()}</p><p className="text-sm text-gray-500 dark:text-gray-400">Total Value</p></div>
             </div>
           </div>
         </div>
@@ -603,7 +603,7 @@ export default function SalesOrders() {
                         </td>
                         <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{new Date(order.order_date).toLocaleDateString()}</td>
                         <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{order.required_date ? new Date(order.required_date).toLocaleDateString() : '-'}</td>
-                        <td className="px-6 py-4 text-right font-semibold text-gray-900 dark:text-white">R {order.total_amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
+                        <td className="px-6 py-4 text-right font-semibold text-gray-900 dark:text-white">R {Number(order.total_amount ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
                         <td className="px-6 py-4">
                           <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${statusConfig.bg} ${statusConfig.text} border ${statusConfig.border}`}>{order.status.replace('_', ' ')}</span>
                         </td>

@@ -258,10 +258,10 @@ export default function BankAccounts() {
                       </span>
                     </td>
                     <td className="px-6 py-4 text-sm text-right font-medium text-gray-900 dark:text-white">
-                      R {account.current_balance.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
+                      R {Number(account.current_balance ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
                     </td>
                     <td className="px-6 py-4 text-sm text-right text-gray-500 dark:text-gray-400">
-                      R {account.reconciled_balance.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
+                      R {Number(account.reconciled_balance ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex gap-2 justify-center">

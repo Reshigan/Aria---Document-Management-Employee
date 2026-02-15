@@ -252,7 +252,7 @@ const Attendance: React.FC = () => {
                   <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">{record.employee_name}</td>
                   <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{record.check_in || '-'}</td>
                   <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{record.check_out || '-'}</td>
-                  <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{record.hours_worked.toFixed(1)}h</td>
+                  <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{Number(record.hours_worked ?? 0).toFixed(1)}h</td>
                   <td className="px-6 py-4">{getStatusBadge(record.status)}</td>
                   <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{record.notes || '-'}</td>
                   <td className="px-6 py-4">

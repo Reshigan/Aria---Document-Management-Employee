@@ -403,7 +403,7 @@ export default function WorkOrders() {
                   <td className="px-6 py-4 text-right">
                     {order.total_cost ? (
                       <span className="text-sm font-medium text-gray-900">
-                        R {order.total_cost.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
+                        R {Number(order.total_cost ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
                       </span>
                     ) : (
                       <span className="text-sm text-gray-400">-</span>

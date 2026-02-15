@@ -122,9 +122,9 @@ const Depreciation: React.FC = () => {
       <Grid container spacing={3} sx={{ mb: 3 }}>
         {[
           { label: 'Total Assets', value: stats.totalAssets, icon: <AccountBalance />, color: '#667eea' },
-          { label: 'Purchase Value', value: `R ${stats.totalPurchaseValue.toLocaleString()}`, icon: <AccountBalance />, color: '#4CAF50' },
-          { label: 'Current Value', value: `R ${stats.totalCurrentValue.toLocaleString()}`, icon: <TrendingDown />, color: '#2196F3' },
-          { label: 'Accumulated Depreciation', value: `R ${stats.totalAccumulatedDep.toLocaleString()}`, icon: <TrendingDown />, color: '#FF9800' },
+          { label: 'Purchase Value', value: `R ${Number(stats.totalPurchaseValue ?? 0).toLocaleString()}`, icon: <AccountBalance />, color: '#4CAF50' },
+          { label: 'Current Value', value: `R ${Number(stats.totalCurrentValue ?? 0).toLocaleString()}`, icon: <TrendingDown />, color: '#2196F3' },
+          { label: 'Accumulated Depreciation', value: `R ${Number(stats.totalAccumulatedDep ?? 0).toLocaleString()}`, icon: <TrendingDown />, color: '#FF9800' },
         ].map((stat, index) => (
           <Grid item xs={12} sm={6} md={3} key={index}>
             <Card sx={{ background: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(10px)' }}>
@@ -169,11 +169,11 @@ const Depreciation: React.FC = () => {
                     <TableCell><Typography fontWeight={600}>{record.assetName}</Typography></TableCell>
                     <TableCell>{record.assetCode}</TableCell>
                     <TableCell><Chip label={record.category} size="small" /></TableCell>
-                    <TableCell>R {record.purchaseValue.toLocaleString()}</TableCell>
-                    <TableCell>R {record.currentValue.toLocaleString()}</TableCell>
+                    <TableCell>R {Number(record.purchaseValue ?? 0).toLocaleString()}</TableCell>
+                    <TableCell>R {Number(record.currentValue ?? 0).toLocaleString()}</TableCell>
                     <TableCell>{record.depreciationMethod.replace(/_/g, ' ')}</TableCell>
-                    <TableCell>R {record.annualDepreciation.toLocaleString()}</TableCell>
-                    <TableCell>R {record.accumulatedDepreciation.toLocaleString()}</TableCell>
+                    <TableCell>R {Number(record.annualDepreciation ?? 0).toLocaleString()}</TableCell>
+                    <TableCell>R {Number(record.accumulatedDepreciation ?? 0).toLocaleString()}</TableCell>
                     <TableCell>
                       <Tooltip title="View Details"><IconButton onClick={() => { setSelectedRecord(record); setFormData(record); setDialogOpen(true); }}><Edit /></IconButton></Tooltip>
                     </TableCell>

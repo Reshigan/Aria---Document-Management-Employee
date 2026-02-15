@@ -448,7 +448,7 @@ export const TransactionSidebar: React.FC<TransactionSidebarProps> = ({
                   <div className="related-doc-info">
                     <span className="related-doc-number">{doc.number}</span>
                     <span className="related-doc-meta">
-                      {doc.date} {doc.amount && `• R ${doc.amount.toLocaleString()}`}
+                      {doc.date} {doc.amount && `• R ${Number(doc.amount ?? 0).toLocaleString()}`}
                     </span>
                   </div>
                   <span className={`related-doc-status status-${doc.status.toLowerCase().replace(' ', '-')}`}>

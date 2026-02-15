@@ -294,10 +294,10 @@ export default function Bills() {
                     {new Date(bill.due_date).toLocaleDateString('en-ZA')}
                   </td>
                   <td className="px-6 py-4 text-right font-medium text-gray-900 dark:text-white">
-                    R {bill.total_amount.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
+                    R {Number(bill.total_amount ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
                   </td>
                   <td className="px-6 py-4 text-right text-gray-500 dark:text-gray-400">
-                    R {bill.amount_due.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
+                    R {Number(bill.amount_due ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
                   </td>
                   <td className="px-6 py-4 text-center">
                     <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${getStatusBadge(bill.status)}`}>

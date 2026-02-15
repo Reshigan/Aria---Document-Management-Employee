@@ -209,14 +209,14 @@ const ComprehensiveReporting: React.FC = () => {
                     <div className="flex justify-between items-baseline">
                       <span className="text-sm text-gray-500 dark:text-gray-400">Current:</span>
                       <span className="text-lg font-bold text-blue-600 dark:text-blue-400">
-                        {kpi.current_value.toLocaleString()} {kpi.unit}
+                        {Number(kpi.current_value ?? 0).toLocaleString()} {kpi.unit}
                       </span>
                     </div>
                     {kpi.variance !== undefined && (
                       <div className="flex justify-between items-baseline">
                         <span className="text-sm text-gray-500 dark:text-gray-400">Variance:</span>
                         <span className={`text-sm font-medium ${kpi.variance >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                          {kpi.variance >= 0 ? '+' : ''}{kpi.variance.toLocaleString()} {kpi.unit}
+                          {kpi.variance >= 0 ? '+' : ''}{Number(kpi.variance ?? 0).toLocaleString()} {kpi.unit}
                         </span>
                       </div>
                     )}
@@ -391,7 +391,7 @@ const ComprehensiveReporting: React.FC = () => {
               <div>
                 <p className="text-sm text-gray-500 dark:text-gray-400">Total Revenue</p>
                 <p className="text-2xl font-bold text-green-600 dark:text-green-400 mt-1">
-                  R {financialSummary.total_revenue.toLocaleString()}
+                  R {Number(financialSummary.total_revenue ?? 0).toLocaleString()}
                 </p>
               </div>
               <div className="p-3 bg-green-100 dark:bg-green-900/30 rounded-lg">
@@ -405,7 +405,7 @@ const ComprehensiveReporting: React.FC = () => {
               <div>
                 <p className="text-sm text-gray-500 dark:text-gray-400">Total Expenses</p>
                 <p className="text-2xl font-bold text-red-600 dark:text-red-400 mt-1">
-                  R {financialSummary.total_expenses.toLocaleString()}
+                  R {Number(financialSummary.total_expenses ?? 0).toLocaleString()}
                 </p>
               </div>
               <div className="p-3 bg-red-100 dark:bg-red-900/30 rounded-lg">
@@ -419,10 +419,10 @@ const ComprehensiveReporting: React.FC = () => {
               <div>
                 <p className="text-sm text-gray-500 dark:text-gray-400">Net Profit</p>
                 <p className="text-2xl font-bold text-blue-600 dark:text-blue-400 mt-1">
-                  R {financialSummary.profit.toLocaleString()}
+                  R {Number(financialSummary.profit ?? 0).toLocaleString()}
                 </p>
                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                  Margin: {financialSummary.profit_margin.toFixed(1)}%
+                  Margin: {Number(financialSummary.profit_margin ?? 0).toFixed(1)}%
                 </p>
               </div>
               <div className="p-3 bg-indigo-100 dark:bg-indigo-900/30 rounded-xl">
@@ -436,7 +436,7 @@ const ComprehensiveReporting: React.FC = () => {
               <div>
                 <p className="text-sm text-gray-500 dark:text-gray-400">Outstanding AR</p>
                 <p className="text-2xl font-bold text-orange-600 mt-1">
-                  R {financialSummary.outstanding_ar.toLocaleString()}
+                  R {Number(financialSummary.outstanding_ar ?? 0).toLocaleString()}
                 </p>
               </div>
               <div className="p-3 bg-orange-100 rounded-lg">
@@ -450,7 +450,7 @@ const ComprehensiveReporting: React.FC = () => {
               <div>
                 <p className="text-sm text-gray-500 dark:text-gray-400">Outstanding AP</p>
                 <p className="text-2xl font-bold text-purple-600 dark:text-purple-400 mt-1">
-                  R {financialSummary.outstanding_ap.toLocaleString()}
+                  R {Number(financialSummary.outstanding_ap ?? 0).toLocaleString()}
                 </p>
               </div>
               <div className="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
@@ -480,7 +480,7 @@ const ComprehensiveReporting: React.FC = () => {
             <div>
               <h4 className="font-semibold text-blue-900 dark:text-blue-100">Analytics Insights</h4>
               <p className="text-sm text-blue-800 dark:text-blue-200 mt-1">
-                Your profit margin is {financialSummary.profit_margin.toFixed(1)}%. 
+                Your profit margin is {Number(financialSummary.profit_margin ?? 0).toFixed(1)}%. 
                 {financialSummary.profit_margin < 20 && ' Consider reviewing expenses to improve profitability.'}
                 {financialSummary.profit_margin >= 20 && financialSummary.profit_margin < 40 && ' You have a healthy profit margin.'}
                 {financialSummary.profit_margin >= 40 && ' Excellent profit margin! Keep up the good work.'}

@@ -92,8 +92,8 @@ export default function ReceiptDetail() {
     if (preselectedInvoiceId && invoices.length > 0) {
       const invoice = invoices.find((inv) => inv.id === preselectedInvoiceId);
       if (invoice && allocations.length === 0) {
-        setAllocations([{ invoice_id: invoice.id, amount: invoice.amount_outstanding.toFixed(2) }]);
-        setAmount(invoice.amount_outstanding.toFixed(2));
+        setAllocations([{ invoice_id: invoice.id, amount: Number(invoice.amount_outstanding ?? 0).toFixed(2) }]);
+        setAmount(Number(invoice.amount_outstanding ?? 0).toFixed(2));
       }
     }
   }, [preselectedInvoiceId, invoices]);
@@ -131,12 +131,12 @@ export default function ReceiptDetail() {
       setBankAccountId(receiptData.bank_account_id);
       setPaymentMethod(receiptData.payment_method);
       setReference(receiptData.reference || '');
-      setAmount(receiptData.amount.toFixed(2));
+      setAmount(Number(receiptData.amount ?? 0).toFixed(2));
       setNotes(receiptData.notes || '');
       setAllocations(
         receiptData.allocations.map((alloc: ReceiptAllocation) => ({
           invoice_id: alloc.invoice_id,
-          amount: alloc.amount.toFixed(2)
+          amount: Number(alloc.amount ?? 0).toFixed(2)
         }))
       );
       setError(null);
@@ -389,7 +389,7 @@ export default function ReceiptDetail() {
                         <option value="">Select invoice...</option>
                         {invoices.map((inv) => (
                           <option key={inv.id} value={inv.id}>
-                            {inv.invoice_number} - Outstanding: R {inv.amount_outstanding.toFixed(2)}
+                            {inv.invoice_number} - Outstanding: R {Number(inv.amount_outstanding ?? 0).toFixed(2)}
                           </option>
                         ))}
                       </select>

@@ -234,10 +234,10 @@ const VATReporting: React.FC = () => {
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                   {new Date(vat201.period_start).toLocaleDateString()} - {new Date(vat201.period_end).toLocaleDateString()}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">R {vat201.output_tax.toLocaleString()}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">R {vat201.input_tax.toLocaleString()}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">R {Number(vat201.output_tax ?? 0).toLocaleString()}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">R {Number(vat201.input_tax ?? 0).toLocaleString()}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900 dark:text-white">
-                  R {vat201.net_vat.toLocaleString()}
+                  R {Number(vat201.net_vat ?? 0).toLocaleString()}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">{getStatusBadge(vat201.status)}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
@@ -285,11 +285,11 @@ const VATReporting: React.FC = () => {
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                   {new Date(emp201.period_start).toLocaleDateString()} - {new Date(emp201.period_end).toLocaleDateString()}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">R {emp201.paye_amount.toLocaleString()}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">R {emp201.uif_amount.toLocaleString()}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">R {emp201.sdl_amount.toLocaleString()}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">R {Number(emp201.paye_amount ?? 0).toLocaleString()}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">R {Number(emp201.uif_amount ?? 0).toLocaleString()}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">R {Number(emp201.sdl_amount ?? 0).toLocaleString()}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900 dark:text-white">
-                  R {emp201.total_amount.toLocaleString()}
+                  R {Number(emp201.total_amount ?? 0).toLocaleString()}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">{getStatusBadge(emp201.status)}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
@@ -443,10 +443,10 @@ const VATReporting: React.FC = () => {
                       Level {item.bbbee_level}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">R {item.total_spend.toLocaleString()}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">R {Number(item.total_spend ?? 0).toLocaleString()}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{item.recognition_percentage}%</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-green-600 dark:text-green-400">
-                    R {item.recognized_spend.toLocaleString()}
+                    R {Number(item.recognized_spend ?? 0).toLocaleString()}
                   </td>
                 </tr>
               ))}

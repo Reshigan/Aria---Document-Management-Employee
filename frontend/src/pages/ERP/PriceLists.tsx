@@ -509,7 +509,7 @@ export default function PriceLists() {
                       <option value="">Select product...</option>
                       {products.map(p => (
                         <option key={p.id} value={p.id}>
-                          {p.code} - {p.name} (R {p.selling_price.toFixed(2)})
+                          {p.code} - {p.name} (R {Number(p.selling_price ?? 0).toFixed(2)})
                         </option>
                       ))}
                     </select>
@@ -589,7 +589,7 @@ export default function PriceLists() {
                             {item.product_name}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                            R {item.unit_price.toFixed(2)}
+                            R {Number(item.unit_price ?? 0).toFixed(2)}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                             {item.min_quantity || 1}

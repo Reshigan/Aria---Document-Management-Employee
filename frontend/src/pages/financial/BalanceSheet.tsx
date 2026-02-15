@@ -169,12 +169,12 @@ export default function BalanceSheetPage() {
                   {data.assets.current.map((account) => (
                     <div key={account.account_code} className="flex justify-between py-1">
                       <span className="text-sm text-gray-600 dark:text-gray-400">{account.account_code} - {account.account_name}</span>
-                      <span className="text-sm text-gray-900 dark:text-white">R {account.balance.toLocaleString()}</span>
+                      <span className="text-sm text-gray-900 dark:text-white">R {Number(account.balance ?? 0).toLocaleString()}</span>
                     </div>
                   ))}
                   <div className="flex justify-between py-1 font-medium border-t border-gray-200 dark:border-gray-700 mt-2 pt-2">
                     <span className="text-gray-700 dark:text-gray-300">Total Current Assets</span>
-                    <span className="text-gray-900 dark:text-white">R {data.assets.total_current.toLocaleString()}</span>
+                    <span className="text-gray-900 dark:text-white">R {data.Number(assets.total_current ?? 0).toLocaleString()}</span>
                   </div>
                 </div>
                 
@@ -183,18 +183,18 @@ export default function BalanceSheetPage() {
                   {data.assets.fixed.map((account) => (
                     <div key={account.account_code} className="flex justify-between py-1">
                       <span className="text-sm text-gray-600 dark:text-gray-400">{account.account_code} - {account.account_name}</span>
-                      <span className="text-sm text-gray-900 dark:text-white">R {account.balance.toLocaleString()}</span>
+                      <span className="text-sm text-gray-900 dark:text-white">R {Number(account.balance ?? 0).toLocaleString()}</span>
                     </div>
                   ))}
                   <div className="flex justify-between py-1 font-medium border-t border-gray-200 dark:border-gray-700 mt-2 pt-2">
                     <span className="text-gray-700 dark:text-gray-300">Total Fixed Assets</span>
-                    <span className="text-gray-900 dark:text-white">R {data.assets.total_fixed.toLocaleString()}</span>
+                    <span className="text-gray-900 dark:text-white">R {data.Number(assets.total_fixed ?? 0).toLocaleString()}</span>
                   </div>
                 </div>
                 
                 <div className="pt-3 border-t-2 border-gray-300 dark:border-gray-600 font-bold flex justify-between" data-testid="total-assets">
                   <span className="text-gray-900 dark:text-white">Total Assets</span>
-                  <span className="text-blue-600 dark:text-blue-400">R {data.assets.total.toLocaleString()}</span>
+                  <span className="text-blue-600 dark:text-blue-400">R {data.Number(assets.total ?? 0).toLocaleString()}</span>
                 </div>
               </div>
             </div>
@@ -208,12 +208,12 @@ export default function BalanceSheetPage() {
                   {data.liabilities.current.map((account) => (
                     <div key={account.account_code} className="flex justify-between py-1">
                       <span className="text-sm text-gray-600 dark:text-gray-400">{account.account_code} - {account.account_name}</span>
-                      <span className="text-sm text-gray-900 dark:text-white">R {account.balance.toLocaleString()}</span>
+                      <span className="text-sm text-gray-900 dark:text-white">R {Number(account.balance ?? 0).toLocaleString()}</span>
                     </div>
                   ))}
                   <div className="flex justify-between py-1 font-medium border-t border-gray-200 dark:border-gray-700 mt-2 pt-2">
                     <span className="text-gray-700 dark:text-gray-300">Total Current Liabilities</span>
-                    <span className="text-gray-900 dark:text-white">R {data.liabilities.total_current.toLocaleString()}</span>
+                    <span className="text-gray-900 dark:text-white">R {data.Number(liabilities.total_current ?? 0).toLocaleString()}</span>
                   </div>
                 </div>
                 
@@ -222,19 +222,19 @@ export default function BalanceSheetPage() {
                   {data.liabilities.long_term.map((account) => (
                     <div key={account.account_code} className="flex justify-between py-1">
                       <span className="text-sm text-gray-600 dark:text-gray-400">{account.account_code} - {account.account_name}</span>
-                      <span className="text-sm text-gray-900 dark:text-white">R {account.balance.toLocaleString()}</span>
+                      <span className="text-sm text-gray-900 dark:text-white">R {Number(account.balance ?? 0).toLocaleString()}</span>
                     </div>
                   ))}
                   <div className="flex justify-between py-1 font-medium border-t border-gray-200 dark:border-gray-700 mt-2 pt-2">
                     <span className="text-gray-700 dark:text-gray-300">Total Long-term Liabilities</span>
-                    <span className="text-gray-900 dark:text-white">R {data.liabilities.total_long_term.toLocaleString()}</span>
+                    <span className="text-gray-900 dark:text-white">R {data.Number(liabilities.total_long_term ?? 0).toLocaleString()}</span>
                   </div>
                 </div>
                 
                 <div className="pt-3 border-t border-gray-200 dark:border-gray-700">
                   <div className="flex justify-between py-1 font-medium" data-testid="total-liabilities">
                     <span className="text-gray-700 dark:text-gray-300">Total Liabilities</span>
-                    <span className="text-gray-900 dark:text-white">R {data.liabilities.total.toLocaleString()}</span>
+                    <span className="text-gray-900 dark:text-white">R {data.Number(liabilities.total ?? 0).toLocaleString()}</span>
                   </div>
                 </div>
 
@@ -243,16 +243,16 @@ export default function BalanceSheetPage() {
                   {data.equity.accounts.map((account) => (
                     <div key={account.account_code} className="flex justify-between py-1">
                       <span className="text-sm text-gray-600 dark:text-gray-400">{account.account_code} - {account.account_name}</span>
-                      <span className="text-sm text-gray-900 dark:text-white">R {account.balance.toLocaleString()}</span>
+                      <span className="text-sm text-gray-900 dark:text-white">R {Number(account.balance ?? 0).toLocaleString()}</span>
                     </div>
                   ))}
                   <div className="flex justify-between py-1">
                     <span className="text-sm text-gray-600 dark:text-gray-400">Retained Earnings</span>
-                    <span className="text-sm text-gray-900 dark:text-white">R {data.equity.retained_earnings.toLocaleString()}</span>
+                    <span className="text-sm text-gray-900 dark:text-white">R {data.Number(equity.retained_earnings ?? 0).toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between py-1 font-bold text-lg pt-2 border-t-2 border-gray-300 dark:border-gray-600" data-testid="total-equity">
                     <span className="text-gray-900 dark:text-white">Total Equity</span>
-                    <span className="text-green-600 dark:text-green-400">R {data.equity.total.toLocaleString()}</span>
+                    <span className="text-green-600 dark:text-green-400">R {data.Number(equity.total ?? 0).toLocaleString()}</span>
                   </div>
                 </div>
               </div>

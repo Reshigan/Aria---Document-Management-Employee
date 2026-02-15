@@ -449,12 +449,12 @@ export default function SalesOrderDetail() {
                         {new Date(invoice.invoice_date).toLocaleDateString()}
                       </span>
                       <span className="text-sm font-medium text-gray-900 dark:text-white">
-                        R {invoice.total_amount.toFixed(2)}
+                        R {Number(invoice.total_amount ?? 0).toFixed(2)}
                       </span>
                     </div>
                     {invoice.amount_due > 0 && (
                       <div className="text-xs text-amber-600 dark:text-amber-400 mt-1">
-                        Due: R {invoice.amount_due.toFixed(2)}
+                        Due: R {Number(invoice.amount_due ?? 0).toFixed(2)}
                       </div>
                     )}
                   </div>
@@ -488,7 +488,7 @@ export default function SalesOrderDetail() {
               <div className="flex justify-between pt-3 border-t border-gray-200 dark:border-gray-700">
                 <span className="text-sm text-gray-500 dark:text-gray-400">Order Value</span>
                 <span className="text-base font-semibold text-gray-900 dark:text-white">
-                  R {order.total_amount.toFixed(2)}
+                  R {Number(order.total_amount ?? 0).toFixed(2)}
                 </span>
               </div>
             </div>

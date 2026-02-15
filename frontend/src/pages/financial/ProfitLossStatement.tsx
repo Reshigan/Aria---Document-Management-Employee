@@ -183,12 +183,12 @@ export default function ProfitLossStatementPage() {
               {data.revenue.map((item) => (
                 <div key={item.account_code} className="flex justify-between py-2 border-b border-gray-200 dark:border-gray-700" data-testid={item.account_name.includes('Sales') ? 'revenue-sales' : undefined}>
                   <span className="text-gray-700 dark:text-gray-300">{item.account_code} - {item.account_name}</span>
-                  <span className="font-medium text-gray-900 dark:text-white">R {item.amount.toLocaleString()}</span>
+                  <span className="font-medium text-gray-900 dark:text-white">R {Number(item.amount ?? 0).toLocaleString()}</span>
                 </div>
               ))}
               <div className="flex justify-between py-2 font-bold text-lg" data-testid="total">
                 <span className="text-gray-900 dark:text-white">Total Revenue</span>
-                <span className="text-green-600 dark:text-green-400">R {data.total_revenue.toLocaleString()}</span>
+                <span className="text-green-600 dark:text-green-400">R {Number(data.total_revenue ?? 0).toLocaleString()}</span>
               </div>
             </div>
 
@@ -197,12 +197,12 @@ export default function ProfitLossStatementPage() {
               {data.cost_of_sales.map((item) => (
                 <div key={item.account_code} className="flex justify-between py-2 border-b border-gray-200 dark:border-gray-700">
                   <span className="text-gray-700 dark:text-gray-300">{item.account_code} - {item.account_name}</span>
-                  <span className="font-medium text-gray-900 dark:text-white">R {item.amount.toLocaleString()}</span>
+                  <span className="font-medium text-gray-900 dark:text-white">R {Number(item.amount ?? 0).toLocaleString()}</span>
                 </div>
               ))}
               <div className="flex justify-between py-2 font-bold">
                 <span className="text-gray-900 dark:text-white">Total Cost of Sales</span>
-                <span className="text-red-600 dark:text-red-400">R {data.total_cost_of_sales.toLocaleString()}</span>
+                <span className="text-red-600 dark:text-red-400">R {Number(data.total_cost_of_sales ?? 0).toLocaleString()}</span>
               </div>
             </div>
 
@@ -210,7 +210,7 @@ export default function ProfitLossStatementPage() {
               <div className="flex justify-between py-2 font-bold text-lg">
                 <span className="text-gray-900 dark:text-white">Gross Profit</span>
                 <span className={data.gross_profit >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}>
-                  R {data.gross_profit.toLocaleString()}
+                  R {Number(data.gross_profit ?? 0).toLocaleString()}
                 </span>
               </div>
               <div className="text-sm text-gray-600 dark:text-gray-400 text-right">
@@ -223,12 +223,12 @@ export default function ProfitLossStatementPage() {
               {data.operating_expenses.map((item) => (
                 <div key={item.account_code} className="flex justify-between py-2 border-b border-gray-200 dark:border-gray-700">
                   <span className="text-gray-700 dark:text-gray-300">{item.account_code} - {item.account_name}</span>
-                  <span className="font-medium text-gray-900 dark:text-white">R {item.amount.toLocaleString()}</span>
+                  <span className="font-medium text-gray-900 dark:text-white">R {Number(item.amount ?? 0).toLocaleString()}</span>
                 </div>
               ))}
               <div className="flex justify-between py-2 font-bold">
                 <span className="text-gray-900 dark:text-white">Total Operating Expenses</span>
-                <span className="text-red-600 dark:text-red-400">R {data.total_operating_expenses.toLocaleString()}</span>
+                <span className="text-red-600 dark:text-red-400">R {Number(data.total_operating_expenses ?? 0).toLocaleString()}</span>
               </div>
             </div>
 
@@ -236,7 +236,7 @@ export default function ProfitLossStatementPage() {
               <div className="flex justify-between py-2 text-xl font-bold" data-testid="net-profit">
                 <span className="text-gray-900 dark:text-white">Net Profit</span>
                 <span className={data.net_profit >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}>
-                  R {data.net_profit.toLocaleString()}
+                  R {Number(data.net_profit ?? 0).toLocaleString()}
                 </span>
               </div>
               <div className="text-sm text-gray-600 dark:text-gray-400 text-right">

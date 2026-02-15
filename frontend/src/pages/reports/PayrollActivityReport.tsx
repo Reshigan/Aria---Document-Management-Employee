@@ -141,10 +141,10 @@ export default function PayrollActivityReportPage() {
               <DataTable data={runs} columns={[
                 { key: 'period', label: 'Period' },
                 { key: 'employees', label: 'Employees' },
-                { key: 'gross', label: 'Gross', render: (r: any) => `R ${r.gross.toLocaleString()}` },
-                { key: 'paye', label: 'PAYE', render: (r: any) => `R ${r.paye.toLocaleString()}` },
-                { key: 'uif', label: 'UIF', render: (r: any) => `R ${r.uif.toLocaleString()}` },
-                { key: 'net', label: 'Net', render: (r: any) => `R ${r.net.toLocaleString()}` },
+                { key: 'gross', label: 'Gross', render: (r: any) => `R ${Number(r.gross ?? 0).toLocaleString()}` },
+                { key: 'paye', label: 'PAYE', render: (r: any) => `R ${Number(r.paye ?? 0).toLocaleString()}` },
+                { key: 'uif', label: 'UIF', render: (r: any) => `R ${Number(r.uif ?? 0).toLocaleString()}` },
+                { key: 'net', label: 'Net', render: (r: any) => `R ${Number(r.net ?? 0).toLocaleString()}` },
                 { key: 'status', label: 'Status', render: (r: any) => (
                   <span className={`px-2 py-1 rounded-full text-xs font-medium ${r.status === 'Completed' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400'}`}>
                     {r.status}

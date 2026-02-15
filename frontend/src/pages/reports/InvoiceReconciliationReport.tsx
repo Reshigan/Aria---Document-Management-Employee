@@ -26,7 +26,7 @@ export default function InvoiceReconciliationReportPage() {
   const columns = [
     { key: 'invoice_number', label: 'Invoice #' },
     { key: 'supplier', label: 'Supplier' },
-    { key: 'amount', label: 'Amount', render: (row: any) => `R ${row.amount.toFixed(2)}` },
+    { key: 'amount', label: 'Amount', render: (row: any) => `R ${Number(row.amount ?? 0).toFixed(2)}` },
     { key: 'status', label: 'Status', render: (row: any) => {
       const colors = {
         matched: 'text-green-600',

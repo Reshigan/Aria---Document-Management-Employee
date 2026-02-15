@@ -292,7 +292,7 @@ export default function Timesheets() {
                     {timesheet.description || '-'}
                   </td>
                   <td className="px-6 py-4 text-right">
-                    <span className="font-medium text-gray-900 dark:text-white">{timesheet.hours.toFixed(1)}h</span>
+                    <span className="font-medium text-gray-900 dark:text-white">{Number(timesheet.hours ?? 0).toFixed(1)}h</span>
                   </td>
                   <td className="px-6 py-4 text-right">
                     {timesheet.billable ? (

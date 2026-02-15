@@ -88,7 +88,7 @@ const StockValuationReport: React.FC = () => {
             <Package className="w-10 h-10 opacity-80" />
           </div>
           <div className="text-sm opacity-90 mb-1">Total Units</div>
-          <div className="text-3xl font-bold">{totals.quantity.toLocaleString()}</div>
+          <div className="text-3xl font-bold">{Number(totals.quantity ?? 0).toLocaleString()}</div>
           <div className="text-xs opacity-75 mt-2">
             Across {totals.items} products
           </div>
@@ -122,7 +122,7 @@ const StockValuationReport: React.FC = () => {
                   style={{ width: `${cat.percentage}%` }}
                 />
               </div>
-              <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">{cat.percentage.toFixed(1)}% of total inventory value</div>
+              <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">{Number(cat.percentage ?? 0).toFixed(1)}% of total inventory value</div>
             </div>
           ))}
         </div>
@@ -165,7 +165,7 @@ const StockValuationReport: React.FC = () => {
                     {item.category}
                   </span>
                 </td>
-                <td className="px-6 py-4 text-right text-sm">{item.quantity.toLocaleString()}</td>
+                <td className="px-6 py-4 text-right text-sm">{Number(item.quantity ?? 0).toLocaleString()}</td>
                 <td className="px-6 py-4 text-right text-sm">{formatCurrency(item.cost_price)}</td>
                 <td className="px-6 py-4 text-right font-semibold text-gray-900 dark:text-white">{formatCurrency(item.total_value)}</td>
               </tr>
@@ -173,7 +173,7 @@ const StockValuationReport: React.FC = () => {
             {/* Totals Row */}
             <tr className="bg-gray-50 dark:bg-gray-900 font-bold">
               <td colSpan={3} className="px-6 py-4 text-gray-900 dark:text-white">TOTAL ({filteredData.length} products)</td>
-              <td className="px-6 py-4 text-right text-blue-700 dark:text-blue-300">{totals.quantity.toLocaleString()}</td>
+              <td className="px-6 py-4 text-right text-blue-700 dark:text-blue-300">{Number(totals.quantity ?? 0).toLocaleString()}</td>
               <td className="px-6 py-4"></td>
               <td className="px-6 py-4 text-right text-blue-700 dark:text-blue-300 text-lg">{formatCurrency(totals.value)}</td>
             </tr>

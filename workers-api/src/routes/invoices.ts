@@ -6,6 +6,7 @@
 import { Hono } from 'hono';
 import { getSecureCompanyId, getSecureUserId } from '../middleware/auth';
 import { postCustomerInvoice, postCustomerPayment, postSupplierInvoice, postSupplierPayment } from '../services/gl-posting-engine';
+import { validateInvoice, validatePayment, validateStatusTransition, safeNumber } from '../services/business-rules';
 
 interface Env {
   DB: D1Database;
@@ -243,10 +244,6 @@ invoices.post('/customer/:id/payment', async (c) => {
     const userId = await getSecureUserId(c);
     const body = await c.req.json<{ amount: number; payment_method?: string; reference?: string }>();
 
-    if (!body.amount || body.amount <= 0) {
-      return c.json({ error: 'Valid payment amount is required' }, 400);
-    }
-
     // Get invoice with customer name
     const invoice = await c.env.DB.prepare(`
       SELECT ci.*, c.customer_name
@@ -257,6 +254,11 @@ invoices.post('/customer/:id/payment', async (c) => {
 
     if (!invoice) {
       return c.json({ error: 'Invoice not found' }, 404);
+    }
+
+    const paymentValidation = validatePayment(safeNumber(body.amount), safeNumber(invoice.total_amount), safeNumber(invoice.amount_paid));
+    if (!paymentValidation.valid) {
+      return c.json({ error: paymentValidation.errors.join('; ') }, 400);
     }
 
     // Generate payment number

@@ -288,7 +288,7 @@ export default function Milestones() {
                       <div className="flex items-center justify-end gap-1">
                         <DollarSign size={14} className="text-gray-400" />
                         <span className="text-sm font-medium">
-                          R {milestone.amount.toLocaleString('en-ZA', { minimumFractionDigits: 0 })}
+                          R {Number(milestone.amount ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 0 })}
                         </span>
                       </div>
                     ) : milestone.percentage ? (

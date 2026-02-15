@@ -5,6 +5,7 @@
 
 import { Hono } from 'hono';
 import { getSecureCompanyId } from '../middleware/auth';
+import { validateQuote, validateStatusTransition, calculateLineTotals, safeNumber } from '../services/business-rules';
 
 interface Env {
   DB: D1Database;
@@ -175,8 +176,9 @@ quotes.post('/', async (c) => {
     const companyId = await getSecureCompanyId(c);
     const body = await c.req.json<Partial<Quote> & { items?: Partial<QuoteItem>[] }>();
 
-    if (!body.customer_id) {
-      return c.json({ error: 'Customer is required' }, 400);
+    const validation = validateQuote(body as Record<string, unknown>);
+    if (!validation.valid) {
+      return c.json({ error: validation.errors.join('; '), errors: validation.errors, warnings: validation.warnings }, 400);
     }
 
     // Generate quote number
@@ -191,20 +193,12 @@ quotes.post('/', async (c) => {
     const now = new Date().toISOString();
     const validUntil = body.valid_until || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
 
-    // Calculate totals from items
-    let subtotal = 0;
-    let taxAmount = 0;
     const items = body.items || [];
-    
-    for (const item of items) {
-      const lineTotal = (item.quantity || 1) * (item.unit_price || 0) * (1 - (item.discount_percent || 0) / 100);
-      const lineTax = lineTotal * ((item.tax_rate || 15) / 100);
-      subtotal += lineTotal;
-      taxAmount += lineTax;
-    }
-
-    const discountAmount = body.discount_amount || 0;
-    const totalAmount = subtotal + taxAmount - discountAmount;
+    const totals = calculateLineTotals(items as Array<{ quantity?: number; unit_price?: number; discount_percent?: number; tax_rate?: number }>);
+    const subtotal = totals.subtotal;
+    const taxAmount = totals.tax_amount;
+    const discountAmount = safeNumber(body.discount_amount);
+    const totalAmount = totals.total_amount - discountAmount;
 
     await c.env.DB.prepare(`
       INSERT INTO quotes (id, company_id, quote_number, customer_id, quote_date, valid_until, status, subtotal, tax_amount, discount_amount, total_amount, notes, terms, created_at, updated_at)
@@ -269,9 +263,14 @@ quotes.put('/:id/status', async (c) => {
     const companyId = await getSecureCompanyId(c);
     const body = await c.req.json<{ status: string }>();
 
-    const validStatuses = ['draft', 'sent', 'accepted', 'rejected', 'expired', 'converted'];
-    if (!validStatuses.includes(body.status)) {
-      return c.json({ error: 'Invalid status' }, 400);
+    const existing = await c.env.DB.prepare(
+      'SELECT status FROM quotes WHERE id = ? AND company_id = ?'
+    ).bind(quoteId, companyId).first<{ status: string }>();
+    if (!existing) return c.json({ error: 'Quote not found' }, 404);
+
+    const transition = validateStatusTransition('quote', existing.status, body.status);
+    if (!transition.valid) {
+      return c.json({ error: transition.errors.join('; ') }, 400);
     }
 
     const result = await c.env.DB.prepare(`

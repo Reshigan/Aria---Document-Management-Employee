@@ -169,7 +169,7 @@ export default function OcrDocumentCaptureReport() {
                       {activity.result?.processed || 0}
                     </TableCell>
                     <TableCell>
-                      {activity.duration ? `${activity.duration.toFixed(2)}s` : 'N/A'}
+                      {activity.duration ? `${Number(activity.duration ?? 0).toFixed(2)}s` : 'N/A'}
                     </TableCell>
                     <TableCell>
                       {activity.result?.successful || 0} successful, {' '}

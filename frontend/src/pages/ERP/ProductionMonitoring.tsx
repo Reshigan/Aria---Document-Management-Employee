@@ -488,7 +488,7 @@ const ProductionMonitoring: React.FC = () => {
             {systemMetrics.map((metric, index) => (
               <tr key={index} className="hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900">
                 <td className="px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">{metric.metric_name}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{metric.metric_value.toFixed(2)}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{Number(metric.metric_value ?? 0).toFixed(2)}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{metric.metric_unit}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                   {new Date(metric.created_at).toLocaleString()}

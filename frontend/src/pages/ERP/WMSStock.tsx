@@ -267,13 +267,13 @@ export default function WMSStock() {
             <div className="flex items-center gap-4"><div className="p-3 bg-gradient-to-br from-teal-500 to-cyan-500 rounded-xl shadow-lg shadow-teal-500/30"><Package className="h-6 w-6 text-white" /></div><div><p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.totalProducts}</p><p className="text-sm text-gray-500 dark:text-gray-400">Total Products</p></div></div>
           </div>
           <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
-            <div className="flex items-center gap-4"><div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl shadow-lg shadow-blue-500/30"><Warehouse className="h-6 w-6 text-white" /></div><div><p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.totalStock.toLocaleString()}</p><p className="text-sm text-gray-500 dark:text-gray-400">Total Stock</p></div></div>
+            <div className="flex items-center gap-4"><div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl shadow-lg shadow-blue-500/30"><Warehouse className="h-6 w-6 text-white" /></div><div><p className="text-2xl font-bold text-gray-900 dark:text-white">{Number(stats.totalStock ?? 0).toLocaleString()}</p><p className="text-sm text-gray-500 dark:text-gray-400">Total Stock</p></div></div>
           </div>
           <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
             <div className="flex items-center gap-4"><div className="p-3 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl shadow-lg shadow-amber-500/30"><AlertTriangle className="h-6 w-6 text-white" /></div><div><p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.lowStock}</p><p className="text-sm text-gray-500 dark:text-gray-400">Low Stock Items</p></div></div>
           </div>
           <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
-            <div className="flex items-center gap-4"><div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg shadow-green-500/30"><TrendingUp className="h-6 w-6 text-white" /></div><div><p className="text-2xl font-bold text-gray-900 dark:text-white">R {stats.totalValue.toLocaleString('en-ZA', { minimumFractionDigits: 0 })}</p><p className="text-sm text-gray-500 dark:text-gray-400">Stock Value</p></div></div>
+            <div className="flex items-center gap-4"><div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg shadow-green-500/30"><TrendingUp className="h-6 w-6 text-white" /></div><div><p className="text-2xl font-bold text-gray-900 dark:text-white">R {Number(stats.totalValue ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 0 })}</p><p className="text-sm text-gray-500 dark:text-gray-400">Stock Value</p></div></div>
           </div>
         </div>
 
@@ -304,8 +304,8 @@ export default function WMSStock() {
                         <td className="px-6 py-4 font-semibold text-teal-600 dark:text-teal-400">{product.code}</td>
                         <td className="px-6 py-4 text-gray-900 dark:text-white">{product.name}</td>
                         <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{product.unit_of_measure}</td>
-                        <td className="px-6 py-4 text-right text-gray-600 dark:text-gray-300">R {product.cost_price.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</td>
-                        <td className="px-6 py-4 text-right font-semibold text-gray-900 dark:text-white">R {product.selling_price.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</td>
+                        <td className="px-6 py-4 text-right text-gray-600 dark:text-gray-300">R {Number(product.cost_price ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</td>
+                        <td className="px-6 py-4 text-right font-semibold text-gray-900 dark:text-white">R {Number(product.selling_price ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</td>
                         <td className="px-6 py-4"><span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${product.is_active ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600'}`}>{product.is_active ? 'Active' : 'Inactive'}</span></td>
                         <td className="px-6 py-4"><div className="flex items-center justify-end gap-2"><button onClick={() => handleEdit(product)} className="p-2 hover:bg-teal-100 dark:hover:bg-teal-900/30 text-teal-600 dark:text-teal-400 rounded-lg transition-colors"><Edit className="h-4 w-4" /></button><button onClick={() => handleDelete(product)} className="p-2 hover:bg-red-100 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg transition-colors"><Trash2 className="h-4 w-4" /></button></div></td>
                       </tr>
@@ -325,9 +325,9 @@ export default function WMSStock() {
                         <td className="px-6 py-4"><div><span className="font-semibold text-teal-600 dark:text-teal-400">{item.product_code}</span><p className="text-sm text-gray-500 dark:text-gray-400">{item.product_name}</p></div></td>
                         <td className="px-6 py-4 text-gray-900 dark:text-white">{item.warehouse_name}</td>
                         <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{item.location_name}</td>
-                        <td className="px-6 py-4 text-right font-semibold text-gray-900 dark:text-white">{item.quantity_on_hand.toLocaleString()}</td>
-                        <td className="px-6 py-4 text-right text-amber-600 dark:text-amber-400">{item.quantity_reserved.toLocaleString()}</td>
-                        <td className="px-6 py-4 text-right"><span className={`font-semibold ${item.quantity_available < 10 ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'}`}>{item.quantity_available.toLocaleString()}</span></td>
+                        <td className="px-6 py-4 text-right font-semibold text-gray-900 dark:text-white">{Number(item.quantity_on_hand ?? 0).toLocaleString()}</td>
+                        <td className="px-6 py-4 text-right text-amber-600 dark:text-amber-400">{Number(item.quantity_reserved ?? 0).toLocaleString()}</td>
+                        <td className="px-6 py-4 text-right"><span className={`font-semibold ${item.quantity_available < 10 ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'}`}>{Number(item.quantity_available ?? 0).toLocaleString()}</span></td>
                       </tr>
                     ))}
                   </tbody>
@@ -345,7 +345,7 @@ export default function WMSStock() {
                         <td className="px-6 py-4 font-semibold text-teal-600 dark:text-teal-400">{mov.movement_number}</td>
                         <td className="px-6 py-4"><span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border capitalize ${getMovementTypeBadge(mov.movement_type)}`}>{mov.movement_type}</span></td>
                         <td className="px-6 py-4"><div><span className="text-gray-900 dark:text-white">{mov.product_code}</span><p className="text-sm text-gray-500 dark:text-gray-400">{mov.product_name}</p></div></td>
-                        <td className="px-6 py-4 text-right font-semibold text-gray-900 dark:text-white">{mov.quantity.toLocaleString()}</td>
+                        <td className="px-6 py-4 text-right font-semibold text-gray-900 dark:text-white">{Number(mov.quantity ?? 0).toLocaleString()}</td>
                         <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{new Date(mov.movement_date).toLocaleDateString()}</td>
                         <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{mov.reference || '-'}</td>
                       </tr>

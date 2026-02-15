@@ -268,7 +268,7 @@ export const Pricing: React.FC = () => {
                     <div key={idx} className="bg-white dark:bg-gray-800 p-4 rounded-lg">
                       <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">{comp.name}</div>
                       <div className="text-lg font-bold text-gray-900 dark:text-white line-through">
-                        R{comp.price.toLocaleString()}/mo
+                        R{Number(comp.price ?? 0).toLocaleString()}/mo
                       </div>
                       <div className="text-green-600 dark:text-green-400 font-bold text-sm mt-1">
                         Save {(comp.savings * 100).toFixed(0)}% (R{(comp.price - displayPrice).toLocaleString()}/mo)

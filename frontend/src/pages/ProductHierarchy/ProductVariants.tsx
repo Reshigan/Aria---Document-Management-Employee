@@ -225,12 +225,12 @@ export default function ProductVariants() {
                   </td>
                   <td className="px-6 py-4 text-right text-sm">
                     {variant.list_price 
-                      ? `R ${variant.list_price.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}`
+                      ? `R ${Number(variant.list_price ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}`
                       : '-'}
                   </td>
                   <td className="px-6 py-4 text-right text-sm text-gray-600 dark:text-gray-400">
                     {variant.cost_price 
-                      ? `R ${variant.cost_price.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}`
+                      ? `R ${Number(variant.cost_price ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}`
                       : '-'}
                   </td>
                   <td className="px-6 py-4 text-right">

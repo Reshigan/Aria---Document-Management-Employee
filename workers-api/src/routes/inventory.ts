@@ -2,6 +2,7 @@
  * Inventory Routes - Warehouses, Stock Movements, Items
  */
 import { Hono } from 'hono';
+import { validateWarehouse, safeNumber } from '../services/business-rules';
 
 interface Env {
   DB: D1Database;
@@ -87,8 +88,9 @@ inventory.post('/warehouses', async (c) => {
     
     const { warehouse_code, warehouse_name, location, capacity, current_stock_value, is_active } = body;
     
-    if (!warehouse_code || !warehouse_name) {
-      return c.json({ error: 'Warehouse code and name are required' }, 400);
+    const validation = validateWarehouse(body as Record<string, unknown>);
+    if (!validation.valid) {
+      return c.json({ error: validation.errors.join('; '), errors: validation.errors, warnings: validation.warnings }, 400);
     }
     
     const id = crypto.randomUUID();

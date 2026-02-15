@@ -150,7 +150,7 @@ const Leads: React.FC = () => {
           { label: 'Total Leads', value: stats.total, icon: <PersonAdd />, color: '#667eea' },
           { label: 'New Leads', value: stats.new, icon: <TrendingUp />, color: '#4CAF50' },
           { label: 'Qualified', value: stats.qualified, icon: <Business />, color: '#FF9800' },
-          { label: 'Pipeline Value', value: `R ${stats.totalValue.toLocaleString()}`, icon: <TrendingUp />, color: '#E91E63' },
+          { label: 'Pipeline Value', value: `R ${Number(stats.totalValue ?? 0).toLocaleString()}`, icon: <TrendingUp />, color: '#E91E63' },
         ].map((stat, index) => (
           <Grid item xs={12} sm={6} md={3} key={index}>
             <Card sx={{ background: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(10px)' }}>
@@ -212,7 +212,7 @@ const Leads: React.FC = () => {
                     </TableCell>
                     <TableCell>{lead.source}</TableCell>
                     <TableCell><Chip label={lead.status.toUpperCase()} color={statusColors[lead.status]} size="small" /></TableCell>
-                    <TableCell>R {lead.value.toLocaleString()}</TableCell>
+                    <TableCell>R {Number(lead.value ?? 0).toLocaleString()}</TableCell>
                     <TableCell>{lead.assignedTo}</TableCell>
                     <TableCell>
                       <Tooltip title="Edit">

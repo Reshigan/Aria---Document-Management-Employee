@@ -176,7 +176,7 @@ const HRDashboard: React.FC = () => {
               <TrendingUp className="h-6 w-6 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{metrics.attendance_rate.toFixed(1)}%</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{Number(metrics.attendance_rate ?? 0).toFixed(1)}%</p>
               <p className="text-sm text-gray-500 dark:text-gray-400">Attendance Rate</p>
               <p className="text-xs text-gray-400 dark:text-gray-500">Last 30 days</p>
             </div>
@@ -218,7 +218,7 @@ const HRDashboard: React.FC = () => {
             </div>
             <div>
               <p className={`text-xl font-bold ${metrics.turnover_rate > 15 ? 'text-red-600 dark:text-red-400' : 'text-gray-900 dark:text-white'}`}>
-                {metrics.turnover_rate.toFixed(1)}%
+                {Number(metrics.turnover_rate ?? 0).toFixed(1)}%
               </p>
               <p className="text-sm text-gray-500 dark:text-gray-400">Turnover Rate</p>
             </div>

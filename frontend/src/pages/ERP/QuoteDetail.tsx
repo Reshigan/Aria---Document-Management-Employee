@@ -440,7 +440,7 @@ export default function QuoteDetail() {
                     <div className="flex justify-between">
                       <span className="text-sm text-gray-500 dark:text-gray-400">Total Revenue</span>
                       <span className="text-sm font-medium text-gray-900 dark:text-white">
-                        R {customer.total_revenue.toFixed(2)}
+                        R {Number(customer.total_revenue ?? 0).toFixed(2)}
                       </span>
                     </div>
                   </div>
@@ -477,7 +477,7 @@ export default function QuoteDetail() {
                         {new Date(order.order_date).toLocaleDateString()}
                       </span>
                       <span className="text-sm font-medium text-gray-900 dark:text-white">
-                        R {order.total_amount.toFixed(2)}
+                        R {Number(order.total_amount ?? 0).toFixed(2)}
                       </span>
                     </div>
                   </div>

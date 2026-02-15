@@ -5,6 +5,7 @@
 
 import { Hono } from 'hono';
 import { getSecureCompanyId } from '../middleware/auth';
+import { validateDelivery, validateStatusTransition, safeNumber } from '../services/business-rules';
 
 interface Env {
   DB: D1Database;
@@ -131,6 +132,11 @@ deliveries.post('/', async (c) => {
   const body = await c.req.json();
   
   try {
+    const validation = validateDelivery(body as Record<string, unknown>);
+    if (!validation.valid) {
+      return c.json({ error: validation.errors.join('; '), errors: validation.errors, warnings: validation.warnings }, 400);
+    }
+
     const id = crypto.randomUUID();
     
     // Generate delivery number

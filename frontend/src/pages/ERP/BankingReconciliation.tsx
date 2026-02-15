@@ -183,7 +183,7 @@ const BankingReconciliation: React.FC = () => {
               <div className="flex justify-between text-sm pt-2 border-t">
                 <span className="text-gray-500 dark:text-gray-400">Current Balance:</span>
                 <span className="font-bold text-lg text-gray-900 dark:text-white">
-                  R {account.current_balance.toLocaleString()}
+                  R {Number(account.current_balance ?? 0).toLocaleString()}
                 </span>
               </div>
             </div>
@@ -247,10 +247,10 @@ const BankingReconciliation: React.FC = () => {
               <tr key={statement.id} className="hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900">
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{statement.account_name}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{new Date(statement.statement_date).toLocaleDateString()}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">R {statement.opening_balance.toLocaleString()}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">R {statement.closing_balance.toLocaleString()}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-red-600 dark:text-red-400">R {statement.total_debits.toLocaleString()}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-green-600 dark:text-green-400">R {statement.total_credits.toLocaleString()}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">R {Number(statement.opening_balance ?? 0).toLocaleString()}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">R {Number(statement.closing_balance ?? 0).toLocaleString()}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-red-600 dark:text-red-400">R {Number(statement.total_debits ?? 0).toLocaleString()}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-green-600 dark:text-green-400">R {Number(statement.total_credits ?? 0).toLocaleString()}</td>
                 <td className="px-6 py-4 whitespace-nowrap">{getStatusBadge(statement.status)}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                   <button className="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:text-blue-100 mr-3">Reconcile</button>
@@ -297,12 +297,12 @@ const BankingReconciliation: React.FC = () => {
                 <td className="px-6 py-4 text-sm text-gray-900 dark:text-white">{transaction.description}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{transaction.reference}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-red-600 dark:text-red-400">
-                  {transaction.debit_amount > 0 ? `R ${transaction.debit_amount.toLocaleString()}` : '-'}
+                  {transaction.debit_amount > 0 ? `R ${Number(transaction.debit_amount ?? 0).toLocaleString()}` : '-'}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-green-600 dark:text-green-400">
-                  {transaction.credit_amount > 0 ? `R ${transaction.credit_amount.toLocaleString()}` : '-'}
+                  {transaction.credit_amount > 0 ? `R ${Number(transaction.credit_amount ?? 0).toLocaleString()}` : '-'}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">R {transaction.balance.toLocaleString()}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">R {Number(transaction.balance ?? 0).toLocaleString()}</td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   {transaction.is_reconciled ? (
                     <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300">

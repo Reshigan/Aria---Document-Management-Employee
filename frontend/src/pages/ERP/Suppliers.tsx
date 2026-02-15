@@ -369,11 +369,11 @@ export default function Suppliers() {
                 </div>
                 <div className="bg-indigo-50 dark:bg-indigo-900/20 p-4 rounded-xl border border-indigo-100 dark:border-indigo-800">
                   <div className="text-sm text-indigo-600 dark:text-indigo-400 font-medium">YTD Spend</div>
-                  <div className="text-2xl font-bold text-indigo-900 dark:text-indigo-100 mt-1">R {supplierStats.total_spend_ytd.toLocaleString()}</div>
+                  <div className="text-2xl font-bold text-indigo-900 dark:text-indigo-100 mt-1">R {Number(supplierStats.total_spend_ytd ?? 0).toLocaleString()}</div>
                 </div>
                 <div className="bg-amber-50 dark:bg-amber-900/20 p-4 rounded-xl border border-amber-100 dark:border-amber-800">
                   <div className="text-sm text-amber-600 dark:text-amber-400 font-medium">Outstanding</div>
-                  <div className="text-2xl font-bold text-amber-900 dark:text-amber-100 mt-1">R {supplierStats.outstanding_balance.toLocaleString()}</div>
+                  <div className="text-2xl font-bold text-amber-900 dark:text-amber-100 mt-1">R {Number(supplierStats.outstanding_balance ?? 0).toLocaleString()}</div>
                 </div>
               </div>
             )}
@@ -417,7 +417,7 @@ export default function Suppliers() {
                           <td className="px-4 py-3 text-sm capitalize text-gray-900 dark:text-white">{txn.type.replace('_', ' ')}</td>
                           <td className="px-4 py-3 text-sm font-medium text-indigo-600 dark:text-indigo-400">{txn.number}</td>
                           <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-300">{new Date(txn.date).toLocaleDateString()}</td>
-                          <td className="px-4 py-3 text-sm text-right font-medium text-gray-900 dark:text-white">R {txn.amount.toLocaleString()}</td>
+                          <td className="px-4 py-3 text-sm text-right font-medium text-gray-900 dark:text-white">R {Number(txn.amount ?? 0).toLocaleString()}</td>
                           <td className="px-4 py-3"><span className="px-2 py-1 text-xs font-medium rounded-full bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 capitalize">{txn.status}</span></td>
                         </tr>
                       ))}

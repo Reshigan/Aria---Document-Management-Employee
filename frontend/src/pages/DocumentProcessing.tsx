@@ -320,7 +320,7 @@ const DocumentProcessing: React.FC = () => {
                         <div className="flex items-center space-x-2">
                           {job.progress !== undefined && job.status === 'processing' && (
                             <div className="text-sm text-gray-500 dark:text-gray-400">
-                              {job.progress.toFixed(0)}%
+                              {Number(job.progress ?? 0).toFixed(0)}%
                             </div>
                           )}
                           <Button
