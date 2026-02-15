@@ -361,21 +361,18 @@ export default function Invoices() {
     return (
       <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
         <div onClick={(e) => e.stopPropagation()} className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden">
-          <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-6">
+          <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-4">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-white/20 rounded-lg"><FileText className="h-6 w-6" /></div>
-                <div>
-                  <h2 className="text-xl font-semibold">{isEdit ? 'Edit Invoice' : 'Create New Invoice'}</h2>
-                  <p className="text-white/80 text-sm">Fill in the details below</p>
-                </div>
+              <div className="flex items-center gap-2">
+                <div className="p-1.5 bg-white/20 rounded-lg"><FileText className="h-5 w-5" /></div>
+                <h2 className="text-lg font-semibold">{isEdit ? 'Edit Invoice' : 'Create New Invoice'}</h2>
               </div>
-              <button onClick={onClose} className="p-2 hover:bg-white/20 rounded-lg transition-colors"><X className="h-5 w-5" /></button>
+              <button onClick={onClose} className="p-1.5 hover:bg-white/20 rounded-lg transition-colors"><X className="h-5 w-5" /></button>
             </div>
           </div>
 
-          <form onSubmit={handleSubmit} className="overflow-y-auto max-h-[calc(90vh-180px)]">
-            <div className="p-6 space-y-6">
+          <form onSubmit={handleSubmit} className="overflow-y-auto max-h-[calc(90vh-120px)]">
+            <div className="p-4 space-y-4">
               {error && (
                 <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl flex items-center gap-3">
                   <AlertCircle className="h-5 w-5 text-red-500 flex-shrink-0" />
@@ -441,12 +438,12 @@ export default function Invoices() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <div className="bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 p-4">
+      <div className="max-w-7xl mx-auto space-y-3">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
           <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Invoices</h1>
-            <p className="text-gray-500 dark:text-gray-400 mt-1">Manage customer invoices and track payments</p>
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Invoices</h1>
+            <p className="text-gray-500 dark:text-gray-400 text-sm">Manage customer invoices and track payments</p>
           </div>
           <div className="flex items-center gap-3">
             <button onClick={() => loadInvoices()} className="p-3 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-200 dark:border-gray-700">

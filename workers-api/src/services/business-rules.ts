@@ -213,7 +213,7 @@ export function validateQuote(data: Record<string, unknown>): ValidationResult {
   if (!data.customer_id) errors.push('Customer is required');
   if (!data.quote_date) errors.push('Quote date is required');
 
-  const items = (data.items as LineItemInput[]) || [];
+  const items = (data.items as LineItemInput[]) || (data.lines as LineItemInput[]) || [];
   if (items.length === 0) warnings.push('Quote has no line items');
 
   for (let i = 0; i < items.length; i++) {
@@ -241,7 +241,7 @@ export function validateSalesOrder(data: Record<string, unknown>): ValidationRes
   if (!data.customer_id) errors.push('Customer is required');
   if (!data.order_date) warnings.push('Order date not specified, will use today');
 
-  const items = (data.items as LineItemInput[]) || [];
+  const items = (data.items as LineItemInput[]) || (data.lines as LineItemInput[]) || [];
   if (items.length === 0) errors.push('Sales order must have at least one line item');
 
   for (let i = 0; i < items.length; i++) {
@@ -262,7 +262,7 @@ export function validatePurchaseOrder(data: Record<string, unknown>): Validation
 
   if (!data.supplier_id) errors.push('Supplier is required');
 
-  const items = (data.items as LineItemInput[]) || [];
+  const items = (data.items as LineItemInput[]) || (data.lines as LineItemInput[]) || [];
   if (items.length === 0) errors.push('Purchase order must have at least one line item');
 
   for (let i = 0; i < items.length; i++) {
