@@ -16,10 +16,16 @@ import {
   postSupplierPayment,
   postGoodsReceipt
 } from '../services/gl-posting-engine';
+import {
+  analyzeBeforeExecution,
+  generateInsights,
+  handleEdgeCase,
+} from '../services/bot-ai-reasoning';
 
 interface Env {
   DB: D1Database;
   JWT_SECRET: string;
+  AI?: any;
 }
 
 interface TokenPayload {
@@ -1679,7 +1685,8 @@ async function executeBotWithStateChanges(
   companyId: string, 
   config: Record<string, any>, 
   db: D1Database,
-  userId: string
+  userId: string,
+  ai?: any
 ): Promise<any> {
   const bot = botRegistry.find(b => b.id === botId);
   if (!bot) {
@@ -1689,7 +1696,6 @@ async function executeBotWithStateChanges(
   const runId = crypto.randomUUID();
   const timestamp = new Date().toISOString();
 
-  // Phase 4: Check if bot is paused for this company
   const paused = await isBotPaused(botId, companyId, db);
   if (paused) {
     return {
@@ -1702,62 +1708,108 @@ async function executeBotWithStateChanges(
     };
   }
 
-  // Record bot execution start
   await recordBotAudit(runId, botId, companyId, 'execution_started', { config }, db);
+
+  const counts = await getExtendedDatabaseCounts(companyId, db);
+  const aiContext = {
+    botId,
+    botName: bot.name,
+    category: bot.category,
+    companyId,
+    counts,
+    config,
+  };
+
+  const preAnalysis = await analyzeBeforeExecution(aiContext, ai);
+
+  if (!preAnalysis.should_proceed && preAnalysis.warnings.length > 0) {
+    await recordBotAudit(runId, botId, companyId, 'execution_blocked_by_ai', {
+      warnings: preAnalysis.warnings,
+      reasoning: preAnalysis.reasoning,
+    }, db);
+    return {
+      success: false,
+      error: 'AI pre-execution check blocked execution',
+      message: `AI Analysis: ${preAnalysis.reasoning}`,
+      warnings: preAnalysis.warnings,
+      run_id: runId,
+      executed_at: timestamp,
+      state_changed: false,
+      ai_reasoning: {
+        pre_analysis: preAnalysis,
+      },
+    };
+  }
+
+  const effectiveConfig = { ...config, ...preAnalysis.adjustments };
 
   let result: any;
   
   try {
-    // Tier-1 bots with actual state changes
     switch (botId) {
       case 'quote_generation':
-        result = await executeQuoteGenerationBot(companyId, config, db, userId, timestamp);
+        result = await executeQuoteGenerationBot(companyId, effectiveConfig, db, userId, timestamp);
         break;
       case 'sales_order':
-        result = await executeSalesOrderBot(companyId, config, db, userId, timestamp);
+        result = await executeSalesOrderBot(companyId, effectiveConfig, db, userId, timestamp);
         break;
       case 'purchase_order':
-        result = await executePurchaseOrderBot(companyId, config, db, userId, timestamp);
+        result = await executePurchaseOrderBot(companyId, effectiveConfig, db, userId, timestamp);
         break;
       case 'goods_receipt':
-        result = await executeGoodsReceiptBot(companyId, config, db, userId, timestamp);
+        result = await executeGoodsReceiptBot(companyId, effectiveConfig, db, userId, timestamp);
         break;
       case 'invoice_reconciliation':
-        result = await executeInvoiceReconciliationBot(companyId, config, db, userId, timestamp);
+        result = await executeInvoiceReconciliationBot(companyId, effectiveConfig, db, userId, timestamp);
         break;
       case 'ar_collections':
-        result = await executeARCollectionsBot(companyId, config, db, userId, timestamp);
+        result = await executeARCollectionsBot(companyId, effectiveConfig, db, userId, timestamp);
         break;
       case 'payment_processing':
-        result = await executePaymentProcessingBot(companyId, config, db, userId, timestamp);
+        result = await executePaymentProcessingBot(companyId, effectiveConfig, db, userId, timestamp);
         break;
       case 'workflow_automation':
-        result = await executeWorkflowAutomationBot(companyId, config, db, userId, timestamp);
+        result = await executeWorkflowAutomationBot(companyId, effectiveConfig, db, userId, timestamp);
         break;
       default:
-        // Tier-2 bots: reporting/analytics only (no state changes)
-        result = await executeBot(botId, companyId, config, db);
+        result = await executeBot(botId, companyId, effectiveConfig, db);
     }
 
-    // Add run_id to result for traceability
     result.run_id = runId;
 
-    // Record successful execution
+    const insights = await generateInsights(aiContext, result, ai);
+    result.ai_insights = insights;
+
+    if (preAnalysis.warnings.length > 0) {
+      result.ai_reasoning = {
+        pre_analysis: preAnalysis,
+        post_insights: insights,
+      };
+    } else {
+      result.ai_reasoning = {
+        post_insights: insights,
+      };
+    }
+
     await recordBotAudit(runId, botId, companyId, 'execution_completed', {
       success: result.success,
       state_changed: result.state_changed,
       message: result.message,
+      ai_risk_level: insights.risk_level,
+      ai_anomalies: insights.anomalies,
     }, db);
 
     return result;
   } catch (error) {
     const errorMessage = String(error);
     
-    // Phase 5: Create escalation task on failure
-    await createEscalationTask(botId, companyId, errorMessage, { config, run_id: runId }, db);
-    
-    // Record failed execution
-    await recordBotAudit(runId, botId, companyId, 'execution_failed', { error: errorMessage }, db);
+    const edgeCaseResolution = await handleEdgeCase(aiContext, errorMessage, ai);
+
+    await createEscalationTask(botId, companyId, errorMessage, { config, run_id: runId, ai_resolution: edgeCaseResolution }, db);
+    await recordBotAudit(runId, botId, companyId, 'execution_failed', {
+      error: errorMessage,
+      ai_resolution: edgeCaseResolution,
+    }, db);
 
     return {
       success: false,
@@ -1767,6 +1819,10 @@ async function executeBotWithStateChanges(
       executed_at: timestamp,
       state_changed: false,
       escalation_created: true,
+      ai_reasoning: {
+        edge_case_resolution: edgeCaseResolution,
+        pre_analysis: preAnalysis,
+      },
     };
   }
 }
@@ -3017,7 +3073,7 @@ app.post('/marketplace/:botId/execute', async (c) => {
     }
     
     // Execute bot with state changes
-    const result = await executeBotWithStateChanges(botId, companyId, config, c.env.DB, auth.userId);
+    const result = await executeBotWithStateChanges(botId, companyId, config, c.env.DB, auth.userId, c.env.AI);
     const completedAt = new Date().toISOString();
     
     try {
@@ -3068,7 +3124,7 @@ app.post('/execute', async (c) => {
     }
     
     // Execute bot with state changes
-    const result = await executeBotWithStateChanges(botId, companyId, config, c.env.DB, auth.userId);
+    const result = await executeBotWithStateChanges(botId, companyId, config, c.env.DB, auth.userId, c.env.AI);
     
     return c.json({
       success: true,
