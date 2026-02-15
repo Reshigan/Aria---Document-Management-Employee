@@ -362,10 +362,7 @@ invoices.post('/customer', async (c) => {
         'SELECT id FROM customers WHERE id = ? AND company_id = ?'
       ).bind(customerId, companyId).first<{ id: string }>();
       if (!existingCustomer) {
-        const customerByName = await c.env.DB.prepare(
-          'SELECT id FROM customers WHERE company_id = ? ORDER BY created_at ASC LIMIT 1 OFFSET ?'
-        ).bind(companyId, Math.max(0, parseInt(customerId) - 1) || 0).first<{ id: string }>();
-        customerId = customerByName?.id || undefined;
+        return c.json({ error: 'Invalid customer_id' }, 400);
       }
     }
     if (!customerId && body.customer_name) {
@@ -376,13 +373,16 @@ invoices.post('/customer', async (c) => {
     }
 
     if (!customerId) {
+      if (!body.customer_name) {
+        return c.json({ error: 'customer_name is required when customer_id is not provided' }, 400);
+      }
       const newId = crypto.randomUUID();
       const now = new Date().toISOString();
       const code = `CUST-${Date.now()}`;
       try {
         await c.env.DB.prepare(
           'INSERT INTO customers (id, company_id, customer_code, customer_name, email, is_active, created_at, updated_at) VALUES (?, ?, ?, ?, ?, 1, ?, ?)'
-        ).bind(newId, companyId, code, body.customer_name || 'Unknown', body.customer_email || null, now, now).run();
+        ).bind(newId, companyId, code, body.customer_name, body.customer_email || null, now, now).run();
         customerId = newId;
       } catch {
         customerId = newId;
@@ -393,8 +393,9 @@ invoices.post('/customer', async (c) => {
       'SELECT invoice_number FROM customer_invoices WHERE company_id = ? ORDER BY created_at DESC LIMIT 1'
     ).bind(companyId).first<{ invoice_number: string }>();
 
-    const lastNum = lastInvoice ? parseInt(lastInvoice.invoice_number.replace(/[^0-9]/g, '')) || 0 : 0;
-    const invoiceNumber = `INV-${Date.now()}`;
+    const lastNum = lastInvoice ? (parseInt((lastInvoice.invoice_number || '').replace(/[^0-9]/g, '')) || 0) : 0;
+    const nextNum = lastNum + 1;
+    const invoiceNumber = `INV-${String(nextNum).padStart(6, '0')}`;
 
     const invoiceId = crypto.randomUUID();
     const now = new Date().toISOString();
@@ -972,17 +973,27 @@ invoices.post('/invoices', async (c) => {
   return invoices.fetch(newReq, c.env);
 });
 
-// DELETE /invoices/:id - Delete invoice
+// DELETE /:id - Delete invoice (safeguards)
 invoices.delete('/:id', async (c) => {
   try {
     const invoiceId = c.req.param('id');
     const companyId = await getSecureCompanyId(c);
-    const result = await c.env.DB.prepare(
-      'DELETE FROM customer_invoices WHERE id = ? AND company_id = ?'
-    ).bind(invoiceId, companyId).run();
-    if (result.meta.changes === 0) {
-      return c.json({ error: 'Invoice not found' }, 404);
+
+    const inv = await c.env.DB.prepare(
+      'SELECT id, status, amount_paid FROM customer_invoices WHERE id = ? AND company_id = ?'
+    ).bind(invoiceId, companyId).first<{ id: string; status: string; amount_paid: number }>();
+
+    if (!inv) return c.json({ error: 'Invoice not found' }, 404);
+    if ((inv.status && inv.status !== 'draft') || (inv.amount_paid && inv.amount_paid > 0)) {
+      return c.json({ error: 'Cannot delete a non-draft or partially/fully paid invoice' }, 400);
     }
+
+    await c.env.DB.prepare('DELETE FROM customer_invoice_items WHERE invoice_id = ?')
+      .bind(invoiceId).run();
+    const result = await c.env.DB.prepare('DELETE FROM customer_invoices WHERE id = ? AND company_id = ?')
+      .bind(invoiceId, companyId).run();
+
+    if (result.meta.changes === 0) return c.json({ error: 'Invoice not found' }, 404);
     return c.json({ message: 'Invoice deleted successfully' });
   } catch (error) {
     console.error('Delete invoice error:', error);
