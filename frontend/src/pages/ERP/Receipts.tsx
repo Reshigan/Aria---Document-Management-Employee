@@ -49,7 +49,8 @@ export default function Receipts() {
       if (statusFilter !== 'all') params.status = statusFilter;
 
       const response = await api.get('/ar/receipts', { params });
-      const data = response.data || [];
+      const raw = response.data;
+      const data = Array.isArray(raw) ? raw : raw.receipts || raw.data || [];
       setReceipts(data);
       
       const totalAmount = data.reduce((sum: number, r: Receipt) => sum + r.amount, 0);

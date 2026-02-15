@@ -32,7 +32,8 @@ export default function Mailroom() {
     try {
       setLoading(true);
       const response = await api.get('/automation/mailroom/messages');
-      setMessages(response.data);
+      const d = response.data;
+      setMessages(Array.isArray(d) ? d : d.messages || d.data || []);
     } catch (err) {
       console.error('Error loading messages:', err);
       setMessages(generateMockMessages());

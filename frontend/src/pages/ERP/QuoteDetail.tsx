@@ -111,7 +111,8 @@ export default function QuoteDetail() {
       const response = await api.get(`/erp/order-to-cash/sales-orders`, {
         params: { customer_id: customerId }
       });
-      setRelatedOrders(response.data);
+      const d = response.data;
+      setRelatedOrders(Array.isArray(d) ? d : d.orders || d.data || []);
     } catch (error) {
       console.error('Error loading related orders:', error);
     }

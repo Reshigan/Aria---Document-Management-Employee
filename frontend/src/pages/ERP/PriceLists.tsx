@@ -87,7 +87,8 @@ export default function PriceLists() {
     try {
       setLoading(true);
       const response = await api.get('/erp/master-data/price-lists');
-      setPriceLists(response.data);
+      const d = response.data;
+      setPriceLists(Array.isArray(d) ? d : d.price_lists || d.data || []);
       setError(null);
     } catch (error: any) {
       console.error('Failed to load price lists:', error);
@@ -103,8 +104,10 @@ export default function PriceLists() {
         api.get('/erp/master-data/customers'),
         api.get('/erp/order-to-cash/products')
       ]);
-      setCustomers(customersRes.data);
-      setProducts(productsRes.data);
+      const cd = customersRes.data;
+      setCustomers(Array.isArray(cd) ? cd : cd.customers || cd.data || []);
+      const pd = productsRes.data;
+      setProducts(Array.isArray(pd) ? pd : pd.products || pd.data || []);
     } catch (error: any) {
       console.error('Failed to load master data:', error);
     }
@@ -113,7 +116,8 @@ export default function PriceLists() {
   const loadPriceListItems = async (priceListId: string) => {
     try {
       const response = await api.get(`/api/erp/master-data/price-lists/${priceListId}/items`);
-      setPriceListItems(response.data || []);
+      const d = response.data;
+      setPriceListItems(Array.isArray(d) ? d : d.items || d.data || []);
     } catch (error: any) {
       console.error('Failed to load price list items:', error);
       setPriceListItems([]);
