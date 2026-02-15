@@ -328,6 +328,133 @@ invoices.post('/customer/:id/payment', async (c) => {
   }
 });
 
+// Create customer invoice
+invoices.post('/customer', async (c) => {
+  try {
+    const companyId = await getSecureCompanyId(c);
+    const userId = await getSecureUserId(c);
+    const body = await c.req.json<{
+      customer_name?: string;
+      customer_email?: string;
+      customer_id?: string;
+      invoice_date?: string;
+      due_date?: string;
+      notes?: string;
+      reference?: string;
+      lines?: Array<{
+        line_number?: number;
+        product_id?: string;
+        description?: string;
+        quantity?: number;
+        unit_price?: number;
+        discount_percent?: number;
+        tax_rate?: number;
+        vat_rate?: number;
+      }>;
+      subtotal?: number;
+      vat_amount?: number;
+      total_amount?: number;
+    }>();
+
+    let customerId = body.customer_id;
+    if (customerId) {
+      const existingCustomer = await c.env.DB.prepare(
+        'SELECT id FROM customers WHERE id = ? AND company_id = ?'
+      ).bind(customerId, companyId).first<{ id: string }>();
+      if (!existingCustomer) {
+        const customerByName = await c.env.DB.prepare(
+          'SELECT id FROM customers WHERE company_id = ? ORDER BY created_at ASC LIMIT 1 OFFSET ?'
+        ).bind(companyId, Math.max(0, parseInt(customerId) - 1) || 0).first<{ id: string }>();
+        customerId = customerByName?.id || undefined;
+      }
+    }
+    if (!customerId && body.customer_name) {
+      const customer = await c.env.DB.prepare(
+        'SELECT id FROM customers WHERE company_id = ? AND customer_name = ? LIMIT 1'
+      ).bind(companyId, body.customer_name).first<{ id: string }>();
+      customerId = customer?.id || undefined;
+    }
+
+    if (!customerId) {
+      const newId = crypto.randomUUID();
+      const now = new Date().toISOString();
+      const code = `CUST-${Date.now()}`;
+      try {
+        await c.env.DB.prepare(
+          'INSERT INTO customers (id, company_id, customer_code, customer_name, email, is_active, created_at, updated_at) VALUES (?, ?, ?, ?, ?, 1, ?, ?)'
+        ).bind(newId, companyId, code, body.customer_name || 'Unknown', body.customer_email || null, now, now).run();
+        customerId = newId;
+      } catch {
+        customerId = newId;
+      }
+    }
+
+    const lastInvoice = await c.env.DB.prepare(
+      'SELECT invoice_number FROM customer_invoices WHERE company_id = ? ORDER BY created_at DESC LIMIT 1'
+    ).bind(companyId).first<{ invoice_number: string }>();
+
+    const lastNum = lastInvoice ? parseInt(lastInvoice.invoice_number.replace(/[^0-9]/g, '')) || 0 : 0;
+    const invoiceNumber = `INV-${Date.now()}`;
+
+    const invoiceId = crypto.randomUUID();
+    const now = new Date().toISOString();
+    const invoiceDate = body.invoice_date || now.split('T')[0];
+    const dueDate = body.due_date || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+
+    const lines = body.lines || [];
+    let subtotal = 0;
+    let taxAmount = 0;
+    for (const line of lines) {
+      const qty = safeNumber(line.quantity) || 1;
+      const price = safeNumber(line.unit_price);
+      const discount = safeNumber(line.discount_percent);
+      const taxRate = safeNumber(line.tax_rate ?? line.vat_rate) || 15;
+      const lineSubtotal = qty * price * (1 - discount / 100);
+      subtotal += lineSubtotal;
+      taxAmount += lineSubtotal * (taxRate / 100);
+    }
+    const totalAmount = subtotal + taxAmount;
+
+    await c.env.DB.prepare(`
+      INSERT INTO customer_invoices (id, company_id, invoice_number, customer_id, sales_order_id, invoice_date, due_date, status, subtotal, tax_amount, discount_amount, total_amount, amount_paid, balance_due, notes, created_by, created_at, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `).bind(
+      invoiceId, companyId, invoiceNumber, customerId, null,
+      invoiceDate, dueDate, 'draft',
+      subtotal, taxAmount, 0, totalAmount, 0, totalAmount,
+      body.notes || null, userId, now, now
+    ).run();
+
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      const qty = safeNumber(line.quantity) || 1;
+      const price = safeNumber(line.unit_price);
+      const discount = safeNumber(line.discount_percent);
+      const taxRate = safeNumber(line.tax_rate ?? line.vat_rate) || 15;
+      const lineTotal = qty * price * (1 - discount / 100);
+
+      await c.env.DB.prepare(`
+        INSERT INTO customer_invoice_items (id, invoice_id, product_id, description, quantity, unit_price, discount_percent, tax_rate, line_total, sort_order, created_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `).bind(
+        crypto.randomUUID(), invoiceId,
+        line.product_id || null, line.description || '',
+        qty, price, discount, taxRate, lineTotal, i, now
+      ).run();
+    }
+
+    return c.json({
+      id: invoiceId,
+      invoice_number: invoiceNumber,
+      total_amount: totalAmount,
+      message: 'Invoice created successfully'
+    }, 201);
+  } catch (error) {
+    console.error('Create customer invoice error:', error);
+    return c.json({ error: 'Internal server error' }, 500);
+  }
+});
+
 // ========================================
 // SUPPLIER INVOICES (AP)
 // ========================================
@@ -825,6 +952,40 @@ invoices.post('/invoice-lines', async (c) => {
     }, 201);
   } catch (error) {
     console.error('Create invoice line error:', error);
+    return c.json({ error: 'Internal server error' }, 500);
+  }
+});
+
+// POST / - Create invoice (alias for /customer, used by /erp/order-to-cash/invoices)
+invoices.post('/', async (c) => {
+  const url = new URL(c.req.url);
+  const newUrl = url.toString().replace(/\/?$/, '/customer');
+  const newReq = new Request(newUrl, c.req.raw);
+  return invoices.fetch(newReq, c.env);
+});
+
+// POST /invoices - Create invoice (alias for /customer, used by /financial/invoices)
+invoices.post('/invoices', async (c) => {
+  const url = new URL(c.req.url);
+  const newUrl = url.toString().replace('/invoices', '/customer');
+  const newReq = new Request(newUrl, c.req.raw);
+  return invoices.fetch(newReq, c.env);
+});
+
+// DELETE /invoices/:id - Delete invoice
+invoices.delete('/:id', async (c) => {
+  try {
+    const invoiceId = c.req.param('id');
+    const companyId = await getSecureCompanyId(c);
+    const result = await c.env.DB.prepare(
+      'DELETE FROM customer_invoices WHERE id = ? AND company_id = ?'
+    ).bind(invoiceId, companyId).run();
+    if (result.meta.changes === 0) {
+      return c.json({ error: 'Invoice not found' }, 404);
+    }
+    return c.json({ message: 'Invoice deleted successfully' });
+  } catch (error) {
+    console.error('Delete invoice error:', error);
     return c.json({ error: 'Internal server error' }, 500);
   }
 });
