@@ -113,7 +113,7 @@ export default function ERPDashboard() {
     <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800">
       {/* Header */}
       <header className="bg-white dark:bg-gray-800 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div className="mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex justify-between items-center">
             <div>
               <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">ARIA ERP</h1>
@@ -137,7 +137,7 @@ export default function ERPDashboard() {
 
       {/* Navigation Tabs */}
       <div className="bg-white dark:bg-gray-800 border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto px-4 sm:px-6 lg:px-8">
           <nav className="flex space-x-8">
             {[
               { key: 'overview', label: 'Overview' },
@@ -162,7 +162,7 @@ export default function ERPDashboard() {
       </div>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      <main className="mx-auto px-4 sm:px-6 lg:px-8 py-4">
         {activeTab === 'overview' && (
           <div className="space-y-3">
             {/* Module Status Cards */}

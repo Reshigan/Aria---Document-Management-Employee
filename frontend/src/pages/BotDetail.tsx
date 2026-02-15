@@ -101,7 +101,7 @@ const BotDetail: React.FC = () => {
     <div className="bg-white dark:bg-gray-800">
       {/* Navigation */}
       <nav className="fixed top-0 w-full z-50 bg-white dark:bg-gray-800/80 backdrop-blur-md border-b border-gray-100 dark:border-gray-700">
-        <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
+        <div className="mx-auto px-6 py-5 flex items-center justify-between">
           <Link to="/" className="flex items-center space-x-3">
             <div className="w-9 h-9 rounded-lg bg-black flex items-center justify-center">
               <Agent className="w-5 h-5 text-white" />
@@ -221,7 +221,7 @@ const BotDetail: React.FC = () => {
 
       {/* Features Grid */}
       <section className="py-16 px-6 bg-gray-50 dark:bg-gray-900">
-        <div className="max-w-6xl mx-auto">
+        <div className="mx-auto">
           <h2 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-12 text-center">
             Key Features
           </h2>
@@ -250,7 +250,7 @@ const BotDetail: React.FC = () => {
 
       {/* Use Cases */}
       <section className="py-16 px-6 bg-white dark:bg-gray-800">
-        <div className="max-w-6xl mx-auto">
+        <div className="mx-auto">
           <h2 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-12 text-center">
             Use Cases & ROI
           </h2>
@@ -311,7 +311,7 @@ const BotDetail: React.FC = () => {
 
       {/* Pricing */}
       <section className="py-16 px-6 bg-white dark:bg-gray-800">
-        <div className="max-w-6xl mx-auto">
+        <div className="mx-auto">
           <h2 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-12 text-center">
             Pricing
           </h2>
@@ -499,7 +499,7 @@ const BotDetail: React.FC = () => {
 
       {/* Footer */}
       <footer className="py-16 px-6 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
-        <div className="max-w-7xl mx-auto text-center">
+        <div className="mx-auto text-center">
           <p className="text-xs text-gray-500 dark:text-gray-400">&copy; 2025 Vanta X Pty Ltd. All rights reserved.</p>
         </div>
       </footer>

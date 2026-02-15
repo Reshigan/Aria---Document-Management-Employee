@@ -94,7 +94,7 @@ export default function PayrollRuns() {
 
   return (
     <div className="bg-gradient-to-br from-gray-50 to-emerald-50 dark:from-gray-900 dark:to-gray-800 p-4" data-testid="payroll-runs">
-      <div className="max-w-7xl mx-auto space-y-3">
+      <div className="mx-auto space-y-3">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
           <div><h1 className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">Payroll Runs</h1><p className="text-gray-500 dark:text-gray-400 mt-1">View and manage payroll processing runs</p></div>
           <div className="flex items-center gap-3">

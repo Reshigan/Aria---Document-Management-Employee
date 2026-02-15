@@ -74,7 +74,7 @@ export default function Sandpit() {
     <div className="bg-gradient-to-br from-blue-50 via-white to-purple-50">
       {/* Hero Section */}
       <div className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
-        <div className="max-w-7xl mx-auto px-4 py-12">
+        <div className="mx-auto px-4 py-12">
           <div className="text-center mb-8">
             <div className="inline-block bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 text-sm font-semibold px-4 py-2 rounded-full mb-4">
               <CheckCircle className="inline w-4 h-4 mr-2" />
@@ -114,7 +114,7 @@ export default function Sandpit() {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 py-12">
+      <div className="mx-auto px-4 py-12">
         
         {/* Testing Tools Section */}
         <section className="mb-12">

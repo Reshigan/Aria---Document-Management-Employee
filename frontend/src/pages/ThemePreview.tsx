@@ -5,7 +5,7 @@ const ThemePreview: React.FC = () => {
   return (
     <MainLayout>
       <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-8">
-        <div className="max-w-6xl mx-auto">
+        <div className="mx-auto">
           {/* Header */}
           <div className="mb-8">
             <h1 className="text-4xl font-bold mb-2" style={{ color: 'var(--color-primary)' }}>

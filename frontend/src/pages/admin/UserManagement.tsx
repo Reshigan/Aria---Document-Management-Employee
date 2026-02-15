@@ -277,7 +277,7 @@ export default function UserManagementPage() {
   }
 
   return (
-    <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 container mx-auto p-4 max-w-7xl">
+    <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 container mx-auto p-4">
       {/* Header */}
       <div className="mb-6 flex items-center justify-between">
         <div>

@@ -82,7 +82,7 @@ const reportCategories: ReportCategory[] = [
 export const ReportsDashboard: React.FC = () => {
   return (
     <div className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-4">
-      <div className="max-w-7xl mx-auto">
+      <div className="mx-auto">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-3">

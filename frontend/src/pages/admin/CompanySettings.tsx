@@ -246,7 +246,7 @@ export default function CompanySettingsPage() {
   }
 
   return (
-    <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 container mx-auto p-4 max-w-6xl">
+    <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 container mx-auto p-4">
       <div className="mb-6">
         <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Company Settings</h1>
         <p className="text-gray-600 dark:text-gray-400 mt-2">Configure your company details and preferences</p>

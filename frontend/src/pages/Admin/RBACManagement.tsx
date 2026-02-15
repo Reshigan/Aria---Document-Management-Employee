@@ -115,7 +115,7 @@ const RBACManagement: React.FC = () => {
   }
 
   return (
-    <div className="p-4 max-w-7xl mx-auto">
+    <div className="p-4 mx-auto">
       <div className="mb-6">
         <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent flex items-center gap-3">
           <Shield size={32} className="text-blue-600 dark:text-blue-400" />

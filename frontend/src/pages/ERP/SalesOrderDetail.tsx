@@ -203,7 +203,7 @@ export default function SalesOrderDetail() {
 
   return (
     <div className="bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 p-4">
-      <div className="max-w-7xl mx-auto">
+      <div className="mx-auto">
       {/* Header */}
       <div className="mb-8">
         <div className="flex gap-2 mb-4">

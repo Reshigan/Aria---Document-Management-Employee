@@ -322,7 +322,7 @@ export default function SetupWizard() {
     <div className="bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-indigo-900">
       {/* Header */}
       <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700 sticky top-0 z-10">
-        <div className="max-w-6xl mx-auto px-6 py-4">
+        <div className="mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center">
@@ -341,7 +341,7 @@ export default function SetupWizard() {
       </div>
 
       {/* Progress Bar */}
-      <div className="max-w-6xl mx-auto px-6 py-6">
+      <div className="mx-auto px-6 py-6">
         <div className="flex items-center justify-between mb-2">
           {WIZARD_STEPS.map((step, index) => (
             <div

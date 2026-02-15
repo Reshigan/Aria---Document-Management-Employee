@@ -11,7 +11,7 @@ export const Landing: React.FC = () => {
     <div className="min-h-screen" style={{ background: 'linear-gradient(180deg, #0f1419 0%, #1a2332 100%)' }}>
       {/* Navigation */}
       <nav className="fixed top-0 w-full z-50 bg-slate-900/80 backdrop-blur-xl border-b border-white/5">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+        <div className="mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center shadow-lg shadow-amber-500/20">
               <span className="text-xl font-bold text-slate-900">A</span>
@@ -49,7 +49,7 @@ export const Landing: React.FC = () => {
           <div className="absolute bottom-20 right-1/4 w-80 h-80 bg-amber-600 rounded-full blur-3xl"></div>
         </div>
         
-        <div className="max-w-6xl mx-auto relative z-10">
+        <div className="mx-auto relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -148,7 +148,7 @@ export const Landing: React.FC = () => {
 
       {/* Features Grid */}
       <section id="features" className="py-24 px-6 bg-slate-900/50">
-        <div className="max-w-7xl mx-auto">
+        <div className="mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 tracking-tight">
               Everything You Need to
@@ -219,7 +219,7 @@ export const Landing: React.FC = () => {
 
       {/* Stats Section */}
       <section className="py-20 px-6">
-        <div className="max-w-7xl mx-auto">
+        <div className="mx-auto">
           <div className="bg-gradient-to-r from-amber-500/10 to-amber-600/10 rounded-3xl border border-amber-500/20 p-12">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
               <div>
@@ -274,7 +274,7 @@ export const Landing: React.FC = () => {
 
       {/* Footer */}
       <footer className="py-16 px-6 border-t border-white/5 bg-slate-900/50">
-        <div className="max-w-7xl mx-auto">
+        <div className="mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
             <div>
               <div className="flex items-center space-x-3 mb-4">

@@ -96,7 +96,7 @@ const DataImport: React.FC = () => {
   };
 
   return (
-    <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4 max-w-6xl mx-auto">
+    <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4 mx-auto">
       <div className="mb-6">
         <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Data Import</h1>
         <p className="text-gray-600 dark:text-gray-400 mt-2">

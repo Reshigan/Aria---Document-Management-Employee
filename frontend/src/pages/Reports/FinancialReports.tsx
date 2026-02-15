@@ -420,7 +420,7 @@ export default function FinancialReports() {
 
   return (
     <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4">
-      <div className="max-w-7xl mx-auto">
+      <div className="mx-auto">
         <div className="mb-8">
           <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Financial Reports</h1>
           <p className="text-gray-500 dark:text-gray-400 mt-1">View comprehensive financial reports and analytics</p>

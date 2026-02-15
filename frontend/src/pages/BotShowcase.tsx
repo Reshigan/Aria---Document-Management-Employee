@@ -286,7 +286,7 @@ const BotShowcase: React.FC = () => {
     <div className="bg-white dark:bg-gray-800">
       {/* Navigation */}
       <nav className="fixed top-0 w-full z-50 bg-white dark:bg-gray-800/80 backdrop-blur-md border-b border-gray-100 dark:border-gray-700">
-        <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
+        <div className="mx-auto px-6 py-5 flex items-center justify-between">
           <Link to="/" className="flex items-center space-x-3">
                         <div className="w-9 h-9 rounded-lg bg-black flex items-center justify-center">
                           <Bot className="w-5 h-5 text-white" />
@@ -313,7 +313,7 @@ const BotShowcase: React.FC = () => {
 
       {/* Hero */}
       <section className="pt-40 pb-20 px-6 bg-white dark:bg-gray-800">
-        <div className="max-w-7xl mx-auto text-center">
+        <div className="mx-auto text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -354,7 +354,7 @@ const BotShowcase: React.FC = () => {
 
       {/* Category Filter */}
       <section className="pb-12 px-6 bg-white dark:bg-gray-800">
-        <div className="max-w-7xl mx-auto">
+        <div className="mx-auto">
           <div className="flex items-center justify-center space-x-2 flex-wrap gap-2">
             {categories.map((cat) => (
               <button
@@ -375,7 +375,7 @@ const BotShowcase: React.FC = () => {
 
       {/* Agents Grid */}
       <section className="pb-24 px-6 bg-white dark:bg-gray-800">
-        <div className="max-w-7xl mx-auto">
+        <div className="mx-auto">
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredBots.map((agent, index) => (
               <motion.div
@@ -462,7 +462,7 @@ const BotShowcase: React.FC = () => {
 
       {/* Footer */}
       <footer className="py-16 px-6 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
-        <div className="max-w-7xl mx-auto text-center">
+        <div className="mx-auto text-center">
           <p className="text-xs text-gray-500 dark:text-gray-400">&copy; 2025 Vanta X Pty Ltd. All rights reserved.</p>
         </div>
       </footer>

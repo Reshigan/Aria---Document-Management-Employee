@@ -122,7 +122,7 @@ export default function Dashboard() {
 
   return (
     <div className="bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-slate-800 p-4">
-      <div className="max-w-7xl mx-auto space-y-3">
+      <div className="mx-auto space-y-3">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
           <div>
