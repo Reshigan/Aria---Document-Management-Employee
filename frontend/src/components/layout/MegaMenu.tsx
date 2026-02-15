@@ -489,7 +489,7 @@ const leaveTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
             to="/dashboard" 
             className={`mega-menu-item ${isActive('/dashboard') ? 'active' : ''}`}
           >
-            <LayoutDashboard size={18} />
+            <LayoutDashboard size={14} />
             <span>Dashboard</span>
           </Link>
 
@@ -499,7 +499,7 @@ const leaveTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
                       className="mega-menu-item mega-menu-search"
                       title="Search (Ctrl+K)"
                     >
-                      <Search size={18} />
+                      <Search size={14} />
                       <span>Search</span>
                       <kbd className="mega-menu-kbd">Ctrl+K</kbd>
                     </button>
@@ -508,7 +508,7 @@ const leaveTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
                       to="/aria" 
                       className={`mega-menu-item mega-menu-item-special ${isActive('/aria') ? 'active' : ''}`}
                     >
-                      <MessageSquare size={18} />
+                      <MessageSquare size={14} />
                       <span>Ask ARIA</span>
                     </Link>
 
@@ -516,7 +516,7 @@ const leaveTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
                       to="/analytics" 
                       className={`mega-menu-item ${isActive('/analytics') ? 'active' : ''}`}
                     >
-                      <BarChart3 size={18} />
+                      <BarChart3 size={14} />
                       <span>Analytics</span>
                     </Link>
 
@@ -529,7 +529,7 @@ const leaveTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
             >
               <button className={`mega-menu-item ${activeDropdown === menuName ? 'active' : ''}`}>
                 <span>{menuName}</span>
-                <ChevronDown size={16} />
+                <ChevronDown size={12} />
               </button>
 
               {activeDropdown === menuName && (
@@ -566,7 +566,7 @@ const leaveTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
             to="/reports" 
             className={`mega-menu-item ${isActive('/reports') ? 'active' : ''}`}
           >
-            <FileText size={18} />
+            <FileText size={14} />
             <span>Reports</span>
           </Link>
 
@@ -574,7 +574,7 @@ const leaveTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
             to="/agents" 
             className={`mega-menu-item ${isActive('/agents') ? 'active' : ''}`}
           >
-            <Bot size={18} />
+            <Bot size={14} />
             <span>Agents</span>
           </Link>
 
@@ -582,23 +582,19 @@ const leaveTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
             to="/admin/system" 
             className={`mega-menu-item ${isActive('/admin') ? 'active' : ''}`}
           >
-            <Shield size={18} />
+            <Shield size={14} />
             <span>Admin</span>
           </Link>
         </nav>
 
                 <div className="mega-menu-user" data-testid="user-menu">
-                  <QuickActions variant="dropdown" />
-                  <RecentItems variant="dropdown" />
                   <NotificationsBell />
-                  <ThemeToggle variant="icon" />
-                  <LanguageSwitcher variant="icon" />
                   <div className="mega-menu-user-info">
                     <span className="mega-menu-user-name" data-testid="user-name">{user?.full_name || 'User'}</span>
                     <span className="mega-menu-user-role">{user?.email}</span>
                   </div>
                   <button onClick={logout} className="mega-menu-logout" title="Logout" data-testid="logout">
-                    <LogOut size={18} />
+                    <LogOut size={14} />
                   </button>
                 </div>
       </div>
