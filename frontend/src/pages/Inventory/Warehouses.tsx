@@ -203,7 +203,7 @@ const Warehouses: React.FC = () => {
                   <td className="px-6 py-4 text-sm font-semibold text-gray-900 dark:text-white">{warehouse.warehouse_code}</td>
                   <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{warehouse.warehouse_name}</td>
                   <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{warehouse.location}</td>
-                  <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{warehouse.capacity.toLocaleString()}</td>
+                  <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{Number(warehouse.capacity ?? 0).toLocaleString()}</td>
                   <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{formatCurrency(warehouse.current_stock_value)}</td>
                   <td className="px-6 py-4">
                     <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${

@@ -151,7 +151,7 @@ export default function VATReturnsPage() {
             <div>
               <div className="text-sm font-medium text-gray-500 dark:text-gray-400">Output Tax</div>
               <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                R {totalOutput.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
+                R {Number(totalOutput ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
               </div>
             </div>
           </div>
@@ -165,7 +165,7 @@ export default function VATReturnsPage() {
             <div>
               <div className="text-sm font-medium text-gray-500 dark:text-gray-400">Input Tax</div>
               <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                R {totalInput.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
+                R {Number(totalInput ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
               </div>
             </div>
           </div>
@@ -231,13 +231,13 @@ export default function VATReturnsPage() {
                       {new Date(vatReturn.period_start).toLocaleDateString('en-ZA')} - {new Date(vatReturn.period_end).toLocaleDateString('en-ZA')}
                     </td>
                     <td className="px-6 py-4 text-right text-green-600 dark:text-green-400">
-                      R {vatReturn.output_tax.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
+                      R {Number(vatReturn.output_tax ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
                     </td>
                     <td className="px-6 py-4 text-right text-blue-600 dark:text-blue-400">
-                      R {vatReturn.input_tax.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
+                      R {Number(vatReturn.input_tax ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
                     </td>
                     <td className={`px-6 py-4 text-right font-medium ${vatReturn.net_vat >= 0 ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'}`}>
-                      R {vatReturn.net_vat.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
+                      R {Number(vatReturn.net_vat ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
                     </td>
                     <td className="px-6 py-4 text-center">
                       <span className={`inline-flex px-3 py-1 rounded-full text-xs font-medium ${getStatusClasses(vatReturn.status)}`}>

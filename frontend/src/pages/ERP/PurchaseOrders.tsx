@@ -383,7 +383,7 @@ export default function PurchaseOrders() {
           <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
             <div className="flex items-center gap-4">
               <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg shadow-green-500/30"><Package className="h-6 w-6 text-white" /></div>
-              <div><p className="text-2xl font-bold text-gray-900 dark:text-white">R {stats.totalValue.toLocaleString()}</p><p className="text-sm text-gray-500 dark:text-gray-400">Total Value</p></div>
+              <div><p className="text-2xl font-bold text-gray-900 dark:text-white">R {Number(stats.totalValue ?? 0).toLocaleString()}</p><p className="text-sm text-gray-500 dark:text-gray-400">Total Value</p></div>
             </div>
           </div>
         </div>
@@ -446,7 +446,7 @@ export default function PurchaseOrders() {
                         <td className="px-6 py-4 text-gray-900 dark:text-white">{order.supplier_name}</td>
                         <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{new Date(order.po_date).toLocaleDateString()}</td>
                         <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{order.expected_delivery_date ? new Date(order.expected_delivery_date).toLocaleDateString() : '-'}</td>
-                        <td className="px-6 py-4 text-right font-semibold text-gray-900 dark:text-white">R {order.total_amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
+                        <td className="px-6 py-4 text-right font-semibold text-gray-900 dark:text-white">R {Number(order.total_amount ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
                         <td className="px-6 py-4">
                           <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${statusConfig.bg} ${statusConfig.text} border ${statusConfig.border} capitalize`}>{order.status}</span>
                         </td>
@@ -616,7 +616,7 @@ export default function PurchaseOrders() {
                 </div>
                 <div className="bg-gray-50 dark:bg-gray-900/50 rounded-xl p-4">
                   <p className="text-sm text-gray-500 dark:text-gray-400">Total Amount</p>
-                  <p className="font-bold text-xl text-gray-900 dark:text-white">R {selectedOrder.total_amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
+                  <p className="font-bold text-xl text-gray-900 dark:text-white">R {Number(selectedOrder.total_amount ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
                 </div>
               </div>
               {selectedOrder.lines && selectedOrder.lines.length > 0 && (
@@ -627,9 +627,9 @@ export default function PurchaseOrders() {
                       <div key={index} className="flex justify-between items-center py-2 border-b border-gray-200 dark:border-gray-700 last:border-0">
                         <div>
                           <p className="font-medium text-gray-900 dark:text-white">{line.description}</p>
-                          <p className="text-sm text-gray-500 dark:text-gray-400">{line.quantity} x R {line.unit_price.toFixed(2)}</p>
+                          <p className="text-sm text-gray-500 dark:text-gray-400">{line.quantity} x R {Number(line.unit_price ?? 0).toFixed(2)}</p>
                         </div>
-                        <p className="font-medium text-gray-900 dark:text-white">R {line.line_total.toFixed(2)}</p>
+                        <p className="font-medium text-gray-900 dark:text-white">R {Number(line.line_total ?? 0).toFixed(2)}</p>
                       </div>
                     ))}
                   </div>

@@ -149,13 +149,13 @@ export default function ProductVariants() {
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-4">
           <div className="text-sm text-gray-500 dark:text-gray-400">Total Stock</div>
           <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-            {totalStock.toLocaleString()}
+            {Number(totalStock ?? 0).toLocaleString()}
           </div>
         </div>
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-4">
           <div className="text-sm text-gray-500 dark:text-gray-400">Stock Value</div>
           <div className="text-2xl font-bold text-orange-600">
-            R {totalValue.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
+            R {Number(totalValue ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
           </div>
         </div>
       </div>
@@ -225,12 +225,12 @@ export default function ProductVariants() {
                   </td>
                   <td className="px-6 py-4 text-right text-sm">
                     {variant.list_price 
-                      ? `R ${variant.list_price.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}`
+                      ? `R ${Number(variant.list_price ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}`
                       : '-'}
                   </td>
                   <td className="px-6 py-4 text-right text-sm text-gray-600 dark:text-gray-400">
                     {variant.cost_price 
-                      ? `R ${variant.cost_price.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}`
+                      ? `R ${Number(variant.cost_price ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}`
                       : '-'}
                   </td>
                   <td className="px-6 py-4 text-right">

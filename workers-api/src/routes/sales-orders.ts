@@ -5,6 +5,7 @@
 
 import { Hono } from 'hono';
 import { getSecureCompanyId } from '../middleware/auth';
+import { validateSalesOrder, validateStatusTransition, calculateLineTotals, safeNumber } from '../services/business-rules';
 
 interface Env {
   DB: D1Database;
@@ -179,8 +180,9 @@ salesOrders.post('/', async (c) => {
     const companyId = await getSecureCompanyId(c);
     const body = await c.req.json<Partial<SalesOrder> & { items?: Partial<SalesOrderItem>[] }>();
 
-    if (!body.customer_id) {
-      return c.json({ error: 'Customer is required' }, 400);
+    const validation = validateSalesOrder(body as Record<string, unknown>);
+    if (!validation.valid) {
+      return c.json({ error: validation.errors.join('; '), errors: validation.errors, warnings: validation.warnings }, 400);
     }
 
     // Generate order number
@@ -194,20 +196,12 @@ salesOrders.post('/', async (c) => {
     const orderId = crypto.randomUUID();
     const now = new Date().toISOString();
 
-    // Calculate totals from items
-    let subtotal = 0;
-    let taxAmount = 0;
     const items = body.items || [];
-    
-    for (const item of items) {
-      const lineTotal = (item.quantity || 1) * (item.unit_price || 0) * (1 - (item.discount_percent || 0) / 100);
-      const lineTax = lineTotal * ((item.tax_rate || 15) / 100);
-      subtotal += lineTotal;
-      taxAmount += lineTax;
-    }
-
-    const discountAmount = body.discount_amount || 0;
-    const totalAmount = subtotal + taxAmount - discountAmount;
+    const totals = calculateLineTotals(items as Array<{ quantity?: number; unit_price?: number; discount_percent?: number; tax_rate?: number }>);
+    const subtotal = totals.subtotal;
+    const taxAmount = totals.tax_amount;
+    const discountAmount = safeNumber(body.discount_amount);
+    const totalAmount = totals.total_amount - discountAmount;
 
     await c.env.DB.prepare(`
       INSERT INTO sales_orders (id, company_id, order_number, customer_id, quote_id, order_date, expected_delivery_date, status, subtotal, tax_amount, discount_amount, total_amount, shipping_address, notes, created_at, updated_at)
@@ -273,9 +267,14 @@ salesOrders.put('/:id/status', async (c) => {
     const companyId = await getSecureCompanyId(c);
     const body = await c.req.json<{ status: string }>();
 
-    const validStatuses = ['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled', 'invoiced'];
-    if (!validStatuses.includes(body.status)) {
-      return c.json({ error: 'Invalid status' }, 400);
+    const existing = await c.env.DB.prepare(
+      'SELECT status FROM sales_orders WHERE id = ? AND company_id = ?'
+    ).bind(orderId, companyId).first<{ status: string }>();
+    if (!existing) return c.json({ error: 'Sales order not found' }, 404);
+
+    const transition = validateStatusTransition('sales_order', existing.status, body.status);
+    if (!transition.valid) {
+      return c.json({ error: transition.errors.join('; ') }, 400);
     }
 
     const result = await c.env.DB.prepare(`

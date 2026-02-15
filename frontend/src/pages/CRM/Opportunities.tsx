@@ -143,9 +143,9 @@ const Opportunities: React.FC = () => {
 
       <Grid container spacing={3} sx={{ mb: 3 }}>
         {[
-          { label: 'Total Pipeline', value: `R ${stats.totalValue.toLocaleString()}`, icon: <AttachMoney />, color: '#667eea' },
+          { label: 'Total Pipeline', value: `R ${Number(stats.totalValue ?? 0).toLocaleString()}`, icon: <AttachMoney />, color: '#667eea' },
           { label: 'Weighted Value', value: `R ${Math.round(stats.weightedValue).toLocaleString()}`, icon: <TrendingUp />, color: '#4CAF50' },
-          { label: 'Won This Month', value: `R ${stats.wonValue.toLocaleString()}`, icon: <Business />, color: '#FF9800' },
+          { label: 'Won This Month', value: `R ${Number(stats.wonValue ?? 0).toLocaleString()}`, icon: <Business />, color: '#FF9800' },
           { label: 'Active Deals', value: stats.total, icon: <TrendingUp />, color: '#E91E63' },
         ].map((stat, index) => (
           <Grid item xs={12} sm={6} md={3} key={index}>
@@ -189,7 +189,7 @@ const Opportunities: React.FC = () => {
                   <TableRow key={opp.id} hover>
                     <TableCell><Typography fontWeight={600}>{opp.name}</Typography></TableCell>
                     <TableCell>{opp.customer}</TableCell>
-                    <TableCell>R {opp.value.toLocaleString()}</TableCell>
+                    <TableCell>R {Number(opp.value ?? 0).toLocaleString()}</TableCell>
                     <TableCell><Chip label={opp.stage.replace('_', ' ').toUpperCase()} color={stageColors[opp.stage]} size="small" /></TableCell>
                     <TableCell>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>

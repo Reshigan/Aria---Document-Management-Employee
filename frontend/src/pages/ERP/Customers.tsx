@@ -360,11 +360,11 @@ export default function Customers() {
                 </div>
                 <div className="bg-indigo-50 dark:bg-indigo-900/20 p-4 rounded-xl border border-indigo-100 dark:border-indigo-800">
                   <div className="text-sm text-indigo-600 dark:text-indigo-400 font-medium">Total Revenue</div>
-                  <div className="text-2xl font-bold text-indigo-900 dark:text-indigo-100 mt-1">R {customerStats.total_revenue.toLocaleString()}</div>
+                  <div className="text-2xl font-bold text-indigo-900 dark:text-indigo-100 mt-1">R {Number(customerStats.total_revenue ?? 0).toLocaleString()}</div>
                 </div>
                 <div className="bg-amber-50 dark:bg-amber-900/20 p-4 rounded-xl border border-amber-100 dark:border-amber-800">
                   <div className="text-sm text-amber-600 dark:text-amber-400 font-medium">Outstanding</div>
-                  <div className="text-2xl font-bold text-amber-900 dark:text-amber-100 mt-1">R {customerStats.outstanding_balance.toLocaleString()}</div>
+                  <div className="text-2xl font-bold text-amber-900 dark:text-amber-100 mt-1">R {Number(customerStats.outstanding_balance ?? 0).toLocaleString()}</div>
                 </div>
               </div>
             )}
@@ -408,7 +408,7 @@ export default function Customers() {
                           <td className="px-4 py-3 text-sm capitalize text-gray-900 dark:text-white">{txn.type.replace('_', ' ')}</td>
                           <td className="px-4 py-3 text-sm font-medium text-cyan-600 dark:text-cyan-400">{txn.number}</td>
                           <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-300">{new Date(txn.date).toLocaleDateString()}</td>
-                          <td className="px-4 py-3 text-sm text-right font-medium text-gray-900 dark:text-white">R {txn.amount.toLocaleString()}</td>
+                          <td className="px-4 py-3 text-sm text-right font-medium text-gray-900 dark:text-white">R {Number(txn.amount ?? 0).toLocaleString()}</td>
                           <td className="px-4 py-3"><span className="px-2 py-1 text-xs font-medium rounded-full bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 capitalize">{txn.status}</span></td>
                         </tr>
                       ))}
@@ -471,7 +471,7 @@ export default function Customers() {
           <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
             <div className="flex items-center gap-4">
               <div className="p-3 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl shadow-lg shadow-amber-500/30"><TrendingUp className="h-6 w-6 text-white" /></div>
-              <div><p className="text-2xl font-bold text-gray-900 dark:text-white">R {stats.totalCredit.toLocaleString()}</p><p className="text-sm text-gray-500 dark:text-gray-400">Total Credit</p></div>
+              <div><p className="text-2xl font-bold text-gray-900 dark:text-white">R {Number(stats.totalCredit ?? 0).toLocaleString()}</p><p className="text-sm text-gray-500 dark:text-gray-400">Total Credit</p></div>
             </div>
           </div>
         </div>

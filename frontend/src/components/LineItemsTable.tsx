@@ -150,10 +150,12 @@ export function LineItemsTable({
   const total = subtotal + taxAmount;
 
   const filteredProducts = searchTerm
-    ? products.filter(p => 
-        p.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        p.name.toLowerCase().includes(searchTerm.toLowerCase())
-      )
+    ? products.filter(p => {
+        const code = (p.code ?? '').toString().toLowerCase();
+        const name = (p.name ?? '').toString().toLowerCase();
+        const q = searchTerm.toLowerCase();
+        return code.includes(q) || name.includes(q);
+      })
     : products;
 
   return (
@@ -298,10 +300,10 @@ export function LineItemsTable({
                                   onMouseEnter={(e) => e.currentTarget.style.background = '#f9fafb'}
                                   onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
                                 >
-                                  <div style={{ fontWeight: '500' }}>{product.code}</div>
-                                  <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>{product.name}</div>
+                                  <div style={{ fontWeight: '500' }}>{product.code || ''}</div>
+                                  <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>{product.name || ''}</div>
                                   <div style={{ fontSize: '0.75rem', color: '#2563eb' }}>
-                                    R {product.selling_price.toFixed(2)} / {product.unit_of_measure}
+                                    R {Number(product.selling_price ?? 0).toFixed(2)} / {product.unit_of_measure || ''}
                                   </div>
                                 </div>
                               ))}
@@ -362,7 +364,7 @@ export function LineItemsTable({
                                           <span style={{ fontSize: '0.75rem', color: '#6b7280' }}>Calculating...</span>
                                         </div>
                                       ) : readOnly ? (
-                                        <div style={{ fontSize: '0.875rem', textAlign: 'right' }}>R {item.unit_price.toFixed(2)}</div>
+                                        <div style={{ fontSize: '0.875rem', textAlign: 'right' }}>R {Number(item.unit_price ?? 0).toFixed(2)}</div>
                                       ) : (
                                         <input
                                           type="number"
@@ -426,7 +428,7 @@ export function LineItemsTable({
                     )}
                   </td>
                   <td style={{ padding: '0.75rem', fontSize: '0.875rem', textAlign: 'right', fontWeight: '500' }}>
-                    R {item.line_total.toFixed(2)}
+                    R {Number(item.line_total ?? 0).toFixed(2)}
                   </td>
                   {!readOnly && (
                     <td style={{ padding: '0.75rem' }}>
@@ -464,11 +466,11 @@ export function LineItemsTable({
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', width: '300px' }}>
           <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>Subtotal:</span>
-          <span style={{ fontSize: '0.875rem', fontWeight: '500' }}>R {subtotal.toFixed(2)}</span>
+          <span style={{ fontSize: '0.875rem', fontWeight: '500' }}>R {Number(subtotal ?? 0).toFixed(2)}</span>
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between', width: '300px' }}>
           <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>Tax:</span>
-          <span style={{ fontSize: '0.875rem', fontWeight: '500' }}>R {taxAmount.toFixed(2)}</span>
+          <span style={{ fontSize: '0.875rem', fontWeight: '500' }}>R {Number(taxAmount ?? 0).toFixed(2)}</span>
         </div>
         <div style={{ 
           display: 'flex', 
@@ -478,7 +480,7 @@ export function LineItemsTable({
           borderTop: '2px solid #d1d5db'
         }}>
           <span style={{ fontSize: '1rem', fontWeight: '600' }}>Total:</span>
-          <span style={{ fontSize: '1rem', fontWeight: '600', color: '#2563eb' }}>R {total.toFixed(2)}</span>
+          <span style={{ fontSize: '1rem', fontWeight: '600', color: '#2563eb' }}>R {Number(total ?? 0).toFixed(2)}</span>
         </div>
       </div>
     </div>

@@ -190,11 +190,11 @@ export default function SalesInvoiceReconciliation() {
     { key: 'customer_name', label: 'Customer' },
     { key: 'invoice_id', label: 'Invoice', render: (row: ReconciliationException) => row.invoice_id || '-' },
     { key: 'exception_type', label: 'Exception Type', render: (row: ReconciliationException) => getExceptionTypeLabel(row.exception_type) },
-    { key: 'expected_amount', label: 'Expected', render: (row: ReconciliationException) => `R ${row.expected_amount.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}` },
-    { key: 'actual_amount', label: 'Actual', render: (row: ReconciliationException) => `R ${row.actual_amount.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}` },
+    { key: 'expected_amount', label: 'Expected', render: (row: ReconciliationException) => `R ${Number(row.expected_amount ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}` },
+    { key: 'actual_amount', label: 'Actual', render: (row: ReconciliationException) => `R ${Number(row.actual_amount ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}` },
     { key: 'variance_amount', label: 'Variance', render: (row: ReconciliationException) => (
       <span className={row.variance_amount < 0 ? 'text-red-600' : 'text-green-600'}>
-        R {row.variance_amount.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
+        R {Number(row.variance_amount ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
       </span>
     )},
     { key: 'status', label: 'Status', render: (row: ReconciliationException) => getStatusBadge(row.status) },
@@ -271,7 +271,7 @@ export default function SalesInvoiceReconciliation() {
                 </div>
                 <div className="text-3xl font-bold text-gray-900 dark:text-white">{summary.summary.total_orders}</div>
                 <div className="text-sm text-gray-500 mt-1">
-                  R {summary.summary.total_sales_value.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
+                  R {Number(summary.summary.total_sales_value ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
                 </div>
               </div>
 
@@ -282,7 +282,7 @@ export default function SalesInvoiceReconciliation() {
                 </div>
                 <div className="text-3xl font-bold text-green-600">{summary.summary.fully_invoiced}</div>
                 <div className="text-sm text-gray-500 mt-1">
-                  {((summary.summary.fully_invoiced / summary.summary.total_orders) * 100).toFixed(1)}% complete
+                  {Number(((summary.summary.fully_invoiced / summary.summary.total_orders) * 100) || 0).toFixed(1)}% complete
                 </div>
               </div>
 
@@ -295,7 +295,7 @@ export default function SalesInvoiceReconciliation() {
                   {summary.summary.partially_invoiced + summary.summary.not_invoiced}
                 </div>
                 <div className="text-sm text-gray-500 mt-1">
-                  R {summary.summary.uninvoiced_value.toLocaleString('en-ZA', { minimumFractionDigits: 2 })} outstanding
+                  R {Number(summary.summary.uninvoiced_value ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })} outstanding
                 </div>
               </div>
 
@@ -306,7 +306,7 @@ export default function SalesInvoiceReconciliation() {
                 </div>
                 <div className="text-3xl font-bold text-red-600">{summary.exceptions.total}</div>
                 <div className="text-sm text-gray-500 mt-1">
-                  R {summary.exceptions.total_variance.toLocaleString('en-ZA', { minimumFractionDigits: 2 })} variance
+                  R {Number(summary.exceptions.total_variance ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })} variance
                 </div>
               </div>
             </div>
@@ -345,7 +345,7 @@ export default function SalesInvoiceReconciliation() {
                   <span className="font-medium">Total Variance</span>
                 </div>
                 <div className="text-2xl font-bold text-purple-800 dark:text-purple-200 mt-1">
-                  R {summary.exceptions.total_variance.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
+                  R {Number(summary.exceptions.total_variance ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
                 </div>
               </div>
             </div>
@@ -416,16 +416,16 @@ export default function SalesInvoiceReconciliation() {
                   </div>
                   <div>
                     <label className="text-sm text-gray-500 dark:text-gray-400">Expected Amount</label>
-                    <p className="font-medium text-gray-900 dark:text-white">R {selectedException.expected_amount.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</p>
+                    <p className="font-medium text-gray-900 dark:text-white">R {Number(selectedException.expected_amount ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</p>
                   </div>
                   <div>
                     <label className="text-sm text-gray-500 dark:text-gray-400">Actual Amount</label>
-                    <p className="font-medium text-gray-900 dark:text-white">R {selectedException.actual_amount.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</p>
+                    <p className="font-medium text-gray-900 dark:text-white">R {Number(selectedException.actual_amount ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</p>
                   </div>
                   <div>
                     <label className="text-sm text-gray-500 dark:text-gray-400">Variance</label>
                     <p className={`font-medium ${selectedException.variance_amount < 0 ? 'text-red-600' : 'text-green-600'}`}>
-                      R {selectedException.variance_amount.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
+                      R {Number(selectedException.variance_amount ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
                     </p>
                   </div>
                   <div>
@@ -482,7 +482,7 @@ export default function SalesInvoiceReconciliation() {
                     Variance Amount
                   </label>
                   <p className={`text-2xl font-bold ${selectedException.variance_amount < 0 ? 'text-red-600' : 'text-green-600'}`}>
-                    R {selectedException.variance_amount.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
+                    R {Number(selectedException.variance_amount ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
                   </p>
                 </div>
                 <div>

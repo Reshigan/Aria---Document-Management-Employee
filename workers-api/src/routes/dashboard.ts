@@ -630,4 +630,63 @@ dashboard.get('/alerts', async (c) => {
   }
 });
 
+// ==================== DASHBOARD STATS ====================
+
+dashboard.get('/stats', async (c) => {
+  try {
+    const companyId = await getSecureCompanyId(c);
+    const revenue = await c.env.DB.prepare(
+      'SELECT COALESCE(SUM(total_amount), 0) as total FROM customer_invoices WHERE company_id = ? AND status IN (\'posted\', \'paid\', \'partial\')'
+    ).bind(companyId).first<{ total: number }>();
+    const expenses = await c.env.DB.prepare(
+      'SELECT COALESCE(SUM(total_amount), 0) as total FROM supplier_invoices WHERE company_id = ? AND status IN (\'approved\', \'paid\', \'partial\')'
+    ).bind(companyId).first<{ total: number }>();
+    const customers = await c.env.DB.prepare(
+      'SELECT COUNT(*) as count FROM customers WHERE company_id = ? AND is_active = 1'
+    ).bind(companyId).first<{ count: number }>();
+    const orders = await c.env.DB.prepare(
+      'SELECT COUNT(*) as count FROM sales_orders WHERE company_id = ?'
+    ).bind(companyId).first<{ count: number }>();
+    return c.json({
+      revenue: revenue?.total || 0,
+      expenses: expenses?.total || 0,
+      net_profit: (revenue?.total || 0) - (expenses?.total || 0),
+      total_customers: customers?.count || 0,
+      total_orders: orders?.count || 0
+    });
+  } catch (error) {
+    console.error('Dashboard stats error:', error);
+    return c.json({ revenue: 0, expenses: 0, net_profit: 0, total_customers: 0, total_orders: 0 });
+  }
+});
+
+// ==================== RECENT ACTIVITY ====================
+
+dashboard.get('/recent-activity', async (c) => {
+  try {
+    const companyId = await getSecureCompanyId(c);
+    const activities: Array<{ id: string; type: string; description: string; timestamp: string; user: string }> = [];
+
+    const recentInvoices = await c.env.DB.prepare(
+      'SELECT id, invoice_number, total_amount, created_at FROM customer_invoices WHERE company_id = ? ORDER BY created_at DESC LIMIT 5'
+    ).bind(companyId).all();
+    for (const inv of recentInvoices.results as any[]) {
+      activities.push({ id: inv.id, type: 'invoice', description: `Invoice ${inv.invoice_number || 'N/A'} created - R ${(inv.total_amount || 0).toLocaleString()}`, timestamp: inv.created_at, user: 'System' });
+    }
+
+    const recentOrders = await c.env.DB.prepare(
+      'SELECT id, order_number, total_amount, created_at FROM sales_orders WHERE company_id = ? ORDER BY created_at DESC LIMIT 5'
+    ).bind(companyId).all();
+    for (const ord of recentOrders.results as any[]) {
+      activities.push({ id: ord.id, type: 'sales_order', description: `Sales Order ${ord.order_number || 'N/A'} created - R ${(ord.total_amount || 0).toLocaleString()}`, timestamp: ord.created_at, user: 'System' });
+    }
+
+    activities.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+    return c.json({ activities: activities.slice(0, 10) });
+  } catch (error) {
+    console.error('Recent activity error:', error);
+    return c.json({ activities: [] });
+  }
+});
+
 export default dashboard;

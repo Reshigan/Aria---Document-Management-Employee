@@ -135,7 +135,7 @@ const ProcurementContracts: React.FC = () => {
         {[
           { label: 'Total Contracts', value: stats.total, icon: <Description />, color: '#667eea' },
           { label: 'Active', value: stats.active, icon: <CheckCircle />, color: '#4CAF50' },
-          { label: 'Total Value', value: `R ${stats.totalValue.toLocaleString()}`, icon: <Business />, color: '#2196F3' },
+          { label: 'Total Value', value: `R ${Number(stats.totalValue ?? 0).toLocaleString()}`, icon: <Business />, color: '#2196F3' },
           { label: 'Expiring Soon', value: stats.expiringSoon, icon: <Warning />, color: '#FF9800' },
         ].map((stat, index) => (
           <Grid item xs={12} sm={6} md={3} key={index}>
@@ -180,7 +180,7 @@ const ProcurementContracts: React.FC = () => {
                     <TableCell>{contract.supplier}</TableCell>
                     <TableCell>{contract.category}</TableCell>
                     <TableCell><Chip label={contract.status.toUpperCase()} color={statusColors[contract.status]} size="small" /></TableCell>
-                    <TableCell>R {contract.value.toLocaleString()}</TableCell>
+                    <TableCell>R {Number(contract.value ?? 0).toLocaleString()}</TableCell>
                     <TableCell>{contract.endDate}</TableCell>
                     <TableCell>
                       <Tooltip title="Edit"><IconButton onClick={() => { setSelectedContract(contract); setFormData(contract); setDialogOpen(true); }}><Edit /></IconButton></Tooltip>

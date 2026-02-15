@@ -287,7 +287,7 @@ export default function SalesOrderDetail() {
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 mb-6">
           <div className="flex justify-between mb-2">
             <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Fulfillment Progress</span>
-            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{fulfillmentProgress.toFixed(0)}%</span>
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{Number(fulfillmentProgress ?? 0).toFixed(0)}%</span>
           </div>
           <div className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
             <div 
@@ -449,12 +449,12 @@ export default function SalesOrderDetail() {
                         {new Date(invoice.invoice_date).toLocaleDateString()}
                       </span>
                       <span className="text-sm font-medium text-gray-900 dark:text-white">
-                        R {invoice.total_amount.toFixed(2)}
+                        R {Number(invoice.total_amount ?? 0).toFixed(2)}
                       </span>
                     </div>
                     {invoice.amount_due > 0 && (
                       <div className="text-xs text-amber-600 dark:text-amber-400 mt-1">
-                        Due: R {invoice.amount_due.toFixed(2)}
+                        Due: R {Number(invoice.amount_due ?? 0).toFixed(2)}
                       </div>
                     )}
                   </div>
@@ -488,7 +488,7 @@ export default function SalesOrderDetail() {
               <div className="flex justify-between pt-3 border-t border-gray-200 dark:border-gray-700">
                 <span className="text-sm text-gray-500 dark:text-gray-400">Order Value</span>
                 <span className="text-base font-semibold text-gray-900 dark:text-white">
-                  R {order.total_amount.toFixed(2)}
+                  R {Number(order.total_amount ?? 0).toFixed(2)}
                 </span>
               </div>
             </div>

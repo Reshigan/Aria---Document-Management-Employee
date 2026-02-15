@@ -296,7 +296,7 @@ export default function PurchaseOrders() {
                     <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">{po.po_number}</td>
                     <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{supplier?.supplier_name || 'Unknown'}</td>
                     <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{new Date(po.order_date).toLocaleDateString()}</td>
-                    <td className="px-6 py-4 text-right font-medium text-gray-900 dark:text-white">R {po.total_amount.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</td>
+                    <td className="px-6 py-4 text-right font-medium text-gray-900 dark:text-white">R {Number(po.total_amount ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</td>
                     <td className="px-6 py-4 text-center">
                       <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium capitalize ${getStatusBadge(po.status)}`}>
                         {po.status.replace('_', ' ')}

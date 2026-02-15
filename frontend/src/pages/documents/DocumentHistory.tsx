@@ -55,7 +55,7 @@ export default function DocumentHistoryPage() {
             { key: 'type', label: 'Type' },
             { key: 'customer', label: 'Customer/Supplier' },
             { key: 'date', label: 'Date' },
-            { key: 'amount', label: 'Amount', render: (row: any) => `R ${row.amount.toLocaleString()}` },
+            { key: 'amount', label: 'Amount', render: (row: any) => `R ${Number(row.amount ?? 0).toLocaleString()}` },
             { key: 'status', label: 'Status' },
             {
               key: 'actions',

@@ -270,15 +270,15 @@ export default function PurchaseOrderDetail() {
             <div className="flex flex-col gap-3">
               <div className="flex justify-between">
                 <span className="text-gray-500 dark:text-gray-400">Subtotal:</span>
-                <span className="font-medium text-gray-900 dark:text-white">R {totals.subtotal.toFixed(2)}</span>
+                <span className="font-medium text-gray-900 dark:text-white">R {Number(totals.subtotal ?? 0).toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-500 dark:text-gray-400">Tax (VAT):</span>
-                <span className="font-medium text-gray-900 dark:text-white">R {totals.taxAmount.toFixed(2)}</span>
+                <span className="font-medium text-gray-900 dark:text-white">R {Number(totals.taxAmount ?? 0).toFixed(2)}</span>
               </div>
               <div className="flex justify-between pt-3 border-t-2 border-gray-200 dark:border-gray-700 text-lg font-semibold">
                 <span className="text-gray-900 dark:text-white">Total:</span>
-                <span className="text-gray-900 dark:text-white">R {totals.total.toFixed(2)}</span>
+                <span className="text-gray-900 dark:text-white">R {Number(totals.total ?? 0).toFixed(2)}</span>
               </div>
             </div>
           </TransactionCard>

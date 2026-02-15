@@ -2,6 +2,7 @@
  * Inventory Routes - Warehouses, Stock Movements, Items
  */
 import { Hono } from 'hono';
+import { validateWarehouse, safeNumber } from '../services/business-rules';
 
 interface Env {
   DB: D1Database;
@@ -87,8 +88,9 @@ inventory.post('/warehouses', async (c) => {
     
     const { warehouse_code, warehouse_name, location, capacity, current_stock_value, is_active } = body;
     
-    if (!warehouse_code || !warehouse_name) {
-      return c.json({ error: 'Warehouse code and name are required' }, 400);
+    const validation = validateWarehouse(body as Record<string, unknown>);
+    if (!validation.valid) {
+      return c.json({ error: validation.errors.join('; '), errors: validation.errors, warnings: validation.warnings }, 400);
     }
     
     const id = crypto.randomUUID();
@@ -330,6 +332,35 @@ inventory.get('/valuation', async (c) => {
   } catch (error: any) {
     console.error('Error fetching inventory valuation:', error);
     return c.json({ error: 'Failed to fetch inventory valuation', detail: error.message }, 500);
+  }
+});
+
+// ==================== STOCK ON HAND ====================
+
+inventory.get('/stock-on-hand', async (c) => {
+  try {
+    const companyId = await getCompanyId(c);
+    let query = `
+      SELECT p.id, p.product_code, p.product_name, p.category,
+             COALESCE(p.quantity_on_hand, 0) as quantity_on_hand,
+             COALESCE(p.cost_price, 0) as cost_price,
+             COALESCE(p.unit_price, 0) as unit_price,
+             COALESCE(p.reorder_level, 0) as reorder_level,
+             COALESCE(p.quantity_on_hand, 0) * COALESCE(p.cost_price, 0) as stock_value
+      FROM products p
+      WHERE p.is_active = 1 AND p.is_service = 0
+    `;
+    const params: string[] = [];
+    if (companyId) {
+      query += ' AND p.company_id = ?';
+      params.push(companyId);
+    }
+    query += ' ORDER BY p.product_name ASC';
+    const result = await c.env.DB.prepare(query).bind(...params).all();
+    return c.json({ stock: result.results || [], total: result.results?.length || 0 });
+  } catch (error: any) {
+    console.error('Error fetching stock on hand:', error);
+    return c.json({ stock: [], total: 0 });
   }
 });
 

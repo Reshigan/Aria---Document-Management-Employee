@@ -160,7 +160,7 @@ export default function ProductionPlanning() {
                     <tr key={plan.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                       <td className="px-6 py-4 font-semibold text-blue-600 dark:text-blue-400">{plan.plan_number}</td>
                       <td className="px-6 py-4 text-gray-900 dark:text-white">{plan.product_name}</td>
-                      <td className="px-6 py-4 text-right font-semibold text-gray-900 dark:text-white">{plan.planned_quantity.toLocaleString()}</td>
+                      <td className="px-6 py-4 text-right font-semibold text-gray-900 dark:text-white">{Number(plan.planned_quantity ?? 0).toLocaleString()}</td>
                       <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{plan.start_date}</td>
                       <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{plan.end_date}</td>
                       <td className="px-6 py-4"><div className="flex items-center gap-2"><div className="w-16 bg-gray-200 dark:bg-gray-700 rounded-full h-2"><div className={`h-2 rounded-full bg-gradient-to-r ${getCapacityColor(plan.capacity_utilization)}`} style={{ width: `${plan.capacity_utilization}%` }}></div></div><span className="text-sm text-gray-600 dark:text-gray-400">{plan.capacity_utilization}%</span></div></td>

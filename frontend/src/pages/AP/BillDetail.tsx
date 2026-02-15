@@ -313,16 +313,16 @@ export default function BillDetail() {
               <div className="flex flex-col gap-3">
                 <div className="flex justify-between">
                   <span className="text-gray-500 dark:text-gray-400">Total Amount:</span>
-                  <span className="font-medium text-gray-900 dark:text-white">R {bill.total_amount.toFixed(2)}</span>
+                  <span className="font-medium text-gray-900 dark:text-white">R {Number(bill.total_amount ?? 0).toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-500 dark:text-gray-400">Amount Paid:</span>
-                  <span className="font-medium text-emerald-600 dark:text-emerald-400">R {bill.amount_paid.toFixed(2)}</span>
+                  <span className="font-medium text-emerald-600 dark:text-emerald-400">R {Number(bill.amount_paid ?? 0).toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between pt-3 border-t-2 border-gray-200 dark:border-gray-700 text-lg font-semibold">
                   <span className="text-gray-900 dark:text-white">Outstanding:</span>
                   <span className={bill.amount_outstanding > 0 ? 'text-red-500' : 'text-emerald-500'}>
-                    R {bill.amount_outstanding.toFixed(2)}
+                    R {Number(bill.amount_outstanding ?? 0).toFixed(2)}
                   </span>
                 </div>
                 <div className="mt-2">
@@ -340,15 +340,15 @@ export default function BillDetail() {
             <div className="flex flex-col gap-3">
               <div className="flex justify-between">
                 <span className="text-gray-500 dark:text-gray-400">Subtotal:</span>
-                <span className="font-medium text-gray-900 dark:text-white">R {totals.subtotal.toFixed(2)}</span>
+                <span className="font-medium text-gray-900 dark:text-white">R {Number(totals.subtotal ?? 0).toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-500 dark:text-gray-400">Tax (VAT):</span>
-                <span className="font-medium text-gray-900 dark:text-white">R {totals.taxAmount.toFixed(2)}</span>
+                <span className="font-medium text-gray-900 dark:text-white">R {Number(totals.taxAmount ?? 0).toFixed(2)}</span>
               </div>
               <div className="flex justify-between pt-3 border-t-2 border-gray-200 dark:border-gray-700 text-lg font-semibold">
                 <span className="text-gray-900 dark:text-white">Total:</span>
-                <span className="text-gray-900 dark:text-white">R {totals.total.toFixed(2)}</span>
+                <span className="text-gray-900 dark:text-white">R {Number(totals.total ?? 0).toFixed(2)}</span>
               </div>
             </div>
           </TransactionCard>

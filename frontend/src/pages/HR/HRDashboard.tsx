@@ -49,8 +49,19 @@ const HRDashboard: React.FC = () => {
         api.get('/hr/metrics'),
         api.get('/hr/recent-activity')
       ]);
-      setMetrics(metricsRes.data);
-      setRecentActivity(activityRes.data || []);
+      const m = metricsRes.data || {};
+      setMetrics({
+        total_employees: m.total_employees ?? 0,
+        active_employees: m.active_employees ?? m.total_employees ?? 0,
+        departments: m.departments ?? m.total_departments ?? 0,
+        avg_tenure_months: m.avg_tenure_months ?? 0,
+        pending_leave_requests: m.pending_leave_requests ?? 0,
+        attendance_rate: m.attendance_rate ?? 0,
+        turnover_rate: m.turnover_rate ?? 0,
+        open_positions: m.open_positions ?? 0
+      });
+      const actData = activityRes.data;
+      setRecentActivity(Array.isArray(actData) ? actData : actData?.activities || actData?.data || []);
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Failed to load HR dashboard data');
     } finally {
@@ -176,7 +187,7 @@ const HRDashboard: React.FC = () => {
               <TrendingUp className="h-6 w-6 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{metrics.attendance_rate.toFixed(1)}%</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{Number(metrics.attendance_rate ?? 0).toFixed(1)}%</p>
               <p className="text-sm text-gray-500 dark:text-gray-400">Attendance Rate</p>
               <p className="text-xs text-gray-400 dark:text-gray-500">Last 30 days</p>
             </div>
@@ -218,7 +229,7 @@ const HRDashboard: React.FC = () => {
             </div>
             <div>
               <p className={`text-xl font-bold ${metrics.turnover_rate > 15 ? 'text-red-600 dark:text-red-400' : 'text-gray-900 dark:text-white'}`}>
-                {metrics.turnover_rate.toFixed(1)}%
+                {Number(metrics.turnover_rate ?? 0).toFixed(1)}%
               </p>
               <p className="text-sm text-gray-500 dark:text-gray-400">Turnover Rate</p>
             </div>

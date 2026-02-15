@@ -145,7 +145,7 @@ const Contracts: React.FC = () => {
           { label: 'Total Contracts', value: stats.total, icon: <Description />, color: '#667eea' },
           { label: 'Active', value: stats.active, icon: <CheckCircle />, color: '#4CAF50' },
           { label: 'Expiring Soon', value: stats.expiringSoon, icon: <Warning />, color: '#FF9800' },
-          { label: 'Total Value', value: `R ${stats.totalValue.toLocaleString()}`, icon: <Gavel />, color: '#E91E63' },
+          { label: 'Total Value', value: `R ${Number(stats.totalValue ?? 0).toLocaleString()}`, icon: <Gavel />, color: '#E91E63' },
         ].map((stat, index) => (
           <Grid item xs={12} sm={6} md={3} key={index}>
             <Card sx={{ background: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(10px)' }}>
@@ -192,7 +192,7 @@ const Contracts: React.FC = () => {
                     <TableCell><Chip label={contract.status.replace('_', ' ').toUpperCase()} color={statusColors[contract.status]} size="small" /></TableCell>
                     <TableCell>{contract.startDate}</TableCell>
                     <TableCell>{contract.endDate}</TableCell>
-                    <TableCell>{contract.value > 0 ? `R ${contract.value.toLocaleString()}` : '-'}</TableCell>
+                    <TableCell>{contract.value > 0 ? `R ${Number(contract.value ?? 0).toLocaleString()}` : '-'}</TableCell>
                     <TableCell>
                       <Tooltip title="Edit"><IconButton onClick={() => { setSelectedContract(contract); setFormData(contract); setDialogOpen(true); }}><Edit /></IconButton></Tooltip>
                       <Tooltip title="Delete"><IconButton onClick={() => handleDelete(contract.id)} color="error"><Delete /></IconButton></Tooltip>

@@ -363,7 +363,7 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({
                     </div>
                     
                     <p className="text-xs text-gray-500">
-                      {(uploadFile.file.size / 1024 / 1024).toFixed(2)} MB
+                      {Number((uploadFile.file.size / 1024 / 1024) || 0).toFixed(2)} MB
                     </p>
                     
                     {(uploadFile.status === 'uploading' || uploadFile.status === 'processing') && (

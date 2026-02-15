@@ -200,16 +200,16 @@ export default function Timesheets() {
         </div>
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-4">
           <div className="text-sm text-gray-500 dark:text-gray-400">Total Hours</div>
-          <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{totalHours.toFixed(1)}</div>
+          <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{Number(totalHours ?? 0).toFixed(1)}</div>
         </div>
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-4">
           <div className="text-sm text-gray-500 dark:text-gray-400">Billable Hours</div>
-          <div className="text-2xl font-bold text-green-600 dark:text-green-400">{billableHours.toFixed(1)}</div>
+          <div className="text-2xl font-bold text-green-600 dark:text-green-400">{Number(billableHours ?? 0).toFixed(1)}</div>
         </div>
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-4">
           <div className="text-sm text-gray-500 dark:text-gray-400">Total Billing</div>
           <div className="text-2xl font-bold text-orange-600">
-            R {totalBilling.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
+            R {Number(totalBilling ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
           </div>
         </div>
       </div>
@@ -292,7 +292,7 @@ export default function Timesheets() {
                     {timesheet.description || '-'}
                   </td>
                   <td className="px-6 py-4 text-right">
-                    <span className="font-medium text-gray-900 dark:text-white">{timesheet.hours.toFixed(1)}h</span>
+                    <span className="font-medium text-gray-900 dark:text-white">{Number(timesheet.hours ?? 0).toFixed(1)}h</span>
                   </td>
                   <td className="px-6 py-4 text-right">
                     {timesheet.billable ? (

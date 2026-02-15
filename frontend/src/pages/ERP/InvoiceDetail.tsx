@@ -310,9 +310,9 @@ export default function InvoiceDetail() {
                     <td>${idx + 1}</td>
                     <td>${line.description}</td>
                     <td>${line.quantity}</td>
-                    <td>R ${line.unit_price.toFixed(2)}</td>
+                    <td>R ${Number(line.unit_price ?? 0).toFixed(2)}</td>
                     <td>${line.tax_rate || 15}%</td>
-                    <td>R ${lineTotal.toFixed(2)}</td>
+                    <td>R ${Number(lineTotal ?? 0).toFixed(2)}</td>
                   </tr>
                 `;
               }).join('')}
@@ -320,9 +320,9 @@ export default function InvoiceDetail() {
           </table>
         
           <div class="totals">
-            <div class="row"><span>Subtotal:</span><span>R ${invoice.subtotal.toFixed(2)}</span></div>
-            <div class="row"><span>VAT (15%):</span><span>R ${invoice.tax_amount.toFixed(2)}</span></div>
-            <div class="row total"><span>Total:</span><span>R ${invoice.total_amount.toFixed(2)}</span></div>
+            <div class="row"><span>Subtotal:</span><span>R ${Number(invoice.subtotal ?? 0).toFixed(2)}</span></div>
+            <div class="row"><span>VAT (15%):</span><span>R ${Number(invoice.tax_amount ?? 0).toFixed(2)}</span></div>
+            <div class="row total"><span>Total:</span><span>R ${Number(invoice.total_amount ?? 0).toFixed(2)}</span></div>
           </div>
         
           ${invoice.notes ? `<div style="margin-top: 30px;"><strong>Notes:</strong><p>${invoice.notes}</p></div>` : ''}
@@ -357,7 +357,7 @@ export default function InvoiceDetail() {
   - Invoice Number: ${invoice.invoice_number}
   - Invoice Date: ${new Date(invoice.invoice_date).toLocaleDateString()}
   - Due Date: ${new Date(invoice.due_date).toLocaleDateString()}
-  - Total Amount: R ${invoice.total_amount.toFixed(2)}
+  - Total Amount: R ${Number(invoice.total_amount ?? 0).toFixed(2)}
 
   Payment is due by ${new Date(invoice.due_date).toLocaleDateString()}.
 
@@ -507,16 +507,16 @@ export default function InvoiceDetail() {
               <div className="flex flex-col gap-3">
                 <div className="flex justify-between">
                   <span className="text-gray-500 dark:text-gray-400">Total Amount:</span>
-                  <span className="font-medium text-gray-900 dark:text-white">R {invoice.total_amount.toFixed(2)}</span>
+                  <span className="font-medium text-gray-900 dark:text-white">R {Number(invoice.total_amount ?? 0).toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-500 dark:text-gray-400">Amount Paid:</span>
-                  <span className="font-medium text-emerald-600 dark:text-emerald-400">R {invoice.amount_paid.toFixed(2)}</span>
+                  <span className="font-medium text-emerald-600 dark:text-emerald-400">R {Number(invoice.amount_paid ?? 0).toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between pt-3 border-t-2 border-gray-200 dark:border-gray-700 text-lg font-semibold">
                   <span className="text-gray-900 dark:text-white">Outstanding:</span>
                   <span className={invoice.amount_outstanding > 0 ? 'text-red-500' : 'text-emerald-500'}>
-                    R {invoice.amount_outstanding.toFixed(2)}
+                    R {Number(invoice.amount_outstanding ?? 0).toFixed(2)}
                   </span>
                 </div>
                 <div className="mt-2">
@@ -534,15 +534,15 @@ export default function InvoiceDetail() {
             <div className="flex flex-col gap-3">
               <div className="flex justify-between">
                 <span className="text-gray-500 dark:text-gray-400">Subtotal:</span>
-                <span className="font-medium text-gray-900 dark:text-white">R {totals.subtotal.toFixed(2)}</span>
+                <span className="font-medium text-gray-900 dark:text-white">R {Number(totals.subtotal ?? 0).toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-500 dark:text-gray-400">Tax (VAT):</span>
-                <span className="font-medium text-gray-900 dark:text-white">R {totals.taxAmount.toFixed(2)}</span>
+                <span className="font-medium text-gray-900 dark:text-white">R {Number(totals.taxAmount ?? 0).toFixed(2)}</span>
               </div>
               <div className="flex justify-between pt-3 border-t-2 border-gray-200 dark:border-gray-700 text-lg font-semibold">
                 <span className="text-gray-900 dark:text-white">Total:</span>
-                <span className="text-gray-900 dark:text-white">R {totals.total.toFixed(2)}</span>
+                <span className="text-gray-900 dark:text-white">R {Number(totals.total ?? 0).toFixed(2)}</span>
               </div>
             </div>
           </TransactionCard>

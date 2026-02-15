@@ -39,7 +39,8 @@ const LeaveManagement: React.FC = () => {
     setError('');
     try {
       const response = await api.get('/hr/leave-requests');
-      setRequests(response.data.requests || []);
+      const d = response.data;
+      setRequests(d.requests || d.leave_requests || (Array.isArray(d) ? d : []));
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Failed to load leave requests');
     } finally {

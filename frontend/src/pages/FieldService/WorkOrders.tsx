@@ -272,7 +272,7 @@ export default function WorkOrders() {
               <CheckCircle className="h-6 w-6 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">R {totalRevenue.toLocaleString('en-ZA', { minimumFractionDigits: 0 })}</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">R {Number(totalRevenue ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 0 })}</p>
               <p className="text-sm text-gray-500 dark:text-gray-400">Total Revenue</p>
             </div>
           </div>
@@ -403,7 +403,7 @@ export default function WorkOrders() {
                   <td className="px-6 py-4 text-right">
                     {order.total_cost ? (
                       <span className="text-sm font-medium text-gray-900">
-                        R {order.total_cost.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
+                        R {Number(order.total_cost ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
                       </span>
                     ) : (
                       <span className="text-sm text-gray-400">-</span>

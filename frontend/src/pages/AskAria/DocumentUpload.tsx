@@ -521,7 +521,7 @@ export default function DocumentUpload() {
                             />
                           </td>
                           <td className="px-4 py-2 font-medium">
-                            R {line.total.toFixed(2)}
+                            R {Number(line.total ?? 0).toFixed(2)}
                           </td>
                         </tr>
                       ))}

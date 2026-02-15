@@ -92,8 +92,8 @@ export default function ReceiptDetail() {
     if (preselectedInvoiceId && invoices.length > 0) {
       const invoice = invoices.find((inv) => inv.id === preselectedInvoiceId);
       if (invoice && allocations.length === 0) {
-        setAllocations([{ invoice_id: invoice.id, amount: invoice.amount_outstanding.toFixed(2) }]);
-        setAmount(invoice.amount_outstanding.toFixed(2));
+        setAllocations([{ invoice_id: invoice.id, amount: Number(invoice.amount_outstanding ?? 0).toFixed(2) }]);
+        setAmount(Number(invoice.amount_outstanding ?? 0).toFixed(2));
       }
     }
   }, [preselectedInvoiceId, invoices]);
@@ -131,12 +131,12 @@ export default function ReceiptDetail() {
       setBankAccountId(receiptData.bank_account_id);
       setPaymentMethod(receiptData.payment_method);
       setReference(receiptData.reference || '');
-      setAmount(receiptData.amount.toFixed(2));
+      setAmount(Number(receiptData.amount ?? 0).toFixed(2));
       setNotes(receiptData.notes || '');
       setAllocations(
         receiptData.allocations.map((alloc: ReceiptAllocation) => ({
           invoice_id: alloc.invoice_id,
-          amount: alloc.amount.toFixed(2)
+          amount: Number(alloc.amount ?? 0).toFixed(2)
         }))
       );
       setError(null);
@@ -171,7 +171,7 @@ export default function ReceiptDetail() {
 
     const totalAllocated = allocations.reduce((sum, alloc) => sum + parseFloat(alloc.amount), 0);
     if (Math.abs(totalAllocated - parseFloat(amount)) > 0.01) {
-      setError(`Total allocated (R ${totalAllocated.toFixed(2)}) must equal payment amount (R ${amount})`);
+      setError(`Total allocated (R ${Number(totalAllocated ?? 0).toFixed(2)}) must equal payment amount (R ${amount})`);
       return;
     }
 
@@ -389,7 +389,7 @@ export default function ReceiptDetail() {
                         <option value="">Select invoice...</option>
                         {invoices.map((inv) => (
                           <option key={inv.id} value={inv.id}>
-                            {inv.invoice_number} - Outstanding: R {inv.amount_outstanding.toFixed(2)}
+                            {inv.invoice_number} - Outstanding: R {Number(inv.amount_outstanding ?? 0).toFixed(2)}
                           </option>
                         ))}
                       </select>
@@ -455,12 +455,12 @@ export default function ReceiptDetail() {
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-500 dark:text-gray-400">Total Allocated:</span>
-                <span className="font-medium text-gray-900 dark:text-white">R {totalAllocated.toFixed(2)}</span>
+                <span className="font-medium text-gray-900 dark:text-white">R {Number(totalAllocated ?? 0).toFixed(2)}</span>
               </div>
               <div className="flex justify-between pt-3 border-t-2 border-gray-200 dark:border-gray-700 text-lg font-semibold">
                 <span className="text-gray-900 dark:text-white">Unallocated:</span>
                 <span className={unallocated > 0.01 ? 'text-red-500' : 'text-emerald-500'}>
-                  R {unallocated.toFixed(2)}
+                  R {Number(unallocated ?? 0).toFixed(2)}
                 </span>
               </div>
               {unallocated > 0.01 && (

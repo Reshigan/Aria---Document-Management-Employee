@@ -262,7 +262,7 @@ export default function Employees() {
           <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
             <div className="flex items-center gap-4">
               <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl shadow-lg shadow-blue-500/30"><DollarSign className="h-6 w-6 text-white" /></div>
-              <div><p className="text-2xl font-bold text-gray-900 dark:text-white">R {(stats.totalSalary / 1000).toFixed(0)}k</p><p className="text-sm text-gray-500 dark:text-gray-400">Monthly Payroll</p></div>
+              <div><p className="text-2xl font-bold text-gray-900 dark:text-white">R {Number((stats.totalSalary / 1000) || 0).toFixed(0)}k</p><p className="text-sm text-gray-500 dark:text-gray-400">Monthly Payroll</p></div>
             </div>
           </div>
         </div>

@@ -45,7 +45,8 @@ const Attendance: React.FC = () => {
     setError('');
     try {
       const response = await api.get(`/hr/attendance?date=${selectedDate}`);
-      setRecords(response.data.records || []);
+      const d = response.data;
+      setRecords(d.records || d.attendance || (Array.isArray(d) ? d : []));
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Failed to load attendance records');
     } finally {
@@ -123,7 +124,7 @@ const Attendance: React.FC = () => {
   const presentCount = records.filter(r => r.status === 'PRESENT').length;
   const absentCount = records.filter(r => r.status === 'ABSENT').length;
   const lateCount = records.filter(r => r.status === 'LATE').length;
-  const attendanceRate = records.length > 0 ? ((presentCount + lateCount) / records.length * 100).toFixed(1) : '0.0';
+  const attendanceRate = records.length > 0 ? Number(((presentCount + lateCount) / records.length * 100) || 0).toFixed(1) : '0.0';
 
   if (loading) {
     return (
@@ -252,7 +253,7 @@ const Attendance: React.FC = () => {
                   <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">{record.employee_name}</td>
                   <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{record.check_in || '-'}</td>
                   <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{record.check_out || '-'}</td>
-                  <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{record.hours_worked.toFixed(1)}h</td>
+                  <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{Number(record.hours_worked ?? 0).toFixed(1)}h</td>
                   <td className="px-6 py-4">{getStatusBadge(record.status)}</td>
                   <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{record.notes || '-'}</td>
                   <td className="px-6 py-4">

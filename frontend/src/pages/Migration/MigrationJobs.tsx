@@ -175,7 +175,7 @@ export default function MigrationJobs() {
               <FileSpreadsheet className="h-6 w-6 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{totalRecords.toLocaleString()}</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{Number(totalRecords ?? 0).toLocaleString()}</p>
               <p className="text-sm text-gray-500 dark:text-gray-400">Total Records</p>
             </div>
           </div>
@@ -186,7 +186,7 @@ export default function MigrationJobs() {
               <CheckCircle className="h-6 w-6 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{successRecords.toLocaleString()}</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{Number(successRecords ?? 0).toLocaleString()}</p>
               <p className="text-sm text-gray-500 dark:text-gray-400">Successful</p>
             </div>
           </div>
@@ -197,7 +197,7 @@ export default function MigrationJobs() {
               <AlertCircle className="h-6 w-6 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{errorRecords.toLocaleString()}</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{Number(errorRecords ?? 0).toLocaleString()}</p>
               <p className="text-sm text-gray-500 dark:text-gray-400">Errors</p>
             </div>
           </div>
