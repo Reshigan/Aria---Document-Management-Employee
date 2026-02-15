@@ -250,7 +250,7 @@ export default function Customers() {
             <form onSubmit={handleSubmit} className="p-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Customer Code *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Customer Code *</label>
                   <input
                     ref={firstFocusableRef}
                     type="text"
@@ -261,7 +261,7 @@ export default function Customers() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Customer Name *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Customer Name *</label>
                   <input
                     type="text"
                     required
@@ -274,7 +274,7 @@ export default function Customers() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Email</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
                   <input
                     type="email"
                     value={formData.email}
@@ -283,7 +283,7 @@ export default function Customers() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Phone</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Phone</label>
                   <input
                     type="tel"
                     value={formData.phone}
@@ -294,7 +294,7 @@ export default function Customers() {
               </div>
 
               <div className="mb-5">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Address</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Address</label>
                 <input
                   type="text"
                   value={formData.address_line1}
@@ -305,7 +305,7 @@ export default function Customers() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">City</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">City</label>
                   <input
                     type="text"
                     value={formData.city}
@@ -314,7 +314,7 @@ export default function Customers() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Country</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Country</label>
                   <input
                     type="text"
                     value={formData.country}
@@ -326,7 +326,7 @@ export default function Customers() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Credit Limit (R)</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Credit Limit (R)</label>
                   <input
                     type="number"
                     step="0.01"
@@ -336,7 +336,7 @@ export default function Customers() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Payment Terms</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Payment Terms</label>
                   <select
                     value={formData.payment_terms}
                     onChange={(e) => setFormData({ ...formData, payment_terms: e.target.value })}
@@ -359,13 +359,13 @@ export default function Customers() {
                     setEditingCustomer(null);
                     resetForm();
                   }}
-                  className="px-5 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-medium"
+                  className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-medium"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2.5 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-xl hover:from-indigo-600 hover:to-purple-600 transition-all  font-medium"
+                  className="px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-xl hover:from-indigo-600 hover:to-purple-600 transition-all  font-medium"
                 >
                   {editingCustomer ? 'Update' : 'Create'}
                 </button>

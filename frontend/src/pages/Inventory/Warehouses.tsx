@@ -247,7 +247,7 @@ const Warehouses: React.FC = () => {
             <div className="p-4 overflow-y-auto max-h-[calc(90vh-80px)]">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Warehouse Code *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Warehouse Code *</label>
                   <input
                     type="text"
                     value={form.warehouse_code}
@@ -256,7 +256,7 @@ const Warehouses: React.FC = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Warehouse Name *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Warehouse Name *</label>
                   <input
                     type="text"
                     value={form.warehouse_name}
@@ -266,7 +266,7 @@ const Warehouses: React.FC = () => {
                 </div>
               </div>
               <div className="mb-5">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Location *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Location *</label>
                 <input
                   type="text"
                   value={form.location}
@@ -276,7 +276,7 @@ const Warehouses: React.FC = () => {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Capacity *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Capacity *</label>
                   <input
                     type="number"
                     value={form.capacity}
@@ -285,7 +285,7 @@ const Warehouses: React.FC = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Current Stock Value *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Current Stock Value *</label>
                   <input
                     type="number"
                     step="0.01"
@@ -309,13 +309,13 @@ const Warehouses: React.FC = () => {
               <div className="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
                 <button
                   onClick={() => setShowModal(false)}
-                  className="px-5 py-2.5 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-medium"
+                  className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-medium"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleSave}
-                  className="px-5 py-2.5 bg-gradient-to-r from-violet-500 to-purple-500 text-white rounded-xl hover:from-violet-600 hover:to-purple-600 transition-all  font-medium"
+                  className="px-4 py-2 bg-gradient-to-r from-violet-500 to-purple-500 text-white rounded-xl hover:from-violet-600 hover:to-purple-600 transition-all  font-medium"
                 >
                   Save
                 </button>

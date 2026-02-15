@@ -221,7 +221,7 @@ export default function Products() {
             <form onSubmit={handleSubmit} className="p-4 overflow-y-auto max-h-[calc(90vh-80px)]">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Product Code *
                   </label>
                   <input
@@ -234,7 +234,7 @@ export default function Products() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Product Name *
                   </label>
                   <input
@@ -249,21 +249,21 @@ export default function Products() {
               </div>
 
               <div className="mb-5">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Description
                 </label>
                 <textarea
                   name="description"
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  rows={2}
+                  rows={1}
                   className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-violet-500 focus:border-transparent"
                 />
               </div>
 
               <div className="grid grid-cols-2 md:grid-cols-3 gap-5 mb-5">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Product Type
                   </label>
                   <select
@@ -279,7 +279,7 @@ export default function Products() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Category
                   </label>
                   <input
@@ -291,7 +291,7 @@ export default function Products() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Unit of Measure
                   </label>
                   <select
@@ -312,7 +312,7 @@ export default function Products() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Standard Cost (R)
                   </label>
                   <input
@@ -325,7 +325,7 @@ export default function Products() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Selling Price (R)
                   </label>
                   <input
@@ -341,7 +341,7 @@ export default function Products() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Reorder Level
                   </label>
                   <input
@@ -353,7 +353,7 @@ export default function Products() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Reorder Quantity
                   </label>
                   <input

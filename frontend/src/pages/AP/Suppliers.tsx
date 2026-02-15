@@ -291,7 +291,7 @@ export default function Suppliers() {
             <form onSubmit={handleSubmit} className="p-4 overflow-y-auto max-h-[calc(90vh-140px)]">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Supplier Code *
                   </label>
                   <input
@@ -304,7 +304,7 @@ export default function Suppliers() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Supplier Name *
                   </label>
                   <input
@@ -318,7 +318,7 @@ export default function Suppliers() {
               </div>
 
               <div className="mb-5">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Supplier Type
                 </label>
                 <select
@@ -334,7 +334,7 @@ export default function Suppliers() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Email
                   </label>
                   <input
@@ -345,7 +345,7 @@ export default function Suppliers() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Phone
                   </label>
                   <input
@@ -358,7 +358,7 @@ export default function Suppliers() {
               </div>
 
               <div className="mb-5">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   VAT Number
                 </label>
                 <input
@@ -376,7 +376,7 @@ export default function Suppliers() {
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                       BBBEE Level
                     </label>
                     <select
@@ -397,7 +397,7 @@ export default function Suppliers() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                       Certificate Expiry
                     </label>
                     <input
@@ -418,13 +418,13 @@ export default function Suppliers() {
                     setEditingSupplier(null);
                     resetForm();
                   }}
-                  className="px-5 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+                  className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-xl font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2.5 bg-gradient-to-r from-slate-500 to-gray-600 text-white rounded-xl font-medium hover:from-slate-600 hover:to-gray-700 transition-all "
+                  className="px-4 py-2 bg-gradient-to-r from-slate-500 to-gray-600 text-white rounded-xl font-medium hover:from-slate-600 hover:to-gray-700 transition-all "
                 >
                   {editingSupplier ? 'Update' : 'Create'}
                 </button>
