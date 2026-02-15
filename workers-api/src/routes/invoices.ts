@@ -3,7 +3,7 @@
  * Phase 2: Customer and Supplier Invoices CRUD
  */
 
-import { Hono } from 'hono';
+import { Hono, Context } from 'hono';
 import { getSecureCompanyId, getSecureUserId } from '../middleware/auth';
 import { postCustomerInvoice, postCustomerPayment, postSupplierInvoice, postSupplierPayment } from '../services/gl-posting-engine';
 import { validateInvoice, validatePayment, validateStatusTransition, safeNumber } from '../services/business-rules';
@@ -328,8 +328,8 @@ invoices.post('/customer/:id/payment', async (c) => {
   }
 });
 
-// Create customer invoice
-invoices.post('/customer', async (c) => {
+// Create customer invoice - shared handler
+const createCustomerInvoiceHandler = async (c: Context<{ Bindings: Env }>) => {
   try {
     const companyId = await getSecureCompanyId(c);
     const userId = await getSecureUserId(c);
@@ -454,7 +454,11 @@ invoices.post('/customer', async (c) => {
     console.error('Create customer invoice error:', error);
     return c.json({ error: 'Internal server error' }, 500);
   }
-});
+};
+
+invoices.post('/customer', createCustomerInvoiceHandler);
+invoices.post('/', createCustomerInvoiceHandler);
+invoices.post('/invoices', createCustomerInvoiceHandler);
 
 // ========================================
 // SUPPLIER INVOICES (AP)
@@ -957,21 +961,6 @@ invoices.post('/invoice-lines', async (c) => {
   }
 });
 
-// POST / - Create invoice (alias for /customer, used by /erp/order-to-cash/invoices)
-invoices.post('/', async (c) => {
-  const url = new URL(c.req.url);
-  const newUrl = url.toString().replace(/\/?$/, '/customer');
-  const newReq = new Request(newUrl, c.req.raw);
-  return invoices.fetch(newReq, c.env);
-});
-
-// POST /invoices - Create invoice (alias for /customer, used by /financial/invoices)
-invoices.post('/invoices', async (c) => {
-  const url = new URL(c.req.url);
-  const newUrl = url.toString().replace('/invoices', '/customer');
-  const newReq = new Request(newUrl, c.req.raw);
-  return invoices.fetch(newReq, c.env);
-});
 
 // DELETE /:id - Delete invoice (safeguards)
 invoices.delete('/:id', async (c) => {
@@ -1006,12 +995,29 @@ invoices.delete('/:id', async (c) => {
 // to the existing customer/supplier invoice handlers
 
 invoices.get('/invoices', async (c) => {
-  const url = new URL(c.req.url);
-  const path = url.pathname;
-  if (path.includes('/ap')) {
-    return invoices.fetch(new Request(url.toString().replace('/invoices', '/supplier'), c.req.raw), c.env);
+  try {
+    const companyId = await getSecureCompanyId(c);
+    const status = c.req.query('status') || '';
+    const search = c.req.query('search') || '';
+    const page = parseInt(c.req.query('page') || '1');
+    const pageSize = parseInt(c.req.query('page_size') || '50');
+    const offset = (page - 1) * pageSize;
+
+    let query = 'SELECT ci.*, c.customer_name, c.email as customer_email FROM customer_invoices ci LEFT JOIN customers c ON ci.customer_id = c.id WHERE ci.company_id = ?';
+    const params: (string | number)[] = [companyId];
+
+    if (status) { query += ' AND ci.status = ?'; params.push(status); }
+    if (search) { query += ' AND (ci.invoice_number LIKE ? OR c.customer_name LIKE ?)'; params.push(`%${search}%`, `%${search}%`); }
+
+    query += ' ORDER BY ci.created_at DESC LIMIT ? OFFSET ?';
+    params.push(pageSize, offset);
+
+    const result = await c.env.DB.prepare(query).bind(...params).all();
+    return c.json({ data: result.results || [], total: result.results?.length || 0 });
+  } catch (error) {
+    console.error('Error fetching invoices:', error);
+    return c.json({ data: [], total: 0 });
   }
-  return invoices.fetch(new Request(url.toString().replace('/invoices', '/customer'), c.req.raw), c.env);
 });
 
 invoices.get('/receipts', async (c) => {
