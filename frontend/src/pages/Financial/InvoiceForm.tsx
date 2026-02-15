@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Save, X, Plus, Trash2, FileText, AlertCircle } from 'lucide-react';
 import { formatCurrency } from '../../utils/formatters';
@@ -12,10 +12,18 @@ interface InvoiceLine {
   vat_rate: number;
 }
 
+interface Customer {
+  id: string;
+  customer_name: string;
+  email?: string;
+}
+
 export default function InvoiceForm() {
   const navigate = useNavigate();
+  const [customers, setCustomers] = useState<Customer[]>([]);
   const [formData, setFormData] = useState({
     customer_id: '',
+    customer_name: '',
     invoice_date: new Date().toISOString().split('T')[0],
     due_date: '',
     reference: '',
@@ -25,6 +33,19 @@ export default function InvoiceForm() {
   const [lines, setLines] = useState<InvoiceLine[]>([
     { id: '1', description: '', quantity: 1, unit_price: 0, vat_rate: 15 }
   ]);
+
+  useEffect(() => {
+    const loadCustomers = async () => {
+      try {
+        const response = await api.get('/erp/order-to-cash/customers');
+        const data = response.data?.data || response.data || [];
+        setCustomers(Array.isArray(data) ? data : []);
+      } catch (err) {
+        console.error('Error loading customers:', err);
+      }
+    };
+    loadCustomers();
+  }, []);
 
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -57,8 +78,15 @@ export default function InvoiceForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const selectedCustomer = customers.find(c => c.id === formData.customer_id);
     const invoiceData = {
-      ...formData,
+      customer_id: formData.customer_id || undefined,
+      customer_name: selectedCustomer?.customer_name || formData.customer_name || undefined,
+      customer_email: selectedCustomer?.email || undefined,
+      invoice_date: formData.invoice_date,
+      due_date: formData.due_date,
+      reference: formData.reference,
+      notes: formData.notes,
       lines: lines.map(line => ({ description: line.description, quantity: line.quantity, unit_price: line.unit_price, vat_rate: line.vat_rate })),
       subtotal: totals.subtotal,
       vat_amount: totals.vat,
@@ -98,7 +126,7 @@ export default function InvoiceForm() {
             </div>
             <div className="p-4 space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Customer *</label><select required value={formData.customer_id} onChange={(e) => setFormData({ ...formData, customer_id: e.target.value })} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"><option value="">Select customer...</option><option value="1">ABC Manufacturing</option><option value="2">XYZ Trading</option><option value="3">Mega Corp</option></select></div>
+                <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Customer *</label><select required value={formData.customer_id} onChange={(e) => setFormData({ ...formData, customer_id: e.target.value })} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"><option value="">Select customer...</option>{customers.map(c => (<option key={c.id} value={c.id}>{c.customer_name}</option>))}</select></div>
                 <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Reference</label><input type="text" value={formData.reference} onChange={(e) => setFormData({ ...formData, reference: e.target.value })} placeholder="PO Number or reference" className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" /></div>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">

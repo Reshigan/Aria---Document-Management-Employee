@@ -356,13 +356,13 @@ invoices.post('/customer', async (c) => {
       total_amount?: number;
     }>();
 
-    let customerId = body.customer_id;
+    let customerId: string | undefined = body.customer_id;
     if (customerId) {
       const existingCustomer = await c.env.DB.prepare(
         'SELECT id FROM customers WHERE id = ? AND company_id = ?'
       ).bind(customerId, companyId).first<{ id: string }>();
       if (!existingCustomer) {
-        return c.json({ error: 'Invalid customer_id' }, 400);
+        customerId = undefined;
       }
     }
     if (!customerId && body.customer_name) {
