@@ -63,7 +63,8 @@ export default function GoodsReceipts() {
     try {
       setLoading(true);
       const response = await api.get('/erp/procure-to-pay/goods-receipts');
-      setReceipts(response.data || []);
+      const d = response.data;
+      setReceipts(Array.isArray(d) ? d : d.receipts || d.data || []);
       setError(null);
     } catch (err: unknown) {
       console.error('Error loading goods receipts:', err);

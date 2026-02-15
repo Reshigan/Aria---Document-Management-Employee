@@ -65,7 +65,8 @@ export default function WorkOrders() {
       if (statusFilter) params.status = statusFilter;
       
       const response = await api.get('/erp/manufacturing/work-orders', { params });
-      setWorkOrders(response.data || []);
+      const d = response.data;
+      setWorkOrders(Array.isArray(d) ? d : d.work_orders || d.data || []);
       setError(null);
     } catch (err: unknown) {
       console.error('Error loading work orders:', err);

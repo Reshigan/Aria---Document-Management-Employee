@@ -55,7 +55,8 @@ export default function Deliveries() {
       if (statusFilter) params.status = statusFilter;
       
       const response = await api.get('/erp/order-to-cash/deliveries', { params });
-      setDeliveries(response.data);
+      const d = response.data;
+      setDeliveries(Array.isArray(d) ? d : d.deliveries || d.data || []);
       setError(null);
     } catch (err: unknown) {
       console.error('Error loading deliveries:', err);

@@ -48,7 +48,8 @@ export default function Employees() {
       if (statusFilter) params.status = statusFilter;
       
       const response = await api.get('/erp/payroll/employees', { params });
-      setEmployees(response.data);
+      const d = response.data;
+      setEmployees(Array.isArray(d) ? d : d.employees || d.data || []);
       setError(null);
     } catch (err: unknown) {
       console.error('Error loading employees:', err);

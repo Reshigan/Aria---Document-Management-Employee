@@ -13,9 +13,8 @@ import { RecentItems } from '../RecentItems/RecentItems';
 import { QuickActions } from '../QuickActions/QuickActions';
 import ThemeToggle from '../ThemeToggle/ThemeToggle';
 import LanguageSwitcher from '../LanguageSwitcher/LanguageSwitcher';
+import api from '../../lib/api';
 import './MegaMenu.css';
-
-const API_BASE_URL = '/api';
 
 interface MenuItem {
   label: string;
@@ -426,9 +425,9 @@ export const MegaMenu: React.FC<MegaMenuProps> = ({ onSearchClick }) => {
   useEffect(() => {
     const fetchMenuStructure = async () => {
       try {
-        const response = await fetch(`${API_BASE_URL}/api/menu/structure`);
-        if (response.ok) {
-          const data = await response.json();
+        const response = await api.get('/menu/structure');
+        if (response.data) {
+          const data = response.data;
           
           const transformedData: Record<string, MegaMenuCategory[]> = {};
           Object.entries(data).forEach(([menuName, categories]: [string, any]) => {

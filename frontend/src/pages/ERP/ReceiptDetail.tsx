@@ -104,8 +104,10 @@ export default function ReceiptDetail() {
         api.get('/erp/master-data/customers'),
         api.get('/erp/master-data/bank-accounts')
       ]);
-      setCustomers(customersRes.data);
-      setBankAccounts(bankAccountsRes.data);
+      const cd = customersRes.data;
+      setCustomers(Array.isArray(cd) ? cd : cd.customers || cd.data || []);
+      const bd = bankAccountsRes.data;
+      setBankAccounts(Array.isArray(bd) ? bd : bd.accounts || bd.data || []);
     } catch (err) {
       console.error('Error loading master data:', err);
     }
@@ -114,7 +116,8 @@ export default function ReceiptDetail() {
   const loadCustomerInvoices = async (custId: string) => {
     try {
       const response = await api.get(`/api/ar/invoices?customer_id=${custId}&payment_status=unpaid,partial`);
-      setInvoices(response.data);
+      const d = response.data;
+      setInvoices(Array.isArray(d) ? d : d.invoices || d.data || []);
     } catch (err) {
       console.error('Error loading customer invoices:', err);
     }

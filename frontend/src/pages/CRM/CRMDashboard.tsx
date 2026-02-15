@@ -114,7 +114,8 @@ const CRMDashboard: React.FC = () => {
     setError('');
     try {
       const response = await api.get('/crm/leads');
-      setLeads(response.data || []);
+      const d = response.data;
+      setLeads(Array.isArray(d) ? d : d.leads || d.data || []);
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Failed to load leads');
     } finally {
@@ -192,7 +193,8 @@ const CRMDashboard: React.FC = () => {
     setError('');
     try {
       const response = await api.get('/crm/opportunities');
-      setOpportunities(response.data || []);
+      const d = response.data;
+      setOpportunities(Array.isArray(d) ? d : d.opportunities || d.data || []);
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Failed to load opportunities');
     } finally {
@@ -272,7 +274,8 @@ const CRMDashboard: React.FC = () => {
     setError('');
     try {
       const response = await api.get('/crm/customers');
-      setCustomers(response.data || []);
+      const d = response.data;
+      setCustomers(Array.isArray(d) ? d : d.customers || d.data || []);
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Failed to load customers');
     } finally {
