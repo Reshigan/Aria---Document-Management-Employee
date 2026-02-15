@@ -374,7 +374,7 @@ const Scheduling: React.FC = () => {
         title="Delete Schedule"
         message={`Are you sure you want to delete the schedule at ${deleteConfirm.time}? This action cannot be undone.`}
         onConfirm={() => handleDelete(deleteConfirm.id)}
-        onCancel={() => setDeleteConfirm({ show: false, id: 0, time: '' })}
+        onClose={() => setDeleteConfirm({ show: false, id: 0, time: '' })}
       />
     </div>
   );

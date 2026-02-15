@@ -351,7 +351,7 @@ const Timesheets: React.FC = () => {
         title="Delete Timesheet"
         message={`Are you sure you want to delete the timesheet for ${deleteConfirm.date}? This action cannot be undone.`}
         onConfirm={() => handleDelete(deleteConfirm.id)}
-        onCancel={() => setDeleteConfirm({ show: false, id: 0, date: '' })}
+        onClose={() => setDeleteConfirm({ show: false, id: 0, date: '' })}
       />
     </div>
   );

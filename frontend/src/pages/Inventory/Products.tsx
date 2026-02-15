@@ -123,12 +123,12 @@ export default function Products() {
   };
 
   const filteredProducts = products.filter(p =>
-    p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    p.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (p.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (p.code || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
     (p.description && p.description.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
-  const totalValue = products.reduce((sum, p) => sum + (p.standard_cost * p.reorder_level), 0);
+  const totalValue = products.reduce((sum, p) => sum + (Number(p.standard_cost ?? 0) * Number(p.reorder_level ?? 0)), 0);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-violet-50 dark:from-gray-900 dark:to-gray-800 p-6">
@@ -421,8 +421,8 @@ export default function Products() {
               </thead>
               <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                 {filteredProducts.map((product) => {
-                  const margin = product.selling_price - product.standard_cost;
-                  const marginPercent = product.standard_cost > 0 ? (margin / product.standard_cost) * 100 : 0;
+                  const margin = Number(product.selling_price ?? 0) - Number(product.standard_cost ?? 0);
+                  const marginPercent = Number(product.standard_cost ?? 0) > 0 ? (margin / Number(product.standard_cost ?? 0)) * 100 : 0;
                   return (
                     <tr key={product.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                       <td className="px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">{product.code}</td>
@@ -433,7 +433,7 @@ export default function Products() {
                         )}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-700 dark:text-gray-300 capitalize">
-                        {product.product_type.replace('_', ' ')}
+                        {(product.product_type || '').replace('_', ' ')}
                       </td>
                       <td className="px-6 py-4 text-sm text-center font-medium text-gray-900 dark:text-white">
                         {product.unit_of_measure}

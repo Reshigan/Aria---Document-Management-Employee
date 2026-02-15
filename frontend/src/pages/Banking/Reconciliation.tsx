@@ -362,7 +362,7 @@ const Reconciliation: React.FC = () => {
         title="Delete Reconciliation"
         message={`Are you sure you want to delete reconciliation for ${deleteConfirm.account}? This action cannot be undone.`}
         onConfirm={() => handleDelete(deleteConfirm.id)}
-        onCancel={() => setDeleteConfirm({ show: false, id: 0, account: '' })}
+        onClose={() => setDeleteConfirm({ show: false, id: 0, account: '' })}
       />
     </div>
   );

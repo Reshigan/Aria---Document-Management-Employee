@@ -334,20 +334,20 @@ const BankingDashboard: React.FC = () => {
   };
 
   const filteredAccounts = accounts.filter(a =>
-    a.account_name.toLowerCase().includes(accountsSearch.toLowerCase()) ||
-    a.account_number.toLowerCase().includes(accountsSearch.toLowerCase()) ||
-    a.bank_name.toLowerCase().includes(accountsSearch.toLowerCase())
+    (a.account_name || '').toLowerCase().includes(accountsSearch.toLowerCase()) ||
+    (a.account_number || '').toLowerCase().includes(accountsSearch.toLowerCase()) ||
+    (a.bank_name || '').toLowerCase().includes(accountsSearch.toLowerCase())
   );
 
   const filteredTransactions = transactions.filter(t =>
-    t.transaction_number.toLowerCase().includes(transactionsSearch.toLowerCase()) ||
-    t.description.toLowerCase().includes(transactionsSearch.toLowerCase()) ||
-    t.reference.toLowerCase().includes(transactionsSearch.toLowerCase())
+    (t.transaction_number || '').toLowerCase().includes(transactionsSearch.toLowerCase()) ||
+    (t.description || '').toLowerCase().includes(transactionsSearch.toLowerCase()) ||
+    (t.reference || '').toLowerCase().includes(transactionsSearch.toLowerCase())
   );
 
   const filteredReconciliations = reconciliations.filter(r =>
-    r.reconciliation_number.toLowerCase().includes(reconciliationsSearch.toLowerCase()) ||
-    r.account_name?.toLowerCase().includes(reconciliationsSearch.toLowerCase())
+    (r.reconciliation_number || '').toLowerCase().includes(reconciliationsSearch.toLowerCase()) ||
+    (r.account_name || '').toLowerCase().includes(reconciliationsSearch.toLowerCase())
   );
 
   const getStatusBadge = (status: string) => {
@@ -357,7 +357,7 @@ const BankingDashboard: React.FC = () => {
       COMPLETED: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
     };
     const style = styles[status] || 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300';
-    return <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${style}`}>{status.replace('_', ' ')}</span>;
+    return <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${style}`}>{(status || '').replace('_', ' ')}</span>;
   };
 
   const getAccountTypeBadge = (type: string) => {
@@ -367,11 +367,11 @@ const BankingDashboard: React.FC = () => {
       FOREIGN_CURRENCY: 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400'
     };
     const style = styles[type] || 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300';
-    return <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${style}`}>{type.replace('_', ' ')}</span>;
+    return <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${style}`}>{(type || '').replace('_', ' ')}</span>;
   };
 
   const formatCurrency = (amount: number, currency: string = 'ZAR') => {
-    return new Intl.NumberFormat('en-ZA', { style: 'currency', currency }).format(amount);
+    return new Intl.NumberFormat('en-ZA', { style: 'currency', currency }).format(Number(amount ?? 0));
   };
 
   const formatDate = (dateString: string) => {
@@ -494,7 +494,7 @@ const BankingDashboard: React.FC = () => {
                 </div>
                 <div>
                   <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                    {formatCurrency(accounts.filter(a => a.currency === 'ZAR').reduce((sum, a) => sum + a.balance, 0))}
+                    {formatCurrency(accounts.filter(a => a.currency === 'ZAR').reduce((sum, a) => sum + Number(a.balance ?? 0), 0))}
                   </p>
                   <p className="text-sm text-gray-500 dark:text-gray-400">Total Balance (ZAR)</p>
                 </div>
@@ -612,7 +612,7 @@ const BankingDashboard: React.FC = () => {
                 </div>
                 <div>
                   <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                    {formatCurrency(transactions.reduce((sum, t) => sum + t.debit, 0))}
+                    {formatCurrency(transactions.reduce((sum, t) => sum + Number(t.debit ?? 0), 0))}
                   </p>
                   <p className="text-sm text-gray-500 dark:text-gray-400">Total Debits</p>
                 </div>
@@ -625,7 +625,7 @@ const BankingDashboard: React.FC = () => {
                 </div>
                 <div>
                   <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                    {formatCurrency(transactions.reduce((sum, t) => sum + t.credit, 0))}
+                    {formatCurrency(transactions.reduce((sum, t) => sum + Number(t.credit ?? 0), 0))}
                   </p>
                   <p className="text-sm text-gray-500 dark:text-gray-400">Total Credits</p>
                 </div>
@@ -1137,7 +1137,7 @@ const BankingDashboard: React.FC = () => {
           else if (deleteConfirm.type === 'transaction') handleDeleteTransaction(deleteConfirm.id);
           else if (deleteConfirm.type === 'reconciliation') handleDeleteReconciliation(deleteConfirm.id);
         }}
-        onCancel={() => setDeleteConfirm({ show: false, type: 'account', id: 0, name: '' })}
+        onClose={() => setDeleteConfirm({ show: false, type: 'account', id: 0, name: '' })}
       />
     </div>
   );

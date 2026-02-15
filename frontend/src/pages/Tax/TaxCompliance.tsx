@@ -372,7 +372,7 @@ const TaxCompliance: React.FC = () => {
         title="Delete Tax Obligation"
         message={`Are you sure you want to delete ${deleteConfirm.type} tax obligation? This action cannot be undone.`}
         onConfirm={() => handleDelete(deleteConfirm.id)}
-        onCancel={() => setDeleteConfirm({ show: false, id: 0, type: '' })}
+        onClose={() => setDeleteConfirm({ show: false, id: 0, type: '' })}
       />
     </div>
   );

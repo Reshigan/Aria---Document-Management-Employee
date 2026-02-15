@@ -910,7 +910,7 @@ const ProcurementDashboard: React.FC = () => {
           else if (deleteConfirm.type === 'po') handleDeletePo(deleteConfirm.id);
           else if (deleteConfirm.type === 'rfq') handleDeleteRfq(deleteConfirm.id);
         }}
-        onCancel={() => setDeleteConfirm({ show: false, type: 'supplier', id: 0, name: '' })}
+        onClose={() => setDeleteConfirm({ show: false, type: 'supplier', id: 0, name: '' })}
       />
       </div>
     </div>

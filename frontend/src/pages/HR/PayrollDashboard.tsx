@@ -976,7 +976,7 @@ const PayrollDashboard: React.FC = () => {
           if (deleteConfirm.type === 'employee') handleDeleteEmployee(deleteConfirm.id);
           else if (deleteConfirm.type === 'payslip') handleDeletePayslip(deleteConfirm.id);
         }}
-        onCancel={() => setDeleteConfirm({ show: false, type: 'employee', id: 0, name: '' })}
+        onClose={() => setDeleteConfirm({ show: false, type: 'employee', id: 0, name: '' })}
       />
     </div>
   );

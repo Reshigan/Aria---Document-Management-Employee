@@ -44,15 +44,15 @@ const StockValuationReport: React.FC = () => {
   const filteredData = filterCategory ? data.filter(item => item.category === filterCategory) : data;
 
   const totals = {
-    quantity: filteredData.reduce((sum, item) => sum + item.quantity, 0),
-    value: filteredData.reduce((sum, item) => sum + item.total_value, 0),
+    quantity: filteredData.reduce((sum, item) => sum + Number(item.quantity ?? 0), 0),
+    value: filteredData.reduce((sum, item) => sum + Number(item.total_value ?? 0), 0),
     items: filteredData.length
   };
 
   const categoryTotals = categories.map(cat => ({
     category: cat,
-    value: data.filter(item => item.category === cat).reduce((sum, item) => sum + item.total_value, 0),
-    percentage: (data.filter(item => item.category === cat).reduce((sum, item) => sum + item.total_value, 0) / totals.value) * 100
+    value: data.filter(item => item.category === cat).reduce((sum, item) => sum + Number(item.total_value ?? 0), 0),
+    percentage: totals.value > 0 ? (data.filter(item => item.category === cat).reduce((sum, item) => sum + Number(item.total_value ?? 0), 0) / totals.value) * 100 : 0
   })).sort((a, b) => b.value - a.value);
 
   return (
@@ -99,7 +99,7 @@ const StockValuationReport: React.FC = () => {
             <Package className="w-10 h-10 opacity-80" />
           </div>
           <div className="text-sm opacity-90 mb-1">Average Value per Product</div>
-          <div className="text-3xl font-bold">{formatCurrency(totals.value / totals.items)}</div>
+          <div className="text-3xl font-bold">{formatCurrency(totals.items > 0 ? totals.value / totals.items : 0)}</div>
           <div className="text-xs opacity-75 mt-2">
             Cost-weighted average
           </div>
@@ -192,7 +192,7 @@ const StockValuationReport: React.FC = () => {
         <div className="bg-blue-50 dark:bg-blue-900/30 border-l-4 border-blue-400 p-4 rounded">
           <h3 className="text-sm font-medium text-blue-800 dark:text-blue-200 mb-2">Inventory Health</h3>
           <p className="text-sm text-blue-700 dark:text-blue-300">
-            Total inventory value of {formatCurrency(totals.value)} across {totals.items} products with average holding of {Math.round(totals.quantity / totals.items)} units per product
+            Total inventory value of {formatCurrency(totals.value)} across {totals.items} products with average holding of {Math.round(totals.items > 0 ? totals.quantity / totals.items : 0)} units per product
           </p>
         </div>
       </div>

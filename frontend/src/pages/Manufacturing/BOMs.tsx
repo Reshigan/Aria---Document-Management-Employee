@@ -181,7 +181,7 @@ export default function BOMs() {
           )}
         </div>
 
-        <ConfirmDialog isOpen={deleteConfirm.show} title="Delete BOM" message={`Are you sure you want to delete BOM ${deleteConfirm.code}? This action cannot be undone.`} onConfirm={() => handleDelete(deleteConfirm.id)} onCancel={() => setDeleteConfirm({ show: false, id: 0, code: '' })} />
+        <ConfirmDialog isOpen={deleteConfirm.show} title="Delete BOM" message={`Are you sure you want to delete BOM ${deleteConfirm.code}? This action cannot be undone.`} onConfirm={() => handleDelete(deleteConfirm.id)} onClose={() => setDeleteConfirm({ show: false, id: 0, code: '' })} />
       </div>
     </div>
   );
