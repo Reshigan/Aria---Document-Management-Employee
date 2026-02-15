@@ -296,6 +296,7 @@ function App() {
                     <Route path="/gl/chart-of-accounts" element={<GeneralLedger />} />
                     <Route path="/financial/general-ledger" element={<GeneralLedger />} />
                     <Route path="/financial/invoices" element={<InvoiceList />} />
+                    <Route path="/financial/invoices/:id" element={<InvoiceForm />} />
           
                     {/* Accounts Payable */}
                     <Route path="/ap" element={<InvoiceList />} />
