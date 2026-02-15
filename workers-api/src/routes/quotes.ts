@@ -193,7 +193,7 @@ quotes.post('/', async (c) => {
     const now = new Date().toISOString();
     const validUntil = body.valid_until || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
 
-    const items = body.items || [];
+    const items = body.items || (body as any).lines || [];
     const totals = calculateLineTotals(items as Array<{ quantity?: number; unit_price?: number; discount_percent?: number; tax_rate?: number }>);
     const subtotal = totals.subtotal;
     const taxAmount = totals.tax_amount;

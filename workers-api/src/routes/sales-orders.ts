@@ -196,7 +196,7 @@ salesOrders.post('/', async (c) => {
     const orderId = crypto.randomUUID();
     const now = new Date().toISOString();
 
-    const items = body.items || [];
+    const items = body.items || (body as any).lines || [];
     const totals = calculateLineTotals(items as Array<{ quantity?: number; unit_price?: number; discount_percent?: number; tax_rate?: number }>);
     const subtotal = totals.subtotal;
     const taxAmount = totals.tax_amount;
@@ -213,7 +213,7 @@ salesOrders.post('/', async (c) => {
       body.customer_id,
       body.quote_id || null,
       body.order_date || now.split('T')[0],
-      body.expected_delivery_date || null,
+      body.expected_delivery_date || (body as any).required_date || null,
       'pending',
       subtotal,
       taxAmount,
