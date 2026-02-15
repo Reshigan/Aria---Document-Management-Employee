@@ -176,7 +176,7 @@ export default function GeneralLedger() {
     if (journalLines.length < 2) { setError('Journal entry must have at least 2 lines'); return; }
     const totalDebits = journalLines.reduce((sum, line) => sum + (line.debit_amount || 0), 0);
     const totalCredits = journalLines.reduce((sum, line) => sum + (line.credit_amount || 0), 0);
-    if (Math.abs(totalDebits - totalCredits) > 0.01) { setError(`Journal entry is not balanced. Debits: R${totalDebits.toFixed(2)}, Credits: R${totalCredits.toFixed(2)}`); return; }
+    if (Math.abs(totalDebits - totalCredits) > 0.01) { setError(`Journal entry is not balanced. Debits: R${Number(totalDebits ?? 0).toFixed(2)}, Credits: R${Number(totalCredits ?? 0).toFixed(2)}`); return; }
     try {
       const payload = { ...journalFormData, lines: journalLines.filter(line => line.account_code && (line.debit_amount > 0 || line.credit_amount > 0)) };
       await api.post('/erp/gl/journal-entries', payload);

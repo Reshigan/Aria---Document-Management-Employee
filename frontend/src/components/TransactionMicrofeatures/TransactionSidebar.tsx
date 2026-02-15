@@ -178,7 +178,7 @@ export const TransactionSidebar: React.FC<TransactionSidebarProps> = ({
     const attachment: Attachment = {
       id: Date.now().toString(),
       name: file.name,
-      size: `${(file.size / 1024 / 1024).toFixed(1)} MB`,
+      size: `${Number((file.size / 1024 / 1024) || 0).toFixed(1)} MB`,
       type: file.type.includes('pdf') ? 'pdf' : file.type.includes('image') ? 'image' : 'other',
       uploadedBy: 'Current User',
       uploadedAt: 'Just now',

@@ -186,7 +186,7 @@ const StockValuationReport: React.FC = () => {
         <div className="bg-green-50 dark:bg-green-900/30 border-l-4 border-green-400 p-4 rounded">
           <h3 className="text-sm font-medium text-green-800 dark:text-green-300 mb-2">Top Category</h3>
           <p className="text-sm text-green-700 dark:text-green-300">
-            {categoryTotals[0]?.category} accounts for {categoryTotals[0]?.percentage.toFixed(1)}% of inventory value ({formatCurrency(categoryTotals[0]?.value)})
+            {categoryTotals[0]?.category} accounts for {categoryTotals[0]?.Number(percentage ?? 0).toFixed(1)}% of inventory value ({formatCurrency(categoryTotals[0]?.value)})
           </p>
         </div>
         <div className="bg-blue-50 dark:bg-blue-900/30 border-l-4 border-blue-400 p-4 rounded">

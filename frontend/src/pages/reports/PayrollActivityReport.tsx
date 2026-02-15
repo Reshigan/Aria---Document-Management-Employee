@@ -125,11 +125,11 @@ export default function PayrollActivityReportPage() {
               </div>
               <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
                 <div className="text-sm font-medium text-gray-600 dark:text-gray-400">Monthly Cost</div>
-                <div className="text-3xl font-bold text-gray-900 dark:text-white mt-2">R {((summary?.monthly_cost || 0) / 1000).toFixed(0)}K</div>
+                <div className="text-3xl font-bold text-gray-900 dark:text-white mt-2">R {Number(((summary?.monthly_cost || 0) / 1000) || 0).toFixed(0)}K</div>
               </div>
               <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
                 <div className="text-sm font-medium text-gray-600 dark:text-gray-400">YTD Cost</div>
-                <div className="text-3xl font-bold text-indigo-600 dark:text-indigo-400 mt-2">R {((summary?.ytd_cost || 0) / 1000000).toFixed(1)}M</div>
+                <div className="text-3xl font-bold text-indigo-600 dark:text-indigo-400 mt-2">R {Number(((summary?.ytd_cost || 0) / 1000000) || 0).toFixed(1)}M</div>
               </div>
               <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
                 <div className="text-sm font-medium text-gray-600 dark:text-gray-400">SARS Submissions</div>

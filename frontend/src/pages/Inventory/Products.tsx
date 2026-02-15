@@ -201,7 +201,7 @@ export default function Products() {
               <DollarSign className="h-6 w-6 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">R {totalValue.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">R {Number(totalValue ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</p>
               <p className="text-sm text-gray-500 dark:text-gray-400">Inventory Value</p>
             </div>
           </div>
@@ -446,7 +446,7 @@ export default function Products() {
                           R {Number(product.selling_price ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
                         </div>
                         <div className={`text-xs ${marginPercent > 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
-                          {marginPercent > 0 ? '+' : ''}{marginPercent.toFixed(1)}% margin
+                          {marginPercent > 0 ? '+' : ''}{Number(marginPercent ?? 0).toFixed(1)}% margin
                         </div>
                       </td>
                       <td className="px-6 py-4 text-center">

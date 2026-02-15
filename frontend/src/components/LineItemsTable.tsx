@@ -466,11 +466,11 @@ export function LineItemsTable({
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', width: '300px' }}>
           <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>Subtotal:</span>
-          <span style={{ fontSize: '0.875rem', fontWeight: '500' }}>R {subtotal.toFixed(2)}</span>
+          <span style={{ fontSize: '0.875rem', fontWeight: '500' }}>R {Number(subtotal ?? 0).toFixed(2)}</span>
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between', width: '300px' }}>
           <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>Tax:</span>
-          <span style={{ fontSize: '0.875rem', fontWeight: '500' }}>R {taxAmount.toFixed(2)}</span>
+          <span style={{ fontSize: '0.875rem', fontWeight: '500' }}>R {Number(taxAmount ?? 0).toFixed(2)}</span>
         </div>
         <div style={{ 
           display: 'flex', 
@@ -480,7 +480,7 @@ export function LineItemsTable({
           borderTop: '2px solid #d1d5db'
         }}>
           <span style={{ fontSize: '1rem', fontWeight: '600' }}>Total:</span>
-          <span style={{ fontSize: '1rem', fontWeight: '600', color: '#2563eb' }}>R {total.toFixed(2)}</span>
+          <span style={{ fontSize: '1rem', fontWeight: '600', color: '#2563eb' }}>R {Number(total ?? 0).toFixed(2)}</span>
         </div>
       </div>
     </div>

@@ -759,7 +759,7 @@ export default function AriaChat() {
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <Paperclip size={16} style={{ color: '#667eea' }} />
                 <span style={{ fontSize: '0.875rem', color: '#374151' }}>
-                  {selectedFile.name} ({(selectedFile.size / 1024).toFixed(1)} KB)
+                  {selectedFile.name} ({Number((selectedFile.size / 1024) || 0).toFixed(1)} KB)
                 </span>
               </div>
               <button

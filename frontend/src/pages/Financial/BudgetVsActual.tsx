@@ -74,7 +74,7 @@ export default function BudgetVsActual() {
   };
 
   const formatCurrency = (amount: number) => new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR' }).format(amount);
-  const formatPercent = (value: number) => `${value >= 0 ? '+' : ''}${value.toFixed(1)}%`;
+  const formatPercent = (value: number) => `${value >= 0 ? '+' : ''}${Number(value ?? 0).toFixed(1)}%`;
 
   const getVarianceColor = (variance: number, isFavorable: boolean) => {
     if (Math.abs(variance) < 5) return 'text-gray-600 dark:text-gray-400';
@@ -134,7 +134,7 @@ export default function BudgetVsActual() {
             </div>
 
             <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-5">
-              <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400 mb-3"><span>Budget Utilization</span><span className="font-semibold">{((report.total_actual / report.total_budget) * 100).toFixed(1)}%</span></div>
+              <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400 mb-3"><span>Budget Utilization</span><span className="font-semibold">{Number(((report.total_actual / report.total_budget) * 100) || 0).toFixed(1)}%</span></div>
               <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-4 overflow-hidden"><div className={`h-4 rounded-full bg-gradient-to-r ${getProgressColor((report.total_actual / report.total_budget) * 100)} transition-all`} style={{ width: `${Math.min((report.total_actual / report.total_budget) * 100, 100)}%` }}></div></div>
             </div>
 
@@ -195,7 +195,7 @@ export default function BudgetVsActual() {
                             <td className="px-6 py-4 text-right text-gray-900 dark:text-white">{formatCurrency(dept.budget)}</td>
                             <td className="px-6 py-4 text-right text-gray-900 dark:text-white">{formatCurrency(dept.actual)}</td>
                             <td className={`px-6 py-4 text-right font-semibold ${dept.variance >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>{formatCurrency(dept.variance)}</td>
-                            <td className="px-6 py-4"><div className="flex items-center gap-3"><div className="w-24 bg-gray-200 dark:bg-gray-700 rounded-full h-2 overflow-hidden"><div className={`h-2 rounded-full bg-gradient-to-r ${getProgressColor(utilization)}`} style={{ width: `${Math.min(utilization, 100)}%` }}></div></div><span className="text-sm text-gray-600 dark:text-gray-400">{utilization.toFixed(0)}%</span></div></td>
+                            <td className="px-6 py-4"><div className="flex items-center gap-3"><div className="w-24 bg-gray-200 dark:bg-gray-700 rounded-full h-2 overflow-hidden"><div className={`h-2 rounded-full bg-gradient-to-r ${getProgressColor(utilization)}`} style={{ width: `${Math.min(utilization, 100)}%` }}></div></div><span className="text-sm text-gray-600 dark:text-gray-400">{Number(utilization ?? 0).toFixed(0)}%</span></div></td>
                           </tr>
                         );
                       })}

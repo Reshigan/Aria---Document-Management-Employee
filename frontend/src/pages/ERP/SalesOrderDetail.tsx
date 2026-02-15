@@ -287,7 +287,7 @@ export default function SalesOrderDetail() {
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 mb-6">
           <div className="flex justify-between mb-2">
             <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Fulfillment Progress</span>
-            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{fulfillmentProgress.toFixed(0)}%</span>
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{Number(fulfillmentProgress ?? 0).toFixed(0)}%</span>
           </div>
           <div className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
             <div 

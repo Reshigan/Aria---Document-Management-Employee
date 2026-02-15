@@ -149,13 +149,13 @@ export default function ProductVariants() {
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-4">
           <div className="text-sm text-gray-500 dark:text-gray-400">Total Stock</div>
           <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-            {totalStock.toLocaleString()}
+            {Number(totalStock ?? 0).toLocaleString()}
           </div>
         </div>
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-4">
           <div className="text-sm text-gray-500 dark:text-gray-400">Stock Value</div>
           <div className="text-2xl font-bold text-orange-600">
-            R {totalValue.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
+            R {Number(totalValue ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
           </div>
         </div>
       </div>

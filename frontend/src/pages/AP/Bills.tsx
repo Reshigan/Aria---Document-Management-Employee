@@ -204,7 +204,7 @@ export default function Bills() {
             </div>
             <div>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                R {totalBills.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
+                R {Number(totalBills ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
               </p>
               <p className="text-sm text-gray-500 dark:text-gray-400">Total Bills</p>
             </div>
@@ -218,7 +218,7 @@ export default function Bills() {
             </div>
             <div>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                R {totalPaid.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
+                R {Number(totalPaid ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
               </p>
               <p className="text-sm text-gray-500 dark:text-gray-400">Paid</p>
             </div>
@@ -232,7 +232,7 @@ export default function Bills() {
             </div>
             <div>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                R {totalDue.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
+                R {Number(totalDue ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
               </p>
               <p className="text-sm text-gray-500 dark:text-gray-400">Outstanding</p>
             </div>

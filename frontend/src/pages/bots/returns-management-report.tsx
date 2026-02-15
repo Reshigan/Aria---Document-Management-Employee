@@ -118,7 +118,7 @@ export default function ReturnsManagementReport() {
                 Success Rate
               </Typography>
               <Typography variant="h4">
-                {successRate.toFixed(1)}%
+                {Number(successRate ?? 0).toFixed(1)}%
               </Typography>
             </CardContent>
           </Card>

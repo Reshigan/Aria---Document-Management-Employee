@@ -151,7 +151,7 @@ export default function VATReturnsPage() {
             <div>
               <div className="text-sm font-medium text-gray-500 dark:text-gray-400">Output Tax</div>
               <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                R {totalOutput.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
+                R {Number(totalOutput ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
               </div>
             </div>
           </div>
@@ -165,7 +165,7 @@ export default function VATReturnsPage() {
             <div>
               <div className="text-sm font-medium text-gray-500 dark:text-gray-400">Input Tax</div>
               <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                R {totalInput.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
+                R {Number(totalInput ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
               </div>
             </div>
           </div>

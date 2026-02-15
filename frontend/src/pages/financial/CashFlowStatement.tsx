@@ -175,7 +175,7 @@ export default function CashFlowStatementPage() {
                 <div className="flex justify-between pt-2 border-t border-gray-200 dark:border-gray-700 font-bold">
                   <span className="text-gray-900 dark:text-white">Net Operating Cash Flow</span>
                   <span className={data.operating.net >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}>
-                    R {data.Number(operating.net ?? 0).toLocaleString()}
+                    R {Number(data.operating.net ?? 0).toLocaleString()}
                   </span>
                 </div>
               </div>
@@ -196,7 +196,7 @@ export default function CashFlowStatementPage() {
                 <div className="flex justify-between pt-2 border-t border-gray-200 dark:border-gray-700 font-bold">
                   <span className="text-gray-900 dark:text-white">Net Investing Cash Flow</span>
                   <span className={data.investing.net >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}>
-                    R {data.Number(investing.net ?? 0).toLocaleString()}
+                    R {Number(data.investing.net ?? 0).toLocaleString()}
                   </span>
                 </div>
               </div>
@@ -217,7 +217,7 @@ export default function CashFlowStatementPage() {
                 <div className="flex justify-between pt-2 border-t border-gray-200 dark:border-gray-700 font-bold">
                   <span className="text-gray-900 dark:text-white">Net Financing Cash Flow</span>
                   <span className={data.financing.net >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}>
-                    R {data.Number(financing.net ?? 0).toLocaleString()}
+                    R {Number(data.financing.net ?? 0).toLocaleString()}
                   </span>
                 </div>
               </div>

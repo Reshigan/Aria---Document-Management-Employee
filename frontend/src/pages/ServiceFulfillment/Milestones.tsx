@@ -194,13 +194,13 @@ export default function Milestones() {
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-4">
           <div className="text-sm text-gray-500 dark:text-gray-400">Total Value</div>
           <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-            R {totalAmount.toLocaleString('en-ZA', { minimumFractionDigits: 0 })}
+            R {Number(totalAmount ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 0 })}
           </div>
         </div>
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-4">
           <div className="text-sm text-gray-500 dark:text-gray-400">Completed Value</div>
           <div className="text-2xl font-bold text-green-600 dark:text-green-400">
-            R {completedAmount.toLocaleString('en-ZA', { minimumFractionDigits: 0 })}
+            R {Number(completedAmount ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 0 })}
           </div>
         </div>
       </div>

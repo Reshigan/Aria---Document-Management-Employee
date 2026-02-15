@@ -312,7 +312,7 @@ export default function InvoiceDetail() {
                     <td>${line.quantity}</td>
                     <td>R ${Number(line.unit_price ?? 0).toFixed(2)}</td>
                     <td>${line.tax_rate || 15}%</td>
-                    <td>R ${lineTotal.toFixed(2)}</td>
+                    <td>R ${Number(lineTotal ?? 0).toFixed(2)}</td>
                   </tr>
                 `;
               }).join('')}

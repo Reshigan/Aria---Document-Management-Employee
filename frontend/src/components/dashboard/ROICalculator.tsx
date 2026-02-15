@@ -63,11 +63,11 @@ const ROICalculator: React.FC = () => {
     const payback_days = (total_aria_cost / (net_benefit / 30));
 
     return {
-      total_manual_cost: total_manual_cost.toFixed(0),
-      total_aria_cost: total_aria_cost.toFixed(0),
-      net_benefit: net_benefit.toFixed(0),
-      roi_percentage: roi_percentage.toFixed(0),
-      payback_days: payback_days.toFixed(1)
+      total_manual_cost: Number(total_manual_cost ?? 0).toFixed(0),
+      total_aria_cost: Number(total_aria_cost ?? 0).toFixed(0),
+      net_benefit: Number(net_benefit ?? 0).toFixed(0),
+      roi_percentage: Number(roi_percentage ?? 0).toFixed(0),
+      payback_days: Number(payback_days ?? 0).toFixed(1)
     };
   };
 

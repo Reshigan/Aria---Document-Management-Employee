@@ -193,13 +193,13 @@ export default function Projects() {
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-4">
           <div className="text-sm text-gray-500 dark:text-gray-400">Total Budget</div>
           <div className="text-2xl font-bold text-green-600 dark:text-green-400">
-            R {totalBudget.toLocaleString('en-ZA', { minimumFractionDigits: 0 })}
+            R {Number(totalBudget ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 0 })}
           </div>
         </div>
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-4">
           <div className="text-sm text-gray-500 dark:text-gray-400">Actual Spent</div>
           <div className="text-2xl font-bold text-orange-600">
-            R {totalActual.toLocaleString('en-ZA', { minimumFractionDigits: 0 })}
+            R {Number(totalActual ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 0 })}
           </div>
         </div>
       </div>

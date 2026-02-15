@@ -171,7 +171,7 @@ export default function ReceiptDetail() {
 
     const totalAllocated = allocations.reduce((sum, alloc) => sum + parseFloat(alloc.amount), 0);
     if (Math.abs(totalAllocated - parseFloat(amount)) > 0.01) {
-      setError(`Total allocated (R ${totalAllocated.toFixed(2)}) must equal payment amount (R ${amount})`);
+      setError(`Total allocated (R ${Number(totalAllocated ?? 0).toFixed(2)}) must equal payment amount (R ${amount})`);
       return;
     }
 
@@ -455,12 +455,12 @@ export default function ReceiptDetail() {
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-500 dark:text-gray-400">Total Allocated:</span>
-                <span className="font-medium text-gray-900 dark:text-white">R {totalAllocated.toFixed(2)}</span>
+                <span className="font-medium text-gray-900 dark:text-white">R {Number(totalAllocated ?? 0).toFixed(2)}</span>
               </div>
               <div className="flex justify-between pt-3 border-t-2 border-gray-200 dark:border-gray-700 text-lg font-semibold">
                 <span className="text-gray-900 dark:text-white">Unallocated:</span>
                 <span className={unallocated > 0.01 ? 'text-red-500' : 'text-emerald-500'}>
-                  R {unallocated.toFixed(2)}
+                  R {Number(unallocated ?? 0).toFixed(2)}
                 </span>
               </div>
               {unallocated > 0.01 && (

@@ -272,7 +272,7 @@ export default function WorkOrders() {
               <CheckCircle className="h-6 w-6 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">R {totalRevenue.toLocaleString('en-ZA', { minimumFractionDigits: 0 })}</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">R {Number(totalRevenue ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 0 })}</p>
               <p className="text-sm text-gray-500 dark:text-gray-400">Total Revenue</p>
             </div>
           </div>

@@ -127,7 +127,7 @@ export default function ProjectsDashboard() {
 
   const totalRevenue = projects.reduce((sum, p) => sum + (p.revenue || 0), 0);
   const totalCosts = projects.reduce((sum, p) => sum + (p.actual_cost || 0), 0);
-  const profitMargin = totalRevenue > 0 ? ((totalRevenue - totalCosts) / totalRevenue * 100).toFixed(1) : '0';
+  const profitMargin = totalRevenue > 0 ? Number(((totalRevenue - totalCosts) / totalRevenue * 100) || 0).toFixed(1) : '0';
 
   const getStatusBadge = (status: string) => {
     const styles: Record<string, string> = {
@@ -205,7 +205,7 @@ export default function ProjectsDashboard() {
               <DollarSign className="h-6 w-6 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">R {totalRevenue.toLocaleString()}</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">R {Number(totalRevenue ?? 0).toLocaleString()}</p>
               <p className="text-sm text-gray-500 dark:text-gray-400">Total Revenue</p>
             </div>
           </div>
@@ -216,7 +216,7 @@ export default function ProjectsDashboard() {
               <DollarSign className="h-6 w-6 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">R {totalCosts.toLocaleString()}</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">R {Number(totalCosts ?? 0).toLocaleString()}</p>
               <p className="text-sm text-gray-500 dark:text-gray-400">Total Costs</p>
             </div>
           </div>

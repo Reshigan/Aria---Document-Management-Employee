@@ -282,7 +282,7 @@ export default function SalesInvoiceReconciliation() {
                 </div>
                 <div className="text-3xl font-bold text-green-600">{summary.summary.fully_invoiced}</div>
                 <div className="text-sm text-gray-500 mt-1">
-                  {((summary.summary.fully_invoiced / summary.summary.total_orders) * 100).toFixed(1)}% complete
+                  {Number(((summary.summary.fully_invoiced / summary.summary.total_orders) * 100) || 0).toFixed(1)}% complete
                 </div>
               </div>
 

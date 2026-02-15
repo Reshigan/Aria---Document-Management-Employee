@@ -156,7 +156,7 @@ const DataImport: React.FC = () => {
           </div>
           {file && (
             <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
-              Selected: {file.name} ({(file.size / 1024).toFixed(2)} KB)
+              Selected: {file.name} ({Number((file.size / 1024) || 0).toFixed(2)} KB)
             </p>
           )}
         </div>

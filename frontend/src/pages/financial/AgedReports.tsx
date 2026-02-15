@@ -138,7 +138,7 @@ export default function AgedReportsPage() {
                 <div key={label} className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 p-4">
                   <p className="text-sm text-gray-600 dark:text-gray-400">{label}</p>
                   <p className={`text-xl font-bold ${idx === 4 ? 'text-indigo-600 dark:text-indigo-400' : idx >= 2 ? 'text-red-600 dark:text-red-400' : 'text-gray-900 dark:text-white'}`}>
-                    R {value.toLocaleString()}
+                    R {Number(value ?? 0).toLocaleString()}
                   </p>
                 </div>
               );

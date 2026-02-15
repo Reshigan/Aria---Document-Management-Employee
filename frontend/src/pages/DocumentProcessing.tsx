@@ -230,7 +230,7 @@ const DocumentProcessing: React.FC = () => {
 
   const formatProcessingTime = (seconds?: number) => {
     if (!seconds) return 'N/A';
-    if (seconds < 60) return `${seconds.toFixed(1)}s`;
+    if (seconds < 60) return `${Number(seconds ?? 0).toFixed(1)}s`;
     return `${Math.floor(seconds / 60)}m ${(seconds % 60).toFixed(0)}s`;
   };
 

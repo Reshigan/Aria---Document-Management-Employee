@@ -320,7 +320,7 @@ export default function AgentSettings() {
                     <Clock className="h-5 w-5 text-yellow-600 dark:text-yellow-400" />
                   </div>
                   <div className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                    {(usage.avg_duration_ms / 1000).toFixed(1)}s
+                    {Number((usage.avg_duration_ms / 1000) || 0).toFixed(1)}s
                   </div>
                   <div className="text-sm text-gray-600 dark:text-gray-400">Avg Duration</div>
                 </div>

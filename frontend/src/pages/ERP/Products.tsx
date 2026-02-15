@@ -295,7 +295,7 @@ export default function Products() {
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Margin</label>
                     <div className="px-4 py-3 bg-gray-100 dark:bg-gray-600 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-700 dark:text-gray-300">
-                      {formData.selling_price && formData.cost_price ? `${((formData.selling_price - formData.cost_price) / formData.selling_price * 100).toFixed(2)}%` : '0.00%'}
+                      {formData.selling_price && formData.cost_price ? `${Number(((formData.selling_price - formData.cost_price) / formData.selling_price * 100) || 0).toFixed(2)}%` : '0.00%'}
                     </div>
                   </div>
                 </div>

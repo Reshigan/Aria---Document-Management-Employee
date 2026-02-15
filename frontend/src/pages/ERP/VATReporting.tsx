@@ -390,7 +390,7 @@ const VATReporting: React.FC = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-500 dark:text-gray-400">Total Procurement Spend</p>
-                <p className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mt-1">R {totalSpend.toLocaleString()}</p>
+                <p className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mt-1">R {Number(totalSpend ?? 0).toLocaleString()}</p>
               </div>
               <div className="p-3 bg-indigo-100 dark:bg-indigo-900/30 rounded-xl">
                 <DollarSign className="w-6 h-6 text-blue-600 dark:text-blue-400" />
@@ -402,7 +402,7 @@ const VATReporting: React.FC = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-500 dark:text-gray-400">Recognized Spend</p>
-                <p className="text-2xl font-bold text-green-600 dark:text-green-400 mt-1">R {totalRecognized.toLocaleString()}</p>
+                <p className="text-2xl font-bold text-green-600 dark:text-green-400 mt-1">R {Number(totalRecognized ?? 0).toLocaleString()}</p>
               </div>
               <div className="p-3 bg-green-100 dark:bg-green-900/30 rounded-lg">
                 <TrendingUp className="w-6 h-6 text-green-600 dark:text-green-400" />
@@ -414,7 +414,7 @@ const VATReporting: React.FC = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-500 dark:text-gray-400">Recognition Rate</p>
-                <p className="text-2xl font-bold text-purple-600 dark:text-purple-400 mt-1">{overallRecognition.toFixed(1)}%</p>
+                <p className="text-2xl font-bold text-purple-600 dark:text-purple-400 mt-1">{Number(overallRecognition ?? 0).toFixed(1)}%</p>
               </div>
               <div className="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
                 <CheckCircle className="w-6 h-6 text-purple-600 dark:text-purple-400" />

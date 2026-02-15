@@ -242,7 +242,7 @@ export const Pricing: React.FC = () => {
                 <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-6 rounded-xl">
                   <div className="text-sm text-green-600 dark:text-green-400 font-medium mb-2">Monthly Cost</div>
                   <div className="text-3xl font-bold text-green-900">
-                    R{displayPrice.toLocaleString()}
+                    R{Number(displayPrice ?? 0).toLocaleString()}
                   </div>
                   <div className="text-sm text-gray-600 dark:text-gray-400 mt-2">
                     {billingPeriod === 'annual' ? 'Billed annually' : 'Billed monthly'}

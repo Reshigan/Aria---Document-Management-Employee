@@ -45,7 +45,8 @@ const Attendance: React.FC = () => {
     setError('');
     try {
       const response = await api.get(`/hr/attendance?date=${selectedDate}`);
-      setRecords(response.data.records || []);
+      const d = response.data;
+      setRecords(d.records || d.attendance || (Array.isArray(d) ? d : []));
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Failed to load attendance records');
     } finally {
@@ -123,7 +124,7 @@ const Attendance: React.FC = () => {
   const presentCount = records.filter(r => r.status === 'PRESENT').length;
   const absentCount = records.filter(r => r.status === 'ABSENT').length;
   const lateCount = records.filter(r => r.status === 'LATE').length;
-  const attendanceRate = records.length > 0 ? ((presentCount + lateCount) / records.length * 100).toFixed(1) : '0.0';
+  const attendanceRate = records.length > 0 ? Number(((presentCount + lateCount) / records.length * 100) || 0).toFixed(1) : '0.0';
 
   if (loading) {
     return (
