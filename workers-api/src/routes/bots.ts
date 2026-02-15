@@ -2111,7 +2111,7 @@ async function executeInvoiceReconciliationBot(
       ).bind(companyId, invoice.id, invoice.total_amount * 0.99).first(); // Allow 1% tolerance
       
       const matchingBankTx = await db.prepare(
-        'SELECT id FROM bank_transactions WHERE company_id = ? AND reference LIKE ? AND amount >= ?'
+        'SELECT id FROM bank_transactions WHERE company_id = ? AND reference LIKE ? AND credit_amount >= ?'
       ).bind(companyId, `%${invoice.invoice_number}%`, invoice.total_amount * 0.99).first();
       
       if (matchingPayment || matchingBankTx) {
