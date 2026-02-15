@@ -285,7 +285,7 @@ export default function ReceiptDetail() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
           <TransactionCard title="Payment Information">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <TransactionField
                 label="Customer"
                 type="select"
@@ -349,7 +349,7 @@ export default function ReceiptDetail() {
                 type="textarea"
                 value={notes}
                 onChange={setNotes}
-                rows={3}
+                rows={2}
                 disabled={receipt?.status !== 'draft' && !isNew}
               />
             </div>
@@ -361,7 +361,7 @@ export default function ReceiptDetail() {
               (receipt?.status === 'draft' || isNew) && (
                 <button
                   onClick={addAllocation}
-                  className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl text-sm font-medium hover:from-blue-600 hover:to-blue-700 shadow-lg shadow-blue-500/30 transition-all"
+                  className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl text-sm font-medium hover:from-blue-600 hover:to-blue-700  transition-all"
                 >
                   Add Allocation
                 </button>
@@ -373,7 +373,7 @@ export default function ReceiptDetail() {
                 No allocations added. Click "Add Allocation" to allocate payment to invoices.
               </div>
             ) : (
-              <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-3">
                 {allocations.map((alloc, index) => (
                   <div
                     key={index}

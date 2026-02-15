@@ -73,11 +73,11 @@ export default function WorkflowManagementPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6 lg:p-8">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+    <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3 mb-2">
-            <div className="p-2 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl shadow-lg shadow-indigo-500/30">
+          <h1 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-3 mb-2">
+            <div className="p-2 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl ">
               <Workflow className="h-7 w-7 text-white" />
             </div>
             Workflow Management
@@ -93,7 +93,7 @@ export default function WorkflowManagementPage() {
           </button>
           <button
             onClick={() => setShowStartModal(true)}
-            className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-xl font-semibold shadow-lg shadow-indigo-500/30 hover:shadow-xl hover:shadow-indigo-500/40 transition-all"
+            className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-xl font-semibold  hover:shadow-xl hover:shadow-indigo-500/40 transition-all"
           >
             <Play className="h-5 w-5" />
             Start Workflow
@@ -107,9 +107,9 @@ export default function WorkflowManagementPage() {
         </div>
       ) : (
         <>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-6 mb-8">
             {workflowTypes.map((wf) => (
-              <div key={wf.id} className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 hover:shadow-lg transition-shadow cursor-pointer">
+              <div key={wf.id} className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 hover:shadow-lg transition-shadow cursor-pointer">
                 <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">{wf.name}</h3>
                 <p className="text-gray-600 dark:text-gray-400 text-sm mb-3">{wf.description}</p>
                 <span className="text-xs text-indigo-600 dark:text-indigo-400">{wf.steps_count} steps</span>
@@ -117,7 +117,7 @@ export default function WorkflowManagementPage() {
             ))}
           </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
             <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Active Workflows</h3>
             <DataTable
               data={workflows}
@@ -144,11 +144,11 @@ export default function WorkflowManagementPage() {
 
       {showStartModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full overflow-hidden">
-            <div className="p-6 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-indigo-500 to-purple-500">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-md w-full overflow-hidden">
+            <div className="p-4 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-indigo-500 to-purple-500">
               <h2 className="text-xl font-bold text-white">Start New Workflow</h2>
             </div>
-            <div className="p-6 space-y-3">
+            <div className="p-4 space-y-3">
               {workflowTypes.map((wf) => (
                 <button
                   key={wf.id}
@@ -160,7 +160,7 @@ export default function WorkflowManagementPage() {
                 </button>
               ))}
             </div>
-            <div className="p-6 border-t border-gray-200 dark:border-gray-700">
+            <div className="p-4 border-t border-gray-200 dark:border-gray-700">
               <button
                 onClick={() => setShowStartModal(false)}
                 className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"

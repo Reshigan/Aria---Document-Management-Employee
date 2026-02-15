@@ -108,10 +108,10 @@ export default function CashFlowStatementPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6">
+    <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4">
       <div className="max-w-4xl mx-auto">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent flex items-center gap-3">
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent flex items-center gap-3">
             <Activity className="h-8 w-8 text-indigo-600" />
             Cash Flow Statement
           </h1>
@@ -153,7 +153,7 @@ export default function CashFlowStatementPage() {
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
           </div>
         ) : data ? (
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6 space-y-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 space-y-3">
             {/* Opening Cash */}
             <div className="flex justify-between py-2 font-medium border-b border-gray-200 dark:border-gray-700">
               <span className="text-gray-700 dark:text-gray-300">Opening Cash Balance</span>

@@ -451,7 +451,7 @@ const AskAriaChat: React.FC = () => {
 
   if (initializing) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
+      <div className="bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
         <div className="text-center">
           <div className="relative">
             <div className="w-20 h-20 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 animate-pulse mx-auto mb-4 flex items-center justify-center">
@@ -467,13 +467,13 @@ const AskAriaChat: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex flex-col">
+    <div className="bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex flex-col">
       {/* Modern Header */}
       <div className="bg-black/20 backdrop-blur-xl border-b border-white/10 px-6 py-4">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             <div className="relative">
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-lg shadow-purple-500/30">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center ">
                 <Bot className="w-7 h-7 text-white" />
               </div>
               <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 rounded-full border-2 border-slate-900 animate-pulse" />
@@ -624,7 +624,7 @@ const AskAriaChat: React.FC = () => {
 
         {/* Messages Area */}
         <div className="flex-1 overflow-auto px-6 py-8">
-          <div className="max-w-4xl mx-auto space-y-6">
+          <div className="max-w-4xl mx-auto space-y-3">
             {/* Quick Actions - Show only at start */}
             {messages.length === 1 && !loading && (
               <div className="mb-8">
@@ -634,7 +634,7 @@ const AskAriaChat: React.FC = () => {
                     <button
                       key={index}
                       onClick={() => handleQuickAction(action.prompt)}
-                      className="group relative overflow-hidden rounded-2xl p-4 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 transition-all duration-300 text-left hover:scale-[1.02] hover:shadow-xl"
+                      className="group relative overflow-hidden rounded-xl p-3 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 transition-all duration-300 text-left hover:scale-[1.02] hover:shadow-xl"
                     >
                       <div className={`absolute inset-0 bg-gradient-to-br ${action.color} opacity-0 group-hover:opacity-10 transition-opacity duration-300`} />
                       <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${action.color} flex items-center justify-center mb-3 shadow-lg group-hover:scale-110 transition-transform duration-300`}>
@@ -652,7 +652,7 @@ const AskAriaChat: React.FC = () => {
             {messages.map((message) => (
               <div
                 key={message.id}
-                className={`flex gap-4 ${message.role === 'user' ? 'flex-row-reverse' : ''} animate-fadeIn`}
+                className={`flex gap-3 ${message.role === 'user' ? 'flex-row-reverse' : ''} animate-fadeIn`}
               >
                 <div className={`flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center shadow-lg ${
                   message.role === 'user'
@@ -666,7 +666,7 @@ const AskAriaChat: React.FC = () => {
                   )}
                 </div>
                 <div className={`flex-1 max-w-[80%] ${message.role === 'user' ? 'text-right' : ''}`}>
-                                    <div className={`inline-block rounded-2xl px-5 py-3 shadow-lg ${
+                                    <div className={`inline-block rounded-2xl px-4 py-2 shadow-lg ${
                                       message.role === 'user'
                                         ? 'bg-gradient-to-br from-blue-500 to-blue-600 text-white'
                                         : 'bg-white/10 backdrop-blur-sm text-white border border-white/10'
@@ -686,7 +686,7 @@ const AskAriaChat: React.FC = () => {
 
             {/* Typing indicator */}
             {loading && messages[messages.length - 1]?.content === '' && (
-              <div className="flex gap-4">
+              <div className="flex gap-3">
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-lg">
                   <Bot className="w-5 h-5 text-white" />
                 </div>
@@ -746,14 +746,14 @@ const AskAriaChat: React.FC = () => {
                 disabled={loading}
                 placeholder="Ask Aria anything... Try 'List available bots' or 'Run reconciliation'"
                 rows={1}
-                className="w-full px-5 py-3.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder-purple-300/50 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 resize-none transition-all duration-200 text-base"
+                className="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder-purple-300/50 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 resize-none transition-all duration-200 text-base"
                 style={{ minHeight: '52px', maxHeight: '120px' }}
               />
             </div>
             <button
               onClick={() => sendMessage()}
               disabled={!inputMessage.trim() || loading}
-              className="flex-shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 flex items-center justify-center text-white shadow-lg shadow-purple-500/30 transition-all duration-200 disabled:opacity-50 disabled:shadow-none hover:scale-105 disabled:hover:scale-100"
+              className="flex-shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 flex items-center justify-center text-white  transition-all duration-200 disabled:opacity-50 disabled:shadow-none hover:scale-105 disabled:hover:scale-100"
               title="Send message"
             >
               <Send className="w-5 h-5" />

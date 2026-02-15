@@ -240,7 +240,7 @@ export default function DocumentUpload() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-6">
+    <div className="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-4">
       <div className="max-w-6xl mx-auto">
         <div className="mb-8">
           <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
@@ -270,8 +270,8 @@ export default function DocumentUpload() {
         )}
 
         {!processedDoc && (
-          <div className="bg-white dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-8">
-            <div className="mb-6 grid grid-cols-3 gap-4">
+          <div className="bg-white dark:bg-gray-800/80 backdrop-blur-sm rounded-xl shadow-xl border border-white/20 p-8">
+            <div className="mb-6 grid grid-cols-3 gap-3">
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Company ID
@@ -322,7 +322,7 @@ export default function DocumentUpload() {
               `}
             >
               {isProcessing ? (
-                <div className="flex flex-col items-center gap-4">
+                <div className="flex flex-col items-center gap-3">
                   <Loader className="w-12 h-12 text-blue-600 dark:text-blue-400 animate-spin" />
                   <p className="text-gray-600 dark:text-gray-400">Processing document...</p>
                 </div>
@@ -344,7 +344,7 @@ export default function DocumentUpload() {
                   />
                   <label
                     htmlFor="file-upload"
-                    className="inline-block px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-medium cursor-pointer hover:shadow-lg transition-all"
+                    className="inline-block px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-medium cursor-pointer "
                   >
                     Choose File
                   </label>
@@ -355,8 +355,8 @@ export default function DocumentUpload() {
         )}
 
         {processedDoc && (
-          <div className="space-y-6">
-            <div className="bg-white dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-6">
+          <div className="space-y-3">
+            <div className="bg-white dark:bg-gray-800/80 backdrop-blur-sm rounded-xl shadow-xl border border-white/20 p-4">
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
                   <FileText className="w-6 h-6 text-blue-600 dark:text-blue-400" />
@@ -391,7 +391,7 @@ export default function DocumentUpload() {
                 </div>
               )}
 
-              <div className="grid grid-cols-2 gap-4 mb-6">
+              <div className="grid grid-cols-2 gap-3 mb-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Supplier Name
@@ -530,11 +530,11 @@ export default function DocumentUpload() {
                 </div>
               </div>
 
-              <div className="flex gap-4">
+              <div className="flex gap-3">
                 <button
                   onClick={handlePostToERP}
                   disabled={isPosting || !vendorId}
-                  className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-medium hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  className="flex-1 px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-medium  disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
                   {isPosting ? (
                     <>
@@ -550,7 +550,7 @@ export default function DocumentUpload() {
                 </button>
                 <button
                   onClick={() => setProcessedDoc(null)}
-                  className="px-6 py-3 bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg font-medium hover:bg-gray-300 transition-all"
+                  className="px-4 py-2 bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg font-medium hover:bg-gray-300 transition-all"
                 >
                   Cancel
                 </button>

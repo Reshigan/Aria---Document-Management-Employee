@@ -72,7 +72,7 @@ export const Landing: React.FC = () => {
               Finance, HR, Inventory, CRM, Manufacturing, and full South African compliance built-in.
             </p>
             
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-16">
               <Link
                 to="/login"
                 className="group px-8 py-4 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-900 rounded-xl font-semibold text-lg transition-all flex items-center space-x-2 shadow-xl shadow-amber-500/25"
@@ -89,7 +89,7 @@ export const Landing: React.FC = () => {
               </Link>
             </div>
             
-            <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-gray-500">
+            <div className="flex flex-wrap items-center justify-center gap-6 text-xs text-gray-500">
               <div className="flex items-center space-x-2">
                 <CheckCircle className="w-5 h-5 text-emerald-500" />
                 <span>No credit card required</span>
@@ -112,14 +112,14 @@ export const Landing: React.FC = () => {
             transition={{ duration: 0.8, delay: 0.3 }}
             className="mt-16 relative"
           >
-            <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-white/10 p-6 shadow-2xl">
+            <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-white/10 p-4 shadow-2xl">
               <div className="flex items-center gap-2 mb-4">
                 <div className="w-3 h-3 rounded-full bg-red-500"></div>
                 <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
                 <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                <span className="ml-4 text-sm text-gray-500">ARIA Executive Dashboard</span>
+                <span className="ml-4 text-xs text-gray-500">ARIA Executive Dashboard</span>
               </div>
-              <div className="grid grid-cols-4 gap-4">
+              <div className="grid grid-cols-4 gap-3">
                 <div className="bg-slate-900/50 rounded-xl p-4 border border-white/5">
                   <div className="text-xs text-gray-500 mb-1">Revenue (YTD)</div>
                   <div className="text-2xl font-bold text-white">R12.4M</div>
@@ -160,7 +160,7 @@ export const Landing: React.FC = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
             {[
               {
                 icon: Brain,
@@ -254,7 +254,7 @@ export const Landing: React.FC = () => {
           <p className="text-xl text-gray-400 mb-10 max-w-2xl mx-auto">
             Start your 14-day free trial today. No credit card required. Full access to all features.
           </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link
               to="/login"
               className="group inline-flex items-center space-x-2 px-8 py-4 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-900 rounded-xl font-semibold text-lg transition-all shadow-xl shadow-amber-500/25"
@@ -290,7 +290,7 @@ export const Landing: React.FC = () => {
             
             <div>
               <h4 className="font-semibold text-white mb-4">Product</h4>
-              <ul className="space-y-3 text-sm text-gray-400">
+              <ul className="space-y-3 text-xs text-gray-400">
                 <li><a href="#features" className="hover:text-amber-500 transition">Features</a></li>
                 <li><a href="#modules" className="hover:text-amber-500 transition">Modules</a></li>
                 <li><a href="#pricing" className="hover:text-amber-500 transition">Pricing</a></li>
@@ -300,7 +300,7 @@ export const Landing: React.FC = () => {
             
             <div>
               <h4 className="font-semibold text-white mb-4">Company</h4>
-              <ul className="space-y-3 text-sm text-gray-400">
+              <ul className="space-y-3 text-xs text-gray-400">
                 <li><a href="#" className="hover:text-amber-500 transition">About Us</a></li>
                 <li><a href="#" className="hover:text-amber-500 transition">Contact</a></li>
                 <li><a href="#" className="hover:text-amber-500 transition">Careers</a></li>
@@ -310,7 +310,7 @@ export const Landing: React.FC = () => {
             
             <div>
               <h4 className="font-semibold text-white mb-4">Legal</h4>
-              <ul className="space-y-3 text-sm text-gray-400">
+              <ul className="space-y-3 text-xs text-gray-400">
                 <li><a href="#" className="hover:text-amber-500 transition">Privacy Policy</a></li>
                 <li><a href="#" className="hover:text-amber-500 transition">Terms of Service</a></li>
                 <li><a href="#" className="hover:text-amber-500 transition">Security</a></li>
@@ -319,9 +319,9 @@ export const Landing: React.FC = () => {
             </div>
           </div>
           
-          <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="text-sm text-gray-500">2025 VantaX Holdings (Pty) Ltd. All rights reserved.</p>
-            <div className="flex items-center gap-6 text-sm text-gray-500">
+          <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-3">
+            <p className="text-xs text-gray-500">2025 VantaX Holdings (Pty) Ltd. All rights reserved.</p>
+            <div className="flex items-center gap-6 text-xs text-gray-500">
               <span>Made with care in South Africa</span>
             </div>
           </div>

@@ -81,10 +81,10 @@ export default function BbbeeComplianceReportPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6">
+    <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4">
       <div className="max-w-6xl mx-auto">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent flex items-center gap-3">
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent flex items-center gap-3">
             <Award className="h-8 w-8 text-indigo-600" />
             BBBEE Compliance Report
           </h1>
@@ -112,32 +112,32 @@ export default function BbbeeComplianceReportPage() {
         ) : data ? (
           <>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
+              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
                 <div className="text-sm font-medium text-gray-600 dark:text-gray-400">Current Level</div>
                 <div className={`text-4xl font-bold mt-2 ${getLevelColor(data.current_level)}`}>Level {data.current_level}</div>
               </div>
-              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
+              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
                 <div className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Score</div>
                 <div className="text-4xl font-bold text-indigo-600 dark:text-indigo-400 mt-2">{data.total_score}</div>
               </div>
-              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
+              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
                 <div className="text-sm font-medium text-gray-600 dark:text-gray-400">Procurement Recognition</div>
                 <div className="text-4xl font-bold text-purple-600 dark:text-purple-400 mt-2">{data.procurement_recognition}%</div>
               </div>
-              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
+              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
                 <div className="text-sm font-medium text-gray-600 dark:text-gray-400">Certificate Expiry</div>
-                <div className="text-2xl font-bold text-gray-900 dark:text-white mt-2">{new Date(data.certificate_expiry).toLocaleDateString()}</div>
+                <div className="text-xl font-bold text-gray-900 dark:text-white mt-2">{new Date(data.certificate_expiry).toLocaleDateString()}</div>
               </div>
             </div>
 
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
               <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-6">Scorecard Elements</h3>
-              <div className="space-y-6">
+              <div className="space-y-3">
                 {data.scorecard_elements.map((element) => (
                   <div key={element.name}>
                     <div className="flex justify-between text-sm mb-2">
                       <span className="font-medium text-gray-700 dark:text-gray-300">{element.name}</span>
-                      <div className="flex items-center gap-4">
+                      <div className="flex items-center gap-3">
                         <span className="text-gray-600 dark:text-gray-400">{element.achieved_points} / {element.max_points} points</span>
                         <span className={`font-bold ${
                           element.percentage >= 80 ? 'text-green-600 dark:text-green-400' :
@@ -161,9 +161,9 @@ export default function BbbeeComplianceReportPage() {
               </div>
             </div>
 
-            <div className="mt-6 bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
+            <div className="mt-6 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
               <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Verification Details</h3>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
                   <p className="text-sm text-gray-600 dark:text-gray-400">Verification Agency</p>
                   <p className="font-medium text-gray-900 dark:text-white">{data.verification_agency}</p>

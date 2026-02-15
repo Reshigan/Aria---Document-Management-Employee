@@ -89,7 +89,7 @@ export const ExecutiveDashboard: React.FC = () => {
 
   // Error banner with retry
   const ErrorBanner = () => (
-    <div className="bg-red-500/10 border border-red-500/30 rounded-2xl p-4 mb-6 flex items-center justify-between">
+    <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-3 mb-6 flex items-center justify-between">
       <div className="flex items-center gap-3">
         <AlertCircle className="h-5 w-5 text-red-400" />
         <span className="text-red-400">{error}</span>
@@ -101,16 +101,16 @@ export const ExecutiveDashboard: React.FC = () => {
   );
 
   return (
-    <div className="min-h-screen p-6" style={{ background: 'linear-gradient(135deg, #0f1419 0%, #1a2332 50%, #0f1419 100%)' }}>
+    <div className="p-6" style={{ background: 'linear-gradient(135deg, #0f1419 0%, #1a2332 50%, #0f1419 100%)' }}>
       {/* Header */}
       <div className="mb-8">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-amber-400 to-amber-600 rounded-2xl shadow-xl shadow-amber-500/20">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-amber-400 to-amber-600 rounded-xl shadow-xl shadow-amber-500/20">
               <BarChart3 className="h-8 w-8 text-slate-900" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-white">Executive Dashboard</h1>
+              <h1 className="text-2xl font-bold text-white">Executive Dashboard</h1>
               <p className="text-gray-400">Real-time financial overview powered by <span className="text-amber-500 font-semibold">{metrics?.active_bots || 109}</span> AI automation agents</p>
             </div>
           </div>
@@ -130,8 +130,8 @@ export const ExecutiveDashboard: React.FC = () => {
       ) : (
         <>
           {/* Financial KPI Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-            <div data-testid="metric-revenue" className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-6 border border-white/5 hover:border-amber-500/30 transition-all group">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+            <div data-testid="metric-revenue" className="bg-slate-800/50 backdrop-blur-sm rounded-xl p-3 border border-white/5 hover:border-amber-500/30 transition-all group">
               <div className="flex items-center justify-between mb-4">
                 <div className="p-2 bg-emerald-500/10 rounded-xl">
                   <TrendingUp className="h-5 w-5 text-emerald-500" />
@@ -139,10 +139,10 @@ export const ExecutiveDashboard: React.FC = () => {
                 <span className="text-xs text-emerald-500 font-medium bg-emerald-500/10 px-2 py-1 rounded-lg">+12.5%</span>
               </div>
               <div className="text-2xl font-bold text-white mb-1">{formatCurrency(metrics?.total_revenue || 0)}</div>
-              <div className="text-sm text-gray-400">Total Revenue (YTD)</div>
+              <div className="text-xs text-gray-400">Total Revenue (YTD)</div>
             </div>
             
-            <div data-testid="metric-expenses" className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-6 border border-white/5 hover:border-amber-500/30 transition-all group">
+            <div data-testid="metric-expenses" className="bg-slate-800/50 backdrop-blur-sm rounded-xl p-3 border border-white/5 hover:border-amber-500/30 transition-all group">
               <div className="flex items-center justify-between mb-4">
                 <div className={`p-2 rounded-xl ${metrics?.is_loss ? 'bg-red-500/10' : 'bg-emerald-500/10'}`}>
                   {metrics?.is_loss ? <TrendingDown className="h-5 w-5 text-red-500" /> : <DollarSign className="h-5 w-5 text-emerald-500" />}
@@ -152,10 +152,10 @@ export const ExecutiveDashboard: React.FC = () => {
                 </span>
               </div>
               <div className="text-2xl font-bold text-white mb-1">{formatCurrency(Math.abs(metrics?.net_profit || 0))}</div>
-              <div className="text-sm text-gray-400">{metrics?.is_loss ? "Net Loss" : "Net Profit"}</div>
+              <div className="text-xs text-gray-400">{metrics?.is_loss ? "Net Loss" : "Net Profit"}</div>
             </div>
             
-            <div data-testid="metric-profit" className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-6 border border-white/5 hover:border-amber-500/30 transition-all group">
+            <div data-testid="metric-profit" className="bg-slate-800/50 backdrop-blur-sm rounded-xl p-3 border border-white/5 hover:border-amber-500/30 transition-all group">
               <div className="flex items-center justify-between mb-4">
                 <div className="p-2 bg-amber-500/10 rounded-xl">
                   <Wallet className="h-5 w-5 text-amber-500" />
@@ -165,10 +165,10 @@ export const ExecutiveDashboard: React.FC = () => {
                 </span>
               </div>
               <div className="text-2xl font-bold text-white mb-1">{formatCurrency(metrics?.cash_position || 0)}</div>
-              <div className="text-sm text-gray-400">Cash Position</div>
+              <div className="text-xs text-gray-400">Cash Position</div>
             </div>
             
-            <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-6 border border-white/5 hover:border-amber-500/30 transition-all group">
+            <div className="bg-slate-800/50 backdrop-blur-sm rounded-xl p-3 border border-white/5 hover:border-amber-500/30 transition-all group">
               <div className="flex items-center justify-between mb-4">
                 <div className="p-2 bg-blue-500/10 rounded-xl">
                   <FileText className="h-5 w-5 text-blue-500" />
@@ -176,25 +176,25 @@ export const ExecutiveDashboard: React.FC = () => {
                 <span className="text-xs text-blue-500 font-medium bg-blue-500/10 px-2 py-1 rounded-lg">Outstanding</span>
               </div>
               <div className="text-2xl font-bold text-white mb-1">{formatCurrency(metrics?.ar_outstanding || 0)}</div>
-              <div className="text-sm text-gray-400">AR Outstanding</div>
+              <div className="text-xs text-gray-400">AR Outstanding</div>
             </div>
           </div>
 
           {/* AP/AR Cards */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
-            <div data-testid="revenue-chart" className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-6 border border-white/5">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 mb-6">
+            <div data-testid="revenue-chart" className="bg-slate-800/50 backdrop-blur-sm rounded-xl p-3 border border-white/5">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-white">Accounts Payable</h3>
                 <div className="p-2 bg-red-500/10 rounded-xl">
                   <CreditCard className="h-5 w-5 text-red-400" />
                 </div>
               </div>
-              <div className="text-3xl font-bold text-white mb-4">
+              <div className="text-2xl font-bold text-white mb-4">
                 {formatCurrency(metrics?.ap_outstanding || 0)}
               </div>
               <div className="flex items-center gap-2 p-3 bg-slate-900/50 rounded-xl">
                 <Bot className="h-4 w-4 text-amber-500" />
-                <span className="text-sm text-gray-400">
+                <span className="text-xs text-gray-400">
                   {metrics?.invoices_processed_today > 0 
                     ? `Invoice Reconciliation Agent: ${metrics.invoices_processed_today} invoices processed today`
                     : 'Invoice Reconciliation Agent: No invoices processed today'}
@@ -202,19 +202,19 @@ export const ExecutiveDashboard: React.FC = () => {
               </div>
             </div>
 
-            <div data-testid="expense-chart" className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-6 border border-white/5">
+            <div data-testid="expense-chart" className="bg-slate-800/50 backdrop-blur-sm rounded-xl p-3 border border-white/5">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-white">Accounts Receivable</h3>
                 <div className="p-2 bg-emerald-500/10 rounded-xl">
                   <Wallet className="h-5 w-5 text-emerald-400" />
                 </div>
               </div>
-              <div className="text-3xl font-bold text-white mb-4">
+              <div className="text-2xl font-bold text-white mb-4">
                 {formatCurrency(metrics?.ar_outstanding || 0)}
               </div>
               <div className="flex items-center gap-2 p-3 bg-slate-900/50 rounded-xl">
                 <Bot className="h-4 w-4 text-amber-500" />
-                <span className="text-sm text-gray-400">
+                <span className="text-xs text-gray-400">
                   {metrics?.pending_payments > 0 
                     ? `Payment Prediction Agent: ${metrics.pending_payments} payments pending`
                     : 'Payment Prediction Agent: No pending payments'}
@@ -224,7 +224,7 @@ export const ExecutiveDashboard: React.FC = () => {
           </div>
 
           {/* Automation Agents Section */}
-          <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-6 border border-white/5 mb-6">
+          <div className="bg-slate-800/50 backdrop-blur-sm rounded-xl p-3 border border-white/5 mb-6">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-amber-500/10 rounded-xl">
@@ -235,27 +235,27 @@ export const ExecutiveDashboard: React.FC = () => {
             </div>
             
             {/* Agent Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
               <div className="bg-slate-900/50 rounded-xl p-4 border border-white/5">
-                <div className="text-sm text-gray-400 mb-1">Total Agents</div>
+                <div className="text-xs text-gray-400 mb-1">Total Agents</div>
                 <div className="text-2xl font-bold text-white">{metrics?.bot_count || 109}</div>
               </div>
               <div className="bg-slate-900/50 rounded-xl p-4 border border-white/5">
-                <div className="text-sm text-gray-400 mb-1">Active</div>
+                <div className="text-xs text-gray-400 mb-1">Active</div>
                 <div className="text-2xl font-bold text-emerald-500">{metrics?.active_bots || 109}</div>
               </div>
               <div className="bg-slate-900/50 rounded-xl p-4 border border-white/5">
-                <div className="text-sm text-gray-400 mb-1">Transactions Today</div>
+                <div className="text-xs text-gray-400 mb-1">Transactions Today</div>
                 <div className="text-2xl font-bold text-white">{metrics?.transactions_today?.toLocaleString() || '0'}</div>
               </div>
               <div className="bg-slate-900/50 rounded-xl p-4 border border-white/5">
-                <div className="text-sm text-gray-400 mb-1">Success Rate</div>
+                <div className="text-xs text-gray-400 mb-1">Success Rate</div>
                 <div className={`text-2xl font-bold ${metrics?.success_rate >= 90 ? 'text-emerald-500' : 'text-amber-500'}`}>{metrics?.success_rate || 100}%</div>
               </div>
             </div>
 
             {/* Agent Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
               {agents.length > 0 ? agents.map((agent, index) => (
                 <div key={index} className="bg-slate-900/50 rounded-xl p-4 border border-white/5 hover:border-amber-500/30 transition-all">
                   <div className="flex justify-between mb-3">

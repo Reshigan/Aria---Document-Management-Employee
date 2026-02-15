@@ -158,21 +158,21 @@ export default function Customers() {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6">
+    <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4">
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-2">
-          <div className="p-3 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl shadow-lg shadow-indigo-500/30">
+          <div className="p-2 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl ">
             <Users className="h-8 w-8 text-white" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Customers</h1>
+            <h1 className="text-xl font-bold text-gray-900 dark:text-white">Customers</h1>
             <p className="text-gray-600 dark:text-gray-400">Manage customer master data and credit limits</p>
           </div>
         </div>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 mb-6">
-        <div className="flex flex-col md:flex-row gap-4">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 mb-6">
+        <div className="flex flex-col md:flex-row gap-3">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
             <input
@@ -189,7 +189,7 @@ export default function Customers() {
               resetForm();
               setShowForm(true);
             }}
-            className="px-6 py-2.5 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-xl hover:from-indigo-600 hover:to-purple-600 transition-all shadow-lg shadow-indigo-500/30 flex items-center gap-2 font-medium"
+            className="px-6 py-2.5 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-xl hover:from-indigo-600 hover:to-purple-600 transition-all  flex items-center gap-2 font-medium"
           >
             <Plus className="h-5 w-5" />
             Add Customer
@@ -198,25 +198,25 @@ export default function Customers() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl shadow-lg shadow-indigo-500/30">
-              <Users className="h-6 w-6 text-white" />
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl ">
+              <Users className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{customers.length}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Total Customers</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{customers.length}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Total Customers</p>
             </div>
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg shadow-green-500/30">
-              <UserCheck className="h-6 w-6 text-white" />
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl ">
+              <UserCheck className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{customers.filter(c => c.is_active).length}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Active Customers</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{customers.filter(c => c.is_active).length}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Active Customers</p>
             </div>
           </div>
         </div>
@@ -239,7 +239,7 @@ export default function Customers() {
             aria-modal="true"
             aria-labelledby="modal-title"
             onKeyDown={handleModalKeyDown}
-            className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-auto"
+            className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-auto"
           >
             <div className="bg-gradient-to-r from-indigo-500 to-purple-500 px-6 py-4">
               <h2 id="modal-title" className="text-xl font-bold text-white flex items-center gap-2">
@@ -365,7 +365,7 @@ export default function Customers() {
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2.5 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-xl hover:from-indigo-600 hover:to-purple-600 transition-all shadow-lg shadow-indigo-500/30 font-medium"
+                  className="px-5 py-2.5 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-xl hover:from-indigo-600 hover:to-purple-600 transition-all  font-medium"
                 >
                   {editingCustomer ? 'Update' : 'Create'}
                 </button>
@@ -375,7 +375,7 @@ export default function Customers() {
         </div>
       )}
 
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
         {loading ? (
           <div className="p-12 text-center">
             <Users className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3 animate-pulse" />
@@ -425,7 +425,7 @@ export default function Customers() {
                         </div>
                       )}
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
+                    <td className="px-6 py-4 text-xs text-gray-500 dark:text-gray-400">
                       {customer.city && customer.country ? `${customer.city}, ${customer.country}` : customer.country || '-'}
                     </td>
                     <td className="px-6 py-4 text-sm text-right font-medium text-gray-900 dark:text-white">

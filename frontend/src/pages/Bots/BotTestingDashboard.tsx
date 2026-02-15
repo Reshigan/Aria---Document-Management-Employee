@@ -127,11 +127,11 @@ const BotTestingDashboard: React.FC = () => {
   const completedBots = agents.filter(agent => agent.status === 'passed' || agent.status === 'failed').length;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 p-6 lg:p-8">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+    <div className="bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 p-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3 mb-2">
-            <div className="p-2 bg-gradient-to-br from-blue-500 to-purple-500 rounded-xl shadow-lg shadow-blue-500/30">
+          <h1 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-3 mb-2">
+            <div className="p-2 bg-gradient-to-br from-blue-500 to-purple-500 rounded-xl ">
               <Bot className="h-7 w-7 text-white" />
             </div>
             AI Agent Testing Dashboard
@@ -153,31 +153,31 @@ const BotTestingDashboard: React.FC = () => {
       ) : (
         <>
           {/* Summary */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-            <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700">
-              <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">Agents Tested</div>
-              <div className="text-2xl font-bold text-gray-900 dark:text-white">{completedBots} / {agents.length}</div>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mb-6">
+            <div className="bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-100 dark:border-gray-700">
+              <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Agents Tested</div>
+              <div className="text-xl font-bold text-gray-900 dark:text-white">{completedBots} / {agents.length}</div>
             </div>
-            <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700">
-              <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">Overall Accuracy</div>
+            <div className="bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-100 dark:border-gray-700">
+              <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Overall Accuracy</div>
               <div className={`text-2xl font-bold ${overallAccuracy >= 85 ? 'text-green-600' : 'text-yellow-600'}`}>
                 {formatPercentage(overallAccuracy)}
               </div>
             </div>
-            <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700">
-              <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">Tests Passed</div>
+            <div className="bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-100 dark:border-gray-700">
+              <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Tests Passed</div>
               <div className="text-2xl font-bold text-green-600">{totalPassed} / {totalTests}</div>
             </div>
-            <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700">
-              <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">Unique Agents</div>
+            <div className="bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-100 dark:border-gray-700">
+              <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Unique Agents</div>
               <div className="text-2xl font-bold text-purple-600">{agents.filter(b => b.unique_feature).length}</div>
             </div>
           </div>
 
           {/* Agent Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
             {agents.map((agent) => (
-              <div key={agent.bot_id} className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 p-4">
+              <div key={agent.bot_id} className="bg-white dark:bg-gray-800 rounded-lg border border-gray-100 dark:border-gray-700 p-4">
                 <div className="flex items-center justify-between mb-3">
                   <div className={`p-2 rounded-lg ${agent.unique_feature ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-600' : 'bg-blue-100 dark:bg-blue-900/30 text-blue-600'}`}>
                     {iconMap[agent.icon_type] || <Bot className="w-6 h-6" />}

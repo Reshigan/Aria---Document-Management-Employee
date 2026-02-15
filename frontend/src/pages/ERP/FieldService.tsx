@@ -203,8 +203,8 @@ export default function FieldService() {
 
     return (
       <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setShowCreateModal(false)}>
-        <div onClick={(e) => e.stopPropagation()} className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden">
-          <div className="bg-gradient-to-r from-cyan-600 to-teal-600 text-white p-6">
+        <div onClick={(e) => e.stopPropagation()} className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-lg overflow-hidden">
+          <div className="bg-gradient-to-r from-cyan-600 to-teal-600 text-white p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-white/20 rounded-lg"><Wrench className="h-6 w-6" /></div>
@@ -218,41 +218,41 @@ export default function FieldService() {
           </div>
 
           {isViewMode ? (
-            <div className="p-6 space-y-4">
+            <div className="p-4 space-y-4">
               {activeTab === 'requests' && selectedItem && 'request_number' in selectedItem && (
                 <>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div><p className="text-sm text-gray-500 dark:text-gray-400">Request #</p><p className="font-semibold text-gray-900 dark:text-white">{selectedItem.request_number}</p></div>
-                    <div><p className="text-sm text-gray-500 dark:text-gray-400">Customer</p><p className="font-semibold text-gray-900 dark:text-white">{selectedItem.customer_name}</p></div>
-                    <div><p className="text-sm text-gray-500 dark:text-gray-400">Type</p><p className="font-semibold text-gray-900 dark:text-white capitalize">{selectedItem.request_type}</p></div>
-                    <div><p className="text-sm text-gray-500 dark:text-gray-400">Priority</p><span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${getPriorityBadge(selectedItem.priority)}`}>{selectedItem.priority}</span></div>
-                    <div><p className="text-sm text-gray-500 dark:text-gray-400">Status</p><span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${getStatusBadge(selectedItem.status)}`}>{selectedItem.status}</span></div>
-                    <div><p className="text-sm text-gray-500 dark:text-gray-400">Reported</p><p className="font-semibold text-gray-900 dark:text-white">{new Date(selectedItem.reported_date).toLocaleDateString()}</p></div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div><p className="text-xs text-gray-500 dark:text-gray-400">Request #</p><p className="font-semibold text-gray-900 dark:text-white">{selectedItem.request_number}</p></div>
+                    <div><p className="text-xs text-gray-500 dark:text-gray-400">Customer</p><p className="font-semibold text-gray-900 dark:text-white">{selectedItem.customer_name}</p></div>
+                    <div><p className="text-xs text-gray-500 dark:text-gray-400">Type</p><p className="font-semibold text-gray-900 dark:text-white capitalize">{selectedItem.request_type}</p></div>
+                    <div><p className="text-xs text-gray-500 dark:text-gray-400">Priority</p><span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${getPriorityBadge(selectedItem.priority)}`}>{selectedItem.priority}</span></div>
+                    <div><p className="text-xs text-gray-500 dark:text-gray-400">Status</p><span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${getStatusBadge(selectedItem.status)}`}>{selectedItem.status}</span></div>
+                    <div><p className="text-xs text-gray-500 dark:text-gray-400">Reported</p><p className="font-semibold text-gray-900 dark:text-white">{new Date(selectedItem.reported_date).toLocaleDateString()}</p></div>
                   </div>
-                  <div><p className="text-sm text-gray-500 dark:text-gray-400">Description</p><p className="text-gray-900 dark:text-white">{selectedItem.description || 'No description'}</p></div>
+                  <div><p className="text-xs text-gray-500 dark:text-gray-400">Description</p><p className="text-gray-900 dark:text-white">{selectedItem.description || 'No description'}</p></div>
                 </>
               )}
               {activeTab === 'workorders' && selectedItem && 'work_order_number' in selectedItem && (
                 <>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div><p className="text-sm text-gray-500 dark:text-gray-400">WO #</p><p className="font-semibold text-gray-900 dark:text-white">{selectedItem.work_order_number}</p></div>
-                    <div><p className="text-sm text-gray-500 dark:text-gray-400">Customer</p><p className="font-semibold text-gray-900 dark:text-white">{selectedItem.customer_name}</p></div>
-                    <div><p className="text-sm text-gray-500 dark:text-gray-400">Work Type</p><p className="font-semibold text-gray-900 dark:text-white capitalize">{selectedItem.work_type}</p></div>
-                    <div><p className="text-sm text-gray-500 dark:text-gray-400">Priority</p><span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${getPriorityBadge(selectedItem.priority)}`}>{selectedItem.priority}</span></div>
-                    <div><p className="text-sm text-gray-500 dark:text-gray-400">Status</p><span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${getStatusBadge(selectedItem.status)}`}>{selectedItem.status}</span></div>
-                    <div><p className="text-sm text-gray-500 dark:text-gray-400">Scheduled</p><p className="font-semibold text-gray-900 dark:text-white">{selectedItem.scheduled_date ? new Date(selectedItem.scheduled_date).toLocaleDateString() : '-'}</p></div>
-                    <div><p className="text-sm text-gray-500 dark:text-gray-400">Technician</p><p className="font-semibold text-gray-900 dark:text-white">{selectedItem.technician_name || 'Unassigned'}</p></div>
-                    <div><p className="text-sm text-gray-500 dark:text-gray-400">Total Cost</p><p className="font-semibold text-gray-900 dark:text-white">R {(selectedItem.total_cost || 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</p></div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div><p className="text-xs text-gray-500 dark:text-gray-400">WO #</p><p className="font-semibold text-gray-900 dark:text-white">{selectedItem.work_order_number}</p></div>
+                    <div><p className="text-xs text-gray-500 dark:text-gray-400">Customer</p><p className="font-semibold text-gray-900 dark:text-white">{selectedItem.customer_name}</p></div>
+                    <div><p className="text-xs text-gray-500 dark:text-gray-400">Work Type</p><p className="font-semibold text-gray-900 dark:text-white capitalize">{selectedItem.work_type}</p></div>
+                    <div><p className="text-xs text-gray-500 dark:text-gray-400">Priority</p><span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${getPriorityBadge(selectedItem.priority)}`}>{selectedItem.priority}</span></div>
+                    <div><p className="text-xs text-gray-500 dark:text-gray-400">Status</p><span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${getStatusBadge(selectedItem.status)}`}>{selectedItem.status}</span></div>
+                    <div><p className="text-xs text-gray-500 dark:text-gray-400">Scheduled</p><p className="font-semibold text-gray-900 dark:text-white">{selectedItem.scheduled_date ? new Date(selectedItem.scheduled_date).toLocaleDateString() : '-'}</p></div>
+                    <div><p className="text-xs text-gray-500 dark:text-gray-400">Technician</p><p className="font-semibold text-gray-900 dark:text-white">{selectedItem.technician_name || 'Unassigned'}</p></div>
+                    <div><p className="text-xs text-gray-500 dark:text-gray-400">Total Cost</p><p className="font-semibold text-gray-900 dark:text-white">R {(selectedItem.total_cost || 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</p></div>
                   </div>
                 </>
               )}
               <div className="pt-4 border-t border-gray-200 dark:border-gray-700 flex justify-end">
-                <button onClick={() => setShowCreateModal(false)} className="px-6 py-3 bg-gradient-to-r from-cyan-600 to-teal-600 text-white rounded-xl font-medium hover:from-cyan-700 hover:to-teal-700 transition-all">Close</button>
+                <button onClick={() => setShowCreateModal(false)} className="px-4 py-2 bg-gradient-to-r from-cyan-600 to-teal-600 text-white rounded-xl font-medium hover:from-cyan-700 hover:to-teal-700 transition-all">Close</button>
               </div>
             </div>
           ) : (
             <form onSubmit={handleSubmit}>
-              <div className="p-6 space-y-4">
+              <div className="p-4 space-y-4">
                 {error && (
                   <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl flex items-center gap-3">
                     <AlertCircle className="h-5 w-5 text-red-500 flex-shrink-0" />
@@ -278,7 +278,7 @@ export default function FieldService() {
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Description</label>
-                      <textarea value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} rows={3} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all resize-none" placeholder="Describe the issue..." />
+                      <textarea value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} rows={2} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all resize-none" placeholder="Describe the issue..." />
                     </div>
                   </>
                 ) : (
@@ -310,9 +310,9 @@ export default function FieldService() {
                 </div>
               </div>
 
-              <div className="p-6 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 flex justify-end gap-3">
-                <button type="button" onClick={() => setShowCreateModal(false)} className="px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">Cancel</button>
-                <button type="submit" className="px-6 py-3 bg-gradient-to-r from-cyan-600 to-teal-600 text-white rounded-xl font-medium hover:from-cyan-700 hover:to-teal-700 transition-all shadow-lg shadow-cyan-500/30">Create</button>
+              <div className="p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 flex justify-end gap-3">
+                <button type="button" onClick={() => setShowCreateModal(false)} className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">Cancel</button>
+                <button type="submit" className="px-4 py-2 bg-gradient-to-r from-cyan-600 to-teal-600 text-white rounded-xl font-medium hover:from-cyan-700 hover:to-teal-700 transition-all ">Create</button>
               </div>
             </form>
           )}
@@ -322,18 +322,18 @@ export default function FieldService() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-cyan-50 dark:from-gray-900 dark:to-gray-800 p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <div className="bg-gradient-to-br from-gray-50 to-cyan-50 dark:from-gray-900 dark:to-gray-800 p-4">
+      <div className="max-w-7xl mx-auto space-y-3">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
           <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-cyan-600 to-teal-600 bg-clip-text text-transparent">Field Service</h1>
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-cyan-600 to-teal-600 bg-clip-text text-transparent">Field Service</h1>
             <p className="text-gray-500 dark:text-gray-400 mt-1">Manage service requests and field work orders</p>
           </div>
           <div className="flex items-center gap-3">
             <button onClick={() => loadData()} className="p-3 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-200 dark:border-gray-700">
               <RefreshCw className={`h-5 w-5 text-gray-600 dark:text-gray-400 ${loading ? 'animate-spin' : ''}`} />
             </button>
-            <button onClick={handleCreate} className="flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-cyan-600 to-teal-600 text-white rounded-xl font-medium hover:from-cyan-700 hover:to-teal-700 transition-all shadow-lg shadow-cyan-500/30">
+            <button onClick={handleCreate} className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-cyan-600 to-teal-600 text-white rounded-xl font-medium hover:from-cyan-700 hover:to-teal-700 transition-all ">
               <Plus className="h-5 w-5" />Create {activeTab === 'requests' ? 'Request' : 'Work Order'}
             </button>
           </div>
@@ -348,81 +348,81 @@ export default function FieldService() {
         )}
 
         <div className="flex gap-2 border-b border-gray-200 dark:border-gray-700">
-          <button onClick={() => setActiveTab('requests')} className={`px-6 py-3 font-medium transition-all ${activeTab === 'requests' ? 'text-cyan-600 dark:text-cyan-400 border-b-2 border-cyan-600 dark:border-cyan-400' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'}`}>Service Requests</button>
-          <button onClick={() => setActiveTab('workorders')} className={`px-6 py-3 font-medium transition-all ${activeTab === 'workorders' ? 'text-cyan-600 dark:text-cyan-400 border-b-2 border-cyan-600 dark:border-cyan-400' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'}`}>Work Orders</button>
+          <button onClick={() => setActiveTab('requests')} className={`px-4 py-2 font-medium transition-all ${activeTab === 'requests' ? 'text-cyan-600 dark:text-cyan-400 border-b-2 border-cyan-600 dark:border-cyan-400' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'}`}>Service Requests</button>
+          <button onClick={() => setActiveTab('workorders')} className={`px-4 py-2 font-medium transition-all ${activeTab === 'workorders' ? 'text-cyan-600 dark:text-cyan-400 border-b-2 border-cyan-600 dark:border-cyan-400' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'}`}>Work Orders</button>
         </div>
 
         {activeTab === 'requests' ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-gradient-to-br from-cyan-500 to-teal-500 rounded-xl shadow-lg shadow-cyan-500/30"><Wrench className="h-6 w-6 text-white" /></div>
-                <div><p className="text-2xl font-bold text-gray-900 dark:text-white">{requestStats.total}</p><p className="text-sm text-gray-500 dark:text-gray-400">Total Requests</p></div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3">
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-gradient-to-br from-cyan-500 to-teal-500 rounded-xl "><Wrench className="h-5 w-5 text-white" /></div>
+                <div><p className="text-xl font-bold text-gray-900 dark:text-white">{requestStats.total}</p><p className="text-xs text-gray-500 dark:text-gray-400">Total Requests</p></div>
               </div>
             </div>
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl shadow-lg shadow-blue-500/30"><Clock className="h-6 w-6 text-white" /></div>
-                <div><p className="text-2xl font-bold text-gray-900 dark:text-white">{requestStats.new}</p><p className="text-sm text-gray-500 dark:text-gray-400">New</p></div>
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl "><Clock className="h-5 w-5 text-white" /></div>
+                <div><p className="text-xl font-bold text-gray-900 dark:text-white">{requestStats.new}</p><p className="text-xs text-gray-500 dark:text-gray-400">New</p></div>
               </div>
             </div>
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-gradient-to-br from-purple-500 to-violet-500 rounded-xl shadow-lg shadow-purple-500/30"><Users className="h-6 w-6 text-white" /></div>
-                <div><p className="text-2xl font-bold text-gray-900 dark:text-white">{requestStats.assigned}</p><p className="text-sm text-gray-500 dark:text-gray-400">Assigned</p></div>
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-gradient-to-br from-purple-500 to-violet-500 rounded-xl "><Users className="h-5 w-5 text-white" /></div>
+                <div><p className="text-xl font-bold text-gray-900 dark:text-white">{requestStats.assigned}</p><p className="text-xs text-gray-500 dark:text-gray-400">Assigned</p></div>
               </div>
             </div>
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl shadow-lg shadow-amber-500/30"><Truck className="h-6 w-6 text-white" /></div>
-                <div><p className="text-2xl font-bold text-gray-900 dark:text-white">{requestStats.in_progress}</p><p className="text-sm text-gray-500 dark:text-gray-400">In Progress</p></div>
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl "><Truck className="h-5 w-5 text-white" /></div>
+                <div><p className="text-xl font-bold text-gray-900 dark:text-white">{requestStats.in_progress}</p><p className="text-xs text-gray-500 dark:text-gray-400">In Progress</p></div>
               </div>
             </div>
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg shadow-green-500/30"><CheckCircle className="h-6 w-6 text-white" /></div>
-                <div><p className="text-2xl font-bold text-gray-900 dark:text-white">{requestStats.completed}</p><p className="text-sm text-gray-500 dark:text-gray-400">Completed</p></div>
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl "><CheckCircle className="h-5 w-5 text-white" /></div>
+                <div><p className="text-xl font-bold text-gray-900 dark:text-white">{requestStats.completed}</p><p className="text-xs text-gray-500 dark:text-gray-400">Completed</p></div>
               </div>
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-gradient-to-br from-cyan-500 to-teal-500 rounded-xl shadow-lg shadow-cyan-500/30"><Wrench className="h-6 w-6 text-white" /></div>
-                <div><p className="text-2xl font-bold text-gray-900 dark:text-white">{woStats.total}</p><p className="text-sm text-gray-500 dark:text-gray-400">Total WOs</p></div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3">
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-gradient-to-br from-cyan-500 to-teal-500 rounded-xl "><Wrench className="h-5 w-5 text-white" /></div>
+                <div><p className="text-xl font-bold text-gray-900 dark:text-white">{woStats.total}</p><p className="text-xs text-gray-500 dark:text-gray-400">Total WOs</p></div>
               </div>
             </div>
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl shadow-lg shadow-blue-500/30"><Calendar className="h-6 w-6 text-white" /></div>
-                <div><p className="text-2xl font-bold text-gray-900 dark:text-white">{woStats.scheduled}</p><p className="text-sm text-gray-500 dark:text-gray-400">Scheduled</p></div>
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl "><Calendar className="h-5 w-5 text-white" /></div>
+                <div><p className="text-xl font-bold text-gray-900 dark:text-white">{woStats.scheduled}</p><p className="text-xs text-gray-500 dark:text-gray-400">Scheduled</p></div>
               </div>
             </div>
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-gradient-to-br from-purple-500 to-violet-500 rounded-xl shadow-lg shadow-purple-500/30"><Send className="h-6 w-6 text-white" /></div>
-                <div><p className="text-2xl font-bold text-gray-900 dark:text-white">{woStats.dispatched}</p><p className="text-sm text-gray-500 dark:text-gray-400">Dispatched</p></div>
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-gradient-to-br from-purple-500 to-violet-500 rounded-xl "><Send className="h-5 w-5 text-white" /></div>
+                <div><p className="text-xl font-bold text-gray-900 dark:text-white">{woStats.dispatched}</p><p className="text-xs text-gray-500 dark:text-gray-400">Dispatched</p></div>
               </div>
             </div>
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl shadow-lg shadow-amber-500/30"><Truck className="h-6 w-6 text-white" /></div>
-                <div><p className="text-2xl font-bold text-gray-900 dark:text-white">{woStats.in_progress}</p><p className="text-sm text-gray-500 dark:text-gray-400">In Progress</p></div>
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl "><Truck className="h-5 w-5 text-white" /></div>
+                <div><p className="text-xl font-bold text-gray-900 dark:text-white">{woStats.in_progress}</p><p className="text-xs text-gray-500 dark:text-gray-400">In Progress</p></div>
               </div>
             </div>
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg shadow-green-500/30"><CheckCircle className="h-6 w-6 text-white" /></div>
-                <div><p className="text-2xl font-bold text-gray-900 dark:text-white">{woStats.completed}</p><p className="text-sm text-gray-500 dark:text-gray-400">Completed</p></div>
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl "><CheckCircle className="h-5 w-5 text-white" /></div>
+                <div><p className="text-xl font-bold text-gray-900 dark:text-white">{woStats.completed}</p><p className="text-xs text-gray-500 dark:text-gray-400">Completed</p></div>
               </div>
             </div>
           </div>
         )}
 
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
-          <div className="p-5 border-b border-gray-100 dark:border-gray-700">
-            <div className="flex flex-col md:flex-row gap-4">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+          <div className="p-3 border-b border-gray-100 dark:border-gray-700">
+            <div className="flex flex-col md:flex-row gap-3">
               <div className="flex-1 relative">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
                 <input type="text" placeholder={`Search by ${activeTab === 'requests' ? 'request' : 'work order'} number or customer...`} value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-12 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all" />
@@ -463,7 +463,7 @@ export default function FieldService() {
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No service requests found</h3>
                 <p className="text-gray-500 dark:text-gray-400 mb-6">{searchTerm || statusFilter ? 'Try adjusting your filters' : 'Get started by creating your first service request'}</p>
                 {!searchTerm && !statusFilter && (
-                  <button onClick={handleCreate} className="px-5 py-3 bg-gradient-to-r from-cyan-600 to-teal-600 text-white rounded-xl font-medium hover:from-cyan-700 hover:to-teal-700 transition-all">Create First Request</button>
+                  <button onClick={handleCreate} className="px-4 py-2 bg-gradient-to-r from-cyan-600 to-teal-600 text-white rounded-xl font-medium hover:from-cyan-700 hover:to-teal-700 transition-all">Create First Request</button>
                 )}
               </div>
             ) : (
@@ -507,7 +507,7 @@ export default function FieldService() {
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No work orders found</h3>
                 <p className="text-gray-500 dark:text-gray-400 mb-6">{searchTerm || statusFilter ? 'Try adjusting your filters' : 'Get started by creating your first work order'}</p>
                 {!searchTerm && !statusFilter && (
-                  <button onClick={handleCreate} className="px-5 py-3 bg-gradient-to-r from-cyan-600 to-teal-600 text-white rounded-xl font-medium hover:from-cyan-700 hover:to-teal-700 transition-all">Create First Work Order</button>
+                  <button onClick={handleCreate} className="px-4 py-2 bg-gradient-to-r from-cyan-600 to-teal-600 text-white rounded-xl font-medium hover:from-cyan-700 hover:to-teal-700 transition-all">Create First Work Order</button>
                 )}
               </div>
             ) : (

@@ -263,8 +263,8 @@ export default function GeneralLedger() {
 
     return (
       <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
-        <div onClick={(e) => e.stopPropagation()} className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden">
-          <div className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white p-6">
+        <div onClick={(e) => e.stopPropagation()} className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-lg overflow-hidden">
+          <div className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-white/20 rounded-lg"><BookOpen className="h-6 w-6" /></div>
@@ -274,9 +274,9 @@ export default function GeneralLedger() {
             </div>
           </div>
           <form onSubmit={handleSubmitAccount}>
-            <div className="p-6 space-y-4">
+            <div className="p-4 space-y-4">
               {error && (<div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl flex items-center gap-3"><AlertCircle className="h-5 w-5 text-red-500" /><p className="text-red-700 dark:text-red-300">{error}</p></div>)}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Account Code *</label><input type="text" value={accountFormData.account_code || ''} onChange={(e) => setAccountFormData({ ...accountFormData, account_code: e.target.value })} required disabled={isEdit} className={`w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all ${isEdit ? 'bg-gray-100 dark:bg-gray-600' : ''}`} /></div>
                 <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Account Type *</label><select value={accountFormData.account_type || 'asset'} onChange={(e) => setAccountFormData({ ...accountFormData, account_type: e.target.value })} required className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"><option value="asset">Asset</option><option value="liability">Liability</option><option value="equity">Equity</option><option value="revenue">Revenue</option><option value="expense">Expense</option></select></div>
               </div>
@@ -284,9 +284,9 @@ export default function GeneralLedger() {
               <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Category</label><input type="text" value={accountFormData.account_category || ''} onChange={(e) => setAccountFormData({ ...accountFormData, account_category: e.target.value })} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all" placeholder="e.g., Current Assets, Fixed Assets" /></div>
               <label className="flex items-center gap-2 cursor-pointer"><input type="checkbox" checked={accountFormData.is_active || false} onChange={(e) => setAccountFormData({ ...accountFormData, is_active: e.target.checked })} className="w-5 h-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" /><span className="text-sm font-medium text-gray-700 dark:text-gray-300">Active</span></label>
             </div>
-            <div className="p-6 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 flex justify-end gap-3">
-              <button type="button" onClick={onClose} className="px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">Cancel</button>
-              <button type="submit" className="px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-medium hover:from-indigo-700 hover:to-purple-700 transition-all shadow-lg shadow-indigo-500/30">{isEdit ? 'Update' : 'Create'}</button>
+            <div className="p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 flex justify-end gap-3">
+              <button type="button" onClick={onClose} className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">Cancel</button>
+              <button type="submit" className="px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-medium hover:from-indigo-700 hover:to-purple-700 transition-all ">{isEdit ? 'Update' : 'Create'}</button>
             </div>
           </form>
         </div>
@@ -298,17 +298,17 @@ export default function GeneralLedger() {
     if (!showCreateJournalModal) return null;
     return (
       <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setShowCreateJournalModal(false)}>
-        <div onClick={(e) => e.stopPropagation()} className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-4xl overflow-hidden max-h-[90vh] overflow-y-auto">
-          <div className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white p-6">
+        <div onClick={(e) => e.stopPropagation()} className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-4xl overflow-hidden max-h-[90vh] overflow-y-auto">
+          <div className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3"><div className="p-2 bg-white/20 rounded-lg"><FileText className="h-6 w-6" /></div><div><h2 className="text-xl font-semibold">Create Journal Entry</h2><p className="text-white/80 text-sm">Record a new journal entry</p></div></div>
               <button onClick={() => setShowCreateJournalModal(false)} className="p-2 hover:bg-white/20 rounded-lg transition-colors"><X className="h-5 w-5" /></button>
             </div>
           </div>
           <form onSubmit={handleSubmitJournal}>
-            <div className="p-6 space-y-6">
+            <div className="p-4 space-y-3">
               {error && (<div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl flex items-center gap-3"><AlertCircle className="h-5 w-5 text-red-500" /><p className="text-red-700 dark:text-red-300">{error}</p></div>)}
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-3 gap-3">
                 <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Entry Date</label><input type="date" value={journalFormData.entry_date} onChange={(e) => setJournalFormData({ ...journalFormData, entry_date: e.target.value })} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all" /></div>
                 <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Reference</label><input type="text" value={journalFormData.reference} onChange={(e) => setJournalFormData({ ...journalFormData, reference: e.target.value })} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all" placeholder="Optional reference" /></div>
                 <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Description</label><input type="text" value={journalFormData.description} onChange={(e) => setJournalFormData({ ...journalFormData, description: e.target.value })} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all" placeholder="Journal description" /></div>
@@ -338,9 +338,9 @@ export default function GeneralLedger() {
                 </div>
               </div>
             </div>
-            <div className="p-6 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 flex justify-end gap-3">
-              <button type="button" onClick={() => setShowCreateJournalModal(false)} className="px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">Cancel</button>
-              <button type="submit" disabled={!isBalanced()} className={`px-6 py-3 rounded-xl font-medium transition-all shadow-lg ${isBalanced() ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:from-indigo-700 hover:to-purple-700 shadow-indigo-500/30' : 'bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400 cursor-not-allowed'}`}>Create Journal Entry</button>
+            <div className="p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 flex justify-end gap-3">
+              <button type="button" onClick={() => setShowCreateJournalModal(false)} className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">Cancel</button>
+              <button type="submit" disabled={!isBalanced()} className={`px-4 py-2 rounded-xl font-medium transition-all shadow-lg ${isBalanced() ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:from-indigo-700 hover:to-purple-700 shadow-indigo-500/30' : 'bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400 cursor-not-allowed'}`}>Create Journal Entry</button>
             </div>
           </form>
         </div>
@@ -349,17 +349,17 @@ export default function GeneralLedger() {
   };
 
   const getCreateButton = () => {
-    if (activeTab === 'accounts') return <button onClick={handleCreateAccount} className="flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-medium hover:from-indigo-700 hover:to-purple-700 transition-all shadow-lg shadow-indigo-500/30"><Plus className="h-5 w-5" />Add Account</button>;
-    if (activeTab === 'journal') return <button onClick={handleCreateJournal} className="flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-medium hover:from-indigo-700 hover:to-purple-700 transition-all shadow-lg shadow-indigo-500/30"><Plus className="h-5 w-5" />New Journal Entry</button>;
+    if (activeTab === 'accounts') return <button onClick={handleCreateAccount} className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-medium hover:from-indigo-700 hover:to-purple-700 transition-all "><Plus className="h-5 w-5" />Add Account</button>;
+    if (activeTab === 'journal') return <button onClick={handleCreateJournal} className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-medium hover:from-indigo-700 hover:to-purple-700 transition-all "><Plus className="h-5 w-5" />New Journal Entry</button>;
     return null;
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4">
+      <div className="max-w-7xl mx-auto space-y-3">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
           <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">General Ledger</h1>
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">General Ledger</h1>
             <p className="text-gray-500 dark:text-gray-400 mt-1">Chart of Accounts, Journal Entries & Trial Balance</p>
           </div>
           <div className="flex items-center gap-3">
@@ -370,31 +370,31 @@ export default function GeneralLedger() {
 
         {error && (<div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl flex items-center gap-3"><AlertCircle className="h-5 w-5 text-red-500" /><p className="text-red-700 dark:text-red-300">{error}</p><button onClick={() => setError(null)} className="ml-auto p-1 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg"><X className="h-4 w-4 text-red-500" /></button></div>)}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
-            <div className="flex items-center gap-4"><div className="p-3 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl shadow-lg shadow-indigo-500/30"><BookOpen className="h-6 w-6 text-white" /></div><div><p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.totalAccounts}</p><p className="text-sm text-gray-500 dark:text-gray-400">Total Accounts</p></div></div>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
+            <div className="flex items-center gap-3"><div className="p-2 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl "><BookOpen className="h-5 w-5 text-white" /></div><div><p className="text-xl font-bold text-gray-900 dark:text-white">{stats.totalAccounts}</p><p className="text-xs text-gray-500 dark:text-gray-400">Total Accounts</p></div></div>
           </div>
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
-            <div className="flex items-center gap-4"><div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl shadow-lg shadow-blue-500/30"><FileText className="h-6 w-6 text-white" /></div><div><p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.totalJournals}</p><p className="text-sm text-gray-500 dark:text-gray-400">Journal Entries</p></div></div>
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
+            <div className="flex items-center gap-3"><div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl "><FileText className="h-5 w-5 text-white" /></div><div><p className="text-xl font-bold text-gray-900 dark:text-white">{stats.totalJournals}</p><p className="text-xs text-gray-500 dark:text-gray-400">Journal Entries</p></div></div>
           </div>
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
-            <div className="flex items-center gap-4"><div className="p-3 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl shadow-lg shadow-amber-500/30"><Calculator className="h-6 w-6 text-white" /></div><div><p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.draftJournals}</p><p className="text-sm text-gray-500 dark:text-gray-400">Draft Entries</p></div></div>
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
+            <div className="flex items-center gap-3"><div className="p-2 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl "><Calculator className="h-5 w-5 text-white" /></div><div><p className="text-xl font-bold text-gray-900 dark:text-white">{stats.draftJournals}</p><p className="text-xs text-gray-500 dark:text-gray-400">Draft Entries</p></div></div>
           </div>
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
-            <div className="flex items-center gap-4"><div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg shadow-green-500/30"><Check className="h-6 w-6 text-white" /></div><div><p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.postedJournals}</p><p className="text-sm text-gray-500 dark:text-gray-400">Posted Entries</p></div></div>
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
+            <div className="flex items-center gap-3"><div className="p-2 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl "><Check className="h-5 w-5 text-white" /></div><div><p className="text-xl font-bold text-gray-900 dark:text-white">{stats.postedJournals}</p><p className="text-xs text-gray-500 dark:text-gray-400">Posted Entries</p></div></div>
           </div>
         </div>
 
         <div className="flex gap-2 border-b border-gray-200 dark:border-gray-700">
           {(['accounts', 'journal', 'trial-balance'] as const).map(tab => (
-            <button key={tab} onClick={() => setActiveTab(tab)} className={`px-6 py-3 font-medium capitalize transition-all ${activeTab === tab ? 'text-indigo-600 dark:text-indigo-400 border-b-2 border-indigo-600 dark:border-indigo-400' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'}`}>{tab === 'trial-balance' ? 'Trial Balance' : tab}</button>
+            <button key={tab} onClick={() => setActiveTab(tab)} className={`px-4 py-2 font-medium capitalize transition-all ${activeTab === tab ? 'text-indigo-600 dark:text-indigo-400 border-b-2 border-indigo-600 dark:border-indigo-400' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'}`}>{tab === 'trial-balance' ? 'Trial Balance' : tab}</button>
           ))}
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
           {activeTab !== 'trial-balance' && (
-            <div className="p-5 border-b border-gray-100 dark:border-gray-700">
-              <div className="flex flex-col md:flex-row gap-4">
+            <div className="p-3 border-b border-gray-100 dark:border-gray-700">
+              <div className="flex flex-col md:flex-row gap-3">
                 <div className="flex-1 relative"><Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" /><input type="text" placeholder="Search..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-12 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all" /></div>
                 {activeTab === 'accounts' && (<select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} className="px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all min-w-[150px]"><option value="">All Types</option><option value="asset">Asset</option><option value="liability">Liability</option><option value="equity">Equity</option><option value="revenue">Revenue</option><option value="expense">Expense</option></select>)}
               </div>
@@ -404,7 +404,7 @@ export default function GeneralLedger() {
           {loading ? (
             <div className="p-12 text-center"><RefreshCw className="h-8 w-8 animate-spin text-indigo-500 mx-auto mb-4" /><p className="text-gray-500 dark:text-gray-400">Loading...</p></div>
           ) : activeTab === 'accounts' ? (
-            accounts.length === 0 ? (<div className="p-12 text-center"><div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-2xl flex items-center justify-center mx-auto mb-4"><BookOpen className="h-8 w-8 text-gray-400" /></div><h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No accounts found</h3><p className="text-gray-500 dark:text-gray-400 mb-6">Get started by adding your first account</p><button onClick={handleCreateAccount} className="px-5 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-medium hover:from-indigo-700 hover:to-purple-700 transition-all">Add First Account</button></div>) : (
+            accounts.length === 0 ? (<div className="p-12 text-center"><div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-2xl flex items-center justify-center mx-auto mb-4"><BookOpen className="h-8 w-8 text-gray-400" /></div><h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No accounts found</h3><p className="text-gray-500 dark:text-gray-400 mb-6">Get started by adding your first account</p><button onClick={handleCreateAccount} className="px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-medium hover:from-indigo-700 hover:to-purple-700 transition-all">Add First Account</button></div>) : (
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead className="bg-gray-50 dark:bg-gray-900/50"><tr><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Code</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Name</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Type</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Category</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th><th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th></tr></thead>
@@ -424,7 +424,7 @@ export default function GeneralLedger() {
               </div>
             )
           ) : activeTab === 'journal' ? (
-            journalEntries.length === 0 ? (<div className="p-12 text-center"><div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-2xl flex items-center justify-center mx-auto mb-4"><FileText className="h-8 w-8 text-gray-400" /></div><h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No journal entries found</h3><p className="text-gray-500 dark:text-gray-400 mb-6">Get started by creating your first journal entry</p><button onClick={handleCreateJournal} className="px-5 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-medium hover:from-indigo-700 hover:to-purple-700 transition-all">Create First Entry</button></div>) : (
+            journalEntries.length === 0 ? (<div className="p-12 text-center"><div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-2xl flex items-center justify-center mx-auto mb-4"><FileText className="h-8 w-8 text-gray-400" /></div><h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No journal entries found</h3><p className="text-gray-500 dark:text-gray-400 mb-6">Get started by creating your first journal entry</p><button onClick={handleCreateJournal} className="px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-medium hover:from-indigo-700 hover:to-purple-700 transition-all">Create First Entry</button></div>) : (
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead className="bg-gray-50 dark:bg-gray-900/50"><tr><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Entry #</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Date</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Description</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Reference</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th><th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th></tr></thead>
@@ -446,8 +446,8 @@ export default function GeneralLedger() {
           ) : (
             !trialBalance ? (<div className="p-12 text-center"><div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-2xl flex items-center justify-center mx-auto mb-4"><TrendingUp className="h-8 w-8 text-gray-400" /></div><h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No trial balance data</h3><p className="text-gray-500 dark:text-gray-400">Post journal entries to generate trial balance</p></div>) : (
               <div>
-                <div className="p-5 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
-                  <div><h3 className="font-semibold text-gray-900 dark:text-white">Trial Balance</h3><p className="text-sm text-gray-500 dark:text-gray-400">As of {new Date(trialBalance.as_of_date).toLocaleDateString()}</p></div>
+                <div className="p-3 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
+                  <div><h3 className="font-semibold text-gray-900 dark:text-white">Trial Balance</h3><p className="text-xs text-gray-500 dark:text-gray-400">As of {new Date(trialBalance.as_of_date).toLocaleDateString()}</p></div>
                   <div className={`flex items-center gap-2 px-4 py-2 rounded-xl ${trialBalance.balanced ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300' : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300'}`}>{trialBalance.balanced ? <><Check className="h-4 w-4" />Balanced</> : <><AlertCircle className="h-4 w-4" />Not Balanced</>}</div>
                 </div>
                 <div className="overflow-x-auto">

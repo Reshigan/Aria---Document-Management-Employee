@@ -220,7 +220,7 @@ const Inspections: React.FC = () => {
               </TextField>
             </Grid>
             <Grid item xs={12} sm={6}><TextField fullWidth label="Defects Found" type="number" value={formData.defectsFound || 0} onChange={(e) => setFormData({ ...formData, defectsFound: Number(e.target.value) })} /></Grid>
-            <Grid item xs={12}><TextField fullWidth label="Notes" multiline rows={3} value={formData.notes || ''} onChange={(e) => setFormData({ ...formData, notes: e.target.value })} /></Grid>
+            <Grid item xs={12}><TextField fullWidth label="Notes" multiline rows={2} value={formData.notes || ''} onChange={(e) => setFormData({ ...formData, notes: e.target.value })} /></Grid>
           </Grid>
         </DialogContent>
         <DialogActions>

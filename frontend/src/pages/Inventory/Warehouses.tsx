@@ -112,20 +112,20 @@ const Warehouses: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-violet-50 dark:from-gray-900 dark:to-gray-800 p-6" data-testid="inventory-warehouses">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+    <div className="bg-gradient-to-br from-gray-50 to-violet-50 dark:from-gray-900 dark:to-gray-800 p-4" data-testid="inventory-warehouses">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-8">
         <div className="flex items-center gap-3">
-          <div className="p-3 bg-gradient-to-br from-violet-500 to-purple-500 rounded-xl shadow-lg shadow-violet-500/30">
+          <div className="p-2 bg-gradient-to-br from-violet-500 to-purple-500 rounded-xl ">
             <WarehouseIcon className="h-8 w-8 text-white" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Warehouses</h1>
+            <h1 className="text-xl font-bold text-gray-900 dark:text-white">Warehouses</h1>
             <p className="text-gray-600 dark:text-gray-400">Manage warehouse locations and inventory</p>
           </div>
         </div>
         <button
           onClick={handleCreate}
-          className="px-6 py-2.5 bg-gradient-to-r from-violet-500 to-purple-500 text-white rounded-xl hover:from-violet-600 hover:to-purple-600 transition-all shadow-lg shadow-violet-500/30 flex items-center gap-2 font-medium"
+          className="px-6 py-2.5 bg-gradient-to-r from-violet-500 to-purple-500 text-white rounded-xl hover:from-violet-600 hover:to-purple-600 transition-all  flex items-center gap-2 font-medium"
           data-testid="create-button"
         >
           <Plus className="h-5 w-5" />
@@ -139,47 +139,47 @@ const Warehouses: React.FC = () => {
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg shadow-green-500/30">
-              <Building2 className="h-6 w-6 text-white" />
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-6 mb-8">
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl ">
+              <Building2 className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{warehouses.filter(w => w.is_active).length}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Active Warehouses</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{warehouses.filter(w => w.is_active).length}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Active Warehouses</p>
             </div>
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl shadow-lg shadow-blue-500/30">
-              <Package className="h-6 w-6 text-white" />
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl ">
+              <Package className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">
+              <p className="text-xl font-bold text-gray-900 dark:text-white">
                 {warehouses.reduce((sum, w) => sum + w.capacity, 0).toLocaleString()}
               </p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Total Capacity</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Total Capacity</p>
             </div>
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl shadow-lg shadow-amber-500/30">
-              <DollarSign className="h-6 w-6 text-white" />
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl ">
+              <DollarSign className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">
+              <p className="text-xl font-bold text-gray-900 dark:text-white">
                 {formatCurrency(warehouses.reduce((sum, w) => sum + w.current_stock_value, 0))}
               </p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Total Stock Value</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Total Stock Value</p>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
         <table className="w-full" data-testid="warehouses-table">
           <thead className="bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-600">
             <tr>
@@ -237,14 +237,14 @@ const Warehouses: React.FC = () => {
 
       {showModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-hidden">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-hidden">
             <div className="bg-gradient-to-r from-violet-500 to-purple-500 px-6 py-4">
               <h2 className="text-xl font-bold text-white flex items-center gap-2">
                 <WarehouseIcon className="h-5 w-5" />
                 {editingWarehouse ? 'Edit Warehouse' : 'New Warehouse'}
               </h2>
             </div>
-            <div className="p-6 overflow-y-auto max-h-[calc(90vh-80px)]">
+            <div className="p-4 overflow-y-auto max-h-[calc(90vh-80px)]">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Warehouse Code *</label>
@@ -315,7 +315,7 @@ const Warehouses: React.FC = () => {
                 </button>
                 <button
                   onClick={handleSave}
-                  className="px-5 py-2.5 bg-gradient-to-r from-violet-500 to-purple-500 text-white rounded-xl hover:from-violet-600 hover:to-purple-600 transition-all shadow-lg shadow-violet-500/30 font-medium"
+                  className="px-5 py-2.5 bg-gradient-to-r from-violet-500 to-purple-500 text-white rounded-xl hover:from-violet-600 hover:to-purple-600 transition-all  font-medium"
                 >
                   Save
                 </button>

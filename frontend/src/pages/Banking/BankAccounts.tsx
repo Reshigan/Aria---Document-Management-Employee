@@ -146,21 +146,21 @@ export default function BankAccounts() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-teal-50 dark:from-gray-900 dark:to-gray-800 p-6 flex items-center justify-center">
+      <div className="bg-gradient-to-br from-gray-50 to-teal-50 dark:from-gray-900 dark:to-gray-800 p-4 flex items-center justify-center">
         <div className="text-gray-500 dark:text-gray-400">Loading...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-teal-50 dark:from-gray-900 dark:to-gray-800 p-6">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+    <div className="bg-gradient-to-br from-gray-50 to-teal-50 dark:from-gray-900 dark:to-gray-800 p-4">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-8">
         <div className="flex items-center gap-3">
-          <div className="p-3 bg-gradient-to-br from-teal-500 to-cyan-500 rounded-xl shadow-lg shadow-teal-500/30">
+          <div className="p-2 bg-gradient-to-br from-teal-500 to-cyan-500 rounded-xl ">
             <Landmark className="h-8 w-8 text-white" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Bank Accounts</h1>
+            <h1 className="text-xl font-bold text-gray-900 dark:text-white">Bank Accounts</h1>
             <p className="text-gray-600 dark:text-gray-400">Manage your bank accounts and balances</p>
           </div>
         </div>
@@ -169,58 +169,58 @@ export default function BankAccounts() {
             setEditingAccount(null);
             setShowModal(true);
           }}
-          className="px-6 py-2.5 bg-gradient-to-r from-teal-500 to-cyan-500 text-white rounded-xl hover:from-teal-600 hover:to-cyan-600 transition-all shadow-lg shadow-teal-500/30 flex items-center gap-2 font-medium"
+          className="px-6 py-2.5 bg-gradient-to-r from-teal-500 to-cyan-500 text-white rounded-xl hover:from-teal-600 hover:to-cyan-600 transition-all  flex items-center gap-2 font-medium"
         >
           <Plus className="h-5 w-5" />
           Add Account
         </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl shadow-lg shadow-blue-500/30">
-              <DollarSign className="h-6 w-6 text-white" />
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-6 mb-8">
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl ">
+              <DollarSign className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">
+              <p className="text-xl font-bold text-gray-900 dark:text-white">
                 R {Number(totalBalance ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
               </p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Total Balance</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Total Balance</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg shadow-green-500/30">
-              <TrendingUp className="h-6 w-6 text-white" />
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl ">
+              <TrendingUp className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">
+              <p className="text-xl font-bold text-gray-900 dark:text-white">
                 R {Number(totalReconciled ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
               </p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Reconciled</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Reconciled</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-red-500 to-rose-500 rounded-xl shadow-lg shadow-red-500/30">
-              <AlertCircle className="h-6 w-6 text-white" />
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-red-500 to-rose-500 rounded-xl ">
+              <AlertCircle className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">
+              <p className="text-xl font-bold text-gray-900 dark:text-white">
                 R {Number(unreconciled ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
               </p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Unreconciled</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Unreconciled</p>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-gray-50 dark:bg-gray-700/50">
@@ -240,7 +240,7 @@ export default function BankAccounts() {
                   <td colSpan={7} className="px-6 py-12 text-center">
                     <Building2 className="h-12 w-12 mx-auto mb-4 text-gray-300 dark:text-gray-600" />
                     <div className="text-gray-500 dark:text-gray-400">No bank accounts found</div>
-                    <div className="text-sm text-gray-400 dark:text-gray-500 mt-1">Add your first bank account to get started</div>
+                    <div className="text-xs text-gray-400 dark:text-gray-500 mt-1">Add your first bank account to get started</div>
                   </td>
                 </tr>
               ) : (
@@ -248,9 +248,9 @@ export default function BankAccounts() {
                   <tr key={account.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                     <td className="px-6 py-4">
                       <div className="font-medium text-gray-900 dark:text-white">{account.account_name}</div>
-                      <div className="text-sm text-gray-500 dark:text-gray-400">GL: {account.gl_account_code}</div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">GL: {account.gl_account_code}</div>
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{account.account_number}</td>
+                    <td className="px-6 py-4 text-xs text-gray-500 dark:text-gray-400">{account.account_number}</td>
                     <td className="px-6 py-4 text-sm text-gray-900 dark:text-white">{account.bank_name}</td>
                     <td className="px-6 py-4">
                       <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400">
@@ -291,7 +291,7 @@ export default function BankAccounts() {
 
       {showModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowModal(false)}>
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden" onClick={(e) => e.stopPropagation()}>
             <div className="bg-gradient-to-r from-teal-500 to-cyan-500 px-6 py-4">
               <h2 className="text-xl font-bold text-white flex items-center gap-2">
                 <CreditCard className="h-5 w-5" />
@@ -299,7 +299,7 @@ export default function BankAccounts() {
               </h2>
             </div>
 
-            <form onSubmit={handleSubmit} className="p-6 overflow-y-auto max-h-[calc(90vh-80px)]">
+            <form onSubmit={handleSubmit} className="p-4 overflow-y-auto max-h-[calc(90vh-80px)]">
               <div className="mb-5">
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Account Name *
@@ -417,7 +417,7 @@ export default function BankAccounts() {
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2.5 bg-gradient-to-r from-teal-500 to-cyan-500 text-white rounded-xl hover:from-teal-600 hover:to-cyan-600 transition-all shadow-lg shadow-teal-500/30 font-medium"
+                  className="px-6 py-2.5 bg-gradient-to-r from-teal-500 to-cyan-500 text-white rounded-xl hover:from-teal-600 hover:to-cyan-600 transition-all  font-medium"
                 >
                   {editingAccount ? 'Update' : 'Create'} Account
                 </button>

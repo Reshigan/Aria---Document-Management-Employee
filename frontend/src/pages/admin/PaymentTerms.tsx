@@ -93,32 +93,32 @@ export default function PaymentTerms() {
   };
 
   return (
-    <div className="p-6 space-y-6 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 min-h-screen">
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <div className="p-4 space-y-3 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
         <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-cyan-600 to-blue-600 bg-clip-text text-transparent">Payment Terms</h1>
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-cyan-600 to-blue-600 bg-clip-text text-transparent">Payment Terms</h1>
           <p className="text-gray-500 mt-1">Configure payment terms with discounts and late fees</p>
         </div>
         <button onClick={() => { setEditingTerm(null); setFormData({ name: '', days: 30, term_type: 'net_days', day_of_month: 1, is_default: false, description: '', early_payment_discount_percent: 0, early_payment_discount_days: 0, late_fee_percent: 0, late_fee_grace_days: 0 }); setShowModal(true); }} className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-cyan-600 to-blue-600 text-white rounded-lg font-medium"><Plus className="h-4 w-4" />Add Term</button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4"><div className="flex items-center gap-3"><div className="p-2 bg-cyan-100 dark:bg-cyan-900/50 rounded-lg"><Calendar className="h-5 w-5 text-cyan-600" /></div><div><p className="text-2xl font-bold">{stats.total}</p><p className="text-sm text-gray-500">Total Terms</p></div></div></div>
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4"><div className="flex items-center gap-3"><div className="p-2 bg-green-100 dark:bg-green-900/50 rounded-lg"><Check className="h-5 w-5 text-green-600" /></div><div><p className="text-2xl font-bold">{stats.active}</p><p className="text-sm text-gray-500">Active</p></div></div></div>
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4"><div className="flex items-center gap-3"><div className="p-2 bg-purple-100 dark:bg-purple-900/50 rounded-lg"><Percent className="h-5 w-5 text-purple-600" /></div><div><p className="text-2xl font-bold">{stats.withDiscount}</p><p className="text-sm text-gray-500">With Discounts</p></div></div></div>
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4"><div className="flex items-center gap-3"><div className="p-2 bg-blue-100 dark:bg-blue-900/50 rounded-lg"><Clock className="h-5 w-5 text-blue-600" /></div><div><p className="text-lg font-bold truncate">{stats.defaultTerm}</p><p className="text-sm text-gray-500">Default</p></div></div></div>
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+        <div className="bg-white dark:bg-gray-800 rounded-lg p-4"><div className="flex items-center gap-3"><div className="p-2 bg-cyan-100 dark:bg-cyan-900/50 rounded-lg"><Calendar className="h-5 w-5 text-cyan-600" /></div><div><p className="text-2xl font-bold">{stats.total}</p><p className="text-xs text-gray-500">Total Terms</p></div></div></div>
+        <div className="bg-white dark:bg-gray-800 rounded-lg p-4"><div className="flex items-center gap-3"><div className="p-2 bg-green-100 dark:bg-green-900/50 rounded-lg"><Check className="h-5 w-5 text-green-600" /></div><div><p className="text-2xl font-bold">{stats.active}</p><p className="text-xs text-gray-500">Active</p></div></div></div>
+        <div className="bg-white dark:bg-gray-800 rounded-lg p-4"><div className="flex items-center gap-3"><div className="p-2 bg-purple-100 dark:bg-purple-900/50 rounded-lg"><Percent className="h-5 w-5 text-purple-600" /></div><div><p className="text-2xl font-bold">{stats.withDiscount}</p><p className="text-xs text-gray-500">With Discounts</p></div></div></div>
+        <div className="bg-white dark:bg-gray-800 rounded-lg p-4"><div className="flex items-center gap-3"><div className="p-2 bg-blue-100 dark:bg-blue-900/50 rounded-lg"><Clock className="h-5 w-5 text-blue-600" /></div><div><p className="text-lg font-bold truncate">{stats.defaultTerm}</p><p className="text-xs text-gray-500">Default</p></div></div></div>
       </div>
 
       {loading ? (
         <div className="flex items-center justify-center py-12"><RefreshCw className="h-8 w-8 animate-spin text-cyan-500" /></div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
           {terms.map(term => (
-            <div key={term.id} className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-5 hover:shadow-xl transition-shadow">
+            <div key={term.id} className="bg-white dark:bg-gray-800 rounded-lg p-5 hover:shadow-xl transition-shadow">
               <div className="flex items-start justify-between mb-3">
                 <div>
                   <h3 className="font-semibold text-lg flex items-center gap-2">{term.name}{term.is_default && <span className="px-2 py-0.5 bg-cyan-100 text-cyan-700 text-xs rounded-full">Default</span>}</h3>
-                  <p className="text-sm text-gray-500">{term.description}</p>
+                  <p className="text-xs text-gray-500">{term.description}</p>
                 </div>
                 <div className="flex gap-1">
                   <button onClick={() => openEdit(term)} className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"><Edit2 className="h-4 w-4" /></button>
@@ -155,7 +155,7 @@ export default function PaymentTerms() {
               <h2 className="text-xl font-semibold">{editingTerm ? 'Edit Payment Term' : 'New Payment Term'}</h2>
               <button onClick={() => setShowModal(false)} className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded"><X className="h-5 w-5" /></button>
             </div>
-            <div className="p-6 space-y-4">
+            <div className="p-4 space-y-4">
               <div><label className="block text-sm font-medium mb-1">Term Name</label><input type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700" placeholder="e.g., Net 30" /></div>
               <div><label className="block text-sm font-medium mb-1">Term Type</label><select value={formData.term_type} onChange={(e) => setFormData({ ...formData, term_type: e.target.value })} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700">{termTypes.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}</select></div>
               {formData.term_type === 'net_days' && <div><label className="block text-sm font-medium mb-1">Days</label><input type="number" value={formData.days} onChange={(e) => setFormData({ ...formData, days: parseInt(e.target.value) || 0 })} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700" /></div>}

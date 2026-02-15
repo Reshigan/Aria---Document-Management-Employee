@@ -124,10 +124,10 @@ export default function VATReturnsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+    <div className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
+          <h1 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
             <FileText className="h-8 w-8 text-purple-600" />
             VAT Returns
           </h1>
@@ -135,7 +135,7 @@ export default function VATReturnsPage() {
         </div>
         <button
           onClick={() => setShowModal(true)}
-          className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
+          className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
         >
           <Plus className="h-5 w-5" />
           New VAT Return
@@ -143,56 +143,56 @@ export default function VATReturnsPage() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
+        <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
             <div className="p-3 bg-green-100 dark:bg-green-900/30 rounded-xl">
               <TrendingUp className="h-6 w-6 text-green-600 dark:text-green-400" />
             </div>
             <div>
               <div className="text-sm font-medium text-gray-500 dark:text-gray-400">Output Tax</div>
-              <div className="text-2xl font-bold text-gray-900 dark:text-white">
+              <div className="text-xl font-bold text-gray-900 dark:text-white">
                 R {Number(totalOutput ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
               </div>
             </div>
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
+        <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
             <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-xl">
               <DollarSign className="h-6 w-6 text-blue-600 dark:text-blue-400" />
             </div>
             <div>
               <div className="text-sm font-medium text-gray-500 dark:text-gray-400">Input Tax</div>
-              <div className="text-2xl font-bold text-gray-900 dark:text-white">
+              <div className="text-xl font-bold text-gray-900 dark:text-white">
                 R {Number(totalInput ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
               </div>
             </div>
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
+        <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
             <div className={`p-3 rounded-xl ${totalNet >= 0 ? 'bg-red-100 dark:bg-red-900/30' : 'bg-green-100 dark:bg-green-900/30'}`}>
               <FileText className={`h-6 w-6 ${totalNet >= 0 ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'}`} />
             </div>
             <div>
               <div className="text-sm font-medium text-gray-500 dark:text-gray-400">Net VAT {totalNet >= 0 ? 'Payable' : 'Refund'}</div>
-              <div className="text-2xl font-bold text-gray-900 dark:text-white">
+              <div className="text-xl font-bold text-gray-900 dark:text-white">
                 R {Math.abs(totalNet).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
               </div>
             </div>
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
+        <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
             <div className="p-3 bg-amber-100 dark:bg-amber-900/30 rounded-xl">
               <Calendar className="h-6 w-6 text-amber-600 dark:text-amber-400" />
             </div>
             <div>
               <div className="text-sm font-medium text-gray-500 dark:text-gray-400">Pending Returns</div>
-              <div className="text-2xl font-bold text-gray-900 dark:text-white">
+              <div className="text-xl font-bold text-gray-900 dark:text-white">
                 {pendingCount}
               </div>
             </div>
@@ -200,7 +200,7 @@ export default function VATReturnsPage() {
         </div>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-600">
@@ -269,8 +269,8 @@ export default function VATReturnsPage() {
 
       {showModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setShowModal(false)}>
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden" onClick={(e) => e.stopPropagation()}>
-            <div className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-lg overflow-hidden" onClick={(e) => e.stopPropagation()}>
+            <div className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white p-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-white/20 rounded-lg">
@@ -287,8 +287,8 @@ export default function VATReturnsPage() {
               </div>
             </div>
 
-            <form onSubmit={handleSubmit} className="p-6 space-y-6">
-              <div className="grid grid-cols-2 gap-4">
+            <form onSubmit={handleSubmit} className="p-4 space-y-3">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Period Start *
@@ -332,13 +332,13 @@ export default function VATReturnsPage() {
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="flex-1 px-6 py-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl font-semibold hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                  className="flex-1 px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl font-semibold hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 px-6 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
+                  className="flex-1 px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
                 >
                   Create VAT Return
                 </button>

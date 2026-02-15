@@ -184,11 +184,11 @@ const ProductionMonitoring: React.FC = () => {
           </button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Pending Jobs</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">Pending Jobs</p>
                 <p className="text-2xl font-bold text-yellow-600 dark:text-yellow-400 mt-1">{pendingJobs}</p>
               </div>
               <div className="p-3 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg">
@@ -197,10 +197,10 @@ const ProductionMonitoring: React.FC = () => {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Failed Jobs</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">Failed Jobs</p>
                 <p className="text-2xl font-bold text-red-600 dark:text-red-400 mt-1">{failedJobs}</p>
               </div>
               <div className="p-3 bg-red-100 dark:bg-red-900/30 rounded-lg">
@@ -209,10 +209,10 @@ const ProductionMonitoring: React.FC = () => {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Completed Jobs</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">Completed Jobs</p>
                 <p className="text-2xl font-bold text-green-600 dark:text-green-400 mt-1">{completedJobs}</p>
               </div>
               <div className="p-3 bg-green-100 dark:bg-green-900/30 rounded-lg">
@@ -222,31 +222,31 @@ const ProductionMonitoring: React.FC = () => {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
           <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
             <thead className="bg-gray-50 dark:bg-gray-900">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Job Name</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Type</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Priority</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Status</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Retry Count</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Scheduled At</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Actions</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Job Name</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Type</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Priority</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Status</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Retry Count</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Scheduled At</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Actions</th>
               </tr>
             </thead>
             <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
               {backgroundJobs.map((job) => (
                 <tr key={job.id} className="hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900">
                   <td className="px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">{job.job_name}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{job.job_type}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">{job.job_type}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{job.priority}</td>
                   <td className="px-6 py-4 whitespace-nowrap">{getStatusBadge(job.status)}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{job.retry_count}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                  <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">{job.retry_count}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">
                     {new Date(job.scheduled_at).toLocaleString()}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                  <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">
                     <button className="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:text-blue-100">View</button>
                   </td>
                 </tr>
@@ -268,29 +268,29 @@ const ProductionMonitoring: React.FC = () => {
         </button>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
         <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
           <thead className="bg-gray-50 dark:bg-gray-900">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Task Name</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Type</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Cron Expression</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Last Run</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Next Run</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Status</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Actions</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Task Name</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Type</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Cron Expression</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Last Run</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Next Run</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Status</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Actions</th>
             </tr>
           </thead>
           <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
             {scheduledTasks.map((task) => (
               <tr key={task.id} className="hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900">
                 <td className="px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">{task.task_name}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{task.task_type}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 font-mono">{task.cron_expression}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">{task.task_type}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400 font-mono">{task.cron_expression}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">
                   {task.last_run_at ? new Date(task.last_run_at).toLocaleString() : 'Never'}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">
                   {task.next_run_at ? new Date(task.next_run_at).toLocaleString() : '-'}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
@@ -300,7 +300,7 @@ const ProductionMonitoring: React.FC = () => {
                     <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-100 text-xs rounded-full">Disabled</span>
                   )}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">
                   <button className="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:text-blue-100 mr-3">Edit</button>
                   <button className="text-red-600 dark:text-red-400 hover:text-red-900">Delete</button>
                 </td>
@@ -325,29 +325,29 @@ const ProductionMonitoring: React.FC = () => {
         </button>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
         <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
           <thead className="bg-gray-50 dark:bg-gray-900">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Check Name</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Type</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Status</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Response Time</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Error Message</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Checked At</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Check Name</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Type</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Status</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Response Time</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Error Message</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Checked At</th>
             </tr>
           </thead>
           <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
             {healthChecks.map((check) => (
               <tr key={check.id} className="hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900">
                 <td className="px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">{check.check_name}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{check.check_type}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">{check.check_type}</td>
                 <td className="px-6 py-4 whitespace-nowrap">{getStatusBadge(check.status)}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">
                   {check.response_time_ms ? `${check.response_time_ms}ms` : '-'}
                 </td>
                 <td className="px-6 py-4 text-sm text-red-600 dark:text-red-400">{check.error_message || '-'}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">
                   {new Date(check.created_at).toLocaleString()}
                 </td>
               </tr>
@@ -368,27 +368,27 @@ const ProductionMonitoring: React.FC = () => {
         </button>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
         <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
           <thead className="bg-gray-50 dark:bg-gray-900">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">User ID</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Action</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Entity Type</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Entity ID</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">IP Address</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Timestamp</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">User ID</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Action</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Entity Type</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Entity ID</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">IP Address</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Timestamp</th>
             </tr>
           </thead>
           <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
             {auditLogs.map((log) => (
               <tr key={log.id} className="hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900">
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{log.user_id}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">{log.user_id}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{log.action}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{log.entity_type}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{log.entity_id || '-'}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{log.ip_address || '-'}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">{log.entity_type}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">{log.entity_id || '-'}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">{log.ip_address || '-'}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">
                   {new Date(log.created_at).toLocaleString()}
                 </td>
               </tr>
@@ -406,7 +406,7 @@ const ProductionMonitoring: React.FC = () => {
       <div className="space-y-4">
         <div className="flex justify-between items-center">
           <h3 className="text-lg font-semibold">Error Logs</h3>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             <span className="text-sm text-gray-600 dark:text-gray-400">
               Unresolved: <span className="font-bold text-red-600 dark:text-red-400">{unresolvedErrors}</span>
             </span>
@@ -417,16 +417,16 @@ const ProductionMonitoring: React.FC = () => {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
           <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
             <thead className="bg-gray-50 dark:bg-gray-900">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Error Type</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Error Message</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Status</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Resolved At</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Created At</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Actions</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Error Type</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Error Message</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Status</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Resolved At</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Created At</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Actions</th>
               </tr>
             </thead>
             <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
@@ -441,13 +441,13 @@ const ProductionMonitoring: React.FC = () => {
                       <span className="px-2 py-1 bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300 text-xs rounded-full">Unresolved</span>
                     )}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                  <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">
                     {error.resolved_at ? new Date(error.resolved_at).toLocaleString() : '-'}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                  <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">
                     {new Date(error.created_at).toLocaleString()}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                  <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">
                     {!error.is_resolved && (
                       <button className="text-green-600 dark:text-green-400 hover:text-green-900">Mark Resolved</button>
                     )}
@@ -474,14 +474,14 @@ const ProductionMonitoring: React.FC = () => {
         </button>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
         <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
           <thead className="bg-gray-50 dark:bg-gray-900">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Metric Name</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Value</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Unit</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Timestamp</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Metric Name</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Value</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Unit</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Timestamp</th>
             </tr>
           </thead>
           <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
@@ -489,8 +489,8 @@ const ProductionMonitoring: React.FC = () => {
               <tr key={index} className="hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900">
                 <td className="px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">{metric.metric_name}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{Number(metric.metric_value ?? 0).toFixed(2)}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{metric.metric_unit}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">{metric.metric_unit}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">
                   {new Date(metric.created_at).toLocaleString()}
                 </td>
               </tr>
@@ -502,7 +502,7 @@ const ProductionMonitoring: React.FC = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6 space-y-6">
+    <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4 space-y-3">
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Production Monitoring</h1>

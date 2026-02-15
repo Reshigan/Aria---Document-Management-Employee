@@ -124,7 +124,7 @@ const LeaveManagement: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-purple-50 dark:from-gray-900 dark:to-gray-800 p-8">
+      <div className="bg-gradient-to-br from-gray-50 to-purple-50 dark:from-gray-900 dark:to-gray-800 p-8">
         <div className="flex items-center justify-center h-64">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500"></div>
         </div>
@@ -133,12 +133,12 @@ const LeaveManagement: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-purple-50 dark:from-gray-900 dark:to-gray-800 p-8" data-testid="hr-leave">
+    <div className="bg-gradient-to-br from-gray-50 to-purple-50 dark:from-gray-900 dark:to-gray-800 p-8" data-testid="hr-leave">
       {/* Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
-            <div className="p-2 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl shadow-lg shadow-purple-500/30">
+          <h1 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl ">
               <Calendar className="h-7 w-7 text-white" />
             </div>
             Leave Management
@@ -147,7 +147,7 @@ const LeaveManagement: React.FC = () => {
         </div>
         <button
           onClick={handleCreate}
-          className="px-6 py-2.5 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl hover:from-purple-600 hover:to-pink-600 transition-all shadow-lg shadow-purple-500/30 flex items-center gap-2 font-medium"
+          className="px-6 py-2.5 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl hover:from-purple-600 hover:to-pink-600 transition-all  flex items-center gap-2 font-medium"
           data-testid="create-button"
         >
           <Plus className="h-5 w-5" />
@@ -162,7 +162,7 @@ const LeaveManagement: React.FC = () => {
       )}
 
       {/* Filter Tabs */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-gray-700 mb-6">
+      <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 mb-6">
         <div className="flex flex-wrap gap-2">
           {(['ALL', 'PENDING', 'APPROVED', 'REJECTED'] as const).map((f) => (
             <button
@@ -170,7 +170,7 @@ const LeaveManagement: React.FC = () => {
               onClick={() => setFilter(f)}
               className={`px-4 py-2 rounded-xl font-medium transition-all ${
                 filter === f
-                  ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg shadow-purple-500/30'
+                  ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white '
                   : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
               }`}
             >
@@ -181,44 +181,44 @@ const LeaveManagement: React.FC = () => {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl shadow-lg shadow-amber-500/30">
-              <Clock className="h-6 w-6 text-white" />
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-6 mb-8">
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl ">
+              <Clock className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{pendingCount}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Pending</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{pendingCount}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Pending</p>
             </div>
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg shadow-green-500/30">
-              <CalendarCheck className="h-6 w-6 text-white" />
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl ">
+              <CalendarCheck className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{approvedCount}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Approved</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{approvedCount}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Approved</p>
             </div>
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-red-500 to-rose-500 rounded-xl shadow-lg shadow-red-500/30">
-              <X className="h-6 w-6 text-white" />
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-red-500 to-rose-500 rounded-xl ">
+              <X className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{rejectedCount}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Rejected</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{rejectedCount}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Rejected</p>
             </div>
           </div>
         </div>
       </div>
 
       {/* Leave Requests Table */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
         {filtered.length === 0 ? (
           <div className="px-6 py-12 text-center">
             <Calendar className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
@@ -282,7 +282,7 @@ const LeaveManagement: React.FC = () => {
                 New Leave Request
               </h2>
             </div>
-            <div className="p-6 overflow-y-auto max-h-[calc(90vh-140px)]">
+            <div className="p-4 overflow-y-auto max-h-[calc(90vh-140px)]">
               <div className="mb-5">
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Employee ID *</label>
                 <input
@@ -307,7 +307,7 @@ const LeaveManagement: React.FC = () => {
                   <option value="STUDY">Study Leave</option>
                 </select>
               </div>
-              <div className="grid grid-cols-2 gap-4 mb-5">
+              <div className="grid grid-cols-2 gap-3 mb-5">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Start Date *</label>
                   <input
@@ -332,7 +332,7 @@ const LeaveManagement: React.FC = () => {
                 <textarea
                   value={form.reason}
                   onChange={(e) => setForm({ ...form, reason: e.target.value })}
-                  rows={3}
+                  rows={2}
                   className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                 />
               </div>
@@ -345,7 +345,7 @@ const LeaveManagement: React.FC = () => {
                 </button>
                 <button
                   onClick={handleSave}
-                  className="px-5 py-2.5 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl font-medium hover:from-purple-600 hover:to-pink-600 transition-all shadow-lg shadow-purple-500/30"
+                  className="px-5 py-2.5 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl font-medium hover:from-purple-600 hover:to-pink-600 transition-all "
                 >
                   Submit Request
                 </button>

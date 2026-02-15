@@ -77,41 +77,41 @@ export default function ManufacturingDashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-amber-50 dark:from-gray-900 dark:to-gray-800 p-6 flex items-center justify-center">
+      <div className="bg-gradient-to-br from-gray-50 to-amber-50 dark:from-gray-900 dark:to-gray-800 p-4 flex items-center justify-center">
         <div className="text-center"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-600 mx-auto mb-4"></div><p className="text-gray-500 dark:text-gray-400">Loading dashboard...</p></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-amber-50 dark:from-gray-900 dark:to-gray-800 p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
+    <div className="bg-gradient-to-br from-gray-50 to-amber-50 dark:from-gray-900 dark:to-gray-800 p-4">
+      <div className="max-w-7xl mx-auto space-y-3">
         <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent">Manufacturing Dashboard</h1>
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent">Manufacturing Dashboard</h1>
           <p className="text-gray-500 dark:text-gray-400 mt-1">Overview of production and manufacturing operations</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
-            <div className="flex items-center gap-4"><div className="p-3 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl shadow-lg shadow-amber-500/30"><Factory className="h-6 w-6 text-white" /></div><div><p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.totalOrders}</p><p className="text-sm text-gray-500 dark:text-gray-400">Total Orders</p></div></div>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
+            <div className="flex items-center gap-3"><div className="p-2 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl "><Factory className="h-5 w-5 text-white" /></div><div><p className="text-xl font-bold text-gray-900 dark:text-white">{stats.totalOrders}</p><p className="text-xs text-gray-500 dark:text-gray-400">Total Orders</p></div></div>
           </div>
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
-            <div className="flex items-center gap-4"><div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl shadow-lg shadow-blue-500/30"><Play className="h-6 w-6 text-white" /></div><div><p className="text-2xl font-bold text-blue-600 dark:text-blue-400">{stats.inProgress}</p><p className="text-sm text-gray-500 dark:text-gray-400">In Progress</p></div></div>
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
+            <div className="flex items-center gap-3"><div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl "><Play className="h-5 w-5 text-white" /></div><div><p className="text-2xl font-bold text-blue-600 dark:text-blue-400">{stats.inProgress}</p><p className="text-xs text-gray-500 dark:text-gray-400">In Progress</p></div></div>
           </div>
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
-            <div className="flex items-center gap-4"><div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg shadow-green-500/30"><CheckCircle className="h-6 w-6 text-white" /></div><div><p className="text-2xl font-bold text-green-600 dark:text-green-400">{stats.completed}</p><p className="text-sm text-gray-500 dark:text-gray-400">Completed</p></div></div>
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
+            <div className="flex items-center gap-3"><div className="p-2 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl "><CheckCircle className="h-5 w-5 text-white" /></div><div><p className="text-2xl font-bold text-green-600 dark:text-green-400">{stats.completed}</p><p className="text-xs text-gray-500 dark:text-gray-400">Completed</p></div></div>
           </div>
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
-            <div className="flex items-center gap-4"><div className="p-3 bg-gradient-to-br from-red-500 to-rose-500 rounded-xl shadow-lg shadow-red-500/30"><AlertTriangle className="h-6 w-6 text-white" /></div><div><p className="text-2xl font-bold text-red-600 dark:text-red-400">{stats.onHold}</p><p className="text-sm text-gray-500 dark:text-gray-400">On Hold</p></div></div>
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
+            <div className="flex items-center gap-3"><div className="p-2 bg-gradient-to-br from-red-500 to-rose-500 rounded-xl "><AlertTriangle className="h-5 w-5 text-white" /></div><div><p className="text-2xl font-bold text-red-600 dark:text-red-400">{stats.onHold}</p><p className="text-xs text-gray-500 dark:text-gray-400">On Hold</p></div></div>
           </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
-            <div className="p-5 border-b border-gray-100 dark:border-gray-700"><h2 className="text-lg font-semibold text-gray-900 dark:text-white">Recent Production Orders</h2></div>
+          <div className="lg:col-span-2 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+            <div className="p-3 border-b border-gray-100 dark:border-gray-700"><h2 className="text-lg font-semibold text-gray-900 dark:text-white">Recent Production Orders</h2></div>
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-gray-50 dark:bg-gray-900/50"><tr><th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Order #</th><th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Product</th><th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Progress</th><th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Priority</th><th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Status</th></tr></thead>
+                <thead className="bg-gray-50 dark:bg-gray-900/50"><tr><th className="px-4 py-2 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Order #</th><th className="px-4 py-2 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Product</th><th className="px-4 py-2 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Progress</th><th className="px-4 py-2 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Priority</th><th className="px-4 py-2 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Status</th></tr></thead>
                 <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
                   {recentOrders.map((order) => (
                     <tr key={order.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
@@ -127,8 +127,8 @@ export default function ManufacturingDashboard() {
             </div>
           </div>
 
-          <div className="space-y-6">
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="space-y-3">
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">BOMs Overview</h3>
               <div className="space-y-4">
                 <div className="flex items-center justify-between"><div className="flex items-center gap-3"><div className="p-2 bg-orange-100 dark:bg-orange-900/30 rounded-lg"><Layers className="h-5 w-5 text-orange-600 dark:text-orange-400" /></div><span className="text-gray-600 dark:text-gray-400">Total BOMs</span></div><span className="text-xl font-bold text-gray-900 dark:text-white">{stats.totalBOMs}</span></div>
@@ -136,7 +136,7 @@ export default function ManufacturingDashboard() {
               </div>
             </div>
 
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Performance Metrics</h3>
               <div className="space-y-4">
                 <div><div className="flex items-center justify-between mb-2"><span className="text-gray-600 dark:text-gray-400">Efficiency</span><span className="font-semibold text-green-600 dark:text-green-400">{stats.efficiency}%</span></div><div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2"><div className="h-2 rounded-full bg-gradient-to-r from-green-500 to-emerald-500" style={{ width: `${stats.efficiency}%` }}></div></div></div>
@@ -144,7 +144,7 @@ export default function ManufacturingDashboard() {
               </div>
             </div>
 
-            <div className="bg-gradient-to-br from-amber-500 to-orange-500 rounded-2xl p-5 text-white">
+            <div className="bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl p-3 text-white">
               <div className="flex items-center gap-3 mb-3"><BarChart3 className="h-6 w-6" /><h3 className="text-lg font-semibold">Quick Actions</h3></div>
               <div className="space-y-2">
                 <a href="/manufacturing/production" className="flex items-center gap-2 p-3 bg-white/20 rounded-xl hover:bg-white/30 transition-colors"><Factory className="h-5 w-5" />View Production Orders</a>

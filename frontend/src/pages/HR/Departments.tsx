@@ -113,7 +113,7 @@ const Departments: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-8">
+      <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-8">
         <div className="flex items-center justify-center h-64">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-500"></div>
         </div>
@@ -122,12 +122,12 @@ const Departments: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-8" data-testid="hr-departments">
+    <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-8" data-testid="hr-departments">
       {/* Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
-            <div className="p-2 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl shadow-lg shadow-indigo-500/30">
+          <h1 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl ">
               <Building2 className="h-7 w-7 text-white" />
             </div>
             Departments
@@ -136,7 +136,7 @@ const Departments: React.FC = () => {
         </div>
         <button
           onClick={handleCreate}
-          className="px-6 py-2.5 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-xl hover:from-indigo-600 hover:to-purple-600 transition-all shadow-lg shadow-indigo-500/30 flex items-center gap-2 font-medium"
+          className="px-6 py-2.5 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-xl hover:from-indigo-600 hover:to-purple-600 transition-all  flex items-center gap-2 font-medium"
           data-testid="create-button"
         >
           <Plus className="h-5 w-5" />
@@ -151,7 +151,7 @@ const Departments: React.FC = () => {
       )}
 
       {/* Search Bar */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-gray-700 mb-6">
+      <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 mb-6">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
           <input
@@ -166,44 +166,44 @@ const Departments: React.FC = () => {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl shadow-lg shadow-indigo-500/30">
-              <Building2 className="h-6 w-6 text-white" />
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-6 mb-8">
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl ">
+              <Building2 className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{departments.filter(d => d.is_active).length}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Total Departments</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{departments.filter(d => d.is_active).length}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Total Departments</p>
             </div>
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl shadow-lg shadow-blue-500/30">
-              <Users className="h-6 w-6 text-white" />
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl ">
+              <Users className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{departments.reduce((sum, d) => sum + Number(d.employee_count ?? 0), 0)}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Total Employees</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{departments.reduce((sum, d) => sum + Number(d.employee_count ?? 0), 0)}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Total Employees</p>
             </div>
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg shadow-green-500/30">
-              <DollarSign className="h-6 w-6 text-white" />
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl ">
+              <DollarSign className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{formatCurrency(departments.reduce((sum, d) => sum + Number(d.budget ?? 0), 0))}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Total Budget</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{formatCurrency(departments.reduce((sum, d) => sum + Number(d.budget ?? 0), 0))}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Total Budget</p>
             </div>
           </div>
         </div>
       </div>
 
       {/* Departments Table */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
         {filtered.length === 0 ? (
           <div className="px-6 py-12 text-center">
             <Building2 className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
@@ -273,7 +273,7 @@ const Departments: React.FC = () => {
                 {editingDepartment ? 'Edit Department' : 'New Department'}
               </h2>
             </div>
-            <div className="p-6 overflow-y-auto max-h-[calc(90vh-140px)]">
+            <div className="p-4 overflow-y-auto max-h-[calc(90vh-140px)]">
               <div className="mb-5">
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Department Name *</label>
                 <input
@@ -321,7 +321,7 @@ const Departments: React.FC = () => {
                 </button>
                 <button
                   onClick={handleSave}
-                  className="px-5 py-2.5 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-xl font-medium hover:from-indigo-600 hover:to-purple-600 transition-all shadow-lg shadow-indigo-500/30"
+                  className="px-5 py-2.5 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-xl font-medium hover:from-indigo-600 hover:to-purple-600 transition-all "
                 >
                   Save
                 </button>

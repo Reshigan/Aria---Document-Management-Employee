@@ -75,7 +75,7 @@ const BotDetail: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-white dark:bg-gray-800 flex items-center justify-center">
+      <div className="bg-white dark:bg-gray-800 flex items-center justify-center">
         <div className="text-center">
           <Agent className="w-12 h-12 text-gray-400 animate-pulse mx-auto mb-4" />
           <p className="text-gray-600 dark:text-gray-400">Loading agent details...</p>
@@ -86,7 +86,7 @@ const BotDetail: React.FC = () => {
 
   if (!botData) {
     return (
-      <div className="min-h-screen bg-white dark:bg-gray-800 flex items-center justify-center">
+      <div className="bg-white dark:bg-gray-800 flex items-center justify-center">
         <div className="text-center">
           <p className="text-gray-600 dark:text-gray-400 mb-4">Agent not found</p>
           <Link to="/agents" className="text-blue-600 dark:text-blue-400 hover:underline">
@@ -98,7 +98,7 @@ const BotDetail: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-800">
+    <div className="bg-white dark:bg-gray-800">
       {/* Navigation */}
       <nav className="fixed top-0 w-full z-50 bg-white dark:bg-gray-800/80 backdrop-blur-md border-b border-gray-100 dark:border-gray-700">
         <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
@@ -160,25 +160,25 @@ const BotDetail: React.FC = () => {
 
             {/* Key Metrics */}
             <div className="grid grid-cols-3 gap-6 mb-8">
-              <div className="text-center p-6 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
+              <div className="text-center p-4 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
                 <TrendingUp className="w-8 h-8 text-green-600 dark:text-green-400 mx-auto mb-3" />
-                <div className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-1">{botData.roi}%</div>
+                <div className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-1">{botData.roi}%</div>
                 <div className="text-sm text-gray-600 dark:text-gray-400">ROI</div>
               </div>
-              <div className="text-center p-6 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
+              <div className="text-center p-4 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
                 <Clock className="w-8 h-8 text-blue-600 dark:text-blue-400 mx-auto mb-3" />
-                <div className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-1">{botData.deploymentTime}</div>
+                <div className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-1">{botData.deploymentTime}</div>
                 <div className="text-sm text-gray-600 dark:text-gray-400">Deploy Time</div>
               </div>
-              <div className="text-center p-6 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
+              <div className="text-center p-4 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
                 <Zap className="w-8 h-8 text-yellow-600 dark:text-yellow-400 mx-auto mb-3" />
-                <div className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-1">95%+</div>
+                <div className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-1">95%+</div>
                 <div className="text-sm text-gray-600 dark:text-gray-400">Accuracy</div>
               </div>
             </div>
 
             {/* CTA Buttons */}
-            <div className="flex flex-wrap gap-4">
+            <div className="flex flex-wrap gap-3">
               {botData.isFunctional ? (
                 <>
                   <button 
@@ -222,10 +222,10 @@ const BotDetail: React.FC = () => {
       {/* Features Grid */}
       <section className="py-16 px-6 bg-gray-50 dark:bg-gray-900">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-12 text-center">
+          <h2 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-12 text-center">
             Key Features
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-8">
             {botData.features.map((feature, index) => (
               <motion.div
                 key={index}
@@ -233,7 +233,7 @@ const BotDetail: React.FC = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
                 viewport={{ once: true }}
-                className="p-6 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700"
+                className="p-4 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700"
               >
                 <feature.icon className="w-10 h-10 text-blue-600 dark:text-blue-400 mb-4" />
                 <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
@@ -251,7 +251,7 @@ const BotDetail: React.FC = () => {
       {/* Use Cases */}
       <section className="py-16 px-6 bg-white dark:bg-gray-800">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-12 text-center">
+          <h2 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-12 text-center">
             Use Cases & ROI
           </h2>
           <div className="space-y-8">
@@ -293,14 +293,14 @@ const BotDetail: React.FC = () => {
       {/* Integrations */}
       <section className="py-16 px-6 bg-gray-50 dark:bg-gray-900">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-8 text-center">
+          <h2 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-8 text-center">
             Integrations
           </h2>
-          <div className="flex flex-wrap justify-center gap-4">
+          <div className="flex flex-wrap justify-center gap-3">
             {botData.integrations.map((integration, index) => (
               <div
                 key={index}
-                className="px-6 py-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 font-medium"
+                className="px-4 py-2 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 font-medium"
               >
                 {integration}
               </div>
@@ -312,10 +312,10 @@ const BotDetail: React.FC = () => {
       {/* Pricing */}
       <section className="py-16 px-6 bg-white dark:bg-gray-800">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-12 text-center">
+          <h2 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-12 text-center">
             Pricing
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-8">
             {/* Starter */}
             <div className="p-8 bg-white dark:bg-gray-800 rounded-xl border-2 border-gray-200 dark:border-gray-700">
               <div className="text-center mb-6">
@@ -454,7 +454,7 @@ const BotDetail: React.FC = () => {
       {/* Requirements */}
       <section className="py-16 px-6 bg-white dark:bg-gray-800">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-8 text-center">
+          <h2 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-8 text-center">
             Requirements
           </h2>
           <div className="bg-gray-50 dark:bg-gray-900 rounded-xl p-8 border border-gray-200 dark:border-gray-700">
@@ -479,7 +479,7 @@ const BotDetail: React.FC = () => {
           <p className="text-xl text-gray-600 dark:text-gray-400 mb-10">
             Deploy {botData.name} in {botData.deploymentTime}. No credit card required for trial.
           </p>
-          <div className="flex flex-wrap justify-center gap-4">
+          <div className="flex flex-wrap justify-center gap-3">
             <button
               onClick={() => navigate('/signup')}
               className="px-10 py-5 bg-black hover:bg-gray-800 text-white rounded-lg font-semibold text-xl transition flex items-center space-x-2"
@@ -500,7 +500,7 @@ const BotDetail: React.FC = () => {
       {/* Footer */}
       <footer className="py-16 px-6 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
         <div className="max-w-7xl mx-auto text-center">
-          <p className="text-sm text-gray-500 dark:text-gray-400">&copy; 2025 Vanta X Pty Ltd. All rights reserved.</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400">&copy; 2025 Vanta X Pty Ltd. All rights reserved.</p>
         </div>
       </footer>
     </div>

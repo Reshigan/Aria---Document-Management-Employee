@@ -117,18 +117,18 @@ export default function Receipts() {
   });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-green-50 dark:from-gray-900 dark:to-gray-800 p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <div className="bg-gradient-to-br from-gray-50 to-green-50 dark:from-gray-900 dark:to-gray-800 p-4">
+      <div className="max-w-7xl mx-auto space-y-3">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
           <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">Customer Receipts</h1>
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">Customer Receipts</h1>
             <p className="text-gray-500 dark:text-gray-400 mt-1">Manage customer payments and allocations</p>
           </div>
           <div className="flex items-center gap-3">
             <button onClick={() => loadReceipts()} className="p-3 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-200 dark:border-gray-700">
               <RefreshCw className={`h-5 w-5 text-gray-600 dark:text-gray-400 ${loading ? 'animate-spin' : ''}`} />
             </button>
-            <button onClick={handleCreateNew} className="flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl font-medium hover:from-green-700 hover:to-emerald-700 transition-all shadow-lg shadow-green-500/30">
+            <button onClick={handleCreateNew} className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl font-medium hover:from-green-700 hover:to-emerald-700 transition-all ">
               <Plus className="h-5 w-5" />New Receipt
             </button>
           </div>
@@ -143,52 +143,52 @@ export default function Receipts() {
         )}
 
         {stats && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg shadow-green-500/30"><DollarSign className="h-6 w-6 text-white" /></div>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl "><DollarSign className="h-5 w-5 text-white" /></div>
                 <div>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.total_receipts}</p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Total Receipts</p>
+                  <p className="text-xl font-bold text-gray-900 dark:text-white">{stats.total_receipts}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Total Receipts</p>
                   <p className="text-xs text-gray-400 dark:text-gray-500">R {Number(stats.total_amount ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</p>
                 </div>
               </div>
             </div>
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl shadow-lg shadow-emerald-500/30"><CheckCircle className="h-6 w-6 text-white" /></div>
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl "><CheckCircle className="h-5 w-5 text-white" /></div>
                 <div>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.posted_count}</p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Posted</p>
+                  <p className="text-xl font-bold text-gray-900 dark:text-white">{stats.posted_count}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Posted</p>
                   <p className="text-xs text-gray-400 dark:text-gray-500">R {Number(stats.posted_amount ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</p>
                 </div>
               </div>
             </div>
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-gradient-to-br from-gray-500 to-gray-600 rounded-xl shadow-lg shadow-gray-500/30"><Clock className="h-6 w-6 text-white" /></div>
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-gradient-to-br from-gray-500 to-gray-600 rounded-xl "><Clock className="h-5 w-5 text-white" /></div>
                 <div>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.draft_count}</p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Draft</p>
+                  <p className="text-xl font-bold text-gray-900 dark:text-white">{stats.draft_count}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Draft</p>
                   <p className="text-xs text-gray-400 dark:text-gray-500">R {Number(stats.draft_amount ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</p>
                 </div>
               </div>
             </div>
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl shadow-lg shadow-amber-500/30"><TrendingUp className="h-6 w-6 text-white" /></div>
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl "><TrendingUp className="h-5 w-5 text-white" /></div>
                 <div>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">R {stats.total_receipts > 0 ? (stats.total_amount / stats.total_receipts).toLocaleString('en-ZA', { minimumFractionDigits: 2 }) : '0.00'}</p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Avg Receipt</p>
+                  <p className="text-xl font-bold text-gray-900 dark:text-white">R {stats.total_receipts > 0 ? (stats.total_amount / stats.total_receipts).toLocaleString('en-ZA', { minimumFractionDigits: 2 }) : '0.00'}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Avg Receipt</p>
                 </div>
               </div>
             </div>
           </div>
         )}
 
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
-          <div className="p-5 border-b border-gray-100 dark:border-gray-700">
-            <div className="flex flex-col md:flex-row gap-4">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+          <div className="p-3 border-b border-gray-100 dark:border-gray-700">
+            <div className="flex flex-col md:flex-row gap-3">
               <div className="flex-1 relative">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
                 <input type="text" placeholder="Search by receipt number, customer, or reference..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-12 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all" />
@@ -213,7 +213,7 @@ export default function Receipts() {
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No receipts found</h3>
               <p className="text-gray-500 dark:text-gray-400 mb-6">{searchTerm || statusFilter !== 'all' ? 'Try adjusting your filters' : 'Get started by creating your first receipt'}</p>
               {!searchTerm && statusFilter === 'all' && (
-                <button onClick={handleCreateNew} className="px-5 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl font-medium hover:from-green-700 hover:to-emerald-700 transition-all">Create First Receipt</button>
+                <button onClick={handleCreateNew} className="px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl font-medium hover:from-green-700 hover:to-emerald-700 transition-all">Create First Receipt</button>
               )}
             </div>
           ) : (

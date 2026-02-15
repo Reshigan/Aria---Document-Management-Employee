@@ -112,7 +112,7 @@ export default function BotsLive() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
+      <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
         <div className="text-center">
           <Loader className="w-12 h-12 text-indigo-600 dark:text-indigo-400 animate-spin mx-auto mb-4" />
           <p className="text-gray-600 dark:text-gray-400">Loading agents from API...</p>
@@ -123,16 +123,16 @@ export default function BotsLive() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 max-w-md">
+      <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-8 max-w-md">
           <AlertCircle className="w-12 h-12 text-red-600 dark:text-red-400 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white text-center mb-2">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white text-center mb-2">
             Connection Error
           </h2>
           <p className="text-gray-600 dark:text-gray-400 text-center mb-4">{error}</p>
           <button
             onClick={loadBots}
-            className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-medium py-2 px-4 rounded-xl transition-all shadow-lg shadow-indigo-500/30"
+            className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-medium py-2 px-4 rounded-xl transition-all "
           >
             Retry
           </button>
@@ -142,10 +142,10 @@ export default function BotsLive() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 py-12 px-4">
+    <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 py-12 px-4">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 mb-8 border border-gray-100 dark:border-gray-700">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-8 mb-8 border border-gray-100 dark:border-gray-700">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2">
@@ -163,13 +163,13 @@ export default function BotsLive() {
         </div>
 
         {/* Agent Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-6">
           {agents.map((agent) => {
             const Icon = iconMap[agent.name] || Bot;
             return (
               <div
                 key={agent.name}
-                className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all border border-gray-100 dark:border-gray-700"
+                className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 hover:shadow-xl transition-all border border-gray-100 dark:border-gray-700"
               >
                 <div className="flex items-start justify-between mb-4">
                   <div className="bg-indigo-100 dark:bg-indigo-900/30 p-3 rounded-xl">
@@ -218,7 +218,7 @@ export default function BotsLive() {
                   className={`w-full flex items-center justify-center gap-2 py-2 px-4 rounded-xl font-medium transition-all ${
                     executingBot === agent.name
                       ? 'bg-gray-300 dark:bg-gray-600 cursor-not-allowed text-gray-500 dark:text-gray-400'
-                      : 'bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-lg shadow-indigo-500/30'
+                      : 'bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white '
                   }`}
                 >
                   {executingBot === agent.name ? (
@@ -240,7 +240,7 @@ export default function BotsLive() {
 
         {/* Execution Result */}
         {executionResult && (
-          <div className="mt-8 bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 border border-gray-100 dark:border-gray-700">
+          <div className="mt-8 bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 border border-gray-100 dark:border-gray-700">
             <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
               Last Execution Result
             </h3>
@@ -251,7 +251,7 @@ export default function BotsLive() {
         )}
 
         {/* API Info */}
-        <div className="mt-8 bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-800 rounded-2xl p-6">
+        <div className="mt-8 bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-800 rounded-xl p-3">
           <h3 className="font-semibold text-indigo-900 dark:text-indigo-300 mb-2">API Information</h3>
           <div className="text-sm text-indigo-800 dark:text-indigo-400 space-y-1">
             <p><strong>Endpoint:</strong> {window.location.origin}/api</p>

@@ -115,14 +115,14 @@ export default function BalanceSheetPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6">
+    <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4">
       <div className="max-w-6xl mx-auto">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent flex items-center gap-3">
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent flex items-center gap-3">
             <Scale className="h-8 w-8 text-indigo-600" />
             Balance Sheet
           </h1>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             <div className="flex items-center gap-2">
               <Calendar className="h-5 w-5 text-gray-500" />
               <input
@@ -161,7 +161,7 @@ export default function BalanceSheetPage() {
         ) : data ? (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Assets */}
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6" data-testid="section-assets">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4" data-testid="section-assets">
               <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Assets</h3>
               <div className="space-y-4">
                 <div data-testid="current-assets">
@@ -200,7 +200,7 @@ export default function BalanceSheetPage() {
             </div>
 
             {/* Liabilities & Equity */}
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
               <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Liabilities & Equity</h3>
               <div className="space-y-4">
                 <div data-testid="section-liabilities">
@@ -266,7 +266,7 @@ export default function BalanceSheetPage() {
 
         {/* Balance Check */}
         {data && (
-          <div className="mt-6 bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
+          <div className="mt-6 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
             <div className="flex justify-between items-center">
               <span className="font-medium text-gray-700 dark:text-gray-300">Balance Check (Assets = Liabilities + Equity)</span>
               {Math.abs(data.assets.total - (data.liabilities.total + data.equity.total)) < 0.01 ? (

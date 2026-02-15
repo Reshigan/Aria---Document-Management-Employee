@@ -206,7 +206,7 @@ export default function HelpdeskTickets() {
 
   if (loading && tickets.length === 0) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
+      <div className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-gray-500 dark:text-gray-400">Loading tickets...</p>
@@ -216,11 +216,11 @@ export default function HelpdeskTickets() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-6 lg:p-8">
+    <div className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-4">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
-          <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl shadow-lg shadow-blue-500/30">
+        <h1 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
+          <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl ">
             <Ticket className="h-7 w-7 text-white" />
           </div>
           Helpdesk Tickets
@@ -230,55 +230,55 @@ export default function HelpdeskTickets() {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl shadow-lg shadow-blue-500/30">
-              <Ticket className="h-6 w-6 text-white" />
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl ">
+              <Ticket className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{tickets.length}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Total Tickets</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{tickets.length}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Total Tickets</p>
             </div>
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-orange-500 to-amber-500 rounded-xl shadow-lg shadow-orange-500/30">
-              <Clock className="h-6 w-6 text-white" />
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-orange-500 to-amber-500 rounded-xl ">
+              <Clock className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{openTickets.length}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Open Tickets</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{openTickets.length}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Open Tickets</p>
             </div>
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-red-500 to-rose-500 rounded-xl shadow-lg shadow-red-500/30">
-              <AlertCircle className="h-6 w-6 text-white" />
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-red-500 to-rose-500 rounded-xl ">
+              <AlertCircle className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{breachedTickets.length}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">SLA Breached</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{breachedTickets.length}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">SLA Breached</p>
             </div>
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-purple-500 to-violet-500 rounded-xl shadow-lg shadow-purple-500/30">
-              <AlertCircle className="h-6 w-6 text-white" />
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-purple-500 to-violet-500 rounded-xl ">
+              <AlertCircle className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{tickets.filter(t => t.priority === 'urgent').length}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Urgent</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{tickets.filter(t => t.priority === 'urgent').length}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Urgent</p>
             </div>
           </div>
         </div>
       </div>
 
       {/* Action Bar */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 mb-6">
-        <div className="p-4 flex flex-col md:flex-row gap-4">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 mb-6">
+        <div className="p-4 flex flex-col md:flex-row gap-3">
           <div className="flex-1 relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
             <input
@@ -312,7 +312,7 @@ export default function HelpdeskTickets() {
           </select>
           <button
             onClick={() => { setEditingTicket(null); resetForm(); setShowForm(true); }}
-            className="flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-xl font-semibold shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 transition-all duration-200"
+            className="flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-xl font-semibold  hover:shadow-xl hover:shadow-blue-500/40 transition-all duration-200"
           >
             <Plus className="h-5 w-5" />
             New Ticket
@@ -321,7 +321,7 @@ export default function HelpdeskTickets() {
       </div>
 
       {/* Table */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
 
         <div className="overflow-x-auto">
           <table className="w-full">
@@ -440,13 +440,13 @@ export default function HelpdeskTickets() {
       {showForm && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white dark:bg-gray-800 rounded-2xl w-full max-w-lg max-h-[90vh] overflow-auto shadow-2xl">
-            <div className="p-6 border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-t-2xl">
+            <div className="p-4 border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-t-2xl">
               <h2 className="text-xl font-bold text-white flex items-center gap-3">
                 <Ticket className="h-6 w-6" />
                 {editingTicket ? 'Edit Ticket' : 'New Ticket'}
               </h2>
             </div>
-            <form onSubmit={handleSubmit} className="p-6 space-y-4">
+            <form onSubmit={handleSubmit} className="p-4 space-y-4">
               <div>
                 <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Subject *</label>
                 <input
@@ -463,7 +463,7 @@ export default function HelpdeskTickets() {
                 <textarea
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  rows={3}
+                  rows={2}
                   placeholder="Detailed description of the issue"
                   className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                 />
@@ -478,7 +478,7 @@ export default function HelpdeskTickets() {
                   className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                 />
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Team</label>
                   <select
@@ -522,7 +522,7 @@ export default function HelpdeskTickets() {
                 </div>
               )}
             </form>
-            <div className="p-6 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3">
+            <div className="p-4 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3">
               <button
                 type="button"
                 onClick={() => { setShowForm(false); setEditingTicket(null); resetForm(); }}
@@ -533,7 +533,7 @@ export default function HelpdeskTickets() {
               <button
                 type="button"
                 onClick={handleSubmit as any}
-                className="px-5 py-2.5 bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-xl font-semibold shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 transition-all"
+                className="px-5 py-2.5 bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-xl font-semibold  hover:shadow-xl hover:shadow-blue-500/40 transition-all"
               >
                 {editingTicket ? 'Update' : 'Create'} Ticket
               </button>
@@ -602,7 +602,7 @@ function TicketDetailModal({ ticket, onClose, onUpdate }: {
       <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col">
         <div className="p-4 border-b flex justify-between items-start">
           <div>
-            <div className="text-sm text-gray-500">#{ticket.ticket_number}</div>
+            <div className="text-xs text-gray-500">#{ticket.ticket_number}</div>
             <h2 className="text-xl font-bold">{ticket.subject}</h2>
             <div className="text-sm text-gray-600 mt-1">
               {ticket.customer_name || ticket.customer_email || 'Unknown Customer'}

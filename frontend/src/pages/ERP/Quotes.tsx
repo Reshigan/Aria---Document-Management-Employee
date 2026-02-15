@@ -372,7 +372,7 @@ export default function Quotes() {
             <button onClick={() => loadQuotes()} className="p-3 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-200 dark:border-gray-700">
               <RefreshCw className={`h-5 w-5 text-gray-600 dark:text-gray-400 ${loading ? 'animate-spin' : ''}`} />
             </button>
-            <button onClick={handleCreate} className="flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-xl font-medium hover:from-violet-700 hover:to-purple-700 transition-all shadow-lg shadow-violet-500/30">
+            <button onClick={handleCreate} className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-xl font-medium hover:from-violet-700 hover:to-purple-700 transition-all ">
               <Plus className="h-5 w-5" />New Quote
             </button>
           </div>
@@ -413,9 +413,9 @@ export default function Quotes() {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
-          <div className="p-5 border-b border-gray-100 dark:border-gray-700">
-            <div className="flex flex-col md:flex-row gap-4">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+          <div className="p-3 border-b border-gray-100 dark:border-gray-700">
+            <div className="flex flex-col md:flex-row gap-3">
               <div className="flex-1 relative">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
                 <input type="text" placeholder="Search by customer, quote number..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-12 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all" />
@@ -443,7 +443,7 @@ export default function Quotes() {
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No quotes found</h3>
               <p className="text-gray-500 dark:text-gray-400 mb-6">{searchTerm || statusFilter ? 'Try adjusting your filters' : 'Get started by creating your first quote'}</p>
               {!searchTerm && !statusFilter && (
-                <button onClick={handleCreate} className="px-5 py-3 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-xl font-medium hover:from-violet-700 hover:to-purple-700 transition-all">Create First Quote</button>
+                <button onClick={handleCreate} className="px-4 py-2 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-xl font-medium hover:from-violet-700 hover:to-purple-700 transition-all">Create First Quote</button>
               )}
             </div>
           ) : (
@@ -469,7 +469,7 @@ export default function Quotes() {
                           <Link to={`/quotes/${quote.id}`} className="font-semibold text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300">{quote.quote_number}</Link>
                         </td>
                         <td className="px-6 py-4">
-                          <div><p className="font-medium text-gray-900 dark:text-white">{quote.customer_name || '-'}</p>{quote.customer_email && (<p className="text-sm text-gray-500 dark:text-gray-400">{quote.customer_email}</p>)}</div>
+                          <div><p className="font-medium text-gray-900 dark:text-white">{quote.customer_name || '-'}</p>{quote.customer_email && (<p className="text-xs text-gray-500 dark:text-gray-400">{quote.customer_email}</p>)}</div>
                         </td>
                         <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{new Date(quote.quote_date).toLocaleDateString()}</td>
                         <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{quote.valid_until ? new Date(quote.valid_until).toLocaleDateString() : '-'}</td>
@@ -510,8 +510,8 @@ export default function Quotes() {
 
       {showCreateModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setShowCreateModal(false)}>
-          <div onClick={(e) => e.stopPropagation()} className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden">
-            <div className="bg-gradient-to-r from-violet-600 to-purple-600 text-white p-6">
+          <div onClick={(e) => e.stopPropagation()} className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden">
+            <div className="bg-gradient-to-r from-violet-600 to-purple-600 text-white p-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-white/20 rounded-lg"><FileCheck className="h-6 w-6" /></div>
@@ -525,7 +525,7 @@ export default function Quotes() {
             </div>
 
             <form onSubmit={handleSubmit} className="overflow-y-auto max-h-[calc(90vh-180px)]">
-              <div className="p-6 space-y-6">
+              <div className="p-4 space-y-3">
                 {error && (
                   <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl flex items-center gap-3">
                     <AlertCircle className="h-5 w-5 text-red-500 flex-shrink-0" />
@@ -538,7 +538,7 @@ export default function Quotes() {
                     <span className="w-6 h-6 rounded-full bg-violet-100 dark:bg-violet-900/50 text-violet-600 dark:text-violet-400 flex items-center justify-center text-xs">1</span>
                     Customer Information
                   </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Customer *</label>
                       <select value={selectedCustomerId} onChange={(e) => handleCustomerChange(e.target.value)} required className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all">
@@ -561,7 +561,7 @@ export default function Quotes() {
                     <span className="w-6 h-6 rounded-full bg-violet-100 dark:bg-violet-900/50 text-violet-600 dark:text-violet-400 flex items-center justify-center text-xs">2</span>
                     Quote Details
                   </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Quote Date *</label>
                       <input type="date" value={formData.quote_date || ''} onChange={(e) => setFormData({ ...formData, quote_date: e.target.value })} required className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all" />
@@ -573,7 +573,7 @@ export default function Quotes() {
                   </div>
                   <div className="mt-4">
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Notes</label>
-                    <textarea value={formData.notes || ''} onChange={(e) => setFormData({ ...formData, notes: e.target.value })} rows={3} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all resize-none" placeholder="Add any notes..." />
+                    <textarea value={formData.notes || ''} onChange={(e) => setFormData({ ...formData, notes: e.target.value })} rows={2} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all resize-none" placeholder="Add any notes..." />
                   </div>
                 </div>
 
@@ -586,9 +586,9 @@ export default function Quotes() {
                 </div>
               </div>
 
-              <div className="p-6 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 flex justify-end gap-3">
-                <button type="button" onClick={() => setShowCreateModal(false)} className="px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">Cancel</button>
-                <button type="submit" className="px-6 py-3 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-xl font-medium hover:from-violet-700 hover:to-purple-700 transition-all shadow-lg shadow-violet-500/30">Create Quote</button>
+              <div className="p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 flex justify-end gap-3">
+                <button type="button" onClick={() => setShowCreateModal(false)} className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">Cancel</button>
+                <button type="submit" className="px-4 py-2 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-xl font-medium hover:from-violet-700 hover:to-purple-700 transition-all ">Create Quote</button>
               </div>
             </form>
           </div>

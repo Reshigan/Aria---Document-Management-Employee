@@ -371,11 +371,11 @@ const ProcurementDashboard: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
+    <div className="bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 p-4">
+      <div className="max-w-7xl mx-auto space-y-3">
         {/* Header */}
         <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Procurement</h1>
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Procurement</h1>
           <p className="text-gray-500 dark:text-gray-400 mt-1">Manage suppliers, purchase orders, and RFQs</p>
         </div>
 
@@ -388,7 +388,7 @@ const ProcurementDashboard: React.FC = () => {
 
         {/* Tabs */}
         <div className="border-b border-gray-200 dark:border-gray-700">
-          <div className="flex gap-4">
+          <div className="flex gap-3">
             <button
               onClick={() => setActiveTab('suppliers')}
               className={`px-4 py-3 text-sm font-semibold border-b-2 transition-colors ${
@@ -436,14 +436,14 @@ const ProcurementDashboard: React.FC = () => {
             />
             <button
               onClick={handleCreateSupplier}
-              className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-semibold hover:from-blue-600 hover:to-blue-700 shadow-lg shadow-blue-500/30 transition-all"
+              className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-semibold hover:from-blue-600 hover:to-blue-700  transition-all"
             >
               + New Supplier
             </button>
           </div>
 
           {/* Suppliers Table */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
             <table className="w-full">
               <thead className="bg-gray-50 dark:bg-gray-900/50 border-b border-gray-100 dark:border-gray-700">
                 <tr>
@@ -503,32 +503,32 @@ const ProcurementDashboard: React.FC = () => {
             />
             <button
               onClick={handleCreatePo}
-              className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-semibold hover:from-blue-600 hover:to-blue-700 shadow-lg shadow-blue-500/30 transition-all"
+              className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-semibold hover:from-blue-600 hover:to-blue-700  transition-all"
             >
               + New Purchase Order
             </button>
           </div>
 
           {/* Summary Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div className="bg-white dark:bg-gray-800 p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
-              <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">Total POs</div>
-              <div className="text-2xl font-bold text-gray-900 dark:text-white">{purchaseOrders.length}</div>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+            <div className="bg-white dark:bg-gray-800 p-5 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
+              <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Total POs</div>
+              <div className="text-xl font-bold text-gray-900 dark:text-white">{purchaseOrders.length}</div>
             </div>
-            <div className="bg-white dark:bg-gray-800 p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
-              <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">Draft</div>
+            <div className="bg-white dark:bg-gray-800 p-5 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
+              <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Draft</div>
               <div className="text-2xl font-bold text-gray-500 dark:text-gray-400">
                 {purchaseOrders.filter(po => po.status === 'DRAFT').length}
               </div>
             </div>
-            <div className="bg-white dark:bg-gray-800 p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
-              <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">Sent</div>
+            <div className="bg-white dark:bg-gray-800 p-5 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
+              <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Sent</div>
               <div className="text-2xl font-bold text-amber-500">
                 {purchaseOrders.filter(po => po.status === 'SENT').length}
               </div>
             </div>
-            <div className="bg-white dark:bg-gray-800 p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
-              <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">Total Value</div>
+            <div className="bg-white dark:bg-gray-800 p-5 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
+              <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Total Value</div>
               <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
                 {formatCurrency(purchaseOrders.reduce((sum, po) => sum + po.total_amount, 0))}
               </div>
@@ -536,7 +536,7 @@ const ProcurementDashboard: React.FC = () => {
           </div>
 
           {/* Purchase Orders Table */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
             <table className="w-full">
               <thead className="bg-gray-50 dark:bg-gray-900/50 border-b border-gray-100 dark:border-gray-700">
                 <tr>
@@ -602,14 +602,14 @@ const ProcurementDashboard: React.FC = () => {
             />
             <button
               onClick={handleCreateRfq}
-              className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-semibold hover:from-blue-600 hover:to-blue-700 shadow-lg shadow-blue-500/30 transition-all"
+              className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-semibold hover:from-blue-600 hover:to-blue-700  transition-all"
             >
               + New RFQ
             </button>
           </div>
 
           {/* RFQs Table */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
             <table className="w-full">
               <thead className="bg-gray-50 dark:bg-gray-900/50 border-b border-gray-100 dark:border-gray-700">
                 <tr>
@@ -660,7 +660,7 @@ const ProcurementDashboard: React.FC = () => {
       {showSupplierModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white dark:bg-gray-800 rounded-2xl w-[600px] max-h-[90vh] overflow-auto shadow-2xl">
-            <div className="p-5 border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-white dark:bg-gray-800 z-10">
+            <div className="p-3 border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-white dark:bg-gray-800 z-10">
               <h2 className="text-xl font-bold text-gray-900 dark:text-white">{editingSupplier ? 'Edit Supplier' : 'New Supplier'}</h2>
             </div>
             <div className="p-5 space-y-4">
@@ -673,7 +673,7 @@ const ProcurementDashboard: React.FC = () => {
                   className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Contact Person *</label>
                   <input
@@ -707,11 +707,11 @@ const ProcurementDashboard: React.FC = () => {
                 <textarea
                   value={supplierForm.address}
                   onChange={(e) => setSupplierForm({ ...supplierForm, address: e.target.value })}
-                  rows={3}
+                  rows={2}
                   className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Payment Terms (days)</label>
                   <input
@@ -760,7 +760,7 @@ const ProcurementDashboard: React.FC = () => {
               </button>
               <button
                 onClick={handleSaveSupplier}
-                className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-semibold hover:from-blue-600 hover:to-blue-700 shadow-lg shadow-blue-500/30 transition-all"
+                className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-semibold hover:from-blue-600 hover:to-blue-700  transition-all"
               >
                 {editingSupplier ? 'Update' : 'Create'}
               </button>
@@ -773,7 +773,7 @@ const ProcurementDashboard: React.FC = () => {
       {showPoModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white dark:bg-gray-800 rounded-2xl w-[600px] max-h-[90vh] overflow-auto shadow-2xl">
-            <div className="p-5 border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-white dark:bg-gray-800 z-10">
+            <div className="p-3 border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-white dark:bg-gray-800 z-10">
               <h2 className="text-xl font-bold text-gray-900 dark:text-white">{editingPo ? 'Edit Purchase Order' : 'New Purchase Order'}</h2>
             </div>
             <div className="p-5 space-y-4">
@@ -786,7 +786,7 @@ const ProcurementDashboard: React.FC = () => {
                   className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Order Date *</label>
                   <input
@@ -826,7 +826,7 @@ const ProcurementDashboard: React.FC = () => {
               </button>
               <button
                 onClick={handleSavePo}
-                className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-semibold hover:from-blue-600 hover:to-blue-700 shadow-lg shadow-blue-500/30 transition-all"
+                className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-semibold hover:from-blue-600 hover:to-blue-700  transition-all"
               >
                 {editingPo ? 'Update' : 'Create'}
               </button>
@@ -839,7 +839,7 @@ const ProcurementDashboard: React.FC = () => {
       {showRfqModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white dark:bg-gray-800 rounded-2xl w-[600px] max-h-[90vh] overflow-auto shadow-2xl">
-            <div className="p-5 border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-white dark:bg-gray-800 z-10">
+            <div className="p-3 border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-white dark:bg-gray-800 z-10">
               <h2 className="text-xl font-bold text-gray-900 dark:text-white">{editingRfq ? 'Edit RFQ' : 'New RFQ'}</h2>
             </div>
             <div className="p-5 space-y-4">
@@ -857,11 +857,11 @@ const ProcurementDashboard: React.FC = () => {
                 <textarea
                   value={rfqForm.description}
                   onChange={(e) => setRfqForm({ ...rfqForm, description: e.target.value })}
-                  rows={4}
+                  rows={2}
                   className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Issue Date *</label>
                   <input
@@ -891,7 +891,7 @@ const ProcurementDashboard: React.FC = () => {
               </button>
               <button
                 onClick={handleSaveRfq}
-                className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-semibold hover:from-blue-600 hover:to-blue-700 shadow-lg shadow-blue-500/30 transition-all"
+                className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-semibold hover:from-blue-600 hover:to-blue-700  transition-all"
               >
                 {editingRfq ? 'Update' : 'Create'}
               </button>

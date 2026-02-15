@@ -182,9 +182,9 @@ const ComprehensiveReporting: React.FC = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
           {filteredKpis.map((kpi) => (
-            <div key={kpi.id} className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6 hover:shadow-lg transition-shadow">
+            <div key={kpi.id} className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 hover:shadow-lg transition-shadow">
               <div className="flex items-start justify-between mb-4">
                 <div className="flex-1">
                   <h4 className="font-semibold text-gray-900 dark:text-white mb-1">{kpi.kpi_name}</h4>
@@ -199,7 +199,7 @@ const ComprehensiveReporting: React.FC = () => {
               
               <div className="space-y-2">
                 <div className="flex justify-between items-baseline">
-                  <span className="text-sm text-gray-500 dark:text-gray-400">Target:</span>
+                  <span className="text-xs text-gray-500 dark:text-gray-400">Target:</span>
                   <span className="text-lg font-bold text-gray-900 dark:text-white">
                     {kpi.target_value?.toLocaleString()} {kpi.unit}
                   </span>
@@ -207,14 +207,14 @@ const ComprehensiveReporting: React.FC = () => {
                 {kpi.current_value !== undefined && (
                   <>
                     <div className="flex justify-between items-baseline">
-                      <span className="text-sm text-gray-500 dark:text-gray-400">Current:</span>
+                      <span className="text-xs text-gray-500 dark:text-gray-400">Current:</span>
                       <span className="text-lg font-bold text-blue-600 dark:text-blue-400">
                         {Number(kpi.current_value ?? 0).toLocaleString()} {kpi.unit}
                       </span>
                     </div>
                     {kpi.variance !== undefined && (
                       <div className="flex justify-between items-baseline">
-                        <span className="text-sm text-gray-500 dark:text-gray-400">Variance:</span>
+                        <span className="text-xs text-gray-500 dark:text-gray-400">Variance:</span>
                         <span className={`text-sm font-medium ${kpi.variance >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                           {kpi.variance >= 0 ? '+' : ''}{Number(kpi.variance ?? 0).toLocaleString()} {kpi.unit}
                         </span>
@@ -259,9 +259,9 @@ const ComprehensiveReporting: React.FC = () => {
         </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
         {dashboards.map((dashboard) => (
-          <div key={dashboard.id} className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6 hover:shadow-lg transition-shadow cursor-pointer">
+          <div key={dashboard.id} className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 hover:shadow-lg transition-shadow cursor-pointer">
             <div className="flex items-start justify-between mb-4">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
@@ -269,7 +269,7 @@ const ComprehensiveReporting: React.FC = () => {
                 </div>
                 <div>
                   <h4 className="font-semibold text-gray-900 dark:text-white">{dashboard.dashboard_name}</h4>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">{dashboard.dashboard_type}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">{dashboard.dashboard_type}</p>
                 </div>
               </div>
               {dashboard.is_default && (
@@ -324,37 +324,37 @@ const ComprehensiveReporting: React.FC = () => {
         </button>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
         <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
           <thead className="bg-gray-50 dark:bg-gray-900">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Report Name</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Type</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Schedule</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Recipients</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Last Run</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Next Run</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Status</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Actions</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Report Name</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Type</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Schedule</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Recipients</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Last Run</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Next Run</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Status</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Actions</th>
             </tr>
           </thead>
           <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
             {scheduledReports.map((report) => (
               <tr key={report.id} className="hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900">
                 <td className="px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">{report.report_name}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{report.report_type}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 font-mono">{report.schedule_cron}</td>
-                <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{report.recipients.length} recipient(s)</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">{report.report_type}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400 font-mono">{report.schedule_cron}</td>
+                <td className="px-6 py-4 text-xs text-gray-500 dark:text-gray-400">{report.recipients.length} recipient(s)</td>
+                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">
                   {report.last_run_at ? new Date(report.last_run_at).toLocaleString() : 'Never'}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">
                   {report.next_run_at ? new Date(report.next_run_at).toLocaleString() : '-'}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   {getStatusBadge(report.is_active ? 'active' : 'inactive')}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">
                   <button className="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:text-blue-100 mr-3">Run Now</button>
                   <button className="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:text-blue-100">Edit</button>
                 </td>
@@ -376,7 +376,7 @@ const ComprehensiveReporting: React.FC = () => {
     }
 
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6 space-y-6">
+      <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4 space-y-3">
         <div className="flex justify-between items-center">
           <h3 className="text-lg font-semibold">Financial Analytics</h3>
           <button className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
@@ -385,11 +385,11 @@ const ComprehensiveReporting: React.FC = () => {
           </button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Total Revenue</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">Total Revenue</p>
                 <p className="text-2xl font-bold text-green-600 dark:text-green-400 mt-1">
                   R {Number(financialSummary.total_revenue ?? 0).toLocaleString()}
                 </p>
@@ -400,10 +400,10 @@ const ComprehensiveReporting: React.FC = () => {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Total Expenses</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">Total Expenses</p>
                 <p className="text-2xl font-bold text-red-600 dark:text-red-400 mt-1">
                   R {Number(financialSummary.total_expenses ?? 0).toLocaleString()}
                 </p>
@@ -414,10 +414,10 @@ const ComprehensiveReporting: React.FC = () => {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Net Profit</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">Net Profit</p>
                 <p className="text-2xl font-bold text-blue-600 dark:text-blue-400 mt-1">
                   R {Number(financialSummary.profit ?? 0).toLocaleString()}
                 </p>
@@ -431,10 +431,10 @@ const ComprehensiveReporting: React.FC = () => {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Outstanding AR</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">Outstanding AR</p>
                 <p className="text-2xl font-bold text-orange-600 mt-1">
                   R {Number(financialSummary.outstanding_ar ?? 0).toLocaleString()}
                 </p>
@@ -445,10 +445,10 @@ const ComprehensiveReporting: React.FC = () => {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Outstanding AP</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">Outstanding AP</p>
                 <p className="text-2xl font-bold text-purple-600 dark:text-purple-400 mt-1">
                   R {Number(financialSummary.outstanding_ap ?? 0).toLocaleString()}
                 </p>
@@ -459,10 +459,10 @@ const ComprehensiveReporting: React.FC = () => {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Working Capital</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">Working Capital</p>
                 <p className="text-2xl font-bold text-indigo-600 dark:text-indigo-400 mt-1">
                   R {(financialSummary.outstanding_ar - financialSummary.outstanding_ap).toLocaleString()}
                 </p>
@@ -504,7 +504,7 @@ const ComprehensiveReporting: React.FC = () => {
   }
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-4 space-y-3">
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Comprehensive Reporting</h1>

@@ -194,16 +194,16 @@ export default function ERPConfigurationPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 container mx-auto p-6 max-w-7xl">
+    <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 container mx-auto p-4 max-w-7xl">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent flex items-center gap-3">
+        <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent flex items-center gap-3">
           <Database className="h-8 w-8 text-blue-600 dark:text-blue-400" />
           ERP Configuration
         </h1>
@@ -224,16 +224,16 @@ export default function ERPConfigurationPage() {
           };
 
           return (
-            <div key={erp.id} className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700-lg overflow-hidden">
+            <div key={erp.id} className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700-lg overflow-hidden">
               {/* Header */}
-              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 border-b border-gray-100 dark:border-gray-700">
+              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 border-b border-gray-100 dark:border-gray-700">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-3">
                     <div className="text-4xl">{erp.logo}</div>
                     <div>
                       <h3 className="text-xl font-bold text-gray-900 dark:text-white">{erp.name}</h3>
                       <p className="text-sm text-gray-600 dark:text-gray-400">{erp.description}</p>
-                      <div className="flex items-center gap-4 mt-2">
+                      <div className="flex items-center gap-3 mt-2">
                         <span className="text-xs bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">
                           {erp.authType}
                         </span>
@@ -243,7 +243,7 @@ export default function ERPConfigurationPage() {
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-3">
                     <div className="flex items-center gap-2">
                       {getStatusIcon(testing === erp.id ? 'testing' : connection.status)}
                       <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -265,8 +265,8 @@ export default function ERPConfigurationPage() {
 
               {/* Configuration Form */}
               {connection.enabled && (
-                <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
                     {erp.id === 'xero' && (
                       <>
                         <div>
@@ -590,7 +590,7 @@ export default function ERPConfigurationPage() {
                   {/* Sync Settings */}
                   <div className="border-t border-gray-200 dark:border-gray-700 pt-4 mb-4">
                     <h4 className="text-sm font-medium text-gray-900 dark:text-white mb-3">Sync Settings</h4>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                           Auto Sync

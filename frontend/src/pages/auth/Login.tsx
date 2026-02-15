@@ -27,7 +27,7 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex" style={{ background: 'linear-gradient(135deg, #0f1419 0%, #1a2332 50%, #0f1419 100%)' }}>
+    <div className="flex" style={{ background: 'linear-gradient(135deg, #0f1419 0%, #1a2332 50%, #0f1419 100%)' }}>
       {/* Left Panel - Branding */}
       <div className="hidden lg:flex lg:w-1/2 flex-col justify-center items-center p-12 relative overflow-hidden">
         <div className="absolute inset-0 opacity-10">
@@ -45,33 +45,33 @@ const Login: React.FC = () => {
           </div>
           
           <div className="space-y-4 text-left">
-            <div className="flex items-start gap-4 p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10">
+            <div className="flex items-start gap-3 p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10">
               <div className="p-2 rounded-lg bg-amber-500/20">
                 <Sparkles className="w-5 h-5 text-amber-400" />
               </div>
               <div>
                 <h3 className="font-semibold text-white mb-1">67 AI Automation Agents</h3>
-                <p className="text-sm text-gray-400">Intelligent automation for every business process</p>
+                <p className="text-xs text-gray-400">Intelligent automation for every business process</p>
               </div>
             </div>
             
-            <div className="flex items-start gap-4 p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10">
+            <div className="flex items-start gap-3 p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10">
               <div className="p-2 rounded-lg bg-emerald-500/20">
                 <Shield className="w-5 h-5 text-emerald-400" />
               </div>
               <div>
                 <h3 className="font-semibold text-white mb-1">Multi-Country Compliance</h3>
-                <p className="text-sm text-gray-400">56 countries with local tax and statutory rules</p>
+                <p className="text-xs text-gray-400">56 countries with local tax and statutory rules</p>
               </div>
             </div>
             
-            <div className="flex items-start gap-4 p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10">
+            <div className="flex items-start gap-3 p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10">
               <div className="p-2 rounded-lg bg-blue-500/20">
                 <BarChart3 className="w-5 h-5 text-blue-400" />
               </div>
               <div>
                 <h3 className="font-semibold text-white mb-1">Complete ERP Suite</h3>
-                <p className="text-sm text-gray-400">Finance, HR, Inventory, CRM, and Manufacturing</p>
+                <p className="text-xs text-gray-400">Finance, HR, Inventory, CRM, and Manufacturing</p>
               </div>
             </div>
           </div>
@@ -84,9 +84,9 @@ const Login: React.FC = () => {
           {/* Mobile Logo */}
           <div className="lg:hidden text-center mb-8">
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 shadow-xl shadow-amber-500/25 mb-4">
-              <span className="text-3xl font-bold text-slate-900">A</span>
+              <span className="text-2xl font-bold text-slate-900">A</span>
             </div>
-            <h1 className="text-3xl font-bold text-white">ARIA</h1>
+            <h1 className="text-2xl font-bold text-white">ARIA</h1>
           </div>
 
           {/* Login Card */}
@@ -96,7 +96,7 @@ const Login: React.FC = () => {
               <p className="text-gray-400">Sign in to your account to continue</p>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-3">
               {error && (
                 <div data-testid="error-message" className="p-4 bg-red-500/10 border border-red-500/30 rounded-xl text-red-400 text-sm flex items-center gap-2">
                   <svg className="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
@@ -183,7 +183,7 @@ const Login: React.FC = () => {
             </div>
           </div>
 
-          <p className="mt-8 text-center text-sm text-gray-500">
+          <p className="mt-8 text-center text-xs text-gray-500">
             2025 VantaX Holdings (Pty) Ltd. All rights reserved.
           </p>
         </div>

@@ -230,11 +230,11 @@ export default function SalesInvoiceReconciliation() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6">
+    <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4">
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-6">
           <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent flex items-center gap-3">
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent flex items-center gap-3">
               <FileText className="h-8 w-8 text-indigo-600" />
               Sales to Invoice Reconciliation
             </h1>
@@ -264,54 +264,54 @@ export default function SalesInvoiceReconciliation() {
         {summary && (
           <>
             <div className="grid grid-cols-4 gap-6 mb-6">
-              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
+              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
                 <div className="flex items-center justify-between mb-2">
                   <div className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Sales Orders</div>
                   <FileText className="h-5 w-5 text-blue-600" />
                 </div>
-                <div className="text-3xl font-bold text-gray-900 dark:text-white">{summary.summary.total_orders}</div>
-                <div className="text-sm text-gray-500 mt-1">
+                <div className="text-xl font-bold text-gray-900 dark:text-white">{summary.summary.total_orders}</div>
+                <div className="text-xs text-gray-500 mt-1">
                   R {Number(summary.summary.total_sales_value ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
                 </div>
               </div>
 
-              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
+              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
                 <div className="flex items-center justify-between mb-2">
                   <div className="text-sm font-medium text-gray-600 dark:text-gray-400">Fully Invoiced</div>
                   <CheckCircle className="h-5 w-5 text-green-600" />
                 </div>
-                <div className="text-3xl font-bold text-green-600">{summary.summary.fully_invoiced}</div>
-                <div className="text-sm text-gray-500 mt-1">
+                <div className="text-2xl font-bold text-green-600">{summary.summary.fully_invoiced}</div>
+                <div className="text-xs text-gray-500 mt-1">
                   {Number(((summary.summary.fully_invoiced / summary.summary.total_orders) * 100) || 0).toFixed(1)}% complete
                 </div>
               </div>
 
-              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
+              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
                 <div className="flex items-center justify-between mb-2">
                   <div className="text-sm font-medium text-gray-600 dark:text-gray-400">Pending Invoice</div>
                   <Clock className="h-5 w-5 text-yellow-600" />
                 </div>
-                <div className="text-3xl font-bold text-yellow-600">
+                <div className="text-2xl font-bold text-yellow-600">
                   {summary.summary.partially_invoiced + summary.summary.not_invoiced}
                 </div>
-                <div className="text-sm text-gray-500 mt-1">
+                <div className="text-xs text-gray-500 mt-1">
                   R {Number(summary.summary.uninvoiced_value ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })} outstanding
                 </div>
               </div>
 
-              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
+              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
                 <div className="flex items-center justify-between mb-2">
                   <div className="text-sm font-medium text-gray-600 dark:text-gray-400">Exceptions</div>
                   <AlertTriangle className="h-5 w-5 text-red-600" />
                 </div>
-                <div className="text-3xl font-bold text-red-600">{summary.exceptions.total}</div>
-                <div className="text-sm text-gray-500 mt-1">
+                <div className="text-2xl font-bold text-red-600">{summary.exceptions.total}</div>
+                <div className="text-xs text-gray-500 mt-1">
                   R {Number(summary.exceptions.total_variance ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })} variance
                 </div>
               </div>
             </div>
 
-            <div className="grid grid-cols-4 gap-4 mb-6">
+            <div className="grid grid-cols-4 gap-3 mb-6">
               <div className="bg-yellow-50 dark:bg-yellow-900/20 rounded-xl p-4 border border-yellow-200 dark:border-yellow-800">
                 <div className="flex items-center gap-2 text-yellow-700 dark:text-yellow-300">
                   <Clock className="h-4 w-4" />
@@ -352,8 +352,8 @@ export default function SalesInvoiceReconciliation() {
           </>
         )}
 
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700">
-          <div className="p-4 border-b border-gray-100 dark:border-gray-700 flex gap-4">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="p-4 border-b border-gray-100 dark:border-gray-700 flex gap-3">
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
@@ -389,53 +389,53 @@ export default function SalesInvoiceReconciliation() {
 
         {selectedException && !showPostModal && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
-              <div className="p-6 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+              <div className="p-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center">
                 <h2 className="text-xl font-bold text-gray-900 dark:text-white">Exception Details</h2>
                 <button onClick={() => setSelectedException(null)} className="text-gray-500 hover:text-gray-700">
                   <X className="h-5 w-5" />
                 </button>
               </div>
-              <div className="p-6 space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+              <div className="p-4 space-y-4">
+                <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="text-sm text-gray-500 dark:text-gray-400">Sales Order</label>
+                    <label className="text-xs text-gray-500 dark:text-gray-400">Sales Order</label>
                     <p className="font-medium text-gray-900 dark:text-white">{selectedException.order_number}</p>
                   </div>
                   <div>
-                    <label className="text-sm text-gray-500 dark:text-gray-400">Customer</label>
+                    <label className="text-xs text-gray-500 dark:text-gray-400">Customer</label>
                     <p className="font-medium text-gray-900 dark:text-white">{selectedException.customer_name}</p>
                   </div>
                   <div>
-                    <label className="text-sm text-gray-500 dark:text-gray-400">Invoice</label>
+                    <label className="text-xs text-gray-500 dark:text-gray-400">Invoice</label>
                     <p className="font-medium text-gray-900 dark:text-white">{selectedException.invoice_id || 'Not Created'}</p>
                   </div>
                   <div>
-                    <label className="text-sm text-gray-500 dark:text-gray-400">Exception Type</label>
+                    <label className="text-xs text-gray-500 dark:text-gray-400">Exception Type</label>
                     <p className="font-medium text-gray-900 dark:text-white">{getExceptionTypeLabel(selectedException.exception_type)}</p>
                   </div>
                   <div>
-                    <label className="text-sm text-gray-500 dark:text-gray-400">Expected Amount</label>
+                    <label className="text-xs text-gray-500 dark:text-gray-400">Expected Amount</label>
                     <p className="font-medium text-gray-900 dark:text-white">R {Number(selectedException.expected_amount ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</p>
                   </div>
                   <div>
-                    <label className="text-sm text-gray-500 dark:text-gray-400">Actual Amount</label>
+                    <label className="text-xs text-gray-500 dark:text-gray-400">Actual Amount</label>
                     <p className="font-medium text-gray-900 dark:text-white">R {Number(selectedException.actual_amount ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</p>
                   </div>
                   <div>
-                    <label className="text-sm text-gray-500 dark:text-gray-400">Variance</label>
+                    <label className="text-xs text-gray-500 dark:text-gray-400">Variance</label>
                     <p className={`font-medium ${selectedException.variance_amount < 0 ? 'text-red-600' : 'text-green-600'}`}>
                       R {Number(selectedException.variance_amount ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
                     </p>
                   </div>
                   <div>
-                    <label className="text-sm text-gray-500 dark:text-gray-400">Status</label>
+                    <label className="text-xs text-gray-500 dark:text-gray-400">Status</label>
                     <p>{getStatusBadge(selectedException.status)}</p>
                   </div>
                 </div>
                 {selectedException.notes && (
                   <div>
-                    <label className="text-sm text-gray-500 dark:text-gray-400">Notes</label>
+                    <label className="text-xs text-gray-500 dark:text-gray-400">Notes</label>
                     <p className="font-medium text-gray-900 dark:text-white">{selectedException.notes}</p>
                   </div>
                 )}
@@ -472,11 +472,11 @@ export default function SalesInvoiceReconciliation() {
 
         {showPostModal && selectedException && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl max-w-md w-full mx-4">
-              <div className="p-6 border-b border-gray-100 dark:border-gray-700">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full mx-4">
+              <div className="p-4 border-b border-gray-100 dark:border-gray-700">
                 <h2 className="text-xl font-bold text-gray-900 dark:text-white">Post Variance to GL</h2>
               </div>
-              <div className="p-6 space-y-4">
+              <div className="p-4 space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Variance Amount
@@ -509,7 +509,7 @@ export default function SalesInvoiceReconciliation() {
                     value={postingData.notes}
                     onChange={(e) => setPostingData({ ...postingData, notes: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                    rows={3}
+                    rows={2}
                     placeholder="Add posting notes..."
                   />
                 </div>

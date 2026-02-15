@@ -39,11 +39,11 @@ export default function CashForecast() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-teal-50 dark:from-gray-900 dark:to-gray-800 p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <div className="bg-gradient-to-br from-gray-50 to-teal-50 dark:from-gray-900 dark:to-gray-800 p-4">
+      <div className="max-w-7xl mx-auto space-y-3">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
           <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-teal-600 to-cyan-600 bg-clip-text text-transparent">Cash Forecast</h1>
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-teal-600 to-cyan-600 bg-clip-text text-transparent">Cash Forecast</h1>
             <p className="text-gray-500 dark:text-gray-400 mt-1">Project future cash positions</p>
           </div>
           <div className="flex items-center gap-3">
@@ -57,22 +57,22 @@ export default function CashForecast() {
 
         {error && (<div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl flex items-center gap-3"><AlertCircle className="h-5 w-5 text-red-500" /><p className="text-red-700 dark:text-red-300">{error}</p><button onClick={() => setError(null)} className="ml-auto p-1 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg"><X className="h-4 w-4 text-red-500" /></button></div>)}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
-            <div className="flex items-center gap-4"><div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg shadow-green-500/30"><ArrowUpRight className="h-6 w-6 text-white" /></div><div><p className="text-2xl font-bold text-green-600 dark:text-green-400">{formatCurrency(stats.totalInflows)}</p><p className="text-sm text-gray-500 dark:text-gray-400">Expected Inflows</p></div></div>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
+            <div className="flex items-center gap-3"><div className="p-2 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl "><ArrowUpRight className="h-5 w-5 text-white" /></div><div><p className="text-2xl font-bold text-green-600 dark:text-green-400">{formatCurrency(stats.totalInflows)}</p><p className="text-xs text-gray-500 dark:text-gray-400">Expected Inflows</p></div></div>
           </div>
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
-            <div className="flex items-center gap-4"><div className="p-3 bg-gradient-to-br from-red-500 to-rose-500 rounded-xl shadow-lg shadow-red-500/30"><ArrowDownRight className="h-6 w-6 text-white" /></div><div><p className="text-2xl font-bold text-red-600 dark:text-red-400">{formatCurrency(stats.totalOutflows)}</p><p className="text-sm text-gray-500 dark:text-gray-400">Expected Outflows</p></div></div>
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
+            <div className="flex items-center gap-3"><div className="p-2 bg-gradient-to-br from-red-500 to-rose-500 rounded-xl "><ArrowDownRight className="h-5 w-5 text-white" /></div><div><p className="text-2xl font-bold text-red-600 dark:text-red-400">{formatCurrency(stats.totalOutflows)}</p><p className="text-xs text-gray-500 dark:text-gray-400">Expected Outflows</p></div></div>
           </div>
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
-            <div className="flex items-center gap-4"><div className="p-3 bg-gradient-to-br from-teal-500 to-cyan-500 rounded-xl shadow-lg shadow-teal-500/30"><TrendingUp className="h-6 w-6 text-white" /></div><div><p className={`text-2xl font-bold ${stats.netChange >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>{formatCurrency(stats.netChange)}</p><p className="text-sm text-gray-500 dark:text-gray-400">Net Change</p></div></div>
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
+            <div className="flex items-center gap-3"><div className="p-2 bg-gradient-to-br from-teal-500 to-cyan-500 rounded-xl "><TrendingUp className="h-5 w-5 text-white" /></div><div><p className={`text-2xl font-bold ${stats.netChange >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>{formatCurrency(stats.netChange)}</p><p className="text-xs text-gray-500 dark:text-gray-400">Net Change</p></div></div>
           </div>
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
-            <div className="flex items-center gap-4"><div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl shadow-lg shadow-blue-500/30"><DollarSign className="h-6 w-6 text-white" /></div><div><p className="text-2xl font-bold text-gray-900 dark:text-white">{formatCurrency(stats.endingBalance)}</p><p className="text-sm text-gray-500 dark:text-gray-400">Ending Balance</p></div></div>
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
+            <div className="flex items-center gap-3"><div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl "><DollarSign className="h-5 w-5 text-white" /></div><div><p className="text-xl font-bold text-gray-900 dark:text-white">{formatCurrency(stats.endingBalance)}</p><p className="text-xs text-gray-500 dark:text-gray-400">Ending Balance</p></div></div>
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
           {loading ? (
             <div className="p-12 text-center"><RefreshCw className="h-8 w-8 animate-spin text-teal-500 mx-auto mb-4" /><p className="text-gray-500 dark:text-gray-400">Loading forecast...</p></div>
           ) : forecast.length === 0 ? (

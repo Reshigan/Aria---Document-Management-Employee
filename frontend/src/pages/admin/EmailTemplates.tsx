@@ -103,29 +103,29 @@ export default function EmailTemplates() {
     .replace(/\{\{portal_link\}\}/g, '#');
 
   return (
-    <div className="p-6 space-y-6 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 min-h-screen">
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <div className="p-4 space-y-3 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
         <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent">Email Templates</h1>
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent">Email Templates</h1>
           <p className="text-gray-500 mt-1">Customize automated email communications</p>
         </div>
         <button onClick={() => { setEditingTemplate(null); setFormData({ name: '', template_type: 'invoice', subject: '', body_html: '', body_text: '', is_active: true }); setShowModal(true); }} className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-600 to-violet-600 text-white rounded-lg font-medium"><Plus className="h-4 w-4" />New Template</button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4"><div className="flex items-center gap-3"><div className="p-2 bg-indigo-100 dark:bg-indigo-900/50 rounded-lg"><Mail className="h-5 w-5 text-indigo-600" /></div><div><p className="text-2xl font-bold">{templates.length}</p><p className="text-sm text-gray-500">Total Templates</p></div></div></div>
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4"><div className="flex items-center gap-3"><div className="p-2 bg-green-100 dark:bg-green-900/50 rounded-lg"><Send className="h-5 w-5 text-green-600" /></div><div><p className="text-2xl font-bold">{templates.filter(t => t.is_active).length}</p><p className="text-sm text-gray-500">Active</p></div></div></div>
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4"><div className="flex items-center gap-3"><div className="p-2 bg-purple-100 dark:bg-purple-900/50 rounded-lg"><FileText className="h-5 w-5 text-purple-600" /></div><div><p className="text-2xl font-bold">{templateTypes.length}</p><p className="text-sm text-gray-500">Template Types</p></div></div></div>
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+        <div className="bg-white dark:bg-gray-800 rounded-lg p-4"><div className="flex items-center gap-3"><div className="p-2 bg-indigo-100 dark:bg-indigo-900/50 rounded-lg"><Mail className="h-5 w-5 text-indigo-600" /></div><div><p className="text-2xl font-bold">{templates.length}</p><p className="text-xs text-gray-500">Total Templates</p></div></div></div>
+        <div className="bg-white dark:bg-gray-800 rounded-lg p-4"><div className="flex items-center gap-3"><div className="p-2 bg-green-100 dark:bg-green-900/50 rounded-lg"><Send className="h-5 w-5 text-green-600" /></div><div><p className="text-2xl font-bold">{templates.filter(t => t.is_active).length}</p><p className="text-xs text-gray-500">Active</p></div></div></div>
+        <div className="bg-white dark:bg-gray-800 rounded-lg p-4"><div className="flex items-center gap-3"><div className="p-2 bg-purple-100 dark:bg-purple-900/50 rounded-lg"><FileText className="h-5 w-5 text-purple-600" /></div><div><p className="text-2xl font-bold">{templateTypes.length}</p><p className="text-xs text-gray-500">Template Types</p></div></div></div>
       </div>
 
       {loading ? (
         <div className="flex items-center justify-center py-12"><RefreshCw className="h-8 w-8 animate-spin text-indigo-500" /></div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
           {templates.map(template => {
             const typeConfig = getTypeConfig(template.template_type);
             return (
-              <div key={template.id} className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden group hover:shadow-xl transition-shadow">
+              <div key={template.id} className="bg-white dark:bg-gray-800 rounded-lg overflow-hidden group hover:shadow-xl transition-shadow">
                 <div className="p-5">
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex items-center gap-3">
@@ -173,7 +173,7 @@ export default function EmailTemplates() {
               {activeTab === 'edit' ? (
                 <div className="grid grid-cols-3 gap-6">
                   <div className="col-span-2 space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-2 gap-3">
                       <div><label className="block text-sm font-medium mb-1">Template Name</label><input type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700" /></div>
                       <div><label className="block text-sm font-medium mb-1">Template Type</label><select value={formData.template_type} onChange={(e) => setFormData({ ...formData, template_type: e.target.value })} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700">{templateTypes.map(t => <option key={t.value} value={t.value}>{t.icon} {t.label}</option>)}</select></div>
                     </div>
@@ -198,10 +198,10 @@ export default function EmailTemplates() {
               ) : (
                 <div className="space-y-4">
                   <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg">
-                    <p className="text-sm text-gray-500 mb-1">Subject:</p>
+                    <p className="text-xs text-gray-500 mb-1">Subject:</p>
                     <p className="font-medium">{formData.subject.replace(/\{\{customer_name\}\}/g, 'John Smith').replace(/\{\{company_name\}\}/g, 'ARIA ERP').replace(/\{\{invoice_number\}\}/g, 'INV-001')}</p>
                   </div>
-                  <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-6 bg-white dark:bg-gray-800">
+                  <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-white dark:bg-gray-800">
                     <div dangerouslySetInnerHTML={{ __html: previewHtml }} className="prose dark:prose-invert max-w-none" />
                   </div>
                 </div>

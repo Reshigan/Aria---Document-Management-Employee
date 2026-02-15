@@ -79,10 +79,10 @@ export default function PayrollActivityReportPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6">
+    <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4">
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent flex items-center gap-3">
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent flex items-center gap-3">
             <DollarSign className="h-8 w-8 text-indigo-600" />
             Payroll Activity Report
           </h1>
@@ -119,25 +119,25 @@ export default function PayrollActivityReportPage() {
         ) : (
           <>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
+              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
                 <div className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Employees</div>
-                <div className="text-3xl font-bold text-gray-900 dark:text-white mt-2">{summary?.total_employees || 0}</div>
+                <div className="text-xl font-bold text-gray-900 dark:text-white mt-2">{summary?.total_employees || 0}</div>
               </div>
-              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
+              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
                 <div className="text-sm font-medium text-gray-600 dark:text-gray-400">Monthly Cost</div>
-                <div className="text-3xl font-bold text-gray-900 dark:text-white mt-2">R {Number(((summary?.monthly_cost || 0) / 1000) || 0).toFixed(0)}K</div>
+                <div className="text-xl font-bold text-gray-900 dark:text-white mt-2">R {Number(((summary?.monthly_cost || 0) / 1000) || 0).toFixed(0)}K</div>
               </div>
-              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
+              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
                 <div className="text-sm font-medium text-gray-600 dark:text-gray-400">YTD Cost</div>
-                <div className="text-3xl font-bold text-indigo-600 dark:text-indigo-400 mt-2">R {Number(((summary?.ytd_cost || 0) / 1000000) || 0).toFixed(1)}M</div>
+                <div className="text-2xl font-bold text-indigo-600 dark:text-indigo-400 mt-2">R {Number(((summary?.ytd_cost || 0) / 1000000) || 0).toFixed(1)}M</div>
               </div>
-              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
+              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
                 <div className="text-sm font-medium text-gray-600 dark:text-gray-400">SARS Submissions</div>
-                <div className="text-3xl font-bold text-green-600 dark:text-green-400 mt-2">{summary?.sars_status || 'Unknown'}</div>
+                <div className="text-2xl font-bold text-green-600 dark:text-green-400 mt-2">{summary?.sars_status || 'Unknown'}</div>
               </div>
             </div>
 
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
               <DataTable data={runs} columns={[
                 { key: 'period', label: 'Period' },
                 { key: 'employees', label: 'Employees' },

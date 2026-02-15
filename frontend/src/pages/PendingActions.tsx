@@ -80,7 +80,7 @@ export default function PendingActionsPage() {
       // Show success message
       const successDiv = document.createElement('div');
       successDiv.setAttribute('data-testid', 'success-message');
-      successDiv.className = 'fixed top-4 right-4 bg-green-50 border border-green-200 text-green-700 px-6 py-3 rounded-lg shadow-lg z-50';
+      successDiv.className = 'fixed top-4 right-4 bg-green-50 border border-green-200 text-green-700 px-4 py-2 rounded-lg shadow-lg z-50';
       successDiv.textContent = 'Action approved successfully!';
       document.body.appendChild(successDiv);
       setTimeout(() => successDiv.remove(), 3000);
@@ -103,7 +103,7 @@ export default function PendingActionsPage() {
       // Show success message
       const successDiv = document.createElement('div');
       successDiv.setAttribute('data-testid', 'success-message');
-      successDiv.className = 'fixed top-4 right-4 bg-green-50 border border-green-200 text-green-700 px-6 py-3 rounded-lg shadow-lg z-50';
+      successDiv.className = 'fixed top-4 right-4 bg-green-50 border border-green-200 text-green-700 px-4 py-2 rounded-lg shadow-lg z-50';
       successDiv.textContent = 'Action rejected successfully!';
       document.body.appendChild(successDiv);
       setTimeout(() => successDiv.remove(), 3000);
@@ -117,8 +117,8 @@ export default function PendingActionsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6">
-      <h1 className="text-3xl font-bold mb-6 flex items-center gap-3">
+    <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4">
+      <h1 className="text-2xl font-bold mb-6 flex items-center gap-3">
         <CheckSquare className="h-8 w-8" />
         Pending Actions
       </h1>
@@ -190,7 +190,7 @@ export default function PendingActionsPage() {
       {/* Reject Modal */}
       {showRejectModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6" data-testid="modal-reject-reason">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-4" data-testid="modal-reject-reason">
             <h2 className="text-xl font-bold text-gray-900 mb-4">Reject Action</h2>
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -201,7 +201,7 @@ export default function PendingActionsPage() {
                 value={rejectReason}
                 onChange={(e) => setRejectReason(e.target.value)}
                 className="w-full px-4 py-2 border border-gray-300 rounded-md"
-                rows={4}
+                rows={2}
                 placeholder="Please provide a reason..."
               />
             </div>

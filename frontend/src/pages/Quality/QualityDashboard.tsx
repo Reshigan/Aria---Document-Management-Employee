@@ -145,10 +145,10 @@ const QualityDashboard: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6" data-testid="quality-dashboard">
+    <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4" data-testid="quality-dashboard">
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Quality Management</h1>
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Quality Management</h1>
           <p className="text-gray-500 dark:text-gray-400 mt-1">Monitor quality inspections and metrics</p>
         </div>
 
@@ -158,21 +158,21 @@ const QualityDashboard: React.FC = () => {
           </div>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700">
-            <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">Quality Score</div>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+          <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
+            <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Quality Score</div>
             <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">{metrics.overall_quality_score}%</div>
           </div>
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700">
-            <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">Completed</div>
+          <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
+            <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Completed</div>
             <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{metrics.inspections_completed}</div>
           </div>
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700">
-            <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">Pass Rate</div>
+          <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
+            <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Pass Rate</div>
             <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">{metrics.pass_rate}%</div>
           </div>
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700">
-            <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">Non-Conformances</div>
+          <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
+            <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Non-Conformances</div>
             <div className="text-2xl font-bold text-red-600 dark:text-red-400">{metrics.non_conformances}</div>
           </div>
         </div>
@@ -181,14 +181,14 @@ const QualityDashboard: React.FC = () => {
           <h2 className="text-xl font-bold text-gray-900 dark:text-white">Quality Inspections</h2>
           <button
             onClick={handleCreate}
-            className="px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-xl font-semibold shadow-lg shadow-indigo-500/30 transition-all"
+            className="px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-xl font-semibold  transition-all"
             data-testid="create-button"
           >
             + New Inspection
           </button>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden border border-gray-100 dark:border-gray-700">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden border border-gray-100 dark:border-gray-700">
           <table className="w-full" data-testid="inspections-table">
             <thead className="bg-gray-50 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700">
               <tr>
@@ -244,7 +244,7 @@ const QualityDashboard: React.FC = () => {
 
       {showModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 w-[500px] max-h-[90vh] overflow-auto shadow-2xl">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-3 w-[500px] max-h-[90vh] overflow-auto shadow-2xl">
             <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
               {editingInspection ? 'Edit Inspection' : 'New Inspection'}
             </h2>
@@ -267,7 +267,7 @@ const QualityDashboard: React.FC = () => {
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
               />
             </div>
-            <div className="grid grid-cols-2 gap-4 mb-4">
+            <div className="grid grid-cols-2 gap-3 mb-4">
               <div>
                 <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Batch Number *</label>
                 <input
@@ -287,7 +287,7 @@ const QualityDashboard: React.FC = () => {
                 />
               </div>
             </div>
-            <div className="grid grid-cols-3 gap-4 mb-4">
+            <div className="grid grid-cols-3 gap-3 mb-4">
               <div>
                 <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Inspection Date *</label>
                 <input
@@ -328,7 +328,7 @@ const QualityDashboard: React.FC = () => {
               </button>
               <button
                 onClick={handleSave}
-                className="px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-xl font-semibold shadow-lg shadow-indigo-500/30 transition-all"
+                className="px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-xl font-semibold  transition-all"
               >
                 Save
               </button>

@@ -33,16 +33,16 @@ export const Signup: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-6">
+    <div className="bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <div className="inline-flex items-center space-x-3 mb-4">
             <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
               <Agent className="w-7 h-7 text-white" />
             </div>
-            <span className="text-3xl font-bold text-white">Aria</span>
+            <span className="text-2xl font-bold text-white">Aria</span>
           </div>
-          <h1 className="text-3xl font-bold text-white mb-2">Get Started</h1>
+          <h1 className="text-2xl font-bold text-white mb-2">Get Started</h1>
           <p className="text-gray-300">Create your AI orchestrator account</p>
         </div>
 

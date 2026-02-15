@@ -66,7 +66,7 @@ const VATSummaryReport: React.FC = () => {
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">VAT Summary Report (VAT201)</h1>
+          <h1 className="text-xl font-bold text-gray-900 dark:text-white">VAT Summary Report (VAT201)</h1>
           <p className="text-gray-500 dark:text-gray-400 mt-1">South African Revenue Service (SARS) VAT Return</p>
         </div>
         <button className="px-4 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-md hover:bg-blue-700 flex items-center">
@@ -77,7 +77,7 @@ const VATSummaryReport: React.FC = () => {
 
       {/* Period Selection */}
       <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow mb-6">
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
           <label className="text-sm font-medium text-gray-700 dark:text-gray-300">VAT Period:</label>
           <input
             type="date"
@@ -92,42 +92,42 @@ const VATSummaryReport: React.FC = () => {
             onChange={(e) => setPeriod({ ...period, end: e.target.value })}
             className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
           />
-          <div className="ml-auto text-sm text-gray-500 dark:text-gray-400">
+          <div className="ml-auto text-xs text-gray-500 dark:text-gray-400">
             Report Generated: {formatDate(new Date())}
           </div>
         </div>
       </div>
 
       {/* VAT Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-6 mb-6">
         {/* Output VAT */}
-        <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow-lg p-6 text-white">
+        <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow-lg p-4 text-white">
           <div className="flex items-center justify-between mb-2">
             <FileText className="w-8 h-8 opacity-80" />
             <span className="text-xs font-medium bg-white dark:bg-gray-800 bg-opacity-20 px-2 py-1 rounded">OUTPUT</span>
           </div>
           <div className="text-sm opacity-90 mb-1">Output VAT (Sales)</div>
-          <div className="text-3xl font-bold">{formatCurrency(data.output_vat)}</div>
+          <div className="text-2xl font-bold">{formatCurrency(data.output_vat)}</div>
           <div className="text-xs opacity-75 mt-2">
             Sales excl VAT: {formatCurrency(data.sales_excl_vat)}
           </div>
         </div>
 
         {/* Input VAT */}
-        <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-lg shadow-lg p-6 text-white">
+        <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-lg shadow-lg p-4 text-white">
           <div className="flex items-center justify-between mb-2">
             <FileText className="w-8 h-8 opacity-80" />
             <span className="text-xs font-medium bg-white dark:bg-gray-800 bg-opacity-20 px-2 py-1 rounded">INPUT</span>
           </div>
           <div className="text-sm opacity-90 mb-1">Input VAT (Purchases)</div>
-          <div className="text-3xl font-bold">{formatCurrency(data.input_vat)}</div>
+          <div className="text-2xl font-bold">{formatCurrency(data.input_vat)}</div>
           <div className="text-xs opacity-75 mt-2">
             Purchases excl VAT: {formatCurrency(data.purchases_excl_vat)}
           </div>
         </div>
 
         {/* Net VAT */}
-        <div className={`bg-gradient-to-br ${isRefund ? 'from-orange-500 to-orange-600' : 'from-red-500 to-red-600'} rounded-lg shadow-lg p-6 text-white`}>
+        <div className={`bg-gradient-to-br ${isRefund ? 'from-orange-500 to-orange-600' : 'from-red-500 to-red-600'} rounded-lg shadow-lg p-4 text-white`}>
           <div className="flex items-center justify-between mb-2">
             <FileText className="w-8 h-8 opacity-80" />
             <span className="text-xs font-medium bg-white dark:bg-gray-800 bg-opacity-20 px-2 py-1 rounded">
@@ -135,7 +135,7 @@ const VATSummaryReport: React.FC = () => {
             </span>
           </div>
           <div className="text-sm opacity-90 mb-1">Net VAT {isRefund ? 'Refundable' : 'Payable'}</div>
-          <div className="text-3xl font-bold">{formatCurrency(Math.abs(data.net_vat))}</div>
+          <div className="text-2xl font-bold">{formatCurrency(Math.abs(data.net_vat))}</div>
           <div className="text-xs opacity-75 mt-2">
             {isRefund ? 'Claim from SARS' : 'Pay to SARS'}
           </div>
@@ -144,7 +144,7 @@ const VATSummaryReport: React.FC = () => {
 
       {/* VAT201 Form Preview */}
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden mb-6">
-        <div className="bg-gray-50 dark:bg-gray-900 px-6 py-4 border-b">
+        <div className="bg-gray-50 dark:bg-gray-900 px-6 py-3 border-b">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white">VAT201 Return Form</h2>
           <p className="text-sm text-gray-600 dark:text-gray-400">Period: {formatDate(new Date(period.start))} - {formatDate(new Date(period.end))}</p>
         </div>
@@ -210,7 +210,7 @@ const VATSummaryReport: React.FC = () => {
 
       {/* Supporting Details */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
           <h3 className="text-lg font-semibold mb-4 flex items-center">
             <FileText className="w-5 h-5 mr-2 text-blue-600 dark:text-blue-400" />
             Sales Summary
@@ -231,7 +231,7 @@ const VATSummaryReport: React.FC = () => {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
           <h3 className="text-lg font-semibold mb-4 flex items-center">
             <FileText className="w-5 h-5 mr-2 text-green-600 dark:text-green-400" />
             Purchases Summary

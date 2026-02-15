@@ -85,7 +85,7 @@ const HRDashboard: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 p-8">
+      <div className="bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 p-8">
         <div className="flex items-center justify-center h-64">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
         </div>
@@ -94,11 +94,11 @@ const HRDashboard: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 p-8" data-testid="hr-dashboard">
+    <div className="bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 p-8" data-testid="hr-dashboard">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
-          <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl shadow-lg shadow-blue-500/30">
+        <h1 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
+          <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl ">
             <Users className="h-7 w-7 text-white" />
           </div>
           Human Resources Dashboard
@@ -118,89 +118,89 @@ const HRDashboard: React.FC = () => {
       {/* Quick Actions */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
         <Link to="/hr/employees" className="group">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg hover:border-blue-200 dark:hover:border-blue-800 transition-all">
-            <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl shadow-lg shadow-blue-500/30 w-fit mb-4">
-              <Users className="h-6 w-6 text-white" />
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg hover:border-blue-200 dark:hover:border-blue-800 transition-all">
+            <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl  w-fit mb-4">
+              <Users className="h-5 w-5 text-white" />
             </div>
             <div className="font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">Employees</div>
-            <div className="text-sm text-gray-500 dark:text-gray-400">Manage employee records</div>
+            <div className="text-xs text-gray-500 dark:text-gray-400">Manage employee records</div>
           </div>
         </Link>
         <Link to="/hr/departments" className="group">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg hover:border-green-200 dark:hover:border-green-800 transition-all">
-            <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg shadow-green-500/30 w-fit mb-4">
-              <Briefcase className="h-6 w-6 text-white" />
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg hover:border-green-200 dark:hover:border-green-800 transition-all">
+            <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl  w-fit mb-4">
+              <Briefcase className="h-5 w-5 text-white" />
             </div>
             <div className="font-semibold text-gray-900 dark:text-white group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors">Departments</div>
-            <div className="text-sm text-gray-500 dark:text-gray-400">Manage departments</div>
+            <div className="text-xs text-gray-500 dark:text-gray-400">Manage departments</div>
           </div>
         </Link>
         <Link to="/hr/attendance" className="group">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg hover:border-amber-200 dark:hover:border-amber-800 transition-all">
-            <div className="p-3 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl shadow-lg shadow-amber-500/30 w-fit mb-4">
-              <Clock className="h-6 w-6 text-white" />
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg hover:border-amber-200 dark:hover:border-amber-800 transition-all">
+            <div className="p-2 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl  w-fit mb-4">
+              <Clock className="h-5 w-5 text-white" />
             </div>
             <div className="font-semibold text-gray-900 dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">Attendance</div>
-            <div className="text-sm text-gray-500 dark:text-gray-400">Track attendance</div>
+            <div className="text-xs text-gray-500 dark:text-gray-400">Track attendance</div>
           </div>
         </Link>
         <Link to="/hr/leave" className="group">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg hover:border-purple-200 dark:hover:border-purple-800 transition-all">
-            <div className="p-3 bg-gradient-to-br from-purple-500 to-violet-500 rounded-xl shadow-lg shadow-purple-500/30 w-fit mb-4">
-              <Calendar className="h-6 w-6 text-white" />
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg hover:border-purple-200 dark:hover:border-purple-800 transition-all">
+            <div className="p-2 bg-gradient-to-br from-purple-500 to-violet-500 rounded-xl  w-fit mb-4">
+              <Calendar className="h-5 w-5 text-white" />
             </div>
             <div className="font-semibold text-gray-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">Leave Management</div>
-            <div className="text-sm text-gray-500 dark:text-gray-400">Manage leave requests</div>
+            <div className="text-xs text-gray-500 dark:text-gray-400">Manage leave requests</div>
           </div>
         </Link>
       </div>
 
       {/* Key Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl shadow-lg shadow-blue-500/30">
-              <Users className="h-6 w-6 text-white" />
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl ">
+              <Users className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{metrics.active_employees}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Total Employees</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{metrics.active_employees}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Total Employees</p>
               <p className="text-xs text-gray-400 dark:text-gray-500">{metrics.total_employees} total (incl. inactive)</p>
             </div>
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg shadow-green-500/30">
-              <Briefcase className="h-6 w-6 text-white" />
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl ">
+              <Briefcase className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{metrics.departments}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Departments</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{metrics.departments}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Departments</p>
               <p className="text-xs text-gray-400 dark:text-gray-500">Active departments</p>
             </div>
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-teal-500 to-cyan-500 rounded-xl shadow-lg shadow-teal-500/30">
-              <TrendingUp className="h-6 w-6 text-white" />
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-teal-500 to-cyan-500 rounded-xl ">
+              <TrendingUp className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{Number(metrics.attendance_rate ?? 0).toFixed(1)}%</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Attendance Rate</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{Number(metrics.attendance_rate ?? 0).toFixed(1)}%</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Attendance Rate</p>
               <p className="text-xs text-gray-400 dark:text-gray-500">Last 30 days</p>
             </div>
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl shadow-lg shadow-amber-500/30">
-              <Calendar className="h-6 w-6 text-white" />
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl ">
+              <Calendar className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{metrics.pending_leave_requests}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Pending Leave</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{metrics.pending_leave_requests}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Pending Leave</p>
               <p className="text-xs text-gray-400 dark:text-gray-500">Requests awaiting approval</p>
             </div>
           </div>
@@ -208,48 +208,48 @@ const HRDashboard: React.FC = () => {
       </div>
 
       {/* Secondary Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl shadow-lg shadow-indigo-500/30">
-              <Clock className="h-6 w-6 text-white" />
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-6 mb-8">
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl ">
+              <Clock className="h-5 w-5 text-white" />
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">
                 {Math.floor(metrics.avg_tenure_months / 12)}y {metrics.avg_tenure_months % 12}m
               </p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Average Tenure</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Average Tenure</p>
             </div>
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className={`p-3 rounded-xl shadow-lg ${metrics.turnover_rate > 15 ? 'bg-gradient-to-br from-red-500 to-rose-500 shadow-red-500/30' : 'bg-gradient-to-br from-green-500 to-emerald-500 shadow-green-500/30'}`}>
-              <TrendingUp className="h-6 w-6 text-white" />
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className={`p-3 rounded-lg ${metrics.turnover_rate > 15 ? 'bg-gradient-to-br from-red-500 to-rose-500 shadow-red-500/30' : 'bg-gradient-to-br from-green-500 to-emerald-500 shadow-green-500/30'}`}>
+              <TrendingUp className="h-5 w-5 text-white" />
             </div>
             <div>
               <p className={`text-xl font-bold ${metrics.turnover_rate > 15 ? 'text-red-600 dark:text-red-400' : 'text-gray-900 dark:text-white'}`}>
                 {Number(metrics.turnover_rate ?? 0).toFixed(1)}%
               </p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Turnover Rate</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Turnover Rate</p>
             </div>
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-xl shadow-lg shadow-cyan-500/30">
-              <Briefcase className="h-6 w-6 text-white" />
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-xl ">
+              <Briefcase className="h-5 w-5 text-white" />
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{metrics.open_positions}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Open Positions</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Open Positions</p>
             </div>
           </div>
         </div>
       </div>
 
       {/* Recent Activity */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
         <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Recent Activity</h2>
         {recentActivity.length === 0 ? (
           <div className="text-center py-8 text-gray-500 dark:text-gray-400">No recent activity</div>
@@ -258,7 +258,7 @@ const HRDashboard: React.FC = () => {
             {recentActivity.slice(0, 10).map((activity) => (
               <div
                 key={activity.id}
-                className="flex items-center gap-4 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
               >
                 <div className="flex-shrink-0">
                   {getActivityIcon(activity.type)}
@@ -267,7 +267,7 @@ const HRDashboard: React.FC = () => {
                   <div className="font-medium text-gray-900 dark:text-white truncate">
                     {activity.employee_name}
                   </div>
-                  <div className="text-sm text-gray-500 dark:text-gray-400 truncate">
+                  <div className="text-xs text-gray-500 dark:text-gray-400 truncate">
                     {activity.description}
                   </div>
                 </div>

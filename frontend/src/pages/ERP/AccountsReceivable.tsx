@@ -237,8 +237,8 @@ export default function AccountsReceivable() {
 
     return (
       <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
-        <div onClick={(e) => e.stopPropagation()} className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden max-h-[90vh] overflow-y-auto">
-          <div className="bg-gradient-to-r from-green-600 to-emerald-600 text-white p-6">
+        <div onClick={(e) => e.stopPropagation()} className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-lg overflow-hidden max-h-[90vh] overflow-y-auto">
+          <div className="bg-gradient-to-r from-green-600 to-emerald-600 text-white p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-white/20 rounded-lg"><Users className="h-6 w-6" /></div>
@@ -248,14 +248,14 @@ export default function AccountsReceivable() {
             </div>
           </div>
           <form onSubmit={handleSubmitCustomer}>
-            <div className="p-6 space-y-4">
+            <div className="p-4 space-y-4">
               {error && (<div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl flex items-center gap-3"><AlertCircle className="h-5 w-5 text-red-500" /><p className="text-red-700 dark:text-red-300">{error}</p></div>)}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Customer Code *</label><input type="text" value={customerFormData.customer_code || ''} onChange={(e) => setCustomerFormData({ ...customerFormData, customer_code: e.target.value })} required className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all" /></div>
                 <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Payment Terms</label><select value={customerFormData.payment_terms || 'Net 30'} onChange={(e) => setCustomerFormData({ ...customerFormData, payment_terms: e.target.value })} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"><option value="Net 30">Net 30</option><option value="Net 60">Net 60</option><option value="Net 90">Net 90</option><option value="COD">Cash on Delivery</option></select></div>
               </div>
               <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Customer Name *</label><input type="text" value={customerFormData.customer_name || ''} onChange={(e) => setCustomerFormData({ ...customerFormData, customer_name: e.target.value })} required className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all" /></div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Contact Person</label><input type="text" value={customerFormData.contact_person || ''} onChange={(e) => setCustomerFormData({ ...customerFormData, contact_person: e.target.value })} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all" /></div>
                 <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Phone</label><input type="tel" value={customerFormData.phone || ''} onChange={(e) => setCustomerFormData({ ...customerFormData, phone: e.target.value })} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all" /></div>
               </div>
@@ -264,9 +264,9 @@ export default function AccountsReceivable() {
               <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Credit Limit (R)</label><input type="number" min="0" step="0.01" value={customerFormData.credit_limit || 0} onChange={(e) => setCustomerFormData({ ...customerFormData, credit_limit: parseFloat(e.target.value) || 0 })} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all" /></div>
               <label className="flex items-center gap-2 cursor-pointer"><input type="checkbox" checked={customerFormData.is_active || false} onChange={(e) => setCustomerFormData({ ...customerFormData, is_active: e.target.checked })} className="w-5 h-5 rounded border-gray-300 text-green-600 focus:ring-green-500" /><span className="text-sm font-medium text-gray-700 dark:text-gray-300">Active</span></label>
             </div>
-            <div className="p-6 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 flex justify-end gap-3">
-              <button type="button" onClick={onClose} className="px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">Cancel</button>
-              <button type="submit" className="px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl font-medium hover:from-green-700 hover:to-emerald-700 transition-all shadow-lg shadow-green-500/30">{isEdit ? 'Update' : 'Create'}</button>
+            <div className="p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 flex justify-end gap-3">
+              <button type="button" onClick={onClose} className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">Cancel</button>
+              <button type="submit" className="px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl font-medium hover:from-green-700 hover:to-emerald-700 transition-all ">{isEdit ? 'Update' : 'Create'}</button>
             </div>
           </form>
         </div>
@@ -278,29 +278,29 @@ export default function AccountsReceivable() {
     if (!showCreatePaymentModal) return null;
     return (
       <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setShowCreatePaymentModal(false)}>
-        <div onClick={(e) => e.stopPropagation()} className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden">
-          <div className="bg-gradient-to-r from-green-600 to-emerald-600 text-white p-6">
+        <div onClick={(e) => e.stopPropagation()} className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-lg overflow-hidden">
+          <div className="bg-gradient-to-r from-green-600 to-emerald-600 text-white p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3"><div className="p-2 bg-white/20 rounded-lg"><DollarSign className="h-6 w-6" /></div><div><h2 className="text-xl font-semibold">Record Payment</h2><p className="text-white/80 text-sm">Receive customer payment</p></div></div>
               <button onClick={() => setShowCreatePaymentModal(false)} className="p-2 hover:bg-white/20 rounded-lg transition-colors"><X className="h-5 w-5" /></button>
             </div>
           </div>
           <form onSubmit={handleSubmitPayment}>
-            <div className="p-6 space-y-4">
+            <div className="p-4 space-y-4">
               {error && (<div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl flex items-center gap-3"><AlertCircle className="h-5 w-5 text-red-500" /><p className="text-red-700 dark:text-red-300">{error}</p></div>)}
               <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Customer *</label><select value={paymentFormData.customer_id} onChange={(e) => setPaymentFormData({ ...paymentFormData, customer_id: e.target.value })} required className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"><option value="">Select customer...</option>{customers.map(c => <option key={c.id} value={c.id}>{c.customer_name}</option>)}</select></div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Amount *</label><input type="number" min="0" step="0.01" value={paymentFormData.amount} onChange={(e) => setPaymentFormData({ ...paymentFormData, amount: parseFloat(e.target.value) || 0 })} required className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all" /></div>
                 <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Payment Method</label><select value={paymentFormData.payment_method} onChange={(e) => setPaymentFormData({ ...paymentFormData, payment_method: e.target.value })} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"><option value="EFT">EFT</option><option value="Cheque">Cheque</option><option value="Cash">Cash</option><option value="Card">Card</option></select></div>
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Payment Date</label><input type="date" value={paymentFormData.payment_date} onChange={(e) => setPaymentFormData({ ...paymentFormData, payment_date: e.target.value })} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all" /></div>
                 <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Reference</label><input type="text" value={paymentFormData.reference} onChange={(e) => setPaymentFormData({ ...paymentFormData, reference: e.target.value })} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all" /></div>
               </div>
             </div>
-            <div className="p-6 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 flex justify-end gap-3">
-              <button type="button" onClick={() => setShowCreatePaymentModal(false)} className="px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">Cancel</button>
-              <button type="submit" className="px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl font-medium hover:from-green-700 hover:to-emerald-700 transition-all shadow-lg shadow-green-500/30">Record Payment</button>
+            <div className="p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 flex justify-end gap-3">
+              <button type="button" onClick={() => setShowCreatePaymentModal(false)} className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">Cancel</button>
+              <button type="submit" className="px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl font-medium hover:from-green-700 hover:to-emerald-700 transition-all ">Record Payment</button>
             </div>
           </form>
         </div>
@@ -309,17 +309,17 @@ export default function AccountsReceivable() {
   };
 
   const getCreateButton = () => {
-    if (activeTab === 'customers') return <button onClick={handleCreateCustomer} className="flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl font-medium hover:from-green-700 hover:to-emerald-700 transition-all shadow-lg shadow-green-500/30"><Plus className="h-5 w-5" />Add Customer</button>;
-    if (activeTab === 'payments') return <button onClick={handleCreatePayment} className="flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl font-medium hover:from-green-700 hover:to-emerald-700 transition-all shadow-lg shadow-green-500/30"><Plus className="h-5 w-5" />Record Payment</button>;
+    if (activeTab === 'customers') return <button onClick={handleCreateCustomer} className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl font-medium hover:from-green-700 hover:to-emerald-700 transition-all "><Plus className="h-5 w-5" />Add Customer</button>;
+    if (activeTab === 'payments') return <button onClick={handleCreatePayment} className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl font-medium hover:from-green-700 hover:to-emerald-700 transition-all "><Plus className="h-5 w-5" />Record Payment</button>;
     return null;
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-green-50 dark:from-gray-900 dark:to-gray-800 p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <div className="bg-gradient-to-br from-gray-50 to-green-50 dark:from-gray-900 dark:to-gray-800 p-4">
+      <div className="max-w-7xl mx-auto space-y-3">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
           <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">Accounts Receivable</h1>
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">Accounts Receivable</h1>
             <p className="text-gray-500 dark:text-gray-400 mt-1">Manage customers, invoices, and payments</p>
           </div>
           <div className="flex items-center gap-3">
@@ -330,31 +330,31 @@ export default function AccountsReceivable() {
 
         {error && (<div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl flex items-center gap-3"><AlertCircle className="h-5 w-5 text-red-500" /><p className="text-red-700 dark:text-red-300">{error}</p><button onClick={() => setError(null)} className="ml-auto p-1 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg"><X className="h-4 w-4 text-red-500" /></button></div>)}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
-            <div className="flex items-center gap-4"><div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg shadow-green-500/30"><Users className="h-6 w-6 text-white" /></div><div><p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.totalCustomers}</p><p className="text-sm text-gray-500 dark:text-gray-400">Total Customers</p></div></div>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
+            <div className="flex items-center gap-3"><div className="p-2 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl "><Users className="h-5 w-5 text-white" /></div><div><p className="text-xl font-bold text-gray-900 dark:text-white">{stats.totalCustomers}</p><p className="text-xs text-gray-500 dark:text-gray-400">Total Customers</p></div></div>
           </div>
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
-            <div className="flex items-center gap-4"><div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl shadow-lg shadow-blue-500/30"><FileText className="h-6 w-6 text-white" /></div><div><p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.totalInvoices}</p><p className="text-sm text-gray-500 dark:text-gray-400">Open Invoices</p></div></div>
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
+            <div className="flex items-center gap-3"><div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl "><FileText className="h-5 w-5 text-white" /></div><div><p className="text-xl font-bold text-gray-900 dark:text-white">{stats.totalInvoices}</p><p className="text-xs text-gray-500 dark:text-gray-400">Open Invoices</p></div></div>
           </div>
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
-            <div className="flex items-center gap-4"><div className="p-3 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl shadow-lg shadow-emerald-500/30"><DollarSign className="h-6 w-6 text-white" /></div><div><p className="text-2xl font-bold text-gray-900 dark:text-white">R {Number(stats.totalReceivable ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 0 })}</p><p className="text-sm text-gray-500 dark:text-gray-400">Total Receivable</p></div></div>
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
+            <div className="flex items-center gap-3"><div className="p-2 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl "><DollarSign className="h-5 w-5 text-white" /></div><div><p className="text-xl font-bold text-gray-900 dark:text-white">R {Number(stats.totalReceivable ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 0 })}</p><p className="text-xs text-gray-500 dark:text-gray-400">Total Receivable</p></div></div>
           </div>
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
-            <div className="flex items-center gap-4"><div className="p-3 bg-gradient-to-br from-red-500 to-rose-500 rounded-xl shadow-lg shadow-red-500/30"><Clock className="h-6 w-6 text-white" /></div><div><p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.overdueInvoices}</p><p className="text-sm text-gray-500 dark:text-gray-400">Overdue</p></div></div>
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
+            <div className="flex items-center gap-3"><div className="p-2 bg-gradient-to-br from-red-500 to-rose-500 rounded-xl "><Clock className="h-5 w-5 text-white" /></div><div><p className="text-xl font-bold text-gray-900 dark:text-white">{stats.overdueInvoices}</p><p className="text-xs text-gray-500 dark:text-gray-400">Overdue</p></div></div>
           </div>
         </div>
 
         <div className="flex gap-2 border-b border-gray-200 dark:border-gray-700">
           {(['customers', 'invoices', 'payments', 'aging'] as const).map(tab => (
-            <button key={tab} onClick={() => setActiveTab(tab)} className={`px-6 py-3 font-medium capitalize transition-all ${activeTab === tab ? 'text-green-600 dark:text-green-400 border-b-2 border-green-600 dark:border-green-400' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'}`}>{tab}</button>
+            <button key={tab} onClick={() => setActiveTab(tab)} className={`px-4 py-2 font-medium capitalize transition-all ${activeTab === tab ? 'text-green-600 dark:text-green-400 border-b-2 border-green-600 dark:border-green-400' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'}`}>{tab}</button>
           ))}
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
           {activeTab !== 'aging' && (
-            <div className="p-5 border-b border-gray-100 dark:border-gray-700">
-              <div className="flex flex-col md:flex-row gap-4">
+            <div className="p-3 border-b border-gray-100 dark:border-gray-700">
+              <div className="flex flex-col md:flex-row gap-3">
                 <div className="flex-1 relative"><Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" /><input type="text" placeholder="Search..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-12 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all" /></div>
                 {activeTab === 'invoices' && (<select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all min-w-[150px]"><option value="">All Statuses</option><option value="draft">Draft</option><option value="sent">Sent</option><option value="paid">Paid</option><option value="overdue">Overdue</option><option value="partial">Partial</option></select>)}
               </div>
@@ -364,7 +364,7 @@ export default function AccountsReceivable() {
           {loading ? (
             <div className="p-12 text-center"><RefreshCw className="h-8 w-8 animate-spin text-green-500 mx-auto mb-4" /><p className="text-gray-500 dark:text-gray-400">Loading...</p></div>
           ) : activeTab === 'customers' ? (
-            customers.length === 0 ? (<div className="p-12 text-center"><div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-2xl flex items-center justify-center mx-auto mb-4"><Users className="h-8 w-8 text-gray-400" /></div><h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No customers found</h3><p className="text-gray-500 dark:text-gray-400 mb-6">Get started by adding your first customer</p><button onClick={handleCreateCustomer} className="px-5 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl font-medium hover:from-green-700 hover:to-emerald-700 transition-all">Add First Customer</button></div>) : (
+            customers.length === 0 ? (<div className="p-12 text-center"><div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-2xl flex items-center justify-center mx-auto mb-4"><Users className="h-8 w-8 text-gray-400" /></div><h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No customers found</h3><p className="text-gray-500 dark:text-gray-400 mb-6">Get started by adding your first customer</p><button onClick={handleCreateCustomer} className="px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl font-medium hover:from-green-700 hover:to-emerald-700 transition-all">Add First Customer</button></div>) : (
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead className="bg-gray-50 dark:bg-gray-900/50"><tr><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Code</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Name</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Contact</th><th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Credit Limit</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th><th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th></tr></thead>
@@ -405,7 +405,7 @@ export default function AccountsReceivable() {
               </div>
             )
           ) : activeTab === 'payments' ? (
-            payments.length === 0 ? (<div className="p-12 text-center"><div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-2xl flex items-center justify-center mx-auto mb-4"><DollarSign className="h-8 w-8 text-gray-400" /></div><h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No payments found</h3><p className="text-gray-500 dark:text-gray-400 mb-6">Get started by recording your first payment</p><button onClick={handleCreatePayment} className="px-5 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl font-medium hover:from-green-700 hover:to-emerald-700 transition-all">Record First Payment</button></div>) : (
+            payments.length === 0 ? (<div className="p-12 text-center"><div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-2xl flex items-center justify-center mx-auto mb-4"><DollarSign className="h-8 w-8 text-gray-400" /></div><h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No payments found</h3><p className="text-gray-500 dark:text-gray-400 mb-6">Get started by recording your first payment</p><button onClick={handleCreatePayment} className="px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl font-medium hover:from-green-700 hover:to-emerald-700 transition-all">Record First Payment</button></div>) : (
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead className="bg-gray-50 dark:bg-gray-900/50"><tr><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Payment #</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Customer</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Date</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Method</th><th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Amount</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Reference</th></tr></thead>

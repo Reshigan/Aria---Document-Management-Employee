@@ -175,7 +175,7 @@ export default function Suppliers() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-slate-50 dark:from-gray-900 dark:to-gray-800 p-8">
+      <div className="bg-gradient-to-br from-gray-50 to-slate-50 dark:from-gray-900 dark:to-gray-800 p-8">
         <div className="flex items-center justify-center h-64">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-500"></div>
         </div>
@@ -184,12 +184,12 @@ export default function Suppliers() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-slate-50 dark:from-gray-900 dark:to-gray-800 p-8">
+    <div className="bg-gradient-to-br from-gray-50 to-slate-50 dark:from-gray-900 dark:to-gray-800 p-8">
       {/* Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
-            <div className="p-2 bg-gradient-to-br from-slate-500 to-gray-600 rounded-xl shadow-lg shadow-slate-500/30">
+          <h1 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-slate-500 to-gray-600 rounded-xl ">
               <Building2 className="h-7 w-7 text-white" />
             </div>
             Suppliers
@@ -202,7 +202,7 @@ export default function Suppliers() {
             resetForm();
             setShowForm(true);
           }}
-          className="px-6 py-2.5 bg-gradient-to-r from-slate-500 to-gray-600 text-white rounded-xl hover:from-slate-600 hover:to-gray-700 transition-all shadow-lg shadow-slate-500/30 flex items-center gap-2 font-medium"
+          className="px-6 py-2.5 bg-gradient-to-r from-slate-500 to-gray-600 text-white rounded-xl hover:from-slate-600 hover:to-gray-700 transition-all  flex items-center gap-2 font-medium"
         >
           <Plus className="h-5 w-5" />
           Add Supplier
@@ -210,7 +210,7 @@ export default function Suppliers() {
       </div>
 
       {/* Search Bar */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-gray-700 mb-6">
+      <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 mb-6">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
           <input
@@ -224,39 +224,39 @@ export default function Suppliers() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-slate-500 to-gray-600 rounded-xl shadow-lg shadow-slate-500/30">
-              <Building2 className="h-6 w-6 text-white" />
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-6 mb-8">
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-slate-500 to-gray-600 rounded-xl ">
+              <Building2 className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{suppliers.length}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Total Suppliers</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{suppliers.length}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Total Suppliers</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg shadow-green-500/30">
-              <Building2 className="h-6 w-6 text-white" />
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl ">
+              <Building2 className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{suppliers.filter(s => s.is_active).length}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Active Suppliers</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{suppliers.filter(s => s.is_active).length}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Active Suppliers</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl shadow-lg shadow-indigo-500/30">
-              <Award className="h-6 w-6 text-white" />
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl ">
+              <Award className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{suppliers.filter(s => s.bbbee_level).length}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">BBBEE Compliant</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{suppliers.filter(s => s.bbbee_level).length}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">BBBEE Compliant</p>
             </div>
           </div>
         </div>
@@ -288,7 +288,7 @@ export default function Suppliers() {
                 {editingSupplier ? 'Edit Supplier' : 'Add Supplier'}
               </h2>
             </div>
-            <form onSubmit={handleSubmit} className="p-6 overflow-y-auto max-h-[calc(90vh-140px)]">
+            <form onSubmit={handleSubmit} className="p-4 overflow-y-auto max-h-[calc(90vh-140px)]">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -424,7 +424,7 @@ export default function Suppliers() {
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2.5 bg-gradient-to-r from-slate-500 to-gray-600 text-white rounded-xl font-medium hover:from-slate-600 hover:to-gray-700 transition-all shadow-lg shadow-slate-500/30"
+                  className="px-5 py-2.5 bg-gradient-to-r from-slate-500 to-gray-600 text-white rounded-xl font-medium hover:from-slate-600 hover:to-gray-700 transition-all "
                 >
                   {editingSupplier ? 'Update' : 'Create'}
                 </button>
@@ -435,12 +435,12 @@ export default function Suppliers() {
       )}
 
       {/* Suppliers Table */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
         {filteredSuppliers.length === 0 ? (
           <div className="px-6 py-12 text-center">
             <Building2 className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
             <p className="text-gray-500 dark:text-gray-400">No suppliers found</p>
-            <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">
+            <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
               {searchTerm ? 'Try adjusting your search' : 'Start by adding your first supplier'}
             </p>
           </div>

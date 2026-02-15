@@ -41,7 +41,7 @@ const ProjectReports: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-rose-50 dark:from-gray-900 dark:to-gray-800 p-8">
+      <div className="bg-gradient-to-br from-gray-50 to-rose-50 dark:from-gray-900 dark:to-gray-800 p-8">
         <div className="flex items-center justify-center h-64">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-rose-500"></div>
         </div>
@@ -50,11 +50,11 @@ const ProjectReports: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-rose-50 dark:from-gray-900 dark:to-gray-800 p-8" data-testid="projects-reports">
+    <div className="bg-gradient-to-br from-gray-50 to-rose-50 dark:from-gray-900 dark:to-gray-800 p-8" data-testid="projects-reports">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
-          <div className="p-2 bg-gradient-to-br from-rose-500 to-pink-500 rounded-xl shadow-lg shadow-rose-500/30">
+        <h1 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
+          <div className="p-2 bg-gradient-to-br from-rose-500 to-pink-500 rounded-xl ">
             <BarChart3 className="h-7 w-7 text-white" />
           </div>
           Project Reports
@@ -71,13 +71,13 @@ const ProjectReports: React.FC = () => {
 
       {/* Reports Table */}
       {reports.length === 0 ? (
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-12 text-center">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-12 text-center">
           <BarChart3 className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No project reports found</h3>
           <p className="text-gray-500 dark:text-gray-400">Reports will appear here once projects have data</p>
         </div>
       ) : (
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
           <table className="w-full" data-testid="reports-table">
             <thead className="bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-600">
               <tr>
@@ -110,7 +110,7 @@ const ProjectReports: React.FC = () => {
                           style={{ width: `${report.progress}%` }}
                         />
                       </div>
-                      <span className="text-sm text-gray-500 dark:text-gray-400">{report.progress}%</span>
+                      <span className="text-xs text-gray-500 dark:text-gray-400">{report.progress}%</span>
                     </div>
                   </td>
                   <td className="px-6 py-4">

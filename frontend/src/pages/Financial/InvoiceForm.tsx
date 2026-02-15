@@ -79,11 +79,11 @@ export default function InvoiceForm() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 p-6">
-      <div className="max-w-5xl mx-auto space-y-6">
+    <div className="bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 p-4">
+      <div className="max-w-5xl mx-auto space-y-3">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">New Invoice</h1>
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">New Invoice</h1>
             <p className="text-gray-500 dark:text-gray-400 mt-1">Create a new customer invoice</p>
           </div>
           <button onClick={() => navigate('/financial/invoices')} className="p-3 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-200 dark:border-gray-700"><X className="h-5 w-5 text-gray-600 dark:text-gray-400" /></button>
@@ -91,28 +91,28 @@ export default function InvoiceForm() {
 
         {error && (<div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl flex items-center gap-3"><AlertCircle className="h-5 w-5 text-red-500" /><p className="text-red-700 dark:text-red-300">{error}</p><button onClick={() => setError(null)} className="ml-auto p-1 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg"><X className="h-4 w-4 text-red-500" /></button></div>)}
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+        <form onSubmit={handleSubmit} className="space-y-3">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
             <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-5">
               <div className="flex items-center gap-3"><div className="p-2 bg-white/20 rounded-lg"><FileText className="h-5 w-5" /></div><div><h2 className="text-lg font-semibold">Invoice Details</h2><p className="text-white/80 text-sm">Basic invoice information</p></div></div>
             </div>
-            <div className="p-6 space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="p-4 space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Customer *</label><select required value={formData.customer_id} onChange={(e) => setFormData({ ...formData, customer_id: e.target.value })} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"><option value="">Select customer...</option><option value="1">ABC Manufacturing</option><option value="2">XYZ Trading</option><option value="3">Mega Corp</option></select></div>
                 <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Reference</label><input type="text" value={formData.reference} onChange={(e) => setFormData({ ...formData, reference: e.target.value })} placeholder="PO Number or reference" className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" /></div>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Invoice Date *</label><input type="date" required value={formData.invoice_date} onChange={(e) => setFormData({ ...formData, invoice_date: e.target.value })} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" /></div>
                 <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Due Date *</label><input type="date" required value={formData.due_date} onChange={(e) => setFormData({ ...formData, due_date: e.target.value })} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" /></div>
               </div>
-              <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Notes</label><textarea value={formData.notes} onChange={(e) => setFormData({ ...formData, notes: e.target.value })} rows={3} placeholder="Additional notes or terms..." className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none" /></div>
+              <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Notes</label><textarea value={formData.notes} onChange={(e) => setFormData({ ...formData, notes: e.target.value })} rows={2} placeholder="Additional notes or terms..." className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none" /></div>
             </div>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
-            <div className="p-5 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+            <div className="p-3 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Line Items</h2>
-              <button type="button" onClick={handleAddLine} className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl text-sm font-medium hover:from-blue-700 hover:to-indigo-700 transition-all shadow-lg shadow-blue-500/30"><Plus className="h-4 w-4" />Add Line</button>
+              <button type="button" onClick={handleAddLine} className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl text-sm font-medium hover:from-blue-700 hover:to-indigo-700 transition-all "><Plus className="h-4 w-4" />Add Line</button>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full">
@@ -133,7 +133,7 @@ export default function InvoiceForm() {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
             <div className="max-w-md ml-auto space-y-3">
               <div className="flex justify-between text-sm"><span className="text-gray-600 dark:text-gray-400">Subtotal:</span><span className="font-medium text-gray-900 dark:text-white">{formatCurrency(totals.subtotal)}</span></div>
               <div className="flex justify-between text-sm"><span className="text-gray-600 dark:text-gray-400">VAT (15%):</span><span className="font-medium text-gray-900 dark:text-white">{formatCurrency(totals.vat)}</span></div>
@@ -141,9 +141,9 @@ export default function InvoiceForm() {
             </div>
           </div>
 
-          <div className="flex justify-end gap-4">
-            <button type="button" onClick={() => navigate('/financial/invoices')} className="px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">Cancel</button>
-            <button type="submit" disabled={saving} className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-medium hover:from-blue-700 hover:to-indigo-700 transition-all shadow-lg shadow-blue-500/30 disabled:opacity-50 disabled:cursor-not-allowed"><Save className="h-5 w-5" />{saving ? 'Saving...' : 'Save Invoice'}</button>
+          <div className="flex justify-end gap-3">
+            <button type="button" onClick={() => navigate('/financial/invoices')} className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">Cancel</button>
+            <button type="submit" disabled={saving} className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-medium hover:from-blue-700 hover:to-indigo-700 transition-all  disabled:opacity-50 disabled:cursor-not-allowed"><Save className="h-5 w-5" />{saving ? 'Saving...' : 'Save Invoice'}</button>
           </div>
         </form>
       </div>

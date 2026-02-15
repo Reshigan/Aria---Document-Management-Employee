@@ -51,14 +51,14 @@ const ComplianceDashboard: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-emerald-50 dark:from-gray-900 dark:to-gray-800 p-6" data-testid="compliance-dashboard">
-      <div className="max-w-7xl mx-auto space-y-6">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <div className="bg-gradient-to-br from-gray-50 to-emerald-50 dark:from-gray-900 dark:to-gray-800 p-4" data-testid="compliance-dashboard">
+      <div className="max-w-7xl mx-auto space-y-3">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
           <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">Compliance Dashboard</h1>
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">Compliance Dashboard</h1>
             <p className="text-gray-500 dark:text-gray-400 mt-1">Monitor tax, legal, and regulatory compliance</p>
           </div>
-          <button onClick={loadMetrics} className="flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-xl font-medium hover:from-emerald-700 hover:to-teal-700 transition-all shadow-lg shadow-emerald-500/30">
+          <button onClick={loadMetrics} className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-xl font-medium hover:from-emerald-700 hover:to-teal-700 transition-all ">
             <RefreshCw className={`h-5 w-5 ${loading ? 'animate-spin' : ''}`} />Refresh
           </button>
         </div>
@@ -70,108 +70,108 @@ const ComplianceDashboard: React.FC = () => {
           </div>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
           <Link to="/tax" className="group">
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl shadow-lg shadow-blue-500/30 group-hover:scale-110 transition-transform">
-                  <FileText className="h-6 w-6 text-white" />
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl  group-hover:scale-110 transition-transform">
+                  <FileText className="h-5 w-5 text-white" />
                 </div>
                 <div>
                   <p className="font-semibold text-gray-900 dark:text-white">Tax Compliance</p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Manage tax obligations</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Manage tax obligations</p>
                 </div>
               </div>
             </div>
           </Link>
           <Link to="/legal" className="group">
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg shadow-green-500/30 group-hover:scale-110 transition-transform">
-                  <Scale className="h-6 w-6 text-white" />
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl  group-hover:scale-110 transition-transform">
+                  <Scale className="h-5 w-5 text-white" />
                 </div>
                 <div>
                   <p className="font-semibold text-gray-900 dark:text-white">Legal Compliance</p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Manage legal documents</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Manage legal documents</p>
                 </div>
               </div>
             </div>
           </Link>
           <Link to="/fixed-assets" className="group">
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl shadow-lg shadow-amber-500/30 group-hover:scale-110 transition-transform">
-                  <Building className="h-6 w-6 text-white" />
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl  group-hover:scale-110 transition-transform">
+                  <Building className="h-5 w-5 text-white" />
                 </div>
                 <div>
                   <p className="font-semibold text-gray-900 dark:text-white">Fixed Assets</p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Track asset depreciation</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Track asset depreciation</p>
                 </div>
               </div>
             </div>
           </Link>
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-            <div className="flex items-center gap-4">
-              <div className="p-3 bg-gradient-to-br from-red-500 to-rose-500 rounded-xl shadow-lg shadow-red-500/30">
-                <AlertTriangle className="h-6 w-6 text-white" />
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-gradient-to-br from-red-500 to-rose-500 rounded-xl ">
+                <AlertTriangle className="h-5 w-5 text-white" />
               </div>
               <div>
                 <p className="font-semibold text-gray-900 dark:text-white">Alerts</p>
-                <p className="text-sm text-gray-500 dark:text-gray-400">View compliance alerts</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">View compliance alerts</p>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-            <div className="flex items-center gap-4">
-              <div className={`p-3 bg-gradient-to-br ${getScoreGradient(metrics.compliance_score)} rounded-xl shadow-lg`}>
-                <TrendingUp className="h-6 w-6 text-white" />
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+            <div className="flex items-center gap-3">
+              <div className={`p-2 bg-gradient-to-br ${getScoreGradient(metrics.compliance_score)} rounded-lg`}>
+                <TrendingUp className="h-5 w-5 text-white" />
               </div>
               <div>
                 <p className={`text-2xl font-bold ${getScoreColor(metrics.compliance_score)}`}>{metrics.compliance_score}%</p>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Compliance Score</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">Compliance Score</p>
               </div>
             </div>
           </div>
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-            <div className="flex items-center gap-4">
-              <div className="p-3 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl shadow-lg shadow-amber-500/30">
-                <Clock className="h-6 w-6 text-white" />
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl ">
+                <Clock className="h-5 w-5 text-white" />
               </div>
               <div>
                 <p className={`text-2xl font-bold ${metrics.tax_obligations_pending > 0 ? 'text-amber-600 dark:text-amber-400' : 'text-green-600 dark:text-green-400'}`}>{metrics.tax_obligations_pending}</p>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Pending Tax Obligations</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">Pending Tax Obligations</p>
               </div>
             </div>
           </div>
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-            <div className="flex items-center gap-4">
-              <div className="p-3 bg-gradient-to-br from-purple-500 to-violet-500 rounded-xl shadow-lg shadow-purple-500/30">
-                <FileText className="h-6 w-6 text-white" />
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-gradient-to-br from-purple-500 to-violet-500 rounded-xl ">
+                <FileText className="h-5 w-5 text-white" />
               </div>
               <div>
                 <p className={`text-2xl font-bold ${metrics.legal_documents_expiring > 0 ? 'text-amber-600 dark:text-amber-400' : 'text-green-600 dark:text-green-400'}`}>{metrics.legal_documents_expiring}</p>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Expiring Documents</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">Expiring Documents</p>
               </div>
             </div>
           </div>
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-            <div className="flex items-center gap-4">
-              <div className="p-3 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-xl shadow-lg shadow-cyan-500/30">
-                <Building className="h-6 w-6 text-white" />
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-xl ">
+                <Building className="h-5 w-5 text-white" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">{metrics.fixed_assets_count}</p>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Fixed Assets</p>
+                <p className="text-xl font-bold text-gray-900 dark:text-white">{metrics.fixed_assets_count}</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">Fixed Assets</p>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
-          <div className="p-6 border-b border-gray-100 dark:border-gray-700">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+          <div className="p-4 border-b border-gray-100 dark:border-gray-700">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-lg">
                 <Shield className="h-5 w-5 text-white" />
@@ -185,13 +185,13 @@ const ComplianceDashboard: React.FC = () => {
               <p className="text-gray-500 dark:text-gray-400">Loading...</p>
             </div>
           ) : (
-            <div className="p-6 space-y-4">
+            <div className="p-4 space-y-4">
               <div className="p-4 bg-gray-50 dark:bg-gray-900/50 rounded-xl flex justify-between items-center">
                 <div className="flex items-center gap-3">
                   <FileText className="h-5 w-5 text-blue-500" />
                   <div>
                     <p className="font-medium text-gray-900 dark:text-white">Tax Compliance</p>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">All tax obligations up to date</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">All tax obligations up to date</p>
                   </div>
                 </div>
                 <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium ${metrics.tax_obligations_pending === 0 ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300' : 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300'}`}>
@@ -204,7 +204,7 @@ const ComplianceDashboard: React.FC = () => {
                   <Scale className="h-5 w-5 text-green-500" />
                   <div>
                     <p className="font-medium text-gray-900 dark:text-white">Legal Compliance</p>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">All legal documents current</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">All legal documents current</p>
                   </div>
                 </div>
                 <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium ${metrics.legal_documents_expiring === 0 ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300' : 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300'}`}>
@@ -217,7 +217,7 @@ const ComplianceDashboard: React.FC = () => {
                   <Building className="h-5 w-5 text-amber-500" />
                   <div>
                     <p className="font-medium text-gray-900 dark:text-white">Asset Management</p>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">Fixed assets properly tracked</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">Fixed assets properly tracked</p>
                   </div>
                 </div>
                 <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300">

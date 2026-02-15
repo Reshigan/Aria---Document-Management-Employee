@@ -258,14 +258,14 @@ export default function PriceLists() {
 
   const renderFormModal = () => (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
-        <div className="p-6 border-b border-gray-100 dark:border-gray-700">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+        <div className="p-4 border-b border-gray-100 dark:border-gray-700">
           <h2 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
             {showEditModal ? 'Edit Price List' : 'Create New Price List'}
           </h2>
         </div>
 
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6">
+        <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4">
           {error && (
             <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/30 border border-red-200 rounded-lg text-red-700 dark:text-red-300">
               {error}
@@ -316,7 +316,7 @@ export default function PriceLists() {
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent"
                 placeholder="Enter description"
-                rows={3}
+                rows={2}
               />
             </div>
 
@@ -399,7 +399,7 @@ export default function PriceLists() {
           </div>
         </div>
 
-        <div className="p-6 border-t border-gray-200 dark:border-gray-700 flex justify-end space-x-3">
+        <div className="p-4 border-t border-gray-200 dark:border-gray-700 flex justify-end space-x-3">
           <button
             onClick={() => {
               setShowCreateModal(false);
@@ -427,11 +427,11 @@ export default function PriceLists() {
 
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700-xl w-full max-w-6xl max-h-[90vh] overflow-y-auto">
-          <div className="p-6 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700-xl w-full max-w-6xl max-h-[90vh] overflow-y-auto">
+          <div className="p-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center">
             <div>
               <h2 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{selectedPriceList.name}</h2>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                 {selectedPriceList.type.charAt(0).toUpperCase() + selectedPriceList.type.slice(1)} Price List
               </p>
             </div>
@@ -447,7 +447,7 @@ export default function PriceLists() {
             </button>
           </div>
 
-          <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6">
+          <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Price List Details</h3>
@@ -568,18 +568,18 @@ export default function PriceLists() {
                 <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                   <thead className="bg-gray-50 dark:bg-gray-900">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Product Code</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Product Name</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Unit Price</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Min Qty</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Discount %</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Actions</th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Product Code</th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Product Name</th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Unit Price</th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Min Qty</th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Discount %</th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                     {priceListItems.length === 0 ? (
                       <tr>
-                        <td colSpan={6} className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
+                        <td colSpan={6} className="px-6 py-4 text-center text-xs text-gray-500 dark:text-gray-400">
                           No items in this price list
                         </td>
                       </tr>
@@ -595,10 +595,10 @@ export default function PriceLists() {
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                             R {Number(item.unit_price ?? 0).toFixed(2)}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                          <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">
                             {item.min_quantity || 1}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                          <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">
                             {item.discount_percent ? `${item.discount_percent}%` : '-'}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -619,7 +619,7 @@ export default function PriceLists() {
             </div>
           </div>
 
-          <div className="p-6 border-t border-gray-200 dark:border-gray-700 flex justify-end space-x-3">
+          <div className="p-4 border-t border-gray-200 dark:border-gray-700 flex justify-end space-x-3">
             <button
               onClick={() => handleEdit(selectedPriceList)}
               className="px-4 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2"
@@ -642,45 +642,45 @@ export default function PriceLists() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6">
+    <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Price Lists</h1>
+        <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Price Lists</h1>
         <p className="text-gray-500 dark:text-gray-400 mt-1">Manage pricing by customer, customer group, or promotional campaigns</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg-sm border border-gray-200 dark:border-gray-700">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-6 mb-6">
+        <div className="bg-white dark:bg-gray-800 p-4 rounded-lg-sm border border-gray-200 dark:border-gray-700">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Total Price Lists</p>
-              <p className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mt-1">{priceLists.length}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Total Price Lists</p>
+              <p className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mt-1">{priceLists.length}</p>
             </div>
             <DollarSign className="w-8 h-8 text-blue-500" />
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg-sm border border-gray-200 dark:border-gray-700">
+        <div className="bg-white dark:bg-gray-800 p-4 rounded-lg-sm border border-gray-200 dark:border-gray-700">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Active Price Lists</p>
-              <p className="text-3xl font-bold text-green-600 dark:text-green-400 mt-1">{activePriceLists}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Active Price Lists</p>
+              <p className="text-2xl font-bold text-green-600 dark:text-green-400 mt-1">{activePriceLists}</p>
             </div>
             <DollarSign className="w-8 h-8 text-green-500" />
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg-sm border border-gray-200 dark:border-gray-700">
+        <div className="bg-white dark:bg-gray-800 p-4 rounded-lg-sm border border-gray-200 dark:border-gray-700">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Inactive Price Lists</p>
-              <p className="text-3xl font-bold text-gray-600 dark:text-gray-400 mt-1">{inactivePriceLists}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Inactive Price Lists</p>
+              <p className="text-2xl font-bold text-gray-600 dark:text-gray-400 mt-1">{inactivePriceLists}</p>
             </div>
             <DollarSign className="w-8 h-8 text-gray-500 dark:text-gray-400" />
           </div>
         </div>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-lg-sm border border-gray-200 dark:border-gray-700 mb-6">
+      <div className="bg-white dark:bg-gray-800 p-4 rounded-lg-sm border border-gray-200 dark:border-gray-700 mb-6">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
           <div className="flex-1 max-w-md">
             <div className="relative">
@@ -720,24 +720,24 @@ export default function PriceLists() {
         </div>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
         <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
           <thead className="bg-gray-50 dark:bg-gray-900">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Name</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Type</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Customer</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Valid From</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Valid To</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Priority</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Name</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Type</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Customer</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Valid From</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Valid To</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Priority</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
             </tr>
           </thead>
           <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
             {filteredPriceLists.length === 0 ? (
               <tr>
-                <td colSpan={8} className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
+                <td colSpan={8} className="px-6 py-4 text-center text-xs text-gray-500 dark:text-gray-400">
                   No price lists found
                 </td>
               </tr>
@@ -752,16 +752,16 @@ export default function PriceLists() {
                       {priceList.type.charAt(0).toUpperCase() + priceList.type.slice(1)}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                  <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">
                     {priceList.customer_name || '-'}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                  <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">
                     {new Date(priceList.valid_from).toLocaleDateString('en-ZA')}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                  <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">
                     {priceList.valid_to ? new Date(priceList.valid_to).toLocaleDateString('en-ZA') : '-'}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                  <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">
                     {priceList.priority}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">

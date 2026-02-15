@@ -137,7 +137,7 @@ const Employees: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 p-8">
+      <div className="bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 p-8">
         <div className="flex items-center justify-center h-64">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
         </div>
@@ -146,12 +146,12 @@ const Employees: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 p-8" data-testid="hr-employees">
+    <div className="bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 p-8" data-testid="hr-employees">
       {/* Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
-            <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl shadow-lg shadow-blue-500/30">
+          <h1 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl ">
               <Users className="h-7 w-7 text-white" />
             </div>
             Employees
@@ -160,7 +160,7 @@ const Employees: React.FC = () => {
         </div>
         <button
           onClick={handleCreate}
-          className="px-6 py-2.5 bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-xl hover:from-blue-600 hover:to-indigo-600 transition-all shadow-lg shadow-blue-500/30 flex items-center gap-2 font-medium"
+          className="px-6 py-2.5 bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-xl hover:from-blue-600 hover:to-indigo-600 transition-all  flex items-center gap-2 font-medium"
           data-testid="create-button"
         >
           <Plus className="h-5 w-5" />
@@ -175,7 +175,7 @@ const Employees: React.FC = () => {
       )}
 
       {/* Search Bar */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-gray-700 mb-6">
+      <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 mb-6">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
           <input
@@ -191,54 +191,54 @@ const Employees: React.FC = () => {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl shadow-lg shadow-blue-500/30">
-              <Users className="h-6 w-6 text-white" />
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl ">
+              <Users className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{employees.filter(e => e.is_active).length}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Total Employees</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{employees.filter(e => e.is_active).length}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Total Employees</p>
             </div>
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg shadow-green-500/30">
-              <UserCheck className="h-6 w-6 text-white" />
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl ">
+              <UserCheck className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{employees.filter(e => e.is_active && e.employment_type === 'PERMANENT').length}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Permanent</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{employees.filter(e => e.is_active && e.employment_type === 'PERMANENT').length}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Permanent</p>
             </div>
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-purple-500 to-violet-500 rounded-xl shadow-lg shadow-purple-500/30">
-              <Briefcase className="h-6 w-6 text-white" />
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-purple-500 to-violet-500 rounded-xl ">
+              <Briefcase className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{employees.filter(e => e.is_active && e.employment_type === 'CONTRACT').length}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Contract</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{employees.filter(e => e.is_active && e.employment_type === 'CONTRACT').length}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Contract</p>
             </div>
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl shadow-lg shadow-amber-500/30">
-              <Clock className="h-6 w-6 text-white" />
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl ">
+              <Clock className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{employees.filter(e => e.is_active && e.employment_type === 'TEMPORARY').length}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Temporary</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{employees.filter(e => e.is_active && e.employment_type === 'TEMPORARY').length}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Temporary</p>
             </div>
           </div>
         </div>
       </div>
 
       {/* Employees Table */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
         {filtered.length === 0 ? (
           <div className="px-6 py-12 text-center">
             <Users className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
@@ -318,7 +318,7 @@ const Employees: React.FC = () => {
                 {editingEmployee ? 'Edit Employee' : 'New Employee'}
               </h2>
             </div>
-            <div className="p-6 overflow-y-auto max-h-[calc(90vh-140px)]">
+            <div className="p-4 overflow-y-auto max-h-[calc(90vh-140px)]">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">First Name *</label>
@@ -420,7 +420,7 @@ const Employees: React.FC = () => {
                 </button>
                 <button
                   onClick={handleSave}
-                  className="px-5 py-2.5 bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-xl font-medium hover:from-blue-600 hover:to-indigo-600 transition-all shadow-lg shadow-blue-500/30"
+                  className="px-5 py-2.5 bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-xl font-medium hover:from-blue-600 hover:to-indigo-600 transition-all "
                 >
                   Save
                 </button>

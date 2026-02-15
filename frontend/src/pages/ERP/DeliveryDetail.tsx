@@ -224,7 +224,7 @@ export default function DeliveryDetail() {
                 <strong>Sales Order:</strong> {delivery.sales_order_number}
               </div>
             )}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <TransactionField
                 label="Customer"
                 type="select"
@@ -257,7 +257,7 @@ export default function DeliveryDetail() {
                 type="textarea"
                 value={notes}
                 onChange={setNotes}
-                rows={3}
+                rows={2}
                 disabled={delivery?.status !== 'draft' && !isNew}
               />
             </div>
@@ -303,7 +303,7 @@ export default function DeliveryDetail() {
               <button
                 onClick={handleCreateInvoice}
                 disabled={loading}
-                className={`w-full py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-xl text-sm font-medium flex items-center justify-center gap-2 hover:from-emerald-600 hover:to-emerald-700 shadow-lg shadow-emerald-500/30 transition-all ${loading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                className={`w-full py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-xl text-sm font-medium flex items-center justify-center gap-2 hover:from-emerald-600 hover:to-emerald-700  transition-all ${loading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
               >
                 <FileText size={16} />
                 Create Invoice

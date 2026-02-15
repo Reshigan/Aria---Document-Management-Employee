@@ -283,7 +283,7 @@ const BotShowcase: React.FC = () => {
     : bots.filter(agent => agent.category === selectedCategory);
   
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-800">
+    <div className="bg-white dark:bg-gray-800">
       {/* Navigation */}
       <nav className="fixed top-0 w-full z-50 bg-white dark:bg-gray-800/80 backdrop-blur-md border-b border-gray-100 dark:border-gray-700">
         <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
@@ -360,7 +360,7 @@ const BotShowcase: React.FC = () => {
               <button
                 key={cat}
                 onClick={() => setSelectedCategory(cat)}
-                className={`px-6 py-3 rounded-lg font-medium text-sm transition-all ${
+                className={`px-4 py-2 rounded-lg font-medium text-sm transition-all ${
                   selectedCategory === cat
                     ? 'bg-black text-white'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -376,7 +376,7 @@ const BotShowcase: React.FC = () => {
       {/* Agents Grid */}
       <section className="pb-24 px-6 bg-white dark:bg-gray-800">
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredBots.map((agent, index) => (
               <motion.div
                 key={agent.id}
@@ -463,7 +463,7 @@ const BotShowcase: React.FC = () => {
       {/* Footer */}
       <footer className="py-16 px-6 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
         <div className="max-w-7xl mx-auto text-center">
-          <p className="text-sm text-gray-500 dark:text-gray-400">&copy; 2025 Vanta X Pty Ltd. All rights reserved.</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400">&copy; 2025 Vanta X Pty Ltd. All rights reserved.</p>
         </div>
       </footer>
     </div>

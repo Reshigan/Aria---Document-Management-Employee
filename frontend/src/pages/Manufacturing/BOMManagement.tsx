@@ -310,16 +310,16 @@ const BOMManagement: React.FC = () => {
   const formTotalCost = formData.items.reduce((sum, item) => sum + (item.quantity * (item.unit_cost || 0)), 0);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-slate-800 p-6">
+    <div className="bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-slate-800 p-4">
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-6">
           <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">Bill of Materials (BOM)</h1>
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">Bill of Materials (BOM)</h1>
             <p className="text-gray-600 dark:text-gray-400 mt-1">Manage product BOMs, versions, and material requirements</p>
           </div>
           <button 
             onClick={handleCreate}
-            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl hover:from-blue-600 hover:to-blue-700 shadow-lg shadow-blue-500/30 transition-all"
+            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl hover:from-blue-600 hover:to-blue-700  transition-all"
           >
             <Plus size={20} />
             Create BOM
@@ -347,12 +347,12 @@ const BOMManagement: React.FC = () => {
         )}
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6">
           <button onClick={() => setFilter('all')} className={`bg-white dark:bg-gray-800 rounded-xl p-4 border-2 transition-all ${filter === 'all' ? 'border-blue-500 shadow-lg' : 'border-transparent hover:border-gray-200'}`}>
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs text-gray-500 dark:text-gray-400">Total</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.total}</p>
+                <p className="text-xl font-bold text-gray-900 dark:text-white">{stats.total}</p>
               </div>
               <Layers className="text-blue-500" size={24} />
             </div>
@@ -401,13 +401,13 @@ const BOMManagement: React.FC = () => {
             <table className="w-full">
               <thead className="bg-gray-50 dark:bg-gray-700">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">BOM ID</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Product</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Version</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Status</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Items</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Total Cost</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Actions</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">BOM ID</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Product</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Version</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Status</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Items</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Total Cost</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
@@ -487,7 +487,7 @@ const BOMManagement: React.FC = () => {
 
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-4 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-bold text-gray-900 dark:text-white">
                 {editingBom ? 'Edit BOM' : 'Create BOM'}
@@ -497,7 +497,7 @@ const BOMManagement: React.FC = () => {
               </button>
             </div>
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Product Name</label>
                   <input

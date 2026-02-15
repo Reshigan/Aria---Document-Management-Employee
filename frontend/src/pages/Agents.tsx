@@ -78,10 +78,10 @@ export default function Agents() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6 space-y-6">
+    <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4 space-y-3">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">AI Agents</h1>
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">AI Agents</h1>
           <p className="text-gray-600 dark:text-gray-400 mt-1">
             {agents.length} AI-powered automation agents available
           </p>
@@ -96,7 +96,7 @@ export default function Agents() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <button
           onClick={() => setSelectedCategory('all')}
           className={`p-4 rounded-xl border-2 transition-all ${
@@ -106,7 +106,7 @@ export default function Agents() {
           }`}
         >
           <div className="text-sm font-medium text-gray-600 dark:text-gray-400">All Agents</div>
-          <div className="text-2xl font-bold text-gray-900 dark:text-white">{agents.length}</div>
+          <div className="text-xl font-bold text-gray-900 dark:text-white">{agents.length}</div>
         </button>
         {Object.entries(categories)
           .slice(0, 3)
@@ -121,19 +121,19 @@ export default function Agents() {
               }`}
             >
               <div className="text-sm font-medium text-gray-600 dark:text-gray-400">{category}</div>
-              <div className="text-2xl font-bold text-gray-900 dark:text-white">{count}</div>
+              <div className="text-xl font-bold text-gray-900 dark:text-white">{count}</div>
             </button>
           ))}
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
         <div className="p-4 border-b border-gray-100 dark:border-gray-700">
           <div className="flex space-x-2 overflow-x-auto">
             <button
               onClick={() => setSelectedCategory('all')}
               className={`px-4 py-2 rounded-xl whitespace-nowrap transition-all ${
                 selectedCategory === 'all'
-                  ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-500/30'
+                  ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white '
                   : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
               }`}
             >
@@ -145,7 +145,7 @@ export default function Agents() {
                 onClick={() => setSelectedCategory(category)}
                 className={`px-4 py-2 rounded-xl whitespace-nowrap transition-all ${
                   selectedCategory === category
-                    ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-500/30'
+                    ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white '
                     : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                 }`}
               >
@@ -155,11 +155,11 @@ export default function Agents() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-6">
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 p-4">
           {filteredBots.map((agent) => (
             <div
               key={agent.id}
-              className="border border-gray-200 dark:border-gray-700 rounded-xl p-4 hover:shadow-lg transition-all cursor-pointer bg-white dark:bg-gray-800/50"
+              className="border border-gray-200 dark:border-gray-700 rounded-xl p-4  cursor-pointer bg-white dark:bg-gray-800/50"
               onClick={() => setSelectedBot(agent)}
             >
               <div className="flex items-start justify-between mb-3">
@@ -178,7 +178,7 @@ export default function Agents() {
                     e.stopPropagation()
                     handleExecuteBot(agent.id)
                   }}
-                  className="flex-1 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white py-2 rounded-xl text-sm shadow-lg shadow-indigo-500/30 flex items-center justify-center transition-all"
+                  className="flex-1 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white py-2 rounded-xl text-sm  flex items-center justify-center transition-all"
                 >
                   <Play className="h-4 w-4 mr-2" />
                   Execute
@@ -253,7 +253,7 @@ function BotDetailsModal({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <div className="p-6">
           <div className="flex items-start justify-between mb-4">
             <div className="flex items-center">
@@ -261,7 +261,7 @@ function BotDetailsModal({
                 <Bot className="h-8 w-8 text-indigo-600 dark:text-indigo-400" />
               </div>
               <div>
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{agent.name}</h2>
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white">{agent.name}</h2>
                 <p className="text-sm text-gray-600 dark:text-gray-400">{agent.category}</p>
               </div>
             </div>
@@ -324,7 +324,7 @@ function BotDetailsModal({
                     onExecute(agent.id)
                     onClose()
                   }}
-                  className="px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-xl shadow-lg shadow-indigo-500/30 flex items-center transition-all"
+                  className="px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-xl  flex items-center transition-all"
                 >
                   <Play className="h-4 w-4 mr-2" />
                   Execute Agent

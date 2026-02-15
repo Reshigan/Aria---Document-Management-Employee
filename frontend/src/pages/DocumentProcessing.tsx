@@ -235,10 +235,10 @@ const DocumentProcessing: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 container mx-auto p-6 space-y-6">
+    <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 container mx-auto p-4 space-y-3">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Document Processing</h1>
+          <h1 className="text-2xl font-bold">Document Processing</h1>
           <p className="text-gray-600 dark:text-gray-400 mt-1">
             Upload and analyze documents with advanced OCR and AI capabilities
           </p>
@@ -270,14 +270,14 @@ const DocumentProcessing: React.FC = () => {
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="upload" className="space-y-6">
+        <TabsContent value="upload" className="space-y-3">
           <DocumentUpload
             onUploadComplete={handleUploadComplete}
             onUploadError={handleUploadError}
           />
         </TabsContent>
 
-        <TabsContent value="history" className="space-y-6">
+        <TabsContent value="history" className="space-y-3">
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
@@ -306,7 +306,7 @@ const DocumentProcessing: React.FC = () => {
                                 {job.status}
                               </Badge>
                             </div>
-                            <p className="text-sm text-gray-500 dark:text-gray-400">
+                            <p className="text-xs text-gray-500 dark:text-gray-400">
                               {job.processing_type} • {formatDate(job.created_at)}
                             </p>
                             {job.processing_time && (
@@ -319,7 +319,7 @@ const DocumentProcessing: React.FC = () => {
                         
                         <div className="flex items-center space-x-2">
                           {job.progress !== undefined && job.status === 'processing' && (
-                            <div className="text-sm text-gray-500 dark:text-gray-400">
+                            <div className="text-xs text-gray-500 dark:text-gray-400">
                               {Number(job.progress ?? 0).toFixed(0)}%
                             </div>
                           )}
@@ -342,7 +342,7 @@ const DocumentProcessing: React.FC = () => {
                 <div className="text-center py-8">
                   <FileText className="w-12 h-12 mx-auto text-gray-400 mb-4" />
                   <p className="text-gray-500 dark:text-gray-400">No processing jobs found</p>
-                  <p className="text-sm text-gray-400 mt-1">
+                  <p className="text-xs text-gray-400 mt-1">
                     Upload a document to get started
                   </p>
                 </div>
@@ -351,7 +351,7 @@ const DocumentProcessing: React.FC = () => {
           </Card>
         </TabsContent>
 
-        <TabsContent value="results" className="space-y-6">
+        <TabsContent value="results" className="space-y-3">
           {selectedJob ? (
             <div className="space-y-4">
               <Card>
@@ -371,7 +371,7 @@ const DocumentProcessing: React.FC = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div className="grid grid-cols-2 gap-3 text-sm">
                     <div>
                       <p className="font-medium">Processing Type:</p>
                       <p className="text-gray-600 dark:text-gray-400">{selectedJob.processing_type}</p>
@@ -412,7 +412,7 @@ const DocumentProcessing: React.FC = () => {
               <CardContent className="text-center py-8">
                 <Brain className="w-12 h-12 mx-auto text-gray-400 mb-4" />
                 <p className="text-gray-500 dark:text-gray-400">No results selected</p>
-                <p className="text-sm text-gray-400 mt-1">
+                <p className="text-xs text-gray-400 mt-1">
                   Select a job from the history to view results
                 </p>
               </CardContent>

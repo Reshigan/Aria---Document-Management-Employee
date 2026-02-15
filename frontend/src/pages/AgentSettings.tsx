@@ -118,7 +118,7 @@ export default function AgentSettings() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6 space-y-6">
+    <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4 space-y-3">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
@@ -132,7 +132,7 @@ export default function AgentSettings() {
             <Bot className="h-8 w-8 text-blue-600 dark:text-blue-400" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{agent.name}</h1>
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{agent.name}</h1>
             <p className="text-gray-600 dark:text-gray-400">{agent.category}</p>
           </div>
         </div>
@@ -147,12 +147,12 @@ export default function AgentSettings() {
       </div>
 
       {/* Tabs */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
         <div className="border-b">
           <div className="flex space-x-8 px-6">
             <button
               onClick={() => setActiveTab('info')}
-              className={`py-4 border-b-2 font-medium ${
+              className={`py-3 border-b-2 font-medium ${
                 activeTab === 'info'
                   ? 'border-blue-600 text-blue-600'
                   : 'border-transparent text-gray-600 hover:text-gray-900'
@@ -162,7 +162,7 @@ export default function AgentSettings() {
             </button>
             <button
               onClick={() => setActiveTab('settings')}
-              className={`py-4 border-b-2 font-medium ${
+              className={`py-3 border-b-2 font-medium ${
                 activeTab === 'settings'
                   ? 'border-blue-600 text-blue-600'
                   : 'border-transparent text-gray-600 hover:text-gray-900'
@@ -172,7 +172,7 @@ export default function AgentSettings() {
             </button>
             <button
               onClick={() => setActiveTab('usage')}
-              className={`py-4 border-b-2 font-medium ${
+              className={`py-3 border-b-2 font-medium ${
                 activeTab === 'usage'
                   ? 'border-blue-600 text-blue-600'
                   : 'border-transparent text-gray-600 hover:text-gray-900'
@@ -184,9 +184,9 @@ export default function AgentSettings() {
         </div>
 
         {/* Tab Content */}
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6">
+        <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4">
           {activeTab === 'info' && (
-            <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6 space-y-6">
+            <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4 space-y-3">
               <div>
                 <h3 className="text-lg font-semibold mb-2">Description</h3>
                 <p className="text-gray-600 dark:text-gray-400">
@@ -205,7 +205,7 @@ export default function AgentSettings() {
                 </div>
               )}
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
                   <div className="text-sm text-gray-600 dark:text-gray-400">Module</div>
                   <div className="text-lg font-semibold">{agent.module}</div>
@@ -222,7 +222,7 @@ export default function AgentSettings() {
           )}
 
           {activeTab === 'settings' && (
-            <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6 space-y-6">
+            <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4 space-y-3">
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Agent Name
@@ -242,7 +242,7 @@ export default function AgentSettings() {
                 <textarea
                   value={agent.description || ''}
                   onChange={(e) => setAgent({ ...agent, description: e.target.value })}
-                  rows={4}
+                  rows={2}
                   className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
                 />
               </div>
@@ -297,8 +297,8 @@ export default function AgentSettings() {
           )}
 
           {activeTab === 'usage' && usage && (
-            <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6 space-y-6">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4 space-y-3">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 <div className="bg-blue-50 dark:bg-blue-900/30 rounded-lg p-4">
                   <div className="flex items-center justify-between mb-2">
                     <Activity className="h-5 w-5 text-blue-600 dark:text-blue-400" />
@@ -334,7 +334,7 @@ export default function AgentSettings() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 <div className="border rounded-lg p-4">
                   <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">Successful Runs</div>
                   <div className="text-2xl font-bold text-green-600 dark:text-green-400">{usage.successful_runs}</div>
