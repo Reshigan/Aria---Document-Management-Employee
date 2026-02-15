@@ -144,12 +144,12 @@ export default function QuoteDetail() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-800">
+    <div className="bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-800">
       <DocumentDetail config={config} key={refreshKey} />
       
       {id && (
         <div className="p-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
               Comments & Activity
             </h2>
@@ -157,14 +157,14 @@ export default function QuoteDetail() {
           </div>
 
           <div className="flex flex-col gap-8">
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-6">
+            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
               <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
                 Attachments
               </h2>
               <AttachmentUpload documentType="quotes" documentId={id} />
             </div>
 
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-6">
+            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
               <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
                 Approval Workflow
               </h2>

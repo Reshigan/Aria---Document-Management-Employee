@@ -18,13 +18,13 @@ const ComingSoon: React.FC<ComingSoonProps> = ({ title, description }) => {
   ).join(' > ');
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-6">
-      <div className="max-w-lg w-full bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 text-center">
+    <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-4">
+      <div className="max-w-lg w-full bg-white dark:bg-gray-800 rounded-xl shadow-xl p-8 text-center">
         <div className="w-20 h-20 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
           <Sparkles className="w-10 h-10 text-white" />
         </div>
         
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+        <h1 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
           {pageName}
         </h1>
         
@@ -40,21 +40,21 @@ const ComingSoon: React.FC<ComingSoonProps> = ({ title, description }) => {
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <button
             onClick={() => navigate(-1)}
-            className="flex items-center justify-center gap-2 px-6 py-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+            className="flex items-center justify-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             Go Back
           </button>
           <button
             onClick={() => navigate('/dashboard')}
-            className="px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-medium hover:from-indigo-700 hover:to-purple-700 transition-all"
+            className="px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-medium hover:from-indigo-700 hover:to-purple-700 transition-all"
           >
             Go to Dashboard
           </button>
         </div>
         
         <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
-          <p className="text-sm text-gray-500 dark:text-gray-500">
+          <p className="text-xs text-gray-500 dark:text-gray-500">
             Need this feature urgently? Contact support at{' '}
             <a href="mailto:support@aria.vantax.co.za" className="text-indigo-600 dark:text-indigo-400 hover:underline">
               support@aria.vantax.co.za

@@ -250,7 +250,7 @@ const Leads: React.FC = () => {
             </Grid>
             <Grid item xs={12} sm={6}><TextField fullWidth label="Value (R)" type="number" value={formData.value || ''} onChange={(e) => setFormData({ ...formData, value: Number(e.target.value) })} /></Grid>
             <Grid item xs={12} sm={6}><TextField fullWidth label="Assigned To" value={formData.assignedTo || ''} onChange={(e) => setFormData({ ...formData, assignedTo: e.target.value })} /></Grid>
-            <Grid item xs={12}><TextField fullWidth label="Notes" multiline rows={3} value={formData.notes || ''} onChange={(e) => setFormData({ ...formData, notes: e.target.value })} /></Grid>
+            <Grid item xs={12}><TextField fullWidth label="Notes" multiline rows={2} value={formData.notes || ''} onChange={(e) => setFormData({ ...formData, notes: e.target.value })} /></Grid>
           </Grid>
         </DialogContent>
         <DialogActions>

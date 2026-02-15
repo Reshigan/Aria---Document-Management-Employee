@@ -78,10 +78,10 @@ export default function InvoiceTemplates() {
   };
 
   return (
-    <div className="p-6 space-y-6 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 min-h-screen">
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <div className="p-4 space-y-3 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
         <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">Invoice Templates</h1>
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">Invoice Templates</h1>
           <p className="text-gray-500 mt-1">Design and customize your document templates</p>
         </div>
         <button onClick={() => { setEditingTemplate(null); setFormData({ name: '', template_type: 'invoice', primary_color: '#1e40af', secondary_color: '#64748b', font_family: 'Inter', show_logo: true, show_payment_advice: true, show_tax_summary: true, is_default: false }); setShowModal(true); }} className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg font-medium"><Plus className="h-4 w-4" />New Template</button>
@@ -90,9 +90,9 @@ export default function InvoiceTemplates() {
       {loading ? (
         <div className="flex items-center justify-center py-12"><RefreshCw className="h-8 w-8 animate-spin text-purple-500" /></div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-6">
           {templates.map(template => (
-            <div key={template.id} className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden group">
+            <div key={template.id} className="bg-white dark:bg-gray-800 rounded-lg overflow-hidden group">
               <div className="h-32 relative" style={{ background: `linear-gradient(135deg, ${template.primary_color}, ${template.secondary_color})` }}>
                 <div className="absolute inset-0 flex items-center justify-center">
                   <FileText className="h-16 w-16 text-white/30" />
@@ -101,7 +101,7 @@ export default function InvoiceTemplates() {
               </div>
               <div className="p-4">
                 <h3 className="font-semibold text-lg">{template.name}</h3>
-                <p className="text-sm text-gray-500 capitalize">{template.template_type}</p>
+                <p className="text-xs text-gray-500 capitalize">{template.template_type}</p>
                 <div className="flex items-center gap-2 mt-3">
                   <div className="w-6 h-6 rounded-full border-2 border-white shadow" style={{ backgroundColor: template.primary_color }} />
                   <div className="w-6 h-6 rounded-full border-2 border-white shadow" style={{ backgroundColor: template.secondary_color }} />
@@ -133,8 +133,8 @@ export default function InvoiceTemplates() {
             </div>
             <div className="p-6">
               {activeTab === 'design' && (
-                <div className="space-y-6">
-                  <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-3">
+                  <div className="grid grid-cols-2 gap-3">
                     <div><label className="block text-sm font-medium mb-1">Template Name</label><input type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700" /></div>
                     <div><label className="block text-sm font-medium mb-1">Template Type</label><select value={formData.template_type} onChange={(e) => setFormData({ ...formData, template_type: e.target.value })} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700"><option value="invoice">Invoice</option><option value="quote">Quote</option><option value="credit_note">Credit Note</option><option value="purchase_order">Purchase Order</option></select></div>
                   </div>
@@ -149,7 +149,7 @@ export default function InvoiceTemplates() {
                       ))}
                     </div>
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-2 gap-3">
                     <div><label className="block text-sm font-medium mb-1">Primary Color</label><input type="color" value={formData.primary_color} onChange={(e) => setFormData({ ...formData, primary_color: e.target.value })} className="w-full h-10 rounded-lg cursor-pointer" /></div>
                     <div><label className="block text-sm font-medium mb-1">Secondary Color</label><input type="color" value={formData.secondary_color} onChange={(e) => setFormData({ ...formData, secondary_color: e.target.value })} className="w-full h-10 rounded-lg cursor-pointer" /></div>
                   </div>
@@ -165,13 +165,13 @@ export default function InvoiceTemplates() {
                 </div>
               )}
               {activeTab === 'preview' && (
-                <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-6" style={{ fontFamily: formData.font_family }}>
+                <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4" style={{ fontFamily: formData.font_family }}>
                   <div className="flex justify-between items-start mb-6">
                     <div><div className="w-16 h-16 rounded-lg flex items-center justify-center text-white font-bold" style={{ backgroundColor: formData.primary_color }}>LOGO</div></div>
                     <div className="text-right"><h2 className="text-2xl font-bold" style={{ color: formData.primary_color }}>INVOICE</h2><p className="text-gray-500">INV-001</p></div>
                   </div>
                   <div className="grid grid-cols-2 gap-6 mb-6">
-                    <div><p className="text-sm font-medium" style={{ color: formData.secondary_color }}>Bill To:</p><p className="font-semibold">Customer Name</p><p className="text-sm text-gray-500">123 Street, City</p></div>
+                    <div><p className="text-sm font-medium" style={{ color: formData.secondary_color }}>Bill To:</p><p className="font-semibold">Customer Name</p><p className="text-xs text-gray-500">123 Street, City</p></div>
                     <div className="text-right"><p className="text-sm" style={{ color: formData.secondary_color }}>Date: Jan 15, 2026</p><p className="text-sm" style={{ color: formData.secondary_color }}>Due: Feb 15, 2026</p></div>
                   </div>
                   <table className="w-full mb-6">

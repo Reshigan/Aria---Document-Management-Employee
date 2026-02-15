@@ -61,7 +61,7 @@ export default function UserManagementPage() {
       // Show success message
       const successDiv = document.createElement('div');
       successDiv.setAttribute('data-testid', 'success-message');
-      successDiv.className = 'fixed top-4 right-4 bg-green-50 border border-green-200 text-green-700 px-6 py-3 rounded-2xl shadow-lg z-50';
+      successDiv.className = 'fixed top-4 right-4 bg-green-50 border border-green-200 text-green-700 px-4 py-2 rounded-xl shadow-sm z-50';
       successDiv.textContent = 'Invitation sent successfully!';
       document.body.appendChild(successDiv);
       setTimeout(() => successDiv.remove(), 3000);
@@ -202,7 +202,7 @@ export default function UserManagementPage() {
             <div className="font-medium text-gray-900 dark:text-white">
               {user.first_name} {user.last_name}
             </div>
-            <div className="text-sm text-gray-500 dark:text-gray-400">{user.email}</div>
+            <div className="text-xs text-gray-500 dark:text-gray-400">{user.email}</div>
           </div>
         </div>
       )
@@ -270,18 +270,18 @@ export default function UserManagementPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 container mx-auto p-6 max-w-7xl">
+    <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 container mx-auto p-4">
       {/* Header */}
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent flex items-center gap-3">
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent flex items-center gap-3">
             <Users className="h-8 w-8" />
             User Management
           </h1>
@@ -289,7 +289,7 @@ export default function UserManagementPage() {
         </div>
         <Button
           onClick={() => setInviteModal({ ...inviteModal, isOpen: true })}
-          className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-lg shadow-indigo-500/30"
+          className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white "
           data-testid="button-invite-user"
         >
           <UserPlus className="h-4 w-4 mr-2" />
@@ -305,15 +305,15 @@ export default function UserManagementPage() {
           { label: 'Invited', value: users.filter(u => u.status === 'invited').length, color: 'yellow', testId: 'stat-invited' },
           { label: 'Inactive', value: users.filter(u => u.status === 'inactive').length, color: 'red', testId: 'stat-inactive' }
         ].map((stat, idx) => (
-          <div key={idx} className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6" data-testid={stat.testId}>
+          <div key={idx} className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4" data-testid={stat.testId}>
             <div className="text-sm font-medium text-gray-600 dark:text-gray-400">{stat.label}</div>
-            <div className={`text-3xl font-bold mt-2 text-${stat.color}-600`}>{stat.value}</div>
+            <div className={`text-2xl font-bold mt-2 text-${stat.color}-600`}>{stat.value}</div>
           </div>
         ))}
       </div>
 
       {/* Search Bar */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-4 mb-4">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 mb-4">
         <input
           type="text"
           name="search"
@@ -325,7 +325,7 @@ export default function UserManagementPage() {
       </div>
 
       {/* Users Table */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700" data-testid="user-table">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700" data-testid="user-table">
         <DataTable
           data={users.filter(user => {
             if (!searchQuery) return true;
@@ -347,14 +347,14 @@ export default function UserManagementPage() {
       {/* Invite User Modal */}
       {inviteModal.isOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700-xl max-w-md w-full p-6" data-testid="modal-invite-user">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700-xl max-w-md w-full p-4" data-testid="modal-invite-user">
             <h2 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-4 flex items-center gap-2">
               <UserPlus className="h-6 w-6" />
               Invite New User
             </h2>
 
             <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     First Name *
@@ -411,7 +411,7 @@ export default function UserManagementPage() {
                   <option value="hr">HR</option>
                   <option value="admin">Admin</option>
                 </select>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                   {inviteModal.role === 'admin' && 'Full system access'}
                   {inviteModal.role === 'manager' && 'Can approve workflows and view reports'}
                   {inviteModal.role === 'finance' && 'Access to financial data and reports'}
@@ -431,7 +431,7 @@ export default function UserManagementPage() {
               <Button
                 onClick={handleInviteUser}
                 disabled={!inviteModal.email || !inviteModal.firstName || !inviteModal.lastName}
-                className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-lg shadow-indigo-500/30"
+                className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white "
                 data-testid="button-send-invitation"
               >
                 <Mail className="h-4 w-4 mr-2" />
@@ -445,7 +445,7 @@ export default function UserManagementPage() {
       {/* Edit Role Modal */}
       {editRoleModal && selectedUser && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700-xl max-w-md w-full p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700-xl max-w-md w-full p-4">
             <h2 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-4 flex items-center gap-2">
               <Shield className="h-6 w-6" />
               Change User Role
@@ -467,7 +467,7 @@ export default function UserManagementPage() {
                   }`}
                 >
                   <div className="font-medium text-gray-900 dark:text-white capitalize">{role}</div>
-                  <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                  <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                     {role === 'admin' && 'Full system access and configuration'}
                     {role === 'manager' && 'Approve workflows, view reports'}
                     {role === 'finance' && 'Access financial data and reports'}

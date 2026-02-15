@@ -248,7 +248,7 @@ export default function BillDetail() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
           <TransactionCard title="Bill Information">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <TransactionField
                 label="Supplier"
                 type="select"
@@ -291,7 +291,7 @@ export default function BillDetail() {
                 type="textarea"
                 value={termsAndConditions}
                 onChange={setTermsAndConditions}
-                rows={3}
+                rows={2}
                 disabled={bill?.status !== 'draft' && !isNew}
               />
             </div>
@@ -358,7 +358,7 @@ export default function BillDetail() {
               <button
                 onClick={handleCreatePayment}
                 disabled={loading}
-                className={`w-full py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-xl text-sm font-medium flex items-center justify-center gap-2 hover:from-emerald-600 hover:to-emerald-700 shadow-lg shadow-emerald-500/30 transition-all ${loading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                className={`w-full py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-xl text-sm font-medium flex items-center justify-center gap-2 hover:from-emerald-600 hover:to-emerald-700  transition-all ${loading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
               >
                 <DollarSign size={16} />
                 Record Payment

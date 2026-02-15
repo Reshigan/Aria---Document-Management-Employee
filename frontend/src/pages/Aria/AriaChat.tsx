@@ -255,7 +255,7 @@ export default function AriaChat() {
     <div className="h-[calc(100vh-4rem)] flex flex-col p-8 bg-gradient-to-br from-indigo-600 to-purple-700 dark:from-indigo-900 dark:to-purple-900">
       {/* Header */}
       <div className="mb-6 text-center">
-        <div className="flex items-center justify-center gap-4 mb-2">
+        <div className="flex items-center justify-center gap-3 mb-2">
           <MessageSquare size={40} className="text-white" />
           <h1 className="text-4xl font-bold text-white m-0">
             Ask Aria
@@ -267,7 +267,7 @@ export default function AriaChat() {
       </div>
 
       {/* Chat Container */}
-      <div className="flex-1 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl flex flex-col overflow-hidden">
+      <div className="flex-1 bg-white dark:bg-gray-800 rounded-xl shadow-2xl flex flex-col overflow-hidden">
         {/* Messages */}
         <div className="flex-1 overflow-y-auto p-8 flex flex-col gap-6">
           {messages.map((message) => (

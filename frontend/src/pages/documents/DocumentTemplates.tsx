@@ -88,8 +88,8 @@ export default function DocumentTemplatesPage() {
   })).filter(cat => cat.templates.length > 0);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6">
-      <h1 className="text-3xl font-bold mb-6 flex items-center gap-3">
+    <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4">
+      <h1 className="text-2xl font-bold mb-6 flex items-center gap-3">
         <FileText className="h-8 w-8" />
         Document Templates
       </h1>
@@ -131,11 +131,11 @@ export default function DocumentTemplatesPage() {
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredCategories.map((category) => (
             <div 
               key={category.name} 
-              className={`bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6 ${selectedCategory === category.name ? 'ring-2 ring-indigo-600 active' : ''}`}
+              className={`bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 ${selectedCategory === category.name ? 'ring-2 ring-indigo-600 active' : ''}`}
               data-testid={category.testId}
             >
               <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">{category.name}</h3>

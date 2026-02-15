@@ -100,70 +100,70 @@ export default function Mailroom() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 p-6">
+    <div className="bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 p-4">
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-2">
-          <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl shadow-lg shadow-blue-500/30">
+          <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl ">
             <Mail className="h-8 w-8 text-white" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Aria Mailroom</h1>
+            <h1 className="text-xl font-bold text-gray-900 dark:text-white">Aria Mailroom</h1>
             <p className="text-gray-600 dark:text-gray-400">Monitor email-driven automation at aria@vantax.co.za</p>
           </div>
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div className={`rounded-2xl p-5 shadow-sm border-2 ${mailboxStatus.connected ? 'bg-green-50 dark:bg-green-900/30 border-green-500' : 'bg-red-50 dark:bg-red-900/30 border-red-500'}`}>
-          <div className="flex items-center gap-4">
-            <div className={`p-3 rounded-xl shadow-lg ${mailboxStatus.connected ? 'bg-gradient-to-br from-green-500 to-emerald-500 shadow-green-500/30' : 'bg-gradient-to-br from-red-500 to-rose-500 shadow-red-500/30'}`}>
-              <Zap className="h-6 w-6 text-white" />
+        <div className={`rounded-xl p-3 shadow-sm border-2 ${mailboxStatus.connected ? 'bg-green-50 dark:bg-green-900/30 border-green-500' : 'bg-red-50 dark:bg-red-900/30 border-red-500'}`}>
+          <div className="flex items-center gap-3">
+            <div className={`p-3 rounded-lg ${mailboxStatus.connected ? 'bg-gradient-to-br from-green-500 to-emerald-500 shadow-green-500/30' : 'bg-gradient-to-br from-red-500 to-rose-500 shadow-red-500/30'}`}>
+              <Zap className="h-5 w-5 text-white" />
             </div>
             <div>
               <p className={`text-xl font-bold ${mailboxStatus.connected ? 'text-green-700 dark:text-green-300' : 'text-red-700 dark:text-red-300'}`}>
                 {mailboxStatus.connected ? 'Connected' : 'Disconnected'}
               </p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Mailbox Status</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Mailbox Status</p>
             </div>
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl shadow-lg shadow-blue-500/30">
-              <Clock className="h-6 w-6 text-white" />
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl ">
+              <Clock className="h-5 w-5 text-white" />
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{new Date(mailboxStatus.last_poll).toLocaleTimeString()}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Last Poll</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Last Poll</p>
             </div>
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl shadow-lg shadow-amber-500/30">
-              <Inbox className="h-6 w-6 text-white" />
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl ">
+              <Inbox className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{mailboxStatus.unread_count}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Unread Messages</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{mailboxStatus.unread_count}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Unread Messages</p>
             </div>
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg shadow-green-500/30">
-              <CheckCircle className="h-6 w-6 text-white" />
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl ">
+              <CheckCircle className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{mailboxStatus.processed_today}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Processed Today</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{mailboxStatus.processed_today}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Processed Today</p>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
-        <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+        <div className="p-4 border-b border-gray-200 dark:border-gray-700">
           <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Recent Messages</h2>
         </div>
 
@@ -191,7 +191,7 @@ export default function Mailroom() {
                       <h3 className="font-semibold text-gray-900 dark:text-white">{message.subject}</h3>
                       {getStatusIcon(message.status)}
                     </div>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">From: {message.from}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">From: {message.from}</p>
                   </div>
                   <div className="text-right">
                     <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
@@ -215,7 +215,7 @@ export default function Mailroom() {
         )}
       </div>
 
-      <div className="mt-6 p-6 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-2xl">
+      <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-2xl">
         <div className="flex items-center gap-2 mb-3">
           <MessageSquare className="h-5 w-5 text-blue-600 dark:text-blue-400" />
           <h3 className="font-semibold text-blue-900 dark:text-blue-100">How It Works</h3>

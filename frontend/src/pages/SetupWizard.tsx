@@ -319,10 +319,10 @@ export default function SetupWizard() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-indigo-900">
+    <div className="bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-indigo-900">
       {/* Header */}
       <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700 sticky top-0 z-10">
-        <div className="max-w-6xl mx-auto px-6 py-4">
+        <div className="mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center">
@@ -330,10 +330,10 @@ export default function SetupWizard() {
               </div>
               <div>
                 <h1 className="text-xl font-bold text-gray-900 dark:text-white">ARIA Setup Wizard</h1>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Configure your business in minutes</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">Configure your business in minutes</p>
               </div>
             </div>
-            <div className="text-sm text-gray-500 dark:text-gray-400">
+            <div className="text-xs text-gray-500 dark:text-gray-400">
               Step {currentStep + 1} of {WIZARD_STEPS.length}
             </div>
           </div>
@@ -341,7 +341,7 @@ export default function SetupWizard() {
       </div>
 
       {/* Progress Bar */}
-      <div className="max-w-6xl mx-auto px-6 py-6">
+      <div className="mx-auto px-6 py-6">
         <div className="flex items-center justify-between mb-2">
           {WIZARD_STEPS.map((step, index) => (
             <div
@@ -388,7 +388,7 @@ export default function SetupWizard() {
 
       {/* Content */}
       <div className="max-w-4xl mx-auto px-6 pb-24">
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 p-8">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-100 dark:border-gray-700 p-8">
           {renderStepContent()}
         </div>
       </div>
@@ -447,7 +447,7 @@ function WelcomeStep() {
       <div className="w-20 h-20 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
         <Sparkles className="w-10 h-10 text-white" />
       </div>
-      <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+      <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
         Welcome to ARIA
       </h2>
       <p className="text-lg text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto">
@@ -455,25 +455,25 @@ function WelcomeStep() {
         your company details, financial settings, chart of accounts, and more.
       </p>
       
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-        <div className="p-6 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-6 mt-8">
+        <div className="p-4 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl">
           <Building2 className="w-8 h-8 text-blue-600 dark:text-blue-400 mb-3" />
           <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Company Setup</h3>
           <p className="text-sm text-gray-600 dark:text-gray-400">Configure your business details and contact information</p>
         </div>
-        <div className="p-6 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-xl">
+        <div className="p-4 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-xl">
           <BookOpen className="w-8 h-8 text-green-600 dark:text-green-400 mb-3" />
           <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Financial Structure</h3>
           <p className="text-sm text-gray-600 dark:text-gray-400">Set up your chart of accounts and tax rates</p>
         </div>
-        <div className="p-6 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-xl">
+        <div className="p-4 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-xl">
           <Users className="w-8 h-8 text-purple-600 dark:text-purple-400 mb-3" />
           <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Team & Templates</h3>
           <p className="text-sm text-gray-600 dark:text-gray-400">Invite team members and customize templates</p>
         </div>
       </div>
       
-      <p className="text-sm text-gray-500 dark:text-gray-400 mt-8">
+      <p className="text-xs text-gray-500 dark:text-gray-400 mt-8">
         This will take approximately 5-10 minutes to complete
       </p>
     </div>
@@ -484,7 +484,7 @@ function CompanyInfoStep({ data, updateData, errors }: { data: WizardData; updat
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Company Information</h2>
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Company Information</h2>
         <p className="text-gray-600 dark:text-gray-400">Enter your company's basic details</p>
       </div>
 
@@ -717,7 +717,7 @@ function FinancialStep({ data, updateData, errors }: { data: WizardData; updateD
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Financial Settings</h2>
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Financial Settings</h2>
         <p className="text-gray-600 dark:text-gray-400">Configure your financial year and currency settings</p>
       </div>
 
@@ -735,7 +735,7 @@ function FinancialStep({ data, updateData, errors }: { data: WizardData; updateD
               <option key={month.value} value={month.value}>{month.label}</option>
             ))}
           </select>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
             Most South African companies use February
           </p>
         </div>
@@ -768,7 +768,7 @@ function FinancialStep({ data, updateData, errors }: { data: WizardData; updateD
             max="100"
             step="0.5"
           />
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
             South Africa standard VAT is 15%
           </p>
         </div>
@@ -787,7 +787,7 @@ function FinancialStep({ data, updateData, errors }: { data: WizardData; updateD
         </div>
       </div>
 
-      <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-6">
+      <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-4">
         <h3 className="font-semibold text-blue-900 dark:text-blue-300 mb-2">Financial Year Information</h3>
         <p className="text-sm text-blue-700 dark:text-blue-400">
           Your financial year will run from {months.find(m => m.value === String(parseInt(data.financialYearEnd) + 1).padStart(2, '0'))?.label || 'March'} to {months.find(m => m.value === data.financialYearEnd)?.label}.
@@ -802,11 +802,11 @@ function ChartOfAccountsStep({ data, updateData }: { data: WizardData; updateDat
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Chart of Accounts</h2>
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Chart of Accounts</h2>
         <p className="text-gray-600 dark:text-gray-400">Select a template that best fits your business type</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         {COA_TEMPLATES.map(template => (
           <div
             key={template.id}
@@ -841,7 +841,7 @@ function ChartOfAccountsStep({ data, updateData }: { data: WizardData; updateDat
         ))}
       </div>
 
-      <div className="bg-amber-50 dark:bg-amber-900/20 rounded-xl p-6">
+      <div className="bg-amber-50 dark:bg-amber-900/20 rounded-xl p-4">
         <h3 className="font-semibold text-amber-900 dark:text-amber-300 mb-2">Note</h3>
         <p className="text-sm text-amber-700 dark:text-amber-400">
           You can customize your chart of accounts after setup is complete. The template provides a starting point 
@@ -872,14 +872,14 @@ function TaxRatesStep({ data, updateData }: { data: WizardData; updateData: (upd
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Tax Rates</h2>
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Tax Rates</h2>
         <p className="text-gray-600 dark:text-gray-400">Configure your VAT and tax rates</p>
       </div>
 
       <div className="space-y-4">
         {data.taxRates.map((rate, index) => (
           <div key={index} className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Name</label>
                 <input
@@ -953,14 +953,14 @@ function PaymentTermsStep({ data, updateData }: { data: WizardData; updateData: 
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Payment Terms</h2>
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Payment Terms</h2>
         <p className="text-gray-600 dark:text-gray-400">Configure your invoice payment terms</p>
       </div>
 
       <div className="space-y-4">
         {data.paymentTerms.map((term, index) => (
           <div key={index} className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Name</label>
                 <input
@@ -1065,12 +1065,12 @@ function BankingStep({ data, updateData, errors }: { data: WizardData; updateDat
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Bank Accounts</h2>
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Bank Accounts</h2>
         <p className="text-gray-600 dark:text-gray-400">Add your company bank accounts for payments and reconciliation</p>
       </div>
 
       {data.bankAccounts.map((account, index) => (
-        <div key={index} className="p-6 bg-gray-50 dark:bg-gray-700/50 rounded-xl space-y-4">
+        <div key={index} className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="font-semibold text-gray-900 dark:text-white">Bank Account {index + 1}</h3>
             {data.bankAccounts.length > 1 && (
@@ -1083,7 +1083,7 @@ function BankingStep({ data, updateData, errors }: { data: WizardData; updateDat
             )}
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Bank Name</label>
               <select
@@ -1188,7 +1188,7 @@ function UsersStep({ data, updateData }: { data: WizardData; updateData: (update
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Users & Roles</h2>
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Users & Roles</h2>
         <p className="text-gray-600 dark:text-gray-400">Invite team members to your ARIA workspace</p>
       </div>
 
@@ -1217,7 +1217,7 @@ function UsersStep({ data, updateData }: { data: WizardData; updateData: (update
         <div className="space-y-4">
           {data.users.map((user, index) => (
             <div key={index} className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Name</label>
                   <input
@@ -1268,7 +1268,7 @@ function UsersStep({ data, updateData }: { data: WizardData; updateData: (update
         </div>
       )}
 
-      <p className="text-sm text-gray-500 dark:text-gray-400">
+      <p className="text-xs text-gray-500 dark:text-gray-400">
         Team members will receive an email invitation to join your ARIA workspace.
         You can also add more users later from the Admin settings.
       </p>
@@ -1286,7 +1286,7 @@ function EmailTemplatesStep({ data, updateData }: { data: WizardData; updateData
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Email Templates</h2>
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Email Templates</h2>
         <p className="text-gray-600 dark:text-gray-400">Customize your invoice and reminder email templates</p>
       </div>
 
@@ -1301,7 +1301,7 @@ function EmailTemplatesStep({ data, updateData }: { data: WizardData; updateData
         </div>
       </div>
 
-      <div className="space-y-6">
+      <div className="space-y-3">
         <div>
           <h3 className="font-semibold text-gray-900 dark:text-white mb-4">Invoice Email</h3>
           <div className="space-y-4">
@@ -1361,7 +1361,7 @@ function CompleteStep({ data }: { data: WizardData }) {
         <div className="w-20 h-20 bg-gradient-to-br from-green-400 to-emerald-500 rounded-2xl flex items-center justify-center mx-auto mb-6">
           <CheckCircle className="w-10 h-10 text-white" />
         </div>
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Ready to Go!</h2>
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Ready to Go!</h2>
         <p className="text-gray-600 dark:text-gray-400">Review your settings and complete the setup</p>
       </div>
 
@@ -1372,7 +1372,7 @@ function CompleteStep({ data }: { data: WizardData }) {
             Company
           </h3>
           <p className="text-gray-600 dark:text-gray-400">{data.companyName || 'Not set'}</p>
-          <p className="text-sm text-gray-500 dark:text-gray-500">{data.city}, {data.province}</p>
+          <p className="text-xs text-gray-500 dark:text-gray-500">{data.city}, {data.province}</p>
         </div>
 
         <div className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
@@ -1381,7 +1381,7 @@ function CompleteStep({ data }: { data: WizardData }) {
             Financial Year
           </h3>
           <p className="text-gray-600 dark:text-gray-400">Ends in month {data.financialYearEnd}</p>
-          <p className="text-sm text-gray-500 dark:text-gray-500">Currency: {data.currency}</p>
+          <p className="text-xs text-gray-500 dark:text-gray-500">Currency: {data.currency}</p>
         </div>
 
         <div className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
@@ -1423,7 +1423,7 @@ function CompleteStep({ data }: { data: WizardData }) {
         </div>
       </div>
 
-      <div className="bg-green-50 dark:bg-green-900/20 rounded-xl p-6 text-center">
+      <div className="bg-green-50 dark:bg-green-900/20 rounded-xl p-4 text-center">
         <p className="text-green-800 dark:text-green-300">
           Click "Complete Setup" to save your settings and start using ARIA.
           You can always modify these settings later from the Admin menu.

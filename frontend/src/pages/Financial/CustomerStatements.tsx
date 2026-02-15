@@ -107,38 +107,38 @@ export default function CustomerStatements() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4">
+      <div className="mx-auto space-y-3">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
           <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent">Customer Statements</h1>
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent">Customer Statements</h1>
             <p className="text-gray-500 dark:text-gray-400 mt-1">Generate and send account statements to customers</p>
           </div>
           <div className="flex items-center gap-3">
             <button onClick={fetchData} className="p-3 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-200 dark:border-gray-700"><RefreshCw className={`h-5 w-5 text-gray-600 dark:text-gray-400 ${loading ? 'animate-spin' : ''}`} /></button>
-            <button onClick={() => setShowGenerateModal(true)} disabled={selectedCustomers.length === 0} className="flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-indigo-600 to-violet-600 text-white rounded-xl font-medium hover:from-indigo-700 hover:to-violet-700 transition-all shadow-lg shadow-indigo-500/30 disabled:opacity-50 disabled:cursor-not-allowed"><FileText className="h-5 w-5" />Generate Statements ({selectedCustomers.length})</button>
+            <button onClick={() => setShowGenerateModal(true)} disabled={selectedCustomers.length === 0} className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-600 to-violet-600 text-white rounded-xl font-medium hover:from-indigo-700 hover:to-violet-700 transition-all  disabled:opacity-50 disabled:cursor-not-allowed"><FileText className="h-5 w-5" />Generate Statements ({selectedCustomers.length})</button>
           </div>
         </div>
 
         {error && (<div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl flex items-center gap-3"><AlertCircle className="h-5 w-5 text-red-500" /><p className="text-red-700 dark:text-red-300">{error}</p><button onClick={() => setError(null)} className="ml-auto p-1 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg"><X className="h-4 w-4 text-red-500" /></button></div>)}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
-            <div className="flex items-center gap-4"><div className="p-3 bg-gradient-to-br from-indigo-500 to-violet-500 rounded-xl shadow-lg shadow-indigo-500/30"><Users className="h-6 w-6 text-white" /></div><div><p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.totalCustomers}</p><p className="text-sm text-gray-500 dark:text-gray-400">Total Customers</p></div></div>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
+            <div className="flex items-center gap-3"><div className="p-2 bg-gradient-to-br from-indigo-500 to-violet-500 rounded-xl "><Users className="h-5 w-5 text-white" /></div><div><p className="text-xl font-bold text-gray-900 dark:text-white">{stats.totalCustomers}</p><p className="text-xs text-gray-500 dark:text-gray-400">Total Customers</p></div></div>
           </div>
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
-            <div className="flex items-center gap-4"><div className="p-3 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl shadow-lg shadow-blue-500/30"><DollarSign className="h-6 w-6 text-white" /></div><div><p className="text-2xl font-bold text-gray-900 dark:text-white">{formatCurrency(stats.totalOutstanding)}</p><p className="text-sm text-gray-500 dark:text-gray-400">Total Outstanding</p></div></div>
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
+            <div className="flex items-center gap-3"><div className="p-2 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl "><DollarSign className="h-5 w-5 text-white" /></div><div><p className="text-xl font-bold text-gray-900 dark:text-white">{formatCurrency(stats.totalOutstanding)}</p><p className="text-xs text-gray-500 dark:text-gray-400">Total Outstanding</p></div></div>
           </div>
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
-            <div className="flex items-center gap-4"><div className="p-3 bg-gradient-to-br from-red-500 to-rose-500 rounded-xl shadow-lg shadow-red-500/30"><Clock className="h-6 w-6 text-white" /></div><div><p className="text-2xl font-bold text-red-600 dark:text-red-400">{formatCurrency(stats.totalOverdue)}</p><p className="text-sm text-gray-500 dark:text-gray-400">Total Overdue</p></div></div>
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
+            <div className="flex items-center gap-3"><div className="p-2 bg-gradient-to-br from-red-500 to-rose-500 rounded-xl "><Clock className="h-5 w-5 text-white" /></div><div><p className="text-2xl font-bold text-red-600 dark:text-red-400">{formatCurrency(stats.totalOverdue)}</p><p className="text-xs text-gray-500 dark:text-gray-400">Total Overdue</p></div></div>
           </div>
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
-            <div className="flex items-center gap-4"><div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg shadow-green-500/30"><Send className="h-6 w-6 text-white" /></div><div><p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.statementsSent}</p><p className="text-sm text-gray-500 dark:text-gray-400">Statements Sent</p></div></div>
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
+            <div className="flex items-center gap-3"><div className="p-2 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl "><Send className="h-5 w-5 text-white" /></div><div><p className="text-xl font-bold text-gray-900 dark:text-white">{stats.statementsSent}</p><p className="text-xs text-gray-500 dark:text-gray-400">Statements Sent</p></div></div>
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
-          <div className="p-5 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+          <div className="p-3 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Customers</h2>
             <button onClick={selectAll} className="text-sm text-indigo-600 dark:text-indigo-400 hover:underline">{selectedCustomers.length === customers.length ? 'Deselect All' : 'Select All'}</button>
           </div>
@@ -152,7 +152,7 @@ export default function CustomerStatements() {
                   {customers.map((customer) => (
                     <tr key={customer.id} className={`hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors ${selectedCustomers.includes(customer.id) ? 'bg-indigo-50 dark:bg-indigo-900/20' : ''}`}>
                       <td className="px-6 py-4"><input type="checkbox" checked={selectedCustomers.includes(customer.id)} onChange={() => toggleCustomer(customer.id)} className="rounded border-gray-300 dark:border-gray-600 text-indigo-600 focus:ring-indigo-500" /></td>
-                      <td className="px-6 py-4"><div className="font-semibold text-gray-900 dark:text-white">{customer.name}</div><div className="text-sm text-gray-500 dark:text-gray-400">{customer.email}</div></td>
+                      <td className="px-6 py-4"><div className="font-semibold text-gray-900 dark:text-white">{customer.name}</div><div className="text-xs text-gray-500 dark:text-gray-400">{customer.email}</div></td>
                       <td className="px-6 py-4 text-right font-semibold text-gray-900 dark:text-white">{formatCurrency(customer.outstanding_balance)}</td>
                       <td className="px-6 py-4 text-right"><span className={customer.overdue_amount > 0 ? 'text-red-600 dark:text-red-400 font-semibold' : 'text-gray-600 dark:text-gray-400'}>{formatCurrency(customer.overdue_amount)}</span></td>
                       <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{customer.last_statement_date ? formatDate(customer.last_statement_date) : 'Never'}</td>
@@ -164,8 +164,8 @@ export default function CustomerStatements() {
           )}
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
-          <div className="p-5 border-b border-gray-100 dark:border-gray-700"><h2 className="text-lg font-semibold text-gray-900 dark:text-white">Recent Statements</h2></div>
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+          <div className="p-3 border-b border-gray-100 dark:border-gray-700"><h2 className="text-lg font-semibold text-gray-900 dark:text-white">Recent Statements</h2></div>
           {statements.length === 0 ? (
             <div className="p-12 text-center"><div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-2xl flex items-center justify-center mx-auto mb-4"><FileText className="h-8 w-8 text-gray-400" /></div><h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No statements yet</h3><p className="text-gray-500 dark:text-gray-400">Select customers and generate statements</p></div>
           ) : (
@@ -196,19 +196,19 @@ export default function CustomerStatements() {
 
         {showGenerateModal && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setShowGenerateModal(false)}>
-            <div onClick={(e) => e.stopPropagation()} className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
-              <div className="bg-gradient-to-r from-indigo-600 to-violet-600 text-white p-6">
+            <div onClick={(e) => e.stopPropagation()} className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-md overflow-hidden">
+              <div className="bg-gradient-to-r from-indigo-600 to-violet-600 text-white p-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3"><div className="p-2 bg-white/20 rounded-lg"><FileText className="h-6 w-6" /></div><div><h2 className="text-xl font-semibold">Generate Statements</h2><p className="text-white/80 text-sm">{selectedCustomers.length} customers selected</p></div></div>
                   <button onClick={() => setShowGenerateModal(false)} className="p-2 hover:bg-white/20 rounded-lg transition-colors"><X className="h-5 w-5" /></button>
                 </div>
               </div>
-              <div className="p-6 space-y-4">
+              <div className="p-4 space-y-4">
                 <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Statement Date</label><div className="relative"><Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" /><input type="date" value={statementDate} onChange={(e) => setStatementDate(e.target.value)} className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all" /></div></div>
                 <div className="bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-800 rounded-xl p-4"><p className="text-sm text-indigo-700 dark:text-indigo-300">Statements will be generated for {selectedCustomers.length} customers showing all transactions up to {formatDate(statementDate)}.</p></div>
                 <div className="flex gap-3 pt-4">
-                  <button onClick={handleGenerateStatements} className="flex-1 px-6 py-3 bg-gradient-to-r from-indigo-600 to-violet-600 text-white rounded-xl font-medium hover:from-indigo-700 hover:to-violet-700 transition-all shadow-lg shadow-indigo-500/30">Generate & Send</button>
-                  <button onClick={() => setShowGenerateModal(false)} className="px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">Cancel</button>
+                  <button onClick={handleGenerateStatements} className="flex-1 px-4 py-2 bg-gradient-to-r from-indigo-600 to-violet-600 text-white rounded-xl font-medium hover:from-indigo-700 hover:to-violet-700 transition-all ">Generate & Send</button>
+                  <button onClick={() => setShowGenerateModal(false)} className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">Cancel</button>
                 </div>
               </div>
             </div>

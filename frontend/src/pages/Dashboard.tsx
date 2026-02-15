@@ -111,7 +111,7 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-slate-800 flex items-center justify-center">
+      <div className="bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-slate-800 flex items-center justify-center">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
           <p className="text-gray-600 dark:text-gray-300">Loading dashboard...</p>
@@ -121,12 +121,12 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-slate-800 p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
+    <div className="bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-slate-800 p-4">
+      <div className="mx-auto space-y-3">
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
           <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
               {getGreeting()}
             </h1>
             <p className="text-gray-600 dark:text-gray-400 mt-1 flex items-center gap-2">
@@ -145,42 +145,42 @@ export default function Dashboard() {
         </div>
 
         {/* Modern Stat Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="group relative overflow-hidden bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-slate-700" data-testid="metric-cost-saved">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          <div className="group relative overflow-hidden bg-white dark:bg-slate-800 rounded-xl p-3 shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-slate-700" data-testid="metric-cost-saved">
             <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-500/10 to-transparent rounded-full -mr-16 -mt-16" />
             <div className="relative">
               <div className="flex items-center justify-between mb-4">
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/30">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center ">
                   <DollarSign className="w-6 h-6 text-white" />
                 </div>
                 <ArrowUpRight className="w-5 h-5 text-emerald-500" />
               </div>
               <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Receivables</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">{formatCurrency(stats?.total_receivables || 0)}</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white mt-1">{formatCurrency(stats?.total_receivables || 0)}</p>
               <p className="text-xs text-orange-500 mt-2">Overdue: {formatCurrency(stats?.overdue_receivables || 0)}</p>
             </div>
           </div>
 
-          <div className="group relative overflow-hidden bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-slate-700" data-testid="metric-expenses">
+          <div className="group relative overflow-hidden bg-white dark:bg-slate-800 rounded-xl p-3 shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-slate-700" data-testid="metric-expenses">
             <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-orange-500/10 to-transparent rounded-full -mr-16 -mt-16" />
             <div className="relative">
               <div className="flex items-center justify-between mb-4">
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center shadow-lg shadow-orange-500/30">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center ">
                   <AlertCircle className="w-6 h-6 text-white" />
                 </div>
                 <ArrowDownRight className="w-5 h-5 text-red-500" />
               </div>
               <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Payables</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">{formatCurrency(stats?.total_payables || 0)}</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white mt-1">{formatCurrency(stats?.total_payables || 0)}</p>
               <p className="text-xs text-red-500 mt-2">Overdue: {formatCurrency(stats?.overdue_payables || 0)}</p>
             </div>
           </div>
 
-          <div className="group relative overflow-hidden bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-slate-700" data-testid="metric-revenue">
+          <div className="group relative overflow-hidden bg-white dark:bg-slate-800 rounded-xl p-3 shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-slate-700" data-testid="metric-revenue">
             <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-emerald-500/10 to-transparent rounded-full -mr-16 -mt-16" />
             <div className="relative">
               <div className="flex items-center justify-between mb-4">
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center shadow-lg shadow-emerald-500/30">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center ">
                   <TrendingUp className="w-6 h-6 text-white" />
                 </div>
                 <span className="flex items-center text-emerald-500 text-sm font-medium">
@@ -189,29 +189,29 @@ export default function Dashboard() {
                 </span>
               </div>
               <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Revenue (MTD)</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">{formatCurrency(stats?.total_revenue || 0)}</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white mt-1">{formatCurrency(stats?.total_revenue || 0)}</p>
               <p className="text-xs text-emerald-500 mt-2">Growth this month</p>
             </div>
           </div>
 
-          <div className="group relative overflow-hidden bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-slate-700" data-testid="metric-profit">
+          <div className="group relative overflow-hidden bg-white dark:bg-slate-800 rounded-xl p-3 shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-slate-700" data-testid="metric-profit">
             <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-purple-500/10 to-transparent rounded-full -mr-16 -mt-16" />
             <div className="relative">
               <div className="flex items-center justify-between mb-4">
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center shadow-lg shadow-purple-500/30">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center ">
                   <Wallet className="w-6 h-6 text-white" />
                 </div>
                 <Activity className="w-5 h-5 text-purple-500" />
               </div>
               <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Profit (MTD)</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">{formatCurrency(stats?.profit || 0)}</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white mt-1">{formatCurrency(stats?.profit || 0)}</p>
               <p className="text-xs text-purple-500 mt-2">Net profit this month</p>
             </div>
           </div>
         </div>
 
         {/* Cash Flow Summary - Modern Card */}
-        <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-slate-700">
+        <div className="bg-white dark:bg-slate-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-slate-700">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
               <BarChart3 className="w-5 h-5 text-blue-500" />
@@ -219,7 +219,7 @@ export default function Dashboard() {
             </h2>
             <span className="text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-slate-700 px-3 py-1 rounded-full">This Month</span>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
             <div className="text-center p-4 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-800">
               <ArrowUpRight className="w-8 h-8 text-emerald-500 mx-auto mb-2" />
               <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Cash In</p>
@@ -243,7 +243,7 @@ export default function Dashboard() {
         {/* Actionable Widgets - Pending Approvals & Alerts */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Pending Approvals */}
-          <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-slate-700">
+          <div className="bg-white dark:bg-slate-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-slate-700">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
                 <Clock className="w-5 h-5 text-amber-500" />
@@ -292,7 +292,7 @@ export default function Dashboard() {
           </div>
 
           {/* System Alerts */}
-          <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-slate-700">
+          <div className="bg-white dark:bg-slate-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-slate-700">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
                 <AlertTriangle className="w-5 h-5 text-red-500" />
@@ -345,7 +345,7 @@ export default function Dashboard() {
 
         {/* Recent Activity Cards */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-slate-700">
+          <div className="bg-white dark:bg-slate-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-slate-700">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
                 <FileText className="w-5 h-5 text-blue-500" />
@@ -386,7 +386,7 @@ export default function Dashboard() {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-slate-700">
+          <div className="bg-white dark:bg-slate-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-slate-700">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
                 <CreditCard className="w-5 h-5 text-emerald-500" />
@@ -423,9 +423,9 @@ export default function Dashboard() {
         </div>
 
         {/* Quick Actions */}
-        <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-slate-700">
+        <div className="bg-white dark:bg-slate-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-slate-700">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Quick Actions</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             <a href="/quotes/new" className="flex flex-col items-center p-4 rounded-xl bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors group">
               <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
                 <FileText className="w-6 h-6 text-white" />
@@ -475,14 +475,14 @@ function StatCard({ title, value, icon: Icon, color, subtitle, testId }: StatCar
   }
 
   return (
-    <div className="bg-white rounded-lg shadow p-6" data-testid={testId}>
+    <div className="bg-white rounded-lg shadow p-4" data-testid={testId}>
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-sm font-medium text-gray-600">{title}</h3>
         <div className={`p-2 rounded-lg ${colors[color as keyof typeof colors]}`}>
           <Icon className="h-5 w-5" />
         </div>
       </div>
-      <p className="text-2xl font-bold text-gray-900">{value}</p>
+      <p className="text-xl font-bold text-gray-900">{value}</p>
       {subtitle && <p className="text-sm text-gray-600 mt-1">{subtitle}</p>}
     </div>
   )

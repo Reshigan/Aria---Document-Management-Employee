@@ -190,7 +190,7 @@ export default function SalesOrderDetail() {
         </div>
         <button
           onClick={() => navigate('/erp/sales-orders')}
-          className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-medium hover:from-blue-600 hover:to-blue-700 shadow-lg shadow-blue-500/30 transition-all"
+          className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-medium hover:from-blue-600 hover:to-blue-700  transition-all"
         >
           Back to Sales Orders
         </button>
@@ -202,8 +202,8 @@ export default function SalesOrderDetail() {
   const fulfillmentProgress = calculateFulfillmentProgress();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 p-6">
-      <div className="max-w-7xl mx-auto">
+    <div className="bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 p-4">
+      <div className="mx-auto">
       {/* Header */}
       <div className="mb-8">
         <div className="flex gap-2 mb-4">
@@ -223,12 +223,12 @@ export default function SalesOrderDetail() {
           </button>
         </div>
 
-        <div className="flex justify-between items-start flex-wrap gap-4">
+        <div className="flex justify-between items-start flex-wrap gap-3">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+            <h1 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
               Sales Order {order.order_number}
             </h1>
-            <div className="flex items-center gap-4 flex-wrap">
+            <div className="flex items-center gap-3 flex-wrap">
               <span className={`px-3 py-1 rounded-full text-sm font-medium ${
                 order.status === 'draft' ? 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300' :
                 order.status === 'approved' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300' :
@@ -239,11 +239,11 @@ export default function SalesOrderDetail() {
                 {order.status.toUpperCase()}
               </span>
               {order.quote_number && (
-                <span className="text-sm text-gray-500 dark:text-gray-400">
+                <span className="text-xs text-gray-500 dark:text-gray-400">
                   From Quote: <a href={`/erp/quotes/${order.quote_id}`} className="text-blue-600 dark:text-blue-400 underline">{order.quote_number}</a>
                 </span>
               )}
-              <span className="text-sm text-gray-500 dark:text-gray-400">
+              <span className="text-xs text-gray-500 dark:text-gray-400">
                 Created {new Date(order.created_at).toLocaleDateString()}
               </span>
             </div>
@@ -255,14 +255,14 @@ export default function SalesOrderDetail() {
               <>
                 <button
                   onClick={handleApprove}
-                  className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl text-sm font-medium hover:from-blue-600 hover:to-blue-700 shadow-lg shadow-blue-500/30 transition-all"
+                  className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl text-sm font-medium hover:from-blue-600 hover:to-blue-700  transition-all"
                 >
                   <Check size={16} />
                   Approve
                 </button>
                 <button
                   onClick={handleDelete}
-                  className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-xl text-sm font-medium hover:from-red-600 hover:to-red-700 shadow-lg shadow-red-500/30 transition-all"
+                  className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-xl text-sm font-medium hover:from-red-600 hover:to-red-700  transition-all"
                 >
                   <Trash2 size={16} />
                   Delete
@@ -272,7 +272,7 @@ export default function SalesOrderDetail() {
             {(order.status === 'approved' || order.status === 'in_progress') && (
               <button
                 onClick={handleCreateDelivery}
-                className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-xl text-sm font-medium hover:from-emerald-600 hover:to-emerald-700 shadow-lg shadow-emerald-500/30 transition-all"
+                className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-xl text-sm font-medium hover:from-emerald-600 hover:to-emerald-700  transition-all"
               >
                 <Truck size={16} />
                 Create Delivery
@@ -284,7 +284,7 @@ export default function SalesOrderDetail() {
 
       {/* Fulfillment Progress */}
       {order.status !== 'draft' && (
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 mb-6">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 mb-6">
           <div className="flex justify-between mb-2">
             <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Fulfillment Progress</span>
             <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{Number(fulfillmentProgress ?? 0).toFixed(0)}%</span>
@@ -302,12 +302,12 @@ export default function SalesOrderDetail() {
         {/* Main Content */}
         <div className="lg:col-span-2 flex flex-col gap-6">
           {/* Order Details Card */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4">
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Order Details</h2>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
               <div>
-                <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">Customer</div>
+                <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Customer</div>
                 <div className="font-medium text-gray-900 dark:text-white flex items-center gap-2">
                   <User size={16} className="text-gray-400" />
                   {order.customer_name}
@@ -315,12 +315,12 @@ export default function SalesOrderDetail() {
               </div>
               {order.customer_email && (
                 <div>
-                  <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">Email</div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Email</div>
                   <div className="font-medium text-gray-900 dark:text-white">{order.customer_email}</div>
                 </div>
               )}
               <div>
-                <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">Order Date</div>
+                <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Order Date</div>
                 <div className="font-medium text-gray-900 dark:text-white flex items-center gap-2">
                   <Calendar size={16} className="text-gray-400" />
                   {new Date(order.order_date).toLocaleDateString()}
@@ -328,7 +328,7 @@ export default function SalesOrderDetail() {
               </div>
               {order.required_date && (
                 <div>
-                  <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">Required Date</div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Required Date</div>
                   <div className="font-medium text-gray-900 dark:text-white flex items-center gap-2">
                     <Calendar size={16} className="text-gray-400" />
                     {new Date(order.required_date).toLocaleDateString()}
@@ -346,7 +346,7 @@ export default function SalesOrderDetail() {
           </div>
 
           {/* Line Items */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4">
             <LineItemsTable
               items={order.lines}
               onChange={() => {}}
@@ -356,17 +356,17 @@ export default function SalesOrderDetail() {
           </div>
 
           {/* Audit Trail */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4">
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Audit Trail</h2>
             <div className="flex flex-col gap-3">
               <div className="flex justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
-                <span className="text-sm text-gray-500 dark:text-gray-400">Created</span>
+                <span className="text-xs text-gray-500 dark:text-gray-400">Created</span>
                 <span className="text-sm font-medium text-gray-900 dark:text-white">
                   {new Date(order.created_at).toLocaleString()}
                 </span>
               </div>
               <div className="flex justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
-                <span className="text-sm text-gray-500 dark:text-gray-400">Last Updated</span>
+                <span className="text-xs text-gray-500 dark:text-gray-400">Last Updated</span>
                 <span className="text-sm font-medium text-gray-900 dark:text-white">
                   {new Date(order.updated_at).toLocaleString()}
                 </span>
@@ -396,13 +396,13 @@ export default function SalesOrderDetail() {
           />
 
           {/* Deliveries */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
               <Truck size={18} />
               Deliveries ({deliveries.length})
             </h3>
             {deliveries.length === 0 ? (
-              <p className="text-sm text-gray-500 dark:text-gray-400">No deliveries yet</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">No deliveries yet</p>
             ) : (
               <div className="flex flex-col gap-3">
                 {deliveries.map((delivery) => (
@@ -425,13 +425,13 @@ export default function SalesOrderDetail() {
           </div>
 
           {/* Invoices */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
               <FileText size={18} />
               Invoices ({invoices.length})
             </h3>
             {invoices.length === 0 ? (
-              <p className="text-sm text-gray-500 dark:text-gray-400">No invoices yet</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">No invoices yet</p>
             ) : (
               <div className="flex flex-col gap-3">
                 {invoices.map((invoice) => (
@@ -464,29 +464,29 @@ export default function SalesOrderDetail() {
           </div>
 
           {/* Quick Stats */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Order Summary</h3>
             <div className="flex flex-col gap-3">
               <div className="flex justify-between">
-                <span className="text-sm text-gray-500 dark:text-gray-400">Total Items</span>
+                <span className="text-xs text-gray-500 dark:text-gray-400">Total Items</span>
                 <span className="text-sm font-medium text-gray-900 dark:text-white">
                   {order.lines.reduce((sum, line) => sum + line.quantity, 0)}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-sm text-gray-500 dark:text-gray-400">Items Delivered</span>
+                <span className="text-xs text-gray-500 dark:text-gray-400">Items Delivered</span>
                 <span className="text-sm font-medium text-emerald-600 dark:text-emerald-400">
                   {order.lines.reduce((sum, line) => sum + line.quantity_delivered, 0)}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-sm text-gray-500 dark:text-gray-400">Items Remaining</span>
+                <span className="text-xs text-gray-500 dark:text-gray-400">Items Remaining</span>
                 <span className="text-sm font-medium text-amber-600 dark:text-amber-400">
                   {order.lines.reduce((sum, line) => sum + line.quantity_remaining, 0)}
                 </span>
               </div>
               <div className="flex justify-between pt-3 border-t border-gray-200 dark:border-gray-700">
-                <span className="text-sm text-gray-500 dark:text-gray-400">Order Value</span>
+                <span className="text-xs text-gray-500 dark:text-gray-400">Order Value</span>
                 <span className="text-base font-semibold text-gray-900 dark:text-white">
                   R {Number(order.total_amount ?? 0).toFixed(2)}
                 </span>

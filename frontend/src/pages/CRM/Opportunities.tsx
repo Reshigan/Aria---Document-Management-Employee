@@ -235,7 +235,7 @@ const Opportunities: React.FC = () => {
             <Grid item xs={12} sm={6}><TextField fullWidth label="Probability (%)" type="number" value={formData.probability || ''} onChange={(e) => setFormData({ ...formData, probability: Number(e.target.value) })} /></Grid>
             <Grid item xs={12} sm={6}><TextField fullWidth label="Expected Close Date" type="date" InputLabelProps={{ shrink: true }} value={formData.expectedCloseDate || ''} onChange={(e) => setFormData({ ...formData, expectedCloseDate: e.target.value })} /></Grid>
             <Grid item xs={12} sm={6}><TextField fullWidth label="Assigned To" value={formData.assignedTo || ''} onChange={(e) => setFormData({ ...formData, assignedTo: e.target.value })} /></Grid>
-            <Grid item xs={12}><TextField fullWidth label="Notes" multiline rows={3} value={formData.notes || ''} onChange={(e) => setFormData({ ...formData, notes: e.target.value })} /></Grid>
+            <Grid item xs={12}><TextField fullWidth label="Notes" multiline rows={2} value={formData.notes || ''} onChange={(e) => setFormData({ ...formData, notes: e.target.value })} /></Grid>
           </Grid>
         </DialogContent>
         <DialogActions>

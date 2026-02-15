@@ -92,10 +92,10 @@ export default function ExpenseManagementReportPage() {
   ] : [];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6">
-      <div className="max-w-7xl mx-auto">
+    <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4">
+      <div className="mx-auto">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent flex items-center gap-3">
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent flex items-center gap-3">
             <Receipt className="h-8 w-8 text-indigo-600" />
             Expense Management Report
           </h1>
@@ -140,9 +140,9 @@ export default function ExpenseManagementReportPage() {
           <>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
               {stats.map((stat) => (
-                <div key={stat.label} className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
+                <div key={stat.label} className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
                   <div className="text-sm font-medium text-gray-600 dark:text-gray-400">{stat.label}</div>
-                  <div className={`text-3xl font-bold mt-2 ${
+                  <div className={`text-2xl font-bold mt-2 ${
                     stat.color === 'indigo' ? 'text-indigo-600 dark:text-indigo-400' :
                     stat.color === 'green' ? 'text-green-600 dark:text-green-400' :
                     stat.color === 'yellow' ? 'text-yellow-600 dark:text-yellow-400' :
@@ -152,7 +152,7 @@ export default function ExpenseManagementReportPage() {
               ))}
             </div>
 
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6 mb-6">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 mb-6">
               <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Auto-Coding Accuracy: {summary?.auto_coding_accuracy || 0}%</h3>
               <p className="text-gray-600 dark:text-gray-400">{summary?.auto_coded_count || 0} of {summary?.total_claims || 0} claims auto-coded successfully</p>
               <div className="mt-4 w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
@@ -163,7 +163,7 @@ export default function ExpenseManagementReportPage() {
               </div>
             </div>
 
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
               <DataTable data={claims} columns={[
                 { key: 'employee', label: 'Employee' },
                 { key: 'department', label: 'Department' },

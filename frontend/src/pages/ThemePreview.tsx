@@ -4,8 +4,8 @@ import { MainLayout } from '../components/layout/MainLayout';
 const ThemePreview: React.FC = () => {
   return (
     <MainLayout>
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-8">
-        <div className="max-w-6xl mx-auto">
+      <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-8">
+        <div className="mx-auto">
           {/* Header */}
           <div className="mb-8">
             <h1 className="text-4xl font-bold mb-2" style={{ color: 'var(--color-primary)' }}>
@@ -17,11 +17,11 @@ const ThemePreview: React.FC = () => {
           </div>
 
           {/* Color Palette */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700-md p-6 mb-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700-md p-4 mb-6">
             <h2 className="text-2xl font-semibold mb-4" style={{ color: 'var(--color-primary)' }}>
               Color Palette
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
               <div className="text-center">
                 <div 
                   className="h-24 rounded-lg mb-2 flex items-center justify-center text-white font-bold"
@@ -56,7 +56,7 @@ const ThemePreview: React.FC = () => {
           </div>
 
           {/* Theme Features */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700-md p-6 mb-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700-md p-4 mb-6">
             <h2 className="text-2xl font-semibold mb-4" style={{ color: 'var(--color-primary)' }}>
               Theme Features
             </h2>
@@ -121,13 +121,13 @@ const ThemePreview: React.FC = () => {
           </div>
 
           {/* Buttons */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700-md p-6 mb-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700-md p-4 mb-6">
             <h2 className="text-2xl font-semibold mb-4" style={{ color: 'var(--color-primary)' }}>
               Button Styles
             </h2>
-            <div className="flex flex-wrap gap-4">
+            <div className="flex flex-wrap gap-3">
               <button 
-                className="px-6 py-3 rounded-lg font-semibold text-white transition-colors"
+                className="px-4 py-2 rounded-lg font-semibold text-white transition-colors"
                 style={{ backgroundColor: 'var(--color-accent)' }}
                 onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--color-accent-light)'}
                 onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--color-accent)'}
@@ -135,7 +135,7 @@ const ThemePreview: React.FC = () => {
                 Primary Button
               </button>
               <button 
-                className="px-6 py-3 rounded-lg font-semibold text-white transition-colors"
+                className="px-4 py-2 rounded-lg font-semibold text-white transition-colors"
                 style={{ backgroundColor: 'var(--color-primary)' }}
                 onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--color-primary-light)'}
                 onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--color-primary)'}
@@ -143,7 +143,7 @@ const ThemePreview: React.FC = () => {
                 Secondary Button
               </button>
               <button 
-                className="px-6 py-3 rounded-lg font-semibold transition-colors border-2"
+                className="px-4 py-2 rounded-lg font-semibold transition-colors border-2"
                 style={{ 
                   borderColor: 'var(--color-accent)',
                   color: 'var(--color-accent)'
@@ -155,27 +155,27 @@ const ThemePreview: React.FC = () => {
           </div>
 
           {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700-md p-6 border-l-4" style={{ borderColor: 'var(--color-accent)' }}>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-6 mb-6">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700-md p-4 border-l-4" style={{ borderColor: 'var(--color-accent)' }}>
               <h3 className="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-2">Total Agents</h3>
-              <p className="text-3xl font-bold" style={{ color: 'var(--color-primary)' }}>67</p>
+              <p className="text-2xl font-bold" style={{ color: 'var(--color-primary)' }}>67</p>
               <p className="text-sm" style={{ color: 'var(--color-accent)' }}>+12% this month</p>
             </div>
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700-md p-6 border-l-4" style={{ borderColor: 'var(--color-accent)' }}>
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700-md p-4 border-l-4" style={{ borderColor: 'var(--color-accent)' }}>
               <h3 className="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-2">ERP Modules</h3>
-              <p className="text-3xl font-bold" style={{ color: 'var(--color-primary)' }}>8</p>
+              <p className="text-2xl font-bold" style={{ color: 'var(--color-primary)' }}>8</p>
               <p className="text-sm" style={{ color: 'var(--color-accent)' }}>All Active</p>
             </div>
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700-md p-6 border-l-4" style={{ borderColor: 'var(--color-accent)' }}>
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700-md p-4 border-l-4" style={{ borderColor: 'var(--color-accent)' }}>
               <h3 className="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-2">Confidence</h3>
-              <p className="text-3xl font-bold" style={{ color: 'var(--color-primary)' }}>94%</p>
+              <p className="text-2xl font-bold" style={{ color: 'var(--color-primary)' }}>94%</p>
               <p className="text-sm" style={{ color: 'var(--color-accent)' }}>Excellent</p>
             </div>
           </div>
 
           {/* Sidebar Instructions */}
           <div 
-            className="rounded-xl shadow-lg p-6 text-white"
+            className="rounded-lg p-4 text-white"
             style={{ backgroundColor: 'var(--color-primary)' }}
           >
             <h2 className="text-2xl font-semibold mb-4">

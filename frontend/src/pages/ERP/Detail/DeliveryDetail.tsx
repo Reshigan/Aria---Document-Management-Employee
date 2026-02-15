@@ -80,19 +80,19 @@ export default function DeliveryDetail() {
   const [refreshKey, setRefreshKey] = useState(0);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-teal-50 dark:from-gray-900 dark:to-gray-800">
+    <div className="bg-gradient-to-br from-gray-50 to-teal-50 dark:from-gray-900 dark:to-gray-800">
       <DocumentDetail config={config} key={refreshKey} />
       
       {id && (
         <div className="p-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
               Comments & Activity
             </h2>
             <CommentSection documentType="deliveries" documentId={id} />
           </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
               Attachments
             </h2>

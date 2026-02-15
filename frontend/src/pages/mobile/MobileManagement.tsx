@@ -97,11 +97,11 @@ export default function MobileManagement() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 p-6 lg:p-8">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+    <div className="bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 p-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3 mb-2">
-            <div className="p-2 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl shadow-lg shadow-blue-500/30">
+          <h1 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-3 mb-2">
+            <div className="p-2 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl ">
               <Smartphone className="h-7 w-7 text-white" />
             </div>
             Mobile Management
@@ -125,7 +125,7 @@ export default function MobileManagement() {
 
       {/* Mobile Analytics */}
       <div className="grid grid-cols-4 gap-6 mb-6" data-testid="mobile-analytics">
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white rounded-lg shadow p-4">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600">Devices</p>
@@ -135,7 +135,7 @@ export default function MobileManagement() {
           </div>
         </div>
         
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white rounded-lg shadow p-4">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600">Sync Sessions</p>
@@ -145,7 +145,7 @@ export default function MobileManagement() {
           </div>
         </div>
         
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white rounded-lg shadow p-4">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600">Storage Used</p>
@@ -155,7 +155,7 @@ export default function MobileManagement() {
           </div>
         </div>
         
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white rounded-lg shadow p-4">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600">Events</p>
@@ -167,7 +167,7 @@ export default function MobileManagement() {
       </div>
 
       {/* Analytics Chart */}
-      <div className="bg-white rounded-lg shadow p-6 mb-6" data-testid="analytics-chart">
+      <div className="bg-white rounded-lg shadow p-4 mb-6" data-testid="analytics-chart">
         <h3 className="text-lg font-semibold mb-4">Mobile Activity</h3>
         <div className="h-64 flex items-center justify-center bg-gray-50 rounded">
           <p className="text-gray-500">Activity chart placeholder</p>
@@ -176,7 +176,7 @@ export default function MobileManagement() {
 
       <div className="grid grid-cols-3 gap-6">
         {/* Mobile Device Manager */}
-        <div className="bg-white rounded-lg shadow p-6" data-testid="mobile-device-manager">
+        <div className="bg-white rounded-lg shadow p-4" data-testid="mobile-device-manager">
           <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
             <Smartphone className="h-5 w-5" />
             Devices
@@ -202,7 +202,7 @@ export default function MobileManagement() {
         </div>
 
         {/* Sync Monitor */}
-        <div className="bg-white rounded-lg shadow p-6" data-testid="sync-monitor">
+        <div className="bg-white rounded-lg shadow p-4" data-testid="sync-monitor">
           <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
             <RefreshCw className="h-5 w-5" />
             Sync Monitor
@@ -238,7 +238,7 @@ export default function MobileManagement() {
         </div>
 
         {/* Offline Document Manager */}
-        <div className="bg-white rounded-lg shadow p-6" data-testid="offline-document-manager">
+        <div className="bg-white rounded-lg shadow p-4" data-testid="offline-document-manager">
           <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
             <Download className="h-5 w-5" />
             Offline Documents

@@ -394,11 +394,11 @@ const CRMDashboard: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-6 lg:p-8">
+    <div className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-4">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3 mb-2">
-          <div className="p-2 bg-gradient-to-br from-rose-500 to-pink-500 rounded-xl shadow-lg shadow-rose-500/30">
+        <h1 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-3 mb-2">
+          <div className="p-2 bg-gradient-to-br from-rose-500 to-pink-500 rounded-xl ">
             <Users className="h-7 w-7 text-white" />
           </div>
           CRM
@@ -441,7 +441,7 @@ const CRMDashboard: React.FC = () => {
       {activeTab === 'leads' && (
         <div>
           {/* Actions Bar */}
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
             <div className="relative w-full sm:w-80">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
               <input
@@ -454,7 +454,7 @@ const CRMDashboard: React.FC = () => {
             </div>
             <button
               onClick={handleCreateLead}
-              className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-rose-500 to-pink-500 text-white rounded-xl font-semibold shadow-lg shadow-rose-500/30 hover:shadow-xl hover:shadow-rose-500/40 transition-all"
+              className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-rose-500 to-pink-500 text-white rounded-xl font-semibold  hover:shadow-xl hover:shadow-rose-500/40 transition-all"
             >
               <Plus className="h-5 w-5" />
               New Lead
@@ -462,7 +462,7 @@ const CRMDashboard: React.FC = () => {
           </div>
 
           {/* Leads Table */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
             <table className="w-full">
               <thead className="bg-gray-50 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700">
                 <tr>
@@ -513,7 +513,7 @@ const CRMDashboard: React.FC = () => {
       {activeTab === 'opportunities' && (
         <div>
           {/* Actions Bar */}
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
             <div className="relative w-full sm:w-80">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
               <input
@@ -526,7 +526,7 @@ const CRMDashboard: React.FC = () => {
             </div>
             <button
               onClick={handleCreateOpportunity}
-              className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-rose-500 to-pink-500 text-white rounded-xl font-semibold shadow-lg shadow-rose-500/30 hover:shadow-xl hover:shadow-rose-500/40 transition-all"
+              className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-rose-500 to-pink-500 text-white rounded-xl font-semibold  hover:shadow-xl hover:shadow-rose-500/40 transition-all"
             >
               <Plus className="h-5 w-5" />
               New Opportunity
@@ -534,44 +534,44 @@ const CRMDashboard: React.FC = () => {
           </div>
 
           {/* Pipeline Summary */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-gradient-to-br from-rose-500 to-pink-500 rounded-xl shadow-lg shadow-rose-500/30">
-                  <DollarSign className="h-6 w-6 text-white" />
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-6">
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-gradient-to-br from-rose-500 to-pink-500 rounded-xl ">
+                  <DollarSign className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">{formatCurrency(opportunities.reduce((sum, o) => sum + Number(o.amount ?? 0), 0))}</p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Total Pipeline</p>
+                  <p className="text-xl font-bold text-gray-900 dark:text-white">{formatCurrency(opportunities.reduce((sum, o) => sum + Number(o.amount ?? 0), 0))}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Total Pipeline</p>
                 </div>
               </div>
             </div>
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl shadow-lg shadow-blue-500/30">
-                  <TrendingUp className="h-6 w-6 text-white" />
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl ">
+                  <TrendingUp className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">{formatCurrency(opportunities.reduce((sum, o) => sum + (Number(o.amount ?? 0) * Number(o.probability ?? 0) / 100), 0))}</p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Weighted Value</p>
+                  <p className="text-xl font-bold text-gray-900 dark:text-white">{formatCurrency(opportunities.reduce((sum, o) => sum + (Number(o.amount ?? 0) * Number(o.probability ?? 0) / 100), 0))}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Weighted Value</p>
                 </div>
               </div>
             </div>
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-gradient-to-br from-emerald-500 to-green-500 rounded-xl shadow-lg shadow-emerald-500/30">
-                  <Target className="h-6 w-6 text-white" />
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-gradient-to-br from-emerald-500 to-green-500 rounded-xl ">
+                  <Target className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">{opportunities.filter(o => o.status === 'OPEN').length}</p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Open Opportunities</p>
+                  <p className="text-xl font-bold text-gray-900 dark:text-white">{opportunities.filter(o => o.status === 'OPEN').length}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Open Opportunities</p>
                 </div>
               </div>
             </div>
           </div>
 
           {/* Opportunities Table */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
             <table className="w-full">
               <thead className="bg-gray-50 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700">
                 <tr>
@@ -624,7 +624,7 @@ const CRMDashboard: React.FC = () => {
       {activeTab === 'customers' && (
         <div>
           {/* Actions Bar */}
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
             <div className="relative w-full sm:w-80">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
               <input
@@ -637,7 +637,7 @@ const CRMDashboard: React.FC = () => {
             </div>
             <button
               onClick={handleCreateCustomer}
-              className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-rose-500 to-pink-500 text-white rounded-xl font-semibold shadow-lg shadow-rose-500/30 hover:shadow-xl hover:shadow-rose-500/40 transition-all"
+              className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-rose-500 to-pink-500 text-white rounded-xl font-semibold  hover:shadow-xl hover:shadow-rose-500/40 transition-all"
             >
               <Plus className="h-5 w-5" />
               New Customer
@@ -645,7 +645,7 @@ const CRMDashboard: React.FC = () => {
           </div>
 
           {/* Customers Table */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
             <table className="w-full">
               <thead className="bg-gray-50 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700">
                 <tr>
@@ -695,13 +695,13 @@ const CRMDashboard: React.FC = () => {
       {showLeadModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white dark:bg-gray-800 rounded-2xl w-full max-w-xl max-h-[90vh] overflow-auto shadow-2xl">
-            <div className="p-6 border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-gradient-to-r from-rose-500 to-pink-500 rounded-t-2xl">
+            <div className="p-4 border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-gradient-to-r from-rose-500 to-pink-500 rounded-t-2xl">
               <h2 className="text-xl font-bold text-white flex items-center gap-3">
                 <Target className="h-6 w-6" />
                 {editingLead ? 'Edit Lead' : 'New Lead'}
               </h2>
             </div>
-            <div className="p-6 space-y-4">
+            <div className="p-4 space-y-4">
               <div>
                 <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Company Name *</label>
                 <input
@@ -720,7 +720,7 @@ const CRMDashboard: React.FC = () => {
                   className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-rose-500"
                 />
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Email *</label>
                   <input
@@ -740,7 +740,7 @@ const CRMDashboard: React.FC = () => {
                   />
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Company Size</label>
                   <select
@@ -768,7 +768,7 @@ const CRMDashboard: React.FC = () => {
                   </select>
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Budget Range</label>
                   <select
@@ -797,16 +797,16 @@ const CRMDashboard: React.FC = () => {
                 </div>
               </div>
             </div>
-            <div className="p-6 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3 sticky bottom-0 bg-white dark:bg-gray-800 rounded-b-2xl">
+            <div className="p-4 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3 sticky bottom-0 bg-white dark:bg-gray-800 rounded-b-2xl">
               <button
                 onClick={() => setShowLeadModal(false)}
-                className="px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-semibold hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-semibold hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSaveLead}
-                className="px-6 py-3 bg-gradient-to-r from-rose-500 to-pink-500 text-white rounded-xl font-semibold shadow-lg shadow-rose-500/30 hover:shadow-xl hover:shadow-rose-500/40 transition-all"
+                className="px-4 py-2 bg-gradient-to-r from-rose-500 to-pink-500 text-white rounded-xl font-semibold  hover:shadow-xl hover:shadow-rose-500/40 transition-all"
               >
                 {editingLead ? 'Update' : 'Create'}
               </button>
@@ -819,13 +819,13 @@ const CRMDashboard: React.FC = () => {
       {showOppModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white dark:bg-gray-800 rounded-2xl w-full max-w-xl max-h-[90vh] overflow-auto shadow-2xl">
-            <div className="p-6 border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-gradient-to-r from-rose-500 to-pink-500 rounded-t-2xl">
+            <div className="p-4 border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-gradient-to-r from-rose-500 to-pink-500 rounded-t-2xl">
               <h2 className="text-xl font-bold text-white flex items-center gap-3">
                 <DollarSign className="h-6 w-6" />
                 {editingOpp ? 'Edit Opportunity' : 'New Opportunity'}
               </h2>
             </div>
-            <div className="p-6 space-y-4">
+            <div className="p-4 space-y-4">
               <div>
                 <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Title *</label>
                 <input
@@ -835,7 +835,7 @@ const CRMDashboard: React.FC = () => {
                   className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-rose-500"
                 />
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Customer ID *</label>
                   <input
@@ -856,7 +856,7 @@ const CRMDashboard: React.FC = () => {
                   />
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Stage</label>
                   <select
@@ -894,16 +894,16 @@ const CRMDashboard: React.FC = () => {
                 />
               </div>
             </div>
-            <div className="p-6 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3 sticky bottom-0 bg-white dark:bg-gray-800 rounded-b-2xl">
+            <div className="p-4 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3 sticky bottom-0 bg-white dark:bg-gray-800 rounded-b-2xl">
               <button
                 onClick={() => setShowOppModal(false)}
-                className="px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-semibold hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-semibold hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSaveOpportunity}
-                className="px-6 py-3 bg-gradient-to-r from-rose-500 to-pink-500 text-white rounded-xl font-semibold shadow-lg shadow-rose-500/30 hover:shadow-xl hover:shadow-rose-500/40 transition-all"
+                className="px-4 py-2 bg-gradient-to-r from-rose-500 to-pink-500 text-white rounded-xl font-semibold  hover:shadow-xl hover:shadow-rose-500/40 transition-all"
               >
                 {editingOpp ? 'Update' : 'Create'}
               </button>
@@ -916,13 +916,13 @@ const CRMDashboard: React.FC = () => {
       {showCustomerModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white dark:bg-gray-800 rounded-2xl w-full max-w-xl max-h-[90vh] overflow-auto shadow-2xl">
-            <div className="p-6 border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-gradient-to-r from-rose-500 to-pink-500 rounded-t-2xl">
+            <div className="p-4 border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-gradient-to-r from-rose-500 to-pink-500 rounded-t-2xl">
               <h2 className="text-xl font-bold text-white flex items-center gap-3">
                 <Building2 className="h-6 w-6" />
                 {editingCustomer ? 'Edit Customer' : 'New Customer'}
               </h2>
             </div>
-            <div className="p-6 space-y-4">
+            <div className="p-4 space-y-4">
               <div>
                 <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Customer Name *</label>
                 <input
@@ -941,7 +941,7 @@ const CRMDashboard: React.FC = () => {
                   className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-rose-500"
                 />
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Email *</label>
                   <input
@@ -961,7 +961,7 @@ const CRMDashboard: React.FC = () => {
                   />
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">BBBEE Level</label>
                   <input
@@ -996,16 +996,16 @@ const CRMDashboard: React.FC = () => {
                 </label>
               </div>
             </div>
-            <div className="p-6 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3 sticky bottom-0 bg-white dark:bg-gray-800 rounded-b-2xl">
+            <div className="p-4 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3 sticky bottom-0 bg-white dark:bg-gray-800 rounded-b-2xl">
               <button
                 onClick={() => setShowCustomerModal(false)}
-                className="px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-semibold hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-semibold hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSaveCustomer}
-                className="px-6 py-3 bg-gradient-to-r from-rose-500 to-pink-500 text-white rounded-xl font-semibold shadow-lg shadow-rose-500/30 hover:shadow-xl hover:shadow-rose-500/40 transition-all"
+                className="px-4 py-2 bg-gradient-to-r from-rose-500 to-pink-500 text-white rounded-xl font-semibold  hover:shadow-xl hover:shadow-rose-500/40 transition-all"
               >
                 {editingCustomer ? 'Update' : 'Create'}
               </button>

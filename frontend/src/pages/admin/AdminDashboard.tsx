@@ -67,16 +67,16 @@ export default function AdminDashboard() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 container mx-auto p-6 max-w-7xl">
+    <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 container mx-auto p-4">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent flex items-center gap-3">
+        <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent flex items-center gap-3">
           <Activity className="h-8 w-8 text-blue-600 dark:text-blue-400" />
           Admin Dashboard
         </h1>
@@ -89,12 +89,12 @@ export default function AdminDashboard() {
           <Database className="h-5 w-5" />
           Master Data
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600 dark:text-gray-400">Companies</p>
-                <p className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{metrics?.master_data.companies || 0}</p>
+                <p className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{metrics?.master_data.companies || 0}</p>
               </div>
               <div className="bg-blue-100 dark:bg-blue-900/30 rounded-full p-3">
                 <Server className="h-6 w-6 text-blue-600 dark:text-blue-400" />
@@ -102,11 +102,11 @@ export default function AdminDashboard() {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600 dark:text-gray-400">Customers</p>
-                <p className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{metrics?.master_data.customers || 0}</p>
+                <p className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{metrics?.master_data.customers || 0}</p>
               </div>
               <div className="bg-green-100 dark:bg-green-900/30 rounded-full p-3">
                 <Users className="h-6 w-6 text-green-600 dark:text-green-400" />
@@ -114,11 +114,11 @@ export default function AdminDashboard() {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600 dark:text-gray-400">Suppliers</p>
-                <p className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{metrics?.master_data.suppliers || 0}</p>
+                <p className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{metrics?.master_data.suppliers || 0}</p>
               </div>
               <div className="bg-purple-100 dark:bg-purple-900/30 rounded-full p-3">
                 <Users className="h-6 w-6 text-purple-600 dark:text-purple-400" />
@@ -126,11 +126,11 @@ export default function AdminDashboard() {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600 dark:text-gray-400">Products</p>
-                <p className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{metrics?.master_data.products || 0}</p>
+                <p className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{metrics?.master_data.products || 0}</p>
               </div>
               <div className="bg-orange-100 rounded-full p-3">
                 <HardDrive className="h-6 w-6 text-orange-600" />
@@ -146,12 +146,12 @@ export default function AdminDashboard() {
           <TrendingUp className="h-5 w-5" />
           Transactions
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600 dark:text-gray-400">Quotes</p>
-                <p className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{metrics?.transactions.quotes || 0}</p>
+                <p className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{metrics?.transactions.quotes || 0}</p>
               </div>
               <div className="bg-blue-100 dark:bg-blue-900/30 rounded-full p-3">
                 <CheckCircle className="h-6 w-6 text-blue-600 dark:text-blue-400" />
@@ -159,11 +159,11 @@ export default function AdminDashboard() {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600 dark:text-gray-400">Sales Orders</p>
-                <p className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{metrics?.transactions.sales_orders || 0}</p>
+                <p className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{metrics?.transactions.sales_orders || 0}</p>
               </div>
               <div className="bg-green-100 dark:bg-green-900/30 rounded-full p-3">
                 <CheckCircle className="h-6 w-6 text-green-600 dark:text-green-400" />
@@ -171,11 +171,11 @@ export default function AdminDashboard() {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600 dark:text-gray-400">Deliveries</p>
-                <p className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{metrics?.transactions.deliveries || 0}</p>
+                <p className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{metrics?.transactions.deliveries || 0}</p>
               </div>
               <div className="bg-purple-100 dark:bg-purple-900/30 rounded-full p-3">
                 <CheckCircle className="h-6 w-6 text-purple-600 dark:text-purple-400" />
@@ -191,12 +191,12 @@ export default function AdminDashboard() {
           <Agent className="h-5 w-5" />
           Automation
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600 dark:text-gray-400">Total Agents</p>
-                <p className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{metrics?.automation.total_bots || 67}</p>
+                <p className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{metrics?.automation.total_bots || 67}</p>
               </div>
               <div className="bg-indigo-100 dark:bg-indigo-900/30 rounded-full p-3">
                 <Agent className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
@@ -204,11 +204,11 @@ export default function AdminDashboard() {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600 dark:text-gray-400">Enabled Agents</p>
-                <p className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{metrics?.automation.enabled_bots || 67}</p>
+                <p className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{metrics?.automation.enabled_bots || 67}</p>
               </div>
               <div className="bg-green-100 dark:bg-green-900/30 rounded-full p-3">
                 <CheckCircle className="h-6 w-6 text-green-600 dark:text-green-400" />
@@ -216,11 +216,11 @@ export default function AdminDashboard() {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600 dark:text-gray-400">Executions Today</p>
-                <p className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{performance?.bot_executions_today || 0}</p>
+                <p className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{performance?.bot_executions_today || 0}</p>
               </div>
               <div className="bg-yellow-100 dark:bg-yellow-900/30 rounded-full p-3">
                 <Zap className="h-6 w-6 text-yellow-600 dark:text-yellow-400" />
@@ -236,12 +236,12 @@ export default function AdminDashboard() {
           <Cpu className="h-5 w-5" />
           System Performance
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600 dark:text-gray-400">Uptime</p>
-                <p className="text-3xl font-bold text-green-600 dark:text-green-400">{performance?.uptime_percent || 99.9}%</p>
+                <p className="text-2xl font-bold text-green-600 dark:text-green-400">{performance?.uptime_percent || 99.9}%</p>
               </div>
               <div className="bg-green-100 dark:bg-green-900/30 rounded-full p-3">
                 <CheckCircle className="h-6 w-6 text-green-600 dark:text-green-400" />
@@ -249,11 +249,11 @@ export default function AdminDashboard() {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600 dark:text-gray-400">Avg Response</p>
-                <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">{performance?.avg_response_time_ms || 250}ms</p>
+                <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">{performance?.avg_response_time_ms || 250}ms</p>
               </div>
               <div className="bg-blue-100 dark:bg-blue-900/30 rounded-full p-3">
                 <Clock className="h-6 w-6 text-blue-600 dark:text-blue-400" />
@@ -261,11 +261,11 @@ export default function AdminDashboard() {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600 dark:text-gray-400">Error Rate</p>
-                <p className="text-3xl font-bold text-yellow-600 dark:text-yellow-400">{performance?.error_rate_percent || 0.5}%</p>
+                <p className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">{performance?.error_rate_percent || 0.5}%</p>
               </div>
               <div className="bg-yellow-100 dark:bg-yellow-900/30 rounded-full p-3">
                 <AlertCircle className="h-6 w-6 text-yellow-600 dark:text-yellow-400" />
@@ -273,11 +273,11 @@ export default function AdminDashboard() {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600 dark:text-gray-400">Active Users</p>
-                <p className="text-3xl font-bold text-purple-600 dark:text-purple-400">{performance?.active_users_today || 0}</p>
+                <p className="text-2xl font-bold text-purple-600 dark:text-purple-400">{performance?.active_users_today || 0}</p>
               </div>
               <div className="bg-purple-100 dark:bg-purple-900/30 rounded-full p-3">
                 <Users className="h-6 w-6 text-purple-600 dark:text-purple-400" />
@@ -288,9 +288,9 @@ export default function AdminDashboard() {
       </div>
 
       {/* Quick Actions */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
         <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Quick Actions</h2>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
           <a
             href="/admin/agents"
             className="flex items-center gap-3 p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900 transition-colors"

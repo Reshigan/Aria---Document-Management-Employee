@@ -418,7 +418,7 @@ export default function InvoiceDetail() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
           <TransactionCard title="Invoice Information">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <TransactionField
                 label="Customer"
                 type="select"
@@ -461,7 +461,7 @@ export default function InvoiceDetail() {
                 type="textarea"
                 value={termsAndConditions}
                 onChange={setTermsAndConditions}
-                rows={3}
+                rows={2}
                 disabled={invoice?.status !== 'draft' && !isNew}
               />
             </div>
@@ -552,7 +552,7 @@ export default function InvoiceDetail() {
               <button
                 onClick={handleCreateReceipt}
                 disabled={loading}
-                className={`w-full py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-xl text-sm font-medium flex items-center justify-center gap-2 hover:from-emerald-600 hover:to-emerald-700 shadow-lg shadow-emerald-500/30 transition-all ${loading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                className={`w-full py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-xl text-sm font-medium flex items-center justify-center gap-2 hover:from-emerald-600 hover:to-emerald-700  transition-all ${loading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
               >
                 <DollarSign size={16} />
                 Record Payment
@@ -582,7 +582,7 @@ export default function InvoiceDetail() {
       {/* Email Modal */}
       {showEmailModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 w-full max-w-[600px] max-h-[90vh] overflow-auto shadow-2xl">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-3 w-full max-w-[600px] max-h-[90vh] overflow-auto shadow-2xl">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-xl font-semibold text-gray-900 dark:text-white flex items-center gap-2">
                 <Mail size={20} />
@@ -592,7 +592,7 @@ export default function InvoiceDetail() {
                 <X size={20} />
               </button>
             </div>
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-3">
               <div>
                 <label className="block mb-2 font-medium text-gray-700 dark:text-gray-300">To *</label>
                 <input
@@ -635,7 +635,7 @@ export default function InvoiceDetail() {
               <button
                 onClick={handleSendEmail}
                 disabled={sendingEmail || !emailTo}
-                className={`px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-medium flex items-center gap-2 hover:from-blue-600 hover:to-blue-700 shadow-lg shadow-blue-500/30 transition-all ${sendingEmail || !emailTo ? 'opacity-50 cursor-not-allowed' : ''}`}
+                className={`px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-medium flex items-center gap-2 hover:from-blue-600 hover:to-blue-700  transition-all ${sendingEmail || !emailTo ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
                 <Mail size={16} />
                 {sendingEmail ? 'Sending...' : 'Send Email'}

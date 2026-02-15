@@ -75,8 +75,8 @@ const PricingComplete: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 py-12 px-4">
-      <div className="max-w-7xl mx-auto">
+    <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 py-12 px-4">
+      <div className="mx-auto">
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
             Simple, Transparent Pricing
@@ -86,11 +86,11 @@ const PricingComplete: React.FC = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
           {tiers.map((tier) => (
             <div
               key={tier.name}
-              className={`relative bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 ${
+              className={`relative bg-white dark:bg-gray-800 rounded-xl shadow-sm p-8 ${
                 tier.popular ? 'ring-2 ring-blue-600 scale-105' : ''
               }`}
             >
@@ -146,7 +146,7 @@ const PricingComplete: React.FC = () => {
           <p className="text-gray-600 dark:text-gray-400 mb-4">
             All plans include 14-day free trial • No credit card required
           </p>
-          <p className="text-sm text-gray-500 dark:text-gray-500">
+          <p className="text-xs text-gray-500 dark:text-gray-500">
             Need a custom plan? <a href="#" className="text-blue-600 hover:text-blue-700 font-semibold">Contact our sales team</a>
           </p>
         </div>

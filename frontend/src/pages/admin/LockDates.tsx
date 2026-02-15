@@ -99,10 +99,10 @@ export default function LockDates() {
   };
 
   return (
-    <div className="p-6 space-y-6 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 min-h-screen">
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <div className="p-4 space-y-3 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
         <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent">
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent">
             Lock Dates & Financial Settings
           </h1>
           <p className="text-gray-500 dark:text-gray-400 mt-1">
@@ -125,8 +125,8 @@ export default function LockDates() {
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="space-y-6">
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
+          <div className="space-y-3">
+            <div className="bg-white dark:bg-gray-800 rounded-lg overflow-hidden">
               <div className="bg-gradient-to-r from-red-500 to-orange-500 text-white p-4">
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-white/20 rounded-lg"><Lock className="h-6 w-6" /></div>
@@ -136,9 +136,9 @@ export default function LockDates() {
                   </div>
                 </div>
               </div>
-              <div className="p-6 space-y-6">
+              <div className="p-4 space-y-3">
                 <div className="p-4 bg-gradient-to-r from-red-50 to-orange-50 dark:from-red-900/20 dark:to-orange-900/20 rounded-lg border border-red-200 dark:border-red-800">
-                  <div className="flex items-start gap-4">
+                  <div className="flex items-start gap-3">
                     <div className="p-2 bg-red-100 dark:bg-red-900/50 rounded-lg"><Users className="h-5 w-5 text-red-600" /></div>
                     <div className="flex-1">
                       <label className="text-base font-semibold text-red-900 dark:text-red-100">Lock Date (All Users)</label>
@@ -153,7 +153,7 @@ export default function LockDates() {
                   </div>
                 </div>
                 <div className="p-4 bg-gradient-to-r from-amber-50 to-yellow-50 dark:from-amber-900/20 dark:to-yellow-900/20 rounded-lg border border-amber-200 dark:border-amber-800">
-                  <div className="flex items-start gap-4">
+                  <div className="flex items-start gap-3">
                     <div className="p-2 bg-amber-100 dark:bg-amber-900/50 rounded-lg"><UserCog className="h-5 w-5 text-amber-600" /></div>
                     <div className="flex-1">
                       <label className="text-base font-semibold text-amber-900 dark:text-amber-100">Lock Date (Non-Admin)</label>
@@ -169,14 +169,14 @@ export default function LockDates() {
                 </div>
               </div>
             </div>
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
+            <div className="bg-white dark:bg-gray-800 rounded-lg overflow-hidden">
               <div className="bg-gradient-to-r from-blue-500 to-indigo-500 text-white p-4">
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-white/20 rounded-lg"><History className="h-6 w-6" /></div>
                   <div><h2 className="text-lg font-semibold">Conversion Date</h2><p className="text-white/80 text-sm">The date you started using ARIA ERP</p></div>
                 </div>
               </div>
-              <div className="p-6 space-y-4">
+              <div className="p-4 space-y-4">
                 <div className="space-y-2">
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Conversion Date</label>
                   <input type="date" value={settings.conversion_date || ''} onChange={(e) => setSettings({ ...settings, conversion_date: e.target.value || null })} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white" />
@@ -184,16 +184,16 @@ export default function LockDates() {
               </div>
             </div>
           </div>
-          <div className="space-y-6">
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
+          <div className="space-y-3">
+            <div className="bg-white dark:bg-gray-800 rounded-lg overflow-hidden">
               <div className="bg-gradient-to-r from-green-500 to-emerald-500 text-white p-4">
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-white/20 rounded-lg"><Calendar className="h-6 w-6" /></div>
                   <div><h2 className="text-lg font-semibold">Financial Year</h2><p className="text-white/80 text-sm">Configure your accounting period</p></div>
                 </div>
               </div>
-              <div className="p-6 space-y-6">
-                <div className="grid grid-cols-2 gap-4">
+              <div className="p-4 space-y-3">
+                <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-2">
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Start Month</label>
                     <select value={settings.financial_year_start_month} onChange={(e) => setSettings({ ...settings, financial_year_start_month: parseInt(e.target.value) })} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
@@ -213,7 +213,7 @@ export default function LockDates() {
                 </div>
               </div>
             </div>
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
+            <div className="bg-white dark:bg-gray-800 rounded-lg overflow-hidden">
               <div className="bg-gradient-to-r from-purple-500 to-violet-500 text-white p-4">
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-white/20 rounded-lg"><span className="text-xl font-bold">R</span></div>

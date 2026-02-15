@@ -213,8 +213,8 @@ export default function Customers() {
 
     return (
       <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
-        <div onClick={(e) => e.stopPropagation()} className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden">
-          <div className="bg-gradient-to-r from-cyan-600 to-blue-600 text-white p-6">
+        <div onClick={(e) => e.stopPropagation()} className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden">
+          <div className="bg-gradient-to-r from-cyan-600 to-blue-600 text-white p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-white/20 rounded-lg"><Users className="h-6 w-6" /></div>
@@ -228,7 +228,7 @@ export default function Customers() {
           </div>
 
           <form onSubmit={handleSubmit} className="overflow-y-auto max-h-[calc(90vh-180px)]">
-            <div className="p-6 space-y-6">
+            <div className="p-4 space-y-3">
               {error && (
                 <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl flex items-center gap-3">
                   <AlertCircle className="h-5 w-5 text-red-500 flex-shrink-0" />
@@ -241,7 +241,7 @@ export default function Customers() {
                   <span className="w-6 h-6 rounded-full bg-cyan-100 dark:bg-cyan-900/50 text-cyan-600 dark:text-cyan-400 flex items-center justify-center text-xs">1</span>
                   Basic Information
                 </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Customer Name *</label>
                     <input type="text" value={formData.name || ''} onChange={(e) => setFormData({ ...formData, name: e.target.value })} required className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all" placeholder="Enter customer name" />
@@ -266,7 +266,7 @@ export default function Customers() {
                   <span className="w-6 h-6 rounded-full bg-cyan-100 dark:bg-cyan-900/50 text-cyan-600 dark:text-cyan-400 flex items-center justify-center text-xs">2</span>
                   Address Information
                 </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <div className="md:col-span-2">
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Street Address</label>
                     <input type="text" value={formData.address || ''} onChange={(e) => setFormData({ ...formData, address: e.target.value })} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all" placeholder="123 Main Street" />
@@ -291,7 +291,7 @@ export default function Customers() {
                   <span className="w-6 h-6 rounded-full bg-cyan-100 dark:bg-cyan-900/50 text-cyan-600 dark:text-cyan-400 flex items-center justify-center text-xs">3</span>
                   Payment Terms
                 </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Payment Terms</label>
                     <select value={formData.payment_terms || 'Net 30'} onChange={(e) => setFormData({ ...formData, payment_terms: e.target.value })} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all">
@@ -317,9 +317,9 @@ export default function Customers() {
               </div>
             </div>
 
-            <div className="p-6 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 flex justify-end gap-3">
-              <button type="button" onClick={onClose} className="px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">Cancel</button>
-              <button type="submit" className="px-6 py-3 bg-gradient-to-r from-cyan-600 to-blue-600 text-white rounded-xl font-medium hover:from-cyan-700 hover:to-blue-700 transition-all shadow-lg shadow-cyan-500/30">{isEdit ? 'Update Customer' : 'Create Customer'}</button>
+            <div className="p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 flex justify-end gap-3">
+              <button type="button" onClick={onClose} className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">Cancel</button>
+              <button type="submit" className="px-4 py-2 bg-gradient-to-r from-cyan-600 to-blue-600 text-white rounded-xl font-medium hover:from-cyan-700 hover:to-blue-700 transition-all ">{isEdit ? 'Update Customer' : 'Create Customer'}</button>
             </div>
           </form>
         </div>
@@ -332,8 +332,8 @@ export default function Customers() {
 
     return (
       <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setShowDetailModal(false)}>
-        <div onClick={(e) => e.stopPropagation()} className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-6xl max-h-[90vh] overflow-hidden">
-          <div className="bg-gradient-to-r from-cyan-600 to-blue-600 text-white p-6">
+        <div onClick={(e) => e.stopPropagation()} className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-h-[90vh] overflow-hidden">
+          <div className="bg-gradient-to-r from-cyan-600 to-blue-600 text-white p-4">
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-xl font-semibold">{selectedCustomer.name}</h2>
@@ -343,9 +343,9 @@ export default function Customers() {
             </div>
           </div>
 
-          <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
+          <div className="p-4 overflow-y-auto max-h-[calc(90vh-120px)]">
             {customerStats && (
-              <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
+              <div className="grid grid-cols-1 md:grid-cols-5 gap-3 mb-6">
                 <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-xl border border-blue-100 dark:border-blue-800">
                   <div className="text-sm text-blue-600 dark:text-blue-400 font-medium">Total Quotes</div>
                   <div className="text-2xl font-bold text-blue-900 dark:text-blue-100 mt-1">{customerStats.total_quotes}</div>
@@ -373,17 +373,17 @@ export default function Customers() {
               <div className="bg-gray-50 dark:bg-gray-900/50 rounded-xl p-5">
                 <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4">Contact Information</h3>
                 <div className="space-y-3">
-                  <div><span className="text-sm text-gray-500 dark:text-gray-400">Email:</span><p className="font-medium text-gray-900 dark:text-white">{selectedCustomer.email}</p></div>
-                  <div><span className="text-sm text-gray-500 dark:text-gray-400">Phone:</span><p className="font-medium text-gray-900 dark:text-white">{selectedCustomer.phone || '-'}</p></div>
-                  <div><span className="text-sm text-gray-500 dark:text-gray-400">Address:</span><p className="font-medium text-gray-900 dark:text-white">{selectedCustomer.address || '-'}, {selectedCustomer.city || ''} {selectedCustomer.postal_code || ''}</p></div>
+                  <div><span className="text-xs text-gray-500 dark:text-gray-400">Email:</span><p className="font-medium text-gray-900 dark:text-white">{selectedCustomer.email}</p></div>
+                  <div><span className="text-xs text-gray-500 dark:text-gray-400">Phone:</span><p className="font-medium text-gray-900 dark:text-white">{selectedCustomer.phone || '-'}</p></div>
+                  <div><span className="text-xs text-gray-500 dark:text-gray-400">Address:</span><p className="font-medium text-gray-900 dark:text-white">{selectedCustomer.address || '-'}, {selectedCustomer.city || ''} {selectedCustomer.postal_code || ''}</p></div>
                 </div>
               </div>
               <div className="bg-gray-50 dark:bg-gray-900/50 rounded-xl p-5">
                 <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4">Payment Details</h3>
                 <div className="space-y-3">
-                  <div><span className="text-sm text-gray-500 dark:text-gray-400">Payment Terms:</span><p className="font-medium text-gray-900 dark:text-white">{selectedCustomer.payment_terms || 'Net 30'}</p></div>
-                  <div><span className="text-sm text-gray-500 dark:text-gray-400">Credit Limit:</span><p className="font-medium text-gray-900 dark:text-white">R {(selectedCustomer.credit_limit || 0).toLocaleString()}</p></div>
-                  <div><span className="text-sm text-gray-500 dark:text-gray-400">VAT Number:</span><p className="font-medium text-gray-900 dark:text-white">{selectedCustomer.tax_number || '-'}</p></div>
+                  <div><span className="text-xs text-gray-500 dark:text-gray-400">Payment Terms:</span><p className="font-medium text-gray-900 dark:text-white">{selectedCustomer.payment_terms || 'Net 30'}</p></div>
+                  <div><span className="text-xs text-gray-500 dark:text-gray-400">Credit Limit:</span><p className="font-medium text-gray-900 dark:text-white">R {(selectedCustomer.credit_limit || 0).toLocaleString()}</p></div>
+                  <div><span className="text-xs text-gray-500 dark:text-gray-400">VAT Number:</span><p className="font-medium text-gray-900 dark:text-white">{selectedCustomer.tax_number || '-'}</p></div>
                 </div>
               </div>
             </div>
@@ -424,18 +424,18 @@ export default function Customers() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-cyan-50 dark:from-gray-900 dark:to-gray-800 p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <div className="bg-gradient-to-br from-gray-50 to-cyan-50 dark:from-gray-900 dark:to-gray-800 p-4">
+      <div className="mx-auto space-y-3">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
           <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-cyan-600 to-blue-600 bg-clip-text text-transparent">Customers</h1>
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-cyan-600 to-blue-600 bg-clip-text text-transparent">Customers</h1>
             <p className="text-gray-500 dark:text-gray-400 mt-1">Manage your customer database</p>
           </div>
           <div className="flex items-center gap-3">
             <button onClick={() => loadCustomers()} className="p-3 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-200 dark:border-gray-700">
               <RefreshCw className={`h-5 w-5 text-gray-600 dark:text-gray-400 ${loading ? 'animate-spin' : ''}`} />
             </button>
-            <button onClick={handleCreate} className="flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-cyan-600 to-blue-600 text-white rounded-xl font-medium hover:from-cyan-700 hover:to-blue-700 transition-all shadow-lg shadow-cyan-500/30">
+            <button onClick={handleCreate} className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-cyan-600 to-blue-600 text-white rounded-xl font-medium hover:from-cyan-700 hover:to-blue-700 transition-all ">
               <Plus className="h-5 w-5" />New Customer
             </button>
           </div>
@@ -449,36 +449,36 @@ export default function Customers() {
           </div>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
-            <div className="flex items-center gap-4">
-              <div className="p-3 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-xl shadow-lg shadow-cyan-500/30"><Users className="h-6 w-6 text-white" /></div>
-              <div><p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.total}</p><p className="text-sm text-gray-500 dark:text-gray-400">Total Customers</p></div>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-xl "><Users className="h-5 w-5 text-white" /></div>
+              <div><p className="text-xl font-bold text-gray-900 dark:text-white">{stats.total}</p><p className="text-xs text-gray-500 dark:text-gray-400">Total Customers</p></div>
             </div>
           </div>
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
-            <div className="flex items-center gap-4">
-              <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg shadow-green-500/30"><CheckCircle className="h-6 w-6 text-white" /></div>
-              <div><p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.active}</p><p className="text-sm text-gray-500 dark:text-gray-400">Active</p></div>
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl "><CheckCircle className="h-5 w-5 text-white" /></div>
+              <div><p className="text-xl font-bold text-gray-900 dark:text-white">{stats.active}</p><p className="text-xs text-gray-500 dark:text-gray-400">Active</p></div>
             </div>
           </div>
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
-            <div className="flex items-center gap-4">
-              <div className="p-3 bg-gradient-to-br from-gray-500 to-gray-600 rounded-xl shadow-lg shadow-gray-500/30"><Building2 className="h-6 w-6 text-white" /></div>
-              <div><p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.inactive}</p><p className="text-sm text-gray-500 dark:text-gray-400">Inactive</p></div>
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-gradient-to-br from-gray-500 to-gray-600 rounded-xl "><Building2 className="h-5 w-5 text-white" /></div>
+              <div><p className="text-xl font-bold text-gray-900 dark:text-white">{stats.inactive}</p><p className="text-xs text-gray-500 dark:text-gray-400">Inactive</p></div>
             </div>
           </div>
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
-            <div className="flex items-center gap-4">
-              <div className="p-3 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl shadow-lg shadow-amber-500/30"><TrendingUp className="h-6 w-6 text-white" /></div>
-              <div><p className="text-2xl font-bold text-gray-900 dark:text-white">R {Number(stats.totalCredit ?? 0).toLocaleString()}</p><p className="text-sm text-gray-500 dark:text-gray-400">Total Credit</p></div>
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl "><TrendingUp className="h-5 w-5 text-white" /></div>
+              <div><p className="text-xl font-bold text-gray-900 dark:text-white">R {Number(stats.totalCredit ?? 0).toLocaleString()}</p><p className="text-xs text-gray-500 dark:text-gray-400">Total Credit</p></div>
             </div>
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
-          <div className="p-5 border-b border-gray-100 dark:border-gray-700">
-            <div className="flex flex-col md:flex-row gap-4">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+          <div className="p-3 border-b border-gray-100 dark:border-gray-700">
+            <div className="flex flex-col md:flex-row gap-3">
               <div className="flex-1 relative">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
                 <input type="text" placeholder="Search by name, email, or code..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-12 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all" />
@@ -502,7 +502,7 @@ export default function Customers() {
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No customers found</h3>
               <p className="text-gray-500 dark:text-gray-400 mb-6">{searchTerm || statusFilter !== 'all' ? 'Try adjusting your filters' : 'Get started by adding your first customer'}</p>
               {!searchTerm && statusFilter === 'all' && (
-                <button onClick={handleCreate} className="px-5 py-3 bg-gradient-to-r from-cyan-600 to-blue-600 text-white rounded-xl font-medium hover:from-cyan-700 hover:to-blue-700 transition-all">Add First Customer</button>
+                <button onClick={handleCreate} className="px-4 py-2 bg-gradient-to-r from-cyan-600 to-blue-600 text-white rounded-xl font-medium hover:from-cyan-700 hover:to-blue-700 transition-all">Add First Customer</button>
               )}
             </div>
           ) : (
@@ -522,10 +522,10 @@ export default function Customers() {
                   {filteredCustomers.map((customer) => (
                     <tr key={customer.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                       <td className="px-6 py-4">
-                        <div><p className="font-semibold text-gray-900 dark:text-white">{customer.name}</p><p className="text-sm text-gray-500 dark:text-gray-400">{customer.code}</p></div>
+                        <div><p className="font-semibold text-gray-900 dark:text-white">{customer.name}</p><p className="text-xs text-gray-500 dark:text-gray-400">{customer.code}</p></div>
                       </td>
                       <td className="px-6 py-4">
-                        <div><p className="text-gray-900 dark:text-white">{customer.email}</p>{customer.phone && (<p className="text-sm text-gray-500 dark:text-gray-400">{customer.phone}</p>)}</div>
+                        <div><p className="text-gray-900 dark:text-white">{customer.email}</p>{customer.phone && (<p className="text-xs text-gray-500 dark:text-gray-400">{customer.phone}</p>)}</div>
                       </td>
                       <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{customer.payment_terms || 'Net 30'}</td>
                       <td className="px-6 py-4 text-right font-semibold text-gray-900 dark:text-white">R {(customer.credit_limit || 0).toLocaleString()}</td>

@@ -379,15 +379,15 @@ const BankingDashboard: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-teal-50 dark:from-gray-900 dark:to-gray-800 p-6">
+    <div className="bg-gradient-to-br from-gray-50 to-teal-50 dark:from-gray-900 dark:to-gray-800 p-4">
       {/* Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-8">
         <div className="flex items-center gap-3">
-          <div className="p-3 bg-gradient-to-br from-teal-500 to-cyan-500 rounded-xl shadow-lg shadow-teal-500/30">
+          <div className="p-2 bg-gradient-to-br from-teal-500 to-cyan-500 rounded-xl ">
             <Landmark className="h-8 w-8 text-white" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Banking & Cash Management</h1>
+            <h1 className="text-xl font-bold text-gray-900 dark:text-white">Banking & Cash Management</h1>
             <p className="text-gray-600 dark:text-gray-400">Manage bank accounts, transactions, and reconciliations</p>
           </div>
         </div>
@@ -401,13 +401,13 @@ const BankingDashboard: React.FC = () => {
       )}
 
       {/* Tabs */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 mb-6">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 mb-6">
         <div className="flex gap-2 p-2">
           <button
             onClick={() => setActiveTab('accounts')}
             className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium transition-all ${
               activeTab === 'accounts'
-                ? 'bg-gradient-to-r from-teal-500 to-cyan-500 text-white shadow-lg shadow-teal-500/30'
+                ? 'bg-gradient-to-r from-teal-500 to-cyan-500 text-white '
                 : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
             }`}
           >
@@ -418,7 +418,7 @@ const BankingDashboard: React.FC = () => {
             onClick={() => setActiveTab('transactions')}
             className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium transition-all ${
               activeTab === 'transactions'
-                ? 'bg-gradient-to-r from-teal-500 to-cyan-500 text-white shadow-lg shadow-teal-500/30'
+                ? 'bg-gradient-to-r from-teal-500 to-cyan-500 text-white '
                 : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
             }`}
           >
@@ -429,7 +429,7 @@ const BankingDashboard: React.FC = () => {
             onClick={() => setActiveTab('reconciliation')}
             className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium transition-all ${
               activeTab === 'reconciliation'
-                ? 'bg-gradient-to-r from-teal-500 to-cyan-500 text-white shadow-lg shadow-teal-500/30'
+                ? 'bg-gradient-to-r from-teal-500 to-cyan-500 text-white '
                 : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
             }`}
           >
@@ -443,7 +443,7 @@ const BankingDashboard: React.FC = () => {
       {activeTab === 'accounts' && (
         <div>
           {/* Actions Bar */}
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-6">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
               <input
@@ -456,7 +456,7 @@ const BankingDashboard: React.FC = () => {
             </div>
             <button
               onClick={handleCreateAccount}
-              className="px-6 py-2.5 bg-gradient-to-r from-teal-500 to-cyan-500 text-white rounded-xl hover:from-teal-600 hover:to-cyan-600 transition-all shadow-lg shadow-teal-500/30 flex items-center gap-2 font-medium"
+              className="px-6 py-2.5 bg-gradient-to-r from-teal-500 to-cyan-500 text-white rounded-xl hover:from-teal-600 hover:to-cyan-600 transition-all  flex items-center gap-2 font-medium"
             >
               <Plus className="h-5 w-5" />
               New Bank Account
@@ -465,56 +465,56 @@ const BankingDashboard: React.FC = () => {
 
           {/* Summary Cards */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-gradient-to-br from-teal-500 to-cyan-500 rounded-xl shadow-lg shadow-teal-500/30">
-                  <CreditCard className="h-6 w-6 text-white" />
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-gradient-to-br from-teal-500 to-cyan-500 rounded-xl ">
+                  <CreditCard className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">{accounts.length}</p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Total Accounts</p>
+                  <p className="text-xl font-bold text-gray-900 dark:text-white">{accounts.length}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Total Accounts</p>
                 </div>
               </div>
             </div>
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg shadow-green-500/30">
-                  <CheckCircle className="h-6 w-6 text-white" />
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl ">
+                  <CheckCircle className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">{accounts.filter(a => a.is_active).length}</p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Active Accounts</p>
+                  <p className="text-xl font-bold text-gray-900 dark:text-white">{accounts.filter(a => a.is_active).length}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Active Accounts</p>
                 </div>
               </div>
             </div>
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl shadow-lg shadow-blue-500/30">
-                  <DollarSign className="h-6 w-6 text-white" />
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl ">
+                  <DollarSign className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                  <p className="text-xl font-bold text-gray-900 dark:text-white">
                     {formatCurrency(accounts.filter(a => a.currency === 'ZAR').reduce((sum, a) => sum + Number(a.balance ?? 0), 0))}
                   </p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Total Balance (ZAR)</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Total Balance (ZAR)</p>
                 </div>
               </div>
             </div>
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl shadow-lg shadow-amber-500/30">
-                  <Globe className="h-6 w-6 text-white" />
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl ">
+                  <Globe className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">{accounts.filter(a => a.currency !== 'ZAR').length}</p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Foreign Currency</p>
+                  <p className="text-xl font-bold text-gray-900 dark:text-white">{accounts.filter(a => a.currency !== 'ZAR').length}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Foreign Currency</p>
                 </div>
               </div>
             </div>
           </div>
 
           {/* Bank Accounts Table */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
             <table className="w-full">
               <thead className="bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-600">
                 <tr>
@@ -572,7 +572,7 @@ const BankingDashboard: React.FC = () => {
       {activeTab === 'transactions' && (
         <div>
           {/* Actions Bar */}
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-6">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
               <input
@@ -585,7 +585,7 @@ const BankingDashboard: React.FC = () => {
             </div>
             <button
               onClick={handleCreateTransaction}
-              className="px-6 py-2.5 bg-gradient-to-r from-teal-500 to-cyan-500 text-white rounded-xl hover:from-teal-600 hover:to-cyan-600 transition-all shadow-lg shadow-teal-500/30 flex items-center gap-2 font-medium"
+              className="px-6 py-2.5 bg-gradient-to-r from-teal-500 to-cyan-500 text-white rounded-xl hover:from-teal-600 hover:to-cyan-600 transition-all  flex items-center gap-2 font-medium"
             >
               <Plus className="h-5 w-5" />
               New Transaction
@@ -594,58 +594,58 @@ const BankingDashboard: React.FC = () => {
 
           {/* Summary Cards */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-gradient-to-br from-teal-500 to-cyan-500 rounded-xl shadow-lg shadow-teal-500/30">
-                  <ArrowUpDown className="h-6 w-6 text-white" />
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-gradient-to-br from-teal-500 to-cyan-500 rounded-xl ">
+                  <ArrowUpDown className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">{transactions.length}</p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Total Transactions</p>
+                  <p className="text-xl font-bold text-gray-900 dark:text-white">{transactions.length}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Total Transactions</p>
                 </div>
               </div>
             </div>
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-gradient-to-br from-red-500 to-rose-500 rounded-xl shadow-lg shadow-red-500/30">
-                  <TrendingDown className="h-6 w-6 text-white" />
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-gradient-to-br from-red-500 to-rose-500 rounded-xl ">
+                  <TrendingDown className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                  <p className="text-xl font-bold text-gray-900 dark:text-white">
                     {formatCurrency(transactions.reduce((sum, t) => sum + Number(t.debit ?? 0), 0))}
                   </p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Total Debits</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Total Debits</p>
                 </div>
               </div>
             </div>
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg shadow-green-500/30">
-                  <TrendingUp className="h-6 w-6 text-white" />
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl ">
+                  <TrendingUp className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                  <p className="text-xl font-bold text-gray-900 dark:text-white">
                     {formatCurrency(transactions.reduce((sum, t) => sum + Number(t.credit ?? 0), 0))}
                   </p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Total Credits</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Total Credits</p>
                 </div>
               </div>
             </div>
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl shadow-lg shadow-amber-500/30">
-                  <Clock className="h-6 w-6 text-white" />
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl ">
+                  <Clock className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">{transactions.filter(t => !t.reconciled).length}</p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Unreconciled</p>
+                  <p className="text-xl font-bold text-gray-900 dark:text-white">{transactions.filter(t => !t.reconciled).length}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Unreconciled</p>
                 </div>
               </div>
             </div>
           </div>
 
           {/* Transactions Table */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
             <table className="w-full">
               <thead className="bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-600">
                 <tr>
@@ -723,7 +723,7 @@ const BankingDashboard: React.FC = () => {
       {activeTab === 'reconciliation' && (
         <div>
           {/* Actions Bar */}
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-6">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
               <input
@@ -736,7 +736,7 @@ const BankingDashboard: React.FC = () => {
             </div>
             <button
               onClick={handleCreateReconciliation}
-              className="px-6 py-2.5 bg-gradient-to-r from-teal-500 to-cyan-500 text-white rounded-xl hover:from-teal-600 hover:to-cyan-600 transition-all shadow-lg shadow-teal-500/30 flex items-center gap-2 font-medium"
+              className="px-6 py-2.5 bg-gradient-to-r from-teal-500 to-cyan-500 text-white rounded-xl hover:from-teal-600 hover:to-cyan-600 transition-all  flex items-center gap-2 font-medium"
             >
               <Plus className="h-5 w-5" />
               New Reconciliation
@@ -744,44 +744,44 @@ const BankingDashboard: React.FC = () => {
           </div>
 
           {/* Summary Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-gradient-to-br from-teal-500 to-cyan-500 rounded-xl shadow-lg shadow-teal-500/30">
-                  <CheckCircle className="h-6 w-6 text-white" />
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-6 mb-8">
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-gradient-to-br from-teal-500 to-cyan-500 rounded-xl ">
+                  <CheckCircle className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">{reconciliations.length}</p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Total Reconciliations</p>
+                  <p className="text-xl font-bold text-gray-900 dark:text-white">{reconciliations.length}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Total Reconciliations</p>
                 </div>
               </div>
             </div>
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl shadow-lg shadow-amber-500/30">
-                  <Clock className="h-6 w-6 text-white" />
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl ">
+                  <Clock className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">{reconciliations.filter(r => r.status === 'IN_PROGRESS').length}</p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">In Progress</p>
+                  <p className="text-xl font-bold text-gray-900 dark:text-white">{reconciliations.filter(r => r.status === 'IN_PROGRESS').length}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">In Progress</p>
                 </div>
               </div>
             </div>
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg shadow-green-500/30">
-                  <CheckCircle className="h-6 w-6 text-white" />
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl ">
+                  <CheckCircle className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">{reconciliations.filter(r => r.status === 'COMPLETED').length}</p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Completed</p>
+                  <p className="text-xl font-bold text-gray-900 dark:text-white">{reconciliations.filter(r => r.status === 'COMPLETED').length}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Completed</p>
                 </div>
               </div>
             </div>
           </div>
 
           {/* Reconciliations Table */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
             <table className="w-full">
               <thead className="bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-600">
                 <tr>
@@ -857,7 +857,7 @@ const BankingDashboard: React.FC = () => {
                 {editingAccount ? 'Edit Bank Account' : 'New Bank Account'}
               </h2>
             </div>
-            <div className="p-6 overflow-y-auto max-h-[calc(90vh-140px)]">
+            <div className="p-4 overflow-y-auto max-h-[calc(90vh-140px)]">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Account Number *</label>
@@ -887,7 +887,7 @@ const BankingDashboard: React.FC = () => {
                   className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                 />
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-5">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-5 mb-5">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Account Type *</label>
                   <select
@@ -945,7 +945,7 @@ const BankingDashboard: React.FC = () => {
               </button>
               <button
                 onClick={handleSaveAccount}
-                className="px-5 py-2.5 bg-gradient-to-r from-teal-500 to-cyan-500 text-white rounded-xl font-medium hover:from-teal-600 hover:to-cyan-600 transition-all shadow-lg shadow-teal-500/30"
+                className="px-5 py-2.5 bg-gradient-to-r from-teal-500 to-cyan-500 text-white rounded-xl font-medium hover:from-teal-600 hover:to-cyan-600 transition-all "
               >
                 {editingAccount ? 'Update' : 'Create'}
               </button>
@@ -964,7 +964,7 @@ const BankingDashboard: React.FC = () => {
                 {editingTransaction ? 'Edit Transaction' : 'New Transaction'}
               </h2>
             </div>
-            <div className="p-6 overflow-y-auto max-h-[calc(90vh-140px)]">
+            <div className="p-4 overflow-y-auto max-h-[calc(90vh-140px)]">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Account ID *</label>
@@ -1046,7 +1046,7 @@ const BankingDashboard: React.FC = () => {
               </button>
               <button
                 onClick={handleSaveTransaction}
-                className="px-5 py-2.5 bg-gradient-to-r from-teal-500 to-cyan-500 text-white rounded-xl font-medium hover:from-teal-600 hover:to-cyan-600 transition-all shadow-lg shadow-teal-500/30"
+                className="px-5 py-2.5 bg-gradient-to-r from-teal-500 to-cyan-500 text-white rounded-xl font-medium hover:from-teal-600 hover:to-cyan-600 transition-all "
               >
                 {editingTransaction ? 'Update' : 'Create'}
               </button>
@@ -1065,7 +1065,7 @@ const BankingDashboard: React.FC = () => {
                 {editingReconciliation ? 'Edit Reconciliation' : 'New Reconciliation'}
               </h2>
             </div>
-            <div className="p-6 overflow-y-auto max-h-[calc(90vh-140px)]">
+            <div className="p-4 overflow-y-auto max-h-[calc(90vh-140px)]">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Account ID *</label>
@@ -1118,7 +1118,7 @@ const BankingDashboard: React.FC = () => {
               </button>
               <button
                 onClick={handleSaveReconciliation}
-                className="px-5 py-2.5 bg-gradient-to-r from-teal-500 to-cyan-500 text-white rounded-xl font-medium hover:from-teal-600 hover:to-cyan-600 transition-all shadow-lg shadow-teal-500/30"
+                className="px-5 py-2.5 bg-gradient-to-r from-teal-500 to-cyan-500 text-white rounded-xl font-medium hover:from-teal-600 hover:to-cyan-600 transition-all "
               >
                 {editingReconciliation ? 'Update' : 'Create'}
               </button>

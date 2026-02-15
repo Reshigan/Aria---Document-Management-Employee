@@ -147,7 +147,7 @@ export default function PriceCalculator() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6">
+    <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4">
       <div className="mb-6">
         <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent flex items-center gap-3">
           <Calculator size={28} className="text-green-500" />
@@ -156,7 +156,7 @@ export default function PriceCalculator() {
         <p className="text-gray-600 dark:text-gray-400 mt-1">Calculate prices with pricelist rules and see price breakdown</p>
       </div>
 
-      <div className="flex gap-4 mb-6">
+      <div className="flex gap-3 mb-6">
         <button
           onClick={() => setMode('single')}
           className={`px-4 py-2 rounded-lg ${
@@ -181,7 +181,7 @@ export default function PriceCalculator() {
 
       <div className="grid grid-cols-3 gap-6">
         {/* Input Form */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
           <h2 className="text-lg font-semibold mb-4">Calculation Parameters</h2>
           <div className="space-y-4">
             {mode === 'single' && (
@@ -260,19 +260,19 @@ export default function PriceCalculator() {
         <div className="col-span-2">
           {mode === 'single' ? (
             result ? (
-              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
+              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
                 <h2 className="text-lg font-semibold mb-4">Price Breakdown</h2>
-                <div className="grid grid-cols-2 gap-4 mb-6">
+                <div className="grid grid-cols-2 gap-3 mb-6">
                   <div className="p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
-                    <div className="text-sm text-gray-500 dark:text-gray-400">Product</div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400">Product</div>
                     <div className="text-lg font-medium">{result.product_name}</div>
                   </div>
                   <div className="p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
-                    <div className="text-sm text-gray-500 dark:text-gray-400">Pricelist</div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400">Pricelist</div>
                     <div className="text-lg font-medium">{result.pricelist_name || 'Default'}</div>
                   </div>
                 </div>
-                <div className="grid grid-cols-3 gap-4 mb-6">
+                <div className="grid grid-cols-3 gap-3 mb-6">
                   <div className="p-4 bg-blue-50 dark:bg-blue-900/30 rounded-lg text-center">
                     <div className="text-sm text-blue-600 dark:text-blue-400">Base Price</div>
                     <div className="text-2xl font-bold text-blue-700 dark:text-blue-300">
@@ -320,14 +320,14 @@ export default function PriceCalculator() {
                 )}
               </div>
             ) : (
-              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6 text-center text-gray-500 dark:text-gray-400">
+              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 text-center text-gray-500 dark:text-gray-400">
                 <Calculator size={48} className="mx-auto mb-4 text-gray-300" />
                 <p>Select a product and click Calculate to see the price breakdown</p>
               </div>
             )
           ) : (
             <div className="space-y-4">
-              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-4">
+              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
                 <h3 className="font-medium mb-3">Select Products ({bulkProductIds.length} selected)</h3>
                 <div className="max-h-48 overflow-y-auto space-y-2">
                   {products.map(p => (
@@ -340,7 +340,7 @@ export default function PriceCalculator() {
                       />
                       <Package size={16} className="text-gray-400" />
                       <span className="text-sm">{p.name}</span>
-                      <span className="text-sm text-gray-500 dark:text-gray-400 ml-auto">
+                      <span className="text-xs text-gray-500 dark:text-gray-400 ml-auto">
                         R {p.list_price?.toLocaleString('en-ZA', { minimumFractionDigits: 2 }) || '0.00'}
                       </span>
                     </label>
@@ -348,7 +348,7 @@ export default function PriceCalculator() {
                 </div>
               </div>
               {bulkResults.length > 0 && (
-                <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden">
+                <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
                   <table className="w-full">
                     <thead className="bg-gray-50 dark:bg-gray-900">
                       <tr>

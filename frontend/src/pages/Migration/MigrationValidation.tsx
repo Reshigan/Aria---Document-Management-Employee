@@ -125,7 +125,7 @@ export default function MigrationValidation() {
   const errorCount = results.filter(r => r.validation_status === 'error').length;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6">
+    <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4">
       <div className="mb-6">
         <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent flex items-center gap-3">
           <ShieldCheck size={28} className="text-purple-500" />
@@ -134,33 +134,33 @@ export default function MigrationValidation() {
         <p className="text-gray-600 dark:text-gray-400 mt-1">Review and fix data quality issues before migration</p>
       </div>
 
-      <div className="grid grid-cols-4 gap-4 mb-6">
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-4">
-          <div className="text-sm text-gray-500 dark:text-gray-400">Total Records</div>
+      <div className="grid grid-cols-4 gap-3 mb-6">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
+          <div className="text-xs text-gray-500 dark:text-gray-400">Total Records</div>
           <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">{results.length}</div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-4">
-          <div className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-1">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
+          <div className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
             <CheckCircle size={14} className="text-green-600 dark:text-green-400" /> Valid
           </div>
           <div className="text-2xl font-bold text-green-600 dark:text-green-400">{validCount}</div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-4">
-          <div className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-1">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
+          <div className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
             <AlertTriangle size={14} className="text-yellow-600 dark:text-yellow-400" /> Warnings
           </div>
           <div className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">{warningCount}</div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-4">
-          <div className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-1">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
+          <div className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
             <XCircle size={14} className="text-red-600 dark:text-red-400" /> Errors
           </div>
           <div className="text-2xl font-bold text-red-600 dark:text-red-400">{errorCount}</div>
         </div>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700">
-        <div className="p-4 border-b flex gap-4 flex-wrap">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
+        <div className="p-4 border-b flex gap-3 flex-wrap">
           <div className="flex-1 min-w-[200px] relative">
             <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
             <input
@@ -206,11 +206,11 @@ export default function MigrationValidation() {
           <table className="w-full">
             <thead className="bg-gray-50 dark:bg-gray-900">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Record</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Job</th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Status</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Issues</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Actions</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Record</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Job</th>
+                <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Status</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Issues</th>
+                <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
@@ -267,11 +267,11 @@ export default function MigrationValidation() {
 
       {selectedResult && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700-xl w-full max-w-2xl p-6 max-h-[80vh] overflow-y-auto">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700-xl w-full max-w-2xl p-4 max-h-[80vh] overflow-y-auto">
             <div className="flex justify-between items-start mb-4">
               <div>
                 <h2 className="text-xl font-bold">Record #{selectedResult.record_number}</h2>
-                <p className="text-sm text-gray-500 dark:text-gray-400">{selectedResult.job_name}</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">{selectedResult.job_name}</p>
               </div>
               <span className={`inline-flex items-center gap-1 px-2 py-1 text-xs rounded-full ${statusColors[selectedResult.validation_status]}`}>
                 {statusIcons[selectedResult.validation_status]}

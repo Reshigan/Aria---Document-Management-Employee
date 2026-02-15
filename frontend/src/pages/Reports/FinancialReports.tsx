@@ -165,7 +165,7 @@ export default function FinancialReports() {
     if (!data) return null;
 
     return (
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden">
         <table className="w-full">
           <thead className="bg-gray-50 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700">
             <tr>
@@ -208,7 +208,7 @@ export default function FinancialReports() {
     if (!data) return null;
 
     return (
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-8">
         <div className="mb-8">
           <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Revenue</h3>
           {data.revenue?.map((item: any, idx: number) => (
@@ -255,7 +255,7 @@ export default function FinancialReports() {
 
     return (
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-8">
           <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Assets</h3>
           
           <div className="mb-6">
@@ -294,7 +294,7 @@ export default function FinancialReports() {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-8">
           <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Liabilities & Equity</h3>
           
           <div className="mb-6">
@@ -355,7 +355,7 @@ export default function FinancialReports() {
     if (!data) return null;
 
     return (
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden">
         <table className="w-full">
           <thead className="bg-gray-50 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700">
             <tr>
@@ -419,16 +419,16 @@ export default function FinancialReports() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6">
-      <div className="max-w-7xl mx-auto">
+    <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4">
+      <div className="mx-auto">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Financial Reports</h1>
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Financial Reports</h1>
           <p className="text-gray-500 dark:text-gray-400 mt-1">View comprehensive financial reports and analytics</p>
         </div>
 
         <div className="flex flex-col lg:flex-row gap-8">
           <div className="lg:w-64 flex-shrink-0">
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-4">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4">
               <h3 className="text-base font-semibold text-gray-700 dark:text-gray-300 mb-4">Reports</h3>
               {reports.map((report) => {
                 const Icon = report.icon;
@@ -438,7 +438,7 @@ export default function FinancialReports() {
                     onClick={() => setSelectedReport(report.id)}
                     className={`w-full flex items-center gap-3 p-3 rounded-xl text-sm font-medium mb-2 text-left transition-all ${
                       selectedReport === report.id
-                        ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-500/30'
+                        ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white '
                         : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
                     }`}
                   >
@@ -449,7 +449,7 @@ export default function FinancialReports() {
               })}
             </div>
 
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-4 mt-4">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 mt-4">
               <h3 className="text-base font-semibold text-gray-700 dark:text-gray-300 mb-4 flex items-center gap-2">
                 <Calendar size={18} />
                 Date Range
@@ -483,10 +483,10 @@ export default function FinancialReports() {
 
           <div className="flex-1">
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white">
                 {reports.find(r => r.id === selectedReport)?.name}
               </h2>
-              <button className="flex items-center gap-2 px-6 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all shadow-sm">
+              <button className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all shadow-sm">
                 <Download size={18} />
                 Export PDF
               </button>

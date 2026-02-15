@@ -84,26 +84,26 @@ export default function TaxRates() {
   const getTypeConfig = (type: string) => taxTypes.find(t => t.value === type) || { label: type, color: 'bg-gray-500' };
 
   return (
-    <div className="p-6 space-y-6 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 min-h-screen">
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <div className="p-4 space-y-3 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
         <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">Tax Rates</h1>
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">Tax Rates</h1>
           <p className="text-gray-500 mt-1">Manage VAT and other tax rates for your transactions</p>
         </div>
         <button onClick={() => { setEditingRate(null); setFormData({ name: '', rate: 15, tax_type: 'output', is_default: false, applies_to: 'all', report_code: '', description: '' }); setShowModal(true); }} className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg font-medium"><Plus className="h-4 w-4" />Add Tax Rate</button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4"><div className="flex items-center gap-3"><div className="p-2 bg-green-100 dark:bg-green-900/50 rounded-lg"><Percent className="h-5 w-5 text-green-600" /></div><div><p className="text-2xl font-bold">{rates.length}</p><p className="text-sm text-gray-500">Total Rates</p></div></div></div>
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4"><div className="flex items-center gap-3"><div className="p-2 bg-blue-100 dark:bg-blue-900/50 rounded-lg"><Calculator className="h-5 w-5 text-blue-600" /></div><div><p className="text-2xl font-bold">{rates.filter(r => r.tax_type === 'output').length}</p><p className="text-sm text-gray-500">Output Tax</p></div></div></div>
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4"><div className="flex items-center gap-3"><div className="p-2 bg-purple-100 dark:bg-purple-900/50 rounded-lg"><FileText className="h-5 w-5 text-purple-600" /></div><div><p className="text-2xl font-bold">{rates.filter(r => r.tax_type === 'input').length}</p><p className="text-sm text-gray-500">Input Tax</p></div></div></div>
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4"><div className="flex items-center gap-3"><div className="p-2 bg-amber-100 dark:bg-amber-900/50 rounded-lg"><Check className="h-5 w-5 text-amber-600" /></div><div><p className="text-lg font-bold truncate">{rates.find(r => r.is_default)?.name || 'None'}</p><p className="text-sm text-gray-500">Default</p></div></div></div>
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+        <div className="bg-white dark:bg-gray-800 rounded-lg p-4"><div className="flex items-center gap-3"><div className="p-2 bg-green-100 dark:bg-green-900/50 rounded-lg"><Percent className="h-5 w-5 text-green-600" /></div><div><p className="text-2xl font-bold">{rates.length}</p><p className="text-xs text-gray-500">Total Rates</p></div></div></div>
+        <div className="bg-white dark:bg-gray-800 rounded-lg p-4"><div className="flex items-center gap-3"><div className="p-2 bg-blue-100 dark:bg-blue-900/50 rounded-lg"><Calculator className="h-5 w-5 text-blue-600" /></div><div><p className="text-2xl font-bold">{rates.filter(r => r.tax_type === 'output').length}</p><p className="text-xs text-gray-500">Output Tax</p></div></div></div>
+        <div className="bg-white dark:bg-gray-800 rounded-lg p-4"><div className="flex items-center gap-3"><div className="p-2 bg-purple-100 dark:bg-purple-900/50 rounded-lg"><FileText className="h-5 w-5 text-purple-600" /></div><div><p className="text-2xl font-bold">{rates.filter(r => r.tax_type === 'input').length}</p><p className="text-xs text-gray-500">Input Tax</p></div></div></div>
+        <div className="bg-white dark:bg-gray-800 rounded-lg p-4"><div className="flex items-center gap-3"><div className="p-2 bg-amber-100 dark:bg-amber-900/50 rounded-lg"><Check className="h-5 w-5 text-amber-600" /></div><div><p className="text-lg font-bold truncate">{rates.find(r => r.is_default)?.name || 'None'}</p><p className="text-xs text-gray-500">Default</p></div></div></div>
       </div>
 
       {loading ? (
         <div className="flex items-center justify-center py-12"><RefreshCw className="h-8 w-8 animate-spin text-green-500" /></div>
       ) : (
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
+        <div className="bg-white dark:bg-gray-800 rounded-lg overflow-hidden">
           <table className="w-full">
             <thead className="bg-gradient-to-r from-green-600 to-emerald-600 text-white">
               <tr><th className="px-4 py-3 text-left">Tax Rate</th><th className="px-4 py-3 text-left">Rate</th><th className="px-4 py-3 text-left">Type</th><th className="px-4 py-3 text-left">Applies To</th><th className="px-4 py-3 text-left">Report Code</th><th className="px-4 py-3 text-left">Actions</th></tr>
@@ -145,13 +145,13 @@ export default function TaxRates() {
               <h2 className="text-xl font-semibold">{editingRate ? 'Edit Tax Rate' : 'New Tax Rate'}</h2>
               <button onClick={() => setShowModal(false)} className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded"><X className="h-5 w-5" /></button>
             </div>
-            <div className="p-6 space-y-4">
+            <div className="p-4 space-y-4">
               <div><label className="block text-sm font-medium mb-1">Tax Rate Name</label><input type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700" placeholder="e.g., Standard VAT (15%)" /></div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 <div><label className="block text-sm font-medium mb-1">Rate (%)</label><input type="number" step="0.01" value={formData.rate} onChange={(e) => setFormData({ ...formData, rate: parseFloat(e.target.value) || 0 })} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700" /></div>
                 <div><label className="block text-sm font-medium mb-1">Tax Type</label><select value={formData.tax_type} onChange={(e) => setFormData({ ...formData, tax_type: e.target.value })} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700">{taxTypes.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}</select></div>
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 <div><label className="block text-sm font-medium mb-1">Applies To</label><select value={formData.applies_to} onChange={(e) => setFormData({ ...formData, applies_to: e.target.value })} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700">{appliesTo.map(a => <option key={a.value} value={a.value}>{a.label}</option>)}</select></div>
                 <div><label className="block text-sm font-medium mb-1">Report Code</label><input type="text" value={formData.report_code} onChange={(e) => setFormData({ ...formData, report_code: e.target.value })} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700" placeholder="e.g., VAT-STD" /></div>
               </div>

@@ -405,7 +405,7 @@ export default function SalesOrders() {
 
     return (
       <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
-        <div onClick={(e) => e.stopPropagation()} className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden">
+        <div onClick={(e) => e.stopPropagation()} className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden">
           <div className="bg-gradient-to-r from-emerald-600 to-teal-600 text-white p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -480,7 +480,7 @@ export default function SalesOrders() {
 
             <div className="p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 flex justify-end gap-3">
               <button type="button" onClick={onClose} className="px-5 py-2.5 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">Cancel</button>
-              <button type="submit" className="px-5 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-xl font-medium hover:from-emerald-700 hover:to-teal-700 transition-all shadow-lg shadow-emerald-500/30">{isEdit ? 'Update Order' : 'Create Order'}</button>
+              <button type="submit" className="px-5 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-xl font-medium hover:from-emerald-700 hover:to-teal-700 transition-all ">{isEdit ? 'Update Order' : 'Create Order'}</button>
             </div>
           </form>
         </div>
@@ -490,7 +490,7 @@ export default function SalesOrders() {
 
   return (
     <div className="bg-gradient-to-br from-gray-50 to-emerald-50 dark:from-gray-900 dark:to-gray-800 p-4">
-      <div className="max-w-7xl mx-auto space-y-3">
+      <div className="mx-auto space-y-3">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
           <div>
             <h1 className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">Sales Orders</h1>
@@ -500,7 +500,7 @@ export default function SalesOrders() {
             <button onClick={() => loadOrders()} className="p-3 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-200 dark:border-gray-700">
               <RefreshCw className={`h-5 w-5 text-gray-600 dark:text-gray-400 ${loading ? 'animate-spin' : ''}`} />
             </button>
-            <button onClick={handleCreate} className="flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-xl font-medium hover:from-emerald-700 hover:to-teal-700 transition-all shadow-lg shadow-emerald-500/30">
+            <button onClick={handleCreate} className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-xl font-medium hover:from-emerald-700 hover:to-teal-700 transition-all ">
               <Plus className="h-5 w-5" />New Order
             </button>
           </div>
@@ -541,9 +541,9 @@ export default function SalesOrders() {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
-          <div className="p-5 border-b border-gray-100 dark:border-gray-700">
-            <div className="flex flex-col md:flex-row gap-4">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+          <div className="p-3 border-b border-gray-100 dark:border-gray-700">
+            <div className="flex flex-col md:flex-row gap-3">
               <div className="flex-1 relative">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
                 <input type="text" placeholder="Search by order number or customer..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-12 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all" />
@@ -570,7 +570,7 @@ export default function SalesOrders() {
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No sales orders found</h3>
               <p className="text-gray-500 dark:text-gray-400 mb-6">{searchTerm || statusFilter ? 'Try adjusting your filters' : 'Get started by creating your first sales order'}</p>
               {!searchTerm && !statusFilter && (
-                <button onClick={handleCreate} className="px-5 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-xl font-medium hover:from-emerald-700 hover:to-teal-700 transition-all">Create First Order</button>
+                <button onClick={handleCreate} className="px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-xl font-medium hover:from-emerald-700 hover:to-teal-700 transition-all">Create First Order</button>
               )}
             </div>
           ) : (
@@ -596,7 +596,7 @@ export default function SalesOrders() {
                           <Link to={`/sales/orders/${order.id}`} className="font-semibold text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300">{order.order_number}</Link>
                         </td>
                         <td className="px-6 py-4">
-                          <div><p className="font-medium text-gray-900 dark:text-white">{order.customer_name}</p>{order.customer_email && (<p className="text-sm text-gray-500 dark:text-gray-400">{order.customer_email}</p>)}</div>
+                          <div><p className="font-medium text-gray-900 dark:text-white">{order.customer_name}</p>{order.customer_email && (<p className="text-xs text-gray-500 dark:text-gray-400">{order.customer_email}</p>)}</div>
                         </td>
                         <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{new Date(order.order_date).toLocaleDateString()}</td>
                         <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{order.required_date ? new Date(order.required_date).toLocaleDateString() : '-'}</td>
