@@ -353,7 +353,7 @@ const Receipts: React.FC = () => {
         title="Delete Receipt"
         message={`Are you sure you want to delete receipt ${deleteConfirm.number}? This action cannot be undone.`}
         onConfirm={() => handleDelete(deleteConfirm.id)}
-        onCancel={() => setDeleteConfirm({ show: false, id: 0, number: '' })}
+        onClose={() => setDeleteConfirm({ show: false, id: 0, number: '' })}
       />
     </div>
   );

@@ -435,7 +435,7 @@ const Employees: React.FC = () => {
         title="Delete Employee"
         message={`Are you sure you want to delete ${deleteConfirm.name}? This action cannot be undone.`}
         onConfirm={() => handleDelete(deleteConfirm.id)}
-        onCancel={() => setDeleteConfirm({ show: false, id: 0, name: '' })}
+        onClose={() => setDeleteConfirm({ show: false, id: 0, name: '' })}
       />
     </div>
   );

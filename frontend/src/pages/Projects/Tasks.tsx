@@ -401,7 +401,7 @@ const Tasks: React.FC = () => {
         title="Delete Task"
         message={`Are you sure you want to delete "${deleteConfirm.title}"? This action cannot be undone.`}
         onConfirm={() => handleDelete(deleteConfirm.id)}
-        onCancel={() => setDeleteConfirm({ show: false, id: 0, title: '' })}
+        onClose={() => setDeleteConfirm({ show: false, id: 0, title: '' })}
       />
     </div>
   );

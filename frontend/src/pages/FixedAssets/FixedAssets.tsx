@@ -333,7 +333,7 @@ const FixedAssets: React.FC = () => {
           title="Delete Fixed Asset"
           message={`Are you sure you want to delete asset ${deleteConfirm.code}? This action cannot be undone.`}
           onConfirm={() => handleDelete(deleteConfirm.id)}
-          onCancel={() => setDeleteConfirm({ show: false, id: 0, code: '' })}
+          onClose={() => setDeleteConfirm({ show: false, id: 0, code: '' })}
         />
       </div>
     </div>

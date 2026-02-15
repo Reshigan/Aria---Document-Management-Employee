@@ -376,7 +376,7 @@ const Attendance: React.FC = () => {
         title="Delete Attendance Record"
         message={`Are you sure you want to delete the attendance record for ${deleteConfirm.name}? This action cannot be undone.`}
         onConfirm={() => handleDelete(deleteConfirm.id)}
-        onCancel={() => setDeleteConfirm({ show: false, id: 0, name: '' })}
+        onClose={() => setDeleteConfirm({ show: false, id: 0, name: '' })}
       />
     </div>
   );

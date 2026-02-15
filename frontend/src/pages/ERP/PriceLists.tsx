@@ -808,7 +808,7 @@ export default function PriceLists() {
           title="Delete Price List"
           message={`Are you sure you want to delete ${selectedPriceList?.name}? This action cannot be undone.`}
           onConfirm={confirmDelete}
-          onCancel={() => {
+          onClose={() => {
             setShowDeleteDialog(false);
             setSelectedPriceList(null);
           }}

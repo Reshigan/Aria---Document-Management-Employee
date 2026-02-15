@@ -340,20 +340,20 @@ const CRMDashboard: React.FC = () => {
   };
 
   const filteredLeads = leads.filter(l =>
-    l.company_name.toLowerCase().includes(leadsSearch.toLowerCase()) ||
-    l.contact_person.toLowerCase().includes(leadsSearch.toLowerCase()) ||
-    l.email.toLowerCase().includes(leadsSearch.toLowerCase())
+    (l.company_name || '').toLowerCase().includes(leadsSearch.toLowerCase()) ||
+    (l.contact_person || '').toLowerCase().includes(leadsSearch.toLowerCase()) ||
+    (l.email || '').toLowerCase().includes(leadsSearch.toLowerCase())
   );
 
   const filteredOpportunities = opportunities.filter(o =>
-    o.title.toLowerCase().includes(oppsSearch.toLowerCase()) ||
-    o.customer_name?.toLowerCase().includes(oppsSearch.toLowerCase())
+    (o.title || '').toLowerCase().includes(oppsSearch.toLowerCase()) ||
+    (o.customer_name || '').toLowerCase().includes(oppsSearch.toLowerCase())
   );
 
   const filteredCustomers = customers.filter(c =>
-    c.customer_name.toLowerCase().includes(customersSearch.toLowerCase()) ||
-    c.customer_code.toLowerCase().includes(customersSearch.toLowerCase()) ||
-    c.email.toLowerCase().includes(customersSearch.toLowerCase())
+    (c.customer_name || '').toLowerCase().includes(customersSearch.toLowerCase()) ||
+    (c.customer_code || '').toLowerCase().includes(customersSearch.toLowerCase()) ||
+    (c.email || '').toLowerCase().includes(customersSearch.toLowerCase())
   );
 
   const getLeadScoreBadge = (score: number) => {
@@ -379,11 +379,11 @@ const CRMDashboard: React.FC = () => {
       CLOSED_WON: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400',
       CLOSED_LOST: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
     };
-    return <span className={`px-2.5 py-1 text-xs font-semibold rounded-full ${styles[status] || 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300'}`}>{status.replace('_', ' ')}</span>;
+    return <span className={`px-2.5 py-1 text-xs font-semibold rounded-full ${styles[status] || 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300'}`}>{(status || '').replace('_', ' ')}</span>;
   };
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR' }).format(amount);
+    return new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR' }).format(Number(amount ?? 0));
   };
 
   const formatDate = (dateString: string) => {
@@ -538,7 +538,7 @@ const CRMDashboard: React.FC = () => {
                   <DollarSign className="h-6 w-6 text-white" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">{formatCurrency(opportunities.reduce((sum, o) => sum + o.amount, 0))}</p>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">{formatCurrency(opportunities.reduce((sum, o) => sum + Number(o.amount ?? 0), 0))}</p>
                   <p className="text-sm text-gray-500 dark:text-gray-400">Total Pipeline</p>
                 </div>
               </div>
@@ -549,7 +549,7 @@ const CRMDashboard: React.FC = () => {
                   <TrendingUp className="h-6 w-6 text-white" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">{formatCurrency(opportunities.reduce((sum, o) => sum + (o.amount * o.probability / 100), 0))}</p>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">{formatCurrency(opportunities.reduce((sum, o) => sum + (Number(o.amount ?? 0) * Number(o.probability ?? 0) / 100), 0))}</p>
                   <p className="text-sm text-gray-500 dark:text-gray-400">Weighted Value</p>
                 </div>
               </div>
@@ -1021,7 +1021,7 @@ const CRMDashboard: React.FC = () => {
           else if (deleteConfirm.type === 'opportunity') handleDeleteOpportunity(deleteConfirm.id);
           else if (deleteConfirm.type === 'customer') handleDeleteCustomer(deleteConfirm.id);
         }}
-        onCancel={() => setDeleteConfirm({ show: false, type: 'lead', id: 0, name: '' })}
+        onClose={() => setDeleteConfirm({ show: false, type: 'lead', id: 0, name: '' })}
       />
     </div>
   );

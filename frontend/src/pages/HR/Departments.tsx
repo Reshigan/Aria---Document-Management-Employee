@@ -66,7 +66,7 @@ const Departments: React.FC = () => {
     setForm({
       department_name: department.department_name,
       manager_name: department.manager_name || '',
-      budget: department.budget.toString(),
+      budget: (department.budget ?? 0).toString(),
       is_active: department.is_active
     });
     setShowModal(true);
@@ -103,12 +103,12 @@ const Departments: React.FC = () => {
   };
 
   const filtered = departments.filter(d =>
-    d.department_name.toLowerCase().includes(search.toLowerCase()) ||
-    d.department_code.toLowerCase().includes(search.toLowerCase())
+    (d.department_name || '').toLowerCase().includes(search.toLowerCase()) ||
+    (d.department_code || '').toLowerCase().includes(search.toLowerCase())
   );
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR' }).format(amount);
+    return new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR' }).format(Number(amount ?? 0));
   };
 
   if (loading) {
@@ -184,7 +184,7 @@ const Departments: React.FC = () => {
               <Users className="h-6 w-6 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{departments.reduce((sum, d) => sum + d.employee_count, 0)}</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{departments.reduce((sum, d) => sum + Number(d.employee_count ?? 0), 0)}</p>
               <p className="text-sm text-gray-500 dark:text-gray-400">Total Employees</p>
             </div>
           </div>
@@ -195,7 +195,7 @@ const Departments: React.FC = () => {
               <DollarSign className="h-6 w-6 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{formatCurrency(departments.reduce((sum, d) => sum + d.budget, 0))}</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{formatCurrency(departments.reduce((sum, d) => sum + Number(d.budget ?? 0), 0))}</p>
               <p className="text-sm text-gray-500 dark:text-gray-400">Total Budget</p>
             </div>
           </div>
@@ -336,7 +336,7 @@ const Departments: React.FC = () => {
         title="Delete Department"
         message={`Are you sure you want to delete ${deleteConfirm.name}? This action cannot be undone.`}
         onConfirm={() => handleDelete(deleteConfirm.id)}
-        onCancel={() => setDeleteConfirm({ show: false, id: 0, name: '' })}
+        onClose={() => setDeleteConfirm({ show: false, id: 0, name: '' })}
       />
     </div>
   );
