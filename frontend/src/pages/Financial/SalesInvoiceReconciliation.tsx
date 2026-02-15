@@ -271,7 +271,7 @@ export default function SalesInvoiceReconciliation() {
                 </div>
                 <div className="text-3xl font-bold text-gray-900 dark:text-white">{summary.summary.total_orders}</div>
                 <div className="text-sm text-gray-500 mt-1">
-                  R {summary.Number(summary.total_sales_value ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
+                  R {Number(summary.summary.total_sales_value ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
                 </div>
               </div>
 
@@ -295,7 +295,7 @@ export default function SalesInvoiceReconciliation() {
                   {summary.summary.partially_invoiced + summary.summary.not_invoiced}
                 </div>
                 <div className="text-sm text-gray-500 mt-1">
-                  R {summary.Number(summary.uninvoiced_value ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })} outstanding
+                  R {Number(summary.summary.uninvoiced_value ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })} outstanding
                 </div>
               </div>
 
@@ -306,7 +306,7 @@ export default function SalesInvoiceReconciliation() {
                 </div>
                 <div className="text-3xl font-bold text-red-600">{summary.exceptions.total}</div>
                 <div className="text-sm text-gray-500 mt-1">
-                  R {summary.Number(exceptions.total_variance ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })} variance
+                  R {Number(summary.exceptions.total_variance ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })} variance
                 </div>
               </div>
             </div>
@@ -345,7 +345,7 @@ export default function SalesInvoiceReconciliation() {
                   <span className="font-medium">Total Variance</span>
                 </div>
                 <div className="text-2xl font-bold text-purple-800 dark:text-purple-200 mt-1">
-                  R {summary.Number(exceptions.total_variance ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
+                  R {Number(summary.exceptions.total_variance ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
                 </div>
               </div>
             </div>
