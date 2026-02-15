@@ -113,7 +113,7 @@ export default function DocumentTemplatesPage() {
           >
             All Categories
           </button>
-          {DOCUMENT_CATEGORIES.map((cat) => (
+          {categories.map((cat) => (
             <button
               key={cat.name}
               onClick={() => setSelectedCategory(cat.name)}
