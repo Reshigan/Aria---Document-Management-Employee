@@ -69,8 +69,8 @@ const Warehouses: React.FC = () => {
       warehouse_code: warehouse.warehouse_code,
       warehouse_name: warehouse.warehouse_name,
       location: warehouse.location,
-      capacity: warehouse.capacity.toString(),
-      current_stock_value: warehouse.current_stock_value.toString(),
+            capacity: (warehouse.capacity ?? 0).toString(),
+            current_stock_value: (warehouse.current_stock_value ?? 0).toString(),
       is_active: warehouse.is_active
     });
     setShowModal(true);
@@ -158,7 +158,7 @@ const Warehouses: React.FC = () => {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">
-                {warehouses.reduce((sum, w) => sum + w.capacity, 0).toLocaleString()}
+                {warehouses.reduce((sum, w) => sum + (Number(w.capacity) || 0), 0).toLocaleString()}
               </p>
               <p className="text-xs text-gray-500 dark:text-gray-400">Total Capacity</p>
             </div>
@@ -171,7 +171,7 @@ const Warehouses: React.FC = () => {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">
-                {formatCurrency(warehouses.reduce((sum, w) => sum + w.current_stock_value, 0))}
+                {formatCurrency(warehouses.reduce((sum, w) => sum + (Number(w.current_stock_value) || 0), 0))}
               </p>
               <p className="text-xs text-gray-500 dark:text-gray-400">Total Stock Value</p>
             </div>
@@ -204,7 +204,7 @@ const Warehouses: React.FC = () => {
                   <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{warehouse.warehouse_name}</td>
                   <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{warehouse.location}</td>
                   <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{Number(warehouse.capacity ?? 0).toLocaleString()}</td>
-                  <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{formatCurrency(warehouse.current_stock_value)}</td>
+                  <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{formatCurrency(Number(warehouse.current_stock_value) || 0)}</td>
                   <td className="px-6 py-4">
                     <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${
                       warehouse.is_active 
