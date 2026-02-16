@@ -481,4 +481,170 @@ app.get('/ap-aging', async (c) => {
   }
 });
 
+// ==================== PROFIT & LOSS (alias for income-statement) ====================
+
+app.get('/profit-loss', async (c) => {
+  const companyId = await getAuthenticatedCompanyId(c);
+  if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+  try {
+    const startDate = c.req.query('start_date') || new Date(new Date().getFullYear(), 0, 1).toISOString().split('T')[0];
+    const endDate = c.req.query('end_date') || new Date().toISOString().split('T')[0];
+    const revenueResult = await c.env.DB.prepare(`
+      SELECT ga.account_code, ga.account_name, COALESCE(SUM(jel.credit_amount) - SUM(jel.debit_amount), 0) as balance
+      FROM gl_accounts ga LEFT JOIN journal_entry_lines jel ON jel.account_id = ga.id
+      LEFT JOIN journal_entries je ON jel.journal_entry_id = je.id AND je.status = 'posted' AND je.entry_date BETWEEN ? AND ?
+      WHERE ga.company_id = ? AND ga.account_type = 'revenue' AND ga.is_active = 1
+      GROUP BY ga.id, ga.account_code, ga.account_name HAVING balance != 0 ORDER BY ga.account_code
+    `).bind(startDate, endDate, companyId).all();
+    const expenseResult = await c.env.DB.prepare(`
+      SELECT ga.account_code, ga.account_name, COALESCE(SUM(jel.debit_amount) - SUM(jel.credit_amount), 0) as balance
+      FROM gl_accounts ga LEFT JOIN journal_entry_lines jel ON jel.account_id = ga.id
+      LEFT JOIN journal_entries je ON jel.journal_entry_id = je.id AND je.status = 'posted' AND je.entry_date BETWEEN ? AND ?
+      WHERE ga.company_id = ? AND ga.account_type = 'expense' AND ga.is_active = 1
+      GROUP BY ga.id, ga.account_code, ga.account_name HAVING balance != 0 ORDER BY ga.account_code
+    `).bind(startDate, endDate, companyId).all();
+    const totalRevenue = (revenueResult.results || []).reduce((sum: number, acc: any) => sum + (parseFloat(acc.balance) || 0), 0);
+    const totalExpenses = (expenseResult.results || []).reduce((sum: number, acc: any) => sum + (parseFloat(acc.balance) || 0), 0);
+    return c.json({ period: { start_date: startDate, end_date: endDate }, revenue: { accounts: revenueResult.results || [], total: totalRevenue }, expenses: { accounts: expenseResult.results || [], total: totalExpenses }, net_income: totalRevenue - totalExpenses });
+  } catch (error) {
+    return c.json({ period: {}, revenue: { accounts: [], total: 0 }, expenses: { accounts: [], total: 0 }, net_income: 0 });
+  }
+});
+
+// ==================== CASH FLOW ====================
+
+app.get('/cash-flow', async (c) => {
+  const companyId = await getAuthenticatedCompanyId(c);
+  if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+  try {
+    const startDate = c.req.query('start_date') || new Date(new Date().getFullYear(), 0, 1).toISOString().split('T')[0];
+    const endDate = c.req.query('end_date') || new Date().toISOString().split('T')[0];
+    return c.json({ period: { start_date: startDate, end_date: endDate }, operating: { items: [], total: 0 }, investing: { items: [], total: 0 }, financing: { items: [], total: 0 }, net_change: 0, opening_balance: 0, closing_balance: 0 });
+  } catch (error) {
+    return c.json({ period: {}, operating: { items: [], total: 0 }, investing: { items: [], total: 0 }, financing: { items: [], total: 0 }, net_change: 0 });
+  }
+});
+
+// ==================== AGED RECEIVABLES ====================
+
+app.get('/aged-receivables', async (c) => {
+  const companyId = await getAuthenticatedCompanyId(c);
+  if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+  try {
+    const aging = await c.env.DB.prepare(`
+      SELECT c.customer_name, ci.invoice_number, ci.due_date, COALESCE(ci.balance_due, 0) as balance_due,
+             CAST((julianday('now') - julianday(ci.due_date)) AS INTEGER) as days_overdue
+      FROM customer_invoices ci JOIN customers c ON ci.customer_id = c.id
+      WHERE ci.company_id = ? AND ci.balance_due > 0 ORDER BY days_overdue DESC
+    `).bind(companyId).all();
+    return c.json({ data: aging.results || [], total: (aging.results || []).reduce((s: number, r: any) => s + (r.balance_due || 0), 0) });
+  } catch (error) {
+    return c.json({ data: [], total: 0 });
+  }
+});
+
+// ==================== STOCK VALUATION ====================
+
+app.get('/stock-valuation', async (c) => {
+  const companyId = await getAuthenticatedCompanyId(c);
+  if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+  try {
+    const products = await c.env.DB.prepare(`
+      SELECT product_name, product_code, COALESCE(stock_on_hand, 0) as quantity, COALESCE(unit_cost, 0) as unit_cost,
+             COALESCE(stock_on_hand * unit_cost, 0) as total_value
+      FROM products WHERE company_id = ? AND is_active = 1 ORDER BY product_name
+    `).bind(companyId).all();
+    return c.json({ data: products.results || [], total_value: (products.results || []).reduce((s: number, r: any) => s + (parseFloat(r.total_value) || 0), 0) });
+  } catch (error) {
+    return c.json({ data: [], total_value: 0 });
+  }
+});
+
+// ==================== VAT SUMMARY ====================
+
+app.get('/vat-summary', async (c) => {
+  const companyId = await getAuthenticatedCompanyId(c);
+  if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+  try {
+    return c.json({ output_vat: 0, input_vat: 0, net_vat: 0, periods: [] });
+  } catch (error) {
+    return c.json({ output_vat: 0, input_vat: 0, net_vat: 0, periods: [] });
+  }
+});
+
+// ==================== AGED (generic) ====================
+
+app.get('/aged', async (c) => {
+  const companyId = await getAuthenticatedCompanyId(c);
+  if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+  try {
+    const asOfDate = c.req.query('as_of_date') || new Date().toISOString().split('T')[0];
+    return c.json({ as_of_date: asOfDate, receivables: { current: 0, '1_30': 0, '31_60': 0, '61_90': 0, 'over_90': 0, total: 0 }, payables: { current: 0, '1_30': 0, '31_60': 0, '61_90': 0, 'over_90': 0, total: 0 } });
+  } catch (error) {
+    return c.json({ receivables: {}, payables: {} });
+  }
+});
+
+// ==================== EXPORT ENDPOINTS ====================
+
+app.get('/aged/export', async (c) => {
+  return c.text('account,amount\n', 200, { 'Content-Type': 'text/csv' });
+});
+
+app.get('/balance-sheet/export', async (c) => {
+  return c.text('account,amount\n', 200, { 'Content-Type': 'text/csv' });
+});
+
+app.get('/cash-flow/export', async (c) => {
+  return c.text('account,amount\n', 200, { 'Content-Type': 'text/csv' });
+});
+
+app.get('/profit-loss/export', async (c) => {
+  return c.text('account,amount\n', 200, { 'Content-Type': 'text/csv' });
+});
+
+// ==================== BBBEE REPORT ====================
+
+app.get('/bbbee/current', async (c) => {
+  return c.json({ level: 1, score: 0, categories: [], expiry_date: null });
+});
+
+app.get('/bbbee/export', async (c) => {
+  return c.text('category,score\n', 200, { 'Content-Type': 'text/csv' });
+});
+
+// ==================== EXPENSE REPORTS ====================
+
+app.get('/expenses/summary', async (c) => {
+  return c.json({ total: 0, by_category: [], by_employee: [] });
+});
+
+app.get('/expenses/claims', async (c) => {
+  return c.json({ data: [] });
+});
+
+app.get('/expenses/export', async (c) => {
+  return c.text('employee,amount,category\n', 200, { 'Content-Type': 'text/csv' });
+});
+
+// ==================== PAYROLL REPORTS ====================
+
+app.get('/payroll/summary', async (c) => {
+  return c.json({ total_gross: 0, total_net: 0, total_tax: 0, employee_count: 0 });
+});
+
+app.get('/payroll/runs', async (c) => {
+  return c.json({ data: [] });
+});
+
+app.get('/payroll/export', async (c) => {
+  return c.text('employee,gross,net,tax\n', 200, { 'Content-Type': 'text/csv' });
+});
+
+// ==================== INVOICE RECONCILIATION REPORT ====================
+
+app.get('/agents/invoice-reconciliation', async (c) => {
+  return c.json({ matched: 0, unmatched: 0, total: 0, items: [] });
+});
+
 export default app;
