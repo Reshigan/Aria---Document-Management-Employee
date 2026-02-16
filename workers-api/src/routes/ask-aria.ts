@@ -274,6 +274,15 @@ async function executeNaturalLanguageOrder(
       }
     }
     if (!matched) {
+      const numRef = item.productRef.match(/^(?:product|item|prod)?\s*#?\s*(\d+)$/i);
+      if (numRef) {
+        const idx = parseInt(numRef[1]) - 1;
+        if (idx >= 0 && idx < allProducts.length) {
+          matched = allProducts[idx];
+        }
+      }
+    }
+    if (!matched) {
       notFound.push(item.productRef);
     } else {
       resolvedItems.push({
