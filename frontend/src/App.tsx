@@ -248,6 +248,7 @@ import DataExport from './pages/GoLive/DataExport';
 import ScheduledBots from './pages/GoLive/ScheduledBots';
 import SecuritySettings from './pages/GoLive/SecuritySettings';
 import DataMigration from './pages/GoLive/DataMigration';
+import WorkflowManagement from './pages/workflows/WorkflowManagement';
 import './styles/design-system.css';
 import './styles/dark-mode.css';
 
@@ -449,6 +450,8 @@ function App() {
                     <Route path="/compliance/risk-register" element={<RiskRegister />} />
                     <Route path="/compliance/document-control" element={<DocumentControl />} />
                     <Route path="/compliance/policies" element={<Policies />} />
+                    <Route path="/workflows" element={<WorkflowManagement />} />
+                    <Route path="/compliance/workflows" element={<WorkflowManagement />} />
                     <Route path="/tax" element={<TaxCompliance />} />
                     <Route path="/tax/vat-returns" element={<VATReturns />} />
                     <Route path="/legal" element={<LegalCompliance />} />
