@@ -268,7 +268,7 @@ const StockMovements: React.FC = () => {
             <div className="p-4 overflow-y-auto max-h-[calc(90vh-80px)]">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Movement Number *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Movement Number *</label>
                   <input
                     type="text"
                     value={form.movement_number}
@@ -277,7 +277,7 @@ const StockMovements: React.FC = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Product Name *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Product Name *</label>
                   <input
                     type="text"
                     value={form.product_name}
@@ -288,7 +288,7 @@ const StockMovements: React.FC = () => {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Warehouse From</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Warehouse From</label>
                   <input
                     type="text"
                     value={form.warehouse_from}
@@ -297,7 +297,7 @@ const StockMovements: React.FC = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Warehouse To</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Warehouse To</label>
                   <input
                     type="text"
                     value={form.warehouse_to}
@@ -308,7 +308,7 @@ const StockMovements: React.FC = () => {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Quantity *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Quantity *</label>
                   <input
                     type="number"
                     value={form.quantity}
@@ -317,7 +317,7 @@ const StockMovements: React.FC = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Movement Type *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Movement Type *</label>
                   <select
                     value={form.movement_type}
                     onChange={(e) => setForm({ ...form, movement_type: e.target.value as any })}
@@ -332,7 +332,7 @@ const StockMovements: React.FC = () => {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Movement Date *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Movement Date *</label>
                   <input
                     type="date"
                     value={form.movement_date}
@@ -341,7 +341,7 @@ const StockMovements: React.FC = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Reference</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Reference</label>
                   <input
                     type="text"
                     value={form.reference}
@@ -353,13 +353,13 @@ const StockMovements: React.FC = () => {
               <div className="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
                 <button
                   onClick={() => setShowModal(false)}
-                  className="px-5 py-2.5 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-medium"
+                  className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-medium"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleSave}
-                  className="px-5 py-2.5 bg-gradient-to-r from-violet-500 to-purple-500 text-white rounded-xl hover:from-violet-600 hover:to-purple-600 transition-all  font-medium"
+                  className="px-4 py-2 bg-gradient-to-r from-violet-500 to-purple-500 text-white rounded-xl hover:from-violet-600 hover:to-purple-600 transition-all  font-medium"
                 >
                   Save
                 </button>

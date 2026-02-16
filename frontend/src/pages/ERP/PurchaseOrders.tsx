@@ -395,7 +395,7 @@ export default function PurchaseOrders() {
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
                 <input type="text" placeholder="Search by PO number or supplier..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-12 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all" />
               </div>
-              <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all min-w-[180px]">
+              <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all min-w-[180px]">
                 <option value="">All Statuses</option>
                 <option value="draft">Draft</option>
                 <option value="approved">Approved</option>
@@ -474,7 +474,7 @@ export default function PurchaseOrders() {
       {showCreateModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => { setShowCreateModal(false); resetForm(); }}>
           <div onClick={(e) => e.stopPropagation()} className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden">
-            <div className="bg-gradient-to-r from-orange-600 to-amber-600 text-white p-4">
+            <div className="bg-gradient-to-r from-orange-600 to-amber-600 text-white p-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-white/20 rounded-lg"><ShoppingCart className="h-6 w-6" /></div>
@@ -487,42 +487,35 @@ export default function PurchaseOrders() {
               </div>
             </div>
 
-            <form onSubmit={handleCreatePO} className="overflow-y-auto max-h-[calc(90vh-180px)]">
-              <div className="p-4 space-y-3">
-                <div className="bg-gray-50 dark:bg-gray-900/50 rounded-xl p-5">
-                  <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4 flex items-center gap-2">
-                    <span className="w-6 h-6 rounded-full bg-orange-100 dark:bg-orange-900/50 text-orange-600 dark:text-orange-400 flex items-center justify-center text-xs">1</span>
-                    Order Details
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <form onSubmit={handleCreatePO} className="overflow-y-auto max-h-[calc(90vh-60px)]">
+              <div className="p-3 space-y-2">
+                <div className="bg-gray-50 dark:bg-gray-900/50 rounded-lg p-2">
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Supplier *</label>
-                      <select value={formData.supplier_id} onChange={(e) => setFormData({ ...formData, supplier_id: e.target.value })} required className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all">
+                      <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-0.5">Supplier *</label>
+                      <select value={formData.supplier_id} onChange={(e) => setFormData({ ...formData, supplier_id: e.target.value })} required className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent">
                         <option value="">Select Supplier</option>
                         {suppliers.map(supplier => (<option key={supplier.id} value={supplier.id}>{supplier.name}</option>))}
                       </select>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">PO Date *</label>
-                      <input type="date" value={formData.po_date} onChange={(e) => setFormData({ ...formData, po_date: e.target.value })} required className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all" />
+                      <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-0.5">PO Date *</label>
+                      <input type="date" value={formData.po_date} onChange={(e) => setFormData({ ...formData, po_date: e.target.value })} required className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent" />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Expected Delivery Date</label>
-                      <input type="date" value={formData.expected_delivery_date} onChange={(e) => setFormData({ ...formData, expected_delivery_date: e.target.value })} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all" />
+                      <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-0.5">Expected Delivery</label>
+                      <input type="date" value={formData.expected_delivery_date} onChange={(e) => setFormData({ ...formData, expected_delivery_date: e.target.value })} className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent" />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Notes</label>
-                      <input type="text" value={formData.notes} onChange={(e) => setFormData({ ...formData, notes: e.target.value })} placeholder="Optional notes" className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all" />
+                      <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-0.5">Notes</label>
+                      <input type="text" value={formData.notes} onChange={(e) => setFormData({ ...formData, notes: e.target.value })} placeholder="Optional notes" className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent" />
                     </div>
                   </div>
                 </div>
 
-                <div className="bg-gray-50 dark:bg-gray-900/50 rounded-xl p-5">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 flex items-center gap-2">
-                      <span className="w-6 h-6 rounded-full bg-orange-100 dark:bg-orange-900/50 text-orange-600 dark:text-orange-400 flex items-center justify-center text-xs">2</span>
-                      Line Items
-                    </h3>
+                <div className="bg-gray-50 dark:bg-gray-900/50 rounded-lg p-2">
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-xs font-semibold text-gray-600 dark:text-gray-300">Line Items</h3>
                     <button type="button" onClick={addLine} className="px-3 py-1.5 bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 rounded-lg text-sm font-medium hover:bg-orange-200 dark:hover:bg-orange-900/50 transition-colors">+ Add Line</button>
                   </div>
                   <div className="overflow-x-auto">
@@ -576,7 +569,7 @@ export default function PurchaseOrders() {
                 </div>
               </div>
 
-              <div className="p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 flex justify-end gap-3">
+              <div className="p-3 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 flex justify-end gap-3">
                 <button type="button" onClick={() => { setShowCreateModal(false); resetForm(); }} className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">Cancel</button>
                 <button type="submit" disabled={submitting} className={`px-4 py-2 bg-gradient-to-r from-orange-600 to-amber-600 text-white rounded-xl font-medium transition-all  ${submitting ? 'opacity-50 cursor-not-allowed' : 'hover:from-orange-700 hover:to-amber-700'}`}>{submitting ? 'Creating...' : 'Create Purchase Order'}</button>
               </div>
@@ -600,27 +593,27 @@ export default function PurchaseOrders() {
                 <button onClick={() => setSelectedOrder(null)} className="p-2 hover:bg-white/20 rounded-lg transition-colors"><X className="h-5 w-5" /></button>
               </div>
             </div>
-            <div className="p-4 space-y-4 overflow-y-auto max-h-[calc(90vh-120px)]">
+            <div className="p-3 space-y-2 overflow-y-auto max-h-[calc(90vh-120px)]">
               <div className="grid grid-cols-2 gap-3">
-                <div className="bg-gray-50 dark:bg-gray-900/50 rounded-xl p-4">
+                <div className="bg-gray-50 dark:bg-gray-900/50 rounded-lg p-3">
                   <p className="text-xs text-gray-500 dark:text-gray-400">PO Date</p>
                   <p className="font-medium text-gray-900 dark:text-white">{new Date(selectedOrder.po_date).toLocaleDateString()}</p>
                 </div>
-                <div className="bg-gray-50 dark:bg-gray-900/50 rounded-xl p-4">
+                <div className="bg-gray-50 dark:bg-gray-900/50 rounded-lg p-3">
                   <p className="text-xs text-gray-500 dark:text-gray-400">Expected Delivery</p>
                   <p className="font-medium text-gray-900 dark:text-white">{selectedOrder.expected_delivery_date ? new Date(selectedOrder.expected_delivery_date).toLocaleDateString() : '-'}</p>
                 </div>
-                <div className="bg-gray-50 dark:bg-gray-900/50 rounded-xl p-4">
+                <div className="bg-gray-50 dark:bg-gray-900/50 rounded-lg p-3">
                   <p className="text-xs text-gray-500 dark:text-gray-400">Status</p>
                   <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${getStatusConfig(selectedOrder.status).bg} ${getStatusConfig(selectedOrder.status).text} border ${getStatusConfig(selectedOrder.status).border} capitalize`}>{selectedOrder.status}</span>
                 </div>
-                <div className="bg-gray-50 dark:bg-gray-900/50 rounded-xl p-4">
+                <div className="bg-gray-50 dark:bg-gray-900/50 rounded-lg p-3">
                   <p className="text-xs text-gray-500 dark:text-gray-400">Total Amount</p>
                   <p className="font-bold text-xl text-gray-900 dark:text-white">R {Number(selectedOrder.total_amount ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
                 </div>
               </div>
               {selectedOrder.lines && selectedOrder.lines.length > 0 && (
-                <div className="bg-gray-50 dark:bg-gray-900/50 rounded-xl p-4">
+                <div className="bg-gray-50 dark:bg-gray-900/50 rounded-lg p-3">
                   <h3 className="font-medium text-gray-900 dark:text-white mb-3">Line Items</h3>
                   <div className="space-y-2">
                     {selectedOrder.lines.map((line, index) => (
