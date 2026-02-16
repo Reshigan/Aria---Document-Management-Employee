@@ -60,7 +60,17 @@ export default function Dashboard() {
       // Load live entity counts
       try {
         const liveRes = await api.get('/go-live/dashboard/live')
-        setLiveCounts(liveRes.data || {})
+        const liveData = liveRes.data?.data || liveRes.data || {}
+        const flat: Record<string, number> = {}
+        for (const [key, val] of Object.entries(liveData)) {
+          if (key === 'recent_activity' || key === 'last_updated') continue
+          if (val && typeof val === 'object' && 'count' in (val as Record<string, unknown>)) {
+            flat[key] = Number((val as Record<string, unknown>).count) || 0
+          } else if (typeof val === 'number') {
+            flat[key] = val
+          }
+        }
+        setLiveCounts(flat)
       } catch (e) {
         console.error('Failed to load live counts:', e)
       }

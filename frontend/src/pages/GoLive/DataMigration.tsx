@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Upload, Database, RefreshCw, FileText, Check, AlertCircle } from 'lucide-react';
 import { goLiveApi } from '../../services/goLiveApi';
 
-const ENTITIES = ['customers', 'suppliers', 'products'];
+const ENTITIES = ['customers', 'suppliers', 'products', 'invoices', 'employees'];
 
 export default function DataMigration() {
   const [status, setStatus] = useState<Record<string, number>>({});
@@ -31,12 +31,32 @@ export default function DataMigration() {
     reader.readAsText(file);
   };
 
-  const parseCsv = (text: string): any[] => {
-    const lines = text.trim().split('\n');
+  const parseCsvLine = (line: string): string[] => {
+    const result: string[] = [];
+    let current = '';
+    let inQuotes = false;
+    for (let i = 0; i < line.length; i++) {
+      const ch = line[i];
+      if (inQuotes) {
+        if (ch === '"' && line[i + 1] === '"') { current += '"'; i++; }
+        else if (ch === '"') { inQuotes = false; }
+        else { current += ch; }
+      } else {
+        if (ch === '"') { inQuotes = true; }
+        else if (ch === ',') { result.push(current.trim()); current = ''; }
+        else { current += ch; }
+      }
+    }
+    result.push(current.trim());
+    return result;
+  };
+
+  const parseCsv = (text: string): Record<string, string>[] => {
+    const lines = text.trim().split('\n').filter(l => l.trim());
     if (lines.length < 2) return [];
-    const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+    const headers = parseCsvLine(lines[0]);
     return lines.slice(1).map(line => {
-      const values = line.split(',').map(v => v.trim().replace(/"/g, ''));
+      const values = parseCsvLine(line);
       const obj: Record<string, string> = {};
       headers.forEach((h, i) => { obj[h] = values[i] || ''; });
       return obj;
@@ -96,7 +116,7 @@ export default function DataMigration() {
             <input type="file" accept=".csv" onChange={handleFileUpload} className="hidden" />
           </label>
         </div>
-        <textarea value={csvText} onChange={e => setCsvText(e.target.value)} rows={6} placeholder={`Paste CSV data here, e.g.:\n${selectedEntity === 'customers' ? 'customer_name,email,phone\nAcme Corp,acme@test.com,0123456789' : selectedEntity === 'suppliers' ? 'supplier_name,email,phone\nSupplier Co,sup@test.com,0123456789' : 'product_name,sku,unit_price,cost_price\nWidget A,WA-001,100,50'}`}
+        <textarea value={csvText} onChange={e => setCsvText(e.target.value)} rows={6} placeholder={`Paste CSV data here, e.g.:\n${selectedEntity === 'customers' ? 'customer_name,email,phone\nAcme Corp,acme@test.com,0123456789' : selectedEntity === 'suppliers' ? 'supplier_name,email,phone\nSupplier Co,sup@test.com,0123456789' : selectedEntity === 'invoices' ? 'invoice_number,customer_id,total_amount,status\nINV-001,cust-uuid,1500,draft' : selectedEntity === 'employees' ? 'full_name,email,department,position\nJohn Doe,john@co.za,Finance,Accountant' : 'product_name,sku,unit_price,cost_price\nWidget A,WA-001,100,50'}`}
           className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-sm font-mono" />
         <button onClick={handleImport} disabled={importing || !csvText.trim()}
           className="w-full px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm font-medium disabled:opacity-50 flex items-center justify-center gap-2">

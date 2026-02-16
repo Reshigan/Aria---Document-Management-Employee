@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { History, RefreshCw, AlertCircle, X, Download, Search, Plus, Edit, Trash2, LogIn, LogOut, Filter } from 'lucide-react';
-import { auditTrailApi } from '../../services/newPagesApi';
+import api from '../../services/api';
 
 interface AuditEntry {
   id: string;
@@ -26,23 +26,36 @@ export default function AuditTrail() {
   const fetchEntries = async () => {
     try {
       setLoading(true);
-      const response = await auditTrailApi.getAll();
-      setEntries(response.data.audit_entries || []);
+      const response = await api.get('/go-live/audit-trail');
+      const data = response.data?.data || response.data || {};
+      setEntries(data.audit_entries || []);
     } catch (err) { setError('Failed to load audit trail'); } finally { setLoading(false); }
   };
 
   const handleFilter = async () => {
     try {
       setLoading(true);
-      const response = await auditTrailApi.search(filters);
-      setEntries(response.data.audit_entries || []);
+      const params = new URLSearchParams();
+      if (filters.entity_type) params.append('entity_type', filters.entity_type);
+      if (filters.action) params.append('action', filters.action);
+      if (filters.date_from) params.append('date_from', filters.date_from);
+      if (filters.date_to) params.append('date_to', filters.date_to);
+      const response = await api.get(`/go-live/audit-trail?${params.toString()}`);
+      const data = response.data?.data || response.data || {};
+      setEntries(data.audit_entries || []);
     } catch (err) { setError('Failed to filter audit trail'); } finally { setLoading(false); }
   };
 
   const handleExport = async () => {
     try {
-      const response = await auditTrailApi.export(filters);
-      const blob = new Blob([JSON.stringify(response.data, null, 2)], { type: 'application/json' });
+      const params = new URLSearchParams();
+      if (filters.entity_type) params.append('entity_type', filters.entity_type);
+      if (filters.action) params.append('action', filters.action);
+      if (filters.date_from) params.append('date_from', filters.date_from);
+      if (filters.date_to) params.append('date_to', filters.date_to);
+      const response = await api.get(`/go-live/audit-trail?${params.toString()}`);
+      const data = response.data?.data || response.data || {};
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;

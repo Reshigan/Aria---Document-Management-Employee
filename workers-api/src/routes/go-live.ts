@@ -107,6 +107,14 @@ async function getDocumentData(db: D1Database, companyId: string, docType: strin
       const cust = await db.prepare('SELECT customer_name FROM customers WHERE id = ?').bind(doc.customer_id).first();
       customerName = (cust as any)?.customer_name || 'Unknown';
     }
+  } else if (docType === 'delivery' || docType === 'delivery_note' || docType === 'delivery-note') {
+    doc = await db.prepare('SELECT * FROM deliveries WHERE id = ? AND company_id = ?').bind(docId, companyId).first();
+    if (doc) {
+      const lineResult = await db.prepare('SELECT * FROM delivery_items WHERE delivery_id = ?').bind(docId).all();
+      lines = (lineResult.results || []) as any[];
+      const cust = await db.prepare('SELECT customer_name FROM customers WHERE id = ?').bind(doc.customer_id).first();
+      customerName = (cust as any)?.customer_name || 'Unknown';
+    }
   } else if (docType === 'quote') {
     doc = await db.prepare('SELECT * FROM quotes WHERE id = ? AND company_id = ?').bind(docId, companyId).first();
     if (doc) {
@@ -176,6 +184,9 @@ app.get('/pdf/:docType/:docId', async (c) => {
       'purchase-order': 'Purchase Order',
       credit_note: 'Credit Note',
       'credit-note': 'Credit Note',
+      delivery: 'Delivery Note',
+      delivery_note: 'Delivery Note',
+      'delivery-note': 'Delivery Note',
       statement: 'Customer Statement',
     };
 
@@ -701,6 +712,51 @@ app.post('/auth/2fa/verify', async (c) => {
       return c.json({ error: 'A 6-digit code is required' }, 400);
     }
 
+    const user = await c.env.DB.prepare('SELECT totp_secret FROM users WHERE id = ?').bind(userId).first();
+    const secret = (user as any)?.totp_secret;
+    if (!secret) {
+      return c.json({ error: 'Please set up 2FA first' }, 400);
+    }
+
+    const epoch = Math.floor(Date.now() / 1000);
+    const timeStep = Math.floor(epoch / 30);
+    let valid = false;
+    for (let offset = -1; offset <= 1; offset++) {
+      const counter = timeStep + offset;
+      const counterBytes = new Uint8Array(8);
+      let tmp = counter;
+      for (let i = 7; i >= 0; i--) {
+        counterBytes[i] = tmp & 0xff;
+        tmp = Math.floor(tmp / 256);
+      }
+      const base32Chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+      const secretBytes: number[] = [];
+      let bits = 0;
+      let value = 0;
+      for (const ch of secret) {
+        const idx = base32Chars.indexOf(ch.toUpperCase());
+        if (idx === -1) continue;
+        value = (value << 5) | idx;
+        bits += 5;
+        if (bits >= 8) {
+          secretBytes.push((value >> (bits - 8)) & 0xff);
+          bits -= 8;
+        }
+      }
+      const key = await crypto.subtle.importKey('raw', new Uint8Array(secretBytes), { name: 'HMAC', hash: 'SHA-1' }, false, ['sign']);
+      const sig = new Uint8Array(await crypto.subtle.sign('HMAC', key, counterBytes));
+      const off = sig[sig.length - 1] & 0x0f;
+      const otp = ((sig[off] & 0x7f) << 24 | sig[off + 1] << 16 | sig[off + 2] << 8 | sig[off + 3]) % 1000000;
+      if (String(otp).padStart(6, '0') === code) {
+        valid = true;
+        break;
+      }
+    }
+
+    if (!valid) {
+      return c.json({ error: 'Invalid verification code' }, 400);
+    }
+
     await c.env.DB.prepare('UPDATE users SET totp_enabled = 1 WHERE id = ?').bind(userId).run();
 
     return c.json({ success: true, message: '2FA enabled successfully' });
@@ -771,6 +827,15 @@ app.post('/migration/import', async (c) => {
           await c.env.DB.prepare(
             'INSERT OR IGNORE INTO products (id, company_id, product_name, sku, unit_price, cost_price, quantity_on_hand, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
           ).bind(id, companyId, record.product_name || record.name, record.sku, Number(record.unit_price || 0), Number(record.cost_price || 0), Number(record.quantity_on_hand || 0), new Date().toISOString()).run();
+        } else if (entity === 'invoices') {
+          const custId = record.customer_id || null;
+          await c.env.DB.prepare(
+            'INSERT OR IGNORE INTO invoices (id, company_id, customer_id, invoice_number, invoice_date, due_date, total_amount, status, currency, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+          ).bind(id, companyId, custId, record.invoice_number || `INV-${Date.now()}`, record.invoice_date || new Date().toISOString(), record.due_date || null, Number(record.total_amount || 0), record.status || 'draft', record.currency || 'ZAR', new Date().toISOString()).run();
+        } else if (entity === 'employees') {
+          await c.env.DB.prepare(
+            'INSERT OR IGNORE INTO employees (id, company_id, full_name, email, phone, department, position, hire_date, status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+          ).bind(id, companyId, record.full_name || record.name, record.email, record.phone, record.department, record.position, record.hire_date || new Date().toISOString(), record.status || 'active', new Date().toISOString()).run();
         }
         imported++;
       } catch (e) {
