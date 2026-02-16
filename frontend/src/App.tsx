@@ -330,6 +330,12 @@ import TaxComplianceBotReport from './pages/bots/tax-compliance-report';
 import TenderMgmtBotConfig from './pages/bots/tender-management-config';
 import TenderMgmtBotReport from './pages/bots/tender-management-report';
 import APSuppliers from './pages/AP/Suppliers';
+import APPurchaseOrders from './pages/AP/PurchaseOrders';
+import ARCustomers from './pages/AR/Customers';
+import AccountsRedirect from './pages/Accounts';
+import AriaChat from './pages/Aria/AriaChat';
+import InvoicesRedirect from './pages/Invoices';
+import PricingComplete from './pages/PricingComplete';
 import './styles/design-system.css';
 import './styles/dark-mode.css';
 
@@ -923,6 +929,14 @@ function App() {
                     <Route path="/bots/tax-compliance/report" element={<TaxComplianceBotReport />} />
                     <Route path="/bots/tender-management/config" element={<TenderMgmtBotConfig />} />
                     <Route path="/bots/tender-management/report" element={<TenderMgmtBotReport />} />
+
+                    {/* Additional Routes */}
+                    <Route path="/ap/purchase-orders-list" element={<APPurchaseOrders />} />
+                    <Route path="/ar/customers-list" element={<ARCustomers />} />
+                    <Route path="/accounts" element={<AccountsRedirect />} />
+                    <Route path="/aria/chat" element={<AriaChat />} />
+                    <Route path="/invoices" element={<InvoicesRedirect />} />
+                    <Route path="/pricing/plans" element={<PricingComplete />} />
 
                     {/* Go-Live Features */}
                     <Route path="/admin/data-export" element={<DataExport />} />
