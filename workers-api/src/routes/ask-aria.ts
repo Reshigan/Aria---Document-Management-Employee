@@ -443,15 +443,32 @@ const skills: Skill[] = [
       }
       const query = runMatch[1].trim().replace(/\s+bot$/i, '').replace(/\s+agent$/i, '');
 
-      let matchedBot = botRegistry.find(b => b.id === query || b.name.toLowerCase() === query);
+      const normalize = (s: string) => s.toLowerCase().replace(/[^a-z0-9\s]/g, '').replace(/\s+agent$/,'').replace(/\s+bot$/,'').trim();
+      const nQuery = normalize(query);
+      let matchedBot = botRegistry.find(b => b.id === query || normalize(b.name) === nQuery);
       if (!matchedBot) {
-        matchedBot = botRegistry.find(b => fuzzyMatch(query, b.name) || fuzzyMatch(query, b.id.replace(/_/g, ' ')));
+        matchedBot = botRegistry.find(b => fuzzyMatch(nQuery, normalize(b.name)) || fuzzyMatch(nQuery, b.id.replace(/_/g, ' ')));
       }
       if (!matchedBot) {
-        const words = query.split(/\s+/);
+        const words = nQuery.split(/\s+/);
         matchedBot = botRegistry.find(b => {
-          const bName = b.name.toLowerCase();
+          const bName = normalize(b.name);
           return words.length > 0 && words.every(w => bName.includes(w));
+        });
+      }
+      if (!matchedBot) {
+        const words = nQuery.split(/\s+/);
+        matchedBot = botRegistry.find(b => {
+          const bName = normalize(b.name);
+          return words.some(w => w.length >= 4 && bName.startsWith(w));
+        });
+      }
+      if (!matchedBot) {
+        const words = nQuery.split(/\s+/);
+        matchedBot = botRegistry.find(b => {
+          const bName = normalize(b.name);
+          const bWords = bName.split(/\s+/);
+          return words.some(w => w.length >= 4 && bWords.some(bw => bw.startsWith(w) || w.startsWith(bw)));
         });
       }
 
