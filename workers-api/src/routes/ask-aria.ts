@@ -116,8 +116,303 @@ async function ensureDemoCompanyExists(db: D1Database, companyId: string): Promi
   }
 }
 
+// --- Natural Language Order Parsing ---
+interface ParsedOrder {
+  intent: 'sales_order' | 'quote' | 'purchase_order' | 'invoice';
+  entityName: string;
+  items: Array<{
+    productRef: string;
+    quantity: number;
+    price: number;
+  }>;
+}
+
+function fuzzyMatch(needle: string, haystack: string): boolean {
+  const n = needle.toLowerCase().trim();
+  const h = haystack.toLowerCase().trim();
+  if (h === n || h.includes(n) || n.includes(h)) return true;
+  if (n.length >= 3 && h.startsWith(n)) return true;
+  const nWords = n.split(/\s+/);
+  if (nWords.length > 0 && nWords.every(w => h.includes(w))) return true;
+  return false;
+}
+
+function parseNaturalLanguageOrder(message: string): ParsedOrder | null {
+  const msg = message.replace(/^(?:hey|hi|hello|yo)?\s*(?:aria)?\s*/i, '').trim();
+
+  let intent: ParsedOrder['intent'] | null = null;
+  if (/(?:create|make|generate|new|prepare|do|process)\s+(?:a\s+)?(?:new\s+)?sales\s+order/i.test(msg)) {
+    intent = 'sales_order';
+  } else if (/(?:create|make|generate|new|prepare|do|process)\s+(?:a\s+)?(?:new\s+)?(?:quote|quotation)/i.test(msg)) {
+    intent = 'quote';
+  } else if (/(?:create|make|generate|new|prepare|do|process)\s+(?:a\s+)?(?:new\s+)?(?:purchase\s+order|po\b)/i.test(msg)) {
+    intent = 'purchase_order';
+  } else if (/(?:create|make|generate|new|prepare|do|process)\s+(?:a\s+)?(?:new\s+)?invoice/i.test(msg)) {
+    intent = 'invoice';
+  }
+  if (!intent) return null;
+
+  const forMatch = msg.match(/\bfor\s+(.+?)(?:\s+(?:they|he|she|we|i\s+need|needs?|wants?|with\s+|products?|items?|\d+\s*(?:x|units?|qty|pcs))|[;\-]|,\s*(?:they|product|item|\d))/i)
+    || msg.match(/\bfor\s+(.+?)$/i);
+  let entityName = '';
+  if (forMatch) {
+    entityName = forMatch[1].trim()
+      .replace(/^(?:customer|client|company|supplier|vendor)\s+/i, '')
+      .replace(/[,;]+$/, '').trim();
+  }
+  if (!entityName) return null;
+
+  const items: ParsedOrder['items'] = [];
+
+  const needPriceQty = /(?:they\s+)?needs?\s+(.+?)\s+(?:at|@)\s+r?\s?(\d[\d,]*(?:\.\d+)?)\s*(?:(?:qty|quantity|x|units?)\s*(\d+))?/gi;
+  let m;
+  while ((m = needPriceQty.exec(msg)) !== null) {
+    items.push({
+      productRef: m[1].trim().replace(/,+$/, ''),
+      price: parseFloat(m[2].replace(/,/g, '')),
+      quantity: m[3] ? parseInt(m[3]) : 1,
+    });
+  }
+
+  if (items.length === 0) {
+    const qtyFirst = /(\d+)\s*(?:x|units?\s+of|pcs?\s+of|of)\s+(.+?)\s+(?:at|@)\s+r?\s?(\d[\d,]*(?:\.\d+)?)/gi;
+    while ((m = qtyFirst.exec(msg)) !== null) {
+      items.push({
+        productRef: m[2].trim().replace(/,+$/, ''),
+        quantity: parseInt(m[1]),
+        price: parseFloat(m[3].replace(/,/g, '')),
+      });
+    }
+  }
+
+  if (items.length === 0) {
+    const productAt = /(?:product|item)\s+(.+?)\s+(?:at|@)\s+r?\s?(\d[\d,]*(?:\.\d+)?)/gi;
+    while ((m = productAt.exec(msg)) !== null) {
+      items.push({
+        productRef: m[1].trim().replace(/,+$/, ''),
+        quantity: 1,
+        price: parseFloat(m[2].replace(/,/g, '')),
+      });
+    }
+  }
+
+  if (items.length > 0) {
+    const trailingQty = msg.match(/(?:and\s+)?(?:they|the|i|we)\s+needs?\s+(\d+)\s*$/i)
+      || msg.match(/\bqty\s+(\d+)\s*$/i)
+      || msg.match(/\bquantity\s+(\d+)\s*$/i)
+      || msg.match(/\bx\s*(\d+)\s*$/i);
+    if (trailingQty) {
+      items[items.length - 1].quantity = parseInt(trailingQty[1]);
+    }
+  }
+
+  if (items.length === 0) return null;
+
+  return { intent, entityName, items };
+}
+
+async function executeNaturalLanguageOrder(
+  parsed: ParsedOrder,
+  db: D1Database,
+  companyId: string,
+): Promise<SkillResult> {
+  await ensureDemoCompanyExists(db, companyId);
+
+  const isPO = parsed.intent === 'purchase_order';
+  let matchedEntity: { id: string; name: string; code: string } | null = null;
+
+  if (isPO) {
+    const suppliers = await db.prepare(
+      'SELECT id, supplier_name, supplier_code FROM suppliers WHERE company_id = ? ORDER BY supplier_name LIMIT 50'
+    ).bind(companyId).all();
+    for (const s of (suppliers.results || []) as any[]) {
+      if (fuzzyMatch(parsed.entityName, s.supplier_name || '')) {
+        matchedEntity = { id: s.id, name: s.supplier_name, code: s.supplier_code };
+        break;
+      }
+    }
+    if (!matchedEntity) {
+      const supplierList = ((suppliers.results || []) as any[]).map((s: any) => `- ${s.supplier_name}`).join('\n');
+      return {
+        response: `**Supplier "${parsed.entityName}" not found.**\n\nAvailable suppliers:\n${supplierList || 'None'}\n\nPlease try again with a valid supplier name.`,
+      };
+    }
+  } else {
+    const customers = await db.prepare(
+      'SELECT id, customer_name, customer_code FROM customers WHERE company_id = ? ORDER BY customer_name LIMIT 50'
+    ).bind(companyId).all();
+    for (const c of (customers.results || []) as any[]) {
+      if (fuzzyMatch(parsed.entityName, c.customer_name || '')) {
+        matchedEntity = { id: c.id, name: c.customer_name, code: c.customer_code };
+        break;
+      }
+    }
+    if (!matchedEntity) {
+      const customerList = ((customers.results || []) as any[]).map((c: any) => `- ${c.customer_name}`).join('\n');
+      return {
+        response: `**Customer "${parsed.entityName}" not found.**\n\nAvailable customers:\n${customerList || 'None'}\n\nPlease try again with a valid customer name.`,
+      };
+    }
+  }
+
+  const products = await db.prepare(
+    'SELECT id, product_name, product_code, unit_price, cost_price FROM products WHERE company_id = ? ORDER BY product_name LIMIT 50'
+  ).bind(companyId).all();
+  const allProducts = (products.results || []) as any[];
+
+  const resolvedItems: Array<{ id: string; name: string; quantity: number; price: number }> = [];
+  const notFound: string[] = [];
+
+  for (const item of parsed.items) {
+    let matched: any = null;
+    for (const p of allProducts) {
+      if (fuzzyMatch(item.productRef, p.product_name || '') || fuzzyMatch(item.productRef, p.product_code || '')) {
+        matched = p;
+        break;
+      }
+    }
+    if (!matched) {
+      notFound.push(item.productRef);
+    } else {
+      resolvedItems.push({
+        id: matched.id,
+        name: matched.product_name,
+        quantity: item.quantity,
+        price: item.price > 0 ? item.price : (isPO ? (matched.cost_price || matched.unit_price || 0) : (matched.unit_price || 0)),
+      });
+    }
+  }
+
+  if (resolvedItems.length === 0) {
+    const productList = allProducts.map((p: any) => `- ${p.product_name} (${p.product_code})`).join('\n');
+    return {
+      response: `**Could not find products: ${notFound.join(', ')}**\n\nAvailable products:\n${productList || 'None'}\n\nPlease try again with valid product names.`,
+    };
+  }
+
+  const subtotal = resolvedItems.reduce((sum, p) => sum + p.quantity * p.price, 0);
+  let docId = '';
+  let docNumber = '';
+  let docType = '';
+  let docAction = '';
+  let viewPath = '';
+
+  if (parsed.intent === 'sales_order') {
+    docId = generateUUID();
+    docNumber = `SO-${Date.now().toString().slice(-8)}`;
+    docType = 'Sales Order';
+    docAction = 'order_created';
+    viewPath = 'Sales > Sales Orders';
+    await db.prepare(`
+      INSERT INTO sales_orders (id, company_id, customer_id, order_number, order_date, status, subtotal, total_amount, created_at, updated_at)
+      VALUES (?, ?, ?, ?, date('now'), 'confirmed', ?, ?, datetime('now'), datetime('now'))
+    `).bind(docId, companyId, matchedEntity.id, docNumber, subtotal, subtotal).run();
+    for (const item of resolvedItems) {
+      await db.prepare(`
+        INSERT INTO sales_order_items (id, sales_order_id, product_id, description, quantity, unit_price, line_total, created_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'))
+      `).bind(generateUUID(), docId, item.id, item.name, item.quantity, item.price, item.quantity * item.price).run();
+    }
+  } else if (parsed.intent === 'quote') {
+    docId = generateUUID();
+    docNumber = `QT-${Date.now().toString().slice(-8)}`;
+    docType = 'Quote';
+    docAction = 'quote_created';
+    viewPath = 'Sales > Quotes';
+    await db.prepare(`
+      INSERT INTO quotes (id, company_id, customer_id, quote_number, quote_date, valid_until, status, subtotal, total_amount, created_at, updated_at)
+      VALUES (?, ?, ?, ?, date('now'), date('now', '+30 days'), 'draft', ?, ?, datetime('now'), datetime('now'))
+    `).bind(docId, companyId, matchedEntity.id, docNumber, subtotal, subtotal).run();
+    for (const item of resolvedItems) {
+      await db.prepare(`
+        INSERT INTO quote_items (id, quote_id, product_id, description, quantity, unit_price, line_total, created_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'))
+      `).bind(generateUUID(), docId, item.id, item.name, item.quantity, item.price, item.quantity * item.price).run();
+    }
+  } else if (parsed.intent === 'purchase_order') {
+    docId = generateUUID();
+    docNumber = `PO-${Date.now().toString().slice(-8)}`;
+    docType = 'Purchase Order';
+    docAction = 'po_created';
+    viewPath = 'Procurement > Purchase Orders';
+    await db.prepare(`
+      INSERT INTO purchase_orders (id, company_id, supplier_id, po_number, po_date, status, subtotal, total_amount, created_at, updated_at)
+      VALUES (?, ?, ?, ?, date('now'), 'pending', ?, ?, datetime('now'), datetime('now'))
+    `).bind(docId, companyId, matchedEntity.id, docNumber, subtotal, subtotal).run();
+    for (const item of resolvedItems) {
+      await db.prepare(`
+        INSERT INTO purchase_order_items (id, purchase_order_id, product_id, description, quantity, unit_price, line_total, created_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'))
+      `).bind(generateUUID(), docId, item.id, item.name, item.quantity, item.price, item.quantity * item.price).run();
+    }
+  } else if (parsed.intent === 'invoice') {
+    docId = generateUUID();
+    docNumber = `INV-${Date.now().toString().slice(-8)}`;
+    docType = 'Invoice';
+    docAction = 'invoice_created';
+    viewPath = 'Financial > AR Invoices';
+    const taxAmount = subtotal * 0.15;
+    const totalAmount = subtotal + taxAmount;
+    const today = new Date().toISOString().split('T')[0];
+    const dueDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+    await db.prepare(`
+      INSERT INTO customer_invoices (id, company_id, invoice_number, customer_id, invoice_date, due_date, status, subtotal, tax_amount, total_amount, balance_due, created_at, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?, 'draft', ?, ?, ?, ?, datetime('now'), datetime('now'))
+    `).bind(docId, companyId, docNumber, matchedEntity.id, today, dueDate, subtotal, taxAmount, totalAmount, totalAmount).run();
+    for (const item of resolvedItems) {
+      await db.prepare(`
+        INSERT INTO customer_invoice_items (id, invoice_id, product_id, description, quantity, unit_price, line_total, created_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'))
+      `).bind(generateUUID(), docId, item.id, item.name, item.quantity, item.price, item.quantity * item.price).run();
+    }
+  }
+
+  const itemsList = resolvedItems.map((p, i) =>
+    `${i + 1}. ${p.name} x ${p.quantity} @ R${p.price.toFixed(2)} = R${(p.quantity * p.price).toFixed(2)}`
+  ).join('\n');
+
+  let extra = '';
+  if (parsed.intent === 'invoice') {
+    const tax = subtotal * 0.15;
+    extra = `\n**Subtotal:** R${subtotal.toFixed(2)}\n**VAT (15%):** R${tax.toFixed(2)}\n**Total:** R${(subtotal + tax).toFixed(2)}`;
+  } else {
+    extra = `\n**Total:** R${subtotal.toFixed(2)}`;
+  }
+
+  let notFoundMsg = '';
+  if (notFound.length > 0) {
+    notFoundMsg = `\n\n_Note: Could not find products: ${notFound.join(', ')} — skipped._`;
+  }
+
+  const entityLabel = isPO ? 'Supplier' : 'Customer';
+  return {
+    response: `**${docType} Created Successfully!**\n\n**${docType} #:** ${docNumber}\n**${entityLabel}:** ${matchedEntity.name} (${matchedEntity.code})\n**Status:** ${parsed.intent === 'sales_order' ? 'Confirmed' : parsed.intent === 'invoice' ? 'Draft' : parsed.intent === 'quote' ? 'Draft' : 'Pending'}\n\n**Items:**\n${itemsList}${extra}${notFoundMsg}\n\nView in **${viewPath}**`,
+    action: docAction,
+    data: { id: docId, number: docNumber, total: subtotal },
+  };
+}
+// --- End Natural Language Order Parsing ---
+
 // Skills registry
 const skills: Skill[] = [
+  // Natural Language Order Creation (must be BEFORE step-by-step skills)
+  {
+    name: 'natural_language_order',
+    description: 'Create sales order, quote, PO, or invoice from natural language with inline details',
+    patterns: [
+      /(?:create|make|generate|new|prepare|do|process)\s+(?:a\s+)?(?:new\s+)?(?:sales\s+order|quote|quotation|purchase\s+order|po|invoice)\s+for\s+\w.+(?:need|at|@|\d+\s*x)/i,
+      /(?:create|make|generate|new|prepare|do|process)\s+(?:a\s+)?(?:new\s+)?(?:sales\s+order|quote|quotation|purchase\s+order|po|invoice)\s+for\s+\w.+(?:product|item)/i,
+    ],
+    slots: [],
+    execute: async (ctx) => {
+      const parsed = parseNaturalLanguageOrder(ctx.message);
+      if (!parsed) {
+        return { response: `I understood you want to create a document, but couldn't parse the details. Try something like:\n\n"Create a sales order for Acme Corp they need Widget A at 500 qty 10"` };
+      }
+      return executeNaturalLanguageOrder(parsed, ctx.db, ctx.companyId);
+    },
+  },
+
   // List Customers
   {
     name: 'list_customers',
@@ -494,28 +789,21 @@ const skills: Skill[] = [
     execute: async () => {
       return {
         response: `I'm ARIA, your ERP assistant. Here's what I can help you with:\n\n` +
+          `**Natural Language Commands (just say it!):**\n` +
+          `- "Create a sales order for Acme Corp they need Widget A at 500 qty 10"\n` +
+          `- "Make a quote for Cape Enterprises they need Product 1 at 1500 qty 3"\n` +
+          `- "Generate an invoice for ABC Ltd they need Service Pack at 2999 qty 1"\n` +
+          `- "Create a PO for Best Supplier they need Raw Material at 100 qty 50"\n\n` +
           `**View Data:**\n` +
-          `- "Show customers" - List all customers\n` +
-          `- "Show suppliers" - List all suppliers\n` +
-          `- "Show products" - List all products\n` +
-          `- "Show invoices" - List recent invoices\n` +
-          `- "Show sales orders" - List sales orders\n` +
-          `- "Show purchase orders" - List purchase orders\n` +
-          `- "Show quotes" - List quotes\n\n` +
-          `**Create Records:**\n` +
-          `- "Create a quote" - Start creating a new quote\n` +
-          `- "Create a purchase order" - Start creating a new PO\n` +
-          `- "Create a sales order" - Start creating a new sales order\n\n` +
+          `- "Show customers" / "Show suppliers" / "Show products"\n` +
+          `- "Show invoices" / "Show sales orders" / "Show purchase orders"\n\n` +
+          `**Step-by-Step Creation:**\n` +
+          `- "Create a quote" / "Create a sales order" / "Create a PO"\n\n` +
           `**Automation Bots:**\n` +
-          `- "List all bots" - Show all 67 automation bots\n` +
-          `- "List financial bots" - Show financial automation bots\n` +
-          `- "Run reconciliation" - Run sales-to-invoice reconciliation\n` +
-          `- "Run bank reconciliation" - Run bank statement reconciliation\n` +
-          `- "Run invoice reconciliation" - Run 3-way invoice matching\n` +
-          `- "Run payroll" - Process employee payroll\n\n` +
+          `- "List all bots" / "Run reconciliation" / "Run payroll"\n\n` +
           `**Reports:**\n` +
           `- "Dashboard" or "Summary" - Show business overview\n\n` +
-          `Just type naturally and I'll try to help!`,
+          `Just type naturally and I'll execute it!`,
       };
     },
   },
@@ -1710,17 +1998,13 @@ function findSkill(message: string): Skill | null {
 function getDefaultResponse(): SkillResult {
   return {
     response: `**I couldn't understand that command.**\n\n` +
-      `Here are some things you can try:\n\n` +
-      `**View Data:**\n` +
-      `- "Show customers" or "List suppliers"\n` +
-      `- "Show products" or "Check inventory"\n` +
-      `- "Show invoices" or "List orders"\n\n` +
-      `**Create Records:**\n` +
-      `- "Create a quote" or "Create purchase order"\n` +
-      `- "Create sales order" or "Generate invoice"\n\n` +
-      `**Run Bots:**\n` +
-      `- "Run payroll" or "Run reconciliation"\n` +
-      `- "List all available bots"\n\n` +
+      `Try natural language like:\n` +
+      `- "Create a sales order for Acme Corp they need Widget A at 500 qty 10"\n` +
+      `- "Make a quote for ABC Ltd they need Product 1 at 1500 qty 3"\n\n` +
+      `Or simple commands:\n` +
+      `- "Show customers" / "Show products" / "Show invoices"\n` +
+      `- "Create a sales order" (step-by-step)\n` +
+      `- "Run payroll" / "Run reconciliation"\n\n` +
       `Type **"help"** for the full list of commands.`,
   };
 }
@@ -1746,11 +2030,12 @@ app.post('/session', async (c) => {
     `).bind(conversationId, userId, companyId).run();
     
     // Store welcome message
-    const welcomeMessage = `Hello! I'm ARIA, your intelligent ERP assistant. I can help you with:\n\n` +
-      `- Viewing customers, suppliers, products, invoices, and orders\n` +
-      `- Creating quotes and purchase orders\n` +
-      `- Getting business summaries and reports\n\n` +
-      `How can I help you today?`;
+    const welcomeMessage = `Hello! I'm ARIA, your intelligent ERP assistant.\n\n` +
+      `**Just tell me what you need in plain English:**\n` +
+      `- "Create a sales order for Acme Corp they need Widget A at 500 qty 10"\n` +
+      `- "Make a quote for ABC Ltd they need Product 1 at 1500"\n` +
+      `- "Show customers" / "Show invoices" / "Dashboard"\n\n` +
+      `I'll parse your request and execute it instantly. Type **"help"** for all commands.`;
     
     await c.env.DB.prepare(`
       INSERT INTO aria_messages (id, conversation_id, role, content, created_at)
