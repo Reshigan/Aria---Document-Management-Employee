@@ -426,6 +426,76 @@ const skills: Skill[] = [
     },
   },
 
+  // Run All Bots (Controller Bot) — MUST come before individual bot skill
+  {
+    name: 'run_all_bots',
+    description: 'Run all automation bots (controller bot)',
+    patterns: [
+      /(?:hey\s+aria\s+)?run\s+(?:all|every)\s+bots?/i,
+      /(?:hey\s+aria\s+)?(?:run|execute|start)\s+(?:the\s+)?controller\s*bot/i,
+      /(?:hey\s+aria\s+)?run\s+(?:the\s+)?full\s+(?:bot\s+)?suite/i,
+      /(?:hey\s+aria\s+)?execute\s+all\s+(?:automation\s+)?bots?/i,
+      /(?:hey\s+aria\s+)?run\s+(?:the\s+)?(?:complete|entire)\s+(?:bot\s+)?suite/i,
+    ],
+    slots: [],
+    execute: async (ctx) => {
+      const categories: Record<string, { total: number; success: number; failed: number; bots: string[] }> = {};
+      let totalSuccess = 0;
+      let totalFailed = 0;
+
+      for (const bot of botRegistry) {
+        if (!categories[bot.category]) {
+          categories[bot.category] = { total: 0, success: 0, failed: 0, bots: [] };
+        }
+        categories[bot.category].total++;
+
+        try {
+          const result = await executeBot(bot.id, ctx.companyId, {}, ctx.db);
+          if (result.success) {
+            totalSuccess++;
+            categories[bot.category].success++;
+          } else {
+            totalFailed++;
+            categories[bot.category].failed++;
+            categories[bot.category].bots.push(bot.name);
+          }
+        } catch {
+          totalFailed++;
+          categories[bot.category].failed++;
+          categories[bot.category].bots.push(bot.name);
+        }
+      }
+
+      const total = botRegistry.length;
+      const runId = generateUUID();
+      await ctx.db.prepare(`
+        INSERT INTO bot_runs (id, company_id, bot_id, status, result, started_at, completed_at)
+        VALUES (?, ?, 'controller_bot', 'completed', ?, datetime('now'), datetime('now'))
+      `).bind(runId, ctx.companyId, JSON.stringify({ total, success: totalSuccess, failed: totalFailed })).run().catch(() => {});
+
+      let categoryReport = '';
+      for (const [cat, data] of Object.entries(categories)) {
+        const status = data.failed === 0 ? 'ALL PASS' : `${data.failed} FAILED`;
+        categoryReport += `- **${cat}** (${data.total}): ${data.success}/${data.total} SUCCESS ${data.failed > 0 ? `| ${status}` : ''}\n`;
+      }
+
+      let failedList = '';
+      const allFailed = Object.values(categories).flatMap(c => c.bots);
+      if (allFailed.length > 0) {
+        failedList = `\n**Failed Bots:**\n${allFailed.map(n => `- ${n}`).join('\n')}\n`;
+      }
+
+      return {
+        response: `**Controller Bot — All ${total} Bots Executed!**\n\n` +
+          `**Overall:** ${totalSuccess}/${total} SUCCESS, ${totalFailed} FAILED\n\n` +
+          `**By Category:**\n${categoryReport}` +
+          failedList +
+          `\nNavigate to **Agents** to view detailed run history.`,
+        data: { total, success: totalSuccess, failed: totalFailed, categories },
+      };
+    },
+  },
+
   // Run Any Bot by Natural Language
   {
     name: 'run_bot_natural_language',
@@ -516,76 +586,6 @@ const skills: Skill[] = [
       } catch (error: any) {
         return { response: `**${matchedBot.name} Error:** ${error.message || 'Execution failed'}\n\nPlease try again.` };
       }
-    },
-  },
-
-  // Run All Bots (Controller Bot)
-  {
-    name: 'run_all_bots',
-    description: 'Run all automation bots (controller bot)',
-    patterns: [
-      /(?:hey\s+aria\s+)?run\s+(?:all|every)\s+bots?/i,
-      /(?:hey\s+aria\s+)?(?:run|execute|start)\s+(?:the\s+)?controller\s*bot/i,
-      /(?:hey\s+aria\s+)?run\s+(?:the\s+)?full\s+(?:bot\s+)?suite/i,
-      /(?:hey\s+aria\s+)?execute\s+all\s+(?:automation\s+)?bots?/i,
-      /(?:hey\s+aria\s+)?run\s+(?:the\s+)?(?:complete|entire)\s+(?:bot\s+)?suite/i,
-    ],
-    slots: [],
-    execute: async (ctx) => {
-      const categories: Record<string, { total: number; success: number; failed: number; bots: string[] }> = {};
-      let totalSuccess = 0;
-      let totalFailed = 0;
-
-      for (const bot of botRegistry) {
-        if (!categories[bot.category]) {
-          categories[bot.category] = { total: 0, success: 0, failed: 0, bots: [] };
-        }
-        categories[bot.category].total++;
-
-        try {
-          const result = await executeBot(bot.id, ctx.companyId, {}, ctx.db);
-          if (result.success) {
-            totalSuccess++;
-            categories[bot.category].success++;
-          } else {
-            totalFailed++;
-            categories[bot.category].failed++;
-            categories[bot.category].bots.push(bot.name);
-          }
-        } catch {
-          totalFailed++;
-          categories[bot.category].failed++;
-          categories[bot.category].bots.push(bot.name);
-        }
-      }
-
-      const total = botRegistry.length;
-      const runId = generateUUID();
-      await ctx.db.prepare(`
-        INSERT INTO bot_runs (id, company_id, bot_id, status, result, started_at, completed_at)
-        VALUES (?, ?, 'controller_bot', 'completed', ?, datetime('now'), datetime('now'))
-      `).bind(runId, ctx.companyId, JSON.stringify({ total, success: totalSuccess, failed: totalFailed })).run().catch(() => {});
-
-      let categoryReport = '';
-      for (const [cat, data] of Object.entries(categories)) {
-        const status = data.failed === 0 ? 'ALL PASS' : `${data.failed} FAILED`;
-        categoryReport += `- **${cat}** (${data.total}): ${data.success}/${data.total} SUCCESS ${data.failed > 0 ? `| ${status}` : ''}\n`;
-      }
-
-      let failedList = '';
-      const allFailed = Object.values(categories).flatMap(c => c.bots);
-      if (allFailed.length > 0) {
-        failedList = `\n**Failed Bots:**\n${allFailed.map(n => `- ${n}`).join('\n')}\n`;
-      }
-
-      return {
-        response: `**Controller Bot — All ${total} Bots Executed!**\n\n` +
-          `**Overall:** ${totalSuccess}/${total} SUCCESS, ${totalFailed} FAILED\n\n` +
-          `**By Category:**\n${categoryReport}` +
-          failedList +
-          `\nNavigate to **Agents** to view detailed run history.`,
-        data: { total, success: totalSuccess, failed: totalFailed, categories },
-      };
     },
   },
 
