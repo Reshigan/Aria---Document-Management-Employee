@@ -264,6 +264,72 @@ import ERPReceipts from './pages/ERP/Receipts';
 import DocumentHistory from './pages/documents/DocumentHistory';
 import IntegrationSync from './pages/integrations/IntegrationSync';
 import InvoiceReconciliationReport from './pages/reports/InvoiceReconciliationReport';
+import AgedReports from './pages/financial/AgedReports';
+import CashFlowStatement from './pages/financial/CashFlowStatement';
+import AdminDashboard from './pages/admin/AdminDashboard';
+import ERPConfiguration from './pages/admin/ERPConfiguration';
+import BotsHub from './pages/Automation/BotsHub';
+import Mailroom from './pages/Automation/Mailroom';
+import FixedAssetsDashboard from './pages/FixedAssets/FixedAssetsDashboard';
+import MaintenanceAssetManagement from './pages/Maintenance/AssetManagement';
+import TaxVATReturns from './pages/Tax/VATReturns';
+import TaxVATReturnsPage from './pages/Tax/VATReturnsPage';
+import PrivacyPolicy from './pages/Legal/PrivacyPolicy';
+import TermsOfService from './pages/Legal/TermsOfService';
+import { Signup } from './pages/auth/Signup';
+import CRMCustomerList from './pages/CRM/CustomerList';
+import BotTestingDashboard from './pages/Bots/BotTestingDashboard';
+import { CustomerDashboard as CustomerDashboardPage } from './pages/CustomerDashboard';
+import DocumentUpload from './pages/AskAria/DocumentUpload';
+import ERPCustomers from './pages/ERP/Customers';
+import ERPSuppliers from './pages/ERP/Suppliers';
+import ERPInvoices from './pages/ERP/Invoices';
+import ERPDocumentTemplates from './pages/ERP/DocumentTemplates';
+import ERPQuoteDetail from './pages/ERP/QuoteDetail';
+import ERPSalesOrderDetail from './pages/ERP/SalesOrderDetail';
+import ERPDeliveryDetail from './pages/ERP/DeliveryDetail';
+import QualityInspectionsPage from './pages/Quality/QualityInspections';
+import BudgetMgmtBotConfig from './pages/bots/budget-management-config';
+import BudgetMgmtBotReport from './pages/bots/budget-management-report';
+import CalendarBotConfig from './pages/bots/calendar-office365-config';
+import CalendarBotReport from './pages/bots/calendar-office365-report';
+import CashMgmtBotConfig from './pages/bots/cash-management-config';
+import CashMgmtBotReport from './pages/bots/cash-management-report';
+import CreditControlBotConfig from './pages/bots/credit-control-config';
+import CreditControlBotReport from './pages/bots/credit-control-report';
+import CustomerOnboardBotConfig from './pages/bots/customer-onboarding-config';
+import CustomerOnboardBotReport from './pages/bots/customer-onboarding-report';
+import CustomerRetentionBotConfig from './pages/bots/customer-retention-config';
+import CustomerRetentionBotReport from './pages/bots/customer-retention-report';
+import EsignatureBotConfig from './pages/bots/esignature-config';
+import EsignatureBotReport from './pages/bots/esignature-report';
+import FixedAssetBotConfig from './pages/bots/fixed-asset-management-config';
+import FixedAssetBotReport from './pages/bots/fixed-asset-management-report';
+import MultiCurrencyBotConfig from './pages/bots/multi-currency-config';
+import MultiCurrencyBotReport from './pages/bots/multi-currency-report';
+import OcrBotConfig from './pages/bots/ocr-document-capture-config';
+import OcrBotReport from './pages/bots/ocr-document-capture-report';
+import PricingBotConfig from './pages/bots/pricing-config';
+import PricingBotReport from './pages/bots/pricing-report';
+import QualityControlBotConfig from './pages/bots/quality-control-config';
+import QualityControlBotReport from './pages/bots/quality-control-report';
+import ReturnsMgmtBotConfig from './pages/bots/returns-management-config';
+import ReturnsMgmtBotReport from './pages/bots/returns-management-report';
+import RfqBotConfig from './pages/bots/rfq-response-config';
+import RfqBotReport from './pages/bots/rfq-response-report';
+import SalesCommissionBotConfig from './pages/bots/sales-commission-config';
+import SalesCommissionBotReport from './pages/bots/sales-commission-report';
+import SalesForecastBotConfig from './pages/bots/sales-forecasting-config';
+import SalesForecastBotReport from './pages/bots/sales-forecasting-report';
+import ShippingBotConfig from './pages/bots/shipping-logistics-config';
+import ShippingBotReport from './pages/bots/shipping-logistics-report';
+import SupplierOnboardBotConfig from './pages/bots/supplier-onboarding-config';
+import SupplierOnboardBotReport from './pages/bots/supplier-onboarding-report';
+import TaxComplianceBotConfig from './pages/bots/tax-compliance-config';
+import TaxComplianceBotReport from './pages/bots/tax-compliance-report';
+import TenderMgmtBotConfig from './pages/bots/tender-management-config';
+import TenderMgmtBotReport from './pages/bots/tender-management-report';
+import APSuppliers from './pages/AP/Suppliers';
 import './styles/design-system.css';
 import './styles/dark-mode.css';
 
@@ -760,6 +826,103 @@ function App() {
 
                     {/* Reports Extended */}
                     <Route path="/reports/invoice-reconciliation" element={<InvoiceReconciliationReport />} />
+
+                    {/* Financial Statements */}
+                    <Route path="/financial/aged-reports" element={<AgedReports />} />
+                    <Route path="/financial/cash-flow" element={<CashFlowStatement />} />
+
+                    {/* Admin Extended */}
+                    <Route path="/admin/overview" element={<AdminDashboard />} />
+                    <Route path="/admin/erp-config" element={<ERPConfiguration />} />
+
+                    {/* Automation */}
+                    <Route path="/automation/bots-hub" element={<BotsHub />} />
+                    <Route path="/automation/mailroom" element={<Mailroom />} />
+
+                    {/* Fixed Assets Dashboard */}
+                    <Route path="/fixed-assets/dashboard" element={<FixedAssetsDashboard />} />
+
+                    {/* Maintenance */}
+                    <Route path="/maintenance/assets" element={<MaintenanceAssetManagement />} />
+
+                    {/* Tax Extended */}
+                    <Route path="/tax/vat-returns" element={<TaxVATReturns />} />
+                    <Route path="/tax/vat-returns-page" element={<TaxVATReturnsPage />} />
+
+                    {/* Legal */}
+                    <Route path="/legal/privacy" element={<PrivacyPolicy />} />
+                    <Route path="/legal/terms" element={<TermsOfService />} />
+
+                    {/* Auth */}
+                    <Route path="/signup" element={<Signup />} />
+                    <Route path="/register" element={<Signup />} />
+
+                    {/* CRM Extended */}
+                    <Route path="/crm/customers" element={<CRMCustomerList />} />
+
+                    {/* Bot Pages */}
+                    <Route path="/bots/testing" element={<BotTestingDashboard />} />
+
+                    {/* Customer & Document */}
+                    <Route path="/customer-dashboard" element={<CustomerDashboardPage />} />
+                    <Route path="/documents/upload" element={<DocumentUpload />} />
+
+                    {/* ERP Extended */}
+                    <Route path="/erp/customers-erp" element={<ERPCustomers />} />
+                    <Route path="/erp/suppliers" element={<ERPSuppliers />} />
+                    <Route path="/erp/invoices-list" element={<ERPInvoices />} />
+                    <Route path="/erp/document-templates" element={<ERPDocumentTemplates />} />
+                    <Route path="/erp/quotes/:id/detail" element={<ERPQuoteDetail />} />
+                    <Route path="/erp/sales-orders/:id/detail" element={<ERPSalesOrderDetail />} />
+                    <Route path="/erp/deliveries/:id/detail" element={<ERPDeliveryDetail />} />
+
+                    {/* Quality Extended */}
+                    <Route path="/quality/inspections-list" element={<QualityInspectionsPage />} />
+
+                    {/* AP Extended */}
+                    <Route path="/ap/supplier-list" element={<APSuppliers />} />
+
+                    {/* Bot Config & Reports */}
+                    <Route path="/bots/budget-management/config" element={<BudgetMgmtBotConfig />} />
+                    <Route path="/bots/budget-management/report" element={<BudgetMgmtBotReport />} />
+                    <Route path="/bots/calendar-office365/config" element={<CalendarBotConfig />} />
+                    <Route path="/bots/calendar-office365/report" element={<CalendarBotReport />} />
+                    <Route path="/bots/cash-management/config" element={<CashMgmtBotConfig />} />
+                    <Route path="/bots/cash-management/report" element={<CashMgmtBotReport />} />
+                    <Route path="/bots/credit-control/config" element={<CreditControlBotConfig />} />
+                    <Route path="/bots/credit-control/report" element={<CreditControlBotReport />} />
+                    <Route path="/bots/customer-onboarding/config" element={<CustomerOnboardBotConfig />} />
+                    <Route path="/bots/customer-onboarding/report" element={<CustomerOnboardBotReport />} />
+                    <Route path="/bots/customer-retention/config" element={<CustomerRetentionBotConfig />} />
+                    <Route path="/bots/customer-retention/report" element={<CustomerRetentionBotReport />} />
+                    <Route path="/bots/esignature/config" element={<EsignatureBotConfig />} />
+                    <Route path="/bots/esignature/report" element={<EsignatureBotReport />} />
+                    <Route path="/bots/fixed-asset-management/config" element={<FixedAssetBotConfig />} />
+                    <Route path="/bots/fixed-asset-management/report" element={<FixedAssetBotReport />} />
+                    <Route path="/bots/multi-currency/config" element={<MultiCurrencyBotConfig />} />
+                    <Route path="/bots/multi-currency/report" element={<MultiCurrencyBotReport />} />
+                    <Route path="/bots/ocr-document-capture/config" element={<OcrBotConfig />} />
+                    <Route path="/bots/ocr-document-capture/report" element={<OcrBotReport />} />
+                    <Route path="/bots/pricing/config" element={<PricingBotConfig />} />
+                    <Route path="/bots/pricing/report" element={<PricingBotReport />} />
+                    <Route path="/bots/quality-control/config" element={<QualityControlBotConfig />} />
+                    <Route path="/bots/quality-control/report" element={<QualityControlBotReport />} />
+                    <Route path="/bots/returns-management/config" element={<ReturnsMgmtBotConfig />} />
+                    <Route path="/bots/returns-management/report" element={<ReturnsMgmtBotReport />} />
+                    <Route path="/bots/rfq-response/config" element={<RfqBotConfig />} />
+                    <Route path="/bots/rfq-response/report" element={<RfqBotReport />} />
+                    <Route path="/bots/sales-commission/config" element={<SalesCommissionBotConfig />} />
+                    <Route path="/bots/sales-commission/report" element={<SalesCommissionBotReport />} />
+                    <Route path="/bots/sales-forecasting/config" element={<SalesForecastBotConfig />} />
+                    <Route path="/bots/sales-forecasting/report" element={<SalesForecastBotReport />} />
+                    <Route path="/bots/shipping-logistics/config" element={<ShippingBotConfig />} />
+                    <Route path="/bots/shipping-logistics/report" element={<ShippingBotReport />} />
+                    <Route path="/bots/supplier-onboarding/config" element={<SupplierOnboardBotConfig />} />
+                    <Route path="/bots/supplier-onboarding/report" element={<SupplierOnboardBotReport />} />
+                    <Route path="/bots/tax-compliance/config" element={<TaxComplianceBotConfig />} />
+                    <Route path="/bots/tax-compliance/report" element={<TaxComplianceBotReport />} />
+                    <Route path="/bots/tender-management/config" element={<TenderMgmtBotConfig />} />
+                    <Route path="/bots/tender-management/report" element={<TenderMgmtBotReport />} />
 
                     {/* Go-Live Features */}
                     <Route path="/admin/data-export" element={<DataExport />} />

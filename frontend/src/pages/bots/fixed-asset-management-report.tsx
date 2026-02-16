@@ -1,5 +1,5 @@
 /**
- * Fixed Asset Management Agent - Report Page
+ * Fixed Asset Management Bot - Report Page
  * Generated: 2025-10-26 14:16:23
  */
 
@@ -68,7 +68,7 @@ export default function FixedAssetManagementReport() {
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h4" gutterBottom>
-        Fixed Asset Management Agent - Report
+        Fixed Asset Management Bot - Report
       </Typography>
 
       <Grid container spacing={3} sx={{ mb: 3 }}>

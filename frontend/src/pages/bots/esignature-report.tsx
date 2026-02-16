@@ -1,5 +1,5 @@
 /**
- * eSignature Agent - Report Page
+ * eSignature Bot - Report Page
  * Generated: 2025-10-26 14:16:23
  */
 
@@ -68,7 +68,7 @@ export default function EsignatureReport() {
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h4" gutterBottom>
-        eSignature Agent - Report
+        eSignature Bot - Report
       </Typography>
 
       <Grid container spacing={3} sx={{ mb: 3 }}>

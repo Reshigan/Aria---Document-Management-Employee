@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  Activity, Agent, Users, Database, TrendingUp, AlertCircle,
+  Activity, Bot, Users, Database, TrendingUp, AlertCircle,
   CheckCircle, Clock, Zap, Server, HardDrive, Cpu
 } from 'lucide-react';
 import api from '../../lib/api';
@@ -188,18 +188,18 @@ export default function AdminDashboard() {
       {/* Automation Overview */}
       <div className="mb-6">
         <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-          <Agent className="h-5 w-5" />
+          <Bot className="h-5 w-5" />
           Automation
         </h2>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Total Agents</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Total Bots</p>
                 <p className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{metrics?.automation.total_bots || 67}</p>
               </div>
               <div className="bg-indigo-100 dark:bg-indigo-900/30 rounded-full p-3">
-                <Agent className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
+                <Bot className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
               </div>
             </div>
           </div>
@@ -207,7 +207,7 @@ export default function AdminDashboard() {
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Enabled Agents</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Enabled Bots</p>
                 <p className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{metrics?.automation.enabled_bots || 67}</p>
               </div>
               <div className="bg-green-100 dark:bg-green-900/30 rounded-full p-3">
@@ -295,8 +295,8 @@ export default function AdminDashboard() {
             href="/admin/agents"
             className="flex items-center gap-3 p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900 transition-colors"
           >
-            <Agent className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-            <span className="font-medium text-gray-900 dark:text-white">Configure Agents</span>
+            <Bot className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+            <span className="font-medium text-gray-900 dark:text-white">Configure Bots</span>
           </a>
 
           <a

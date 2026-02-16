@@ -1,5 +1,5 @@
 /**
- * Cash Management Agent - Report Page
+ * Cash Management Bot - Report Page
  * Generated: 2025-10-26 14:16:23
  */
 
@@ -68,7 +68,7 @@ export default function CashManagementReport() {
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h4" gutterBottom>
-        Cash Management Agent - Report
+        Cash Management Bot - Report
       </Typography>
 
       <Grid container spacing={3} sx={{ mb: 3 }}>

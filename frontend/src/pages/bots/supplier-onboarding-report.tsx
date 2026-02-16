@@ -1,5 +1,5 @@
 /**
- * Supplier Onboarding Agent - Report Page
+ * Supplier Onboarding Bot - Report Page
  * Generated: 2025-10-26 14:16:23
  */
 
@@ -68,7 +68,7 @@ export default function SupplierOnboardingReport() {
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h4" gutterBottom>
-        Supplier Onboarding Agent - Report
+        Supplier Onboarding Bot - Report
       </Typography>
 
       <Grid container spacing={3} sx={{ mb: 3 }}>

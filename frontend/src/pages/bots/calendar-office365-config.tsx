@@ -1,5 +1,5 @@
 /**
- * Calendar Agent (Office 365) - Configuration Page
+ * Calendar Bot (Office 365) - Configuration Page
  * Generated: 2025-10-26 14:16:23
  */
 
@@ -84,7 +84,7 @@ export default function CalendarOffice365Config() {
       });
       
       if (response.ok) {
-        setMessage({ type: 'success', text: 'Agent execution started!' });
+        setMessage({ type: 'success', text: 'Bot execution started!' });
       } else {
         throw new Error('Failed to start agent execution');
       }
@@ -96,7 +96,7 @@ export default function CalendarOffice365Config() {
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h4" gutterBottom>
-        Calendar Agent (Office 365)
+        Calendar Bot (Office 365)
       </Typography>
       
       <Typography variant="body1" color="text.secondary" paragraph>
@@ -124,7 +124,7 @@ export default function CalendarOffice365Config() {
       <Card sx={{ mb: 3 }}>
         <CardContent>
           <Typography variant="h6" gutterBottom>
-            Agent Configuration
+            Bot Configuration
           </Typography>
           
           <Grid container spacing={3}>
@@ -136,7 +136,7 @@ export default function CalendarOffice365Config() {
                     onChange={(e) => setConfig({...config, enabled: e.target.checked})}
                   />
                 }
-                label="Enable Agent"
+                label="Enable Bot"
               />
             </Grid>
 

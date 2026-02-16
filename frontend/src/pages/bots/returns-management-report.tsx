@@ -1,5 +1,5 @@
 /**
- * Returns Management Agent - Report Page
+ * Returns Management Bot - Report Page
  * Generated: 2025-10-26 14:16:23
  */
 
@@ -68,7 +68,7 @@ export default function ReturnsManagementReport() {
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h4" gutterBottom>
-        Returns Management Agent - Report
+        Returns Management Bot - Report
       </Typography>
 
       <Grid container spacing={3} sx={{ mb: 3 }}>

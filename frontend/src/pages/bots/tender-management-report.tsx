@@ -1,5 +1,5 @@
 /**
- * Tender Management Agent - Report Page
+ * Tender Management Bot - Report Page
  * Generated: 2025-10-26 14:16:23
  */
 
@@ -68,7 +68,7 @@ export default function TenderManagementReport() {
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h4" gutterBottom>
-        Tender Management Agent - Report
+        Tender Management Bot - Report
       </Typography>
 
       <Grid container spacing={3} sx={{ mb: 3 }}>
