@@ -249,6 +249,21 @@ import ScheduledBots from './pages/GoLive/ScheduledBots';
 import SecuritySettings from './pages/GoLive/SecuritySettings';
 import DataMigration from './pages/GoLive/DataMigration';
 import WorkflowManagement from './pages/workflows/WorkflowManagement';
+import ERPBankingReconciliation from './pages/ERP/BankingReconciliation';
+import ERPProcureToPay from './pages/ERP/ProcureToPay';
+import ERPProductionMonitoring from './pages/ERP/ProductionMonitoring';
+import ERPSAPIntegration from './pages/ERP/SAPIntegration';
+import ERPVATReporting from './pages/ERP/VATReporting';
+import ERPComprehensiveReporting from './pages/ERP/ComprehensiveReporting';
+import ERPAccountsPayable from './pages/ERP/AccountsPayable';
+import ERPInvoiceDetail from './pages/ERP/InvoiceDetail';
+import ERPReceiptDetail from './pages/ERP/ReceiptDetail';
+import ERPPriceLists from './pages/ERP/PriceLists';
+import ERPProducts from './pages/ERP/Products';
+import ERPReceipts from './pages/ERP/Receipts';
+import DocumentHistory from './pages/documents/DocumentHistory';
+import IntegrationSync from './pages/integrations/IntegrationSync';
+import InvoiceReconciliationReport from './pages/reports/InvoiceReconciliationReport';
 import './styles/design-system.css';
 import './styles/dark-mode.css';
 
@@ -723,6 +738,29 @@ function App() {
                                         <Route path="/training/services/timesheets" element={<TrainingServicesRefresher />} />
                                         <Route path="/training/services/videos" element={<TrainingServicesBasics />} />
           
+                    {/* ERP Advanced Modules */}
+                    <Route path="/erp/banking-reconciliation" element={<ERPBankingReconciliation />} />
+                    <Route path="/erp/procure-to-pay" element={<ERPProcureToPay />} />
+                    <Route path="/erp/production-monitoring" element={<ERPProductionMonitoring />} />
+                    <Route path="/erp/sap-integration" element={<ERPSAPIntegration />} />
+                    <Route path="/erp/vat-reporting" element={<ERPVATReporting />} />
+                    <Route path="/erp/comprehensive-reporting" element={<ERPComprehensiveReporting />} />
+                    <Route path="/erp/accounts-payable" element={<ERPAccountsPayable />} />
+                    <Route path="/erp/invoice/:id" element={<ERPInvoiceDetail />} />
+                    <Route path="/erp/receipt/:id" element={<ERPReceiptDetail />} />
+                    <Route path="/erp/price-lists" element={<ERPPriceLists />} />
+                    <Route path="/erp/products" element={<ERPProducts />} />
+                    <Route path="/erp/receipts" element={<ERPReceipts />} />
+
+                    {/* Documents */}
+                    <Route path="/documents/history" element={<DocumentHistory />} />
+
+                    {/* Integrations */}
+                    <Route path="/integrations/sync" element={<IntegrationSync />} />
+
+                    {/* Reports Extended */}
+                    <Route path="/reports/invoice-reconciliation" element={<InvoiceReconciliationReport />} />
+
                     {/* Go-Live Features */}
                     <Route path="/admin/data-export" element={<DataExport />} />
                     <Route path="/admin/scheduled-bots" element={<ScheduledBots />} />
