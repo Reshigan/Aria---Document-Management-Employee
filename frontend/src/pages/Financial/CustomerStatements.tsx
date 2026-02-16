@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { FileText, RefreshCw, AlertCircle, X, DollarSign, Users, Send, Download, Calendar, Clock, CheckCircle } from 'lucide-react';
+import api from '../../services/api';
 
 interface Customer {
   id: string;
@@ -36,26 +37,16 @@ export default function CustomerStatements() {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
       const [customersRes, statementsRes] = await Promise.all([
-        fetch(`${API_BASE}/api/customers`, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }),
-        fetch(`${API_BASE}/api/customer-statements`, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } })
+        api.get('/customers'),
+        api.get('/customer-statements').catch(() => ({ data: [] })),
       ]);
-      if (customersRes.ok) {
-        const data = await customersRes.json();
-        setCustomers(Array.isArray(data) ? data : data.data || []);
-      } else {
-        setCustomers([]);
-      }
-      if (statementsRes.ok) {
-        const data = await statementsRes.json();
-        setStatements(Array.isArray(data) ? data : data.data || []);
-      } else {
-        setStatements([]);
-      }
-    } catch (err) { 
-      console.error('Failed to load data:', err);
-      setError('Failed to load data'); 
+      const cData = customersRes.data?.data || customersRes.data || [];
+      setCustomers(Array.isArray(cData) ? cData : []);
+      const sData = statementsRes.data?.data || statementsRes.data || [];
+      setStatements(Array.isArray(sData) ? sData : []);
+    } catch (err) {
+      setError('Failed to load data');
       setCustomers([]);
       setStatements([]);
     } finally { setLoading(false); }
@@ -65,7 +56,10 @@ export default function CustomerStatements() {
     if (selectedCustomers.length === 0) return;
     try {
       setLoading(true);
-      alert(`Generated statements for ${selectedCustomers.length} customers`);
+      await api.post('/go-live/statements/generate', {
+        customer_ids: selectedCustomers,
+        statement_date: statementDate,
+      });
       setShowGenerateModal(false);
       setSelectedCustomers([]);
       await fetchData();
@@ -74,7 +68,10 @@ export default function CustomerStatements() {
 
   const handleSendStatement = async (statementId: string) => {
     try {
-      alert(`Statement ${statementId} sent successfully`);
+      await api.post(`/go-live/email/send`, {
+        document_type: 'statement',
+        document_id: statementId,
+      });
       await fetchData();
     } catch (err) { setError('Failed to send statement'); }
   };

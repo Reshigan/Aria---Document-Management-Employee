@@ -30,6 +30,7 @@ export default function Dashboard() {
   const [activity, setActivity] = useState<RecentActivity | null>(null)
   const [pendingApprovals, setPendingApprovals] = useState<ActionableItem[]>([])
   const [alerts, setAlerts] = useState<AlertItem[]>([])
+  const [liveCounts, setLiveCounts] = useState<Record<string, number>>({})
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
 
@@ -54,6 +55,24 @@ export default function Dashboard() {
       } catch (e) {
         console.error('Failed to load pending approvals:', e)
         setPendingApprovals([])
+      }
+
+      // Load live entity counts
+      try {
+        const liveRes = await api.get('/go-live/dashboard/live')
+        const liveData = liveRes.data?.data || liveRes.data || {}
+        const flat: Record<string, number> = {}
+        for (const [key, val] of Object.entries(liveData)) {
+          if (key === 'recent_activity' || key === 'last_updated') continue
+          if (val && typeof val === 'object' && 'count' in (val as Record<string, unknown>)) {
+            flat[key] = Number((val as Record<string, unknown>).count) || 0
+          } else if (typeof val === 'number') {
+            flat[key] = val
+          }
+        }
+        setLiveCounts(flat)
+      } catch (e) {
+        console.error('Failed to load live counts:', e)
       }
       
       // Load alerts from API
@@ -421,6 +440,24 @@ export default function Dashboard() {
             </div>
           </div>
         </div>
+
+        {/* Live Entity Counts */}
+        {Object.keys(liveCounts).length > 0 && (
+          <div className="bg-white dark:bg-slate-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-slate-700">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+              <Package className="w-5 h-5 text-indigo-500" />
+              System Overview
+            </h2>
+            <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
+              {Object.entries(liveCounts).filter(([k]) => !k.startsWith('total_')).map(([key, count]) => (
+                <div key={key} className="text-center p-3 rounded-xl bg-gray-50 dark:bg-slate-700/50 border border-gray-100 dark:border-slate-600">
+                  <p className="text-xl font-bold text-gray-900 dark:text-white">{count}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 capitalize">{key.replace(/_/g, ' ')}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Quick Actions */}
         <div className="bg-white dark:bg-slate-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-slate-700">

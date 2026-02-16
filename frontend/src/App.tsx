@@ -244,6 +244,11 @@ import TrainingServicesAdvanced from './pages/Training/ServicesAdvanced';
 import TrainingServicesCertification from './pages/Training/ServicesCertification';
 import TrainingServicesRefresher from './pages/Training/ServicesRefresher';
 import SetupWizard from './pages/SetupWizard';
+import DataExport from './pages/GoLive/DataExport';
+import ScheduledBots from './pages/GoLive/ScheduledBots';
+import SecuritySettings from './pages/GoLive/SecuritySettings';
+import DataMigration from './pages/GoLive/DataMigration';
+import WorkflowManagement from './pages/workflows/WorkflowManagement';
 import './styles/design-system.css';
 import './styles/dark-mode.css';
 
@@ -445,6 +450,8 @@ function App() {
                     <Route path="/compliance/risk-register" element={<RiskRegister />} />
                     <Route path="/compliance/document-control" element={<DocumentControl />} />
                     <Route path="/compliance/policies" element={<Policies />} />
+                    <Route path="/workflows" element={<WorkflowManagement />} />
+                    <Route path="/compliance/workflows" element={<WorkflowManagement />} />
                     <Route path="/tax" element={<TaxCompliance />} />
                     <Route path="/tax/vat-returns" element={<VATReturns />} />
                     <Route path="/legal" element={<LegalCompliance />} />
@@ -716,6 +723,16 @@ function App() {
                                         <Route path="/training/services/timesheets" element={<TrainingServicesRefresher />} />
                                         <Route path="/training/services/videos" element={<TrainingServicesBasics />} />
           
+                    {/* Go-Live Features */}
+                    <Route path="/admin/data-export" element={<DataExport />} />
+                    <Route path="/admin/scheduled-bots" element={<ScheduledBots />} />
+                    <Route path="/admin/security" element={<SecuritySettings />} />
+                    <Route path="/admin/data-migration" element={<DataMigration />} />
+                    <Route path="/settings/security" element={<SecuritySettings />} />
+                    <Route path="/settings/export" element={<DataExport />} />
+                    <Route path="/settings/migration" element={<DataMigration />} />
+                    <Route path="/settings/scheduled-bots" element={<ScheduledBots />} />
+
                     {/* Catch-all: 404 Not Found page */}
                     <Route path="*" element={<NotFound />} />
               </Routes>
