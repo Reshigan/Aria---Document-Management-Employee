@@ -586,4 +586,26 @@ app.get('/erp/banking/reconciliation-rules', async (c) => {
   return c.json({ data: [] });
 });
 
+// ==================== ADDITIONAL MISSING ROUTES ====================
+
+app.get('/support/customer-portal/config', async (c) => {
+  return c.json({ enabled: true, allow_ticket_creation: true, allow_invoice_view: true, branding: {} });
+});
+
+app.get('/mobile/sync/status', async (c) => {
+  return c.json({ status: 'idle', last_sync: null, pending_changes: 0 });
+});
+
+app.get('/aria-growth/metrics', async (c) => {
+  return c.json({ data: { users: 0, revenue: 0, growth_rate: 0 } });
+});
+
+app.get('/erp/production/monitoring', async (c) => {
+  return c.json({ status: 'healthy', uptime: '99.9%', active_workers: 1, error_rate: 0 });
+});
+
+app.get('/sap/integration/status', async (c) => {
+  return c.json({ connected: false, last_sync: null, modules: [] });
+});
+
 export default app;

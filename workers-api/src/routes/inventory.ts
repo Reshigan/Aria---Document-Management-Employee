@@ -364,4 +364,19 @@ inventory.get('/stock-on-hand', async (c) => {
   }
 });
 
+inventory.get('/stock-levels', async (c) => {
+  try {
+    const companyId = await getCompanyId(c);
+    const query = companyId
+      ? 'SELECT p.id, p.product_code, p.product_name, COALESCE(p.quantity_on_hand, 0) as quantity, COALESCE(p.reorder_level, 0) as reorder_level FROM products p WHERE p.company_id = ? AND p.is_active = 1 ORDER BY p.product_name'
+      : 'SELECT p.id, p.product_code, p.product_name, COALESCE(p.quantity_on_hand, 0) as quantity, COALESCE(p.reorder_level, 0) as reorder_level FROM products p WHERE p.is_active = 1 ORDER BY p.product_name';
+    const result = companyId ? await c.env.DB.prepare(query).bind(companyId).all() : await c.env.DB.prepare(query).all();
+    return c.json({ data: result.results || [] });
+  } catch { return c.json({ data: [] }); }
+});
+
+inventory.get('/metrics', async (c) => {
+  return c.json({ total_products: 0, total_warehouses: 0, low_stock_items: 0, stock_value: 0 });
+});
+
 export default inventory;

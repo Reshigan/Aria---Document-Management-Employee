@@ -631,4 +631,8 @@ app.get('/mailroom/status', async (c) => {
   });
 });
 
+app.get('/templates', async (c) => {
+  return c.json({ data: [{ id: 'welcome', name: 'Welcome Email', subject: 'Welcome to ARIA' }, { id: 'invoice', name: 'Invoice Email', subject: 'Invoice #{number}' }, { id: 'statement', name: 'Statement Email', subject: 'Monthly Statement' }] });
+});
+
 export default app;

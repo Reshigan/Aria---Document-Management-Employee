@@ -1654,4 +1654,8 @@ app.put('/policies/:id/archive', async (c) => {
   return c.json({ message: 'Policy archived successfully' });
 });
 
+app.get('/suppliers', async (c) => {
+  return c.json({ data: [] });
+});
+
 export default app;
