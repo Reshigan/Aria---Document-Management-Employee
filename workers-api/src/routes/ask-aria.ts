@@ -6,6 +6,7 @@
 
 import { Hono } from 'hono';
 import { orchestrate, classifyIntent, BOT_CATALOG } from '../services/ai-orchestrator';
+import { botRegistry, getExtendedDatabaseCounts, executeBot } from './bots';
 
 interface Env {
   DB: D1Database;
@@ -422,6 +423,152 @@ const skills: Skill[] = [
         return { response: `I understood you want to create a document, but couldn't parse the details. Try something like:\n\n"Create a sales order for Acme Corp they need Widget A at 500 qty 10"` };
       }
       return executeNaturalLanguageOrder(parsed, ctx.db, ctx.companyId);
+    },
+  },
+
+  // Run Any Bot by Natural Language
+  {
+    name: 'run_bot_natural_language',
+    description: 'Run any automation bot by name using natural language',
+    patterns: [
+      /(?:hey\s+aria\s+)?(?:run|execute|start|trigger|launch|activate)\s+(?:the\s+)?(.+?)(?:\s+bot|\s+agent)?$/i,
+      /(?:hey\s+aria\s+)?(?:run|execute|start|trigger|launch|activate)\s+(?:the\s+)?(.+?)(?:\s+bot|\s+agent)\s*/i,
+    ],
+    slots: [],
+    execute: async (ctx) => {
+      const msg = ctx.message.toLowerCase().replace(/^hey\s+aria\s+/i, '').trim();
+      const runMatch = msg.match(/(?:run|execute|start|trigger|launch|activate)\s+(?:the\s+)?(.+?)(?:\s+bot|\s+agent)?$/i);
+      if (!runMatch) {
+        return { response: 'Please specify which bot to run. Try "run [bot name]" or "list all bots" to see available bots.' };
+      }
+      const query = runMatch[1].trim().replace(/\s+bot$/i, '').replace(/\s+agent$/i, '');
+
+      let matchedBot = botRegistry.find(b => b.id === query || b.name.toLowerCase() === query);
+      if (!matchedBot) {
+        matchedBot = botRegistry.find(b => fuzzyMatch(query, b.name) || fuzzyMatch(query, b.id.replace(/_/g, ' ')));
+      }
+      if (!matchedBot) {
+        const words = query.split(/\s+/);
+        matchedBot = botRegistry.find(b => {
+          const bName = b.name.toLowerCase();
+          return words.length > 0 && words.every(w => bName.includes(w));
+        });
+      }
+
+      if (!matchedBot) {
+        const suggestions = botRegistry
+          .filter(b => query.split(/\s+/).some(w => b.name.toLowerCase().includes(w) || b.id.includes(w)))
+          .slice(0, 5);
+        const sugList = suggestions.length > 0
+          ? suggestions.map(b => `- **${b.name}** (${b.category})`).join('\n')
+          : botRegistry.slice(0, 10).map(b => `- **${b.name}** (${b.category})`).join('\n');
+        return {
+          response: `**Bot "${query}" not found.**\n\nDid you mean:\n${sugList}\n\nSay "list all bots" to see all ${botRegistry.length} bots.`,
+        };
+      }
+
+      try {
+        const result = await executeBot(matchedBot.id, ctx.companyId, {}, ctx.db);
+        if (!result.success) {
+          return { response: `**${matchedBot.name} failed:** ${result.error || 'Unknown error'}\n\nTry again or check the system logs.` };
+        }
+
+        const runId = generateUUID();
+        await ctx.db.prepare(`
+          INSERT INTO bot_runs (id, company_id, bot_id, status, result, started_at, completed_at)
+          VALUES (?, ?, ?, 'completed', ?, datetime('now'), datetime('now'))
+        `).bind(runId, ctx.companyId, matchedBot.id, JSON.stringify(result)).run().catch(() => {});
+
+        const details = Object.entries(result)
+          .filter(([k]) => !['success', 'executed_at', 'data_source', 'message'].includes(k))
+          .map(([k, v]) => {
+            const label = k.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+            const val = typeof v === 'number' && v > 999 ? `R${v.toLocaleString()}` : v;
+            return `- **${label}:** ${val}`;
+          })
+          .join('\n');
+
+        return {
+          response: `**${matchedBot.name} Executed Successfully!**\n\n` +
+            `**Category:** ${matchedBot.category}\n` +
+            `${result.message ? `**Summary:** ${result.message}\n` : ''}` +
+            `\n**Results:**\n${details}\n\n` +
+            `Navigate to **Agents** to view run history.`,
+          data: result,
+        };
+      } catch (error: any) {
+        return { response: `**${matchedBot.name} Error:** ${error.message || 'Execution failed'}\n\nPlease try again.` };
+      }
+    },
+  },
+
+  // Run All Bots (Controller Bot)
+  {
+    name: 'run_all_bots',
+    description: 'Run all automation bots (controller bot)',
+    patterns: [
+      /(?:hey\s+aria\s+)?run\s+(?:all|every)\s+bots?/i,
+      /(?:hey\s+aria\s+)?(?:run|execute|start)\s+(?:the\s+)?controller\s*bot/i,
+      /(?:hey\s+aria\s+)?run\s+(?:the\s+)?full\s+(?:bot\s+)?suite/i,
+      /(?:hey\s+aria\s+)?execute\s+all\s+(?:automation\s+)?bots?/i,
+      /(?:hey\s+aria\s+)?run\s+(?:the\s+)?(?:complete|entire)\s+(?:bot\s+)?suite/i,
+    ],
+    slots: [],
+    execute: async (ctx) => {
+      const categories: Record<string, { total: number; success: number; failed: number; bots: string[] }> = {};
+      let totalSuccess = 0;
+      let totalFailed = 0;
+
+      for (const bot of botRegistry) {
+        if (!categories[bot.category]) {
+          categories[bot.category] = { total: 0, success: 0, failed: 0, bots: [] };
+        }
+        categories[bot.category].total++;
+
+        try {
+          const result = await executeBot(bot.id, ctx.companyId, {}, ctx.db);
+          if (result.success) {
+            totalSuccess++;
+            categories[bot.category].success++;
+          } else {
+            totalFailed++;
+            categories[bot.category].failed++;
+            categories[bot.category].bots.push(bot.name);
+          }
+        } catch {
+          totalFailed++;
+          categories[bot.category].failed++;
+          categories[bot.category].bots.push(bot.name);
+        }
+      }
+
+      const total = botRegistry.length;
+      const runId = generateUUID();
+      await ctx.db.prepare(`
+        INSERT INTO bot_runs (id, company_id, bot_id, status, result, started_at, completed_at)
+        VALUES (?, ?, 'controller_bot', 'completed', ?, datetime('now'), datetime('now'))
+      `).bind(runId, ctx.companyId, JSON.stringify({ total, success: totalSuccess, failed: totalFailed })).run().catch(() => {});
+
+      let categoryReport = '';
+      for (const [cat, data] of Object.entries(categories)) {
+        const status = data.failed === 0 ? 'ALL PASS' : `${data.failed} FAILED`;
+        categoryReport += `- **${cat}** (${data.total}): ${data.success}/${data.total} SUCCESS ${data.failed > 0 ? `| ${status}` : ''}\n`;
+      }
+
+      let failedList = '';
+      const allFailed = Object.values(categories).flatMap(c => c.bots);
+      if (allFailed.length > 0) {
+        failedList = `\n**Failed Bots:**\n${allFailed.map(n => `- ${n}`).join('\n')}\n`;
+      }
+
+      return {
+        response: `**Controller Bot — All ${total} Bots Executed!**\n\n` +
+          `**Overall:** ${totalSuccess}/${total} SUCCESS, ${totalFailed} FAILED\n\n` +
+          `**By Category:**\n${categoryReport}` +
+          failedList +
+          `\nNavigate to **Agents** to view detailed run history.`,
+        data: { total, success: totalSuccess, failed: totalFailed, categories },
+      };
     },
   },
 
