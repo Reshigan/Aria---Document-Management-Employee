@@ -406,6 +406,17 @@ const fallbackMenuData: Record<string, MegaMenuCategory[]> = {
       items: [
         { label: 'Bot Configuration', path: '/admin/agents' },
         { label: 'Agent Registry', path: '/agents' },
+        { label: 'Scheduled Bots', path: '/admin/scheduled-bots' },
+      ]
+    },
+    {
+      title: 'Data & Security',
+      icon: <Shield size={18} />,
+      color: '#ef4444',
+      items: [
+        { label: 'Data Export', path: '/admin/data-export' },
+        { label: 'Data Migration', path: '/admin/data-migration' },
+        { label: 'Security Settings', path: '/admin/security' },
       ]
     },
   ],
