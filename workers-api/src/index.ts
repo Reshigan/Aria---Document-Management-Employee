@@ -50,6 +50,7 @@ import xeroParity from './routes/xero-parity';
 import adminConfig from './routes/admin-config';
 import inventory from './routes/inventory';
 import crossModule from './routes/cross-module';
+import goLive from './routes/go-live';
 import { executeScheduledBots as runScheduledBots } from './services/bot-executor';
 import { processPendingDeliveries } from './services/webhook-service';
 import { processDueScheduledReports } from './services/report-builder-service';
@@ -576,6 +577,10 @@ app.route('/api/customer-statements', xeroParity);
 // Admin Configuration routes (Chart of Accounts, Invoice Templates, Lock Dates, Payment Terms, Tax Rates, Email Templates, Tracking Categories)
 app.route('/api/admin-config', adminConfig);
 app.route('/admin-config', adminConfig);
+
+// Go-Live improvements (PDF, Email, Export, Audit, Dashboard, Auth, Currency, Bots, 2FA, Migration)
+app.route('/api/go-live', goLive);
+app.route('/go-live', goLive);
 
 // Inventory routes (Warehouses, Stock Movements, Items)
 app.route('/api/inventory', inventory);
