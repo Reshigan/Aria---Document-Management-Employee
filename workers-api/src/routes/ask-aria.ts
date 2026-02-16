@@ -223,7 +223,7 @@ async function executeNaturalLanguageOrder(
 
   if (isPO) {
     const suppliers = await db.prepare(
-      'SELECT id, supplier_name, supplier_code FROM suppliers WHERE company_id = ? ORDER BY supplier_name LIMIT 50'
+      'SELECT id, supplier_name, supplier_code FROM suppliers WHERE company_id = ? GROUP BY supplier_name ORDER BY supplier_name LIMIT 50'
     ).bind(companyId).all();
     for (const s of (suppliers.results || []) as any[]) {
       if (fuzzyMatch(parsed.entityName, s.supplier_name || '')) {
@@ -232,14 +232,15 @@ async function executeNaturalLanguageOrder(
       }
     }
     if (!matchedEntity) {
-      const supplierList = ((suppliers.results || []) as any[]).map((s: any) => `- ${s.supplier_name}`).join('\n');
+      const uniqueNames = [...new Set(((suppliers.results || []) as any[]).map((s: any) => s.supplier_name).filter(Boolean))];
+      const supplierList = uniqueNames.slice(0, 10).map((n: string) => `- ${n}`).join('\n');
       return {
         response: `**Supplier "${parsed.entityName}" not found.**\n\nAvailable suppliers:\n${supplierList || 'None'}\n\nPlease try again with a valid supplier name.`,
       };
     }
   } else {
     const customers = await db.prepare(
-      'SELECT id, customer_name, customer_code FROM customers WHERE company_id = ? ORDER BY customer_name LIMIT 50'
+      'SELECT id, customer_name, customer_code FROM customers WHERE company_id = ? GROUP BY customer_name ORDER BY customer_name LIMIT 50'
     ).bind(companyId).all();
     for (const c of (customers.results || []) as any[]) {
       if (fuzzyMatch(parsed.entityName, c.customer_name || '')) {
@@ -248,7 +249,8 @@ async function executeNaturalLanguageOrder(
       }
     }
     if (!matchedEntity) {
-      const customerList = ((customers.results || []) as any[]).map((c: any) => `- ${c.customer_name}`).join('\n');
+      const uniqueNames = [...new Set(((customers.results || []) as any[]).map((c: any) => c.customer_name).filter(Boolean))];
+      const customerList = uniqueNames.slice(0, 10).map((n: string) => `- ${n}`).join('\n');
       return {
         response: `**Customer "${parsed.entityName}" not found.**\n\nAvailable customers:\n${customerList || 'None'}\n\nPlease try again with a valid customer name.`,
       };
@@ -284,7 +286,8 @@ async function executeNaturalLanguageOrder(
   }
 
   if (resolvedItems.length === 0) {
-    const productList = allProducts.map((p: any) => `- ${p.product_name} (${p.product_code})`).join('\n');
+    const uniqueProducts = [...new Set(allProducts.map((p: any) => `${p.product_name} (${p.product_code})`).filter(Boolean))];
+    const productList = uniqueProducts.slice(0, 10).map((n: string) => `- ${n}`).join('\n');
     return {
       response: `**Could not find products: ${notFound.join(', ')}**\n\nAvailable products:\n${productList || 'None'}\n\nPlease try again with valid product names.`,
     };
