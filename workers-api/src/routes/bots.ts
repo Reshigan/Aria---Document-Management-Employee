@@ -3456,4 +3456,5 @@ app.get('/workflows/runs', async (c) => {
   }
 });
 
+export { botRegistry, getExtendedDatabaseCounts, executeBot };
 export default app;
