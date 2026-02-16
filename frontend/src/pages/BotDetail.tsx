@@ -9,6 +9,9 @@ import {
   Zap, Shield, Download, Play, Star, ArrowRight, Package
 } from 'lucide-react';
 
+const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev/api';
+
+
 interface BotFeature {
   title: string;
   description: string;
@@ -58,7 +61,7 @@ const BotDetail: React.FC = () => {
     // Fetch agent data from API
     const fetchBotData = async () => {
       try {
-        const response = await fetch(`/api/agents/marketplace/${botId}`);
+        const response = await fetch(`${API_BASE}/agents/marketplace/${botId}`);
         if (response.ok) {
           const data = await response.json();
           setBotData(data);

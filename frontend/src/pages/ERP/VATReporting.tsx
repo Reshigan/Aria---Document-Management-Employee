@@ -5,6 +5,9 @@ import {
   Calendar, TrendingUp, DollarSign
 } from 'lucide-react';
 
+const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev/api';
+
+
 interface TaxCode {
   id: string;
   tax_code: string;
@@ -93,35 +96,35 @@ const VATReporting: React.FC = () => {
 
       switch (activeTab) {
         case 'tax-codes':
-          const taxCodesRes = await fetch(`/api/erp/vat-reporting/tax-codes?company_id=${companyId}`, { headers });
+          const taxCodesRes = await fetch(`${API_BASE}/erp/vat-reporting/tax-codes?company_id=${companyId}`, { headers });
           if (taxCodesRes.ok) {
             const data = await taxCodesRes.json();
             setTaxCodes(data.tax_codes || []);
           }
           break;
         case 'vat201':
-          const vat201Res = await fetch(`/api/erp/vat-reporting/vat201?company_id=${companyId}`, { headers });
+          const vat201Res = await fetch(`${API_BASE}/erp/vat-reporting/vat201?company_id=${companyId}`, { headers });
           if (vat201Res.ok) {
             const data = await vat201Res.json();
             setVat201Returns(data.vat201_returns || []);
           }
           break;
         case 'emp201':
-          const emp201Res = await fetch(`/api/erp/vat-reporting/emp201?company_id=${companyId}`, { headers });
+          const emp201Res = await fetch(`${API_BASE}/erp/vat-reporting/emp201?company_id=${companyId}`, { headers });
           if (emp201Res.ok) {
             const data = await emp201Res.json();
             setEmp201Returns(data.emp201_returns || []);
           }
           break;
         case 'period-close':
-          const periodCloseRes = await fetch(`/api/erp/vat-reporting/period-close?company_id=${companyId}`, { headers });
+          const periodCloseRes = await fetch(`${API_BASE}/erp/vat-reporting/period-close?company_id=${companyId}`, { headers });
           if (periodCloseRes.ok) {
             const data = await periodCloseRes.json();
             setPeriodCloses(data.period_closes || []);
           }
           break;
         case 'bbbee':
-          const bbbeeRes = await fetch(`/api/erp/vat-reporting/bbbee/procurement?company_id=${companyId}`, { headers });
+          const bbbeeRes = await fetch(`${API_BASE}/erp/vat-reporting/bbbee/procurement?company_id=${companyId}`, { headers });
           if (bbbeeRes.ok) {
             const data = await bbbeeRes.json();
             setBbbeeReport(data.bbbee_report || []);

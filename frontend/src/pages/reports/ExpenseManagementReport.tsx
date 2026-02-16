@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Receipt, RefreshCw, Download, Calendar } from 'lucide-react';
 import { DataTable } from '../../components/shared/DataTable';
 
+const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev/api';
+
+
 interface ExpenseClaim {
   id: string;
   employee: string;
@@ -36,8 +39,8 @@ export default function ExpenseManagementReportPage() {
     setLoading(true);
     try {
       const [claimsRes, summaryRes] = await Promise.all([
-        fetch(`/api/reports/expenses/claims?start_date=${dateRange.start}&end_date=${dateRange.end}`),
-        fetch(`/api/reports/expenses/summary?start_date=${dateRange.start}&end_date=${dateRange.end}`)
+        fetch(`${API_BASE}/reports/expenses/claims?start_date=${dateRange.start}&end_date=${dateRange.end}`),
+        fetch(`${API_BASE}/reports/expenses/summary?start_date=${dateRange.start}&end_date=${dateRange.end}`)
       ]);
       if (claimsRes.ok) setClaims(await claimsRes.json());
       if (summaryRes.ok) setSummary(await summaryRes.json());
@@ -70,7 +73,7 @@ export default function ExpenseManagementReportPage() {
 
   const handleExport = async () => {
     try {
-      const response = await fetch(`/api/reports/expenses/export?start_date=${dateRange.start}&end_date=${dateRange.end}&format=csv`);
+      const response = await fetch(`${API_BASE}/reports/expenses/export?start_date=${dateRange.start}&end_date=${dateRange.end}&format=csv`);
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');

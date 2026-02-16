@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { RefreshCw, CheckCircle, XCircle, Clock, Activity } from 'lucide-react';
 import { DataTable } from '../../components/shared/DataTable';
 
+const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev/api';
+
+
 interface SyncRecord {
   id: number;
   integration: string;
@@ -28,8 +31,8 @@ export default function IntegrationSyncPage() {
     setLoading(true);
     try {
       const [historyRes, summaryRes] = await Promise.all([
-        fetch('/api/integrations/sync/history'),
-        fetch('/api/integrations/sync/summary')
+        fetch(`${API_BASE}/integrations/sync/history`),
+        fetch(`${API_BASE}/integrations/sync/summary`)
       ]);
       if (historyRes.ok) setSyncHistory(await historyRes.json());
       if (summaryRes.ok) setSummary(await summaryRes.json());
@@ -55,7 +58,7 @@ export default function IntegrationSyncPage() {
   const handleSyncAll = async () => {
     setSyncing(true);
     try {
-      await fetch('/api/integrations/sync/all', { method: 'POST' });
+      await fetch(`${API_BASE}/integrations/sync/all`, { method: 'POST' });
       await fetchSyncHistory();
     } catch (err) {
       console.error('Sync all failed:', err);

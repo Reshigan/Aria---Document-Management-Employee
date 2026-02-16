@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Smartphone, Wifi, WifiOff, RefreshCw, Download, BarChart3 } from 'lucide-react';
 
+const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev/api';
+
+
 interface Device {
   id: string;
   name: string;
@@ -47,10 +50,10 @@ export default function MobileManagement() {
     setLoading(true);
     try {
       const [devicesRes, sessionsRes, docsRes, statsRes] = await Promise.all([
-        fetch('/api/mobile/devices'),
-        fetch('/api/mobile/sync-sessions'),
-        fetch('/api/mobile/offline-documents'),
-        fetch('/api/mobile/stats')
+        fetch(`${API_BASE}/mobile/devices`),
+        fetch(`${API_BASE}/mobile/sync-sessions`),
+        fetch(`${API_BASE}/mobile/offline-documents`),
+        fetch(`${API_BASE}/mobile/stats`)
       ]);
       if (devicesRes.ok) setDevices(await devicesRes.json());
       if (sessionsRes.ok) setSyncSessions(await sessionsRes.json());
@@ -86,7 +89,7 @@ export default function MobileManagement() {
   const handleSyncToggle = async (enabled: boolean) => {
     setSyncEnabled(enabled);
     try {
-      await fetch('/api/mobile/sync-settings', {
+      await fetch(`${API_BASE}/mobile/sync-settings`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ auto_sync: enabled })

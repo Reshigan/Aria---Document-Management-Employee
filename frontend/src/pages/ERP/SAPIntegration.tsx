@@ -5,6 +5,9 @@ import {
   FileText, Settings, Database, RefreshCw
 } from 'lucide-react';
 
+const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev/api';
+
+
 interface SAPConnection {
   id: string;
   connection_name: string;
@@ -77,28 +80,28 @@ const SAPIntegration: React.FC = () => {
 
       switch (activeTab) {
         case 'connections':
-          const connectionsRes = await fetch(`/api/erp/sap-integration/connections?company_id=${companyId}`, { headers });
+          const connectionsRes = await fetch(`${API_BASE}/erp/sap-integration/connections?company_id=${companyId}`, { headers });
           if (connectionsRes.ok) {
             const data = await connectionsRes.json();
             setConnections(data.connections || []);
           }
           break;
         case 'mappings':
-          const mappingsRes = await fetch(`/api/erp/sap-integration/field-mappings?company_id=${companyId}`, { headers });
+          const mappingsRes = await fetch(`${API_BASE}/erp/sap-integration/field-mappings?company_id=${companyId}`, { headers });
           if (mappingsRes.ok) {
             const data = await mappingsRes.json();
             setFieldMappings(data.mappings || []);
           }
           break;
         case 'export-queue':
-          const queueRes = await fetch(`/api/erp/sap-integration/export-queue?company_id=${companyId}`, { headers });
+          const queueRes = await fetch(`${API_BASE}/erp/sap-integration/export-queue?company_id=${companyId}`, { headers });
           if (queueRes.ok) {
             const data = await queueRes.json();
             setExportQueue(data.exports || []);
           }
           break;
         case 'gl-mappings':
-          const glMappingsRes = await fetch(`/api/erp/sap-integration/gl-mappings?company_id=${companyId}`, { headers });
+          const glMappingsRes = await fetch(`${API_BASE}/erp/sap-integration/gl-mappings?company_id=${companyId}`, { headers });
           if (glMappingsRes.ok) {
             const data = await glMappingsRes.json();
             setGLMappings(data.gl_mappings || []);
@@ -115,7 +118,7 @@ const SAPIntegration: React.FC = () => {
   const testConnection = async (connectionId: string) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`/api/erp/sap-integration/connections/${connectionId}/test`, {
+      const response = await fetch(`${API_BASE}/erp/sap-integration/connections/${connectionId}/test`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

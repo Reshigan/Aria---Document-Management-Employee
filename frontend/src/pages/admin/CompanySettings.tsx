@@ -8,6 +8,9 @@ import { Button } from '../../components/ui/button';
 import { Save, Upload, Building2, FileText, Palette, CreditCard, AlertCircle } from 'lucide-react';
 import api from '../../lib/api';
 
+const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev/api';
+
+
 interface CompanySettings {
   id: string;
   name: string;
@@ -215,7 +218,7 @@ export default function CompanySettingsPage() {
     formData.append('logo', file);
 
     try {
-      const response = await fetch('/api/admin/company/logo', {
+      const response = await fetch(`${API_BASE}/admin/company/logo`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` },
         body: formData

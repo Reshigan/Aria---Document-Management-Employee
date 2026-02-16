@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Bot, TrendingUp, Clock, CheckCircle, BarChart3 } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
+const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev/api';
+
+
 interface AgentPerformance {
   name: string;
   success: number;
@@ -39,7 +42,7 @@ export default function BotDashboardPage() {
 
   const fetchStats = async () => {
     try {
-      const response = await fetch('/api/reports/agents/dashboard', {
+      const response = await fetch(`${API_BASE}/reports/agents/dashboard`, {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
       if (response.ok) {
@@ -53,7 +56,7 @@ export default function BotDashboardPage() {
 
   const fetchChartData = async () => {
     try {
-      const response = await fetch('/api/reports/agents/activity-chart', {
+      const response = await fetch(`${API_BASE}/reports/agents/activity-chart`, {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
       if (response.ok) {
@@ -67,7 +70,7 @@ export default function BotDashboardPage() {
 
   const fetchAgentPerformance = async () => {
     try {
-      const response = await fetch('/api/reports/agents/performance', {
+      const response = await fetch(`${API_BASE}/reports/agents/performance`, {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
       if (response.ok) {
@@ -81,7 +84,7 @@ export default function BotDashboardPage() {
 
   const fetchRecentActions = async () => {
     try {
-      const response = await fetch('/api/reports/agents/recent-actions', {
+      const response = await fetch(`${API_BASE}/reports/agents/recent-actions`, {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
       if (response.ok) {

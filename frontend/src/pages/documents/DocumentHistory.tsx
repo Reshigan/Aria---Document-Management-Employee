@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { FileText, Download, Mail, Eye, RefreshCw } from 'lucide-react';
 import { DataTable } from '../../components/shared/DataTable';
 
+const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev/api';
+
+
 interface Document {
   id: string;
   type: string;
@@ -25,7 +28,7 @@ export default function DocumentHistoryPage() {
       const token = localStorage.getItem('token');
       const companyId = localStorage.getItem('selectedCompanyId');
       
-      const response = await fetch(`/api/documents/history?company_id=${companyId}`, {
+      const response = await fetch(`${API_BASE}/documents/history?company_id=${companyId}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       

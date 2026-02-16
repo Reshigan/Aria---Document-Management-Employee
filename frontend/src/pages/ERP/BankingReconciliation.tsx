@@ -5,6 +5,9 @@ import {
   FileText, TrendingUp
 } from 'lucide-react';
 
+const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev/api';
+
+
 interface BankAccount {
   id: string;
   account_number: string;
@@ -84,28 +87,28 @@ const BankingReconciliation: React.FC = () => {
 
       switch (activeTab) {
         case 'accounts':
-          const accountsRes = await fetch(`/api/erp/banking/bank-accounts?company_id=${companyId}`, { headers });
+          const accountsRes = await fetch(`${API_BASE}/erp/banking/bank-accounts?company_id=${companyId}`, { headers });
           if (accountsRes.ok) {
             const data = await accountsRes.json();
             setBankAccounts(data.bank_accounts || []);
           }
           break;
         case 'statements':
-          const statementsRes = await fetch(`/api/erp/banking/bank-statements?company_id=${companyId}`, { headers });
+          const statementsRes = await fetch(`${API_BASE}/erp/banking/bank-statements?company_id=${companyId}`, { headers });
           if (statementsRes.ok) {
             const data = await statementsRes.json();
             setBankStatements(data.bank_statements || []);
           }
           break;
         case 'transactions':
-          const transactionsRes = await fetch(`/api/erp/banking/bank-transactions?company_id=${companyId}`, { headers });
+          const transactionsRes = await fetch(`${API_BASE}/erp/banking/bank-transactions?company_id=${companyId}`, { headers });
           if (transactionsRes.ok) {
             const data = await transactionsRes.json();
             setBankTransactions(data.bank_transactions || []);
           }
           break;
         case 'rules':
-          const rulesRes = await fetch(`/api/erp/banking/reconciliation-rules?company_id=${companyId}`, { headers });
+          const rulesRes = await fetch(`${API_BASE}/erp/banking/reconciliation-rules?company_id=${companyId}`, { headers });
           if (rulesRes.ok) {
             const data = await rulesRes.json();
             setReconciliationRules(data.reconciliation_rules || []);

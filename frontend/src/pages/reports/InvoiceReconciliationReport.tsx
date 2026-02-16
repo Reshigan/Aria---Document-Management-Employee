@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { FileText, CheckCircle, XCircle, Clock } from 'lucide-react';
 import { DataTable } from '../../components/shared/DataTable';
 
+const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev/api';
+
+
 export default function InvoiceReconciliationReportPage() {
   const [data, setData] = useState({ stats: {}, invoices: [] });
   const [loading, setLoading] = useState(true);
@@ -12,7 +15,7 @@ export default function InvoiceReconciliationReportPage() {
 
   const fetchData = async () => {
     try {
-      const response = await fetch('/api/reports/agents/invoice-reconciliation', {
+      const response = await fetch(`${API_BASE}/reports/agents/invoice-reconciliation`, {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
       if (response.ok) {
