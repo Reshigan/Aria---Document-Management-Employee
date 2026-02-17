@@ -76,7 +76,7 @@ export default function PerformanceReviews() {
     return 'text-red-600 dark:text-red-400';
   };
 
-  const stats = { total: reviews.length, completed: reviews.filter(r => r.status === 'completed').length, avgRating: reviews.length > 0 ? (reviews.reduce((sum, r) => sum + r.overall_rating, 0) / reviews.length).toFixed(1) : '0', pending: reviews.filter(r => r.status === 'draft' || r.status === 'submitted').length };
+  const stats = { total: reviews.length, completed: reviews.filter(r => r.status === 'completed').length, avgRating: reviews.length > 0 ? (reviews.reduce((sum, r) => sum + (r.overall_rating || 0), 0) / reviews.length).toFixed(1) : '0', pending: reviews.filter(r => r.status === 'draft' || r.status === 'submitted').length };
 
   return (
     <div className="bg-gradient-to-br from-gray-50 to-violet-50 dark:from-gray-900 dark:to-gray-800 p-4">

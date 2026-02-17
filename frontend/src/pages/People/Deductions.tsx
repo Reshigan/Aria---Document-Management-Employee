@@ -71,7 +71,7 @@ export default function Deductions() {
     return styles[status] || styles.inactive;
   };
 
-  const stats = { total: deductions.length, active: deductions.filter(d => d.status === 'active').length, totalEmployees: deductions.reduce((sum, d) => sum + d.employees_count, 0), fixed: deductions.filter(d => d.type === 'fixed').length };
+  const stats = { total: deductions.length, active: deductions.filter(d => d.status === 'active').length, totalEmployees: deductions.reduce((sum, d) => sum + (d.employees_count || 0), 0), fixed: deductions.filter(d => d.type === 'fixed').length };
 
   return (
     <div className="bg-gradient-to-br from-gray-50 to-rose-50 dark:from-gray-900 dark:to-gray-800 p-4">

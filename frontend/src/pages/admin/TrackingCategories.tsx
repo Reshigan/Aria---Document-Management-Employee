@@ -76,7 +76,7 @@ export default function TrackingCategories() {
     setExpandedCategories(n);
   };
 
-  const totalOptions = categories.reduce((sum, c) => sum + c.options.length, 0);
+  const totalOptions = categories.reduce((sum, c) => sum + (c.options?.length || 0), 0);
   const activeOptions = categories.reduce((sum, c) => sum + c.options.filter(o => o.is_active).length, 0);
 
   return (

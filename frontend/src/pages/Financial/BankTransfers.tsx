@@ -72,7 +72,7 @@ export default function BankTransfers() {
 
   const stats = {
     total: transfers.length,
-    totalAmount: transfers.reduce((sum, t) => sum + t.amount, 0),
+    totalAmount: transfers.reduce((sum, t) => sum + (t.amount || 0), 0),
     completed: transfers.filter(t => t.status === 'completed').length,
     pending: transfers.filter(t => t.status === 'pending').length,
   };

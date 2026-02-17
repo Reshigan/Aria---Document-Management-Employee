@@ -68,8 +68,8 @@ export default function PaymentBatches() {
 
   const stats = {
     total: batches.length,
-    totalAmount: batches.reduce((sum, b) => sum + b.total_amount, 0),
-    totalPayments: batches.reduce((sum, b) => sum + b.payment_count, 0),
+    totalAmount: batches.reduce((sum, b) => sum + (b.total_amount || 0), 0),
+    totalPayments: batches.reduce((sum, b) => sum + (b.payment_count || 0), 0),
     processed: batches.filter(b => b.status === 'processed').length,
   };
 

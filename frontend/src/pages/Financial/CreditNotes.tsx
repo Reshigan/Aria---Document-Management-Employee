@@ -64,7 +64,7 @@ export default function CreditNotes() {
 
   const stats = {
     total: creditNotes.length,
-    totalAmount: creditNotes.reduce((sum, c) => sum + c.total_amount, 0),
+    totalAmount: creditNotes.reduce((sum, c) => sum + (c.total_amount || 0), 0),
     issued: creditNotes.filter(c => c.status === 'issued').length,
     draft: creditNotes.filter(c => c.status === 'draft').length,
   };

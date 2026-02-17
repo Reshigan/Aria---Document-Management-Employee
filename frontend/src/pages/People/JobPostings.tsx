@@ -82,7 +82,7 @@ export default function JobPostings() {
   const stats = {
     total: postings.length,
     open: postings.filter(p => p.status === 'open').length,
-    totalApplicants: postings.reduce((sum, p) => sum + p.applicants_count, 0),
+    totalApplicants: postings.reduce((sum, p) => sum + (p.applicants_count || 0), 0),
     closed: postings.filter(p => p.status === 'closed').length,
   };
 

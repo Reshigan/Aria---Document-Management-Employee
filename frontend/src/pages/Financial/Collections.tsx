@@ -70,7 +70,7 @@ export default function Collections() {
 
   const stats = {
     total: collections.length,
-    totalOutstanding: collections.reduce((sum, c) => sum + c.amount_outstanding, 0),
+    totalOutstanding: collections.reduce((sum, c) => sum + (c.amount_outstanding || 0), 0),
     withPromise: collections.filter(c => c.promise_to_pay_date).length,
     followUps: collections.filter(c => c.follow_up_date && new Date(c.follow_up_date) >= new Date()).length,
   };

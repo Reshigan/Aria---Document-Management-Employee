@@ -62,7 +62,7 @@ export default function RoutePlanning() {
     return styles[status] || styles.planned;
   };
 
-  const stats = { total: routes.length, completed: routes.filter(r => r.status === 'completed').length, inProgress: routes.filter(r => r.status === 'in_progress').length, totalDistance: routes.reduce((sum, r) => sum + r.total_distance_km, 0) };
+  const stats = { total: routes.length, completed: routes.filter(r => r.status === 'completed').length, inProgress: routes.filter(r => r.status === 'in_progress').length, totalDistance: routes.reduce((sum, r) => sum + (r.total_distance_km || 0), 0) };
 
   return (
     <div className="bg-gradient-to-br from-gray-50 to-sky-50 dark:from-gray-900 dark:to-gray-800 p-4">

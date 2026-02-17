@@ -250,7 +250,7 @@ export default function PurchaseOrders() {
                 <p className="text-xl font-bold text-gray-900 dark:text-white">{pos.length}</p>
                 <p className="text-xs text-gray-500 dark:text-gray-300 capitalize">{status.replace('_', ' ')} POs</p>
                 <p className="text-xs text-gray-300 dark:text-gray-500 mt-0.5">
-                  R {pos.reduce((sum, po) => sum + po.total_amount, 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  R {pos.reduce((sum, po) => sum + (po.total_amount || 0), 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </p>
               </div>
             </div>

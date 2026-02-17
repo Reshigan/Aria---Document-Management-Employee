@@ -77,8 +77,8 @@ export default function Positions() {
 
   const stats = {
     total: positions.length,
-    totalHeadcount: positions.reduce((sum, p) => sum + p.headcount, 0),
-    totalFilled: positions.reduce((sum, p) => sum + p.filled, 0),
+    totalHeadcount: positions.reduce((sum, p) => sum + (p.headcount || 0), 0),
+    totalFilled: positions.reduce((sum, p) => sum + (p.filled || 0), 0),
     vacancies: positions.reduce((sum, p) => sum + (p.headcount - p.filled), 0),
   };
 
