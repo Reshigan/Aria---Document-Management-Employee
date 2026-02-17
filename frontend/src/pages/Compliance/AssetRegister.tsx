@@ -53,7 +53,7 @@ export default function AssetRegister() {
     try { await assetRegisterApi.delete(id); fetchAssets(); } catch (err) { setError('Failed to delete asset'); }
   };
 
-  const formatCurrency = (amount: number) => new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR' }).format(amount);
+  const formatCurrency = (amount: number) => new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR' }).format(Number(amount) || 0);
   
   const getStatusBadge = (status: string) => {
     const styles: Record<string, string> = {

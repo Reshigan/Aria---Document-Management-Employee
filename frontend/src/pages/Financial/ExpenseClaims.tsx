@@ -52,7 +52,7 @@ export default function ExpenseClaims() {
     } catch (err) { setError(`Failed to ${action} claim`); }
   };
 
-  const formatCurrency = (amount: number, currency: string) => new Intl.NumberFormat('en-ZA', { style: 'currency', currency }).format(amount);
+  const formatCurrency = (amount: number, currency: string) => new Intl.NumberFormat('en-ZA', { style: 'currency', currency }).format(Number(amount) || 0);
 
   const getStatusBadge = (status: string) => {
     const styles: Record<string, string> = {

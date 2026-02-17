@@ -296,7 +296,7 @@ export default function GoodsReceipts() {
                         <Link to={`/procurement/goods-receipts/${receipt.id}`} className="font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300">{receipt.receipt_number}</Link>
                       </td>
                       <td className="px-6 py-4 text-gray-900 dark:text-white">{receipt.supplier_name}</td>
-                      <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{new Date(receipt.receipt_date).toLocaleDateString()}</td>
+                      <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{(receipt.receipt_date ? new Date(receipt.receipt_date).toLocaleDateString() : "-")}</td>
                       <td className="px-6 py-4">
                         <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${getStatusBadge(receipt.status)}`}>{receipt.status}</span>
                       </td>

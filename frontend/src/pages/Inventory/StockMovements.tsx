@@ -127,9 +127,7 @@ const StockMovements: React.FC = () => {
     return <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${style}`}>{type}</span>;
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-ZA');
-  };
+  const formatDate = (dateString: string) => { if (!dateString) return "-"; const _d = new Date(dateString); return isNaN(_d.getTime()) ? dateString : _d.toLocaleDateString("en-ZA"); };
 
   return (
     <div className="bg-gradient-to-br from-gray-50 to-violet-50 dark:from-gray-900 dark:to-gray-800 p-4" data-testid="inventory-movements">

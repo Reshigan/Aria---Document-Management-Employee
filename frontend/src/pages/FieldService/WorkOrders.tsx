@@ -380,7 +380,7 @@ export default function WorkOrders() {
                       <div className="flex items-center gap-2 text-sm text-gray-600">
                         <Calendar size={14} className="text-gray-400" />
                         <div>
-                          <div>{new Date(order.scheduled_date).toLocaleDateString()}</div>
+                          <div>{(order.scheduled_date ? new Date(order.scheduled_date).toLocaleDateString() : "-")}</div>
                           {order.scheduled_time && (
                             <div className="text-xs text-gray-500">{order.scheduled_time}</div>
                           )}

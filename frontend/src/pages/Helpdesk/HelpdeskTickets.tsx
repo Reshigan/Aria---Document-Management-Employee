@@ -387,7 +387,7 @@ export default function HelpdeskTickets() {
                           <CheckCircle size={14} />
                         )}
                         <span className="text-xs">
-                          {new Date(ticket.sla_deadline).toLocaleDateString()}
+                          {(ticket.sla_deadline ? new Date(ticket.sla_deadline).toLocaleDateString() : "-")}
                         </span>
                       </div>
                     ) : (

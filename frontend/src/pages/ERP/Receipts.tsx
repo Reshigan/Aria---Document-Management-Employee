@@ -236,7 +236,7 @@ export default function Receipts() {
                     <tr key={receipt.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                       <td className="px-6 py-4 font-semibold text-green-600 dark:text-green-400">{receipt.receipt_number}</td>
                       <td className="px-6 py-4 text-gray-900 dark:text-white">{receipt.customer_name || `Customer ${receipt.customer_id}`}</td>
-                      <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{new Date(receipt.payment_date).toLocaleDateString()}</td>
+                      <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{(receipt.payment_date ? new Date(receipt.payment_date).toLocaleDateString() : "-")}</td>
                       <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{getPaymentMethodLabel(receipt.payment_method)}</td>
                       <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{receipt.reference || '-'}</td>
                       <td className="px-6 py-4 text-right font-semibold text-gray-900 dark:text-white">R {Number(receipt.amount ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</td>

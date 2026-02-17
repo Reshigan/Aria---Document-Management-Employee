@@ -235,7 +235,7 @@ const VATReporting: React.FC = () => {
               <tr key={vat201.id} className="hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900">
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{vat201.return_number}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">
-                  {new Date(vat201.period_start).toLocaleDateString()} - {new Date(vat201.period_end).toLocaleDateString()}
+                  {(vat201.period_start ? new Date(vat201.period_start).toLocaleDateString() : "-")} - {(vat201.period_end ? new Date(vat201.period_end).toLocaleDateString() : "-")}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">R {Number(vat201.output_tax ?? 0).toLocaleString()}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">R {Number(vat201.input_tax ?? 0).toLocaleString()}</td>
@@ -286,7 +286,7 @@ const VATReporting: React.FC = () => {
               <tr key={emp201.id} className="hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900">
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{emp201.return_number}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">
-                  {new Date(emp201.period_start).toLocaleDateString()} - {new Date(emp201.period_end).toLocaleDateString()}
+                  {(emp201.period_start ? new Date(emp201.period_start).toLocaleDateString() : "-")} - {(emp201.period_end ? new Date(emp201.period_end).toLocaleDateString() : "-")}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">R {Number(emp201.paye_amount ?? 0).toLocaleString()}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">R {Number(emp201.uif_amount ?? 0).toLocaleString()}</td>
@@ -348,8 +348,8 @@ const VATReporting: React.FC = () => {
             {periodCloses.map((period) => (
               <tr key={period.id} className="hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900">
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{period.period_name}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">{new Date(period.period_start).toLocaleDateString()}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">{new Date(period.period_end).toLocaleDateString()}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">{(period.period_start ? new Date(period.period_start).toLocaleDateString() : "-")}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">{(period.period_end ? new Date(period.period_end).toLocaleDateString() : "-")}</td>
                 <td className="px-6 py-4 whitespace-nowrap">{getStatusBadge(period.status)}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">{period.closed_by || '-'}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">

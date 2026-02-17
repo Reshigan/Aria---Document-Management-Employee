@@ -461,7 +461,7 @@ export default function Products() {
                     <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
                       {priceHistory.map((history) => (
                         <tr key={history.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50">
-                          <td className="px-4 py-3 text-sm text-gray-900 dark:text-white">{new Date(history.effective_date).toLocaleDateString()}</td>
+                          <td className="px-4 py-3 text-sm text-gray-900 dark:text-white">{(history.effective_date ? new Date(history.effective_date).toLocaleDateString() : "-")}</td>
                           <td className="px-4 py-3 text-sm text-right text-gray-600 dark:text-gray-300">R {Number(history.cost_price ?? 0).toLocaleString()}</td>
                           <td className="px-4 py-3 text-sm text-right text-gray-600 dark:text-gray-300">R {Number(history.selling_price ?? 0).toLocaleString()}</td>
                           <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-300">{history.changed_by}</td>

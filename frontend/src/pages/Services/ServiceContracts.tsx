@@ -51,7 +51,7 @@ export default function ServiceContracts() {
     try { await serviceContractsApi.terminate(id); fetchContracts(); } catch (err) { setError('Failed to terminate contract'); }
   };
 
-  const formatCurrency = (amount: number) => new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR' }).format(amount);
+  const formatCurrency = (amount: number) => new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR' }).format(Number(amount) || 0);
   
   const getStatusBadge = (status: string) => {
     const styles: Record<string, string> = {

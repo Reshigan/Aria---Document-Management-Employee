@@ -444,7 +444,7 @@ export default function PurchaseOrders() {
                           <Link to={`/procurement/purchase-orders/${order.id}`} className="font-semibold text-orange-600 dark:text-orange-400 hover:text-orange-700 dark:hover:text-orange-300">{order.po_number}</Link>
                         </td>
                         <td className="px-6 py-4 text-gray-900 dark:text-white">{order.supplier_name}</td>
-                        <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{new Date(order.po_date).toLocaleDateString()}</td>
+                        <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{(order.po_date ? new Date(order.po_date).toLocaleDateString() : "-")}</td>
                         <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{order.expected_delivery_date ? new Date(order.expected_delivery_date).toLocaleDateString() : '-'}</td>
                         <td className="px-6 py-4 text-right font-semibold text-gray-900 dark:text-white">R {Number(order.total_amount ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
                         <td className="px-6 py-4">
@@ -597,7 +597,7 @@ export default function PurchaseOrders() {
               <div className="grid grid-cols-2 gap-3">
                 <div className="bg-gray-50 dark:bg-gray-900/50 rounded-lg p-3">
                   <p className="text-xs text-gray-500 dark:text-gray-400">PO Date</p>
-                  <p className="font-medium text-gray-900 dark:text-white">{new Date(selectedOrder.po_date).toLocaleDateString()}</p>
+                  <p className="font-medium text-gray-900 dark:text-white">{(selectedOrder.po_date ? new Date(selectedOrder.po_date).toLocaleDateString() : "-")}</p>
                 </div>
                 <div className="bg-gray-50 dark:bg-gray-900/50 rounded-lg p-3">
                   <p className="text-xs text-gray-500 dark:text-gray-400">Expected Delivery</p>

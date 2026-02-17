@@ -432,7 +432,7 @@ export default function GeneralLedger() {
                     {journalEntries.map(journal => (
                       <tr key={journal.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                         <td className="px-6 py-4 font-semibold text-indigo-600 dark:text-indigo-400">{journal.entry_number}</td>
-                        <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{new Date(journal.entry_date).toLocaleDateString()}</td>
+                        <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{(journal.entry_date ? new Date(journal.entry_date).toLocaleDateString() : "-")}</td>
                         <td className="px-6 py-4 text-gray-900 dark:text-white">{journal.description || '-'}</td>
                         <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{journal.reference || '-'}</td>
                         <td className="px-6 py-4"><span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border capitalize ${getStatusBadge(journal.status)}`}>{journal.status}</span></td>
@@ -447,7 +447,7 @@ export default function GeneralLedger() {
             !trialBalance ? (<div className="p-12 text-center"><div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-2xl flex items-center justify-center mx-auto mb-4"><TrendingUp className="h-8 w-8 text-gray-400" /></div><h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No trial balance data</h3><p className="text-gray-500 dark:text-gray-400">Post journal entries to generate trial balance</p></div>) : (
               <div>
                 <div className="p-3 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
-                  <div><h3 className="font-semibold text-gray-900 dark:text-white">Trial Balance</h3><p className="text-xs text-gray-500 dark:text-gray-400">As of {new Date(trialBalance.as_of_date).toLocaleDateString()}</p></div>
+                  <div><h3 className="font-semibold text-gray-900 dark:text-white">Trial Balance</h3><p className="text-xs text-gray-500 dark:text-gray-400">As of {(trialBalance.as_of_date ? new Date(trialBalance.as_of_date).toLocaleDateString() : "-")}</p></div>
                   <div className={`flex items-center gap-2 px-4 py-2 rounded-xl ${trialBalance.balanced ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300' : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300'}`}>{trialBalance.balanced ? <><Check className="h-4 w-4" />Balanced</> : <><AlertCircle className="h-4 w-4" />Not Balanced</>}</div>
                 </div>
                 <div className="overflow-x-auto">

@@ -46,7 +46,7 @@ export default function Collections() {
     } catch (err) { setError('Failed to create collection record'); }
   };
 
-  const formatCurrency = (amount: number) => new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR' }).format(amount);
+  const formatCurrency = (amount: number) => new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR' }).format(Number(amount) || 0);
 
   const getMethodIcon = (method: string) => {
     switch (method) {

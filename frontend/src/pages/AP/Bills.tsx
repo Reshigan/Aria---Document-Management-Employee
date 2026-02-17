@@ -288,10 +288,10 @@ export default function Bills() {
                   <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">{bill.bill_number}</td>
                   <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{bill.supplier_name || `Supplier ${bill.supplier_id}`}</td>
                   <td className="px-6 py-4 text-gray-500 dark:text-gray-400">
-                    {new Date(bill.bill_date).toLocaleDateString('en-ZA')}
+                    {(bill.bill_date ? new Date(bill.bill_date).toLocaleDateString('en-ZA') : "-")}
                   </td>
                   <td className="px-6 py-4 text-gray-500 dark:text-gray-400">
-                    {new Date(bill.due_date).toLocaleDateString('en-ZA')}
+                    {(bill.due_date ? new Date(bill.due_date).toLocaleDateString('en-ZA') : "-")}
                   </td>
                   <td className="px-6 py-4 text-right font-medium text-gray-900 dark:text-white">
                     R {Number(bill.total_amount ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}

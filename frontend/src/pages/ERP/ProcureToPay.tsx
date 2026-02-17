@@ -191,8 +191,8 @@ const ProcureToPay: React.FC = () => {
               <tr key={rfq.id} className="hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900">
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{rfq.rfq_number}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">{rfq.supplier_name}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">{new Date(rfq.rfq_date).toLocaleDateString()}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">{new Date(rfq.required_date).toLocaleDateString()}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">{(rfq.rfq_date ? new Date(rfq.rfq_date).toLocaleDateString() : "-")}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">{(rfq.required_date ? new Date(rfq.required_date).toLocaleDateString() : "-")}</td>
                 <td className="px-6 py-4 whitespace-nowrap">{getStatusBadge(rfq.status)}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">R {Number(rfq.total_amount ?? 0).toLocaleString()}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">
@@ -234,8 +234,8 @@ const ProcureToPay: React.FC = () => {
               <tr key={po.id} className="hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900">
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{po.po_number}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">{po.supplier_name}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">{new Date(po.order_date).toLocaleDateString()}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">{new Date(po.delivery_date).toLocaleDateString()}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">{(po.order_date ? new Date(po.order_date).toLocaleDateString() : "-")}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">{(po.delivery_date ? new Date(po.delivery_date).toLocaleDateString() : "-")}</td>
                 <td className="px-6 py-4 whitespace-nowrap">{getStatusBadge(po.status)}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">R {Number(po.total_amount ?? 0).toLocaleString()}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">
@@ -276,7 +276,7 @@ const ProcureToPay: React.FC = () => {
               <tr key={gr.id} className="hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900">
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{gr.gr_number}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">{gr.po_number}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">{new Date(gr.receipt_date).toLocaleDateString()}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">{(gr.receipt_date ? new Date(gr.receipt_date).toLocaleDateString() : "-")}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{gr.total_quantity}</td>
                 <td className="px-6 py-4 whitespace-nowrap">{getStatusBadge(gr.status)}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">
@@ -318,8 +318,8 @@ const ProcureToPay: React.FC = () => {
               <tr key={invoice.id} className="hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900">
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{invoice.invoice_number}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">{invoice.supplier_name}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">{new Date(invoice.invoice_date).toLocaleDateString()}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">{new Date(invoice.due_date).toLocaleDateString()}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">{(invoice.invoice_date ? new Date(invoice.invoice_date).toLocaleDateString() : "-")}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">{(invoice.due_date ? new Date(invoice.due_date).toLocaleDateString() : "-")}</td>
                 <td className="px-6 py-4 whitespace-nowrap">{getStatusBadge(invoice.status)}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">R {Number(invoice.total_amount ?? 0).toLocaleString()}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">
@@ -361,7 +361,7 @@ const ProcureToPay: React.FC = () => {
               <tr key={payment.id} className="hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900">
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{payment.payment_number}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">{payment.supplier_name}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">{new Date(payment.payment_date).toLocaleDateString()}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">{(payment.payment_date ? new Date(payment.payment_date).toLocaleDateString() : "-")}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">{payment.payment_method}</td>
                 <td className="px-6 py-4 whitespace-nowrap">{getStatusBadge(payment.status)}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">R {Number(payment.total_amount ?? 0).toLocaleString()}</td>

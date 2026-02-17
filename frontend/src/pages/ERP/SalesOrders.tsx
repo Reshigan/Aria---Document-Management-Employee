@@ -580,7 +580,7 @@ export default function SalesOrders() {
                         <td className="px-6 py-4">
                           <div><p className="font-medium text-gray-900 dark:text-white">{order.customer_name}</p>{order.customer_email && (<p className="text-xs text-gray-500 dark:text-gray-400">{order.customer_email}</p>)}</div>
                         </td>
-                        <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{new Date(order.order_date).toLocaleDateString()}</td>
+                        <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{(order.order_date ? new Date(order.order_date).toLocaleDateString() : "-")}</td>
                         <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{order.required_date ? new Date(order.required_date).toLocaleDateString() : '-'}</td>
                         <td className="px-6 py-4 text-right font-semibold text-gray-900 dark:text-white">R {Number(order.total_amount ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
                         <td className="px-6 py-4">

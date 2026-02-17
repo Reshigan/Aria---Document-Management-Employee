@@ -182,7 +182,7 @@ const QualityInspections: React.FC = () => {
                         {inspection.result}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-sm">{new Date(inspection.inspection_date).toLocaleDateString()}</td>
+                    <td className="px-6 py-4 text-sm">{(inspection.inspection_date ? new Date(inspection.inspection_date).toLocaleDateString() : "-")}</td>
                     <td className="px-6 py-4 text-sm">
                       <div className="flex items-center space-x-2">
                         <button onClick={() => handleEdit(inspection)} className="text-gray-600 hover:text-blue-600">

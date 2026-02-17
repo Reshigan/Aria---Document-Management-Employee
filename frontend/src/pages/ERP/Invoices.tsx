@@ -521,7 +521,7 @@ export default function Invoices() {
                         <td className="px-6 py-4">
                           <div><p className="font-medium text-gray-900 dark:text-white">{invoice.customer_name}</p>{invoice.customer_email && (<p className="text-xs text-gray-500 dark:text-gray-400">{invoice.customer_email}</p>)}</div>
                         </td>
-                        <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{new Date(invoice.invoice_date).toLocaleDateString()}</td>
+                        <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{(invoice.invoice_date ? new Date(invoice.invoice_date).toLocaleDateString() : "-")}</td>
                         <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{invoice.due_date ? new Date(invoice.due_date).toLocaleDateString() : '-'}</td>
                         <td className="px-6 py-4">
                           <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${statusConfig.bg} ${statusConfig.text} border ${statusConfig.border}`}>{invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1)}</span>

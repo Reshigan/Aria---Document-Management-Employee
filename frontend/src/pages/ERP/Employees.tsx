@@ -327,7 +327,7 @@ export default function Employees() {
                       <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{emp.email || '-'}</td>
                       <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{emp.department || '-'}</td>
                       <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{emp.position || '-'}</td>
-                      <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{new Date(emp.hire_date).toLocaleDateString()}</td>
+                      <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{(emp.hire_date ? new Date(emp.hire_date).toLocaleDateString() : "-")}</td>
                       <td className="px-6 py-4">
                         <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${getStatusBadge(emp.status)}`}>{emp.status.replace('_', ' ')}</span>
                       </td>

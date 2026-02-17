@@ -249,7 +249,7 @@ const BankingReconciliation: React.FC = () => {
             {bankStatements.map((statement) => (
               <tr key={statement.id} className="hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900">
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{statement.account_name}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">{new Date(statement.statement_date).toLocaleDateString()}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">{(statement.statement_date ? new Date(statement.statement_date).toLocaleDateString() : "-")}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">R {Number(statement.opening_balance ?? 0).toLocaleString()}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">R {Number(statement.closing_balance ?? 0).toLocaleString()}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-red-600 dark:text-red-400">R {Number(statement.total_debits ?? 0).toLocaleString()}</td>
@@ -296,7 +296,7 @@ const BankingReconciliation: React.FC = () => {
           <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
             {bankTransactions.map((transaction) => (
               <tr key={transaction.id} className={`hover:bg-gray-50 ${transaction.is_reconciled ? 'bg-green-50' : ''}`}>
-                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">{new Date(transaction.transaction_date).toLocaleDateString()}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">{(transaction.transaction_date ? new Date(transaction.transaction_date).toLocaleDateString() : "-")}</td>
                 <td className="px-6 py-4 text-sm text-gray-900 dark:text-white">{transaction.description}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">{transaction.reference}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-red-600 dark:text-red-400">

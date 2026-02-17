@@ -129,9 +129,7 @@ const FixedAssets: React.FC = () => {
     return new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR' }).format(amount);
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-ZA');
-  };
+  const formatDate = (dateString: string) => { if (!dateString) return "-"; const _d = new Date(dateString); return isNaN(_d.getTime()) ? dateString : _d.toLocaleDateString("en-ZA"); };
 
   const totalPurchaseCost = assets.reduce((sum, a) => sum + a.purchase_cost, 0);
   const totalDepreciation = assets.reduce((sum, a) => sum + a.accumulated_depreciation, 0);

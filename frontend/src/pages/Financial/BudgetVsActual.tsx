@@ -73,7 +73,7 @@ export default function BudgetVsActual() {
     } catch (err) { console.error('Failed to load alerts:', err); }
   };
 
-  const formatCurrency = (amount: number) => new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR' }).format(amount);
+  const formatCurrency = (amount: number) => new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR' }).format(Number(amount) || 0);
   const formatPercent = (value: number) => `${value >= 0 ? '+' : ''}${Number(value ?? 0).toFixed(1)}%`;
 
   const getVarianceColor = (variance: number, isFavorable: boolean) => {

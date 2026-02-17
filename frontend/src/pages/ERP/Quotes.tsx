@@ -471,7 +471,7 @@ export default function Quotes() {
                         <td className="px-6 py-4">
                           <div><p className="font-medium text-gray-900 dark:text-white">{quote.customer_name || '-'}</p>{quote.customer_email && (<p className="text-xs text-gray-500 dark:text-gray-400">{quote.customer_email}</p>)}</div>
                         </td>
-                        <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{new Date(quote.quote_date).toLocaleDateString()}</td>
+                        <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{(quote.quote_date ? new Date(quote.quote_date).toLocaleDateString() : "-")}</td>
                         <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{quote.valid_until ? new Date(quote.valid_until).toLocaleDateString() : '-'}</td>
                         <td className="px-6 py-4 text-right font-semibold text-gray-900 dark:text-white">R {Number(quote.total_amount ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
                         <td className="px-6 py-4">

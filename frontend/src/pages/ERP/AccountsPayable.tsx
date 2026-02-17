@@ -454,8 +454,8 @@ export default function AccountsPayable() {
                       <tr key={inv.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                         <td className="px-6 py-4 font-semibold text-red-600 dark:text-red-400">{inv.invoice_number}</td>
                         <td className="px-6 py-4 text-gray-900 dark:text-white">{inv.vendor_name}</td>
-                        <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{new Date(inv.invoice_date).toLocaleDateString()}</td>
-                        <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{new Date(inv.due_date).toLocaleDateString()}</td>
+                        <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{(inv.invoice_date ? new Date(inv.invoice_date).toLocaleDateString() : "-")}</td>
+                        <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{(inv.due_date ? new Date(inv.due_date).toLocaleDateString() : "-")}</td>
                         <td className="px-6 py-4 text-right text-gray-900 dark:text-white">R {Number(inv.total_amount ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</td>
                         <td className="px-6 py-4 text-right font-semibold text-gray-900 dark:text-white">R {Number(inv.balance ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</td>
                         <td className="px-6 py-4"><span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${getStatusBadge(inv.status)}`}>{inv.status}</span></td>
@@ -475,7 +475,7 @@ export default function AccountsPayable() {
                       <tr key={pmt.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                         <td className="px-6 py-4 font-semibold text-red-600 dark:text-red-400">{pmt.payment_number}</td>
                         <td className="px-6 py-4 text-gray-900 dark:text-white">{pmt.vendor_name}</td>
-                        <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{new Date(pmt.payment_date).toLocaleDateString()}</td>
+                        <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{(pmt.payment_date ? new Date(pmt.payment_date).toLocaleDateString() : "-")}</td>
                         <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{pmt.payment_method}</td>
                         <td className="px-6 py-4 text-right font-semibold text-gray-900 dark:text-white">R {Number(pmt.amount ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</td>
                         <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{pmt.reference || '-'}</td>

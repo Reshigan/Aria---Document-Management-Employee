@@ -140,9 +140,7 @@ const QualityDashboard: React.FC = () => {
     return <span className={`px-2 py-1 text-xs font-semibold rounded-full ${colorClass}`}>{status}</span>;
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-ZA');
-  };
+  const formatDate = (dateString: string) => { if (!dateString) return "-"; const _d = new Date(dateString); return isNaN(_d.getTime()) ? dateString : _d.toLocaleDateString("en-ZA"); };
 
   return (
     <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4" data-testid="quality-dashboard">

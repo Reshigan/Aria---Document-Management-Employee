@@ -272,7 +272,7 @@ export default function Timesheets() {
                     <div className="flex items-center gap-2">
                       <Calendar size={16} className="text-gray-400" />
                       <span className="text-sm text-gray-900 dark:text-white">
-                        {new Date(timesheet.date).toLocaleDateString()}
+                        {(timesheet.date ? new Date(timesheet.date).toLocaleDateString() : "-")}
                       </span>
                     </div>
                   </td>

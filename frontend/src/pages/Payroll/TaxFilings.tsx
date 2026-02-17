@@ -89,8 +89,8 @@ export default function TaxFilings() {
     }
   };
 
-  const formatCurrency = (amount: number) => new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR' }).format(amount);
-  const formatDate = (dateString: string) => new Date(dateString).toLocaleDateString('en-ZA');
+  const formatCurrency = (amount: number) => new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR' }).format(Number(amount) || 0);
+  const formatDate = (dateString: string) => { if (!dateString) return "-"; const _d = new Date(dateString); return isNaN(_d.getTime()) ? dateString : _d.toLocaleDateString("en-ZA"); };
 
   const getStatusBadge = (status: string) => {
     const styles: Record<string, string> = {

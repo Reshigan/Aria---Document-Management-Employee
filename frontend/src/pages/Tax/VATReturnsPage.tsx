@@ -228,7 +228,7 @@ export default function VATReturnsPage() {
                   <tr key={vatReturn.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                     <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">{vatReturn.return_number}</td>
                     <td className="px-6 py-4 text-gray-600 dark:text-gray-400">
-                      {new Date(vatReturn.period_start).toLocaleDateString('en-ZA')} - {new Date(vatReturn.period_end).toLocaleDateString('en-ZA')}
+                      {(vatReturn.period_start ? new Date(vatReturn.period_start).toLocaleDateString('en-ZA') : "-")} - {(vatReturn.period_end ? new Date(vatReturn.period_end).toLocaleDateString('en-ZA') : "-")}
                     </td>
                     <td className="px-6 py-4 text-right text-green-600 dark:text-green-400">
                       R {Number(vatReturn.output_tax ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}

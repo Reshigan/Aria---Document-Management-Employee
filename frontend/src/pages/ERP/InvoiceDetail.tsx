@@ -285,8 +285,8 @@ export default function InvoiceDetail() {
             </div>
             <div class="info-box">
               <h3>Invoice Details</h3>
-              <p><strong>Invoice Date:</strong> ${new Date(invoice.invoice_date).toLocaleDateString()}</p>
-              <p><strong>Due Date:</strong> ${new Date(invoice.due_date).toLocaleDateString()}</p>
+              <p><strong>Invoice Date:</strong> ${(invoice.invoice_date ? new Date(invoice.invoice_date).toLocaleDateString() : "-")}</p>
+              <p><strong>Due Date:</strong> ${(invoice.due_date ? new Date(invoice.due_date).toLocaleDateString() : "-")}</p>
               <p><strong>Status:</strong> ${invoice.status.toUpperCase()}</p>
             </div>
           </div>
@@ -351,15 +351,15 @@ export default function InvoiceDetail() {
       setEmailSubject(`Invoice ${invoice.invoice_number} from ARIA ERP`);
       setEmailBody(`Dear ${customer?.name || 'Customer'},
 
-  Please find attached Invoice ${invoice.invoice_number} dated ${new Date(invoice.invoice_date).toLocaleDateString()}.
+  Please find attached Invoice ${invoice.invoice_number} dated ${(invoice.invoice_date ? new Date(invoice.invoice_date).toLocaleDateString() : "-")}.
 
   Invoice Details:
   - Invoice Number: ${invoice.invoice_number}
-  - Invoice Date: ${new Date(invoice.invoice_date).toLocaleDateString()}
-  - Due Date: ${new Date(invoice.due_date).toLocaleDateString()}
+  - Invoice Date: ${(invoice.invoice_date ? new Date(invoice.invoice_date).toLocaleDateString() : "-")}
+  - Due Date: ${(invoice.due_date ? new Date(invoice.due_date).toLocaleDateString() : "-")}
   - Total Amount: R ${Number(invoice.total_amount ?? 0).toFixed(2)}
 
-  Payment is due by ${new Date(invoice.due_date).toLocaleDateString()}.
+  Payment is due by ${(invoice.due_date ? new Date(invoice.due_date).toLocaleDateString() : "-")}.
 
   Thank you for your business.
 
