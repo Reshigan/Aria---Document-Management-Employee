@@ -468,7 +468,7 @@ export default function Suppliers() {
                     )}
                   </td>
                   <td className="px-6 py-4 text-gray-600 dark:text-gray-300 capitalize">
-                    {(supplier.supplier_type || '').replace('_', ' ')}
+                    {String(supplier.supplier_type || '').replace('_', ' ')}
                   </td>
                   <td className="px-6 py-4">
                     {supplier.email && (
