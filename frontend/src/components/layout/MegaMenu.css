@@ -107,10 +107,9 @@
 }
 
 .mega-menu-panel {
-  position: fixed;
-  top: 36px;
-  left: 50%;
-  transform: translateX(-50%);
+  position: absolute;
+  top: 100%;
+  left: 0;
   padding-top: 4px;
   z-index: 10001;
   pointer-events: auto;

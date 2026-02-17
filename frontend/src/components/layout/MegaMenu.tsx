@@ -549,7 +549,11 @@ const leaveTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
               </button>
 
               {activeDropdown === menuName && (
-                <div className="mega-menu-panel">
+                <div
+                  className="mega-menu-panel"
+                  onMouseEnter={() => handleMouseEnter(menuName)}
+                  onMouseLeave={handleMouseLeave}
+                >
                   <div className="mega-menu-panel-inner">
                   <div className="mega-menu-panel-content">
                     {categories.map((category) => (
