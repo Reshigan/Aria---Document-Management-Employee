@@ -462,52 +462,146 @@ const skills: Skill[] = [
     },
   },
 
-  // Run All Bots (Controller Bot) — MUST come before individual bot skill
+  // Controller Bot — NLP-powered dispatcher for all sub-bots
+  // Accepts natural language: "run all bots", "process financial tasks",
+  // "do order to cash", "handle month end", "run procurement bots", etc.
   {
-    name: 'run_all_bots',
-    description: 'Run all automation bots (controller bot)',
+    name: 'controller_bot_nlp',
+    description: 'Natural language controller bot that dispatches sub-bots intelligently',
     patterns: [
       /(?:hey\s+aria\s+)?run\s+(?:all|every)\s+bots?/i,
       /(?:hey\s+aria\s+)?(?:run|execute|start)\s+(?:the\s+)?controller\s*bot/i,
       /(?:hey\s+aria\s+)?run\s+(?:the\s+)?full\s+(?:bot\s+)?suite/i,
       /(?:hey\s+aria\s+)?execute\s+all\s+(?:automation\s+)?bots?/i,
       /(?:hey\s+aria\s+)?run\s+(?:the\s+)?(?:complete|entire)\s+(?:bot\s+)?suite/i,
+      /(?:hey\s+aria\s+)?(?:run|execute|do|process|handle|perform)\s+(?:the\s+)?(?:all\s+)?(?:financial|finance|accounting)\s+(?:bots?|tasks?|processes?|automation)/i,
+      /(?:hey\s+aria\s+)?(?:run|execute|do|process|handle|perform)\s+(?:the\s+)?(?:all\s+)?(?:procurement|purchasing|supply\s*chain)\s+(?:bots?|tasks?|processes?|automation)/i,
+      /(?:hey\s+aria\s+)?(?:run|execute|do|process|handle|perform)\s+(?:the\s+)?(?:all\s+)?(?:hr|human\s*resource|payroll|people)\s+(?:bots?|tasks?|processes?|automation)/i,
+      /(?:hey\s+aria\s+)?(?:run|execute|do|process|handle|perform)\s+(?:the\s+)?(?:all\s+)?(?:sales|crm|revenue)\s+(?:bots?|tasks?|processes?|automation)/i,
+      /(?:hey\s+aria\s+)?(?:run|execute|do|process|handle|perform)\s+(?:the\s+)?(?:all\s+)?(?:manufacturing|production|factory)\s+(?:bots?|tasks?|processes?|automation)/i,
+      /(?:hey\s+aria\s+)?(?:run|execute|do|process|handle|perform)\s+(?:the\s+)?(?:all\s+)?(?:inventory|stock|warehouse)\s+(?:bots?|tasks?|processes?|automation)/i,
+      /(?:hey\s+aria\s+)?(?:run|execute|do|process|handle|perform)\s+(?:the\s+)?(?:all\s+)?(?:governance|compliance|audit)\s+(?:bots?|tasks?|processes?|automation)/i,
+      /(?:hey\s+aria\s+)?(?:run|execute|do|process|handle|perform)\s+(?:the\s+)?(?:all\s+)?(?:document|workflow)\s+(?:bots?|tasks?|processes?|automation)/i,
+      /(?:hey\s+aria\s+)?(?:do|process|handle|perform|run)\s+(?:the\s+)?(?:full\s+)?(?:month[- ]?end|period[- ]?end|year[- ]?end)\s*(?:close|closing|process)?/i,
+      /(?:hey\s+aria\s+)?(?:do|process|handle|perform|run)\s+(?:the\s+)?order[- ]?to[- ]?cash\s*(?:cycle|process|flow)?/i,
+      /(?:hey\s+aria\s+)?(?:do|process|handle|perform|run)\s+(?:the\s+)?procure[- ]?to[- ]?pay\s*(?:cycle|process|flow)?/i,
+      /(?:hey\s+aria\s+)?(?:do|process|handle|perform|run)\s+(?:the\s+)?(?:full\s+)?reconciliation\s*(?:suite|process|cycle)?/i,
     ],
     slots: [],
     execute: async (ctx) => {
-      const categories: Record<string, { total: number; success: number; failed: number; bots: string[] }> = {};
-      let totalSuccess = 0;
-      let totalFailed = 0;
+      const msg = ctx.message.toLowerCase().replace(/^hey\s+aria\s+/i, '').trim();
 
+      const WORKFLOWS: Record<string, { label: string; botIds: string[] }> = {
+        'order_to_cash': {
+          label: 'Order-to-Cash',
+          botIds: ['quote_generation', 'sales_order', 'invoice_generation', 'ar_collections', 'payment_processing'],
+        },
+        'procure_to_pay': {
+          label: 'Procure-to-Pay',
+          botIds: ['purchase_order', 'goods_receipt', 'accounts_payable', 'payment_processing'],
+        },
+        'month_end': {
+          label: 'Month-End Close',
+          botIds: ['invoice_reconciliation', 'bank_reconciliation', 'general_ledger', 'financial_close', 'financial_reporting', 'tax_compliance'],
+        },
+        'reconciliation': {
+          label: 'Full Reconciliation',
+          botIds: ['invoice_reconciliation', 'bank_reconciliation', 'general_ledger', 'ar_collections', 'accounts_payable'],
+        },
+      };
+
+      const CATEGORY_MAP: Record<string, string[]> = {};
       for (const bot of botRegistry) {
-        if (!categories[bot.category]) {
-          categories[bot.category] = { total: 0, success: 0, failed: 0, bots: [] };
-        }
-        categories[bot.category].total++;
+        const cat = bot.category;
+        if (!CATEGORY_MAP[cat]) CATEGORY_MAP[cat] = [];
+        CATEGORY_MAP[cat].push(bot.id);
+      }
 
-        try {
-          const result = await executeBot(bot.id, ctx.companyId, {}, ctx.db);
-          if (result.success) {
-            totalSuccess++;
-            categories[bot.category].success++;
-          } else {
-            totalFailed++;
-            categories[bot.category].failed++;
-            categories[bot.category].bots.push(bot.name);
+      const CATEGORY_ALIASES: Record<string, string> = {
+        'financial': 'Financial', 'finance': 'Financial', 'accounting': 'Financial',
+        'procurement': 'Procurement', 'purchasing': 'Procurement', 'supply chain': 'Procurement',
+        'hr': 'HR', 'human resource': 'HR', 'payroll': 'HR', 'people': 'HR',
+        'sales': 'Sales', 'crm': 'Sales', 'revenue': 'Sales',
+        'manufacturing': 'Manufacturing', 'production': 'Manufacturing', 'factory': 'Manufacturing',
+        'inventory': 'Inventory', 'stock': 'Inventory', 'warehouse': 'Inventory',
+        'governance': 'Governance', 'compliance': 'Governance', 'audit': 'Governance',
+        'documents': 'Documents', 'document': 'Documents', 'workflow': 'Documents',
+      };
+
+      let selectedBotIds: string[] = [];
+      let runLabel = '';
+
+      if (/order[- ]?to[- ]?cash/i.test(msg)) {
+        selectedBotIds = WORKFLOWS['order_to_cash'].botIds;
+        runLabel = WORKFLOWS['order_to_cash'].label;
+      } else if (/procure[- ]?to[- ]?pay/i.test(msg)) {
+        selectedBotIds = WORKFLOWS['procure_to_pay'].botIds;
+        runLabel = WORKFLOWS['procure_to_pay'].label;
+      } else if (/month[- ]?end|period[- ]?end|year[- ]?end/i.test(msg)) {
+        selectedBotIds = WORKFLOWS['month_end'].botIds;
+        runLabel = WORKFLOWS['month_end'].label;
+      } else if (/(?:full\s+)?reconciliation\s*(?:suite|process|cycle)/i.test(msg)) {
+        selectedBotIds = WORKFLOWS['reconciliation'].botIds;
+        runLabel = WORKFLOWS['reconciliation'].label;
+      } else {
+        let matchedCategory = '';
+        for (const [alias, cat] of Object.entries(CATEGORY_ALIASES)) {
+          if (msg.includes(alias)) {
+            matchedCategory = cat;
+            break;
           }
-        } catch {
-          totalFailed++;
-          categories[bot.category].failed++;
-          categories[bot.category].bots.push(bot.name);
+        }
+
+        if (matchedCategory && CATEGORY_MAP[matchedCategory]) {
+          selectedBotIds = CATEGORY_MAP[matchedCategory];
+          runLabel = `${matchedCategory} Bots`;
+        } else {
+          selectedBotIds = botRegistry.map(b => b.id);
+          runLabel = 'All Bots';
         }
       }
 
-      const total = botRegistry.length;
+      const categories: Record<string, { total: number; success: number; failed: number; bots: string[] }> = {};
+      let totalSuccess = 0;
+      let totalFailed = 0;
+      const botResults: Array<{ name: string; success: boolean; message: string }> = [];
+
+      for (const botId of selectedBotIds) {
+        const bot = botRegistry.find(b => b.id === botId);
+        if (!bot) continue;
+
+        const cat = bot.category;
+        if (!categories[cat]) {
+          categories[cat] = { total: 0, success: 0, failed: 0, bots: [] };
+        }
+        categories[cat].total++;
+
+        try {
+          const result = await executeBot(botId, ctx.companyId, {}, ctx.db);
+          if (result.success) {
+            totalSuccess++;
+            categories[cat].success++;
+            botResults.push({ name: bot.name, success: true, message: result.message || 'OK' });
+          } else {
+            totalFailed++;
+            categories[cat].failed++;
+            categories[cat].bots.push(bot.name);
+            botResults.push({ name: bot.name, success: false, message: result.error || 'Failed' });
+          }
+        } catch (err) {
+          totalFailed++;
+          categories[cat].failed++;
+          categories[cat].bots.push(bot.name);
+          botResults.push({ name: bot.name, success: false, message: String(err) });
+        }
+      }
+
+      const total = selectedBotIds.length;
       const runId = generateUUID();
       await ctx.db.prepare(`
         INSERT INTO bot_runs (id, company_id, bot_id, status, result, started_at, completed_at)
         VALUES (?, ?, 'controller_bot', 'completed', ?, datetime('now'), datetime('now'))
-      `).bind(runId, ctx.companyId, JSON.stringify({ total, success: totalSuccess, failed: totalFailed })).run().catch(() => {});
+      `).bind(runId, ctx.companyId, JSON.stringify({ label: runLabel, total, success: totalSuccess, failed: totalFailed })).run().catch(() => {});
 
       let categoryReport = '';
       for (const [cat, data] of Object.entries(categories)) {
@@ -521,13 +615,20 @@ const skills: Skill[] = [
         failedList = `\n**Failed Bots:**\n${allFailed.map(n => `- ${n}`).join('\n')}\n`;
       }
 
+      const botSummary = botResults.slice(0, 10).map(r =>
+        `${r.success ? '+' : '-'} ${r.name}`
+      ).join('\n');
+      const moreCount = botResults.length > 10 ? `\n...and ${botResults.length - 10} more` : '';
+
       return {
-        response: `**Controller Bot — All ${total} Bots Executed!**\n\n` +
+        response: `**Controller Bot — ${runLabel} (${total} bots)**\n\n` +
           `**Overall:** ${totalSuccess}/${total} SUCCESS, ${totalFailed} FAILED\n\n` +
           `**By Category:**\n${categoryReport}` +
           failedList +
-          `\nNavigate to **Agents** to view detailed run history.`,
-        data: { total, success: totalSuccess, failed: totalFailed, categories },
+          `\n**Execution Log:**\n${botSummary}${moreCount}\n\n` +
+          `Navigate to **Agents** to view detailed run history.\n\n` +
+          `_Tip: Try "run financial bots", "do month-end close", or "process order-to-cash" for targeted execution._`,
+        data: { label: runLabel, total, success: totalSuccess, failed: totalFailed, categories, botResults },
       };
     },
   },
@@ -2338,17 +2439,36 @@ app.post('/message', async (c) => {
         // Only use AI result if it actually executed a bot or query (not just clarification)
         // action_taken values: 'executed', 'no_action', 'error' = bot ran; 'clarify' = unknown intent
         const actionTaken = aiResult.action_taken || '';
-        const isActualAction = ['executed', 'no_action', 'error'].includes(actionTaken) || 
-                               (aiResult.bot_id !== null && aiResult.bot_id !== undefined) ||
-                               (aiResult.data && Object.keys(aiResult.data).length > 0);
-        
-        if (isActualAction) {
-          result = {
-            response: aiResult.response,
-            data: aiResult.data,
-            action: aiResult.action_taken,
-          };
-          usedAI = true;
+
+        if (actionTaken === 'controller') {
+          const controllerSkill = skills.find(s => s.name === 'controller_bot_nlp');
+          if (controllerSkill) {
+            const context: SkillContext = {
+              db: c.env.DB,
+              companyId: conversation.company_id,
+              userId: conversation.user_id,
+              message,
+              slots: {},
+              conversationId: conversation_id,
+              conversationState,
+              updateState,
+            };
+            result = await controllerSkill.execute(context);
+            usedAI = true;
+          }
+        } else {
+          const isActualAction = ['executed', 'no_action', 'error'].includes(actionTaken) || 
+                                 (aiResult.bot_id !== null && aiResult.bot_id !== undefined) ||
+                                 (aiResult.data && Object.keys(aiResult.data).length > 0);
+          
+          if (isActualAction) {
+            result = {
+              response: aiResult.response,
+              data: aiResult.data,
+              action: aiResult.action_taken,
+            };
+            usedAI = true;
+          }
         }
       } catch (aiError) {
         console.error('AI orchestrator error, falling back to rule-based:', aiError);
