@@ -3,7 +3,7 @@
  * Features: Streaming responses, markdown rendering, code highlighting, file attachments
  */
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Bot, User, Loader, Sparkles, FileText, X, Copy, Check, Bot as Agent } from 'lucide-react';
+import { Send, Bot, User, Loader, Sparkles, FileText, X, Copy, Check } from 'lucide-react';
 import api from '@/lib/api';
 
 interface Message {
@@ -222,7 +222,7 @@ const MessageBubble: React.FC<{ message: Message; isStreaming?: boolean }> = ({ 
       <div className={`flex-none w-10 h-10 rounded-full flex items-center justify-center shadow-md ${
         isUser ? 'bg-gradient-to-br from-blue-500 to-cyan-500' : 'bg-gradient-to-br from-purple-500 to-pink-500'
       }`}>
-        {isUser ? <User className="w-5 h-5 text-white" /> : <Agent className="w-5 h-5 text-white" />}
+        {isUser ? <User className="w-5 h-5 text-white" /> : <Bot className="w-5 h-5 text-white" />}
       </div>
       <div className="flex-1 max-w-3xl">
         <div className={`rounded-2xl px-5 py-3 shadow-md ${

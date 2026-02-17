@@ -94,7 +94,7 @@ export default function AdminDashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600 dark:text-gray-400">Companies</p>
-                <p className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{metrics?.master_data.companies || 0}</p>
+                <p className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{metrics?.master_data?.companies || 0}</p>
               </div>
               <div className="bg-blue-100 dark:bg-blue-900/30 rounded-full p-3">
                 <Server className="h-6 w-6 text-blue-600 dark:text-blue-400" />
@@ -106,7 +106,7 @@ export default function AdminDashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600 dark:text-gray-400">Customers</p>
-                <p className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{metrics?.master_data.customers || 0}</p>
+                <p className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{metrics?.master_data?.customers || 0}</p>
               </div>
               <div className="bg-green-100 dark:bg-green-900/30 rounded-full p-3">
                 <Users className="h-6 w-6 text-green-600 dark:text-green-400" />
@@ -118,7 +118,7 @@ export default function AdminDashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600 dark:text-gray-400">Suppliers</p>
-                <p className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{metrics?.master_data.suppliers || 0}</p>
+                <p className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{metrics?.master_data?.suppliers || 0}</p>
               </div>
               <div className="bg-purple-100 dark:bg-purple-900/30 rounded-full p-3">
                 <Users className="h-6 w-6 text-purple-600 dark:text-purple-400" />
@@ -130,7 +130,7 @@ export default function AdminDashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600 dark:text-gray-400">Products</p>
-                <p className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{metrics?.master_data.products || 0}</p>
+                <p className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{metrics?.master_data?.products || 0}</p>
               </div>
               <div className="bg-orange-100 rounded-full p-3">
                 <HardDrive className="h-6 w-6 text-orange-600" />
@@ -151,7 +151,7 @@ export default function AdminDashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600 dark:text-gray-400">Quotes</p>
-                <p className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{metrics?.transactions.quotes || 0}</p>
+                <p className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{metrics?.transactions?.quotes || 0}</p>
               </div>
               <div className="bg-blue-100 dark:bg-blue-900/30 rounded-full p-3">
                 <CheckCircle className="h-6 w-6 text-blue-600 dark:text-blue-400" />
@@ -163,7 +163,7 @@ export default function AdminDashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600 dark:text-gray-400">Sales Orders</p>
-                <p className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{metrics?.transactions.sales_orders || 0}</p>
+                <p className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{metrics?.transactions?.sales_orders || 0}</p>
               </div>
               <div className="bg-green-100 dark:bg-green-900/30 rounded-full p-3">
                 <CheckCircle className="h-6 w-6 text-green-600 dark:text-green-400" />
@@ -175,7 +175,7 @@ export default function AdminDashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600 dark:text-gray-400">Deliveries</p>
-                <p className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{metrics?.transactions.deliveries || 0}</p>
+                <p className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{metrics?.transactions?.deliveries || 0}</p>
               </div>
               <div className="bg-purple-100 dark:bg-purple-900/30 rounded-full p-3">
                 <CheckCircle className="h-6 w-6 text-purple-600 dark:text-purple-400" />
@@ -196,7 +196,7 @@ export default function AdminDashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600 dark:text-gray-400">Total Bots</p>
-                <p className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{metrics?.automation.total_bots || 67}</p>
+                <p className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{metrics?.automation?.total_bots || 67}</p>
               </div>
               <div className="bg-indigo-100 dark:bg-indigo-900/30 rounded-full p-3">
                 <Bot className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
@@ -208,7 +208,7 @@ export default function AdminDashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600 dark:text-gray-400">Enabled Bots</p>
-                <p className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{metrics?.automation.enabled_bots || 67}</p>
+                <p className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{metrics?.automation?.enabled_bots || 67}</p>
               </div>
               <div className="bg-green-100 dark:bg-green-900/30 rounded-full p-3">
                 <CheckCircle className="h-6 w-6 text-green-600 dark:text-green-400" />

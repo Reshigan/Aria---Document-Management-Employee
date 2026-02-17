@@ -44,6 +44,7 @@ export function DataTable<T extends Record<string, any>>({
   emptyMessage = 'No data available',
   pageSize = 10,
 }: DataTableProps<T>) {
+  const safeData = Array.isArray(data) ? data : [];
   const [searchQuery, setSearchQuery] = useState('');
   const [sortColumn, setSortColumn] = useState<string | null>(null);
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
@@ -57,14 +58,14 @@ export function DataTable<T extends Record<string, any>>({
   const getHeader = (col: Column<T>) => col.header || col.label || col.key;
 
   const filteredData = useMemo(() => {
-    if (!searchQuery) return data;
-    return data.filter((row) =>
+    if (!searchQuery) return safeData;
+    return safeData.filter((row) =>
       columns.some((col) => {
         const value = getAccessor(col)(row);
         return String(value ?? '').toLowerCase().includes(searchQuery.toLowerCase());
       })
     );
-  }, [data, searchQuery, columns]);
+  }, [safeData, searchQuery, columns]);
 
   const sortedData = useMemo(() => {
     if (!sortColumn) return filteredData;

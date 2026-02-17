@@ -66,8 +66,10 @@ export default function PurchaseOrderDetail() {
         api.get('/erp/master-data/suppliers'),
         api.get('/erp/order-to-cash/products')
       ]);
-      setSuppliers(suppliersRes.data);
-      setProducts(productsRes.data);
+      const sData = suppliersRes.data?.data || suppliersRes.data?.suppliers || suppliersRes.data;
+      setSuppliers(Array.isArray(sData) ? sData : []);
+      const pData = productsRes.data?.data || productsRes.data?.products || productsRes.data;
+      setProducts(Array.isArray(pData) ? pData : []);
     } catch (err) {
       console.error('Error loading master data:', err);
     }
