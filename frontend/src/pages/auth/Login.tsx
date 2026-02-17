@@ -51,7 +51,7 @@ const Login: React.FC = () => {
               </div>
               <div>
                 <h3 className="font-semibold text-white mb-1">67 AI Automation Agents</h3>
-                <p className="text-xs text-gray-400">Intelligent automation for every business process</p>
+                <p className="text-sm text-gray-300">Intelligent automation for every business process</p>
               </div>
             </div>
             
@@ -61,7 +61,7 @@ const Login: React.FC = () => {
               </div>
               <div>
                 <h3 className="font-semibold text-white mb-1">Multi-Country Compliance</h3>
-                <p className="text-xs text-gray-400">56 countries with local tax and statutory rules</p>
+                <p className="text-sm text-gray-300">56 countries with local tax and statutory rules</p>
               </div>
             </div>
             
@@ -71,7 +71,7 @@ const Login: React.FC = () => {
               </div>
               <div>
                 <h3 className="font-semibold text-white mb-1">Complete ERP Suite</h3>
-                <p className="text-xs text-gray-400">Finance, HR, Inventory, CRM, and Manufacturing</p>
+                <p className="text-sm text-gray-300">Finance, HR, Inventory, CRM, and Manufacturing</p>
               </div>
             </div>
           </div>
@@ -119,8 +119,8 @@ const Login: React.FC = () => {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    className="w-full pl-12 pr-4 py-3.5 bg-slate-900/60 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500/50 transition-all"
-                    placeholder="you@company.com"
+                                        className="w-full pl-12 pr-4 py-3.5 bg-slate-900/60 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500/50 transition-all"
+                                        placeholder="you@company.com"
                   />
                 </div>
               </div>
@@ -138,8 +138,8 @@ const Login: React.FC = () => {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
-                    className="w-full pl-12 pr-4 py-3.5 bg-slate-900/60 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500/50 transition-all"
-                    placeholder="Enter your password"
+                                        className="w-full pl-12 pr-4 py-3.5 bg-slate-900/60 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500/50 transition-all"
+                                        placeholder="Enter your password"
                   />
                 </div>
               </div>
@@ -149,7 +149,7 @@ const Login: React.FC = () => {
                   <input type="checkbox" className="w-4 h-4 rounded border-gray-600 bg-slate-900 text-amber-500 focus:ring-amber-500/50" />
                   <span className="text-gray-400">Remember me</span>
                 </label>
-                <a href="#" className="text-amber-500 hover:text-amber-400 transition-colors">
+                <a href="#" className="text-gray-400 hover:text-white transition-colors underline">
                   Forgot password?
                 </a>
               </div>
@@ -177,14 +177,14 @@ const Login: React.FC = () => {
               <p className="text-gray-400">
                 Don't have an account?{' '}
                 <Link to="/signup" className="font-medium text-amber-500 hover:text-amber-400 transition-colors">
-                  Sign up
+                  Sign Up
                 </Link>
               </p>
             </div>
           </div>
 
           <p className="mt-8 text-center text-xs text-gray-500">
-            2025 VantaX Holdings (Pty) Ltd. All rights reserved.
+            {new Date().getFullYear()} VantaX Holdings (Pty) Ltd. All rights reserved.
           </p>
         </div>
       </div>

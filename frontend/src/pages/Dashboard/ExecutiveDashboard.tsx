@@ -111,7 +111,7 @@ export const ExecutiveDashboard: React.FC = () => {
             </div>
             <div>
               <h1 className="text-2xl font-bold text-white">Executive Dashboard</h1>
-              <p className="text-gray-400">Real-time financial overview powered by <span className="text-amber-500 font-semibold">{metrics?.active_bots || 109}</span> AI automation agents</p>
+              <p className="text-gray-300">Real-time financial overview powered by <span className="text-amber-500 font-semibold">{metrics?.active_bots || 109}</span> AI automation agents</p>
             </div>
           </div>
           <div className="hidden md:flex items-center gap-3">
@@ -139,7 +139,7 @@ export const ExecutiveDashboard: React.FC = () => {
                 <span className="text-xs text-emerald-500 font-medium bg-emerald-500/10 px-2 py-1 rounded-lg">+12.5%</span>
               </div>
               <div className="text-2xl font-bold text-white mb-1">{formatCurrency(metrics?.total_revenue || 0)}</div>
-              <div className="text-xs text-gray-400">Total Revenue (YTD)</div>
+              <div className="text-sm text-gray-300">Total Revenue (YTD)</div>
             </div>
             
             <div data-testid="metric-expenses" className="bg-slate-800/50 backdrop-blur-sm rounded-xl p-3 border border-white/5 hover:border-amber-500/30 transition-all group">
@@ -152,7 +152,7 @@ export const ExecutiveDashboard: React.FC = () => {
                 </span>
               </div>
               <div className="text-2xl font-bold text-white mb-1">{formatCurrency(Math.abs(metrics?.net_profit || 0))}</div>
-              <div className="text-xs text-gray-400">{metrics?.is_loss ? "Net Loss" : "Net Profit"}</div>
+              <div className="text-sm text-gray-300">{metrics?.is_loss ? "Net Loss" : "Net Profit"}</div>
             </div>
             
             <div data-testid="metric-profit" className="bg-slate-800/50 backdrop-blur-sm rounded-xl p-3 border border-white/5 hover:border-amber-500/30 transition-all group">
@@ -165,7 +165,7 @@ export const ExecutiveDashboard: React.FC = () => {
                 </span>
               </div>
               <div className="text-2xl font-bold text-white mb-1">{formatCurrency(metrics?.cash_position || 0)}</div>
-              <div className="text-xs text-gray-400">Cash Position</div>
+              <div className="text-sm text-gray-300">Cash Position</div>
             </div>
             
             <div className="bg-slate-800/50 backdrop-blur-sm rounded-xl p-3 border border-white/5 hover:border-amber-500/30 transition-all group">
@@ -176,7 +176,7 @@ export const ExecutiveDashboard: React.FC = () => {
                 <span className="text-xs text-blue-500 font-medium bg-blue-500/10 px-2 py-1 rounded-lg">Outstanding</span>
               </div>
               <div className="text-2xl font-bold text-white mb-1">{formatCurrency(metrics?.ar_outstanding || 0)}</div>
-              <div className="text-xs text-gray-400">AR Outstanding</div>
+              <div className="text-sm text-gray-300">AR Outstanding</div>
             </div>
           </div>
 
@@ -237,20 +237,20 @@ export const ExecutiveDashboard: React.FC = () => {
             {/* Agent Stats */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
               <div className="bg-slate-900/50 rounded-xl p-4 border border-white/5">
-                <div className="text-xs text-gray-400 mb-1">Total Agents</div>
+                <div className="text-sm text-gray-300 mb-1">Total Agents</div>
                 <div className="text-2xl font-bold text-white">{metrics?.bot_count || 109}</div>
               </div>
               <div className="bg-slate-900/50 rounded-xl p-4 border border-white/5">
-                <div className="text-xs text-gray-400 mb-1">Active</div>
+                <div className="text-sm text-gray-300 mb-1">Active</div>
                 <div className="text-2xl font-bold text-emerald-500">{metrics?.active_bots || 109}</div>
               </div>
               <div className="bg-slate-900/50 rounded-xl p-4 border border-white/5">
-                <div className="text-xs text-gray-400 mb-1">Transactions Today</div>
+                <div className="text-sm text-gray-300 mb-1">Transactions Today</div>
                 <div className="text-2xl font-bold text-white">{metrics?.transactions_today?.toLocaleString() || '0'}</div>
               </div>
               <div className="bg-slate-900/50 rounded-xl p-4 border border-white/5">
-                <div className="text-xs text-gray-400 mb-1">Success Rate</div>
-                <div className={`text-2xl font-bold ${metrics?.success_rate >= 90 ? 'text-emerald-500' : 'text-amber-500'}`}>{metrics?.success_rate || 100}%</div>
+                <div className="text-sm text-gray-300 mb-1">Success Rate</div>
+                <div className={`text-2xl font-bold ${metrics?.transactions_today > 0 ? (metrics?.success_rate >= 90 ? 'text-emerald-500' : 'text-amber-500') : 'text-gray-400'}`}>{metrics?.transactions_today > 0 ? `${metrics?.success_rate || 0}%` : 'N/A'}</div>
               </div>
             </div>
 
