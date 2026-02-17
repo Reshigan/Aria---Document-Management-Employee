@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { FileText, Download, Mail, MessageSquare, Loader2, CheckCircle } from 'lucide-react';
 
+const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev/api';
+
+
 interface Customer {
   id: string;
   name: string;
@@ -31,7 +34,7 @@ export default function GenerateDocumentPage() {
     try {
       const token = localStorage.getItem('token');
       const companyId = localStorage.getItem('selectedCompanyId');
-      const response = await fetch(`/api/customers?search=${encodeURIComponent(query)}&company_id=${companyId}`, {
+      const response = await fetch(`${API_BASE}/customers?search=${encodeURIComponent(query)}&company_id=${companyId}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (response.ok) {
@@ -54,7 +57,7 @@ export default function GenerateDocumentPage() {
       const token = localStorage.getItem('token');
       const companyId = localStorage.getItem('selectedCompanyId');
       
-      const response = await fetch('/api/documents/generate', {
+      const response = await fetch(`${API_BASE}/documents/generate`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

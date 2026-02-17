@@ -1,5 +1,5 @@
 /**
- * Quality Control Agent - Report Page
+ * Quality Control Bot - Report Page
  * Generated: 2025-10-26 14:16:23
  */
 
@@ -68,7 +68,7 @@ export default function QualityControlReport() {
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h4" gutterBottom>
-        Quality Control Agent - Report
+        Quality Control Bot - Report
       </Typography>
 
       <Grid container spacing={3} sx={{ mb: 3 }}>

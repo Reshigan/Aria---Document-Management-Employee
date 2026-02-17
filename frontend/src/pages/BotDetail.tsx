@@ -5,9 +5,12 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
-  Agent, ArrowLeft, CheckCircle, TrendingUp, DollarSign, Clock, Users,
+  Bot, ArrowLeft, CheckCircle, TrendingUp, DollarSign, Clock, Users,
   Zap, Shield, Download, Play, Star, ArrowRight, Package
 } from 'lucide-react';
+
+const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev/api';
+
 
 interface BotFeature {
   title: string;
@@ -58,7 +61,7 @@ const BotDetail: React.FC = () => {
     // Fetch agent data from API
     const fetchBotData = async () => {
       try {
-        const response = await fetch(`/api/agents/marketplace/${botId}`);
+        const response = await fetch(`${API_BASE}/agents/marketplace/${botId}`);
         if (response.ok) {
           const data = await response.json();
           setBotData(data);
@@ -77,7 +80,7 @@ const BotDetail: React.FC = () => {
     return (
       <div className="bg-white dark:bg-gray-800 flex items-center justify-center">
         <div className="text-center">
-          <Agent className="w-12 h-12 text-gray-400 animate-pulse mx-auto mb-4" />
+          <Bot className="w-12 h-12 text-gray-400 animate-pulse mx-auto mb-4" />
           <p className="text-gray-600 dark:text-gray-400">Loading agent details...</p>
         </div>
       </div>
@@ -104,7 +107,7 @@ const BotDetail: React.FC = () => {
         <div className="mx-auto px-6 py-5 flex items-center justify-between">
           <Link to="/" className="flex items-center space-x-3">
             <div className="w-9 h-9 rounded-lg bg-black flex items-center justify-center">
-              <Agent className="w-5 h-5 text-white" />
+              <Bot className="w-5 h-5 text-white" />
             </div>
             <span className="text-2xl font-semibold text-gray-900 dark:text-white tracking-tight">Aria</span>
           </Link>

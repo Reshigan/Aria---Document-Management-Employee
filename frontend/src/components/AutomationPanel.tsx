@@ -4,7 +4,7 @@
  */
 import React, { useState, useEffect } from 'react';
 import { Bot, Play, Clock, CheckCircle, XCircle, ChevronRight, Loader } from 'lucide-react';
-import { botsService, ariaControllerService, getBotsForDocumentType } from '../services/agents';
+import { botsService, ariaControllerService, getBotsForDocumentType } from '../services/bots';
 import type { Agent as BotType, BotExecution } from '../types/erp';
 
 interface AutomationPanelProps {
@@ -124,7 +124,7 @@ export function AutomationPanel({
           alignItems: 'center',
           gap: '0.5rem'
         }}>
-          <Agent size={18} style={{ color: '#2563eb' }} />
+          <Bot size={18} style={{ color: '#2563eb' }} />
           <h3 style={{ fontSize: '1rem', fontWeight: '600', margin: 0 }}>
             Automation
           </h3>
@@ -351,7 +351,7 @@ export function AutomationPanelCompact({
         alignItems: 'center',
         gap: '0.5rem'
       }}>
-        <Agent size={16} style={{ color: '#2563eb' }} />
+        <Bot size={16} style={{ color: '#2563eb' }} />
         <span style={{ fontSize: '0.875rem', fontWeight: '500' }}>
           Automation ({botCount})
         </span>

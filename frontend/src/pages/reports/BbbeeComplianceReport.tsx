@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Award, RefreshCw, Download, TrendingUp } from 'lucide-react';
 
+const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev/api';
+
+
 interface ScorecardElement {
   name: string;
   max_points: number;
@@ -26,7 +29,7 @@ export default function BbbeeComplianceReportPage() {
   const fetchBbbeeData = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/reports/bbbee/current');
+      const response = await fetch(`${API_BASE}/reports/bbbee/current`);
       if (!response.ok) throw new Error('Failed to fetch');
       const result = await response.json();
       setData(result);
@@ -59,7 +62,7 @@ export default function BbbeeComplianceReportPage() {
 
   const handleExport = async () => {
     try {
-      const response = await fetch('/api/reports/bbbee/export?format=pdf');
+      const response = await fetch(`${API_BASE}/reports/bbbee/export?format=pdf`);
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');

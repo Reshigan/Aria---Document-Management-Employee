@@ -1,5 +1,5 @@
 /**
- * Sales Forecasting Agent - Report Page
+ * Sales Forecasting Bot - Report Page
  * Generated: 2025-10-26 14:16:23
  */
 
@@ -68,7 +68,7 @@ export default function SalesForecastingReport() {
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h4" gutterBottom>
-        Sales Forecasting Agent - Report
+        Sales Forecasting Bot - Report
       </Typography>
 
       <Grid container spacing={3} sx={{ mb: 3 }}>

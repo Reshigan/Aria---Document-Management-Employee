@@ -1,5 +1,5 @@
 /**
- * eSignature Agent - Configuration Page
+ * eSignature Bot - Configuration Page
  * Generated: 2025-10-26 14:16:23
  */
 
@@ -84,7 +84,7 @@ export default function EsignatureConfig() {
       });
       
       if (response.ok) {
-        setMessage({ type: 'success', text: 'Agent execution started!' });
+        setMessage({ type: 'success', text: 'Bot execution started!' });
       } else {
         throw new Error('Failed to start agent execution');
       }
@@ -96,7 +96,7 @@ export default function EsignatureConfig() {
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h4" gutterBottom>
-        eSignature Agent
+        eSignature Bot
       </Typography>
       
       <Typography variant="body1" color="text.secondary" paragraph>
@@ -124,7 +124,7 @@ export default function EsignatureConfig() {
       <Card sx={{ mb: 3 }}>
         <CardContent>
           <Typography variant="h6" gutterBottom>
-            Agent Configuration
+            Bot Configuration
           </Typography>
           
           <Grid container spacing={3}>
@@ -136,7 +136,7 @@ export default function EsignatureConfig() {
                     onChange={(e) => setConfig({...config, enabled: e.target.checked})}
                   />
                 }
-                label="Enable Agent"
+                label="Enable Bot"
               />
             </Grid>
 

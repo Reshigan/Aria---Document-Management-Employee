@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { DollarSign, RefreshCw, Download, Calendar } from 'lucide-react';
 import { DataTable } from '../../components/shared/DataTable';
 
+const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev/api';
+
+
 interface PayrollRun {
   id: string;
   period: string;
@@ -32,8 +35,8 @@ export default function PayrollActivityReportPage() {
     setLoading(true);
     try {
       const [runsRes, summaryRes] = await Promise.all([
-        fetch(`/api/reports/payroll/runs?year=${year}`),
-        fetch(`/api/reports/payroll/summary?year=${year}`)
+        fetch(`${API_BASE}/reports/payroll/runs?year=${year}`),
+        fetch(`${API_BASE}/reports/payroll/summary?year=${year}`)
       ]);
       if (runsRes.ok) setRuns(await runsRes.json());
       if (summaryRes.ok) setSummary(await summaryRes.json());
@@ -64,7 +67,7 @@ export default function PayrollActivityReportPage() {
 
   const handleExport = async () => {
     try {
-      const response = await fetch(`/api/reports/payroll/export?year=${year}&format=csv`);
+      const response = await fetch(`${API_BASE}/reports/payroll/export?year=${year}&format=csv`);
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');

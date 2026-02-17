@@ -60,7 +60,7 @@ export default function Mailroom() {
         to: 'aria@vantax.co.za',
         received_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
         processed: true,
-        bot_triggered: 'AP Invoice Processing Agent',
+        bot_triggered: 'AP Invoice Processing Bot',
         status: 'completed'
       },
       {
@@ -70,7 +70,7 @@ export default function Mailroom() {
         to: 'aria@vantax.co.za',
         received_at: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
         processed: true,
-        bot_triggered: 'Quote Generation Agent',
+        bot_triggered: 'Quote Generation Bot',
         status: 'completed'
       },
       {
@@ -80,7 +80,7 @@ export default function Mailroom() {
         to: 'aria@vantax.co.za',
         received_at: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
         processed: true,
-        bot_triggered: 'Delivery Processing Agent',
+        bot_triggered: 'Delivery Processing Bot',
         status: 'completed'
       }
     ];
@@ -206,7 +206,7 @@ export default function Mailroom() {
                 </div>
                 {message.bot_triggered && (
                   <div className="mt-3 p-3 bg-blue-50 dark:bg-blue-900/30 rounded-xl text-sm text-blue-700 dark:text-blue-300">
-                    <strong>Agent Triggered:</strong> {message.bot_triggered}
+                    <strong>Bot Triggered:</strong> {message.bot_triggered}
                   </div>
                 )}
               </div>

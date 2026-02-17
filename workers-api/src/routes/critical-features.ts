@@ -1121,4 +1121,8 @@ app.get('/backups/schema', async (c) => {
   return c.json(schemas);
 });
 
+app.get('/', async (c) => {
+  return c.json({ data: [] });
+});
+
 export default app;

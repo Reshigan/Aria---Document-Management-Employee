@@ -460,4 +460,21 @@ app.post('/attendance', async (c) => {
   }
 });
 
+app.get('/leave-balances', async (c) => {
+  const companyId = await getAuthenticatedCompanyId(c);
+  if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+  try {
+    const result = await c.env.DB.prepare(
+      `SELECT e.id as employee_id, e.first_name || ' ' || e.last_name as employee_name,
+       COALESCE(SUM(CASE WHEN lr.leave_type = 'annual' AND lr.status = 'approved' THEN 1 ELSE 0 END), 0) as annual_used,
+       21 as annual_total,
+       COALESCE(SUM(CASE WHEN lr.leave_type = 'sick' AND lr.status = 'approved' THEN 1 ELSE 0 END), 0) as sick_used,
+       30 as sick_total
+       FROM employees e LEFT JOIN leave_requests lr ON lr.employee_id = e.id
+       WHERE e.company_id = ? AND e.status = 'active' GROUP BY e.id`
+    ).bind(companyId).all();
+    return c.json({ data: result.results || [] });
+  } catch { return c.json({ data: [] }); }
+});
+
 export default app;

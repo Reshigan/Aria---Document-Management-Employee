@@ -5,6 +5,9 @@ import {
   Truck, DollarSign, AlertCircle
 } from 'lucide-react';
 
+const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev/api';
+
+
 interface RFQ {
   id: string;
   rfq_number: string;
@@ -96,35 +99,35 @@ const ProcureToPay: React.FC = () => {
 
       switch (activeTab) {
         case 'rfq':
-          const rfqRes = await fetch(`/api/erp/procure-to-pay/rfqs?company_id=${companyId}`, { headers });
+          const rfqRes = await fetch(`${API_BASE}/erp/procure-to-pay/rfqs?company_id=${companyId}`, { headers });
           if (rfqRes.ok) {
             const data = await rfqRes.json();
             setRfqs(data.rfqs || []);
           }
           break;
         case 'po':
-          const poRes = await fetch(`/api/erp/procure-to-pay/purchase-orders?company_id=${companyId}`, { headers });
+          const poRes = await fetch(`${API_BASE}/erp/procure-to-pay/purchase-orders?company_id=${companyId}`, { headers });
           if (poRes.ok) {
             const data = await poRes.json();
             setPurchaseOrders(data.purchase_orders || []);
           }
           break;
         case 'gr':
-          const grRes = await fetch(`/api/erp/procure-to-pay/goods-receipts?company_id=${companyId}`, { headers });
+          const grRes = await fetch(`${API_BASE}/erp/procure-to-pay/goods-receipts?company_id=${companyId}`, { headers });
           if (grRes.ok) {
             const data = await grRes.json();
             setGoodsReceipts(data.goods_receipts || []);
           }
           break;
         case 'invoice':
-          const invRes = await fetch(`/api/erp/procure-to-pay/supplier-invoices?company_id=${companyId}`, { headers });
+          const invRes = await fetch(`${API_BASE}/erp/procure-to-pay/supplier-invoices?company_id=${companyId}`, { headers });
           if (invRes.ok) {
             const data = await invRes.json();
             setSupplierInvoices(data.supplier_invoices || []);
           }
           break;
         case 'payment':
-          const payRes = await fetch(`/api/erp/procure-to-pay/supplier-payments?company_id=${companyId}`, { headers });
+          const payRes = await fetch(`${API_BASE}/erp/procure-to-pay/supplier-payments?company_id=${companyId}`, { headers });
           if (payRes.ok) {
             const data = await payRes.json();
             setSupplierPayments(data.supplier_payments || []);

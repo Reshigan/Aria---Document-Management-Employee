@@ -4,7 +4,7 @@
  */
 import React, { useState, useEffect } from 'react';
 import {
-  TrendingUp, Users, Agent, DollarSign, Target, AlertCircle,
+  TrendingUp, Users, Bot, DollarSign, Target, AlertCircle,
   CheckCircle, ArrowUp, ArrowDown, Zap, Settings
 } from 'lucide-react';
 
@@ -184,7 +184,7 @@ export const CustomerDashboard: React.FC = () => {
               <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400">
                 Departments
               </h3>
-              <Agent className="w-5 h-5 text-purple-600" />
+              <Bot className="w-5 h-5 text-purple-600" />
             </div>
             <div className="flex items-end space-x-2">
               <span className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">

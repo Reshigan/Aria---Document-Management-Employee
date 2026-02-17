@@ -51,6 +51,7 @@ import adminConfig from './routes/admin-config';
 import inventory from './routes/inventory';
 import crossModule from './routes/cross-module';
 import goLive from './routes/go-live';
+import missingEndpoints from './routes/missing-endpoints';
 import { executeScheduledBots as runScheduledBots } from './services/bot-executor';
 import { processPendingDeliveries } from './services/webhook-service';
 import { processDueScheduledReports } from './services/report-builder-service';
@@ -744,7 +745,11 @@ app.route('/erp/procure-to-pay', crossModule);
 app.route('/api/odoo', crossModule);
 app.route('/odoo', crossModule);
 
-// Data Seeding endpoint (for generating test data)
+// Missing endpoints catch-all
+app.route('/api', missingEndpoints);
+app.route('', missingEndpoints);
+
+// Data Seedingendpoint (for generating test data)
 import { seedFullYear, seedMonth } from './services/data-seeding-service';
 
 app.post('/api/seed/full-year', async (c) => {

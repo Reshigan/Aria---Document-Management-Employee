@@ -1,6 +1,9 @@
 import { useState, useRef, useEffect } from 'react';
 import { MessageSquare, Send, Bot, User, Loader, Paperclip, X } from 'lucide-react';
 
+const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev/api';
+
+
 interface Message {
   id: string;
   role: 'user' | 'assistant';
@@ -96,12 +99,12 @@ export default function AriaChat() {
           formData.append('message', userInput);
         }
         
-        response = await fetch('/api/chat/upload', {
+        response = await fetch(`${API_BASE}/chat/upload`, {
           method: 'POST',
           body: formData
         });
       } else {
-        response = await fetch('/api/chat', {
+        response = await fetch(`${API_BASE}/chat`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

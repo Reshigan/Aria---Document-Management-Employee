@@ -1,5 +1,5 @@
 /**
- * OCR/Document Capture Agent - Report Page
+ * OCR/Document Capture Bot - Report Page
  * Generated: 2025-10-26 14:16:23
  */
 
@@ -68,7 +68,7 @@ export default function OcrDocumentCaptureReport() {
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h4" gutterBottom>
-        OCR/Document Capture Agent - Report
+        OCR/Document Capture Bot - Report
       </Typography>
 
       <Grid container spacing={3} sx={{ mb: 3 }}>

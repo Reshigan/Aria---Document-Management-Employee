@@ -1,5 +1,5 @@
 /**
- * Shipping & Logistics Agent - Report Page
+ * Shipping & Logistics Bot - Report Page
  * Generated: 2025-10-26 14:16:23
  */
 
@@ -68,7 +68,7 @@ export default function ShippingLogisticsReport() {
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h4" gutterBottom>
-        Shipping & Logistics Agent - Report
+        Shipping & Logistics Bot - Report
       </Typography>
 
       <Grid container spacing={3} sx={{ mb: 3 }}>

@@ -967,4 +967,8 @@ app.get('/services/projects/:projectId/budget', async (c) => {
   }
 });
 
+app.get('/', async (c) => {
+  return c.json({ data: [] });
+});
+
 export default app;

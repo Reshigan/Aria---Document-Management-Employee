@@ -1,5 +1,5 @@
 /**
- * Tax Compliance Agent - Report Page
+ * Tax Compliance Bot - Report Page
  * Generated: 2025-10-26 14:16:23
  */
 
@@ -68,7 +68,7 @@ export default function TaxComplianceReport() {
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h4" gutterBottom>
-        Tax Compliance Agent - Report
+        Tax Compliance Bot - Report
       </Typography>
 
       <Grid container spacing={3} sx={{ mb: 3 }}>

@@ -1,5 +1,5 @@
 /**
- * Credit Control Agent - Report Page
+ * Credit Control Bot - Report Page
  * Generated: 2025-10-26 14:16:23
  */
 
@@ -68,7 +68,7 @@ export default function CreditControlReport() {
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h4" gutterBottom>
-        Credit Control Agent - Report
+        Credit Control Bot - Report
       </Typography>
 
       <Grid container spacing={3} sx={{ mb: 3 }}>

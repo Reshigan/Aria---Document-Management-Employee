@@ -5,6 +5,9 @@ import {
   Server, Database, FileText, Shield, RefreshCw
 } from 'lucide-react';
 
+const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev/api';
+
+
 interface BackgroundJob {
   id: string;
   job_name: string;
@@ -97,42 +100,42 @@ const ProductionMonitoring: React.FC = () => {
 
       switch (activeTab) {
         case 'jobs':
-          const jobsRes = await fetch(`/api/erp/production/background-jobs?company_id=${companyId}`, { headers });
+          const jobsRes = await fetch(`${API_BASE}/erp/production/background-jobs?company_id=${companyId}`, { headers });
           if (jobsRes.ok) {
             const data = await jobsRes.json();
             setBackgroundJobs(data.jobs || []);
           }
           break;
         case 'tasks':
-          const tasksRes = await fetch(`/api/erp/production/scheduled-tasks?company_id=${companyId}`, { headers });
+          const tasksRes = await fetch(`${API_BASE}/erp/production/scheduled-tasks?company_id=${companyId}`, { headers });
           if (tasksRes.ok) {
             const data = await tasksRes.json();
             setScheduledTasks(data.tasks || []);
           }
           break;
         case 'health':
-          const healthRes = await fetch(`/api/erp/production/health-checks`, { headers });
+          const healthRes = await fetch(`${API_BASE}/erp/production/health-checks`, { headers });
           if (healthRes.ok) {
             const data = await healthRes.json();
             setHealthChecks(data.health_checks || []);
           }
           break;
         case 'audit':
-          const auditRes = await fetch(`/api/erp/production/audit-logs?company_id=${companyId}`, { headers });
+          const auditRes = await fetch(`${API_BASE}/erp/production/audit-logs?company_id=${companyId}`, { headers });
           if (auditRes.ok) {
             const data = await auditRes.json();
             setAuditLogs(data.audit_logs || []);
           }
           break;
         case 'errors':
-          const errorsRes = await fetch(`/api/erp/production/error-logs?company_id=${companyId}`, { headers });
+          const errorsRes = await fetch(`${API_BASE}/erp/production/error-logs?company_id=${companyId}`, { headers });
           if (errorsRes.ok) {
             const data = await errorsRes.json();
             setErrorLogs(data.error_logs || []);
           }
           break;
         case 'metrics':
-          const metricsRes = await fetch(`/api/erp/production/metrics`, { headers });
+          const metricsRes = await fetch(`${API_BASE}/erp/production/metrics`, { headers });
           if (metricsRes.ok) {
             const data = await metricsRes.json();
             setSystemMetrics(data.metrics || []);

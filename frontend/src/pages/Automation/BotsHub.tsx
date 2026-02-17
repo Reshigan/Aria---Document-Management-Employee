@@ -94,7 +94,7 @@ export default function BotsHub() {
         query,
         context: {}
       });
-      alert(`Agent executed successfully!\n\nResponse: ${response.data.response}\n\nConfidence: ${(response.data.confidence * 100).toFixed(0)}%`);
+      alert(`Bot executed successfully!\n\nResponse: ${response.data.response}\n\nConfidence: ${(response.data.confidence * 100).toFixed(0)}%`);
       loadBots();
     } catch (err: any) {
       console.error('Error running agent:', err);
@@ -255,7 +255,7 @@ export default function BotsHub() {
                     className="w-full px-4 py-2.5 bg-gradient-to-r from-violet-500 to-purple-500 text-white rounded-xl hover:from-violet-600 hover:to-purple-600 transition-all  flex items-center justify-center gap-2 text-sm font-medium"
                   >
                     <Play className="h-4 w-4" />
-                    Run Agent
+                    Run Bot
                   </button>
                 </div>
               ))}

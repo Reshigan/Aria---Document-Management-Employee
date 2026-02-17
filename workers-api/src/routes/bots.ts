@@ -3456,5 +3456,9 @@ app.get('/workflows/runs', async (c) => {
   }
 });
 
+app.get('/testing/status', async (c) => {
+  return c.json({ status: 'idle', last_run: null, results: [] });
+});
+
 export { botRegistry, getExtendedDatabaseCounts, executeBot };
 export default app;

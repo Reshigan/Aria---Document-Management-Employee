@@ -1,5 +1,5 @@
 /**
- * Customer Retention Agent - Report Page
+ * Customer Retention Bot - Report Page
  * Generated: 2025-10-26 14:16:23
  */
 
@@ -68,7 +68,7 @@ export default function CustomerRetentionReport() {
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h4" gutterBottom>
-        Customer Retention Agent - Report
+        Customer Retention Bot - Report
       </Typography>
 
       <Grid container spacing={3} sx={{ mb: 3 }}>

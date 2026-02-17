@@ -1,5 +1,5 @@
 /**
- * RFQ Response Agent - Report Page
+ * RFQ Response Bot - Report Page
  * Generated: 2025-10-26 14:16:23
  */
 
@@ -68,7 +68,7 @@ export default function RfqResponseReport() {
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h4" gutterBottom>
-        RFQ Response Agent - Report
+        RFQ Response Bot - Report
       </Typography>
 
       <Grid container spacing={3} sx={{ mb: 3 }}>

@@ -47,14 +47,14 @@ const BotTestingDashboard: React.FC = () => {
       console.error('Error fetching bot test results:', err);
       // Fallback data
       setBots([
-        { bot_id: 'invoice_processing', bot_name: 'Invoice Processing Agent', icon_type: 'FileText', status: 'not_started', accuracy: null, tests_run: 0, tests_passed: 0, tests_failed: 0, unique_feature: false },
-        { bot_id: 'bank_reconciliation', bot_name: 'Bank Reconciliation Agent', icon_type: 'TrendingUp', status: 'not_started', accuracy: null, tests_run: 0, tests_passed: 0, tests_failed: 0, unique_feature: false },
-        { bot_id: 'vat_return', bot_name: 'VAT Return Filing Agent', icon_type: 'DollarSign', status: 'not_started', accuracy: null, tests_run: 0, tests_passed: 0, tests_failed: 0, unique_feature: true },
-        { bot_id: 'expense_approval', bot_name: 'Expense Approval Agent', icon_type: 'FileCheck', status: 'not_started', accuracy: null, tests_run: 0, tests_passed: 0, tests_failed: 0, unique_feature: false },
-        { bot_id: 'quote_generation', bot_name: 'Quote Generation Agent', icon_type: 'Users', status: 'not_started', accuracy: null, tests_run: 0, tests_passed: 0, tests_failed: 0, unique_feature: false },
-        { bot_id: 'contract_analysis', bot_name: 'Contract Analysis Agent', icon_type: 'Briefcase', status: 'not_started', accuracy: null, tests_run: 0, tests_passed: 0, tests_failed: 0, unique_feature: true },
-        { bot_id: 'emp201_payroll', bot_name: 'EMP201 Payroll Tax Agent', icon_type: 'Calendar', status: 'not_started', accuracy: null, tests_run: 0, tests_passed: 0, tests_failed: 0, unique_feature: true },
-        { bot_id: 'inventory_reorder', bot_name: 'Inventory Reorder Agent', icon_type: 'Package', status: 'not_started', accuracy: null, tests_run: 0, tests_passed: 0, tests_failed: 0, unique_feature: false }
+        { bot_id: 'invoice_processing', bot_name: 'Invoice Processing Bot', icon_type: 'FileText', status: 'not_started', accuracy: null, tests_run: 0, tests_passed: 0, tests_failed: 0, unique_feature: false },
+        { bot_id: 'bank_reconciliation', bot_name: 'Bank Reconciliation Bot', icon_type: 'TrendingUp', status: 'not_started', accuracy: null, tests_run: 0, tests_passed: 0, tests_failed: 0, unique_feature: false },
+        { bot_id: 'vat_return', bot_name: 'VAT Return Filing Bot', icon_type: 'DollarSign', status: 'not_started', accuracy: null, tests_run: 0, tests_passed: 0, tests_failed: 0, unique_feature: true },
+        { bot_id: 'expense_approval', bot_name: 'Expense Approval Bot', icon_type: 'FileCheck', status: 'not_started', accuracy: null, tests_run: 0, tests_passed: 0, tests_failed: 0, unique_feature: false },
+        { bot_id: 'quote_generation', bot_name: 'Quote Generation Bot', icon_type: 'Users', status: 'not_started', accuracy: null, tests_run: 0, tests_passed: 0, tests_failed: 0, unique_feature: false },
+        { bot_id: 'contract_analysis', bot_name: 'Contract Analysis Bot', icon_type: 'Briefcase', status: 'not_started', accuracy: null, tests_run: 0, tests_passed: 0, tests_failed: 0, unique_feature: true },
+        { bot_id: 'emp201_payroll', bot_name: 'EMP201 Payroll Tax Bot', icon_type: 'Calendar', status: 'not_started', accuracy: null, tests_run: 0, tests_passed: 0, tests_failed: 0, unique_feature: true },
+        { bot_id: 'inventory_reorder', bot_name: 'Inventory Reorder Bot', icon_type: 'Package', status: 'not_started', accuracy: null, tests_run: 0, tests_passed: 0, tests_failed: 0, unique_feature: false }
       ]);
     } finally {
       setLoading(false);
@@ -134,7 +134,7 @@ const BotTestingDashboard: React.FC = () => {
             <div className="p-2 bg-gradient-to-br from-blue-500 to-purple-500 rounded-xl ">
               <Bot className="h-7 w-7 text-white" />
             </div>
-            AI Agent Testing Dashboard
+            AI Bot Testing Dashboard
           </h1>
           <p className="text-gray-500 dark:text-gray-400 ml-14">Test all AI agents for accuracy and performance</p>
         </div>
@@ -174,7 +174,7 @@ const BotTestingDashboard: React.FC = () => {
             </div>
           </div>
 
-          {/* Agent Cards */}
+          {/* Bot Cards */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
             {agents.map((agent) => (
               <div key={agent.bot_id} className="bg-white dark:bg-gray-800 rounded-lg border border-gray-100 dark:border-gray-700 p-4">
@@ -204,7 +204,7 @@ const BotTestingDashboard: React.FC = () => {
                       : 'bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700'
                   }`}
                 >
-                  {agent.status === 'running' ? 'Testing...' : 'Test Agent'}
+                  {agent.status === 'running' ? 'Testing...' : 'Test Bot'}
                 </button>
               </div>
             ))}

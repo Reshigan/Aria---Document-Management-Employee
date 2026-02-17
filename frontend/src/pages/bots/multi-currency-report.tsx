@@ -1,5 +1,5 @@
 /**
- * Multi-Currency Agent - Report Page
+ * Multi-Currency Bot - Report Page
  * Generated: 2025-10-26 14:16:23
  */
 
@@ -68,7 +68,7 @@ export default function MultiCurrencyReport() {
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h4" gutterBottom>
-        Multi-Currency Agent - Report
+        Multi-Currency Bot - Report
       </Typography>
 
       <Grid container spacing={3} sx={{ mb: 3 }}>

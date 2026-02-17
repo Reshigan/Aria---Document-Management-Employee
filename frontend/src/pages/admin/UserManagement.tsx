@@ -13,6 +13,9 @@ import {
 import type { User } from '../../types/api';
 import api from '../../lib/api';
 
+const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev/api';
+
+
 interface InviteUserModal {
   isOpen: boolean;
   email: string;
@@ -76,7 +79,7 @@ export default function UserManagementPage() {
 
   const handleUpdateRole = async (userId: string, newRole: string) => {
     try {
-      const response = await fetch(`/api/admin/users/${userId}/role`, {
+      const response = await fetch(`${API_BASE}/admin/users/${userId}/role`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -100,7 +103,7 @@ export default function UserManagementPage() {
     if (!confirm('Are you sure you want to deactivate this user?')) return;
 
     try {
-      const response = await fetch(`/api/admin/users/${userId}/deactivate`, {
+      const response = await fetch(`${API_BASE}/admin/users/${userId}/deactivate`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
@@ -116,7 +119,7 @@ export default function UserManagementPage() {
 
   const handleReactivateUser = async (userId: string) => {
     try {
-      const response = await fetch(`/api/admin/users/${userId}/reactivate`, {
+      const response = await fetch(`${API_BASE}/admin/users/${userId}/reactivate`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
@@ -134,7 +137,7 @@ export default function UserManagementPage() {
     if (!confirm('Send password reset email to this user?')) return;
 
     try {
-      const response = await fetch(`/api/admin/users/${userId}/reset-password`, {
+      const response = await fetch(`${API_BASE}/admin/users/${userId}/reset-password`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });

@@ -1424,4 +1424,8 @@ app.post('/migration/jobs/:id/validate/stock-valuation', async (c) => {
   return c.json({ success: true, data: result });
 });
 
+app.get('/jobs', async (c) => {
+  return c.json({ data: [] });
+});
+
 export default app;
