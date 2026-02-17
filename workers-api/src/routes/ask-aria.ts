@@ -2293,6 +2293,229 @@ const skills: Skill[] = [
       };
     },
   },
+
+  // ============================================
+  // HELPDESK SKILLS
+  // ============================================
+  {
+    name: 'helpdesk_create_ticket',
+    description: 'Create a helpdesk support ticket via natural language',
+    patterns: [
+      /(?:create|open|raise|submit|log|file)\s+(?:a\s+)?(?:new\s+)?(?:support\s+)?ticket/i,
+      /(?:create|open|raise|submit|log|file)\s+(?:a\s+)?(?:new\s+)?(?:helpdesk|help\s+desk)\s+(?:ticket|issue|request)/i,
+      /(?:i\s+)?(?:need|want)\s+(?:to\s+)?(?:report|log)\s+(?:a\s+)?(?:issue|problem|bug)/i,
+      /(?:create|open)\s+(?:a\s+)?(?:new\s+)?(?:issue|case|incident)/i,
+      /helpdesk.*(?:create|new|open)/i,
+      /support\s+(?:ticket|request|issue).*(?:for|about)/i,
+    ],
+    slots: ['customer_name', 'subject', 'priority', 'team'],
+    execute: async (ctx) => {
+      const msg = ctx.message;
+
+      let customerName = '';
+      const forMatch = msg.match(/(?:for|from)\s+(?:customer\s+)?(.+?)(?:\s+(?:about|regarding|re:|issue|problem|subject)|$)/i);
+      if (forMatch) customerName = forMatch[1].trim().replace(/[,;]+$/, '');
+
+      let subject = '';
+      const aboutMatch = msg.match(/(?:about|regarding|re:|subject|issue|problem)\s+(.+?)(?:\s+(?:with|priority|team|urgent|high|low|medium)|$)/i);
+      if (aboutMatch) subject = aboutMatch[1].trim().replace(/[,;]+$/, '');
+      if (!subject) {
+        const issueMatch = msg.match(/(?:issue|problem|bug|error)(?:\s+(?:is|with|:))?\s+(.+?)$/i);
+        if (issueMatch) subject = issueMatch[1].trim();
+      }
+
+      let priority: 'low' | 'medium' | 'high' | 'urgent' = 'medium';
+      if (/\b(?:urgent|critical|emergency|asap)\b/i.test(msg)) priority = 'urgent';
+      else if (/\b(?:high|important|serious)\b/i.test(msg)) priority = 'high';
+      else if (/\b(?:low|minor|cosmetic)\b/i.test(msg)) priority = 'low';
+
+      if (!subject && !customerName) {
+        return {
+          response: `**Create Support Ticket**\n\nPlease provide more details. Try:\n\n_"Create a ticket for [Customer] about [Issue]"_\n_"Open a support ticket about login problems with urgent priority"_\n_"Log a helpdesk issue for Acme Corp regarding billing error"_`,
+        };
+      }
+
+      try {
+        const teams = await ctx.db.prepare(
+          'SELECT id, name FROM helpdesk_teams WHERE company_id = ? AND is_active = 1 ORDER BY name LIMIT 1'
+        ).bind(ctx.companyId).all();
+        const defaultTeam = (teams.results || [])[0] as any;
+
+        let customerId: string | null = null;
+        if (customerName) {
+          const customers = await ctx.db.prepare(
+            'SELECT id, customer_name FROM customers WHERE company_id = ? ORDER BY customer_name LIMIT 50'
+          ).bind(ctx.companyId).all();
+          for (const c of (customers.results || []) as any[]) {
+            if ((c.customer_name || '').toLowerCase().includes(customerName.toLowerCase()) || customerName.toLowerCase().includes((c.customer_name || '').toLowerCase())) {
+              customerId = c.id;
+              customerName = c.customer_name;
+              break;
+            }
+          }
+        }
+
+        const ticketId = generateUUID();
+        const countResult = await ctx.db.prepare(
+          'SELECT COUNT(*) as count FROM helpdesk_tickets WHERE company_id = ?'
+        ).bind(ctx.companyId).first<{count: number}>();
+        const ticketNumber = `TKT-${String((countResult?.count || 0) + 1).padStart(4, '0')}`;
+
+        await ctx.db.prepare(`
+          INSERT INTO helpdesk_tickets (id, company_id, team_id, ticket_number, subject, description, customer_id, customer_name, priority, source, sla_status, created_at, updated_at)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'chat', 'on_track', datetime('now'), datetime('now'))
+        `).bind(
+          ticketId, ctx.companyId, defaultTeam?.id || null, ticketNumber,
+          subject || `Support request from ${customerName || 'Unknown'}`,
+          `Ticket created via Ask ARIA: ${msg}`,
+          customerId, customerName || null, priority
+        ).run();
+
+        const lines = [
+          `**Ticket Created Successfully**`,
+          ``,
+          `| Field | Value |`,
+          `|-------|-------|`,
+          `| Ticket # | **${ticketNumber}** |`,
+          `| Subject | ${subject || 'Support request'} |`,
+          customerName ? `| Customer | ${customerName} |` : null,
+          `| Priority | ${priority.charAt(0).toUpperCase() + priority.slice(1)} |`,
+          defaultTeam ? `| Team | ${defaultTeam.name} |` : null,
+          `| Status | Open |`,
+          ``,
+          `View and manage this ticket in **Services > Helpdesk > Tickets**`,
+        ].filter(Boolean);
+
+        return {
+          response: lines.join('\n'),
+          data: { ticket_id: ticketId, ticket_number: ticketNumber },
+          action: 'ticket_created',
+        };
+      } catch (error) {
+        return {
+          response: `**Failed to create ticket.** Please try again or create the ticket manually in Services > Helpdesk > Tickets.\n\nError: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        };
+      }
+    },
+  },
+  {
+    name: 'helpdesk_list_tickets',
+    description: 'List or search helpdesk tickets',
+    patterns: [
+      /(?:show|list|get|view)\s+(?:me\s+)?(?:all\s+)?(?:open\s+)?(?:support\s+)?tickets/i,
+      /(?:show|list|get|view)\s+(?:me\s+)?(?:all\s+)?(?:helpdesk|help\s+desk)\s+tickets/i,
+      /(?:what|how\s+many)\s+(?:are\s+)?(?:the\s+)?(?:open|pending|unresolved)\s+tickets/i,
+      /ticket\s+status/i,
+      /helpdesk\s+status/i,
+    ],
+    slots: [],
+    execute: async (ctx) => {
+      try {
+        const result = await ctx.db.prepare(
+          'SELECT ticket_number, subject, priority, sla_status, customer_name, created_at FROM helpdesk_tickets WHERE company_id = ? AND closed_at IS NULL ORDER BY created_at DESC LIMIT 10'
+        ).bind(ctx.companyId).all();
+        const tickets = (result.results || []) as any[];
+
+        if (tickets.length === 0) {
+          return { response: `**No open tickets found.**\n\nYour helpdesk is clear! Create a new ticket by saying _"Create a support ticket about..."_` };
+        }
+
+        const priorityEmoji: Record<string, string> = { urgent: '🔴', high: '🟠', medium: '🟡', low: '🟢' };
+        const rows = tickets.map((t: any) =>
+          `| ${t.ticket_number} | ${t.subject || '-'} | ${priorityEmoji[t.priority] || '⚪'} ${t.priority} | ${t.customer_name || '-'} | ${t.sla_status} |`
+        ).join('\n');
+
+        return {
+          response: `**Open Support Tickets (${tickets.length})**\n\n| Ticket | Subject | Priority | Customer | SLA |\n|--------|---------|----------|----------|-----|\n${rows}\n\nManage tickets in **Services > Helpdesk > Tickets**`,
+          data: { tickets },
+        };
+      } catch {
+        return { response: `**Unable to retrieve tickets.** Please check the Helpdesk section directly.` };
+      }
+    },
+  },
+  {
+    name: 'helpdesk_assign_ticket',
+    description: 'Assign a helpdesk ticket to a team or agent',
+    patterns: [
+      /assign\s+ticket\s+(TKT-?\d+)/i,
+      /(?:assign|route|move|transfer)\s+(?:ticket\s+)?(?:#?\s*)?(?:TKT-?\d+)\s+(?:to)\s+/i,
+      /(?:escalate|upgrade)\s+(?:ticket\s+)?(?:#?\s*)?(?:TKT-?\d+)/i,
+    ],
+    slots: ['ticket_number', 'assignee'],
+    execute: async (ctx) => {
+      const ticketMatch = ctx.message.match(/TKT-?(\d+)/i);
+      if (!ticketMatch) {
+        return { response: `**Please specify a ticket number.** Example: _"Assign ticket TKT-0001 to support team"_` };
+      }
+      const ticketNumber = `TKT-${ticketMatch[1].padStart(4, '0')}`;
+
+      let newPriority: string | null = null;
+      if (/\b(?:urgent|critical)\b/i.test(ctx.message)) newPriority = 'urgent';
+      else if (/\b(?:high)\b/i.test(ctx.message)) newPriority = 'high';
+      else if (/\bescalat/i.test(ctx.message)) newPriority = 'urgent';
+
+      try {
+        const ticket = await ctx.db.prepare(
+          'SELECT id, subject, priority FROM helpdesk_tickets WHERE company_id = ? AND ticket_number = ?'
+        ).bind(ctx.companyId, ticketNumber).first<{id: string; subject: string; priority: string}>();
+
+        if (!ticket) {
+          return { response: `**Ticket ${ticketNumber} not found.** Please check the ticket number and try again.` };
+        }
+
+        if (newPriority) {
+          await ctx.db.prepare(
+            'UPDATE helpdesk_tickets SET priority = ?, updated_at = datetime(\'now\') WHERE id = ?'
+          ).bind(newPriority, ticket.id).run();
+        }
+
+        return {
+          response: `**Ticket ${ticketNumber} Updated**\n\n| Field | Value |\n|-------|-------|\n| Subject | ${ticket.subject} |\n${newPriority ? `| Priority | ${ticket.priority} → **${newPriority}** |\n` : ''}| Status | Updated |\n\nView details in **Services > Helpdesk > Tickets**`,
+          action: 'ticket_updated',
+        };
+      } catch {
+        return { response: `**Failed to update ticket ${ticketNumber}.** Please try again.` };
+      }
+    },
+  },
+  {
+    name: 'helpdesk_resolve_ticket',
+    description: 'Resolve/close a helpdesk ticket',
+    patterns: [
+      /(?:resolve|close|complete|finish)\s+(?:ticket\s+)?(?:#?\s*)?TKT-?\d+/i,
+      /(?:mark\s+)?(?:ticket\s+)?(?:#?\s*)?TKT-?\d+\s+(?:as\s+)?(?:resolved|closed|done|complete)/i,
+    ],
+    slots: ['ticket_number'],
+    execute: async (ctx) => {
+      const ticketMatch = ctx.message.match(/TKT-?(\d+)/i);
+      if (!ticketMatch) {
+        return { response: `**Please specify a ticket number.** Example: _"Resolve ticket TKT-0001"_` };
+      }
+      const ticketNumber = `TKT-${ticketMatch[1].padStart(4, '0')}`;
+
+      try {
+        const ticket = await ctx.db.prepare(
+          'SELECT id, subject FROM helpdesk_tickets WHERE company_id = ? AND ticket_number = ?'
+        ).bind(ctx.companyId, ticketNumber).first<{id: string; subject: string}>();
+
+        if (!ticket) {
+          return { response: `**Ticket ${ticketNumber} not found.**` };
+        }
+
+        await ctx.db.prepare(
+          'UPDATE helpdesk_tickets SET closed_at = datetime(\'now\'), sla_status = \'achieved\', updated_at = datetime(\'now\') WHERE id = ?'
+        ).bind(ticket.id).run();
+
+        return {
+          response: `**Ticket ${ticketNumber} Resolved**\n\n| Field | Value |\n|-------|-------|\n| Subject | ${ticket.subject} |\n| Status | Resolved |\n| Closed | ${new Date().toISOString().split('T')[0]} |\n\nThe ticket has been closed successfully.`,
+          action: 'ticket_resolved',
+        };
+      } catch {
+        return { response: `**Failed to resolve ticket ${ticketNumber}.** Please try again.` };
+      }
+    },
+  },
 ];
 
 // Find matching skill

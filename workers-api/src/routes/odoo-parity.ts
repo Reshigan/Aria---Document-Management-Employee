@@ -961,6 +961,122 @@ app.get('/helpdesk/customers/:id/tickets', async (c) => {
 });
 
 // ============================================
+// HELPDESK KNOWLEDGE BASE ROUTES
+// ============================================
+
+app.get('/helpdesk/knowledge-base', async (c) => {
+  const db = c.env.DB;
+  const companyId = getCompanyId(c);
+  try {
+    const result = await db.prepare(
+      'SELECT * FROM helpdesk_knowledge_base WHERE company_id = ? ORDER BY created_at DESC'
+    ).bind(companyId).all();
+    return c.json({ success: true, data: result.results || [] });
+  } catch {
+    return c.json({ success: true, data: [] });
+  }
+});
+
+app.post('/helpdesk/knowledge-base', async (c) => {
+  const db = c.env.DB;
+  const companyId = getCompanyId(c);
+  const body = await c.req.json();
+  const id = crypto.randomUUID();
+  try {
+    await db.prepare(
+      'CREATE TABLE IF NOT EXISTS helpdesk_knowledge_base (id TEXT PRIMARY KEY, company_id TEXT, title TEXT, body TEXT, category TEXT, tags TEXT, is_published INTEGER DEFAULT 1, views INTEGER DEFAULT 0, created_at TEXT, updated_at TEXT)'
+    ).run();
+    await db.prepare(
+      'INSERT INTO helpdesk_knowledge_base (id, company_id, title, body, category, tags, is_published, views, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, 0, datetime(\'now\'), datetime(\'now\'))'
+    ).bind(id, companyId, body.title, body.body, body.category || 'General', body.tags || '', body.is_published !== false ? 1 : 0).run();
+    return c.json({ success: true, data: { id } });
+  } catch (e: any) {
+    return c.json({ success: false, error: e.message }, 500);
+  }
+});
+
+app.put('/helpdesk/knowledge-base/:id', async (c) => {
+  const db = c.env.DB;
+  const id = c.req.param('id');
+  const body = await c.req.json();
+  try {
+    await db.prepare(
+      'UPDATE helpdesk_knowledge_base SET title = ?, body = ?, category = ?, tags = ?, is_published = ?, updated_at = datetime(\'now\') WHERE id = ?'
+    ).bind(body.title, body.body, body.category || 'General', body.tags || '', body.is_published !== false ? 1 : 0, id).run();
+    return c.json({ success: true });
+  } catch (e: any) {
+    return c.json({ success: false, error: e.message }, 500);
+  }
+});
+
+app.delete('/helpdesk/knowledge-base/:id', async (c) => {
+  const db = c.env.DB;
+  const id = c.req.param('id');
+  try {
+    await db.prepare('DELETE FROM helpdesk_knowledge_base WHERE id = ?').bind(id).run();
+    return c.json({ success: true });
+  } catch (e: any) {
+    return c.json({ success: false, error: e.message }, 500);
+  }
+});
+
+// ============================================
+// HELPDESK SLA POLICIES (top-level CRUD)
+// ============================================
+
+app.get('/helpdesk/sla-policies', async (c) => {
+  const db = c.env.DB;
+  const companyId = getCompanyId(c);
+  try {
+    const result = await db.prepare(
+      'SELECT p.*, t.name as team_name FROM helpdesk_sla_policies p LEFT JOIN helpdesk_teams t ON p.team_id = t.id WHERE t.company_id = ? ORDER BY p.created_at DESC'
+    ).bind(companyId).all();
+    return c.json({ success: true, data: result.results || [] });
+  } catch {
+    return c.json({ success: true, data: [] });
+  }
+});
+
+app.post('/helpdesk/sla-policies', async (c) => {
+  const db = c.env.DB;
+  const body = await c.req.json();
+  const id = crypto.randomUUID();
+  try {
+    await db.prepare(
+      'INSERT INTO helpdesk_sla_policies (id, team_id, name, priority, ticket_type, time_to_first_response_hours, time_to_resolve_hours, is_active, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, datetime(\'now\'))'
+    ).bind(id, body.team_id, body.name, body.priority || null, body.ticket_type || null, body.time_to_first_response_hours || null, body.time_to_resolve_hours || null, body.is_active !== false ? 1 : 0).run();
+    return c.json({ success: true, data: { id } });
+  } catch (e: any) {
+    return c.json({ success: false, error: e.message }, 500);
+  }
+});
+
+app.put('/helpdesk/sla-policies/:id', async (c) => {
+  const db = c.env.DB;
+  const id = c.req.param('id');
+  const body = await c.req.json();
+  try {
+    await db.prepare(
+      'UPDATE helpdesk_sla_policies SET name = ?, team_id = ?, priority = ?, ticket_type = ?, time_to_first_response_hours = ?, time_to_resolve_hours = ?, is_active = ? WHERE id = ?'
+    ).bind(body.name, body.team_id, body.priority || null, body.ticket_type || null, body.time_to_first_response_hours || null, body.time_to_resolve_hours || null, body.is_active !== false ? 1 : 0, id).run();
+    return c.json({ success: true });
+  } catch (e: any) {
+    return c.json({ success: false, error: e.message }, 500);
+  }
+});
+
+app.delete('/helpdesk/sla-policies/:id', async (c) => {
+  const db = c.env.DB;
+  const id = c.req.param('id');
+  try {
+    await db.prepare('DELETE FROM helpdesk_sla_policies WHERE id = ?').bind(id).run();
+    return c.json({ success: true });
+  } catch (e: any) {
+    return c.json({ success: false, error: e.message }, 500);
+  }
+});
+
+// ============================================
 // FIELD SERVICE ROUTES
 // ============================================
 
