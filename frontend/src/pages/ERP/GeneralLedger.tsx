@@ -458,13 +458,13 @@ export default function GeneralLedger() {
                         <tr key={acc.account_code} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                           <td className="px-6 py-4 font-semibold text-indigo-600 dark:text-indigo-400">{acc.account_code}</td>
                           <td className="px-6 py-4 text-gray-900 dark:text-white">{acc.account_name}</td>
-                          <td className="px-6 py-4 text-right text-gray-900 dark:text-white">{acc.balance_type === 'debit' ? `R ${Number(acc.balance ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}` : '-'}</td>
-                          <td className="px-6 py-4 text-right text-gray-900 dark:text-white">{acc.balance_type === 'credit' ? `R ${Number(acc.balance ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}` : '-'}</td>
+                          <td className="px-6 py-4 text-right text-gray-900 dark:text-white">{acc.balance_type === 'debit' ? `R ${Number(acc.balance ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : '-'}</td>
+                          <td className="px-6 py-4 text-right text-gray-900 dark:text-white">{acc.balance_type === 'credit' ? `R ${Number(acc.balance ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : '-'}</td>
                         </tr>
                       ))}
                     </tbody>
                     <tfoot className="bg-gray-50 dark:bg-gray-900/50 font-bold">
-                      <tr><td colSpan={2} className="px-6 py-4 text-right text-gray-700 dark:text-gray-300">Totals:</td><td className="px-6 py-4 text-right text-gray-900 dark:text-white">R {Number(trialBalance.total_debits ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</td><td className="px-6 py-4 text-right text-gray-900 dark:text-white">R {Number(trialBalance.total_credits ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</td></tr>
+                      <tr><td colSpan={2} className="px-6 py-4 text-right text-gray-700 dark:text-gray-300">Totals:</td><td className="px-6 py-4 text-right text-gray-900 dark:text-white">R {Number(trialBalance.total_debits ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td><td className="px-6 py-4 text-right text-gray-900 dark:text-white">R {Number(trialBalance.total_credits ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td></tr>
                     </tfoot>
                   </table>
                 </div>

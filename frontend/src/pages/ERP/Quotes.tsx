@@ -473,7 +473,7 @@ export default function Quotes() {
                         </td>
                         <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{(quote.quote_date ? new Date(quote.quote_date).toLocaleDateString() : "-")}</td>
                         <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{quote.valid_until ? new Date(quote.valid_until).toLocaleDateString() : '-'}</td>
-                        <td className="px-6 py-4 text-right font-semibold text-gray-900 dark:text-white">R {Number(quote.total_amount ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
+                        <td className="px-6 py-4 text-right font-semibold text-gray-900 dark:text-white">R {Number(quote.total_amount ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                         <td className="px-6 py-4">
                           <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${statusConfig.bg} ${statusConfig.text} border ${statusConfig.border} capitalize`}>{quote.status}</span>
                         </td>

@@ -209,7 +209,7 @@ export default function Timesheets() {
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
           <div className="text-xs text-gray-500 dark:text-gray-400">Total Billing</div>
           <div className="text-2xl font-bold text-orange-600">
-            R {Number(totalBilling ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
+            R {Number(totalBilling ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </div>
         </div>
       </div>
@@ -297,7 +297,7 @@ export default function Timesheets() {
                   <td className="px-6 py-4 text-right">
                     {timesheet.billable ? (
                       <span className="text-sm font-medium text-green-600 dark:text-green-400">
-                        R {(timesheet.billing_amount || 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
+                        R {(timesheet.billing_amount || 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                       </span>
                     ) : (
                       <span className="text-xs text-gray-400">Non-billable</span>
@@ -424,7 +424,7 @@ export default function Timesheets() {
                   />
                   {formData.hours > 0 && formData.billing_rate > 0 && (
                     <p className="text-sm text-green-600 dark:text-green-400 mt-1">
-                      Total: R {(formData.hours * formData.billing_rate).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
+                      Total: R {(formData.hours * formData.billing_rate).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </p>
                   )}
                 </div>

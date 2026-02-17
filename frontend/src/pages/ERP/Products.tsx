@@ -410,8 +410,8 @@ export default function Products() {
               <div className="bg-gray-50 dark:bg-gray-900/50 rounded-xl p-5">
                 <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4">Pricing</h3>
                 <div className="space-y-3">
-                  <div><span className="text-xs text-gray-500 dark:text-gray-400">Cost Price:</span><p className="font-medium text-gray-900 dark:text-white">R {Number(selectedProduct.cost_price ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}</p></div>
-                  <div><span className="text-xs text-gray-500 dark:text-gray-400">Selling Price:</span><p className="font-medium text-gray-900 dark:text-white">R {Number(selectedProduct.selling_price ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}</p></div>
+                  <div><span className="text-xs text-gray-500 dark:text-gray-400">Cost Price:</span><p className="font-medium text-gray-900 dark:text-white">R {Number(selectedProduct.cost_price ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p></div>
+                  <div><span className="text-xs text-gray-500 dark:text-gray-400">Selling Price:</span><p className="font-medium text-gray-900 dark:text-white">R {Number(selectedProduct.selling_price ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p></div>
                   <div><span className="text-xs text-gray-500 dark:text-gray-400">Tax Rate:</span><p className="font-medium text-gray-900 dark:text-white">{selectedProduct.tax_rate}%</p></div>
                 </div>
               </div>
@@ -585,8 +585,8 @@ export default function Products() {
                         <div><p className="font-semibold text-gray-900 dark:text-white">{product.name}</p><p className="text-xs text-gray-500 dark:text-gray-400">{product.code}</p></div>
                       </td>
                       <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{product.category || '-'}</td>
-                      <td className="px-6 py-4 text-right text-gray-600 dark:text-gray-300">R {Number(product.cost_price ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
-                      <td className="px-6 py-4 text-right font-semibold text-gray-900 dark:text-white">R {Number(product.selling_price ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
+                      <td className="px-6 py-4 text-right text-gray-600 dark:text-gray-300">R {Number(product.cost_price ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                      <td className="px-6 py-4 text-right font-semibold text-gray-900 dark:text-white">R {Number(product.selling_price ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                       <td className="px-6 py-4 text-right">
                         <span className={`font-medium ${marginPercent(product) >= 30 ? 'text-green-600 dark:text-green-400' : marginPercent(product) >= 15 ? 'text-amber-600 dark:text-amber-400' : 'text-red-600 dark:text-red-400'}`}>{marginPercent(product).toFixed(1)}%</span>
                       </td>

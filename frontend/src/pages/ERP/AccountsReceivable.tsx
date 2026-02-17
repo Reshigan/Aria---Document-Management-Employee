@@ -374,7 +374,7 @@ export default function AccountsReceivable() {
                         <td className="px-6 py-4 font-semibold text-green-600 dark:text-green-400">{customer.customer_code}</td>
                         <td className="px-6 py-4 text-gray-900 dark:text-white">{customer.customer_name}</td>
                         <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{customer.contact_person || '-'}</td>
-                        <td className="px-6 py-4 text-right text-gray-600 dark:text-gray-300">R {(customer.credit_limit || 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</td>
+                        <td className="px-6 py-4 text-right text-gray-600 dark:text-gray-300">R {(customer.credit_limit || 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                         <td className="px-6 py-4"><span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${customer.is_active ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600'}`}>{customer.is_active ? 'Active' : 'Inactive'}</span></td>
                         <td className="px-6 py-4"><div className="flex items-center justify-end gap-2"><button onClick={() => handleEditCustomer(customer)} className="p-2 hover:bg-green-100 dark:hover:bg-green-900/30 text-green-600 dark:text-green-400 rounded-lg transition-colors"><Edit className="h-4 w-4" /></button><button onClick={() => handleDeleteCustomer(customer)} className="p-2 hover:bg-red-100 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg transition-colors"><Trash2 className="h-4 w-4" /></button></div></td>
                       </tr>
@@ -395,8 +395,8 @@ export default function AccountsReceivable() {
                         <td className="px-6 py-4 text-gray-900 dark:text-white">{inv.customer_name}</td>
                         <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{(inv.invoice_date ? new Date(inv.invoice_date).toLocaleDateString() : "-")}</td>
                         <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{(inv.due_date ? new Date(inv.due_date).toLocaleDateString() : "-")}</td>
-                        <td className="px-6 py-4 text-right text-gray-900 dark:text-white">R {Number(inv.total_amount ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</td>
-                        <td className="px-6 py-4 text-right font-semibold text-gray-900 dark:text-white">R {Number(inv.balance ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</td>
+                        <td className="px-6 py-4 text-right text-gray-900 dark:text-white">R {Number(inv.total_amount ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                        <td className="px-6 py-4 text-right font-semibold text-gray-900 dark:text-white">R {Number(inv.balance ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                         <td className="px-6 py-4"><span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${getStatusBadge(inv.status)}`}>{inv.status}</span></td>
                       </tr>
                     ))}
@@ -416,7 +416,7 @@ export default function AccountsReceivable() {
                         <td className="px-6 py-4 text-gray-900 dark:text-white">{pmt.customer_name}</td>
                         <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{(pmt.payment_date ? new Date(pmt.payment_date).toLocaleDateString() : "-")}</td>
                         <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{pmt.payment_method}</td>
-                        <td className="px-6 py-4 text-right font-semibold text-gray-900 dark:text-white">R {Number(pmt.amount ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</td>
+                        <td className="px-6 py-4 text-right font-semibold text-gray-900 dark:text-white">R {Number(pmt.amount ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                         <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{pmt.reference || '-'}</td>
                       </tr>
                     ))}
@@ -433,12 +433,12 @@ export default function AccountsReceivable() {
                     {aging.map(row => (
                       <tr key={row.customer_id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                         <td className="px-6 py-4 font-semibold text-gray-900 dark:text-white">{row.customer_name}</td>
-                        <td className="px-6 py-4 text-right text-gray-600 dark:text-gray-300">R {Number(row.current ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</td>
-                        <td className="px-6 py-4 text-right text-gray-600 dark:text-gray-300">R {Number(row.days_30 ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</td>
-                        <td className="px-6 py-4 text-right text-amber-600 dark:text-amber-400">R {Number(row.days_60 ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</td>
-                        <td className="px-6 py-4 text-right text-orange-600 dark:text-orange-400">R {Number(row.days_90 ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</td>
-                        <td className="px-6 py-4 text-right text-red-600 dark:text-red-400">R {Number(row.over_90 ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</td>
-                        <td className="px-6 py-4 text-right font-bold text-gray-900 dark:text-white">R {Number(row.total ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</td>
+                        <td className="px-6 py-4 text-right text-gray-600 dark:text-gray-300">R {Number(row.current ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                        <td className="px-6 py-4 text-right text-gray-600 dark:text-gray-300">R {Number(row.days_30 ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                        <td className="px-6 py-4 text-right text-amber-600 dark:text-amber-400">R {Number(row.days_60 ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                        <td className="px-6 py-4 text-right text-orange-600 dark:text-orange-400">R {Number(row.days_90 ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                        <td className="px-6 py-4 text-right text-red-600 dark:text-red-400">R {Number(row.over_90 ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                        <td className="px-6 py-4 text-right font-bold text-gray-900 dark:text-white">R {Number(row.total ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                       </tr>
                     ))}
                   </tbody>

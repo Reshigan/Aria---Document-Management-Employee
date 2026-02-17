@@ -276,7 +276,7 @@ export default function PriceCalculator() {
                   <div className="p-4 bg-blue-50 dark:bg-blue-900/30 rounded-lg text-center">
                     <div className="text-sm text-blue-600 dark:text-blue-400">Base Price</div>
                     <div className="text-2xl font-bold text-blue-700 dark:text-blue-300">
-                      R {Number(result.base_price ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
+                      R {Number(result.base_price ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </div>
                   </div>
                   <div className="p-4 bg-orange-50 rounded-lg text-center">
@@ -285,13 +285,13 @@ export default function PriceCalculator() {
                       {Number(result.discount_percentage ?? 0).toFixed(1)}%
                     </div>
                     <div className="text-sm text-orange-600">
-                      -R {Number(result.discount_amount ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
+                      -R {Number(result.discount_amount ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </div>
                   </div>
                   <div className="p-4 bg-green-50 dark:bg-green-900/30 rounded-lg text-center">
                     <div className="text-sm text-green-600 dark:text-green-400">Final Price</div>
                     <div className="text-2xl font-bold text-green-700 dark:text-green-300">
-                      R {Number(result.final_price ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
+                      R {Number(result.final_price ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </div>
                   </div>
                 </div>
@@ -341,7 +341,7 @@ export default function PriceCalculator() {
                       <Package size={16} className="text-gray-400" />
                       <span className="text-sm">{p.name}</span>
                       <span className="text-xs text-gray-500 dark:text-gray-400 ml-auto">
-                        R {p.list_price?.toLocaleString('en-ZA', { minimumFractionDigits: 2 }) || '0.00'}
+                        R {p.list_price?.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || '0.00'}
                       </span>
                     </label>
                   ))}
@@ -363,13 +363,13 @@ export default function PriceCalculator() {
                         <tr key={idx} className="hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900">
                           <td className="px-4 py-3 text-sm font-medium">{r.product_name}</td>
                           <td className="px-4 py-3 text-sm text-right text-gray-600 dark:text-gray-400">
-                            R {Number(r.base_price ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
+                            R {Number(r.base_price ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                           </td>
                           <td className="px-4 py-3 text-sm text-right text-orange-600">
                             {Number(r.discount_percentage ?? 0).toFixed(1)}%
                           </td>
                           <td className="px-4 py-3 text-sm text-right font-medium text-green-600 dark:text-green-400">
-                            R {Number(r.final_price ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
+                            R {Number(r.final_price ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                           </td>
                         </tr>
                       ))}

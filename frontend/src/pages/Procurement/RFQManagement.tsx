@@ -406,7 +406,7 @@ const RFQManagement: React.FC = () => {
                         <td className="px-6 py-4 text-sm"><div className="flex items-center gap-1"><Users size={14} className="text-gray-400" />{rfq.suppliers?.length || 0}</div></td>
                         <td className="px-6 py-4 text-sm">
                           {bestQuote ? (
-                            <span className="flex items-center gap-1 text-emerald-600 font-medium"><DollarSign size={14} />{Number(bestQuote.quoted_amount ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</span>
+                            <span className="flex items-center gap-1 text-emerald-600 font-medium"><DollarSign size={14} />{Number(bestQuote.quoted_amount ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                           ) : <span className="text-gray-400">-</span>}
                         </td>
                         <td className="px-6 py-4 text-sm">{rfq.due_date ? new Date(rfq.due_date).toLocaleDateString() : '-'}</td>

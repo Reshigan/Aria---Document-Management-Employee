@@ -260,10 +260,10 @@ export default function ProductTemplates() {
                     </span>
                   </td>
                   <td className="px-6 py-4 text-right text-sm">
-                    R {Number(template.list_price ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
+                    R {Number(template.list_price ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </td>
                   <td className="px-6 py-4 text-right text-sm text-gray-600 dark:text-gray-400">
-                    R {Number(template.cost_price ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
+                    R {Number(template.cost_price ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </td>
                   <td className="px-6 py-4 text-center">
                     <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-100 text-xs rounded-full">

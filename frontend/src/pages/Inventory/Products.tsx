@@ -201,7 +201,7 @@ export default function Products() {
               <DollarSign className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-xl font-bold text-gray-900 dark:text-white">R {Number(totalValue ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">R {Number(totalValue ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
               <p className="text-xs text-gray-500 dark:text-gray-400">Inventory Value</p>
             </div>
           </div>
@@ -439,11 +439,11 @@ export default function Products() {
                         {product.unit_of_measure}
                       </td>
                       <td className="px-6 py-4 text-sm text-right text-gray-700 dark:text-gray-300">
-                        R {Number(product.standard_cost ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
+                        R {Number(product.standard_cost ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                       </td>
                       <td className="px-6 py-4 text-sm text-right">
                         <div className="font-medium text-gray-900 dark:text-white">
-                          R {Number(product.selling_price ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
+                          R {Number(product.selling_price ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </div>
                         <div className={`text-xs ${marginPercent > 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
                           {marginPercent > 0 ? '+' : ''}{Number(marginPercent ?? 0).toFixed(1)}% margin

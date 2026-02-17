@@ -446,7 +446,7 @@ export default function PurchaseOrders() {
                         <td className="px-6 py-4 text-gray-900 dark:text-white">{order.supplier_name}</td>
                         <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{(order.po_date ? new Date(order.po_date).toLocaleDateString() : "-")}</td>
                         <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{order.expected_delivery_date ? new Date(order.expected_delivery_date).toLocaleDateString() : '-'}</td>
-                        <td className="px-6 py-4 text-right font-semibold text-gray-900 dark:text-white">R {Number(order.total_amount ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
+                        <td className="px-6 py-4 text-right font-semibold text-gray-900 dark:text-white">R {Number(order.total_amount ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                         <td className="px-6 py-4">
                           <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${statusConfig.bg} ${statusConfig.text} border ${statusConfig.border} capitalize`}>{order.status}</span>
                         </td>
@@ -548,7 +548,7 @@ export default function PurchaseOrders() {
                             <td className="px-3 py-2">
                               <input type="number" value={line.unit_price} onChange={(e) => updateLine(index, 'unit_price', e.target.value)} min="0" step="0.01" className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm text-right" />
                             </td>
-                            <td className="px-3 py-2 text-right font-medium text-gray-900 dark:text-white">R {calculateLineTotal(line).toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
+                            <td className="px-3 py-2 text-right font-medium text-gray-900 dark:text-white">R {calculateLineTotal(line).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                             <td className="px-3 py-2 text-center">
                               {formData.lines.length > 1 && (
                                 <button type="button" onClick={() => removeLine(index)} className="p-1.5 text-red-500 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg transition-colors"><X className="h-4 w-4" /></button>
@@ -560,7 +560,7 @@ export default function PurchaseOrders() {
                       <tfoot>
                         <tr className="border-t-2 border-gray-200 dark:border-gray-700">
                           <td colSpan={4} className="px-3 py-3 text-right font-semibold text-gray-700 dark:text-gray-300">Total:</td>
-                          <td className="px-3 py-3 text-right font-bold text-gray-900 dark:text-white">R {calculateTotal().toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
+                          <td className="px-3 py-3 text-right font-bold text-gray-900 dark:text-white">R {calculateTotal().toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                           <td></td>
                         </tr>
                       </tfoot>
@@ -609,7 +609,7 @@ export default function PurchaseOrders() {
                 </div>
                 <div className="bg-gray-50 dark:bg-gray-900/50 rounded-lg p-3">
                   <p className="text-xs text-gray-500 dark:text-gray-400">Total Amount</p>
-                  <p className="font-bold text-xl text-gray-900 dark:text-white">R {Number(selectedOrder.total_amount ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
+                  <p className="font-bold text-xl text-gray-900 dark:text-white">R {Number(selectedOrder.total_amount ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
                 </div>
               </div>
               {selectedOrder.lines && selectedOrder.lines.length > 0 && (
