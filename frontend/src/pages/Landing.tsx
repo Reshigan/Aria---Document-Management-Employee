@@ -83,7 +83,7 @@ export const Landing: React.FC = () => {
               
               <Link
                 to="/login"
-                className="px-8 py-4 bg-white/5 hover:bg-white/10 text-white border border-white/10 rounded-xl font-semibold text-lg transition-all"
+                className="px-8 py-4 bg-white/5 hover:bg-white/10 text-white border border-white/20 rounded-xl font-semibold text-lg transition-all"
               >
                 Watch Demo
               </Link>
@@ -112,7 +112,7 @@ export const Landing: React.FC = () => {
             transition={{ duration: 0.8, delay: 0.3 }}
             className="mt-16 relative"
           >
-            <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-white/10 p-4 shadow-2xl">
+            <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-white/20 p-4 shadow-2xl">
               <div className="flex items-center gap-2 mb-4">
                 <div className="w-3 h-3 rounded-full bg-red-500"></div>
                 <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
@@ -264,7 +264,7 @@ export const Landing: React.FC = () => {
             </Link>
             <Link
               to="/login"
-              className="px-8 py-4 bg-white/5 hover:bg-white/10 text-white border border-white/10 rounded-xl font-semibold text-lg transition-all"
+              className="px-8 py-4 bg-white/5 hover:bg-white/10 text-white border border-white/20 rounded-xl font-semibold text-lg transition-all"
             >
               Contact Sales
             </Link>

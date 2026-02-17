@@ -299,12 +299,10 @@ export default function AriaChat() {
                   <User size={20} style={{ color: '#6b7280' }} />
                 )}
               </div>
-              <div style={{
+              <div className={message.role === 'assistant' ? 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-100' : 'bg-indigo-500 text-white'} style={{
                 maxWidth: '70%',
                 padding: '1rem 1.25rem',
-                borderRadius: '1rem',
-                background: message.role === 'assistant' ? '#f3f4f6' : '#667eea',
-                color: message.role === 'assistant' ? '#1f2937' : 'white'
+                borderRadius: '1rem'
               }}>
                 <div style={{ whiteSpace: 'pre-wrap', lineHeight: '1.6' }}>
                   {message.content}
@@ -684,16 +682,15 @@ export default function AriaChat() {
               }}>
                 <Bot size={20} style={{ color: 'white' }} />
               </div>
-              <div style={{
+              <div className="bg-gray-100 dark:bg-gray-700" style={{
                 padding: '1rem 1.25rem',
                 borderRadius: '1rem',
-                background: '#f3f4f6',
                 display: 'flex',
                 gap: '0.5rem',
                 alignItems: 'center'
               }}>
                 <Loader size={16} style={{ animation: 'spin 1s linear infinite' }} />
-                <span style={{ color: '#6b7280' }}>Aria is thinking...</span>
+                <span className="text-gray-500 dark:text-gray-300">Aria is thinking...</span>
               </div>
             </div>
           )}
@@ -702,12 +699,10 @@ export default function AriaChat() {
 
         {/* Quick Actions */}
         {messages.length === 1 && (
-          <div style={{ 
-            padding: '1rem 2rem',
-            borderTop: '1px solid #e5e7eb',
-            background: '#f9fafb'
+          <div className="border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50" style={{ 
+            padding: '1rem 2rem'
           }}>
-            <div style={{ fontSize: '0.875rem', fontWeight: '600', marginBottom: '0.75rem', color: '#6b7280' }}>
+            <div className="text-gray-500 dark:text-gray-300" style={{ fontSize: '0.875rem', fontWeight: '600', marginBottom: '0.75rem' }}>
               Quick Actions:
             </div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
@@ -715,26 +710,7 @@ export default function AriaChat() {
                 <button
                   key={action}
                   onClick={() => setInput(action)}
-                  style={{
-                    padding: '0.5rem 1rem',
-                    background: 'white',
-                    border: '1px solid #d1d5db',
-                    borderRadius: '9999px',
-                    fontSize: '0.875rem',
-                    color: '#374151',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background = '#667eea';
-                    e.currentTarget.style.color = 'white';
-                    e.currentTarget.style.borderColor = '#667eea';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background = 'white';
-                    e.currentTarget.style.color = '#374151';
-                    e.currentTarget.style.borderColor = '#d1d5db';
-                  }}
+                  className="bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-indigo-500 hover:text-white hover:border-indigo-500 transition-all duration-200 rounded-full text-sm px-4 py-2 cursor-pointer"
                 >
                   {action}
                 </button>
@@ -744,10 +720,8 @@ export default function AriaChat() {
         )}
 
         {/* Input */}
-        <div style={{ 
-          padding: '1.5rem 2rem',
-          borderTop: '1px solid #e5e7eb',
-          background: 'white'
+        <div className="border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800" style={{ 
+          padding: '1.5rem 2rem'
         }}>
           {selectedFile && (
             <div style={{
@@ -761,7 +735,7 @@ export default function AriaChat() {
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <Paperclip size={16} style={{ color: '#667eea' }} />
-                <span style={{ fontSize: '0.875rem', color: '#374151' }}>
+                <span className="text-gray-700 dark:text-gray-200" style={{ fontSize: '0.875rem' }}>
                   {selectedFile.name} ({Number((selectedFile.size / 1024) || 0).toFixed(1)} KB)
                 </span>
               </div>
@@ -820,19 +794,10 @@ export default function AriaChat() {
               onKeyPress={handleKeyPress}
               placeholder={selectedFile ? "Add a message about this file..." : "Type your message or upload a file..."}
               rows={1}
+              className="flex-1 bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-2 border-gray-200 dark:border-gray-600 rounded-xl text-sm resize-none font-inherit outline-none transition-colors duration-200 focus:border-indigo-500 placeholder-gray-400 dark:placeholder-gray-400"
               style={{
-                flex: 1,
-                padding: '0.75rem 1rem',
-                border: '2px solid #e5e7eb',
-                borderRadius: '0.75rem',
-                fontSize: '0.875rem',
-                resize: 'none',
-                fontFamily: 'inherit',
-                outline: 'none',
-                transition: 'border-color 0.2s'
+                padding: '0.75rem 1rem'
               }}
-              onFocus={(e) => e.currentTarget.style.borderColor = '#667eea'}
-              onBlur={(e) => e.currentTarget.style.borderColor = '#e5e7eb'}
             />
             <button
               onClick={handleSend}

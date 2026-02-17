@@ -45,7 +45,7 @@ const Login: React.FC = () => {
           </div>
           
           <div className="space-y-4 text-left">
-            <div className="flex items-start gap-3 p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10">
+            <div className="flex items-start gap-3 p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/20">
               <div className="p-2 rounded-lg bg-amber-500/20">
                 <Sparkles className="w-5 h-5 text-amber-400" />
               </div>
@@ -55,7 +55,7 @@ const Login: React.FC = () => {
               </div>
             </div>
             
-            <div className="flex items-start gap-3 p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10">
+            <div className="flex items-start gap-3 p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/20">
               <div className="p-2 rounded-lg bg-emerald-500/20">
                 <Shield className="w-5 h-5 text-emerald-400" />
               </div>
@@ -65,7 +65,7 @@ const Login: React.FC = () => {
               </div>
             </div>
             
-            <div className="flex items-start gap-3 p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10">
+            <div className="flex items-start gap-3 p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/20">
               <div className="p-2 rounded-lg bg-blue-500/20">
                 <BarChart3 className="w-5 h-5 text-blue-400" />
               </div>
@@ -90,7 +90,7 @@ const Login: React.FC = () => {
           </div>
 
           {/* Login Card */}
-          <div className="bg-slate-800/80 backdrop-blur-xl rounded-2xl p-8 shadow-2xl border border-white/10">
+          <div className="bg-slate-800/80 backdrop-blur-xl rounded-2xl p-8 shadow-2xl border border-white/20">
             <div className="text-center mb-8">
               <h2 className="text-2xl font-bold text-white mb-2">Welcome Back</h2>
               <p className="text-gray-300">Sign in to your account to continue</p>

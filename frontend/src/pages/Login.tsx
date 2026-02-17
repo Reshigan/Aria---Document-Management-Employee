@@ -45,7 +45,7 @@ export default function Login() {
           </div>
           
           <div className="space-y-3 text-left">
-            <div className="flex items-start gap-3 p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10">
+            <div className="flex items-start gap-3 p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/20">
               <div className="p-2 rounded-lg bg-amber-500/20">
                 <Sparkles className="w-5 h-5 text-amber-400" />
               </div>
@@ -55,7 +55,7 @@ export default function Login() {
               </div>
             </div>
             
-            <div className="flex items-start gap-3 p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10">
+            <div className="flex items-start gap-3 p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/20">
               <div className="p-2 rounded-lg bg-amber-500/20">
                 <Sparkles className="w-5 h-5 text-amber-400" />
               </div>
@@ -65,7 +65,7 @@ export default function Login() {
               </div>
             </div>
             
-            <div className="flex items-start gap-3 p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10">
+            <div className="flex items-start gap-3 p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/20">
               <div className="p-2 rounded-lg bg-amber-500/20">
                 <Sparkles className="w-5 h-5 text-amber-400" />
               </div>
@@ -76,7 +76,7 @@ export default function Login() {
             </div>
           </div>
           
-          <div className="mt-12 pt-8 border-t border-white/10">
+          <div className="mt-12 pt-8 border-t border-white/20">
             <p className="text-gray-500 text-sm">Powered by</p>
             <p className="text-white font-semibold">Vanta<span className="text-amber-500">X</span> Holdings</p>
           </div>
@@ -96,7 +96,7 @@ export default function Login() {
           </div>
 
           {/* Login Card */}
-          <div className="bg-slate-800/80 backdrop-blur-xl rounded-2xl p-8 shadow-2xl border border-white/10">
+          <div className="bg-slate-800/80 backdrop-blur-xl rounded-2xl p-8 shadow-2xl border border-white/20">
             <div className="text-center mb-8">
               <h2 className="text-2xl font-bold text-white mb-2">Welcome Back</h2>
               <p className="text-gray-300">Sign in to your account to continue</p>
@@ -125,7 +125,7 @@ export default function Login() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    className="w-full pl-12 pr-4 py-3.5 bg-slate-900/60 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500/50 transition-all"
+                    className="w-full pl-12 pr-4 py-3.5 bg-slate-900/60 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500/50 transition-all"
                     placeholder="you@company.com"
                   />
                 </div>
@@ -144,7 +144,7 @@ export default function Login() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
-                    className="w-full pl-12 pr-4 py-3.5 bg-slate-900/60 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500/50 transition-all"
+                    className="w-full pl-12 pr-4 py-3.5 bg-slate-900/60 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500/50 transition-all"
                     placeholder="Enter your password"
                   />
                 </div>
@@ -179,7 +179,7 @@ export default function Login() {
               </button>
             </form>
 
-            <div className="mt-8 pt-6 border-t border-white/10 text-center">
+            <div className="mt-8 pt-6 border-t border-white/20 text-center">
               <p className="text-gray-300">
                 Don't have an account?{' '}
                 <Link to="/register" className="text-amber-500 font-medium hover:text-amber-400 transition-colors">

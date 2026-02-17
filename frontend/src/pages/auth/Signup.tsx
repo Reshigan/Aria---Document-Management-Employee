@@ -63,7 +63,7 @@ export const Signup: React.FC = () => {
                   value={formData.full_name}
                   onChange={(e) => setFormData({...formData, full_name: e.target.value})}
                   required
-                  className="w-full pl-11 pr-4 py-3 bg-white dark:bg-gray-800/5 border border-white/10 rounded-lg text-white placeholder-gray-400 dark:placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full pl-11 pr-4 py-3 bg-white dark:bg-gray-800/5 border border-white/20 rounded-lg text-white placeholder-gray-400 dark:placeholder-gray-400 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   placeholder="John Doe"
                 />
               </div>
@@ -78,7 +78,7 @@ export const Signup: React.FC = () => {
                   value={formData.email}
                   onChange={(e) => setFormData({...formData, email: e.target.value})}
                   required
-                  className="w-full pl-11 pr-4 py-3 bg-white dark:bg-gray-800/5 border border-white/10 rounded-lg text-white placeholder-gray-400 dark:placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full pl-11 pr-4 py-3 bg-white dark:bg-gray-800/5 border border-white/20 rounded-lg text-white placeholder-gray-400 dark:placeholder-gray-400 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   placeholder="you@company.com"
                 />
               </div>
@@ -93,7 +93,7 @@ export const Signup: React.FC = () => {
                   value={formData.organization_name}
                   onChange={(e) => setFormData({...formData, organization_name: e.target.value})}
                   required
-                  className="w-full pl-11 pr-4 py-3 bg-white dark:bg-gray-800/5 border border-white/10 rounded-lg text-white placeholder-gray-400 dark:placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full pl-11 pr-4 py-3 bg-white dark:bg-gray-800/5 border border-white/20 rounded-lg text-white placeholder-gray-400 dark:placeholder-gray-400 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   placeholder="Acme Corp"
                 />
               </div>
@@ -109,7 +109,7 @@ export const Signup: React.FC = () => {
                   onChange={(e) => setFormData({...formData, password: e.target.value})}
                   required
                   minLength={8}
-                  className="w-full pl-11 pr-4 py-3 bg-white dark:bg-gray-800/5 border border-white/10 rounded-lg text-white placeholder-gray-400 dark:placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full pl-11 pr-4 py-3 bg-white dark:bg-gray-800/5 border border-white/20 rounded-lg text-white placeholder-gray-400 dark:placeholder-gray-400 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   placeholder="••••••••"
                 />
               </div>
