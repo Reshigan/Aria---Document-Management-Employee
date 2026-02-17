@@ -77,9 +77,9 @@ export default function BudgetManagement() {
 
   const stats = {
     total: budgets.length,
-    totalBudget: budgets.reduce((sum, b) => sum + b.total_amount, 0),
-    totalSpent: budgets.reduce((sum, b) => sum + b.spent_amount, 0),
-    totalRemaining: budgets.reduce((sum, b) => sum + b.remaining_amount, 0),
+        totalBudget: budgets.reduce((sum, b) => sum + (b.total_amount || 0), 0),
+        totalSpent: budgets.reduce((sum, b) => sum + (b.spent_amount || 0), 0),
+        totalRemaining: budgets.reduce((sum, b) => sum + (b.remaining_amount || 0), 0),
   };
 
   return (
