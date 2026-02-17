@@ -147,7 +147,7 @@ export default function BankAccounts() {
   if (loading) {
     return (
       <div className="bg-gradient-to-br from-gray-50 to-teal-50 dark:from-gray-900 dark:to-gray-800 p-4 flex items-center justify-center">
-        <div className="text-gray-500 dark:text-gray-400">Loading...</div>
+        <div className="text-gray-500 dark:text-gray-300">Loading...</div>
       </div>
     );
   }
@@ -161,7 +161,7 @@ export default function BankAccounts() {
           </div>
           <div>
             <h1 className="text-xl font-bold text-gray-900 dark:text-white">Bank Accounts</h1>
-            <p className="text-gray-600 dark:text-gray-400">Manage your bank accounts and balances</p>
+            <p className="text-gray-600 dark:text-gray-300">Manage your bank accounts and balances</p>
           </div>
         </div>
         <button
@@ -186,7 +186,7 @@ export default function BankAccounts() {
               <p className="text-xl font-bold text-gray-900 dark:text-white">
                 R {Number(totalBalance ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Total Balance</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Total Balance</p>
             </div>
           </div>
         </div>
@@ -200,7 +200,7 @@ export default function BankAccounts() {
               <p className="text-xl font-bold text-gray-900 dark:text-white">
                 R {Number(totalReconciled ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Reconciled</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Reconciled</p>
             </div>
           </div>
         </div>
@@ -214,7 +214,7 @@ export default function BankAccounts() {
               <p className="text-xl font-bold text-gray-900 dark:text-white">
                 R {Number(unreconciled ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Unreconciled</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Unreconciled</p>
             </div>
           </div>
         </div>
@@ -239,8 +239,8 @@ export default function BankAccounts() {
                 <tr>
                   <td colSpan={7} className="px-6 py-12 text-center">
                     <Building2 className="h-12 w-12 mx-auto mb-4 text-gray-300 dark:text-gray-600" />
-                    <div className="text-gray-500 dark:text-gray-400">No bank accounts found</div>
-                    <div className="text-xs text-gray-400 dark:text-gray-500 mt-1">Add your first bank account to get started</div>
+                    <div className="text-gray-500 dark:text-gray-300">No bank accounts found</div>
+                    <div className="text-xs text-gray-300 dark:text-gray-500 mt-1">Add your first bank account to get started</div>
                   </td>
                 </tr>
               ) : (
@@ -248,9 +248,9 @@ export default function BankAccounts() {
                   <tr key={account.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                     <td className="px-6 py-4">
                       <div className="font-medium text-gray-900 dark:text-white">{account.account_name}</div>
-                      <div className="text-xs text-gray-500 dark:text-gray-400">GL: {account.gl_account_code}</div>
+                      <div className="text-xs text-gray-500 dark:text-gray-300">GL: {account.gl_account_code}</div>
                     </td>
-                    <td className="px-6 py-4 text-xs text-gray-500 dark:text-gray-400">{account.account_number}</td>
+                    <td className="px-6 py-4 text-xs text-gray-500 dark:text-gray-300">{account.account_number}</td>
                     <td className="px-6 py-4 text-sm text-gray-900 dark:text-white">{account.bank_name}</td>
                     <td className="px-6 py-4">
                       <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400">
@@ -260,14 +260,14 @@ export default function BankAccounts() {
                     <td className="px-6 py-4 text-sm text-right font-medium text-gray-900 dark:text-white">
                       R {Number(account.current_balance ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </td>
-                    <td className="px-6 py-4 text-sm text-right text-gray-500 dark:text-gray-400">
+                    <td className="px-6 py-4 text-sm text-right text-gray-500 dark:text-gray-300">
                       R {Number(account.reconciled_balance ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex gap-2 justify-center">
                         <button
                           onClick={() => handleEdit(account)}
-                          className="p-2 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                          className="p-2 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
                           title="Edit"
                         >
                           <Edit2 className="h-4 w-4" />

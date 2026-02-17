@@ -52,7 +52,7 @@ const QuickLink: React.FC<QuickLinkProps> = ({ to, icon: Icon, title, descriptio
         {external && <ExternalLink className="inline w-4 h-4 ml-2" />}
       </h3>
       
-      <p className="text-gray-600 dark:text-gray-400 text-sm">
+      <p className="text-gray-600 dark:text-gray-300 text-sm">
         {description}
       </p>
     </div>
@@ -85,7 +85,7 @@ export default function Sandpit() {
               ARIA Testing Sandpit
             </h1>
             
-            <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
+            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
               Complete testing environment with 8 operational agents and 5 ERP modules.
               Everything is live and ready to test!
             </p>
@@ -95,19 +95,19 @@ export default function Sandpit() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             <div className="bg-blue-50 dark:bg-blue-900/30 rounded-lg p-4 text-center">
               <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">8</div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">Agents Active</div>
+              <div className="text-sm text-gray-600 dark:text-gray-300">Agents Active</div>
             </div>
             <div className="bg-green-50 dark:bg-green-900/30 rounded-lg p-4 text-center">
               <div className="text-2xl font-bold text-green-600 dark:text-green-400">5</div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">ERP Modules</div>
+              <div className="text-sm text-gray-600 dark:text-gray-300">ERP Modules</div>
             </div>
             <div className="bg-purple-50 dark:bg-purple-900/30 rounded-lg p-4 text-center">
               <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">16+</div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">UI Pages</div>
+              <div className="text-sm text-gray-600 dark:text-gray-300">UI Pages</div>
             </div>
             <div className="bg-orange-50 rounded-lg p-4 text-center">
               <div className="text-2xl font-bold text-orange-600">100%</div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">Uptime</div>
+              <div className="text-sm text-gray-600 dark:text-gray-300">Uptime</div>
             </div>
           </div>
         </div>
@@ -298,17 +298,17 @@ export default function Sandpit() {
           <h3 className="text-lg font-bold mb-4">🚀 Quick Commands</h3>
           <div className="space-y-2 font-mono text-sm">
             <div className="bg-gray-800 p-3 rounded">
-              <span className="text-gray-400"># Test backend health</span>
+              <span className="text-gray-300"># Test backend health</span>
               <br />
               curl http://localhost:8000/health
             </div>
             <div className="bg-gray-800 p-3 rounded">
-              <span className="text-gray-400"># List all agents</span>
+              <span className="text-gray-300"># List all agents</span>
               <br />
               curl http://localhost:8000/api/agents
             </div>
             <div className="bg-gray-800 p-3 rounded">
-              <span className="text-gray-400"># Run automated tests</span>
+              <span className="text-gray-300"># Run automated tests</span>
               <br />
               ./test_sandpit.sh
             </div>

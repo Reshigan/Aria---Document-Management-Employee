@@ -134,7 +134,7 @@ const Receipts: React.FC = () => {
           </div>
           <div>
             <h1 className="text-xl font-bold text-gray-900 dark:text-white">Customer Receipts</h1>
-            <p className="text-gray-600 dark:text-gray-400">Track and manage customer payments received</p>
+            <p className="text-gray-600 dark:text-gray-300">Track and manage customer payments received</p>
           </div>
         </div>
         <button
@@ -163,7 +163,7 @@ const Receipts: React.FC = () => {
               <p className="text-xl font-bold text-gray-900 dark:text-white">
                 {formatCurrency(receipts.reduce((sum, r) => sum + r.amount, 0))}
               </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Total Received</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Total Received</p>
             </div>
           </div>
         </div>
@@ -174,7 +174,7 @@ const Receipts: React.FC = () => {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{receipts.filter(r => r.status === 'PENDING').length}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Pending</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Pending</p>
             </div>
           </div>
         </div>
@@ -185,7 +185,7 @@ const Receipts: React.FC = () => {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{receipts.filter(r => r.status === 'CLEARED').length}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Cleared</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Cleared</p>
             </div>
           </div>
         </div>
@@ -207,9 +207,9 @@ const Receipts: React.FC = () => {
           </thead>
           <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
             {loading ? (
-              <tr><td colSpan={8} className="px-6 py-12 text-center text-gray-500 dark:text-gray-400">Loading...</td></tr>
+              <tr><td colSpan={8} className="px-6 py-12 text-center text-gray-500 dark:text-gray-300">Loading...</td></tr>
             ) : receipts.length === 0 ? (
-              <tr><td colSpan={8} className="px-6 py-12 text-center text-gray-500 dark:text-gray-400">No receipts found</td></tr>
+              <tr><td colSpan={8} className="px-6 py-12 text-center text-gray-500 dark:text-gray-300">No receipts found</td></tr>
             ) : (
               receipts.map((receipt) => (
                 <tr key={receipt.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors">

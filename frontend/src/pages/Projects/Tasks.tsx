@@ -151,7 +151,7 @@ const Tasks: React.FC = () => {
           </div>
           Project Tasks
         </h1>
-        <p className="text-gray-500 dark:text-gray-400 mt-1">Manage and track project tasks</p>
+        <p className="text-gray-500 dark:text-gray-300 mt-1">Manage and track project tasks</p>
       </div>
 
       {error && (
@@ -197,7 +197,7 @@ const Tasks: React.FC = () => {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{tasks.filter(t => t.status === 'TODO').length}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">To Do</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">To Do</p>
             </div>
           </div>
         </div>
@@ -208,7 +208,7 @@ const Tasks: React.FC = () => {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{tasks.filter(t => t.status === 'IN_PROGRESS').length}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">In Progress</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">In Progress</p>
             </div>
           </div>
         </div>
@@ -219,7 +219,7 @@ const Tasks: React.FC = () => {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{tasks.filter(t => t.status === 'REVIEW').length}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">In Review</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">In Review</p>
             </div>
           </div>
         </div>
@@ -230,7 +230,7 @@ const Tasks: React.FC = () => {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{tasks.filter(t => t.status === 'DONE').length}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Done</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Done</p>
             </div>
           </div>
         </div>
@@ -241,7 +241,7 @@ const Tasks: React.FC = () => {
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-12 text-center">
           <CheckSquare className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No tasks found</h3>
-          <p className="text-gray-500 dark:text-gray-400 mb-6">Create your first task to get started</p>
+          <p className="text-gray-500 dark:text-gray-300 mb-6">Create your first task to get started</p>
           <button
             onClick={handleCreate}
             className="px-6 py-2.5 bg-gradient-to-r from-violet-500 to-purple-500 text-white rounded-xl hover:from-violet-600 hover:to-purple-600 transition-all  font-medium"
@@ -268,10 +268,10 @@ const Tasks: React.FC = () => {
                 <tr key={task.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                   <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">{task.title}</td>
                   <td className="px-6 py-4 text-violet-600 dark:text-violet-400">{task.project_name}</td>
-                  <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{task.assigned_to || 'Unassigned'}</td>
+                  <td className="px-6 py-4 text-gray-500 dark:text-gray-300">{task.assigned_to || 'Unassigned'}</td>
                   <td className="px-6 py-4">{getPriorityBadge(task.priority)}</td>
                   <td className="px-6 py-4">{getStatusBadge(task.status)}</td>
-                  <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{formatDate(task.due_date)}</td>
+                  <td className="px-6 py-4 text-gray-500 dark:text-gray-300">{formatDate(task.due_date)}</td>
                   <td className="px-6 py-4">
                     <div className="flex gap-2 justify-center">
                       <button onClick={() => handleEdit(task)} className="p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors" title="Edit">

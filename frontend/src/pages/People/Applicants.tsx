@@ -88,10 +88,10 @@ export default function Applicants() {
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
           <div>
             <h1 className="text-2xl font-bold bg-gradient-to-r from-cyan-600 to-blue-600 bg-clip-text text-transparent">Applicants</h1>
-            <p className="text-gray-500 dark:text-gray-400 mt-1">Manage job applicants and recruitment</p>
+            <p className="text-gray-500 dark:text-gray-300 mt-1">Manage job applicants and recruitment</p>
           </div>
           <div className="flex items-center gap-3">
-            <button onClick={fetchApplicants} className="p-3 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-200 dark:border-gray-700"><RefreshCw className={`h-5 w-5 text-gray-600 dark:text-gray-400 ${loading ? 'animate-spin' : ''}`} /></button>
+            <button onClick={fetchApplicants} className="p-3 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-200 dark:border-gray-700"><RefreshCw className={`h-5 w-5 text-gray-600 dark:text-gray-300 ${loading ? 'animate-spin' : ''}`} /></button>
             <button onClick={() => setShowForm(true)} className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-cyan-600 to-blue-600 text-white rounded-xl font-medium hover:from-cyan-700 hover:to-blue-700 transition-all "><Plus className="h-5 w-5" />Add Applicant</button>
           </div>
         </div>
@@ -100,16 +100,16 @@ export default function Applicants() {
 
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
           <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
-            <div className="flex items-center gap-3"><div className="p-2 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-xl "><UserPlus className="h-5 w-5 text-white" /></div><div><p className="text-xl font-bold text-gray-900 dark:text-white">{stats.total}</p><p className="text-xs text-gray-500 dark:text-gray-400">Total Applicants</p></div></div>
+            <div className="flex items-center gap-3"><div className="p-2 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-xl "><UserPlus className="h-5 w-5 text-white" /></div><div><p className="text-xl font-bold text-gray-900 dark:text-white">{stats.total}</p><p className="text-xs text-gray-500 dark:text-gray-300">Total Applicants</p></div></div>
           </div>
           <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
-            <div className="flex items-center gap-3"><div className="p-2 bg-gradient-to-br from-cyan-500 to-teal-500 rounded-xl "><Clock className="h-5 w-5 text-white" /></div><div><p className="text-2xl font-bold text-cyan-600 dark:text-cyan-400">{stats.new}</p><p className="text-xs text-gray-500 dark:text-gray-400">New</p></div></div>
+            <div className="flex items-center gap-3"><div className="p-2 bg-gradient-to-br from-cyan-500 to-teal-500 rounded-xl "><Clock className="h-5 w-5 text-white" /></div><div><p className="text-2xl font-bold text-cyan-600 dark:text-cyan-400">{stats.new}</p><p className="text-xs text-gray-500 dark:text-gray-300">New</p></div></div>
           </div>
           <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
-            <div className="flex items-center gap-3"><div className="p-2 bg-gradient-to-br from-purple-500 to-violet-500 rounded-xl "><Calendar className="h-5 w-5 text-white" /></div><div><p className="text-2xl font-bold text-purple-600 dark:text-purple-400">{stats.interview}</p><p className="text-xs text-gray-500 dark:text-gray-400">In Interview</p></div></div>
+            <div className="flex items-center gap-3"><div className="p-2 bg-gradient-to-br from-purple-500 to-violet-500 rounded-xl "><Calendar className="h-5 w-5 text-white" /></div><div><p className="text-2xl font-bold text-purple-600 dark:text-purple-400">{stats.interview}</p><p className="text-xs text-gray-500 dark:text-gray-300">In Interview</p></div></div>
           </div>
           <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
-            <div className="flex items-center gap-3"><div className="p-2 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl "><CheckCircle className="h-5 w-5 text-white" /></div><div><p className="text-2xl font-bold text-green-600 dark:text-green-400">{stats.hired}</p><p className="text-xs text-gray-500 dark:text-gray-400">Hired</p></div></div>
+            <div className="flex items-center gap-3"><div className="p-2 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl "><CheckCircle className="h-5 w-5 text-white" /></div><div><p className="text-2xl font-bold text-green-600 dark:text-green-400">{stats.hired}</p><p className="text-xs text-gray-500 dark:text-gray-300">Hired</p></div></div>
           </div>
         </div>
 
@@ -140,18 +140,18 @@ export default function Applicants() {
 
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
           {loading ? (
-            <div className="p-12 text-center"><RefreshCw className="h-8 w-8 animate-spin text-cyan-500 mx-auto mb-4" /><p className="text-gray-500 dark:text-gray-400">Loading applicants...</p></div>
+            <div className="p-12 text-center"><RefreshCw className="h-8 w-8 animate-spin text-cyan-500 mx-auto mb-4" /><p className="text-gray-500 dark:text-gray-300">Loading applicants...</p></div>
           ) : applicants.length === 0 ? (
-            <div className="p-12 text-center"><div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-2xl flex items-center justify-center mx-auto mb-4"><UserPlus className="h-8 w-8 text-gray-400" /></div><h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No applicants found</h3><p className="text-gray-500 dark:text-gray-400 mb-6">Add your first job applicant</p><button onClick={() => setShowForm(true)} className="px-4 py-2 bg-gradient-to-r from-cyan-600 to-blue-600 text-white rounded-xl font-medium hover:from-cyan-700 hover:to-blue-700 transition-all">Add Applicant</button></div>
+            <div className="p-12 text-center"><div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-2xl flex items-center justify-center mx-auto mb-4"><UserPlus className="h-8 w-8 text-gray-300" /></div><h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No applicants found</h3><p className="text-gray-500 dark:text-gray-300 mb-6">Add your first job applicant</p><button onClick={() => setShowForm(true)} className="px-4 py-2 bg-gradient-to-r from-cyan-600 to-blue-600 text-white rounded-xl font-medium hover:from-cyan-700 hover:to-blue-700 transition-all">Add Applicant</button></div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-gray-50 dark:bg-gray-900/50"><tr><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Name</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Contact</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Position</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Applied</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th><th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Resume</th></tr></thead>
+                <thead className="bg-gray-50 dark:bg-gray-900/50"><tr><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Name</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Contact</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Position</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Applied</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th><th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Resume</th></tr></thead>
                 <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
                   {applicants.map((a) => (
                     <tr key={a.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                       <td className="px-6 py-4 font-semibold text-gray-900 dark:text-white">{a.name}</td>
-                      <td className="px-6 py-4"><div className="space-y-1"><div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300"><Mail className="h-4 w-4 text-gray-400" />{a.email}</div><div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300"><Phone className="h-4 w-4 text-gray-400" />{a.phone}</div></div></td>
+                      <td className="px-6 py-4"><div className="space-y-1"><div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300"><Mail className="h-4 w-4 text-gray-300" />{a.email}</div><div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300"><Phone className="h-4 w-4 text-gray-300" />{a.phone}</div></div></td>
                       <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{a.position}</td>
                       <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{a.applied_date}</td>
                       <td className="px-6 py-4"><span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium border capitalize ${getStatusBadge(a.status)}`}>{a.status === 'hired' ? <CheckCircle className="h-3.5 w-3.5" /> : a.status === 'rejected' ? <XCircle className="h-3.5 w-3.5" /> : <Clock className="h-3.5 w-3.5" />}{a.status}</span></td>

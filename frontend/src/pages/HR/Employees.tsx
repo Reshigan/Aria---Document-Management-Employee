@@ -154,7 +154,7 @@ const Employees: React.FC = () => {
             </div>
             Employees
           </h1>
-          <p className="text-gray-500 dark:text-gray-400 mt-1">Manage employee records and information</p>
+          <p className="text-gray-500 dark:text-gray-300 mt-1">Manage employee records and information</p>
         </div>
         <button
           onClick={handleCreate}
@@ -175,7 +175,7 @@ const Employees: React.FC = () => {
       {/* Search Bar */}
       <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 mb-6">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-300" />
           <input
             type="text"
             placeholder="Search employees..."
@@ -196,7 +196,7 @@ const Employees: React.FC = () => {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{employees.filter(e => e.is_active).length}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Total Employees</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Total Employees</p>
             </div>
           </div>
         </div>
@@ -207,7 +207,7 @@ const Employees: React.FC = () => {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{employees.filter(e => e.is_active && e.employment_type === 'PERMANENT').length}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Permanent</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Permanent</p>
             </div>
           </div>
         </div>
@@ -218,7 +218,7 @@ const Employees: React.FC = () => {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{employees.filter(e => e.is_active && e.employment_type === 'CONTRACT').length}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Contract</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Contract</p>
             </div>
           </div>
         </div>
@@ -229,7 +229,7 @@ const Employees: React.FC = () => {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{employees.filter(e => e.is_active && e.employment_type === 'TEMPORARY').length}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Temporary</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Temporary</p>
             </div>
           </div>
         </div>
@@ -240,7 +240,7 @@ const Employees: React.FC = () => {
         {filtered.length === 0 ? (
           <div className="px-6 py-12 text-center">
             <Users className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
-            <p className="text-gray-500 dark:text-gray-400">No employees found</p>
+            <p className="text-gray-500 dark:text-gray-300">No employees found</p>
           </div>
         ) : (
           <table className="w-full" data-testid="employees-table">
@@ -264,15 +264,15 @@ const Employees: React.FC = () => {
                   <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">
                     {employee.first_name} {employee.last_name}
                   </td>
-                  <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{employee.email}</td>
-                  <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{employee.department}</td>
-                  <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{employee.position}</td>
+                  <td className="px-6 py-4 text-gray-500 dark:text-gray-300">{employee.email}</td>
+                  <td className="px-6 py-4 text-gray-500 dark:text-gray-300">{employee.department}</td>
+                  <td className="px-6 py-4 text-gray-500 dark:text-gray-300">{employee.position}</td>
                   <td className="px-6 py-4">
                     <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${getTypeBadge(employee.employment_type)}`}>
                       {employee.employment_type}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{formatDate(employee.hire_date)}</td>
+                  <td className="px-6 py-4 text-gray-500 dark:text-gray-300">{formatDate(employee.hire_date)}</td>
                   <td className="px-6 py-4">
                     <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
                       employee.is_active 

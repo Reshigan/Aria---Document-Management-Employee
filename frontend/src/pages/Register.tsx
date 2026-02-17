@@ -38,7 +38,7 @@ export default function Register() {
             <UserPlus className="h-8 w-8 text-white" />
           </div>
           <h1 className="text-xl font-bold text-gray-900 dark:text-white">Create Account</h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-2">Get started with ARIA ERP</p>
+          <p className="text-gray-600 dark:text-gray-300 mt-2">Get started with ARIA ERP</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-3">
@@ -118,7 +118,7 @@ export default function Register() {
           </button>
         </form>
 
-        <p className="mt-6 text-center text-sm text-gray-600 dark:text-gray-400">
+        <p className="mt-6 text-center text-sm text-gray-600 dark:text-gray-300">
           Already have an account?{' '}
           <Link to="/login" className="text-blue-600 dark:text-blue-400 font-medium hover:text-blue-700 dark:text-blue-300">
             Sign in

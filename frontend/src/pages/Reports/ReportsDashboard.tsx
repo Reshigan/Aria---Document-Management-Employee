@@ -91,7 +91,7 @@ export const ReportsDashboard: React.FC = () => {
             </div>
             Reports
           </h1>
-          <p className="text-gray-500 dark:text-gray-400 mt-1">Comprehensive reporting across all ERP modules</p>
+          <p className="text-gray-500 dark:text-gray-300 mt-1">Comprehensive reporting across all ERP modules</p>
         </div>
 
         {/* Report Categories Grid */}
@@ -123,11 +123,11 @@ export const ReportsDashboard: React.FC = () => {
                         <div className="font-medium text-gray-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
                           {report.name}
                         </div>
-                        <div className="text-xs text-gray-500 dark:text-gray-400">
+                        <div className="text-xs text-gray-500 dark:text-gray-300">
                           {report.description}
                         </div>
                       </div>
-                      <ChevronRight className="h-5 w-5 text-gray-400 group-hover:text-indigo-500 group-hover:translate-x-1 transition-all" />
+                      <ChevronRight className="h-5 w-5 text-gray-300 group-hover:text-indigo-500 group-hover:translate-x-1 transition-all" />
                     </Link>
                   ))}
                 </div>

@@ -312,11 +312,11 @@ export default function BillDetail() {
             <TransactionCard title="Payment Status">
               <div className="flex flex-col gap-3">
                 <div className="flex justify-between">
-                  <span className="text-gray-500 dark:text-gray-400">Total Amount:</span>
+                  <span className="text-gray-500 dark:text-gray-300">Total Amount:</span>
                   <span className="font-medium text-gray-900 dark:text-white">R {Number(bill.total_amount ?? 0).toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-500 dark:text-gray-400">Amount Paid:</span>
+                  <span className="text-gray-500 dark:text-gray-300">Amount Paid:</span>
                   <span className="font-medium text-emerald-600 dark:text-emerald-400">R {Number(bill.amount_paid ?? 0).toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between pt-3 border-t-2 border-gray-200 dark:border-gray-700 text-lg font-semibold">
@@ -339,11 +339,11 @@ export default function BillDetail() {
           <TransactionCard title="Totals">
             <div className="flex flex-col gap-3">
               <div className="flex justify-between">
-                <span className="text-gray-500 dark:text-gray-400">Subtotal:</span>
+                <span className="text-gray-500 dark:text-gray-300">Subtotal:</span>
                 <span className="font-medium text-gray-900 dark:text-white">R {Number(totals.subtotal ?? 0).toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-500 dark:text-gray-400">Tax (VAT):</span>
+                <span className="text-gray-500 dark:text-gray-300">Tax (VAT):</span>
                 <span className="font-medium text-gray-900 dark:text-white">R {Number(totals.taxAmount ?? 0).toFixed(2)}</span>
               </div>
               <div className="flex justify-between pt-3 border-t-2 border-gray-200 dark:border-gray-700 text-lg font-semibold">
@@ -370,12 +370,12 @@ export default function BillDetail() {
             <TransactionCard title="Metadata">
               <div className="flex flex-col gap-2 text-sm">
                 <div>
-                  <span className="text-gray-500 dark:text-gray-400">Created:</span>
+                  <span className="text-gray-500 dark:text-gray-300">Created:</span>
                   <br />
                   <span className="text-gray-900 dark:text-white">{bill.created_at ? new Date(bill.created_at).toLocaleString() : '-'}</span>
                 </div>
                 <div>
-                  <span className="text-gray-500 dark:text-gray-400">Last Updated:</span>
+                  <span className="text-gray-500 dark:text-gray-300">Last Updated:</span>
                   <br />
                   <span className="text-gray-900 dark:text-white">{bill.updated_at ? new Date(bill.updated_at).toLocaleString() : '-'}</span>
                 </div>

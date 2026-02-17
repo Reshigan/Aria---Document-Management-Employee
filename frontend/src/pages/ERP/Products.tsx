@@ -322,14 +322,14 @@ export default function Products() {
                                           <input type="radio" name="item_type" checked={!formData.is_service} onChange={() => setFormData({ ...formData, is_service: false, track_inventory: true })} className="w-5 h-5 text-rose-600 border-gray-300 focus:ring-rose-500" />
                                           <div>
                                             <span className="text-sm font-medium text-gray-900 dark:text-white">Stock Item</span>
-                                            <p className="text-xs text-gray-500 dark:text-gray-400">Physical inventory that is tracked</p>
+                                            <p className="text-xs text-gray-500 dark:text-gray-300">Physical inventory that is tracked</p>
                                           </div>
                                         </label>
                                         <label className={`flex-1 flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all ${formData.is_service ? 'border-rose-500 bg-rose-50 dark:bg-rose-900/20' : 'border-gray-200 dark:border-gray-600 hover:border-gray-300'}`}>
                                           <input type="radio" name="item_type" checked={formData.is_service ?? false} onChange={() => setFormData({ ...formData, is_service: true, track_inventory: false })} className="w-5 h-5 text-rose-600 border-gray-300 focus:ring-rose-500" />
                                           <div>
                                             <span className="text-sm font-medium text-gray-900 dark:text-white">Service Item</span>
-                                            <p className="text-xs text-gray-500 dark:text-gray-400">Non-physical service or labor</p>
+                                            <p className="text-xs text-gray-500 dark:text-gray-300">Non-physical service or labor</p>
                                           </div>
                                         </label>
                                       </div>
@@ -402,17 +402,17 @@ export default function Products() {
               <div className="bg-gray-50 dark:bg-gray-900/50 rounded-xl p-5">
                 <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4">Product Details</h3>
                 <div className="space-y-3">
-                  <div><span className="text-xs text-gray-500 dark:text-gray-400">Category:</span><p className="font-medium text-gray-900 dark:text-white">{selectedProduct.category || '-'}</p></div>
-                  <div><span className="text-xs text-gray-500 dark:text-gray-400">Unit:</span><p className="font-medium text-gray-900 dark:text-white">{selectedProduct.unit_of_measure}</p></div>
-                  <div><span className="text-xs text-gray-500 dark:text-gray-400">Barcode:</span><p className="font-medium text-gray-900 dark:text-white">{selectedProduct.barcode || '-'}</p></div>
+                  <div><span className="text-xs text-gray-500 dark:text-gray-300">Category:</span><p className="font-medium text-gray-900 dark:text-white">{selectedProduct.category || '-'}</p></div>
+                  <div><span className="text-xs text-gray-500 dark:text-gray-300">Unit:</span><p className="font-medium text-gray-900 dark:text-white">{selectedProduct.unit_of_measure}</p></div>
+                  <div><span className="text-xs text-gray-500 dark:text-gray-300">Barcode:</span><p className="font-medium text-gray-900 dark:text-white">{selectedProduct.barcode || '-'}</p></div>
                 </div>
               </div>
               <div className="bg-gray-50 dark:bg-gray-900/50 rounded-xl p-5">
                 <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4">Pricing</h3>
                 <div className="space-y-3">
-                  <div><span className="text-xs text-gray-500 dark:text-gray-400">Cost Price:</span><p className="font-medium text-gray-900 dark:text-white">R {Number(selectedProduct.cost_price ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p></div>
-                  <div><span className="text-xs text-gray-500 dark:text-gray-400">Selling Price:</span><p className="font-medium text-gray-900 dark:text-white">R {Number(selectedProduct.selling_price ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p></div>
-                  <div><span className="text-xs text-gray-500 dark:text-gray-400">Tax Rate:</span><p className="font-medium text-gray-900 dark:text-white">{selectedProduct.tax_rate}%</p></div>
+                  <div><span className="text-xs text-gray-500 dark:text-gray-300">Cost Price:</span><p className="font-medium text-gray-900 dark:text-white">R {Number(selectedProduct.cost_price ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p></div>
+                  <div><span className="text-xs text-gray-500 dark:text-gray-300">Selling Price:</span><p className="font-medium text-gray-900 dark:text-white">R {Number(selectedProduct.selling_price ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p></div>
+                  <div><span className="text-xs text-gray-500 dark:text-gray-300">Tax Rate:</span><p className="font-medium text-gray-900 dark:text-white">{selectedProduct.tax_rate}%</p></div>
                 </div>
               </div>
             </div>
@@ -424,10 +424,10 @@ export default function Products() {
                   <table className="w-full">
                     <thead className="bg-gray-50 dark:bg-gray-900/50">
                       <tr>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Warehouse</th>
-                        <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">On Hand</th>
-                        <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Allocated</th>
-                        <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Available</th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase">Warehouse</th>
+                        <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase">On Hand</th>
+                        <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase">Allocated</th>
+                        <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase">Available</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
@@ -452,10 +452,10 @@ export default function Products() {
                   <table className="w-full">
                     <thead className="bg-gray-50 dark:bg-gray-900/50">
                       <tr>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Date</th>
-                        <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Cost</th>
-                        <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Selling</th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Changed By</th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase">Date</th>
+                        <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase">Cost</th>
+                        <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase">Selling</th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase">Changed By</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
@@ -484,11 +484,11 @@ export default function Products() {
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
           <div>
             <h1 className="text-2xl font-bold bg-gradient-to-r from-rose-600 to-pink-600 bg-clip-text text-transparent">Products</h1>
-            <p className="text-gray-500 dark:text-gray-400 mt-1">Manage your product catalog</p>
+            <p className="text-gray-500 dark:text-gray-300 mt-1">Manage your product catalog</p>
           </div>
           <div className="flex items-center gap-3">
             <button onClick={() => { loadProducts(); loadProductStats(); }} className="p-3 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-200 dark:border-gray-700">
-              <RefreshCw className={`h-5 w-5 text-gray-600 dark:text-gray-400 ${loading ? 'animate-spin' : ''}`} />
+              <RefreshCw className={`h-5 w-5 text-gray-600 dark:text-gray-300 ${loading ? 'animate-spin' : ''}`} />
             </button>
             <button onClick={handleCreate} className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-rose-600 to-pink-600 text-white rounded-xl font-medium hover:from-rose-700 hover:to-pink-700 transition-all ">
               <Plus className="h-5 w-5" />New Product
@@ -508,25 +508,25 @@ export default function Products() {
           <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-gradient-to-br from-rose-500 to-pink-500 rounded-xl "><Package className="h-5 w-5 text-white" /></div>
-              <div><p className="text-xl font-bold text-gray-900 dark:text-white">{stats.total}</p><p className="text-xs text-gray-500 dark:text-gray-400">Total Products</p></div>
+              <div><p className="text-xl font-bold text-gray-900 dark:text-white">{stats.total}</p><p className="text-xs text-gray-500 dark:text-gray-300">Total Products</p></div>
             </div>
           </div>
           <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl "><CheckCircle className="h-5 w-5 text-white" /></div>
-              <div><p className="text-xl font-bold text-gray-900 dark:text-white">{stats.active}</p><p className="text-xs text-gray-500 dark:text-gray-400">Active</p></div>
+              <div><p className="text-xl font-bold text-gray-900 dark:text-white">{stats.active}</p><p className="text-xs text-gray-500 dark:text-gray-300">Active</p></div>
             </div>
           </div>
           <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl "><Tag className="h-5 w-5 text-white" /></div>
-              <div><p className="text-xl font-bold text-gray-900 dark:text-white">{categories.length}</p><p className="text-xs text-gray-500 dark:text-gray-400">Categories</p></div>
+              <div><p className="text-xl font-bold text-gray-900 dark:text-white">{categories.length}</p><p className="text-xs text-gray-500 dark:text-gray-300">Categories</p></div>
             </div>
           </div>
           <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-gradient-to-br from-purple-500 to-violet-500 rounded-xl "><TrendingUp className="h-5 w-5 text-white" /></div>
-              <div><p className="text-xl font-bold text-gray-900 dark:text-white">{Number(stats.avgMargin ?? 0).toFixed(1)}%</p><p className="text-xs text-gray-500 dark:text-gray-400">Avg Margin</p></div>
+              <div><p className="text-xl font-bold text-gray-900 dark:text-white">{Number(stats.avgMargin ?? 0).toFixed(1)}%</p><p className="text-xs text-gray-500 dark:text-gray-300">Avg Margin</p></div>
             </div>
           </div>
         </div>
@@ -535,7 +535,7 @@ export default function Products() {
           <div className="p-3 border-b border-gray-100 dark:border-gray-700">
             <div className="flex flex-col md:flex-row gap-3">
               <div className="flex-1 relative">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-300" />
                 <input type="text" placeholder="Search by name, code, or description..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-12 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all" />
               </div>
               <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)} className="px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all min-w-[160px]">
@@ -553,13 +553,13 @@ export default function Products() {
           {loading ? (
             <div className="p-12 text-center">
               <RefreshCw className="h-8 w-8 animate-spin text-rose-500 mx-auto mb-4" />
-              <p className="text-gray-500 dark:text-gray-400">Loading products...</p>
+              <p className="text-gray-500 dark:text-gray-300">Loading products...</p>
             </div>
           ) : filteredProducts.length === 0 ? (
             <div className="p-12 text-center">
-              <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-2xl flex items-center justify-center mx-auto mb-4"><Package className="h-8 w-8 text-gray-400" /></div>
+              <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-2xl flex items-center justify-center mx-auto mb-4"><Package className="h-8 w-8 text-gray-300" /></div>
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No products found</h3>
-              <p className="text-gray-500 dark:text-gray-400 mb-6">{searchTerm || statusFilter !== 'all' || categoryFilter !== 'all' ? 'Try adjusting your filters' : 'Get started by adding your first product'}</p>
+              <p className="text-gray-500 dark:text-gray-300 mb-6">{searchTerm || statusFilter !== 'all' || categoryFilter !== 'all' ? 'Try adjusting your filters' : 'Get started by adding your first product'}</p>
               {!searchTerm && statusFilter === 'all' && categoryFilter === 'all' && (
                 <button onClick={handleCreate} className="px-4 py-2 bg-gradient-to-r from-rose-600 to-pink-600 text-white rounded-xl font-medium hover:from-rose-700 hover:to-pink-700 transition-all">Add First Product</button>
               )}
@@ -569,20 +569,20 @@ export default function Products() {
               <table className="w-full">
                 <thead className="bg-gray-50 dark:bg-gray-900/50">
                   <tr>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Product</th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Category</th>
-                    <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Cost</th>
-                    <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Selling</th>
-                    <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Margin</th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
-                    <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Product</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Category</th>
+                    <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Cost</th>
+                    <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Selling</th>
+                    <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Margin</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
+                    <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
                   {filteredProducts.map((product) => (
                     <tr key={product.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                       <td className="px-6 py-4">
-                        <div><p className="font-semibold text-gray-900 dark:text-white">{product.name}</p><p className="text-xs text-gray-500 dark:text-gray-400">{product.code}</p></div>
+                        <div><p className="font-semibold text-gray-900 dark:text-white">{product.name}</p><p className="text-xs text-gray-500 dark:text-gray-300">{product.code}</p></div>
                       </td>
                       <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{product.category || '-'}</td>
                       <td className="px-6 py-4 text-right text-gray-600 dark:text-gray-300">R {Number(product.cost_price ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>

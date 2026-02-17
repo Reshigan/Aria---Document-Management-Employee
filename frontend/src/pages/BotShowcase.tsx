@@ -298,7 +298,7 @@ const BotShowcase: React.FC = () => {
             <Link to="/agents" className="text-sm font-medium text-gray-900 dark:text-white">
               Platform
             </Link>
-            <Link to="/login" className="text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:text-white transition">
+            <Link to="/login" className="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:text-white transition">
               Sign In
             </Link>
             <Link 
@@ -330,22 +330,22 @@ const BotShowcase: React.FC = () => {
               just works
             </h1>
             
-            <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-400 mb-12 max-w-3xl mx-auto font-light">
+            <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 mb-12 max-w-3xl mx-auto font-light">
               Production-ready AI agents for financial ops, compliance, sales, and HR. From invoice reconciliation to BBBEE compliance, deploy in 24 hours.
             </p>
             
                         <div className="grid grid-cols-3 gap-8 max-w-3xl mx-auto mb-16">
                           <div>
                             <div className="text-4xl font-bold text-green-600 dark:text-green-400 mb-2">{stats.functional}</div>
-                            <div className="text-sm text-gray-600 dark:text-gray-400">Functional Agents</div>
+                            <div className="text-sm text-gray-600 dark:text-gray-300">Functional Agents</div>
                           </div>
                           <div>
                             <div className="text-4xl font-bold text-gray-900 dark:text-white mb-2">{stats.total}</div>
-                            <div className="text-sm text-gray-600 dark:text-gray-400">Total Agents</div>
+                            <div className="text-sm text-gray-600 dark:text-gray-300">Total Agents</div>
                           </div>
                           <div>
                             <div className="text-4xl font-bold text-gray-900 dark:text-white mb-2">24hrs</div>
-                            <div className="text-sm text-gray-600 dark:text-gray-400">To Deployment</div>
+                            <div className="text-sm text-gray-600 dark:text-gray-300">To Deployment</div>
                           </div>
                         </div>
           </motion.div>
@@ -393,7 +393,7 @@ const BotShowcase: React.FC = () => {
                       <span>LIVE</span>
                     </span>
                   ) : (
-                    <span className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 text-xs font-semibold rounded-full">
+                    <span className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-xs font-semibold rounded-full">
                       COMING SOON
                     </span>
                   )}
@@ -404,7 +404,7 @@ const BotShowcase: React.FC = () => {
                 </div>
                 
                 <div className="mb-3 flex items-center justify-between">
-                  <span className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                  <span className="text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wide">
                     {agent.category}
                   </span>
                   {agent.roi && (
@@ -418,13 +418,13 @@ const BotShowcase: React.FC = () => {
                   {agent.name}
                 </h3>
                 
-                <p className="text-gray-600 dark:text-gray-400 mb-6 leading-relaxed">
+                <p className="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">
                   {agent.description}
                 </p>
                 
                 <div className="space-y-2 mb-6">
                   {agent.features.slice(0, 3).map((feature, i) => (
-                    <div key={i} className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
+                    <div key={i} className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-300">
                       <CheckCircle className="w-4 h-4 text-green-600 dark:text-green-400 flex-shrink-0" />
                       <span>{feature}</span>
                     </div>
@@ -447,7 +447,7 @@ const BotShowcase: React.FC = () => {
           <h2 className="text-5xl font-bold text-gray-900 dark:text-white mb-6 tracking-tight">
             Ready to get started?
           </h2>
-          <p className="text-xl text-gray-600 dark:text-gray-400 mb-10">
+          <p className="text-xl text-gray-600 dark:text-gray-300 mb-10">
             Start your 14-day free trial. No credit card required.
           </p>
           <Link
@@ -463,7 +463,7 @@ const BotShowcase: React.FC = () => {
       {/* Footer */}
       <footer className="py-16 px-6 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
         <div className="mx-auto text-center">
-          <p className="text-xs text-gray-500 dark:text-gray-400">&copy; 2025 Vanta X Pty Ltd. All rights reserved.</p>
+          <p className="text-xs text-gray-500 dark:text-gray-300">&copy; 2025 Vanta X Pty Ltd. All rights reserved.</p>
         </div>
       </footer>
     </div>

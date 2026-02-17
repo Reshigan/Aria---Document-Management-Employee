@@ -103,7 +103,7 @@ export default function IntegrationsListPage() {
           </div>
           Integrations
         </h1>
-        <p className="text-gray-500 dark:text-gray-400 ml-14">Connect and manage third-party services</p>
+        <p className="text-gray-500 dark:text-gray-300 ml-14">Connect and manage third-party services</p>
       </div>
 
       {loading ? (
@@ -130,7 +130,7 @@ export default function IntegrationsListPage() {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{integrations.filter(i => i.connected).length}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Connected</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Connected</p>
             </div>
           </div>
         </div>
@@ -141,7 +141,7 @@ export default function IntegrationsListPage() {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{integrations.filter(i => !i.connected).length}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Not Connected</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Not Connected</p>
             </div>
           </div>
         </div>
@@ -152,7 +152,7 @@ export default function IntegrationsListPage() {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{integrations.length}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Total Integrations</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Total Integrations</p>
             </div>
           </div>
         </div>
@@ -176,7 +176,7 @@ export default function IntegrationsListPage() {
                       Connected
                     </span>
                   ) : (
-                    <span className="flex items-center gap-1 text-gray-500 dark:text-gray-400 text-sm">
+                    <span className="flex items-center gap-1 text-gray-500 dark:text-gray-300 text-sm">
                       <XCircle className="h-4 w-4" />
                       Not Connected
                     </span>
@@ -184,12 +184,12 @@ export default function IntegrationsListPage() {
                 </div>
               </div>
               <button className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
-                <Settings className="h-5 w-5 text-gray-500 dark:text-gray-400" />
+                <Settings className="h-5 w-5 text-gray-500 dark:text-gray-300" />
               </button>
             </div>
 
             {integration.connected && (
-              <div className="text-xs text-gray-500 dark:text-gray-400 mb-4">
+              <div className="text-xs text-gray-500 dark:text-gray-300 mb-4">
                 Last synced: {integration.lastSync}
               </div>
             )}

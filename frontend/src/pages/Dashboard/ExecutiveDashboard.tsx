@@ -250,7 +250,7 @@ export const ExecutiveDashboard: React.FC = () => {
               </div>
               <div className="bg-slate-900/50 rounded-xl p-4 border border-white/5">
                 <div className="text-sm text-gray-300 mb-1">Success Rate</div>
-                <div className={`text-2xl font-bold ${metrics?.transactions_today > 0 ? (metrics?.success_rate >= 90 ? 'text-emerald-500' : 'text-amber-500') : 'text-gray-400'}`}>{metrics?.transactions_today > 0 ? `${metrics?.success_rate || 0}%` : 'N/A'}</div>
+                <div className={`text-2xl font-bold ${metrics?.transactions_today > 0 ? (metrics?.success_rate >= 90 ? 'text-emerald-500' : 'text-amber-500') : 'text-gray-300'}`}>{metrics?.transactions_today > 0 ? `${metrics?.success_rate || 0}%` : 'N/A'}</div>
               </div>
             </div>
 
@@ -262,7 +262,7 @@ export const ExecutiveDashboard: React.FC = () => {
                     <div className="p-2 bg-amber-500/10 rounded-lg">
                       <Bot className="h-4 w-4 text-amber-500" />
                     </div>
-                    <span className={`text-xs font-medium px-2 py-1 rounded-lg ${agent.status === 'active' ? 'text-emerald-400 bg-emerald-500/10' : 'text-gray-400 bg-gray-500/10'}`}>
+                    <span className={`text-xs font-medium px-2 py-1 rounded-lg ${agent.status === 'active' ? 'text-emerald-400 bg-emerald-500/10' : 'text-gray-300 bg-gray-500/10'}`}>
                       {agent.status}
                     </span>
                   </div>

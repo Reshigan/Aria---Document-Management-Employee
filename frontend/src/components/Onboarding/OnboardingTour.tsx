@@ -135,7 +135,7 @@ export default function OnboardingTour({ onComplete, onSkip }: OnboardingTourPro
         {/* Close Button */}
         <button
           onClick={handleSkip}
-          className="absolute top-4 right-4 p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+          className="absolute top-4 right-4 p-2 text-gray-300 hover:text-gray-600 dark:hover:text-gray-300 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
         >
           <X className="h-5 w-5" />
         </button>
@@ -181,7 +181,7 @@ export default function OnboardingTour({ onComplete, onSkip }: OnboardingTourPro
         <div className="px-8 pb-8 flex items-center justify-between">
           <button
             onClick={handleSkip}
-            className="text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+            className="text-sm text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-200"
           >
             Skip tour
           </button>

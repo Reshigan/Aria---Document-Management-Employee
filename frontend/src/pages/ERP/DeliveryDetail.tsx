@@ -315,12 +315,12 @@ export default function DeliveryDetail() {
             <TransactionCard title="Metadata">
               <div className="flex flex-col gap-2 text-sm">
                 <div>
-                  <span className="text-gray-500 dark:text-gray-400">Created:</span>
+                  <span className="text-gray-500 dark:text-gray-300">Created:</span>
                   <br />
                   <span className="text-gray-900 dark:text-white">{delivery.created_at ? new Date(delivery.created_at).toLocaleString() : '-'}</span>
                 </div>
                 <div>
-                  <span className="text-gray-500 dark:text-gray-400">Last Updated:</span>
+                  <span className="text-gray-500 dark:text-gray-300">Last Updated:</span>
                   <br />
                   <span className="text-gray-900 dark:text-white">{delivery.updated_at ? new Date(delivery.updated_at).toLocaleString() : '-'}</span>
                 </div>

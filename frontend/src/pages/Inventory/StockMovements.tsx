@@ -138,7 +138,7 @@ const StockMovements: React.FC = () => {
           </div>
           <div>
             <h1 className="text-xl font-bold text-gray-900 dark:text-white">Stock Movements</h1>
-            <p className="text-gray-600 dark:text-gray-400">Track inventory movements and transfers</p>
+            <p className="text-gray-600 dark:text-gray-300">Track inventory movements and transfers</p>
           </div>
         </div>
         <button
@@ -165,7 +165,7 @@ const StockMovements: React.FC = () => {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{movements.filter(m => m.movement_type === 'IN').length}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Stock In</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Stock In</p>
             </div>
           </div>
         </div>
@@ -176,7 +176,7 @@ const StockMovements: React.FC = () => {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{movements.filter(m => m.movement_type === 'OUT').length}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Stock Out</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Stock Out</p>
             </div>
           </div>
         </div>
@@ -187,7 +187,7 @@ const StockMovements: React.FC = () => {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{movements.filter(m => m.movement_type === 'TRANSFER').length}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Transfers</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Transfers</p>
             </div>
           </div>
         </div>
@@ -198,7 +198,7 @@ const StockMovements: React.FC = () => {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{movements.filter(m => m.movement_type === 'ADJUSTMENT').length}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Adjustments</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Adjustments</p>
             </div>
           </div>
         </div>
@@ -220,9 +220,9 @@ const StockMovements: React.FC = () => {
           </thead>
           <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
             {loading ? (
-              <tr><td colSpan={8} className="px-6 py-12 text-center text-gray-500 dark:text-gray-400">Loading...</td></tr>
+              <tr><td colSpan={8} className="px-6 py-12 text-center text-gray-500 dark:text-gray-300">Loading...</td></tr>
             ) : movements.length === 0 ? (
-              <tr><td colSpan={8} className="px-6 py-12 text-center text-gray-500 dark:text-gray-400">No stock movements found</td></tr>
+              <tr><td colSpan={8} className="px-6 py-12 text-center text-gray-500 dark:text-gray-300">No stock movements found</td></tr>
             ) : (
               movements.map((movement) => (
                 <tr key={movement.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors">

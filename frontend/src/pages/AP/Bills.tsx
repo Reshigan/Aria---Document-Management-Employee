@@ -170,7 +170,7 @@ export default function Bills() {
             </div>
             Bills
           </h1>
-          <p className="text-gray-500 dark:text-gray-400 mt-1">Manage supplier bills and payments</p>
+          <p className="text-gray-500 dark:text-gray-300 mt-1">Manage supplier bills and payments</p>
         </div>
         <button
           onClick={() => navigate('/ap/bills/new')}
@@ -184,7 +184,7 @@ export default function Bills() {
       {/* Search Bar */}
       <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 mb-6">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-300" />
           <input
             type="text"
             placeholder="Search bills..."
@@ -206,7 +206,7 @@ export default function Bills() {
               <p className="text-xl font-bold text-gray-900 dark:text-white">
                 R {Number(totalBills ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Total Bills</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Total Bills</p>
             </div>
           </div>
         </div>
@@ -220,7 +220,7 @@ export default function Bills() {
               <p className="text-xl font-bold text-gray-900 dark:text-white">
                 R {Number(totalPaid ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Paid</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Paid</p>
             </div>
           </div>
         </div>
@@ -234,7 +234,7 @@ export default function Bills() {
               <p className="text-xl font-bold text-gray-900 dark:text-white">
                 R {Number(totalDue ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Outstanding</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Outstanding</p>
             </div>
           </div>
         </div>
@@ -248,7 +248,7 @@ export default function Bills() {
               <p className="text-xl font-bold text-gray-900 dark:text-white">
                 {overdueCount} {overdueCount === 1 ? 'Bill' : 'Bills'}
               </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Overdue</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Overdue</p>
             </div>
           </div>
         </div>
@@ -274,8 +274,8 @@ export default function Bills() {
               <tr>
                 <td colSpan={8} className="px-6 py-12 text-center">
                   <FileText className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
-                  <p className="text-gray-500 dark:text-gray-400">No bills found</p>
-                  <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">Create your first bill to get started</p>
+                  <p className="text-gray-500 dark:text-gray-300">No bills found</p>
+                  <p className="text-xs text-gray-300 dark:text-gray-500 mt-1">Create your first bill to get started</p>
                 </td>
               </tr>
             ) : (
@@ -287,16 +287,16 @@ export default function Bills() {
                 >
                   <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">{bill.bill_number}</td>
                   <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{bill.supplier_name || `Supplier ${bill.supplier_id}`}</td>
-                  <td className="px-6 py-4 text-gray-500 dark:text-gray-400">
+                  <td className="px-6 py-4 text-gray-500 dark:text-gray-300">
                     {(bill.bill_date ? new Date(bill.bill_date).toLocaleDateString('en-ZA') : "-")}
                   </td>
-                  <td className="px-6 py-4 text-gray-500 dark:text-gray-400">
+                  <td className="px-6 py-4 text-gray-500 dark:text-gray-300">
                     {(bill.due_date ? new Date(bill.due_date).toLocaleDateString('en-ZA') : "-")}
                   </td>
                   <td className="px-6 py-4 text-right font-medium text-gray-900 dark:text-white">
                     R {Number(bill.total_amount ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </td>
-                  <td className="px-6 py-4 text-right text-gray-500 dark:text-gray-400">
+                  <td className="px-6 py-4 text-right text-gray-500 dark:text-gray-300">
                     R {Number(bill.amount_due ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </td>
                   <td className="px-6 py-4 text-center">

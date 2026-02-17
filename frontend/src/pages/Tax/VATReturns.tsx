@@ -95,7 +95,7 @@ export default function VATReturns() {
           </div>
           VAT Returns
         </h1>
-        <p className="text-gray-600 dark:text-gray-400">Manage VAT returns and submissions to SARS</p>
+        <p className="text-gray-600 dark:text-gray-300">Manage VAT returns and submissions to SARS</p>
       </div>
 
       {loading ? (
@@ -111,7 +111,7 @@ export default function VATReturns() {
                   <TrendingUp className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">Output VAT (Sales)</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-300">Output VAT (Sales)</p>
                   <p className="text-2xl font-bold text-green-600 dark:text-green-400">{formatCurrency(summary.output_vat)}</p>
                 </div>
               </div>
@@ -122,7 +122,7 @@ export default function VATReturns() {
                   <TrendingDown className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">Input VAT (Purchases)</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-300">Input VAT (Purchases)</p>
                   <p className="text-2xl font-bold text-red-600 dark:text-red-400">{formatCurrency(summary.input_vat)}</p>
                 </div>
               </div>
@@ -133,7 +133,7 @@ export default function VATReturns() {
                   <DollarSign className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">Net VAT Payable</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-300">Net VAT Payable</p>
                   <p className="text-2xl font-bold text-amber-600 dark:text-amber-400">{formatCurrency(summary.net_vat)}</p>
                 </div>
               </div>
@@ -144,7 +144,7 @@ export default function VATReturns() {
                   <Calendar className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">Next Submission</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-300">Next Submission</p>
                   <p className="text-xl font-bold text-indigo-600 dark:text-indigo-400">{summary.next_submission}</p>
                 </div>
               </div>
@@ -154,7 +154,7 @@ export default function VATReturns() {
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 mb-6">
             <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex flex-col sm:flex-row gap-3">
               <div className="flex-1 relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-300" />
                 <input
                   type="text"
                   placeholder="Search VAT returns..."
@@ -173,7 +173,7 @@ export default function VATReturns() {
               <div className="p-12 text-center">
                 <FileText className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">No VAT returns yet</h3>
-                <p className="text-gray-500 dark:text-gray-400 mb-6">
+                <p className="text-gray-500 dark:text-gray-300 mb-6">
                   Create your first VAT return to submit to SARS
                 </p>
                 <button className="px-4 py-2 bg-gradient-to-r from-red-500 to-rose-500 text-white rounded-xl font-semibold  hover:shadow-xl hover:shadow-red-500/40 transition-all">
@@ -185,11 +185,11 @@ export default function VATReturns() {
                 <table className="w-full">
                   <thead className="bg-gray-50 dark:bg-gray-700">
                     <tr>
-                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Period</th>
-                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Output VAT</th>
-                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Input VAT</th>
-                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Net VAT</th>
-                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Status</th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Period</th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Output VAT</th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Input VAT</th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Net VAT</th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Status</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200 dark:divide-gray-700">

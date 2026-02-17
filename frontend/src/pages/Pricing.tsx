@@ -226,7 +226,7 @@ export const Pricing: React.FC = () => {
                   onChange={(e) => setUserCount(parseInt(e.target.value))}
                   className="w-full h-2 bg-gray-200 dark:bg-gray-600 rounded-lg appearance-none cursor-pointer accent-indigo-600"
                 />
-                <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
+                <div className="flex justify-between text-xs text-gray-500 dark:text-gray-300 mt-1">
                   <span>10 users</span>
                   <span>200 users</span>
                 </div>
@@ -236,7 +236,7 @@ export const Pricing: React.FC = () => {
                 <div className="bg-gradient-to-br from-indigo-50 to-purple-50 p-4 rounded-xl">
                   <div className="text-sm text-indigo-600 dark:text-indigo-400 font-medium mb-2">Your Plan</div>
                   <div className="text-2xl font-bold text-indigo-900">{selectedPlan.name}</div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400 mt-2">{selectedPlan.agents} AI Agents Included</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-300 mt-2">{selectedPlan.agents} AI Agents Included</div>
                 </div>
 
                 <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-4 rounded-xl">
@@ -244,7 +244,7 @@ export const Pricing: React.FC = () => {
                   <div className="text-2xl font-bold text-green-900">
                     R{Number(displayPrice ?? 0).toLocaleString()}
                   </div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400 mt-2">
+                  <div className="text-sm text-gray-600 dark:text-gray-300 mt-2">
                     {billingPeriod === 'annual' ? 'Billed annually' : 'Billed monthly'}
                   </div>
                 </div>
@@ -254,7 +254,7 @@ export const Pricing: React.FC = () => {
                   <div className="text-2xl font-bold text-blue-900 dark:text-blue-100">
                     R{selectedPlan.price}
                   </div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400 mt-2">
+                  <div className="text-sm text-gray-600 dark:text-gray-300 mt-2">
                     {billingPeriod === 'annual' ? 'R' + (selectedPlan.price * 0.9).toFixed(0) + ' with annual' : 'Save 10% annually'}
                   </div>
                 </div>
@@ -266,7 +266,7 @@ export const Pricing: React.FC = () => {
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                   {COMPETITORS.slice(0, 3).map((comp, idx) => (
                     <div key={idx} className="bg-white dark:bg-gray-800 p-4 rounded-lg">
-                      <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">{comp.name}</div>
+                      <div className="text-sm text-gray-600 dark:text-gray-300 mb-1">{comp.name}</div>
                       <div className="text-lg font-bold text-gray-900 dark:text-white line-through">
                         R{Number(comp.price ?? 0).toLocaleString()}/mo
                       </div>
@@ -327,24 +327,24 @@ export const Pricing: React.FC = () => {
                 <div className="p-6">
                   <div className="space-y-3 mb-6">
                     <div className="flex items-center gap-2 text-sm">
-                      <Users size={16} className="text-gray-400" />
-                      <span className="text-gray-600 dark:text-gray-400">{plan.minUsers}-{plan.maxUsers} users</span>
+                      <Users size={16} className="text-gray-300" />
+                      <span className="text-gray-600 dark:text-gray-300">{plan.minUsers}-{plan.maxUsers} users</span>
                     </div>
                     <div className="flex items-center gap-2 text-sm">
-                      <Zap size={16} className="text-gray-400" />
-                      <span className="text-gray-600 dark:text-gray-400">{plan.agents} AI Agents</span>
+                      <Zap size={16} className="text-gray-300" />
+                      <span className="text-gray-600 dark:text-gray-300">{plan.agents} AI Agents</span>
                     </div>
                     <div className="flex items-center gap-2 text-sm">
-                      <Package size={16} className="text-gray-400" />
-                      <span className="text-gray-600 dark:text-gray-400">{plan.storage} storage</span>
+                      <Package size={16} className="text-gray-300" />
+                      <span className="text-gray-600 dark:text-gray-300">{plan.storage} storage</span>
                     </div>
                     <div className="flex items-center gap-2 text-sm">
-                      <Clock size={16} className="text-gray-400" />
-                      <span className="text-gray-600 dark:text-gray-400">{plan.support}</span>
+                      <Clock size={16} className="text-gray-300" />
+                      <span className="text-gray-600 dark:text-gray-300">{plan.support}</span>
                     </div>
                     <div className="flex items-center gap-2 text-sm">
-                      <Shield size={16} className="text-gray-400" />
-                      <span className="text-gray-600 dark:text-gray-400">{plan.sla}</span>
+                      <Shield size={16} className="text-gray-300" />
+                      <span className="text-gray-600 dark:text-gray-300">{plan.sla}</span>
                     </div>
                   </div>
 
@@ -353,7 +353,7 @@ export const Pricing: React.FC = () => {
                       {plan.features.slice(0, 5).map((feature, idx) => (
                         <li key={idx} className="flex items-start gap-2 text-sm">
                           <Check size={16} className="text-green-500 flex-shrink-0 mt-0.5" />
-                          <span className="text-gray-600 dark:text-gray-400">{feature}</span>
+                          <span className="text-gray-600 dark:text-gray-300">{feature}</span>
                         </li>
                       ))}
                       {plan.features.length > 5 && (
@@ -380,7 +380,7 @@ export const Pricing: React.FC = () => {
         {/* Agent Packages */}
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl p-8 mb-12">
           <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Individual Agent Packages</h2>
-          <p className="text-gray-600 dark:text-gray-400 mb-8">
+          <p className="text-gray-600 dark:text-gray-300 mb-8">
             Already have an ERP? Add AI automation with individual agents or bundles
           </p>
 
@@ -449,25 +449,25 @@ export const Pricing: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <h3 className="font-bold text-gray-900 dark:text-white mb-2">What's included in the free trial?</h3>
-              <p className="text-gray-600 dark:text-gray-400 text-sm">
+              <p className="text-gray-600 dark:text-gray-300 text-sm">
                 14-day free trial with full access to your plan's features. No credit card required to start.
               </p>
             </div>
             <div>
               <h3 className="font-bold text-gray-900 dark:text-white mb-2">Can I change plans later?</h3>
-              <p className="text-gray-600 dark:text-gray-400 text-sm">
+              <p className="text-gray-600 dark:text-gray-300 text-sm">
                 Yes! Upgrade or downgrade anytime. Changes take effect immediately, and we'll prorate the difference.
               </p>
             </div>
             <div>
               <h3 className="font-bold text-gray-900 dark:text-white mb-2">What if I need more than 200 users?</h3>
-              <p className="text-gray-600 dark:text-gray-400 text-sm">
+              <p className="text-gray-600 dark:text-gray-300 text-sm">
                 Contact our sales team for custom enterprise pricing. We support organizations of any size.
               </p>
             </div>
             <div>
               <h3 className="font-bold text-gray-900 dark:text-white mb-2">How does billing work?</h3>
-              <p className="text-gray-600 dark:text-gray-400 text-sm">
+              <p className="text-gray-600 dark:text-gray-300 text-sm">
                 Monthly or annual billing. Annual plans get 10% discount. Add or remove users anytime.
               </p>
             </div>

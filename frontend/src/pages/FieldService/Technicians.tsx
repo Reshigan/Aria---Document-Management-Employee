@@ -107,7 +107,7 @@ const Technicians: React.FC = () => {
     const styles: Record<string, string> = {
       AVAILABLE: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400',
       ON_JOB: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
-      OFF_DUTY: 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-400'
+      OFF_DUTY: 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300'
     };
     return (
       <span className={`px-2.5 py-1 text-xs font-semibold rounded-full ${styles[status] || styles.OFF_DUTY}`}>
@@ -121,7 +121,7 @@ const Technicians: React.FC = () => {
       <div className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-teal-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-500 dark:text-gray-400">Loading technicians...</p>
+          <p className="text-gray-500 dark:text-gray-300">Loading technicians...</p>
         </div>
       </div>
     );
@@ -137,7 +137,7 @@ const Technicians: React.FC = () => {
           </div>
           Technicians
         </h1>
-        <p className="text-gray-500 dark:text-gray-400 mt-1">Manage field service technicians and their assignments</p>
+        <p className="text-gray-500 dark:text-gray-300 mt-1">Manage field service technicians and their assignments</p>
       </div>
 
       {error && (
@@ -167,7 +167,7 @@ const Technicians: React.FC = () => {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{technicians.filter(t => t.status === 'AVAILABLE').length}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Available</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Available</p>
             </div>
           </div>
         </div>
@@ -178,7 +178,7 @@ const Technicians: React.FC = () => {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{technicians.filter(t => t.status === 'ON_JOB').length}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">On Job</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">On Job</p>
             </div>
           </div>
         </div>
@@ -189,7 +189,7 @@ const Technicians: React.FC = () => {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{technicians.length}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Total Technicians</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Total Technicians</p>
             </div>
           </div>
         </div>
@@ -201,14 +201,14 @@ const Technicians: React.FC = () => {
           <table className="w-full" data-testid="technicians-table">
             <thead className="bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-700">
               <tr>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Employee #</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Name</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Email</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Phone</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Specialization</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Active Orders</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
-                <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Employee #</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Name</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Email</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Phone</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Specialization</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Active Orders</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
+                <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
@@ -216,7 +216,7 @@ const Technicians: React.FC = () => {
                 <tr>
                   <td colSpan={8} className="px-6 py-12 text-center">
                     <UserX className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
-                    <p className="text-gray-500 dark:text-gray-400">No technicians found</p>
+                    <p className="text-gray-500 dark:text-gray-300">No technicians found</p>
                   </td>
                 </tr>
               ) : (
@@ -224,10 +224,10 @@ const Technicians: React.FC = () => {
                   <tr key={tech.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors">
                     <td className="px-6 py-4 text-sm text-gray-900 dark:text-white">{tech.employee_number}</td>
                     <td className="px-6 py-4 text-sm font-semibold text-gray-900 dark:text-white">{tech.name}</td>
-                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">{tech.email}</td>
-                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">{tech.phone}</td>
-                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">{tech.specialization}</td>
-                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">{tech.active_orders}</td>
+                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{tech.email}</td>
+                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{tech.phone}</td>
+                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{tech.specialization}</td>
+                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{tech.active_orders}</td>
                     <td className="px-6 py-4">{getStatusBadge(tech.status)}</td>
                     <td className="px-6 py-4 text-right">
                       <button

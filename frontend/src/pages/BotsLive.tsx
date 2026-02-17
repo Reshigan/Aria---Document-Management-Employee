@@ -115,7 +115,7 @@ export default function BotsLive() {
       <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
         <div className="text-center">
           <Loader className="w-12 h-12 text-indigo-600 dark:text-indigo-400 animate-spin mx-auto mb-4" />
-          <p className="text-gray-600 dark:text-gray-400">Loading agents from API...</p>
+          <p className="text-gray-600 dark:text-gray-300">Loading agents from API...</p>
         </div>
       </div>
     );
@@ -129,7 +129,7 @@ export default function BotsLive() {
           <h2 className="text-xl font-bold text-gray-900 dark:text-white text-center mb-2">
             Connection Error
           </h2>
-          <p className="text-gray-600 dark:text-gray-400 text-center mb-4">{error}</p>
+          <p className="text-gray-600 dark:text-gray-300 text-center mb-4">{error}</p>
           <button
             onClick={loadBots}
             className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-medium py-2 px-4 rounded-xl transition-all "
@@ -151,7 +151,7 @@ export default function BotsLive() {
               <h1 className="text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2">
                 Live Agent Status
               </h1>
-              <p className="text-gray-600 dark:text-gray-400">
+              <p className="text-gray-600 dark:text-gray-300">
                 Real-time data from backend API - {agents.length} agents operational
               </p>
             </div>
@@ -185,7 +185,7 @@ export default function BotsLive() {
                   {(agent.type || agent.name || '').replace(/Agent$/, '').replace(/([A-Z])/g, ' $1').trim()}
                 </h3>
                 
-                <p className="text-gray-600 dark:text-gray-400 text-sm mb-4">
+                <p className="text-gray-600 dark:text-gray-300 text-sm mb-4">
                   {agent.description}
                 </p>
 
@@ -204,7 +204,7 @@ export default function BotsLive() {
                         </span>
                       ))}
                       {agent.capabilities.length > 3 && (
-                        <span className="inline-block bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 text-xs px-2 py-1 rounded-lg">
+                        <span className="inline-block bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-xs px-2 py-1 rounded-lg">
                           +{agent.capabilities.length - 3} more
                         </span>
                       )}
@@ -217,7 +217,7 @@ export default function BotsLive() {
                   disabled={executingBot === agent.name}
                   className={`w-full flex items-center justify-center gap-2 py-2 px-4 rounded-xl font-medium transition-all ${
                     executingBot === agent.name
-                      ? 'bg-gray-300 dark:bg-gray-600 cursor-not-allowed text-gray-500 dark:text-gray-400'
+                      ? 'bg-gray-300 dark:bg-gray-600 cursor-not-allowed text-gray-500 dark:text-gray-300'
                       : 'bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white '
                   }`}
                 >

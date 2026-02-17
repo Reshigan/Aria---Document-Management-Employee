@@ -246,7 +246,7 @@ export default function DocumentUpload() {
           <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
             Ask Aria
           </h1>
-          <p className="text-gray-600 dark:text-gray-400">Upload documents for automatic processing and posting to ERP</p>
+          <p className="text-gray-600 dark:text-gray-300">Upload documents for automatic processing and posting to ERP</p>
         </div>
 
         {error && (
@@ -324,15 +324,15 @@ export default function DocumentUpload() {
               {isProcessing ? (
                 <div className="flex flex-col items-center gap-3">
                   <Loader className="w-12 h-12 text-blue-600 dark:text-blue-400 animate-spin" />
-                  <p className="text-gray-600 dark:text-gray-400">Processing document...</p>
+                  <p className="text-gray-600 dark:text-gray-300">Processing document...</p>
                 </div>
               ) : (
                 <>
-                  <Upload className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                  <Upload className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                   <p className="text-xl font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Drop your document here
                   </p>
-                  <p className="text-gray-500 dark:text-gray-400 mb-6">
+                  <p className="text-gray-500 dark:text-gray-300 mb-6">
                     or click to browse (PDF, JPG, PNG - max 10MB)
                   </p>
                   <input

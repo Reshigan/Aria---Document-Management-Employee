@@ -222,7 +222,7 @@ export const CommentSection: React.FC<CommentSectionProps> = ({
             <div className="text-center py-8 text-gray-500">Loading comments...</div>
           ) : comments.length === 0 ? (
             <div className="text-center py-8 text-gray-500">
-              <MessageSquare size={48} className="mx-auto mb-2 text-gray-400" />
+              <MessageSquare size={48} className="mx-auto mb-2 text-gray-300" />
               <p>No comments yet</p>
               <p className="text-sm">Be the first to comment</p>
             </div>
@@ -260,7 +260,7 @@ export const CommentSection: React.FC<CommentSectionProps> = ({
         <div className="space-y-2">
           {activity.length === 0 ? (
             <div className="text-center py-8 text-gray-500">
-              <Activity size={48} className="mx-auto mb-2 text-gray-400" />
+              <Activity size={48} className="mx-auto mb-2 text-gray-300" />
               <p>No activity yet</p>
             </div>
           ) : (

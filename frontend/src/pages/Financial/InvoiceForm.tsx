@@ -116,7 +116,7 @@ export default function InvoiceForm() {
             <div className="p-1.5 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-lg"><FileText className="h-4 w-4 text-white" /></div>
             <h1 className="text-lg font-bold text-gray-900 dark:text-white">New Invoice</h1>
           </div>
-          <button onClick={() => navigate('/financial/invoices')} className="p-1.5 bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md border border-gray-200 dark:border-gray-700"><X className="h-4 w-4 text-gray-600 dark:text-gray-400" /></button>
+          <button onClick={() => navigate('/financial/invoices')} className="p-1.5 bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md border border-gray-200 dark:border-gray-700"><X className="h-4 w-4 text-gray-600 dark:text-gray-300" /></button>
         </div>
 
         {error && (<div className="p-2 mb-2 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg flex items-center gap-2 text-sm"><AlertCircle className="h-4 w-4 text-red-500" /><p className="text-red-700 dark:text-red-300">{error}</p><button onClick={() => setError(null)} className="ml-auto p-1 hover:bg-red-100 rounded"><X className="h-3 w-3 text-red-500" /></button></div>)}
@@ -125,19 +125,19 @@ export default function InvoiceForm() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
             <div className="lg:col-span-2 space-y-3">
               <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700 p-3">
-                <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Invoice Details</h3>
+                <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider mb-2">Invoice Details</h3>
                 <div className="grid grid-cols-2 gap-2">
-                  <div><label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Customer *</label><select required value={formData.customer_id} onChange={(e) => setFormData({ ...formData, customer_id: e.target.value })} className={inputClass}><option value="">Select customer...</option>{customers.map(c => (<option key={c.id} value={c.id}>{c.customer_name}</option>))}</select></div>
-                  <div><label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Reference</label><input type="text" value={formData.reference} onChange={(e) => setFormData({ ...formData, reference: e.target.value })} placeholder="PO Number" className={inputClass} /></div>
-                  <div><label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Invoice Date *</label><input type="date" required value={formData.invoice_date} onChange={(e) => setFormData({ ...formData, invoice_date: e.target.value })} className={inputClass} /></div>
-                  <div><label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Due Date *</label><input type="date" required value={formData.due_date} onChange={(e) => setFormData({ ...formData, due_date: e.target.value })} className={inputClass} /></div>
+                  <div><label className="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">Customer *</label><select required value={formData.customer_id} onChange={(e) => setFormData({ ...formData, customer_id: e.target.value })} className={inputClass}><option value="">Select customer...</option>{customers.map(c => (<option key={c.id} value={c.id}>{c.customer_name}</option>))}</select></div>
+                  <div><label className="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">Reference</label><input type="text" value={formData.reference} onChange={(e) => setFormData({ ...formData, reference: e.target.value })} placeholder="PO Number" className={inputClass} /></div>
+                  <div><label className="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">Invoice Date *</label><input type="date" required value={formData.invoice_date} onChange={(e) => setFormData({ ...formData, invoice_date: e.target.value })} className={inputClass} /></div>
+                  <div><label className="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">Due Date *</label><input type="date" required value={formData.due_date} onChange={(e) => setFormData({ ...formData, due_date: e.target.value })} className={inputClass} /></div>
                 </div>
-                <div className="mt-2"><label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Notes</label><input type="text" value={formData.notes} onChange={(e) => setFormData({ ...formData, notes: e.target.value })} placeholder="Additional notes..." className={inputClass} /></div>
+                <div className="mt-2"><label className="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">Notes</label><input type="text" value={formData.notes} onChange={(e) => setFormData({ ...formData, notes: e.target.value })} placeholder="Additional notes..." className={inputClass} /></div>
               </div>
 
               <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
                 <div className="px-3 py-2 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
-                  <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Line Items</h3>
+                  <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Line Items</h3>
                   <button type="button" onClick={handleAddLine} className="flex items-center gap-1 px-2.5 py-1 bg-blue-600 text-white rounded-lg text-xs font-medium hover:bg-blue-700"><Plus className="h-3 w-3" />Add</button>
                 </div>
                 <table className="w-full">
@@ -167,7 +167,7 @@ export default function InvoiceForm() {
 
             <div className="space-y-3">
               <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700 p-3">
-                <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">Summary</h3>
+                <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider mb-3">Summary</h3>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between"><span className="text-gray-500">Subtotal</span><span className="font-medium text-gray-900 dark:text-white">{formatCurrency(totals.subtotal)}</span></div>
                   <div className="flex justify-between"><span className="text-gray-500">VAT (15%)</span><span className="font-medium text-gray-900 dark:text-white">{formatCurrency(totals.vat)}</span></div>

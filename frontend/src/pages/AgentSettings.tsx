@@ -106,7 +106,7 @@ export default function AgentSettings() {
   if (!agent) {
     return (
       <div className="p-8 text-center">
-        <p className="text-gray-600 dark:text-gray-400">Agent not found</p>
+        <p className="text-gray-600 dark:text-gray-300">Agent not found</p>
         <button
           onClick={() => navigate('/agents')}
           className="mt-4 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:text-blue-300"
@@ -133,7 +133,7 @@ export default function AgentSettings() {
           </div>
           <div>
             <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{agent.name}</h1>
-            <p className="text-gray-600 dark:text-gray-400">{agent.category}</p>
+            <p className="text-gray-600 dark:text-gray-300">{agent.category}</p>
           </div>
         </div>
         <button
@@ -189,7 +189,7 @@ export default function AgentSettings() {
             <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4 space-y-3">
               <div>
                 <h3 className="text-lg font-semibold mb-2">Description</h3>
-                <p className="text-gray-600 dark:text-gray-400">
+                <p className="text-gray-600 dark:text-gray-300">
                   {agent.description || 'This agent automates business processes efficiently.'}
                 </p>
               </div>
@@ -199,7 +199,7 @@ export default function AgentSettings() {
                   <h3 className="text-lg font-semibold mb-2">Capabilities</h3>
                   <ul className="list-disc list-inside space-y-1">
                     {agent.capabilities.map((cap, idx) => (
-                      <li key={idx} className="text-gray-600 dark:text-gray-400">{cap}</li>
+                      <li key={idx} className="text-gray-600 dark:text-gray-300">{cap}</li>
                     ))}
                   </ul>
                 </div>
@@ -207,11 +207,11 @@ export default function AgentSettings() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
-                  <div className="text-sm text-gray-600 dark:text-gray-400">Module</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-300">Module</div>
                   <div className="text-lg font-semibold">{agent.module}</div>
                 </div>
                 <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
-                  <div className="text-sm text-gray-600 dark:text-gray-400">Status</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-300">Status</div>
                   <div className="flex items-center space-x-2">
                     <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400" />
                     <span className="text-lg font-semibold">{agent.status}</span>
@@ -275,7 +275,7 @@ export default function AgentSettings() {
                   onChange={(e) => setAgent({ ...agent, temperature: parseFloat(e.target.value) })}
                   className="w-full"
                 />
-                <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
+                <div className="flex justify-between text-xs text-gray-500 dark:text-gray-300 mt-1">
                   <span>Precise</span>
                   <span>Creative</span>
                 </div>
@@ -304,7 +304,7 @@ export default function AgentSettings() {
                     <Activity className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                   </div>
                   <div className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{usage.total_runs}</div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">Total Runs</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-300">Total Runs</div>
                 </div>
 
                 <div className="bg-green-50 dark:bg-green-900/30 rounded-lg p-4">
@@ -312,7 +312,7 @@ export default function AgentSettings() {
                     <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400" />
                   </div>
                   <div className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{usage.success_rate}%</div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">Success Rate</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-300">Success Rate</div>
                 </div>
 
                 <div className="bg-yellow-50 dark:bg-yellow-900/30 rounded-lg p-4">
@@ -322,7 +322,7 @@ export default function AgentSettings() {
                   <div className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
                     {Number((usage.avg_duration_ms / 1000) || 0).toFixed(1)}s
                   </div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">Avg Duration</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-300">Avg Duration</div>
                 </div>
 
                 <div className="bg-purple-50 dark:bg-purple-900/30 rounded-lg p-4">
@@ -330,24 +330,24 @@ export default function AgentSettings() {
                     <TrendingUp className="h-5 w-5 text-purple-600 dark:text-purple-400" />
                   </div>
                   <div className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{usage.runs_7d}</div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">Last 7 Days</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-300">Last 7 Days</div>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="border rounded-lg p-4">
-                  <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">Successful Runs</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-300 mb-1">Successful Runs</div>
                   <div className="text-2xl font-bold text-green-600 dark:text-green-400">{usage.successful_runs}</div>
                 </div>
                 <div className="border rounded-lg p-4">
-                  <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">Failed Runs</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-300 mb-1">Failed Runs</div>
                   <div className="text-2xl font-bold text-red-600 dark:text-red-400">{usage.failed_runs}</div>
                 </div>
               </div>
 
               {usage.last_run && (
                 <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
-                  <div className="text-sm text-gray-600 dark:text-gray-400">Last Run</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-300">Last Run</div>
                   <div className="text-lg font-semibold">
                     {usage.last_run ? new Date(usage.last_run).toLocaleString() : '-'}
                   </div>
@@ -358,11 +358,11 @@ export default function AgentSettings() {
                 <h3 className="text-lg font-semibold mb-2">Activity Breakdown</h3>
                 <div className="space-y-2">
                   <div className="flex justify-between items-center">
-                    <span className="text-gray-600 dark:text-gray-400">Last 7 days</span>
+                    <span className="text-gray-600 dark:text-gray-300">Last 7 days</span>
                     <span className="font-semibold">{usage.runs_7d} runs</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-gray-600 dark:text-gray-400">Last 30 days</span>
+                    <span className="text-gray-600 dark:text-gray-300">Last 30 days</span>
                     <span className="font-semibold">{usage.runs_30d} runs</span>
                   </div>
                 </div>

@@ -33,7 +33,7 @@ const ComingSoon: React.FC<ComingSoonProps> = ({ title, description }) => {
           <span className="font-medium">Coming Soon</span>
         </div>
         
-        <p className="text-gray-600 dark:text-gray-400 mb-8">
+        <p className="text-gray-600 dark:text-gray-300 mb-8">
           {description || "We're working hard to bring you this feature. It will be available in an upcoming release."}
         </p>
         

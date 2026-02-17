@@ -182,7 +182,7 @@ export default function CustomerDetail() {
       <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4 flex items-center justify-center">
         <div className="text-center">
           <Users className="h-12 w-12 text-indigo-500 mx-auto mb-3 animate-pulse" />
-          <p className="text-gray-500 dark:text-gray-400">Loading customer...</p>
+          <p className="text-gray-500 dark:text-gray-300">Loading customer...</p>
         </div>
       </div>
     );
@@ -194,7 +194,7 @@ export default function CustomerDetail() {
         <div className="text-center">
           <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-3" />
           <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Customer Not Found</h2>
-          <p className="text-gray-500 dark:text-gray-400 mb-4">The customer you're looking for doesn't exist.</p>
+          <p className="text-gray-500 dark:text-gray-300 mb-4">The customer you're looking for doesn't exist.</p>
           <button
             onClick={() => navigate('/ar/customers')}
             className="px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition-colors"
@@ -212,7 +212,7 @@ export default function CustomerDetail() {
       <div className="mb-8">
         <button
           onClick={() => navigate('/ar/customers')}
-          className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white mb-4 transition-colors"
+          className="flex items-center gap-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white mb-4 transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />
           Back to Customers
@@ -224,7 +224,7 @@ export default function CustomerDetail() {
             </div>
             <div>
               <h1 className="text-xl font-bold text-gray-900 dark:text-white">{customer.name}</h1>
-              <p className="text-gray-600 dark:text-gray-400">Customer Code: {customer.code}</p>
+              <p className="text-gray-600 dark:text-gray-300">Customer Code: {customer.code}</p>
             </div>
           </div>
           <div className="flex gap-3">
@@ -251,7 +251,7 @@ export default function CustomerDetail() {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{stats.totalOrders}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Total Orders</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Total Orders</p>
             </div>
           </div>
         </div>
@@ -262,7 +262,7 @@ export default function CustomerDetail() {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{formatCurrency(stats.totalRevenue)}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Total Revenue</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Total Revenue</p>
             </div>
           </div>
         </div>
@@ -273,7 +273,7 @@ export default function CustomerDetail() {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{formatCurrency(stats.outstandingBalance)}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Outstanding</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Outstanding</p>
             </div>
           </div>
         </div>
@@ -284,7 +284,7 @@ export default function CustomerDetail() {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{formatCurrency(stats.avgOrderValue)}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Avg Order Value</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Avg Order Value</p>
             </div>
           </div>
         </div>
@@ -299,7 +299,7 @@ export default function CustomerDetail() {
             className={`px-4 py-2 rounded-lg font-medium transition-all ${
               activeTab === tab
                 ? 'bg-indigo-500 text-white '
-                : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
+                : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
             }`}
           >
             {tab.charAt(0).toUpperCase() + tab.slice(1)}
@@ -319,27 +319,27 @@ export default function CustomerDetail() {
             <div className="space-y-4">
               {customer.email && (
                 <div className="flex items-center gap-3">
-                  <Mail className="h-5 w-5 text-gray-400" />
+                  <Mail className="h-5 w-5 text-gray-300" />
                   <div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">Email</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-300">Email</p>
                     <p className="text-gray-900 dark:text-white">{customer.email}</p>
                   </div>
                 </div>
               )}
               {customer.phone && (
                 <div className="flex items-center gap-3">
-                  <Phone className="h-5 w-5 text-gray-400" />
+                  <Phone className="h-5 w-5 text-gray-300" />
                   <div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">Phone</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-300">Phone</p>
                     <p className="text-gray-900 dark:text-white">{customer.phone}</p>
                   </div>
                 </div>
               )}
               {(customer.address_line1 || customer.city || customer.country) && (
                 <div className="flex items-center gap-3">
-                  <MapPin className="h-5 w-5 text-gray-400" />
+                  <MapPin className="h-5 w-5 text-gray-300" />
                   <div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">Address</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-300">Address</p>
                     <p className="text-gray-900 dark:text-white">
                       {[customer.address_line1, customer.city, customer.country].filter(Boolean).join(', ')}
                     </p>
@@ -357,21 +357,21 @@ export default function CustomerDetail() {
             </h3>
             <div className="space-y-4">
               <div className="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-700">
-                <span className="text-gray-500 dark:text-gray-400">Credit Limit</span>
+                <span className="text-gray-500 dark:text-gray-300">Credit Limit</span>
                 <span className="font-semibold text-gray-900 dark:text-white">{formatCurrency(customer.credit_limit || 0)}</span>
               </div>
               <div className="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-700">
-                <span className="text-gray-500 dark:text-gray-400">Payment Terms</span>
+                <span className="text-gray-500 dark:text-gray-300">Payment Terms</span>
                 <span className="font-semibold text-gray-900 dark:text-white">{customer.payment_terms || 'Net 30'}</span>
               </div>
               <div className="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-700">
-                <span className="text-gray-500 dark:text-gray-400">Available Credit</span>
+                <span className="text-gray-500 dark:text-gray-300">Available Credit</span>
                 <span className="font-semibold text-green-600 dark:text-green-400">
                   {formatCurrency((customer.credit_limit || 0) - stats.outstandingBalance)}
                 </span>
               </div>
               <div className="flex justify-between items-center py-2">
-                <span className="text-gray-500 dark:text-gray-400">Customer Since</span>
+                <span className="text-gray-500 dark:text-gray-300">Customer Since</span>
                 <span className="font-semibold text-gray-900 dark:text-white">{formatDate(customer.created_at)}</span>
               </div>
             </div>
@@ -385,7 +385,7 @@ export default function CustomerDetail() {
             <div className="p-12 text-center">
               <FileText className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">No transactions yet</h3>
-              <p className="text-gray-500 dark:text-gray-400">This customer doesn't have any transactions.</p>
+              <p className="text-gray-500 dark:text-gray-300">This customer doesn't have any transactions.</p>
             </div>
           ) : (
             <div className="overflow-x-auto">

@@ -365,11 +365,11 @@ const WorkOrders: React.FC = () => {
         <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-3 mb-6">
           <div>
             <h1 className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">Work Orders</h1>
-            <p className="text-gray-600 dark:text-gray-400 mt-1">Track and manage production work orders</p>
+            <p className="text-gray-600 dark:text-gray-300 mt-1">Track and manage production work orders</p>
           </div>
           <div className="flex items-center gap-3">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-300" size={18} />
               <input
                 type="text"
                 placeholder="Search orders..."
@@ -425,7 +425,7 @@ const WorkOrders: React.FC = () => {
                 <p className="text-xs text-gray-500">Planned</p>
                 <p className="text-2xl font-bold text-gray-600">{stats.planned}</p>
               </div>
-              <Calendar className="text-gray-400" size={20} />
+              <Calendar className="text-gray-300" size={20} />
             </div>
           </button>
           <button onClick={() => setFilter('in_progress')} className={`bg-white dark:bg-gray-800 rounded-xl p-4 border-2 transition-all ${filter === 'in_progress' ? 'border-blue-500 shadow-lg' : 'border-transparent hover:border-gray-200'}`}>

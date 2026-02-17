@@ -101,7 +101,7 @@ export default function PayrollActivityReportPage() {
             </select>
             <button
               onClick={fetchPayrollData}
-              className="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+              className="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
             >
               <RefreshCw className={`h-5 w-5 ${loading ? 'animate-spin' : ''}`} />
             </button>
@@ -123,19 +123,19 @@ export default function PayrollActivityReportPage() {
           <>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
               <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
-                <div className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Employees</div>
+                <div className="text-sm font-medium text-gray-600 dark:text-gray-300">Total Employees</div>
                 <div className="text-xl font-bold text-gray-900 dark:text-white mt-2">{summary?.total_employees || 0}</div>
               </div>
               <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
-                <div className="text-sm font-medium text-gray-600 dark:text-gray-400">Monthly Cost</div>
+                <div className="text-sm font-medium text-gray-600 dark:text-gray-300">Monthly Cost</div>
                 <div className="text-xl font-bold text-gray-900 dark:text-white mt-2">R {Number(((summary?.monthly_cost || 0) / 1000) || 0).toFixed(0)}K</div>
               </div>
               <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
-                <div className="text-sm font-medium text-gray-600 dark:text-gray-400">YTD Cost</div>
+                <div className="text-sm font-medium text-gray-600 dark:text-gray-300">YTD Cost</div>
                 <div className="text-2xl font-bold text-indigo-600 dark:text-indigo-400 mt-2">R {Number(((summary?.ytd_cost || 0) / 1000000) || 0).toFixed(1)}M</div>
               </div>
               <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
-                <div className="text-sm font-medium text-gray-600 dark:text-gray-400">SARS Submissions</div>
+                <div className="text-sm font-medium text-gray-600 dark:text-gray-300">SARS Submissions</div>
                 <div className="text-2xl font-bold text-green-600 dark:text-green-400 mt-2">{summary?.sars_status || 'Unknown'}</div>
               </div>
             </div>

@@ -153,7 +153,7 @@ export default function PriceCalculator() {
           <Calculator size={28} className="text-green-500" />
           Price Calculator
         </h1>
-        <p className="text-gray-600 dark:text-gray-400 mt-1">Calculate prices with pricelist rules and see price breakdown</p>
+        <p className="text-gray-600 dark:text-gray-300 mt-1">Calculate prices with pricelist rules and see price breakdown</p>
       </div>
 
       <div className="flex gap-3 mb-6">
@@ -264,11 +264,11 @@ export default function PriceCalculator() {
                 <h2 className="text-lg font-semibold mb-4">Price Breakdown</h2>
                 <div className="grid grid-cols-2 gap-3 mb-6">
                   <div className="p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
-                    <div className="text-xs text-gray-500 dark:text-gray-400">Product</div>
+                    <div className="text-xs text-gray-500 dark:text-gray-300">Product</div>
                     <div className="text-lg font-medium">{result.product_name}</div>
                   </div>
                   <div className="p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
-                    <div className="text-xs text-gray-500 dark:text-gray-400">Pricelist</div>
+                    <div className="text-xs text-gray-500 dark:text-gray-300">Pricelist</div>
                     <div className="text-lg font-medium">{result.pricelist_name || 'Default'}</div>
                   </div>
                 </div>
@@ -320,7 +320,7 @@ export default function PriceCalculator() {
                 )}
               </div>
             ) : (
-              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 text-center text-gray-500 dark:text-gray-400">
+              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 text-center text-gray-500 dark:text-gray-300">
                 <Calculator size={48} className="mx-auto mb-4 text-gray-300" />
                 <p>Select a product and click Calculate to see the price breakdown</p>
               </div>
@@ -338,9 +338,9 @@ export default function PriceCalculator() {
                         onChange={() => toggleBulkProduct(p.id)}
                         className="h-4 w-4 text-green-600 dark:text-green-400 focus:ring-green-500 border-gray-300 dark:border-gray-600 rounded"
                       />
-                      <Package size={16} className="text-gray-400" />
+                      <Package size={16} className="text-gray-300" />
                       <span className="text-sm">{p.name}</span>
-                      <span className="text-xs text-gray-500 dark:text-gray-400 ml-auto">
+                      <span className="text-xs text-gray-500 dark:text-gray-300 ml-auto">
                         R {p.list_price?.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || '0.00'}
                       </span>
                     </label>
@@ -352,17 +352,17 @@ export default function PriceCalculator() {
                   <table className="w-full">
                     <thead className="bg-gray-50 dark:bg-gray-900">
                       <tr>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Product</th>
-                        <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Base</th>
-                        <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Discount</th>
-                        <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Final</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Product</th>
+                        <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Base</th>
+                        <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Discount</th>
+                        <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Final</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y">
                       {bulkResults.map((r, idx) => (
                         <tr key={idx} className="hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900">
                           <td className="px-4 py-3 text-sm font-medium">{r.product_name}</td>
-                          <td className="px-4 py-3 text-sm text-right text-gray-600 dark:text-gray-400">
+                          <td className="px-4 py-3 text-sm text-right text-gray-600 dark:text-gray-300">
                             R {Number(r.base_price ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                           </td>
                           <td className="px-4 py-3 text-sm text-right text-orange-600">

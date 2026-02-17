@@ -85,10 +85,10 @@ export default function Production() {
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
           <div>
             <h1 className="text-2xl font-bold bg-gradient-to-r from-amber-600 to-yellow-600 bg-clip-text text-transparent">Production Orders</h1>
-            <p className="text-gray-500 dark:text-gray-400 mt-1">Manage manufacturing production orders</p>
+            <p className="text-gray-500 dark:text-gray-300 mt-1">Manage manufacturing production orders</p>
           </div>
           <div className="flex items-center gap-3">
-            <button onClick={fetchOrders} className="p-3 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-200 dark:border-gray-700"><RefreshCw className={`h-5 w-5 text-gray-600 dark:text-gray-400 ${loading ? 'animate-spin' : ''}`} /></button>
+            <button onClick={fetchOrders} className="p-3 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-200 dark:border-gray-700"><RefreshCw className={`h-5 w-5 text-gray-600 dark:text-gray-300 ${loading ? 'animate-spin' : ''}`} /></button>
             <button onClick={() => setShowForm(true)} className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-amber-600 to-yellow-600 text-white rounded-xl font-medium hover:from-amber-700 hover:to-yellow-700 transition-all "><Plus className="h-5 w-5" />New Order</button>
           </div>
         </div>
@@ -97,16 +97,16 @@ export default function Production() {
 
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
           <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
-            <div className="flex items-center gap-3"><div className="p-2 bg-gradient-to-br from-amber-500 to-yellow-500 rounded-xl "><Factory className="h-5 w-5 text-white" /></div><div><p className="text-xl font-bold text-gray-900 dark:text-white">{stats.total}</p><p className="text-xs text-gray-500 dark:text-gray-400">Total Orders</p></div></div>
+            <div className="flex items-center gap-3"><div className="p-2 bg-gradient-to-br from-amber-500 to-yellow-500 rounded-xl "><Factory className="h-5 w-5 text-white" /></div><div><p className="text-xl font-bold text-gray-900 dark:text-white">{stats.total}</p><p className="text-xs text-gray-500 dark:text-gray-300">Total Orders</p></div></div>
           </div>
           <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
-            <div className="flex items-center gap-3"><div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl "><Play className="h-5 w-5 text-white" /></div><div><p className="text-2xl font-bold text-blue-600 dark:text-blue-400">{stats.inProgress}</p><p className="text-xs text-gray-500 dark:text-gray-400">In Progress</p></div></div>
+            <div className="flex items-center gap-3"><div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl "><Play className="h-5 w-5 text-white" /></div><div><p className="text-2xl font-bold text-blue-600 dark:text-blue-400">{stats.inProgress}</p><p className="text-xs text-gray-500 dark:text-gray-300">In Progress</p></div></div>
           </div>
           <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
-            <div className="flex items-center gap-3"><div className="p-2 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl "><CheckCircle className="h-5 w-5 text-white" /></div><div><p className="text-2xl font-bold text-green-600 dark:text-green-400">{stats.completed}</p><p className="text-xs text-gray-500 dark:text-gray-400">Completed</p></div></div>
+            <div className="flex items-center gap-3"><div className="p-2 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl "><CheckCircle className="h-5 w-5 text-white" /></div><div><p className="text-2xl font-bold text-green-600 dark:text-green-400">{stats.completed}</p><p className="text-xs text-gray-500 dark:text-gray-300">Completed</p></div></div>
           </div>
           <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
-            <div className="flex items-center gap-3"><div className="p-2 bg-gradient-to-br from-gray-500 to-slate-500 rounded-xl "><Clock className="h-5 w-5 text-white" /></div><div><p className="text-2xl font-bold text-gray-600 dark:text-gray-400">{stats.planned}</p><p className="text-xs text-gray-500 dark:text-gray-400">Planned</p></div></div>
+            <div className="flex items-center gap-3"><div className="p-2 bg-gradient-to-br from-gray-500 to-slate-500 rounded-xl "><Clock className="h-5 w-5 text-white" /></div><div><p className="text-2xl font-bold text-gray-600 dark:text-gray-300">{stats.planned}</p><p className="text-xs text-gray-500 dark:text-gray-300">Planned</p></div></div>
           </div>
         </div>
 
@@ -140,19 +140,19 @@ export default function Production() {
 
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
           {loading ? (
-            <div className="p-12 text-center"><RefreshCw className="h-8 w-8 animate-spin text-amber-500 mx-auto mb-4" /><p className="text-gray-500 dark:text-gray-400">Loading production orders...</p></div>
+            <div className="p-12 text-center"><RefreshCw className="h-8 w-8 animate-spin text-amber-500 mx-auto mb-4" /><p className="text-gray-500 dark:text-gray-300">Loading production orders...</p></div>
           ) : orders.length === 0 ? (
-            <div className="p-12 text-center"><div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-2xl flex items-center justify-center mx-auto mb-4"><Factory className="h-8 w-8 text-gray-400" /></div><h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No production orders</h3><p className="text-gray-500 dark:text-gray-400 mb-6">Create your first production order</p><button onClick={() => setShowForm(true)} className="px-4 py-2 bg-gradient-to-r from-amber-600 to-yellow-600 text-white rounded-xl font-medium hover:from-amber-700 hover:to-yellow-700 transition-all">New Order</button></div>
+            <div className="p-12 text-center"><div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-2xl flex items-center justify-center mx-auto mb-4"><Factory className="h-8 w-8 text-gray-300" /></div><h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No production orders</h3><p className="text-gray-500 dark:text-gray-300 mb-6">Create your first production order</p><button onClick={() => setShowForm(true)} className="px-4 py-2 bg-gradient-to-r from-amber-600 to-yellow-600 text-white rounded-xl font-medium hover:from-amber-700 hover:to-yellow-700 transition-all">New Order</button></div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-gray-50 dark:bg-gray-900/50"><tr><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Order #</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Product</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Progress</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Start Date</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">End Date</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Priority</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th></tr></thead>
+                <thead className="bg-gray-50 dark:bg-gray-900/50"><tr><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Order #</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Product</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Progress</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Start Date</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">End Date</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Priority</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th></tr></thead>
                 <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
                   {orders.map((order) => (
                     <tr key={order.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                       <td className="px-6 py-4 font-semibold text-amber-600 dark:text-amber-400">{order.order_number}</td>
                       <td className="px-6 py-4 text-gray-900 dark:text-white">{order.product_name}</td>
-                      <td className="px-6 py-4"><div className="flex items-center gap-3"><div className="w-24 bg-gray-200 dark:bg-gray-700 rounded-full h-2 overflow-hidden"><div className={`h-2 rounded-full ${order.status === 'completed' ? 'bg-green-500' : 'bg-amber-500'}`} style={{ width: `${(order.completed_quantity / order.quantity) * 100}%` }}></div></div><span className="text-sm text-gray-600 dark:text-gray-400">{order.completed_quantity}/{order.quantity}</span></div></td>
+                      <td className="px-6 py-4"><div className="flex items-center gap-3"><div className="w-24 bg-gray-200 dark:bg-gray-700 rounded-full h-2 overflow-hidden"><div className={`h-2 rounded-full ${order.status === 'completed' ? 'bg-green-500' : 'bg-amber-500'}`} style={{ width: `${(order.completed_quantity / order.quantity) * 100}%` }}></div></div><span className="text-sm text-gray-600 dark:text-gray-300">{order.completed_quantity}/{order.quantity}</span></div></td>
                       <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{order.start_date}</td>
                       <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{order.end_date}</td>
                       <td className="px-6 py-4"><span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium border capitalize ${getPriorityBadge(order.priority)}`}>{order.priority}</span></td>

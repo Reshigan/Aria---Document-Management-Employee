@@ -127,7 +127,7 @@ const ServiceOrders: React.FC = () => {
 
   const getPriorityBadge = (priority: string) => {
     const styles: Record<string, string> = {
-      LOW: 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-400',
+      LOW: 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300',
       MEDIUM: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
       HIGH: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400',
       URGENT: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
@@ -146,7 +146,7 @@ const ServiceOrders: React.FC = () => {
       <div className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-500 dark:text-gray-400">Loading service orders...</p>
+          <p className="text-gray-500 dark:text-gray-300">Loading service orders...</p>
         </div>
       </div>
     );
@@ -162,7 +162,7 @@ const ServiceOrders: React.FC = () => {
           </div>
           Service Orders
         </h1>
-        <p className="text-gray-500 dark:text-gray-400 mt-1">Manage field service orders and assignments</p>
+        <p className="text-gray-500 dark:text-gray-300 mt-1">Manage field service orders and assignments</p>
       </div>
 
       {error && (
@@ -192,7 +192,7 @@ const ServiceOrders: React.FC = () => {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{orders.filter(o => o.status === 'SCHEDULED').length}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Scheduled</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Scheduled</p>
             </div>
           </div>
         </div>
@@ -203,7 +203,7 @@ const ServiceOrders: React.FC = () => {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{orders.filter(o => o.status === 'IN_PROGRESS').length}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">In Progress</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">In Progress</p>
             </div>
           </div>
         </div>
@@ -214,7 +214,7 @@ const ServiceOrders: React.FC = () => {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{orders.filter(o => o.status === 'COMPLETED').length}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Completed</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Completed</p>
             </div>
           </div>
         </div>
@@ -225,7 +225,7 @@ const ServiceOrders: React.FC = () => {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{orders.length}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Total Orders</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Total Orders</p>
             </div>
           </div>
         </div>
@@ -237,14 +237,14 @@ const ServiceOrders: React.FC = () => {
           <table className="w-full" data-testid="orders-table">
             <thead className="bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-700">
               <tr>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Order #</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Customer</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Service Type</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Technician</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Priority</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Scheduled</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
-                <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Order #</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Customer</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Service Type</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Technician</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Priority</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Scheduled</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
+                <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
@@ -252,18 +252,18 @@ const ServiceOrders: React.FC = () => {
                 <tr>
                   <td colSpan={8} className="px-6 py-12 text-center">
                     <Package className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
-                    <p className="text-gray-500 dark:text-gray-400">No service orders found</p>
+                    <p className="text-gray-500 dark:text-gray-300">No service orders found</p>
                   </td>
                 </tr>
               ) : (
                 orders.map((order) => (
                   <tr key={order.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors">
                     <td className="px-6 py-4 text-sm font-semibold text-gray-900 dark:text-white">{order.order_number}</td>
-                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">{order.customer_name}</td>
-                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">{order.service_type}</td>
-                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">{order.technician_name || 'Unassigned'}</td>
+                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{order.customer_name}</td>
+                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{order.service_type}</td>
+                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{order.technician_name || 'Unassigned'}</td>
                     <td className="px-6 py-4">{getPriorityBadge(order.priority)}</td>
-                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">{formatDate(order.scheduled_date)}</td>
+                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{formatDate(order.scheduled_date)}</td>
                     <td className="px-6 py-4">{getStatusBadge(order.status)}</td>
                     <td className="px-6 py-4 text-right">
                       <button

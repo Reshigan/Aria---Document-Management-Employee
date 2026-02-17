@@ -153,7 +153,7 @@ const Payments: React.FC = () => {
             </div>
             Supplier Payments
           </h1>
-          <p className="text-gray-500 dark:text-gray-400 mt-1">Track and manage supplier payments</p>
+          <p className="text-gray-500 dark:text-gray-300 mt-1">Track and manage supplier payments</p>
         </div>
         <button
           onClick={handleCreate}
@@ -175,7 +175,7 @@ const Payments: React.FC = () => {
       {/* Search Bar */}
       <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 mb-6">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-300" />
           <input
             type="text"
             placeholder="Search payments..."
@@ -197,7 +197,7 @@ const Payments: React.FC = () => {
               <p className="text-xl font-bold text-gray-900 dark:text-white">
                 {formatCurrency(payments.reduce((sum, p) => sum + p.amount, 0))}
               </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Total Paid</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Total Paid</p>
             </div>
           </div>
         </div>
@@ -211,7 +211,7 @@ const Payments: React.FC = () => {
               <p className="text-xl font-bold text-gray-900 dark:text-white">
                 {payments.filter(p => p.status === 'PENDING').length}
               </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Pending</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Pending</p>
             </div>
           </div>
         </div>
@@ -225,7 +225,7 @@ const Payments: React.FC = () => {
               <p className="text-xl font-bold text-gray-900 dark:text-white">
                 {payments.filter(p => p.status === 'CLEARED').length}
               </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Cleared</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Cleared</p>
             </div>
           </div>
         </div>
@@ -251,8 +251,8 @@ const Payments: React.FC = () => {
               <tr>
                 <td colSpan={8} className="px-6 py-12 text-center">
                   <CreditCard className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
-                  <p className="text-gray-500 dark:text-gray-400">No payments found</p>
-                  <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">Create your first payment to get started</p>
+                  <p className="text-gray-500 dark:text-gray-300">No payments found</p>
+                  <p className="text-xs text-gray-300 dark:text-gray-500 mt-1">Create your first payment to get started</p>
                 </td>
               </tr>
             ) : (
@@ -260,10 +260,10 @@ const Payments: React.FC = () => {
                 <tr key={payment.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                   <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">{payment.payment_number}</td>
                   <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{payment.supplier_name}</td>
-                  <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{payment.bill_number}</td>
+                  <td className="px-6 py-4 text-gray-500 dark:text-gray-300">{payment.bill_number}</td>
                   <td className="px-6 py-4 text-right font-medium text-gray-900 dark:text-white">{formatCurrency(payment.amount)}</td>
-                  <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{payment.payment_method.replace('_', ' ')}</td>
-                  <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{formatDate(payment.payment_date)}</td>
+                  <td className="px-6 py-4 text-gray-500 dark:text-gray-300">{payment.payment_method.replace('_', ' ')}</td>
+                  <td className="px-6 py-4 text-gray-500 dark:text-gray-300">{formatDate(payment.payment_date)}</td>
                   <td className="px-6 py-4 text-center">
                     <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${getStatusBadge(payment.status)}`}>
                       {payment.status}

@@ -132,7 +132,7 @@ const Departments: React.FC = () => {
             </div>
             Departments
           </h1>
-          <p className="text-gray-500 dark:text-gray-400 mt-1">Manage organizational departments and structure</p>
+          <p className="text-gray-500 dark:text-gray-300 mt-1">Manage organizational departments and structure</p>
         </div>
         <button
           onClick={handleCreate}
@@ -153,7 +153,7 @@ const Departments: React.FC = () => {
       {/* Search Bar */}
       <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 mb-6">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-300" />
           <input
             type="text"
             placeholder="Search departments..."
@@ -174,7 +174,7 @@ const Departments: React.FC = () => {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{departments.filter(d => d.is_active).length}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Total Departments</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Total Departments</p>
             </div>
           </div>
         </div>
@@ -185,7 +185,7 @@ const Departments: React.FC = () => {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{departments.reduce((sum, d) => sum + Number(d.employee_count ?? 0), 0)}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Total Employees</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Total Employees</p>
             </div>
           </div>
         </div>
@@ -196,7 +196,7 @@ const Departments: React.FC = () => {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{formatCurrency(departments.reduce((sum, d) => sum + Number(d.budget ?? 0), 0))}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Total Budget</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Total Budget</p>
             </div>
           </div>
         </div>
@@ -207,7 +207,7 @@ const Departments: React.FC = () => {
         {filtered.length === 0 ? (
           <div className="px-6 py-12 text-center">
             <Building2 className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
-            <p className="text-gray-500 dark:text-gray-400">No departments found</p>
+            <p className="text-gray-500 dark:text-gray-300">No departments found</p>
           </div>
         ) : (
           <table className="w-full" data-testid="departments-table">
@@ -227,9 +227,9 @@ const Departments: React.FC = () => {
                 <tr key={department.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                   <td className="px-6 py-4 text-gray-900 dark:text-white">{department.department_code}</td>
                   <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">{department.department_name}</td>
-                  <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{department.manager_name || '-'}</td>
-                  <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{department.employee_count}</td>
-                  <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{formatCurrency(department.budget)}</td>
+                  <td className="px-6 py-4 text-gray-500 dark:text-gray-300">{department.manager_name || '-'}</td>
+                  <td className="px-6 py-4 text-gray-500 dark:text-gray-300">{department.employee_count}</td>
+                  <td className="px-6 py-4 text-gray-500 dark:text-gray-300">{formatCurrency(department.budget)}</td>
                   <td className="px-6 py-4">
                     <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
                       department.is_active 

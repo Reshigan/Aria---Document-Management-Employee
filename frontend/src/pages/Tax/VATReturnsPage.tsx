@@ -120,7 +120,7 @@ export default function VATReturnsPage() {
   };
 
   if (loading) {
-    return <div className="p-8 text-gray-600 dark:text-gray-400">Loading...</div>;
+    return <div className="p-8 text-gray-600 dark:text-gray-300">Loading...</div>;
   }
 
   return (
@@ -131,7 +131,7 @@ export default function VATReturnsPage() {
             <FileText className="h-8 w-8 text-purple-600" />
             VAT Returns
           </h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-1">Manage VAT returns and submissions</p>
+          <p className="text-gray-600 dark:text-gray-300 mt-1">Manage VAT returns and submissions</p>
         </div>
         <button
           onClick={() => setShowModal(true)}
@@ -149,7 +149,7 @@ export default function VATReturnsPage() {
               <TrendingUp className="h-6 w-6 text-green-600 dark:text-green-400" />
             </div>
             <div>
-              <div className="text-sm font-medium text-gray-500 dark:text-gray-400">Output Tax</div>
+              <div className="text-sm font-medium text-gray-500 dark:text-gray-300">Output Tax</div>
               <div className="text-xl font-bold text-gray-900 dark:text-white">
                 R {Number(totalOutput ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </div>
@@ -163,7 +163,7 @@ export default function VATReturnsPage() {
               <DollarSign className="h-6 w-6 text-blue-600 dark:text-blue-400" />
             </div>
             <div>
-              <div className="text-sm font-medium text-gray-500 dark:text-gray-400">Input Tax</div>
+              <div className="text-sm font-medium text-gray-500 dark:text-gray-300">Input Tax</div>
               <div className="text-xl font-bold text-gray-900 dark:text-white">
                 R {Number(totalInput ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </div>
@@ -177,7 +177,7 @@ export default function VATReturnsPage() {
               <FileText className={`h-6 w-6 ${totalNet >= 0 ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'}`} />
             </div>
             <div>
-              <div className="text-sm font-medium text-gray-500 dark:text-gray-400">Net VAT {totalNet >= 0 ? 'Payable' : 'Refund'}</div>
+              <div className="text-sm font-medium text-gray-500 dark:text-gray-300">Net VAT {totalNet >= 0 ? 'Payable' : 'Refund'}</div>
               <div className="text-xl font-bold text-gray-900 dark:text-white">
                 R {Math.abs(totalNet).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </div>
@@ -191,7 +191,7 @@ export default function VATReturnsPage() {
               <Calendar className="h-6 w-6 text-amber-600 dark:text-amber-400" />
             </div>
             <div>
-              <div className="text-sm font-medium text-gray-500 dark:text-gray-400">Pending Returns</div>
+              <div className="text-sm font-medium text-gray-500 dark:text-gray-300">Pending Returns</div>
               <div className="text-xl font-bold text-gray-900 dark:text-white">
                 {pendingCount}
               </div>
@@ -217,7 +217,7 @@ export default function VATReturnsPage() {
             <tbody className="divide-y divide-gray-200 dark:divide-gray-600">
               {returns.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="px-6 py-12 text-center text-gray-500 dark:text-gray-400">
+                  <td colSpan={7} className="px-6 py-12 text-center text-gray-500 dark:text-gray-300">
                     <FileText className="h-12 w-12 mx-auto mb-4 opacity-30" />
                     <div className="font-medium">No VAT returns found</div>
                     <div className="text-sm mt-1">Create your first VAT return to get started</div>
@@ -227,7 +227,7 @@ export default function VATReturnsPage() {
                 returns.map((vatReturn) => (
                   <tr key={vatReturn.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                     <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">{vatReturn.return_number}</td>
-                    <td className="px-6 py-4 text-gray-600 dark:text-gray-400">
+                    <td className="px-6 py-4 text-gray-600 dark:text-gray-300">
                       {(vatReturn.period_start ? new Date(vatReturn.period_start).toLocaleDateString('en-ZA') : "-")} - {(vatReturn.period_end ? new Date(vatReturn.period_end).toLocaleDateString('en-ZA') : "-")}
                     </td>
                     <td className="px-6 py-4 text-right text-green-600 dark:text-green-400">
@@ -254,7 +254,7 @@ export default function VATReturnsPage() {
                             File Return
                           </button>
                         )}
-                        <button className="p-2 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+                        <button className="p-2 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
                           <Download className="h-4 w-4" />
                         </button>
                       </div>

@@ -176,7 +176,7 @@ export default function NotificationCenter({ className = '' }: NotificationCente
                   className={`px-3 py-1 text-sm rounded-full transition-colors ${
                     filter === 'all'
                       ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
-                      : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
+                      : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
                   }`}
                 >
                   All
@@ -186,7 +186,7 @@ export default function NotificationCenter({ className = '' }: NotificationCente
                   className={`px-3 py-1 text-sm rounded-full transition-colors ${
                     filter === 'unread'
                       ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
-                      : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
+                      : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
                   }`}
                 >
                   Unread ({unreadCount})
@@ -199,7 +199,7 @@ export default function NotificationCenter({ className = '' }: NotificationCente
               {filteredNotifications.length === 0 ? (
                 <div className="py-12 text-center">
                   <Bell className="h-12 w-12 mx-auto text-gray-300 dark:text-gray-600 mb-3" />
-                  <p className="text-gray-500 dark:text-gray-400">
+                  <p className="text-gray-500 dark:text-gray-300">
                     {filter === 'unread' ? 'No unread notifications' : 'No notifications yet'}
                   </p>
                 </div>
@@ -228,11 +228,11 @@ export default function NotificationCenter({ className = '' }: NotificationCente
                             }`}>
                               {notification.title}
                             </p>
-                            <span className="text-xs text-gray-400 whitespace-nowrap">
+                            <span className="text-xs text-gray-300 whitespace-nowrap">
                               {formatTime(notification.created_at)}
                             </span>
                           </div>
-                          <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5 line-clamp-2">
+                          <p className="text-sm text-gray-500 dark:text-gray-300 mt-0.5 line-clamp-2">
                             {notification.message}
                           </p>
                           
@@ -260,7 +260,7 @@ export default function NotificationCenter({ className = '' }: NotificationCente
                             )}
                             <button
                               onClick={() => deleteNotification(notification.id)}
-                              className="text-xs text-gray-400 hover:text-red-500 ml-auto"
+                              className="text-xs text-gray-300 hover:text-red-500 ml-auto"
                             >
                               <Trash2 className="h-3 w-3" />
                             </button>

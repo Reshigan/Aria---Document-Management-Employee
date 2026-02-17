@@ -166,7 +166,7 @@ export default function SecuritySettings() {
           <div className="space-y-2">
             {sessions.map(s => (
               <div key={s.id} className="flex items-center gap-3 p-2 rounded-lg border border-gray-100 dark:border-gray-700">
-                <Monitor className="h-4 w-4 text-gray-400 shrink-0" />
+                <Monitor className="h-4 w-4 text-gray-300 shrink-0" />
                 <div className="flex-1 min-w-0">
                   <p className="text-sm text-gray-900 dark:text-white truncate">{s.user_agent || 'Unknown device'}</p>
                   <p className="text-xs text-gray-500">{s.ip_address || 'Unknown IP'} &middot; {s.created_at ? new Date(s.created_at).toLocaleString() : ''}</p>

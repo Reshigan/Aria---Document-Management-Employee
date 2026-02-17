@@ -350,7 +350,7 @@ const PayrollDashboard: React.FC = () => {
           </div>
           Payroll
         </h1>
-        <p className="text-gray-500 dark:text-gray-400 mt-1">Manage employees, payslips, and SA tax compliance (PAYE, UIF, SDL)</p>
+        <p className="text-gray-500 dark:text-gray-300 mt-1">Manage employees, payslips, and SA tax compliance (PAYE, UIF, SDL)</p>
       </div>
 
       {/* Error Display */}
@@ -405,7 +405,7 @@ const PayrollDashboard: React.FC = () => {
           {/* Actions Bar */}
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-6">
             <div className="relative w-full md:w-80">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-300" />
               <input
                 type="text"
                 placeholder="Search employees..."
@@ -432,7 +432,7 @@ const PayrollDashboard: React.FC = () => {
                 </div>
                 <div>
                   <p className="text-xl font-bold text-gray-900 dark:text-white">{employees.filter(e => e.is_active).length}</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">Total Employees</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-300">Total Employees</p>
                 </div>
               </div>
             </div>
@@ -443,7 +443,7 @@ const PayrollDashboard: React.FC = () => {
                 </div>
                 <div>
                   <p className="text-xl font-bold text-gray-900 dark:text-white">{employees.filter(e => e.is_active && e.employment_type === 'PERMANENT').length}</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">Permanent</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-300">Permanent</p>
                 </div>
               </div>
             </div>
@@ -454,7 +454,7 @@ const PayrollDashboard: React.FC = () => {
                 </div>
                 <div>
                   <p className="text-xl font-bold text-gray-900 dark:text-white">{employees.filter(e => e.is_active && e.employment_type === 'CONTRACT').length}</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">Contract</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-300">Contract</p>
                 </div>
               </div>
             </div>
@@ -465,7 +465,7 @@ const PayrollDashboard: React.FC = () => {
                 </div>
                 <div>
                   <p className="text-xl font-bold text-gray-900 dark:text-white">{formatCurrency(employees.filter(e => e.is_active).reduce((sum, e) => sum + e.salary, 0))}</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">Total Payroll</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-300">Total Payroll</p>
                 </div>
               </div>
             </div>
@@ -480,7 +480,7 @@ const PayrollDashboard: React.FC = () => {
             ) : filteredEmployees.length === 0 ? (
               <div className="px-6 py-12 text-center">
                 <Users className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
-                <p className="text-gray-500 dark:text-gray-400">No employees found</p>
+                <p className="text-gray-500 dark:text-gray-300">No employees found</p>
               </div>
             ) : (
               <table className="w-full">
@@ -500,8 +500,8 @@ const PayrollDashboard: React.FC = () => {
                     <tr key={employee.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                       <td className="px-6 py-4 font-medium text-green-600 dark:text-green-400">{employee.employee_number}</td>
                       <td className="px-6 py-4 text-gray-900 dark:text-white">{employee.first_name} {employee.last_name}</td>
-                      <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{employee.department}</td>
-                      <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{employee.position}</td>
+                      <td className="px-6 py-4 text-gray-500 dark:text-gray-300">{employee.department}</td>
+                      <td className="px-6 py-4 text-gray-500 dark:text-gray-300">{employee.position}</td>
                       <td className="px-6 py-4">{getEmploymentTypeBadge(employee.employment_type)}</td>
                       <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">{formatCurrency(employee.salary)}</td>
                       <td className="px-6 py-4">
@@ -529,7 +529,7 @@ const PayrollDashboard: React.FC = () => {
           {/* Actions Bar */}
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-6">
             <div className="relative w-full md:w-80">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-300" />
               <input
                 type="text"
                 placeholder="Search payslips..."
@@ -556,7 +556,7 @@ const PayrollDashboard: React.FC = () => {
                 </div>
                 <div>
                   <p className="text-xl font-bold text-gray-900 dark:text-white">{payslips.length}</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">Total Payslips</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-300">Total Payslips</p>
                 </div>
               </div>
             </div>
@@ -567,7 +567,7 @@ const PayrollDashboard: React.FC = () => {
                 </div>
                 <div>
                   <p className="text-xl font-bold text-gray-900 dark:text-white">{payslips.filter(p => p.status === 'DRAFT').length}</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">Draft</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-300">Draft</p>
                 </div>
               </div>
             </div>
@@ -578,7 +578,7 @@ const PayrollDashboard: React.FC = () => {
                 </div>
                 <div>
                   <p className="text-xl font-bold text-gray-900 dark:text-white">{payslips.filter(p => p.status === 'PAID').length}</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">Paid</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-300">Paid</p>
                 </div>
               </div>
             </div>
@@ -589,7 +589,7 @@ const PayrollDashboard: React.FC = () => {
                 </div>
                 <div>
                   <p className="text-xl font-bold text-gray-900 dark:text-white">{formatCurrency(payslips.reduce((sum, p) => sum + p.net_salary, 0))}</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">Total Net Pay</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-300">Total Net Pay</p>
                 </div>
               </div>
             </div>
@@ -604,7 +604,7 @@ const PayrollDashboard: React.FC = () => {
             ) : filteredPayslips.length === 0 ? (
               <div className="px-6 py-12 text-center">
                 <FileText className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
-                <p className="text-gray-500 dark:text-gray-400">No payslips found</p>
+                <p className="text-gray-500 dark:text-gray-300">No payslips found</p>
               </div>
             ) : (
               <div className="overflow-x-auto">
@@ -627,10 +627,10 @@ const PayrollDashboard: React.FC = () => {
                       <tr key={payslip.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                         <td className="px-6 py-4 font-medium text-green-600 dark:text-green-400">{payslip.payslip_number}</td>
                         <td className="px-6 py-4 text-gray-900 dark:text-white">{payslip.employee_name || `Employee #${payslip.employee_id}`}</td>
-                        <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{formatDate(payslip.pay_period_start)} - {formatDate(payslip.pay_period_end)}</td>
-                        <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{formatCurrency(payslip.gross_salary)}</td>
-                        <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{formatCurrency(payslip.paye)}</td>
-                        <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{formatCurrency(payslip.uif)}</td>
+                        <td className="px-6 py-4 text-gray-500 dark:text-gray-300">{formatDate(payslip.pay_period_start)} - {formatDate(payslip.pay_period_end)}</td>
+                        <td className="px-6 py-4 text-gray-500 dark:text-gray-300">{formatCurrency(payslip.gross_salary)}</td>
+                        <td className="px-6 py-4 text-gray-500 dark:text-gray-300">{formatCurrency(payslip.paye)}</td>
+                        <td className="px-6 py-4 text-gray-500 dark:text-gray-300">{formatCurrency(payslip.uif)}</td>
                         <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">{formatCurrency(payslip.net_salary)}</td>
                         <td className="px-6 py-4">{getStatusBadge(payslip.status)}</td>
                         <td className="px-6 py-4">
@@ -674,7 +674,7 @@ const PayrollDashboard: React.FC = () => {
             <div>
               <div className="mb-6">
                 <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">SA Tax Compliance Summary</h2>
-                <p className="text-gray-500 dark:text-gray-400">Period: {taxSummary.period}</p>
+                <p className="text-gray-500 dark:text-gray-300">Period: {taxSummary.period}</p>
               </div>
 
               <div className="grid grid-cols-2 md:grid-cols-3 gap-6 mb-6">
@@ -683,30 +683,30 @@ const PayrollDashboard: React.FC = () => {
                     <div className="p-2 bg-gradient-to-br from-red-500 to-rose-500 rounded-xl ">
                       <Calculator className="h-5 w-5 text-white" />
                     </div>
-                    <div className="text-xs text-gray-500 dark:text-gray-400">Total PAYE (Pay As You Earn)</div>
+                    <div className="text-xs text-gray-500 dark:text-gray-300">Total PAYE (Pay As You Earn)</div>
                   </div>
                   <div className="text-2xl font-bold text-red-600 dark:text-red-400">{formatCurrency(taxSummary.total_paye)}</div>
-                  <div className="text-xs text-gray-400 dark:text-gray-500 mt-2">Income tax withheld from employees</div>
+                  <div className="text-xs text-gray-300 dark:text-gray-500 mt-2">Income tax withheld from employees</div>
                 </div>
                 <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
                   <div className="flex items-center gap-3 mb-4">
                     <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl ">
                       <Calculator className="h-5 w-5 text-white" />
                     </div>
-                    <div className="text-xs text-gray-500 dark:text-gray-400">Total UIF (Unemployment Insurance Fund)</div>
+                    <div className="text-xs text-gray-500 dark:text-gray-300">Total UIF (Unemployment Insurance Fund)</div>
                   </div>
                   <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{formatCurrency(taxSummary.total_uif)}</div>
-                  <div className="text-xs text-gray-400 dark:text-gray-500 mt-2">1% of gross salary (max R17,712/month)</div>
+                  <div className="text-xs text-gray-300 dark:text-gray-500 mt-2">1% of gross salary (max R17,712/month)</div>
                 </div>
                 <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
                   <div className="flex items-center gap-3 mb-4">
                     <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl ">
                       <Calculator className="h-5 w-5 text-white" />
                     </div>
-                    <div className="text-xs text-gray-500 dark:text-gray-400">Total SDL (Skills Development Levy)</div>
+                    <div className="text-xs text-gray-500 dark:text-gray-300">Total SDL (Skills Development Levy)</div>
                   </div>
                   <div className="text-2xl font-bold text-green-600 dark:text-green-400">{formatCurrency(taxSummary.total_sdl)}</div>
-                  <div className="text-xs text-gray-400 dark:text-gray-500 mt-2">1% of total payroll</div>
+                  <div className="text-xs text-gray-300 dark:text-gray-500 mt-2">1% of total payroll</div>
                 </div>
               </div>
 
@@ -715,7 +715,7 @@ const PayrollDashboard: React.FC = () => {
                 <div className="text-5xl font-bold text-gray-900 dark:text-white">
                   {formatCurrency(taxSummary.total_paye + taxSummary.total_uif + taxSummary.total_sdl)}
                 </div>
-                <div className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                <div className="text-xs text-gray-500 dark:text-gray-300 mt-2">
                   Amount to be paid to SARS via EMP201 submission
                 </div>
               </div>
@@ -723,7 +723,7 @@ const PayrollDashboard: React.FC = () => {
           ) : (
             <div className="px-6 py-12 text-center">
               <Calculator className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
-              <p className="text-gray-500 dark:text-gray-400">No tax summary available</p>
+              <p className="text-gray-500 dark:text-gray-300">No tax summary available</p>
             </div>
           )}
         </div>

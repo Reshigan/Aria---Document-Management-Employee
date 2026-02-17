@@ -41,7 +41,7 @@ export default function Login() {
               <span className="text-4xl font-bold text-slate-900">A</span>
             </div>
             <h1 className="text-5xl font-bold text-white mb-4">ARIA</h1>
-            <p className="text-xl text-gray-400">AI-Native Enterprise Resource Planning</p>
+            <p className="text-xl text-gray-300">AI-Native Enterprise Resource Planning</p>
           </div>
           
           <div className="space-y-3 text-left">
@@ -51,7 +51,7 @@ export default function Login() {
               </div>
               <div>
                 <h3 className="font-semibold text-white mb-1">109 AI Automation Agents</h3>
-                <p className="text-xs text-gray-400">Intelligent bots handling your business processes 24/7</p>
+                <p className="text-xs text-gray-300">Intelligent bots handling your business processes 24/7</p>
               </div>
             </div>
             
@@ -61,7 +61,7 @@ export default function Login() {
               </div>
               <div>
                 <h3 className="font-semibold text-white mb-1">South African Compliance</h3>
-                <p className="text-xs text-gray-400">Built-in VAT, PAYE, UIF, and B-BBEE compliance</p>
+                <p className="text-xs text-gray-300">Built-in VAT, PAYE, UIF, and B-BBEE compliance</p>
               </div>
             </div>
             
@@ -71,7 +71,7 @@ export default function Login() {
               </div>
               <div>
                 <h3 className="font-semibold text-white mb-1">Complete ERP Suite</h3>
-                <p className="text-xs text-gray-400">Finance, HR, Inventory, CRM, Manufacturing and more</p>
+                <p className="text-xs text-gray-300">Finance, HR, Inventory, CRM, Manufacturing and more</p>
               </div>
             </div>
           </div>
@@ -92,14 +92,14 @@ export default function Login() {
               <span className="text-2xl font-bold text-slate-900">A</span>
             </div>
             <h1 className="text-2xl font-bold text-white">ARIA</h1>
-            <p className="text-gray-400 mt-1">AI-Native ERP Platform</p>
+            <p className="text-gray-300 mt-1">AI-Native ERP Platform</p>
           </div>
 
           {/* Login Card */}
           <div className="bg-slate-800/80 backdrop-blur-xl rounded-2xl p-8 shadow-2xl border border-white/10">
             <div className="text-center mb-8">
               <h2 className="text-2xl font-bold text-white mb-2">Welcome Back</h2>
-              <p className="text-gray-400">Sign in to your account to continue</p>
+              <p className="text-gray-300">Sign in to your account to continue</p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-3">
@@ -153,7 +153,7 @@ export default function Login() {
               <div className="flex items-center justify-between text-sm">
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input type="checkbox" className="w-4 h-4 rounded border-gray-600 bg-slate-900 text-amber-500 focus:ring-amber-500/50" />
-                  <span className="text-gray-400">Remember me</span>
+                  <span className="text-gray-300">Remember me</span>
                 </label>
                 <a href="#" className="text-amber-500 hover:text-amber-400 transition-colors">
                   Forgot password?
@@ -180,7 +180,7 @@ export default function Login() {
             </form>
 
             <div className="mt-8 pt-6 border-t border-white/10 text-center">
-              <p className="text-gray-400">
+              <p className="text-gray-300">
                 Don't have an account?{' '}
                 <Link to="/register" className="text-amber-500 font-medium hover:text-amber-400 transition-colors">
                   Create Account

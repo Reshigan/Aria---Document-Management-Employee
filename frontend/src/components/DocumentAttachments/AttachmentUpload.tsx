@@ -173,7 +173,7 @@ export const AttachmentUpload: React.FC<AttachmentUploadProps> = ({
         </div>
       ) : attachments.length === 0 ? (
         <div className="text-center py-8 text-gray-500">
-          <File size={48} className="mx-auto mb-2 text-gray-400" />
+          <File size={48} className="mx-auto mb-2 text-gray-300" />
           <p>No attachments yet</p>
           <p className="text-sm">Upload files to attach them to this document</p>
         </div>
@@ -184,7 +184,7 @@ export const AttachmentUpload: React.FC<AttachmentUploadProps> = ({
               key={attachment.id}
               className="flex items-center gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50"
             >
-              <File size={24} className="text-gray-400 flex-shrink-0" />
+              <File size={24} className="text-gray-300 flex-shrink-0" />
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">
                   <p className="font-medium truncate">{attachment.file_name}</p>

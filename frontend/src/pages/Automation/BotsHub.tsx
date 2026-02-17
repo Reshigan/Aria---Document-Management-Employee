@@ -127,7 +127,7 @@ export default function BotsHub() {
           </div>
           <div>
             <h1 className="text-xl font-bold text-gray-900 dark:text-white">Automation Agents</h1>
-            <p className="text-gray-600 dark:text-gray-400">67 AI-powered automation agents to streamline your business processes</p>
+            <p className="text-gray-600 dark:text-gray-300">67 AI-powered automation agents to streamline your business processes</p>
           </div>
         </div>
       </div>
@@ -135,7 +135,7 @@ export default function BotsHub() {
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 mb-6">
         <div className="flex flex-col md:flex-row gap-3">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-300" />
             <input
               type="text"
               placeholder="Search agents by name or description..."
@@ -164,7 +164,7 @@ export default function BotsHub() {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{agents.length}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Total Agents</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Total Agents</p>
             </div>
           </div>
         </div>
@@ -175,7 +175,7 @@ export default function BotsHub() {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{agents.filter(b => b.status === 'active').length}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Active Agents</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Active Agents</p>
             </div>
           </div>
         </div>
@@ -186,7 +186,7 @@ export default function BotsHub() {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{Object.keys(botsByCategory).length}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Categories</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Categories</p>
             </div>
           </div>
         </div>
@@ -197,7 +197,7 @@ export default function BotsHub() {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{agents.length > 0 ? Math.round(agents.reduce((sum, b) => sum + (b.success_rate || 0), 0) / agents.length) : 0}%</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Avg Success Rate</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Avg Success Rate</p>
             </div>
           </div>
         </div>
@@ -206,19 +206,19 @@ export default function BotsHub() {
       {loading ? (
         <div className="text-center py-12">
           <Cpu className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3 animate-pulse" />
-          <p className="text-gray-500 dark:text-gray-400">Loading agents...</p>
+          <p className="text-gray-500 dark:text-gray-300">Loading agents...</p>
         </div>
       ) : Object.keys(botsByCategory).length === 0 ? (
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-12 text-center">
           <Cpu className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
-          <p className="text-gray-500 dark:text-gray-400">No agents found matching your filters</p>
+          <p className="text-gray-500 dark:text-gray-300">No agents found matching your filters</p>
         </div>
       ) : (
         Object.entries(botsByCategory).map(([category, categoryBots]) => (
           <div key={category} className="mb-8">
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
               {category}
-              <span className="text-sm font-medium text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-full">
+              <span className="text-sm font-medium text-gray-500 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-full">
                 {categoryBots.length}
               </span>
             </h2>
@@ -237,10 +237,10 @@ export default function BotsHub() {
                       {agent.status}
                     </span>
                   </div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 line-clamp-2">
+                  <p className="text-sm text-gray-600 dark:text-gray-300 mb-4 line-clamp-2">
                     {agent.description}
                   </p>
-                  <div className="flex items-center justify-between mb-4 text-xs text-gray-500 dark:text-gray-400">
+                  <div className="flex items-center justify-between mb-4 text-xs text-gray-500 dark:text-gray-300">
                     <div className="flex items-center gap-1">
                       <Clock className="h-3.5 w-3.5" />
                       {agent.last_run ? new Date(agent.last_run).toLocaleDateString() : 'Never run'}

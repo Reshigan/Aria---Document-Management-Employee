@@ -20,16 +20,16 @@ export const Landing: React.FC = () => {
           </div>
           
           <div className="hidden md:flex items-center space-x-8">
-            <a href="#features" className="text-sm font-medium text-gray-400 hover:text-white transition">
+            <a href="#features" className="text-sm font-medium text-gray-300 hover:text-white transition">
               Features
             </a>
-            <a href="#modules" className="text-sm font-medium text-gray-400 hover:text-white transition">
+            <a href="#modules" className="text-sm font-medium text-gray-300 hover:text-white transition">
               Modules
             </a>
-            <a href="#pricing" className="text-sm font-medium text-gray-400 hover:text-white transition">
+            <a href="#pricing" className="text-sm font-medium text-gray-300 hover:text-white transition">
               Pricing
             </a>
-            <Link to="/login" className="text-sm font-medium text-gray-400 hover:text-white transition">
+            <Link to="/login" className="text-sm font-medium text-gray-300 hover:text-white transition">
               Sign In
             </Link>
             <Link 
@@ -67,7 +67,7 @@ export const Landing: React.FC = () => {
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-amber-600">Business Automation</span>
             </h1>
             
-            <p className="text-xl text-gray-400 mb-12 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-xl text-gray-300 mb-12 max-w-3xl mx-auto leading-relaxed">
               109 AI-powered automation agents and complete ERP modules ready to transform your business.
               Finance, HR, Inventory, CRM, Manufacturing, and full South African compliance built-in.
             </p>
@@ -155,7 +155,7 @@ export const Landing: React.FC = () => {
               <br />
               <span className="text-amber-500">Run Your Business</span>
             </h2>
-            <p className="text-xl text-gray-400 max-w-2xl mx-auto">
+            <p className="text-xl text-gray-300 max-w-2xl mx-auto">
               A complete AI-powered platform that replaces multiple systems and saves you time and money
             </p>
           </div>
@@ -210,7 +210,7 @@ export const Landing: React.FC = () => {
                   <feature.icon className="w-6 h-6 text-white" />
                 </div>
                 <h3 className="text-xl font-semibold text-white mb-3">{feature.title}</h3>
-                <p className="text-gray-400 leading-relaxed">{feature.description}</p>
+                <p className="text-gray-300 leading-relaxed">{feature.description}</p>
               </motion.div>
             ))}
           </div>
@@ -224,19 +224,19 @@ export const Landing: React.FC = () => {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
               <div>
                 <div className="text-4xl md:text-5xl font-bold text-amber-500 mb-2">93%</div>
-                <div className="text-gray-400">Cost Savings vs SAP</div>
+                <div className="text-gray-300">Cost Savings vs SAP</div>
               </div>
               <div>
                 <div className="text-4xl md:text-5xl font-bold text-white mb-2">24hrs</div>
-                <div className="text-gray-400">Time to Deployment</div>
+                <div className="text-gray-300">Time to Deployment</div>
               </div>
               <div>
                 <div className="text-4xl md:text-5xl font-bold text-white mb-2">109</div>
-                <div className="text-gray-400">AI Automation Agents</div>
+                <div className="text-gray-300">AI Automation Agents</div>
               </div>
               <div>
                 <div className="text-4xl md:text-5xl font-bold text-emerald-500 mb-2">99.8%</div>
-                <div className="text-gray-400">Uptime Guarantee</div>
+                <div className="text-gray-300">Uptime Guarantee</div>
               </div>
             </div>
           </div>
@@ -251,7 +251,7 @@ export const Landing: React.FC = () => {
             <br />
             <span className="text-amber-500">Your Business?</span>
           </h2>
-          <p className="text-xl text-gray-400 mb-10 max-w-2xl mx-auto">
+          <p className="text-xl text-gray-300 mb-10 max-w-2xl mx-auto">
             Start your 14-day free trial today. No credit card required. Full access to all features.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
@@ -283,14 +283,14 @@ export const Landing: React.FC = () => {
                 </div>
                 <span className="text-2xl font-bold text-white">ARIA</span>
               </div>
-              <p className="text-gray-400 text-sm leading-relaxed">
+              <p className="text-gray-300 text-sm leading-relaxed">
                 AI-Native Enterprise Resource Planning for South African businesses. Automate your operations with 109 intelligent agents.
               </p>
             </div>
             
             <div>
               <h4 className="font-semibold text-white mb-4">Product</h4>
-              <ul className="space-y-3 text-xs text-gray-400">
+              <ul className="space-y-3 text-xs text-gray-300">
                 <li><a href="#features" className="hover:text-amber-500 transition">Features</a></li>
                 <li><a href="#modules" className="hover:text-amber-500 transition">Modules</a></li>
                 <li><a href="#pricing" className="hover:text-amber-500 transition">Pricing</a></li>
@@ -300,7 +300,7 @@ export const Landing: React.FC = () => {
             
             <div>
               <h4 className="font-semibold text-white mb-4">Company</h4>
-              <ul className="space-y-3 text-xs text-gray-400">
+              <ul className="space-y-3 text-xs text-gray-300">
                 <li><a href="#" className="hover:text-amber-500 transition">About Us</a></li>
                 <li><a href="#" className="hover:text-amber-500 transition">Contact</a></li>
                 <li><a href="#" className="hover:text-amber-500 transition">Careers</a></li>
@@ -310,7 +310,7 @@ export const Landing: React.FC = () => {
             
             <div>
               <h4 className="font-semibold text-white mb-4">Legal</h4>
-              <ul className="space-y-3 text-xs text-gray-400">
+              <ul className="space-y-3 text-xs text-gray-300">
                 <li><a href="#" className="hover:text-amber-500 transition">Privacy Policy</a></li>
                 <li><a href="#" className="hover:text-amber-500 transition">Terms of Service</a></li>
                 <li><a href="#" className="hover:text-amber-500 transition">Security</a></li>

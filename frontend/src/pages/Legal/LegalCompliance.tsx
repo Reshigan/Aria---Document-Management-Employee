@@ -123,7 +123,7 @@ const LegalCompliance: React.FC = () => {
       <div className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-500 dark:text-gray-400">Loading legal documents...</p>
+          <p className="text-gray-500 dark:text-gray-300">Loading legal documents...</p>
         </div>
       </div>
     );
@@ -139,7 +139,7 @@ const LegalCompliance: React.FC = () => {
             </div>
             Legal Compliance
           </h1>
-          <p className="text-gray-500 dark:text-gray-400 ml-14">Manage legal documents and compliance requirements</p>
+          <p className="text-gray-500 dark:text-gray-300 ml-14">Manage legal documents and compliance requirements</p>
         </div>
         <button
           onClick={handleCreate}
@@ -166,7 +166,7 @@ const LegalCompliance: React.FC = () => {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{documents.filter(d => d.status === 'ACTIVE').length}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Active</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Active</p>
             </div>
           </div>
         </div>
@@ -177,7 +177,7 @@ const LegalCompliance: React.FC = () => {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{documents.filter(d => d.status === 'EXPIRING_SOON').length}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Expiring Soon</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Expiring Soon</p>
             </div>
           </div>
         </div>
@@ -188,7 +188,7 @@ const LegalCompliance: React.FC = () => {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{documents.filter(d => d.status === 'EXPIRED').length}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Expired</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Expired</p>
             </div>
           </div>
         </div>
@@ -199,7 +199,7 @@ const LegalCompliance: React.FC = () => {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{documents.length}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Total Documents</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Total Documents</p>
             </div>
           </div>
         </div>
@@ -210,21 +210,21 @@ const LegalCompliance: React.FC = () => {
         <table className="w-full" data-testid="documents-table">
           <thead className="bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-700">
             <tr>
-              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Document Type</th>
-              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Title</th>
-              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Expiry Date</th>
-              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
-              <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Document Type</th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Title</th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Expiry Date</th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
+              <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
             {loading ? (
-              <tr><td colSpan={5} className="px-6 py-12 text-center text-gray-500 dark:text-gray-400">Loading...</td></tr>
+              <tr><td colSpan={5} className="px-6 py-12 text-center text-gray-500 dark:text-gray-300">Loading...</td></tr>
             ) : documents.length === 0 ? (
               <tr>
                 <td colSpan={5} className="px-6 py-12 text-center">
                   <Scale className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
-                  <p className="text-gray-500 dark:text-gray-400">No legal documents found</p>
+                  <p className="text-gray-500 dark:text-gray-300">No legal documents found</p>
                 </td>
               </tr>
             ) : (

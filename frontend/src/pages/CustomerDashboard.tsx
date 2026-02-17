@@ -110,7 +110,7 @@ export const CustomerDashboard: React.FC = () => {
           <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2">
             Customer Growth Dashboard
           </h1>
-          <p className="text-gray-600 dark:text-gray-400">
+          <p className="text-gray-600 dark:text-gray-300">
             Track Aria's integration and discover expansion opportunities
           </p>
         </div>
@@ -120,7 +120,7 @@ export const CustomerDashboard: React.FC = () => {
           {/* Embedding Score */}
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700-md p-4">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400">
+              <h3 className="text-sm font-medium text-gray-600 dark:text-gray-300">
                 Embedding Score
               </h3>
               <Target className="w-5 h-5 text-indigo-600" />
@@ -141,7 +141,7 @@ export const CustomerDashboard: React.FC = () => {
           {/* Health Score */}
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700-md p-4">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400">
+              <h3 className="text-sm font-medium text-gray-600 dark:text-gray-300">
                 Health Score
               </h3>
               <Zap className="w-5 h-5 text-yellow-600" />
@@ -162,7 +162,7 @@ export const CustomerDashboard: React.FC = () => {
           {/* Active Users */}
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700-md p-4">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400">
+              <h3 className="text-sm font-medium text-gray-600 dark:text-gray-300">
                 Daily Active Users
               </h3>
               <Users className="w-5 h-5 text-blue-600" />
@@ -181,7 +181,7 @@ export const CustomerDashboard: React.FC = () => {
           {/* Departments */}
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700-md p-4">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400">
+              <h3 className="text-sm font-medium text-gray-600 dark:text-gray-300">
                 Departments
               </h3>
               <Bot className="w-5 h-5 text-purple-600" />
@@ -208,7 +208,7 @@ export const CustomerDashboard: React.FC = () => {
             
             {/* Positive Indicators */}
             <div className="mb-4">
-              <h4 className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
+              <h4 className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
                 ✅ Positive Signals
               </h4>
               <div className="space-y-2">
@@ -224,7 +224,7 @@ export const CustomerDashboard: React.FC = () => {
             {/* Risk Factors */}
             {health && (health.riskFactors || []).length > 0 && (
               <div>
-                <h4 className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
+                <h4 className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
                   ⚠️ Risk Factors
                 </h4>
                 <div className="space-y-2">
@@ -245,7 +245,7 @@ export const CustomerDashboard: React.FC = () => {
               </h4>
               <ul className="space-y-1">
                 {(health?.recommendedActions || []).map((action, i) => (
-                  <li key={i} className="text-sm text-gray-600 dark:text-gray-400">
+                  <li key={i} className="text-sm text-gray-600 dark:text-gray-300">
                     • {action}
                   </li>
                 ))}

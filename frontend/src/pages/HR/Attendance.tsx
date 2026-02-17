@@ -147,7 +147,7 @@ const Attendance: React.FC = () => {
             </div>
             Attendance Tracking
           </h1>
-          <p className="text-gray-500 dark:text-gray-400 mt-1">Monitor employee attendance and work hours</p>
+          <p className="text-gray-500 dark:text-gray-300 mt-1">Monitor employee attendance and work hours</p>
         </div>
         <button
           onClick={handleCreate}
@@ -188,7 +188,7 @@ const Attendance: React.FC = () => {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{presentCount}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Present</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Present</p>
             </div>
           </div>
         </div>
@@ -199,7 +199,7 @@ const Attendance: React.FC = () => {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{absentCount}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Absent</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Absent</p>
             </div>
           </div>
         </div>
@@ -210,7 +210,7 @@ const Attendance: React.FC = () => {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{lateCount}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Late</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Late</p>
             </div>
           </div>
         </div>
@@ -221,7 +221,7 @@ const Attendance: React.FC = () => {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{attendanceRate}%</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Attendance Rate</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Attendance Rate</p>
             </div>
           </div>
         </div>
@@ -232,7 +232,7 @@ const Attendance: React.FC = () => {
         {records.length === 0 ? (
           <div className="px-6 py-12 text-center">
             <Clock className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
-            <p className="text-gray-500 dark:text-gray-400">No attendance records for this date</p>
+            <p className="text-gray-500 dark:text-gray-300">No attendance records for this date</p>
           </div>
         ) : (
           <table className="w-full" data-testid="attendance-table">
@@ -251,11 +251,11 @@ const Attendance: React.FC = () => {
               {records.map((record) => (
                 <tr key={record.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                   <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">{record.employee_name}</td>
-                  <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{record.check_in || '-'}</td>
-                  <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{record.check_out || '-'}</td>
-                  <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{Number(record.hours_worked ?? 0).toFixed(1)}h</td>
+                  <td className="px-6 py-4 text-gray-500 dark:text-gray-300">{record.check_in || '-'}</td>
+                  <td className="px-6 py-4 text-gray-500 dark:text-gray-300">{record.check_out || '-'}</td>
+                  <td className="px-6 py-4 text-gray-500 dark:text-gray-300">{Number(record.hours_worked ?? 0).toFixed(1)}h</td>
                   <td className="px-6 py-4">{getStatusBadge(record.status)}</td>
-                  <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{record.notes || '-'}</td>
+                  <td className="px-6 py-4 text-gray-500 dark:text-gray-300">{record.notes || '-'}</td>
                   <td className="px-6 py-4">
                     <div className="flex gap-2 justify-center">
                       <button

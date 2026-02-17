@@ -319,7 +319,7 @@ const BOMManagement: React.FC = () => {
         <div className="flex justify-between items-center mb-6">
           <div>
             <h1 className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">Bill of Materials (BOM)</h1>
-            <p className="text-gray-600 dark:text-gray-400 mt-1">Manage product BOMs, versions, and material requirements</p>
+            <p className="text-gray-600 dark:text-gray-300 mt-1">Manage product BOMs, versions, and material requirements</p>
           </div>
           <button 
             onClick={handleCreate}
@@ -355,7 +355,7 @@ const BOMManagement: React.FC = () => {
           <button onClick={() => setFilter('all')} className={`bg-white dark:bg-gray-800 rounded-xl p-4 border-2 transition-all ${filter === 'all' ? 'border-blue-500 shadow-lg' : 'border-transparent hover:border-gray-200'}`}>
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs text-gray-500 dark:text-gray-400">Total</p>
+                <p className="text-xs text-gray-500 dark:text-gray-300">Total</p>
                 <p className="text-xl font-bold text-gray-900 dark:text-white">{stats.total}</p>
               </div>
               <Layers className="text-blue-500" size={24} />
@@ -364,16 +364,16 @@ const BOMManagement: React.FC = () => {
           <button onClick={() => setFilter('draft')} className={`bg-white dark:bg-gray-800 rounded-xl p-4 border-2 transition-all ${filter === 'draft' ? 'border-gray-500 shadow-lg' : 'border-transparent hover:border-gray-200'}`}>
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs text-gray-500 dark:text-gray-400">Draft</p>
+                <p className="text-xs text-gray-500 dark:text-gray-300">Draft</p>
                 <p className="text-2xl font-bold text-gray-600 dark:text-gray-300">{stats.draft}</p>
               </div>
-              <FileText className="text-gray-400" size={24} />
+              <FileText className="text-gray-300" size={24} />
             </div>
           </button>
           <button onClick={() => setFilter('approved')} className={`bg-white dark:bg-gray-800 rounded-xl p-4 border-2 transition-all ${filter === 'approved' ? 'border-blue-500 shadow-lg' : 'border-transparent hover:border-gray-200'}`}>
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs text-gray-500 dark:text-gray-400">Approved</p>
+                <p className="text-xs text-gray-500 dark:text-gray-300">Approved</p>
                 <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">{stats.approved}</p>
               </div>
               <CheckCircle className="text-blue-500" size={24} />
@@ -382,7 +382,7 @@ const BOMManagement: React.FC = () => {
           <button onClick={() => setFilter('active')} className={`bg-white dark:bg-gray-800 rounded-xl p-4 border-2 transition-all ${filter === 'active' ? 'border-emerald-500 shadow-lg' : 'border-transparent hover:border-gray-200'}`}>
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs text-gray-500 dark:text-gray-400">Active</p>
+                <p className="text-xs text-gray-500 dark:text-gray-300">Active</p>
                 <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">{stats.active}</p>
               </div>
               <Play className="text-emerald-500" size={24} />
@@ -391,7 +391,7 @@ const BOMManagement: React.FC = () => {
           <button onClick={() => setFilter('obsolete')} className={`bg-white dark:bg-gray-800 rounded-xl p-4 border-2 transition-all ${filter === 'obsolete' ? 'border-red-500 shadow-lg' : 'border-transparent hover:border-gray-200'}`}>
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs text-gray-500 dark:text-gray-400">Obsolete</p>
+                <p className="text-xs text-gray-500 dark:text-gray-300">Obsolete</p>
                 <p className="text-2xl font-bold text-red-600 dark:text-red-400">{stats.obsolete}</p>
               </div>
               <XCircle className="text-red-500" size={24} />
@@ -441,7 +441,7 @@ const BOMManagement: React.FC = () => {
                       <td className="px-6 py-4 text-sm">{bom.items?.length || 0} items</td>
                       <td className="px-6 py-4 text-sm font-medium">
                         <span className="flex items-center gap-1">
-                          <DollarSign size={14} className="text-gray-400" />
+                          <DollarSign size={14} className="text-gray-300" />
                           {(bom.total_cost || 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </span>
                       </td>

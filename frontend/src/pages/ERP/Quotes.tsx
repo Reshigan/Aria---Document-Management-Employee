@@ -347,7 +347,7 @@ export default function Quotes() {
       sent: { bg: 'bg-amber-100 dark:bg-amber-900/30', text: 'text-amber-700 dark:text-amber-300', border: 'border-amber-200 dark:border-amber-800' },
       accepted: { bg: 'bg-green-100 dark:bg-green-900/30', text: 'text-green-700 dark:text-green-300', border: 'border-green-200 dark:border-green-800' },
       rejected: { bg: 'bg-red-100 dark:bg-red-900/30', text: 'text-red-700 dark:text-red-300', border: 'border-red-200 dark:border-red-800' },
-      expired: { bg: 'bg-gray-100 dark:bg-gray-800', text: 'text-gray-500 dark:text-gray-400', border: 'border-gray-200 dark:border-gray-700' }
+      expired: { bg: 'bg-gray-100 dark:bg-gray-800', text: 'text-gray-500 dark:text-gray-300', border: 'border-gray-200 dark:border-gray-700' }
     };
     return configs[status] || configs.draft;
   };
@@ -366,11 +366,11 @@ export default function Quotes() {
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
           <div>
             <h1 className="text-2xl font-bold bg-gradient-to-r from-violet-600 to-purple-600 bg-clip-text text-transparent">Quotes</h1>
-            <p className="text-gray-500 dark:text-gray-400 text-sm">Manage customer quotes and convert to sales orders</p>
+            <p className="text-gray-500 dark:text-gray-300 text-sm">Manage customer quotes and convert to sales orders</p>
           </div>
           <div className="flex items-center gap-3">
             <button onClick={() => loadQuotes()} className="p-3 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-200 dark:border-gray-700">
-              <RefreshCw className={`h-5 w-5 text-gray-600 dark:text-gray-400 ${loading ? 'animate-spin' : ''}`} />
+              <RefreshCw className={`h-5 w-5 text-gray-600 dark:text-gray-300 ${loading ? 'animate-spin' : ''}`} />
             </button>
             <button onClick={handleCreate} className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-xl font-medium hover:from-violet-700 hover:to-purple-700 transition-all ">
               <Plus className="h-5 w-5" />New Quote
@@ -390,25 +390,25 @@ export default function Quotes() {
           <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-gradient-to-br from-violet-500 to-purple-500 rounded-lg"><FileCheck className="h-5 w-5 text-white" /></div>
-              <div><p className="text-xl font-bold text-gray-900 dark:text-white">{stats.total}</p><p className="text-xs text-gray-500 dark:text-gray-400">Total Quotes</p></div>
+              <div><p className="text-xl font-bold text-gray-900 dark:text-white">{stats.total}</p><p className="text-xs text-gray-500 dark:text-gray-300">Total Quotes</p></div>
             </div>
           </div>
           <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-gradient-to-br from-gray-500 to-gray-600 rounded-lg"><Clock className="h-5 w-5 text-white" /></div>
-              <div><p className="text-xl font-bold text-gray-900 dark:text-white">{stats.draft}</p><p className="text-xs text-gray-500 dark:text-gray-400">Draft</p></div>
+              <div><p className="text-xl font-bold text-gray-900 dark:text-white">{stats.draft}</p><p className="text-xs text-gray-500 dark:text-gray-300">Draft</p></div>
             </div>
           </div>
           <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-gradient-to-br from-amber-500 to-orange-500 rounded-lg"><Send className="h-5 w-5 text-white" /></div>
-              <div><p className="text-xl font-bold text-gray-900 dark:text-white">{stats.sent}</p><p className="text-xs text-gray-500 dark:text-gray-400">Sent</p></div>
+              <div><p className="text-xl font-bold text-gray-900 dark:text-white">{stats.sent}</p><p className="text-xs text-gray-500 dark:text-gray-300">Sent</p></div>
             </div>
           </div>
           <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-500 rounded-lg"><TrendingUp className="h-5 w-5 text-white" /></div>
-              <div><p className="text-xl font-bold text-gray-900 dark:text-white">R {Number(stats.totalValue ?? 0).toLocaleString()}</p><p className="text-xs text-gray-500 dark:text-gray-400">Total Value</p></div>
+              <div><p className="text-xl font-bold text-gray-900 dark:text-white">R {Number(stats.totalValue ?? 0).toLocaleString()}</p><p className="text-xs text-gray-500 dark:text-gray-300">Total Value</p></div>
             </div>
           </div>
         </div>
@@ -417,7 +417,7 @@ export default function Quotes() {
           <div className="p-3 border-b border-gray-100 dark:border-gray-700">
             <div className="flex flex-col md:flex-row gap-3">
               <div className="flex-1 relative">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-300" />
                 <input type="text" placeholder="Search by customer, quote number..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-12 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all" />
               </div>
               <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all min-w-[180px]">
@@ -435,13 +435,13 @@ export default function Quotes() {
           {loading ? (
             <div className="p-12 text-center">
               <RefreshCw className="h-8 w-8 animate-spin text-violet-500 mx-auto mb-4" />
-              <p className="text-gray-500 dark:text-gray-400">Loading quotes...</p>
+              <p className="text-gray-500 dark:text-gray-300">Loading quotes...</p>
             </div>
           ) : quotes.length === 0 ? (
             <div className="p-12 text-center">
-              <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-2xl flex items-center justify-center mx-auto mb-4"><FileCheck className="h-8 w-8 text-gray-400" /></div>
+              <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-2xl flex items-center justify-center mx-auto mb-4"><FileCheck className="h-8 w-8 text-gray-300" /></div>
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No quotes found</h3>
-              <p className="text-gray-500 dark:text-gray-400 mb-6">{searchTerm || statusFilter ? 'Try adjusting your filters' : 'Get started by creating your first quote'}</p>
+              <p className="text-gray-500 dark:text-gray-300 mb-6">{searchTerm || statusFilter ? 'Try adjusting your filters' : 'Get started by creating your first quote'}</p>
               {!searchTerm && !statusFilter && (
                 <button onClick={handleCreate} className="px-4 py-2 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-xl font-medium hover:from-violet-700 hover:to-purple-700 transition-all">Create First Quote</button>
               )}
@@ -451,13 +451,13 @@ export default function Quotes() {
               <table className="w-full">
                 <thead className="bg-gray-50 dark:bg-gray-900/50">
                   <tr>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Quote #</th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Customer</th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Date</th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Valid Until</th>
-                    <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Total</th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
-                    <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Quote #</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Customer</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Date</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Valid Until</th>
+                    <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Total</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
+                    <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
@@ -469,7 +469,7 @@ export default function Quotes() {
                           <Link to={`/quotes/${quote.id}`} className="font-semibold text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300">{quote.quote_number}</Link>
                         </td>
                         <td className="px-6 py-4">
-                          <div><p className="font-medium text-gray-900 dark:text-white">{quote.customer_name || '-'}</p>{quote.customer_email && (<p className="text-xs text-gray-500 dark:text-gray-400">{quote.customer_email}</p>)}</div>
+                          <div><p className="font-medium text-gray-900 dark:text-white">{quote.customer_name || '-'}</p>{quote.customer_email && (<p className="text-xs text-gray-500 dark:text-gray-300">{quote.customer_email}</p>)}</div>
                         </td>
                         <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{(quote.quote_date ? new Date(quote.quote_date).toLocaleDateString() : "-")}</td>
                         <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{quote.valid_until ? new Date(quote.valid_until).toLocaleDateString() : '-'}</td>
@@ -479,10 +479,10 @@ export default function Quotes() {
                         </td>
                         <td className="px-6 py-4">
                                                     <div className="flex items-center justify-end gap-1">
-                                                      <button onClick={() => handleDownloadPDF(quote)} title="Download PDF" className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-lg transition-colors"><Download className="h-4 w-4" /></button>
-                                                      <button onClick={() => handlePrintQuote(quote)} title="Print" className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-lg transition-colors"><Printer className="h-4 w-4" /></button>
+                                                      <button onClick={() => handleDownloadPDF(quote)} title="Download PDF" className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-lg transition-colors"><Download className="h-4 w-4" /></button>
+                                                      <button onClick={() => handlePrintQuote(quote)} title="Print" className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-lg transition-colors"><Printer className="h-4 w-4" /></button>
                                                       {quote.customer_email && (
-                                                        <button onClick={() => handleEmailQuote(quote)} title="Email Quote" className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-lg transition-colors"><Mail className="h-4 w-4" /></button>
+                                                        <button onClick={() => handleEmailQuote(quote)} title="Email Quote" className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-lg transition-colors"><Mail className="h-4 w-4" /></button>
                                                       )}
                                                       {quote.status === 'draft' && (
                                                         <button onClick={() => approveQuote(quote.id)} className="flex items-center gap-1 px-3 py-2 bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-lg text-xs font-medium hover:from-blue-600 hover:to-indigo-600 transition-all"><Check className="h-3.5 w-3.5" />Approve</button>

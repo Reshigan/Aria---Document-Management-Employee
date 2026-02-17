@@ -133,7 +133,7 @@ export default function ApiTest() {
       case 'error':
         return <XCircle className="w-5 h-5 text-red-500" />;
       case 'pending':
-        return <Loader className="w-5 h-5 text-gray-400 animate-spin" />;
+        return <Loader className="w-5 h-5 text-gray-300 animate-spin" />;
       default:
         return null;
     }
@@ -148,7 +148,7 @@ export default function ApiTest() {
               <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2">
                 API Connection Test
               </h1>
-              <p className="text-gray-600 dark:text-gray-400">
+              <p className="text-gray-600 dark:text-gray-300">
                 Test connection between frontend and backend API
               </p>
             </div>

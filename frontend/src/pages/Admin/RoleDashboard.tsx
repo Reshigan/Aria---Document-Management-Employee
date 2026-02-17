@@ -92,7 +92,7 @@ const RoleDashboard: React.FC = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen">
-        <div className="text-xl text-gray-600 dark:text-gray-400">Loading dashboard...</div>
+        <div className="text-xl text-gray-600 dark:text-gray-300">Loading dashboard...</div>
       </div>
     );
   }
@@ -101,7 +101,7 @@ const RoleDashboard: React.FC = () => {
     <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4 mx-auto">
       <div className="mb-6">
         <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{userRole} Dashboard</h1>
-        <p className="text-gray-600 dark:text-gray-400 mt-2">
+        <p className="text-gray-600 dark:text-gray-300 mt-2">
           Key performance indicators and metrics for your role
         </p>
       </div>
@@ -111,7 +111,7 @@ const RoleDashboard: React.FC = () => {
           <div key={index} className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700-md p-4 hover:shadow-lg transition-shadow">
             <div className="flex items-start justify-between mb-4">
               <div className="flex-1">
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">{kpi.label}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-300 mb-1">{kpi.label}</p>
                 <p className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{kpi.value}</p>
               </div>
               <div className="ml-4">{kpi.icon}</div>
@@ -126,7 +126,7 @@ const RoleDashboard: React.FC = () => {
               <span className={`ml-1 text-sm font-medium ${kpi.change >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                 {kpi.change > 0 ? '+' : ''}{kpi.change}%
               </span>
-              <span className="ml-2 text-xs text-gray-500 dark:text-gray-400">vs last month</span>
+              <span className="ml-2 text-xs text-gray-500 dark:text-gray-300">vs last month</span>
             </div>
           </div>
         ))}
@@ -142,7 +142,7 @@ const RoleDashboard: React.FC = () => {
                   <div className="w-2 h-2 bg-blue-600 dark:bg-blue-500 rounded-full mr-3"></div>
                   <div>
                     <p className="text-sm font-medium text-gray-900 dark:text-white">Sales Order SO-{1000 + item}</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">Created 2 hours ago</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-300">Created 2 hours ago</p>
                   </div>
                 </div>
                 <span className="text-sm font-medium text-gray-900 dark:text-white">R 12,450</span>
@@ -165,7 +165,7 @@ const RoleDashboard: React.FC = () => {
                   <AlertCircle size={16} className="text-orange-600 mr-3" />
                   <div>
                     <p className="text-sm font-medium text-gray-900 dark:text-white">{item.type}: {item.doc}</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">Waiting for action</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-300">Waiting for action</p>
                   </div>
                 </div>
                 <span className="text-sm font-medium text-gray-900 dark:text-white">{item.amount}</span>

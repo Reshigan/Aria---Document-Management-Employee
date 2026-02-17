@@ -11,11 +11,11 @@ const PrivacyPolicy: React.FC = () => {
             <Shield className="h-10 w-10 text-white" />
           </div>
           <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">Privacy Policy</h1>
-          <p className="text-gray-500 dark:text-gray-400">How we collect, use, and protect your information</p>
+          <p className="text-gray-500 dark:text-gray-300">How we collect, use, and protect your information</p>
         </div>
 
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-8">
-          <p className="text-xs text-gray-500 dark:text-gray-400 mb-6 pb-4 border-b border-gray-200 dark:border-gray-700">Last updated: October 27, 2025</p>
+          <p className="text-xs text-gray-500 dark:text-gray-300 mb-6 pb-4 border-b border-gray-200 dark:border-gray-700">Last updated: October 27, 2025</p>
           
           <div className="space-y-8">
             <div className="flex gap-3">

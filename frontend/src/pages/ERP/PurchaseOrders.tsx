@@ -341,11 +341,11 @@ export default function PurchaseOrders() {
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
           <div>
             <h1 className="text-2xl font-bold bg-gradient-to-r from-orange-600 to-amber-600 bg-clip-text text-transparent">Purchase Orders</h1>
-            <p className="text-gray-500 dark:text-gray-400 text-sm">Manage purchase orders and procurement workflow</p>
+            <p className="text-gray-500 dark:text-gray-300 text-sm">Manage purchase orders and procurement workflow</p>
           </div>
           <div className="flex items-center gap-3">
             <button onClick={() => loadOrders()} className="p-3 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-200 dark:border-gray-700">
-              <RefreshCw className={`h-5 w-5 text-gray-600 dark:text-gray-400 ${loading ? 'animate-spin' : ''}`} />
+              <RefreshCw className={`h-5 w-5 text-gray-600 dark:text-gray-300 ${loading ? 'animate-spin' : ''}`} />
             </button>
             <button onClick={() => setShowCreateModal(true)} className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-orange-600 to-amber-600 text-white rounded-xl font-medium hover:from-orange-700 hover:to-amber-700 transition-all ">
               <Plus className="h-5 w-5" />Create PO
@@ -365,25 +365,25 @@ export default function PurchaseOrders() {
           <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-gradient-to-br from-orange-500 to-amber-500 rounded-lg"><ShoppingCart className="h-5 w-5 text-white" /></div>
-              <div><p className="text-xl font-bold text-gray-900 dark:text-white">{stats.total}</p><p className="text-xs text-gray-500 dark:text-gray-400">Total POs</p></div>
+              <div><p className="text-xl font-bold text-gray-900 dark:text-white">{stats.total}</p><p className="text-xs text-gray-500 dark:text-gray-300">Total POs</p></div>
             </div>
           </div>
           <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-gradient-to-br from-gray-500 to-gray-600 rounded-lg"><Clock className="h-5 w-5 text-white" /></div>
-              <div><p className="text-xl font-bold text-gray-900 dark:text-white">{stats.draft}</p><p className="text-xs text-gray-500 dark:text-gray-400">Draft</p></div>
+              <div><p className="text-xl font-bold text-gray-900 dark:text-white">{stats.draft}</p><p className="text-xs text-gray-500 dark:text-gray-300">Draft</p></div>
             </div>
           </div>
           <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-lg"><Check className="h-5 w-5 text-white" /></div>
-              <div><p className="text-xl font-bold text-gray-900 dark:text-white">{stats.approved}</p><p className="text-xs text-gray-500 dark:text-gray-400">Approved</p></div>
+              <div><p className="text-xl font-bold text-gray-900 dark:text-white">{stats.approved}</p><p className="text-xs text-gray-500 dark:text-gray-300">Approved</p></div>
             </div>
           </div>
           <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-500 rounded-lg"><Package className="h-5 w-5 text-white" /></div>
-              <div><p className="text-xl font-bold text-gray-900 dark:text-white">R {Number(stats.totalValue ?? 0).toLocaleString()}</p><p className="text-xs text-gray-500 dark:text-gray-400">Total Value</p></div>
+              <div><p className="text-xl font-bold text-gray-900 dark:text-white">R {Number(stats.totalValue ?? 0).toLocaleString()}</p><p className="text-xs text-gray-500 dark:text-gray-300">Total Value</p></div>
             </div>
           </div>
         </div>
@@ -392,7 +392,7 @@ export default function PurchaseOrders() {
           <div className="p-3 border-b border-gray-100 dark:border-gray-700">
             <div className="flex flex-col md:flex-row gap-3">
               <div className="flex-1 relative">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-300" />
                 <input type="text" placeholder="Search by PO number or supplier..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-12 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all" />
               </div>
               <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all min-w-[180px]">
@@ -410,13 +410,13 @@ export default function PurchaseOrders() {
           {loading ? (
             <div className="p-12 text-center">
               <RefreshCw className="h-8 w-8 animate-spin text-orange-500 mx-auto mb-4" />
-              <p className="text-gray-500 dark:text-gray-400">Loading purchase orders...</p>
+              <p className="text-gray-500 dark:text-gray-300">Loading purchase orders...</p>
             </div>
           ) : filteredOrders.length === 0 ? (
             <div className="p-12 text-center">
-              <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-2xl flex items-center justify-center mx-auto mb-4"><ShoppingCart className="h-8 w-8 text-gray-400" /></div>
+              <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-2xl flex items-center justify-center mx-auto mb-4"><ShoppingCart className="h-8 w-8 text-gray-300" /></div>
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No purchase orders found</h3>
-              <p className="text-gray-500 dark:text-gray-400 mb-6">{searchTerm || statusFilter ? 'Try adjusting your filters' : 'Get started by creating your first purchase order'}</p>
+              <p className="text-gray-500 dark:text-gray-300 mb-6">{searchTerm || statusFilter ? 'Try adjusting your filters' : 'Get started by creating your first purchase order'}</p>
               {!searchTerm && !statusFilter && (
                 <button onClick={() => setShowCreateModal(true)} className="px-4 py-2 bg-gradient-to-r from-orange-600 to-amber-600 text-white rounded-xl font-medium hover:from-orange-700 hover:to-amber-700 transition-all">Create First PO</button>
               )}
@@ -426,13 +426,13 @@ export default function PurchaseOrders() {
               <table className="w-full">
                 <thead className="bg-gray-50 dark:bg-gray-900/50">
                   <tr>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">PO #</th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Supplier</th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">PO Date</th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Expected Delivery</th>
-                    <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Total</th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
-                    <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">PO #</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Supplier</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">PO Date</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Expected Delivery</th>
+                    <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Total</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
+                    <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
@@ -452,9 +452,9 @@ export default function PurchaseOrders() {
                         </td>
                         <td className="px-6 py-4">
                                                     <div className="flex items-center justify-end gap-1">
-                                                      <button onClick={() => handleDownloadPDF(order)} title="Download PDF" className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-lg transition-colors"><Download className="h-4 w-4" /></button>
-                                                      <button onClick={() => handlePrintPO(order)} title="Print" className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-lg transition-colors"><Printer className="h-4 w-4" /></button>
-                                                      <button onClick={() => handleEmailPO(order)} title="Email PO" className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-lg transition-colors"><Mail className="h-4 w-4" /></button>
+                                                      <button onClick={() => handleDownloadPDF(order)} title="Download PDF" className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-lg transition-colors"><Download className="h-4 w-4" /></button>
+                                                      <button onClick={() => handlePrintPO(order)} title="Print" className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-lg transition-colors"><Printer className="h-4 w-4" /></button>
+                                                      <button onClick={() => handleEmailPO(order)} title="Email PO" className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-lg transition-colors"><Mail className="h-4 w-4" /></button>
                                                       {order.status === 'draft' && (
                                                         <button onClick={() => approvePO(order.id)} className="flex items-center gap-1 px-3 py-2 bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-lg text-xs font-medium hover:from-blue-600 hover:to-indigo-600 transition-all"><Check className="h-3.5 w-3.5" />Approve</button>
                                                       )}
@@ -522,11 +522,11 @@ export default function PurchaseOrders() {
                     <table className="w-full text-sm">
                       <thead>
                         <tr className="border-b border-gray-200 dark:border-gray-700">
-                          <th className="px-3 py-2 text-left font-medium text-gray-600 dark:text-gray-400">Product</th>
-                          <th className="px-3 py-2 text-left font-medium text-gray-600 dark:text-gray-400">Description</th>
-                          <th className="px-3 py-2 text-right font-medium text-gray-600 dark:text-gray-400 w-24">Qty</th>
-                          <th className="px-3 py-2 text-right font-medium text-gray-600 dark:text-gray-400 w-32">Unit Price</th>
-                          <th className="px-3 py-2 text-right font-medium text-gray-600 dark:text-gray-400 w-32">Total</th>
+                          <th className="px-3 py-2 text-left font-medium text-gray-600 dark:text-gray-300">Product</th>
+                          <th className="px-3 py-2 text-left font-medium text-gray-600 dark:text-gray-300">Description</th>
+                          <th className="px-3 py-2 text-right font-medium text-gray-600 dark:text-gray-300 w-24">Qty</th>
+                          <th className="px-3 py-2 text-right font-medium text-gray-600 dark:text-gray-300 w-32">Unit Price</th>
+                          <th className="px-3 py-2 text-right font-medium text-gray-600 dark:text-gray-300 w-32">Total</th>
                           <th className="px-3 py-2 w-12"></th>
                         </tr>
                       </thead>
@@ -596,19 +596,19 @@ export default function PurchaseOrders() {
             <div className="p-3 space-y-2 overflow-y-auto max-h-[calc(90vh-120px)]">
               <div className="grid grid-cols-2 gap-3">
                 <div className="bg-gray-50 dark:bg-gray-900/50 rounded-lg p-3">
-                  <p className="text-xs text-gray-500 dark:text-gray-400">PO Date</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-300">PO Date</p>
                   <p className="font-medium text-gray-900 dark:text-white">{(selectedOrder.po_date ? new Date(selectedOrder.po_date).toLocaleDateString() : "-")}</p>
                 </div>
                 <div className="bg-gray-50 dark:bg-gray-900/50 rounded-lg p-3">
-                  <p className="text-xs text-gray-500 dark:text-gray-400">Expected Delivery</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-300">Expected Delivery</p>
                   <p className="font-medium text-gray-900 dark:text-white">{selectedOrder.expected_delivery_date ? new Date(selectedOrder.expected_delivery_date).toLocaleDateString() : '-'}</p>
                 </div>
                 <div className="bg-gray-50 dark:bg-gray-900/50 rounded-lg p-3">
-                  <p className="text-xs text-gray-500 dark:text-gray-400">Status</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-300">Status</p>
                   <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${getStatusConfig(selectedOrder.status).bg} ${getStatusConfig(selectedOrder.status).text} border ${getStatusConfig(selectedOrder.status).border} capitalize`}>{selectedOrder.status}</span>
                 </div>
                 <div className="bg-gray-50 dark:bg-gray-900/50 rounded-lg p-3">
-                  <p className="text-xs text-gray-500 dark:text-gray-400">Total Amount</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-300">Total Amount</p>
                   <p className="font-bold text-xl text-gray-900 dark:text-white">R {Number(selectedOrder.total_amount ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
                 </div>
               </div>
@@ -620,7 +620,7 @@ export default function PurchaseOrders() {
                       <div key={index} className="flex justify-between items-center py-2 border-b border-gray-200 dark:border-gray-700 last:border-0">
                         <div>
                           <p className="font-medium text-gray-900 dark:text-white">{line.description}</p>
-                          <p className="text-xs text-gray-500 dark:text-gray-400">{line.quantity} x R {Number(line.unit_price ?? 0).toFixed(2)}</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-300">{line.quantity} x R {Number(line.unit_price ?? 0).toFixed(2)}</p>
                         </div>
                         <p className="font-medium text-gray-900 dark:text-white">R {Number(line.line_total ?? 0).toFixed(2)}</p>
                       </div>

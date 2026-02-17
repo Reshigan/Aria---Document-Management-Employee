@@ -57,7 +57,7 @@ export const Signup: React.FC = () => {
             <div>
               <label className="block text-sm font-medium text-gray-200 mb-2">Full Name</label>
               <div className="relative">
-                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-300" />
                 <input
                   type="text"
                   value={formData.full_name}
@@ -72,7 +72,7 @@ export const Signup: React.FC = () => {
             <div>
               <label className="block text-sm font-medium text-gray-200 mb-2">Email</label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-300" />
                 <input
                   type="email"
                   value={formData.email}
@@ -87,7 +87,7 @@ export const Signup: React.FC = () => {
             <div>
               <label className="block text-sm font-medium text-gray-200 mb-2">Organization Name</label>
               <div className="relative">
-                <Building className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <Building className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-300" />
                 <input
                   type="text"
                   value={formData.organization_name}
@@ -102,7 +102,7 @@ export const Signup: React.FC = () => {
             <div>
               <label className="block text-sm font-medium text-gray-200 mb-2">Password</label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-300" />
                 <input
                   type="password"
                   value={formData.password}
@@ -113,7 +113,7 @@ export const Signup: React.FC = () => {
                   placeholder="••••••••"
                 />
               </div>
-              <p className="text-xs text-gray-400 mt-1">Minimum 8 characters</p>
+              <p className="text-xs text-gray-300 mt-1">Minimum 8 characters</p>
             </div>
 
             <button

@@ -67,7 +67,7 @@ const VATSummaryReport: React.FC = () => {
       <div className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-xl font-bold text-gray-900 dark:text-white">VAT Summary Report (VAT201)</h1>
-          <p className="text-gray-500 dark:text-gray-400 mt-1">South African Revenue Service (SARS) VAT Return</p>
+          <p className="text-gray-500 dark:text-gray-300 mt-1">South African Revenue Service (SARS) VAT Return</p>
         </div>
         <button className="px-4 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-md hover:bg-blue-700 flex items-center">
           <Download className="w-4 h-4 mr-2" />
@@ -85,14 +85,14 @@ const VATSummaryReport: React.FC = () => {
             onChange={(e) => setPeriod({ ...period, start: e.target.value })}
             className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
           />
-          <span className="text-gray-500 dark:text-gray-400">to</span>
+          <span className="text-gray-500 dark:text-gray-300">to</span>
           <input
             type="date"
             value={period.end}
             onChange={(e) => setPeriod({ ...period, end: e.target.value })}
             className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
           />
-          <div className="ml-auto text-xs text-gray-500 dark:text-gray-400">
+          <div className="ml-auto text-xs text-gray-500 dark:text-gray-300">
             Report Generated: {formatDate(new Date())}
           </div>
         </div>
@@ -146,7 +146,7 @@ const VATSummaryReport: React.FC = () => {
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden mb-6">
         <div className="bg-gray-50 dark:bg-gray-900 px-6 py-3 border-b">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white">VAT201 Return Form</h2>
-          <p className="text-sm text-gray-600 dark:text-gray-400">Period: {formatDate(new Date(period.start))} - {formatDate(new Date(period.end))}</p>
+          <p className="text-sm text-gray-600 dark:text-gray-300">Period: {formatDate(new Date(period.start))} - {formatDate(new Date(period.end))}</p>
         </div>
 
         <div className="p-6">
@@ -217,11 +217,11 @@ const VATSummaryReport: React.FC = () => {
           </h3>
           <div className="space-y-3">
             <div className="flex justify-between text-sm">
-              <span className="text-gray-600 dark:text-gray-400">Standard Rated Sales:</span>
+              <span className="text-gray-600 dark:text-gray-300">Standard Rated Sales:</span>
               <span className="font-medium">{formatCurrency(data.sales_excl_vat)}</span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-gray-600 dark:text-gray-400">VAT on Sales (15%):</span>
+              <span className="text-gray-600 dark:text-gray-300">VAT on Sales (15%):</span>
               <span className="font-medium text-blue-600 dark:text-blue-400">{formatCurrency(data.output_vat)}</span>
             </div>
             <div className="flex justify-between text-sm pt-2 border-t">
@@ -238,11 +238,11 @@ const VATSummaryReport: React.FC = () => {
           </h3>
           <div className="space-y-3">
             <div className="flex justify-between text-sm">
-              <span className="text-gray-600 dark:text-gray-400">Standard Rated Purchases:</span>
+              <span className="text-gray-600 dark:text-gray-300">Standard Rated Purchases:</span>
               <span className="font-medium">{formatCurrency(data.purchases_excl_vat)}</span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-gray-600 dark:text-gray-400">VAT on Purchases (15%):</span>
+              <span className="text-gray-600 dark:text-gray-300">VAT on Purchases (15%):</span>
               <span className="font-medium text-green-600 dark:text-green-400">{formatCurrency(data.input_vat)}</span>
             </div>
             <div className="flex justify-between text-sm pt-2 border-t">

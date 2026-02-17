@@ -61,7 +61,7 @@ const StockValuationReport: React.FC = () => {
       <div className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-xl font-bold text-gray-900 dark:text-white">Stock Valuation Report</h1>
-          <p className="text-gray-500 dark:text-gray-400 mt-1">Current inventory valuation</p>
+          <p className="text-gray-500 dark:text-gray-300 mt-1">Current inventory valuation</p>
         </div>
         <button className="px-4 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-md hover:bg-blue-700 flex items-center">
           <Download className="w-4 h-4 mr-2" />
@@ -122,7 +122,7 @@ const StockValuationReport: React.FC = () => {
                   style={{ width: `${cat.percentage}%` }}
                 />
               </div>
-              <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">{Number(cat.percentage ?? 0).toFixed(1)}% of total inventory value</div>
+              <div className="text-xs text-gray-500 dark:text-gray-300 mt-1">{Number(cat.percentage ?? 0).toFixed(1)}% of total inventory value</div>
             </div>
           ))}
         </div>
@@ -147,12 +147,12 @@ const StockValuationReport: React.FC = () => {
         <table className="w-full">
           <thead className="bg-gray-50 dark:bg-gray-900 border-b-2 border-gray-200 dark:border-gray-700">
             <tr>
-              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Product Code</th>
-              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Product Name</th>
-              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Category</th>
-              <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Quantity</th>
-              <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Cost Price</th>
-              <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Total Value</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Product Code</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Product Name</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Category</th>
+              <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Quantity</th>
+              <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Cost Price</th>
+              <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Total Value</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200 dark:divide-gray-700">

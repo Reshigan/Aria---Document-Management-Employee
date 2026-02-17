@@ -191,7 +191,7 @@ export default function CommandPalette({ isOpen, onClose }: CommandPaletteProps)
         <div className="relative w-full max-w-2xl bg-white rounded-xl shadow-2xl overflow-hidden">
           {/* Search Input */}
           <div className="flex items-center px-4 py-3 border-b">
-            <Search className="h-5 w-5 text-gray-400 mr-3" />
+            <Search className="h-5 w-5 text-gray-300 mr-3" />
             <input
               ref={inputRef}
               type="text"
@@ -203,7 +203,7 @@ export default function CommandPalette({ isOpen, onClose }: CommandPaletteProps)
               placeholder="Type a command or search..."
               className="flex-1 text-lg outline-none placeholder-gray-400"
             />
-            <div className="flex items-center gap-1 text-xs text-gray-400">
+            <div className="flex items-center gap-1 text-xs text-gray-300">
               <kbd className="px-1.5 py-0.5 bg-gray-100 rounded">Esc</kbd>
               <span>to close</span>
             </div>
@@ -242,7 +242,7 @@ export default function CommandPalette({ isOpen, onClose }: CommandPaletteProps)
                           <div className="flex items-center gap-2">
                             <span className="font-medium truncate">{cmd.title}</span>
                             {isRecent && (
-                              <Clock className="h-3 w-3 text-gray-400" />
+                              <Clock className="h-3 w-3 text-gray-300" />
                             )}
                           </div>
                           {cmd.description && (
@@ -250,7 +250,7 @@ export default function CommandPalette({ isOpen, onClose }: CommandPaletteProps)
                           )}
                         </div>
                         {isSelected && (
-                          <div className="flex items-center gap-1 text-xs text-gray-400">
+                          <div className="flex items-center gap-1 text-xs text-gray-300">
                             <kbd className="px-1.5 py-0.5 bg-gray-100 rounded">Enter</kbd>
                           </div>
                         )}

@@ -152,7 +152,7 @@ export default function MigrationJobs() {
           </div>
           <div>
             <h1 className="text-xl font-bold text-gray-900 dark:text-white">Data Migration</h1>
-            <p className="text-gray-600 dark:text-gray-400">Import data from external systems into ARIA ERP</p>
+            <p className="text-gray-600 dark:text-gray-300">Import data from external systems into ARIA ERP</p>
           </div>
         </div>
       </div>
@@ -165,7 +165,7 @@ export default function MigrationJobs() {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{jobs.length}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Total Jobs</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Total Jobs</p>
             </div>
           </div>
         </div>
@@ -176,7 +176,7 @@ export default function MigrationJobs() {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{Number(totalRecords ?? 0).toLocaleString()}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Total Records</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Total Records</p>
             </div>
           </div>
         </div>
@@ -187,7 +187,7 @@ export default function MigrationJobs() {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{Number(successRecords ?? 0).toLocaleString()}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Successful</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Successful</p>
             </div>
           </div>
         </div>
@@ -198,7 +198,7 @@ export default function MigrationJobs() {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{Number(errorRecords ?? 0).toLocaleString()}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Errors</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Errors</p>
             </div>
           </div>
         </div>
@@ -207,7 +207,7 @@ export default function MigrationJobs() {
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
         <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex flex-col md:flex-row gap-3">
           <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-300" />
             <input
               type="text"
               placeholder="Search jobs..."
@@ -256,12 +256,12 @@ export default function MigrationJobs() {
                   <td className="px-6 py-4">
                     <div className="font-medium text-gray-900 dark:text-white">{job.name}</div>
                     {job.description && (
-                      <div className="text-xs text-gray-500 dark:text-gray-400 truncate max-w-xs">{job.description}</div>
+                      <div className="text-xs text-gray-500 dark:text-gray-300 truncate max-w-xs">{job.description}</div>
                     )}
                   </td>
                   <td className="px-6 py-4">
                     <div className="text-sm font-medium text-gray-900 dark:text-white">{job.source_system}</div>
-                    <div className="text-xs text-gray-500 dark:text-gray-400">{job.source_type.toUpperCase()}</div>
+                    <div className="text-xs text-gray-500 dark:text-gray-300">{job.source_type.toUpperCase()}</div>
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">
                     {job.target_module}
@@ -274,9 +274,9 @@ export default function MigrationJobs() {
                           style={{ width: `${getProgress(job)}%` }}
                         />
                       </div>
-                      <span className="text-xs text-gray-600 dark:text-gray-400">{getProgress(job)}%</span>
+                      <span className="text-xs text-gray-600 dark:text-gray-300">{getProgress(job)}%</span>
                     </div>
-                    <div className="text-xs text-center text-gray-500 dark:text-gray-400 mt-1">
+                    <div className="text-xs text-center text-gray-500 dark:text-gray-300 mt-1">
                       {job.processed_records || 0} / {job.total_records || 0}
                     </div>
                   </td>
@@ -335,7 +335,7 @@ export default function MigrationJobs() {
           {filteredJobs.length === 0 && (
             <div className="p-12 text-center">
               <Database className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
-              <p className="text-gray-500 dark:text-gray-400">
+              <p className="text-gray-500 dark:text-gray-300">
                 {searchTerm || filterStatus 
                   ? 'No migration jobs found matching your criteria' 
                   : 'No migration jobs yet. Create your first one!'}

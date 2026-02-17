@@ -31,7 +31,7 @@ const AssetManagement: React.FC = () => {
       OPERATIONAL: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400',
       MAINTENANCE: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
       REPAIR: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400',
-      RETIRED: 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-400',
+      RETIRED: 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300',
       INACTIVE: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
     };
     return (
@@ -46,7 +46,7 @@ const AssetManagement: React.FC = () => {
       <div className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-teal-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-500 dark:text-gray-400">Loading assets...</p>
+          <p className="text-gray-500 dark:text-gray-300">Loading assets...</p>
         </div>
       </div>
     );
@@ -64,7 +64,7 @@ const AssetManagement: React.FC = () => {
               </div>
               Asset Management
             </h1>
-            <p className="text-gray-500 dark:text-gray-400 ml-14">Track and manage equipment assets</p>
+            <p className="text-gray-500 dark:text-gray-300 ml-14">Track and manage equipment assets</p>
           </div>
           <button className="flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-teal-500 to-cyan-500 text-white rounded-xl font-semibold  hover:shadow-xl hover:shadow-teal-500/40 transition-all duration-200">
             <Plus size={20} />
@@ -81,7 +81,7 @@ const AssetManagement: React.FC = () => {
               </div>
               <div>
                 <p className="text-xl font-bold text-gray-900 dark:text-white">{assets.length}</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">Total Assets</p>
+                <p className="text-xs text-gray-500 dark:text-gray-300">Total Assets</p>
               </div>
             </div>
           </div>
@@ -92,7 +92,7 @@ const AssetManagement: React.FC = () => {
               </div>
               <div>
                 <p className="text-xl font-bold text-gray-900 dark:text-white">{assets.filter(a => a.status?.toUpperCase() === 'ACTIVE' || a.status?.toUpperCase() === 'OPERATIONAL').length}</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">Operational</p>
+                <p className="text-xs text-gray-500 dark:text-gray-300">Operational</p>
               </div>
             </div>
           </div>
@@ -103,7 +103,7 @@ const AssetManagement: React.FC = () => {
               </div>
               <div>
                 <p className="text-xl font-bold text-gray-900 dark:text-white">{assets.filter(a => a.status?.toUpperCase() === 'MAINTENANCE' || a.status?.toUpperCase() === 'REPAIR').length}</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">In Maintenance</p>
+                <p className="text-xs text-gray-500 dark:text-gray-300">In Maintenance</p>
               </div>
             </div>
           </div>
@@ -114,7 +114,7 @@ const AssetManagement: React.FC = () => {
               </div>
               <div>
                 <p className="text-xl font-bold text-gray-900 dark:text-white">{assets.filter(a => a.status?.toUpperCase() === 'RETIRED' || a.status?.toUpperCase() === 'INACTIVE').length}</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">Retired/Inactive</p>
+                <p className="text-xs text-gray-500 dark:text-gray-300">Retired/Inactive</p>
               </div>
             </div>
           </div>
@@ -125,11 +125,11 @@ const AssetManagement: React.FC = () => {
           <table className="w-full">
             <thead className="bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-700">
               <tr>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Asset ID</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Name</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Type</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Location</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Asset ID</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Name</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Type</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Location</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
@@ -137,7 +137,7 @@ const AssetManagement: React.FC = () => {
                 <tr>
                   <td colSpan={5} className="px-6 py-12 text-center">
                     <Wrench className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
-                    <p className="text-gray-500 dark:text-gray-400">No assets found</p>
+                    <p className="text-gray-500 dark:text-gray-300">No assets found</p>
                   </td>
                 </tr>
               ) : (

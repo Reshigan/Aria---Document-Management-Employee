@@ -178,7 +178,7 @@ export default function FinancialReports() {
           <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
             {data.accounts?.map((account: any, idx: number) => (
               <tr key={idx} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-                <td className="p-4 text-gray-500 dark:text-gray-400">{account.account_code}</td>
+                <td className="p-4 text-gray-500 dark:text-gray-300">{account.account_code}</td>
                 <td className="p-4 font-medium text-gray-900 dark:text-white">{account.account_name}</td>
                 <td className="p-4 text-right text-emerald-600 dark:text-emerald-400">
                   {account.debit > 0 ? `R ${Number(account.debit ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : '-'}
@@ -259,7 +259,7 @@ export default function FinancialReports() {
           <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Assets</h3>
           
           <div className="mb-6">
-            <h4 className="text-base font-semibold text-gray-500 dark:text-gray-400 mb-2">Current Assets</h4>
+            <h4 className="text-base font-semibold text-gray-500 dark:text-gray-300 mb-2">Current Assets</h4>
             {data.current_assets?.map((item: any, idx: number) => (
               <div key={idx} className="flex justify-between py-2 text-gray-700 dark:text-gray-300">
                 <span>{item.account_name}</span>
@@ -273,7 +273,7 @@ export default function FinancialReports() {
           </div>
 
           <div>
-            <h4 className="text-base font-semibold text-gray-500 dark:text-gray-400 mb-2">Fixed Assets</h4>
+            <h4 className="text-base font-semibold text-gray-500 dark:text-gray-300 mb-2">Fixed Assets</h4>
             {data.fixed_assets?.map((item: any, idx: number) => (
               <div key={idx} className="flex justify-between py-2 text-gray-700 dark:text-gray-300">
                 <span>{item.account_name}</span>
@@ -298,7 +298,7 @@ export default function FinancialReports() {
           <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Liabilities & Equity</h3>
           
           <div className="mb-6">
-            <h4 className="text-base font-semibold text-gray-500 dark:text-gray-400 mb-2">Current Liabilities</h4>
+            <h4 className="text-base font-semibold text-gray-500 dark:text-gray-300 mb-2">Current Liabilities</h4>
             {data.current_liabilities?.map((item: any, idx: number) => (
               <div key={idx} className="flex justify-between py-2 text-gray-700 dark:text-gray-300">
                 <span>{item.account_name}</span>
@@ -312,7 +312,7 @@ export default function FinancialReports() {
           </div>
 
           <div className="mb-6">
-            <h4 className="text-base font-semibold text-gray-500 dark:text-gray-400 mb-2">Long-term Liabilities</h4>
+            <h4 className="text-base font-semibold text-gray-500 dark:text-gray-300 mb-2">Long-term Liabilities</h4>
             {data.long_term_liabilities?.map((item: any, idx: number) => (
               <div key={idx} className="flex justify-between py-2 text-gray-700 dark:text-gray-300">
                 <span>{item.account_name}</span>
@@ -326,7 +326,7 @@ export default function FinancialReports() {
           </div>
 
           <div>
-            <h4 className="text-base font-semibold text-gray-500 dark:text-gray-400 mb-2">Equity</h4>
+            <h4 className="text-base font-semibold text-gray-500 dark:text-gray-300 mb-2">Equity</h4>
             {data.equity?.map((item: any, idx: number) => (
               <div key={idx} className="flex justify-between py-2 text-gray-700 dark:text-gray-300">
                 <span>{item.account_name}</span>
@@ -399,7 +399,7 @@ export default function FinancialReports() {
 
   const renderReport = () => {
     if (loading) {
-      return <div className="p-12 text-center text-gray-500 dark:text-gray-400">Loading report...</div>;
+      return <div className="p-12 text-center text-gray-500 dark:text-gray-300">Loading report...</div>;
     }
 
     switch (selectedReport) {
@@ -414,7 +414,7 @@ export default function FinancialReports() {
       case 'aged_payables':
         return renderAgedReport('payables');
       default:
-        return <div className="p-12 text-center text-gray-500 dark:text-gray-400">Select a report to view</div>;
+        return <div className="p-12 text-center text-gray-500 dark:text-gray-300">Select a report to view</div>;
     }
   };
 
@@ -423,7 +423,7 @@ export default function FinancialReports() {
       <div className="mx-auto">
         <div className="mb-8">
           <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Financial Reports</h1>
-          <p className="text-gray-500 dark:text-gray-400 mt-1">View comprehensive financial reports and analytics</p>
+          <p className="text-gray-500 dark:text-gray-300 mt-1">View comprehensive financial reports and analytics</p>
         </div>
 
         <div className="flex flex-col lg:flex-row gap-8">
@@ -456,7 +456,7 @@ export default function FinancialReports() {
               </h3>
               <div className="space-y-3">
                 <div>
-                  <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
+                  <label className="block text-xs font-medium text-gray-500 dark:text-gray-300 mb-1">
                     Start Date
                   </label>
                   <input
@@ -467,7 +467,7 @@ export default function FinancialReports() {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
+                  <label className="block text-xs font-medium text-gray-500 dark:text-gray-300 mb-1">
                     End Date
                   </label>
                   <input

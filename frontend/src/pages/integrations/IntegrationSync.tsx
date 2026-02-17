@@ -77,7 +77,7 @@ export default function IntegrationSyncPage() {
             </div>
             Integration Sync History
           </h1>
-          <p className="text-gray-500 dark:text-gray-400 ml-14">Monitor and manage data synchronization</p>
+          <p className="text-gray-500 dark:text-gray-300 ml-14">Monitor and manage data synchronization</p>
         </div>
         <button 
           onClick={handleSyncAll}
@@ -103,7 +103,7 @@ export default function IntegrationSyncPage() {
                 </div>
                 <div>
                   <p className="text-xl font-bold text-gray-900 dark:text-white">{summary.total_today}</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">Total Syncs Today</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-300">Total Syncs Today</p>
                 </div>
               </div>
             </div>
@@ -115,7 +115,7 @@ export default function IntegrationSyncPage() {
                 </div>
                 <div>
                   <p className="text-xl font-bold text-gray-900 dark:text-white">{summary.successful}</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">Successful</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-300">Successful</p>
                 </div>
               </div>
             </div>
@@ -127,7 +127,7 @@ export default function IntegrationSyncPage() {
                 </div>
                 <div>
                   <p className="text-xl font-bold text-gray-900 dark:text-white">{summary.failed}</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">Failed</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-300">Failed</p>
                 </div>
               </div>
             </div>

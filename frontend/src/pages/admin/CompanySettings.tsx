@@ -252,7 +252,7 @@ export default function CompanySettingsPage() {
     <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 container mx-auto p-4">
       <div className="mb-6">
         <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Company Settings</h1>
-        <p className="text-gray-600 dark:text-gray-400 mt-2">Configure your company details and preferences</p>
+        <p className="text-gray-600 dark:text-gray-300 mt-2">Configure your company details and preferences</p>
       </div>
 
       {successMessage && (
@@ -481,7 +481,7 @@ export default function CompanySettingsPage() {
                     onChange={(e) => setSettings({ ...settings, bbbee_level: parseInt(e.target.value) })}
                     className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md"
                   />
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Enter 1-8 for BBBEE Level, or 0 for Non-Compliant</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-300 mt-1">Enter 1-8 for BBBEE Level, or 0 for Non-Compliant</p>
                 </div>
 
                 <div>
@@ -603,7 +603,7 @@ export default function CompanySettingsPage() {
                     />
                   ) : (
                     <div className="w-32 h-32 bg-gray-100 dark:bg-gray-700 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg flex items-center justify-center">
-                      <Upload className="h-8 w-8 text-gray-400" />
+                      <Upload className="h-8 w-8 text-gray-300" />
                     </div>
                   )}
                 </div>
@@ -614,7 +614,7 @@ export default function CompanySettingsPage() {
                     onChange={handleLogoUpload}
                     className="mb-2"
                   />
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                  <p className="text-xs text-gray-500 dark:text-gray-300">
                     Recommended: PNG or SVG, max 2MB, square aspect ratio
                   </p>
                 </div>

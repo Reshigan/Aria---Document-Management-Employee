@@ -242,13 +242,13 @@ export default function GenerateDocumentPage() {
                 </button>
                 <div className="border-t pt-3 space-y-2">
                   <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">Subtotal:</span>
+                    <span className="text-gray-600 dark:text-gray-300">Subtotal:</span>
                     <span className="font-medium" data-testid="subtotal">
                       R {lineItems.reduce((sum, item) => sum + (item.quantity * item.unitPrice), 0).toFixed(2)}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">VAT (15%):</span>
+                    <span className="text-gray-600 dark:text-gray-300">VAT (15%):</span>
                     <span className="font-medium" data-testid="vat">
                       R {(lineItems.reduce((sum, item) => sum + (item.quantity * item.unitPrice), 0) * 0.15).toFixed(2)}
                     </span>
@@ -307,7 +307,7 @@ export default function GenerateDocumentPage() {
             <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4">
               <h2 className="text-2xl font-bold mb-4">Document Preview</h2>
               <div className="border rounded p-8 bg-gray-50 dark:bg-gray-900 min-h-[500px]" data-testid="pdf-preview">
-                <div className="text-center text-gray-500 dark:text-gray-400">PDF Preview would render here</div>
+                <div className="text-center text-gray-500 dark:text-gray-300">PDF Preview would render here</div>
               </div>
               <div className="flex justify-end gap-3 mt-6">
                 <button

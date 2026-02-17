@@ -138,7 +138,7 @@ const Reconciliation: React.FC = () => {
           </div>
           <div>
             <h1 className="text-xl font-bold text-gray-900 dark:text-white">Bank Reconciliation</h1>
-            <p className="text-gray-600 dark:text-gray-400">Reconcile bank statements with accounting records</p>
+            <p className="text-gray-600 dark:text-gray-300">Reconcile bank statements with accounting records</p>
           </div>
         </div>
         <button
@@ -165,7 +165,7 @@ const Reconciliation: React.FC = () => {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{reconciliations.filter(r => r.status === 'IN_PROGRESS').length}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">In Progress</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">In Progress</p>
             </div>
           </div>
         </div>
@@ -176,7 +176,7 @@ const Reconciliation: React.FC = () => {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{reconciliations.filter(r => r.status === 'COMPLETED').length}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Completed</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Completed</p>
             </div>
           </div>
         </div>
@@ -187,7 +187,7 @@ const Reconciliation: React.FC = () => {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{reconciliations.filter(r => r.status === 'APPROVED').length}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Approved</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Approved</p>
             </div>
           </div>
         </div>
@@ -210,19 +210,19 @@ const Reconciliation: React.FC = () => {
             </thead>
             <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
               {loading ? (
-                <tr><td colSpan={8} className="px-6 py-12 text-center text-gray-500 dark:text-gray-400">Loading...</td></tr>
+                <tr><td colSpan={8} className="px-6 py-12 text-center text-gray-500 dark:text-gray-300">Loading...</td></tr>
               ) : reconciliations.length === 0 ? (
-                <tr><td colSpan={8} className="px-6 py-12 text-center text-gray-500 dark:text-gray-400">No reconciliations found</td></tr>
+                <tr><td colSpan={8} className="px-6 py-12 text-center text-gray-500 dark:text-gray-300">No reconciliations found</td></tr>
               ) : (
                 reconciliations.map((recon) => (
                   <tr key={recon.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                     <td className="px-6 py-4 text-sm font-semibold text-gray-900 dark:text-white">{recon.account_name}</td>
-                    <td className="px-6 py-4 text-xs text-gray-500 dark:text-gray-400">
+                    <td className="px-6 py-4 text-xs text-gray-500 dark:text-gray-300">
                       {formatDate(recon.period_start)} - {formatDate(recon.period_end)}
                     </td>
-                    <td className="px-6 py-4 text-xs text-gray-500 dark:text-gray-400">{formatCurrency(recon.opening_balance)}</td>
-                    <td className="px-6 py-4 text-xs text-gray-500 dark:text-gray-400">{formatCurrency(recon.closing_balance)}</td>
-                    <td className="px-6 py-4 text-xs text-gray-500 dark:text-gray-400">{formatCurrency(recon.statement_balance)}</td>
+                    <td className="px-6 py-4 text-xs text-gray-500 dark:text-gray-300">{formatCurrency(recon.opening_balance)}</td>
+                    <td className="px-6 py-4 text-xs text-gray-500 dark:text-gray-300">{formatCurrency(recon.closing_balance)}</td>
+                    <td className="px-6 py-4 text-xs text-gray-500 dark:text-gray-300">{formatCurrency(recon.statement_balance)}</td>
                     <td className={`px-6 py-4 text-sm font-medium ${recon.difference !== 0 ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'}`}>
                       {formatCurrency(recon.difference)}
                     </td>
@@ -231,7 +231,7 @@ const Reconciliation: React.FC = () => {
                       <div className="flex gap-2 justify-end">
                         <button
                           onClick={() => handleEdit(recon)}
-                          className="p-2 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                          className="p-2 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
                           title="Edit"
                         >
                           <Edit2 className="h-4 w-4" />

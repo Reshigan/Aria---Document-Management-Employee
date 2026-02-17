@@ -134,7 +134,7 @@ export default function CashFlowStatementPage() {
             </div>
             <button
               onClick={fetchCashFlow}
-              className="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+              className="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
             >
               <RefreshCw className={`h-5 w-5 ${loading ? 'animate-spin' : ''}`} />
             </button>
@@ -239,7 +239,7 @@ export default function CashFlowStatementPage() {
           </div>
         ) : (
           <div className="text-center py-12">
-            <p className="text-gray-600 dark:text-gray-400">No data available</p>
+            <p className="text-gray-600 dark:text-gray-300">No data available</p>
           </div>
         )}
       </div>

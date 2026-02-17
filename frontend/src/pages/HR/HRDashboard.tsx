@@ -101,7 +101,7 @@ const HRDashboard: React.FC = () => {
           </div>
           Human Resources Dashboard
         </h1>
-        <p className="text-gray-500 dark:text-gray-400 mt-1">
+        <p className="text-gray-500 dark:text-gray-300 mt-1">
           Manage employees, departments, attendance, and leave requests
         </p>
       </div>
@@ -121,7 +121,7 @@ const HRDashboard: React.FC = () => {
               <Users className="h-5 w-5 text-white" />
             </div>
             <div className="font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">Employees</div>
-            <div className="text-xs text-gray-500 dark:text-gray-400">Manage employee records</div>
+            <div className="text-xs text-gray-500 dark:text-gray-300">Manage employee records</div>
           </div>
         </Link>
         <Link to="/hr/departments" className="group">
@@ -130,7 +130,7 @@ const HRDashboard: React.FC = () => {
               <Briefcase className="h-5 w-5 text-white" />
             </div>
             <div className="font-semibold text-gray-900 dark:text-white group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors">Departments</div>
-            <div className="text-xs text-gray-500 dark:text-gray-400">Manage departments</div>
+            <div className="text-xs text-gray-500 dark:text-gray-300">Manage departments</div>
           </div>
         </Link>
         <Link to="/hr/attendance" className="group">
@@ -139,7 +139,7 @@ const HRDashboard: React.FC = () => {
               <Clock className="h-5 w-5 text-white" />
             </div>
             <div className="font-semibold text-gray-900 dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">Attendance</div>
-            <div className="text-xs text-gray-500 dark:text-gray-400">Track attendance</div>
+            <div className="text-xs text-gray-500 dark:text-gray-300">Track attendance</div>
           </div>
         </Link>
         <Link to="/hr/leave" className="group">
@@ -148,7 +148,7 @@ const HRDashboard: React.FC = () => {
               <Calendar className="h-5 w-5 text-white" />
             </div>
             <div className="font-semibold text-gray-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">Leave Management</div>
-            <div className="text-xs text-gray-500 dark:text-gray-400">Manage leave requests</div>
+            <div className="text-xs text-gray-500 dark:text-gray-300">Manage leave requests</div>
           </div>
         </Link>
       </div>
@@ -162,8 +162,8 @@ const HRDashboard: React.FC = () => {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{metrics.active_employees}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Total Employees</p>
-              <p className="text-xs text-gray-400 dark:text-gray-500">{metrics.total_employees} total (incl. inactive)</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Total Employees</p>
+              <p className="text-xs text-gray-300 dark:text-gray-500">{metrics.total_employees} total (incl. inactive)</p>
             </div>
           </div>
         </div>
@@ -174,8 +174,8 @@ const HRDashboard: React.FC = () => {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{metrics.departments}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Departments</p>
-              <p className="text-xs text-gray-400 dark:text-gray-500">Active departments</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Departments</p>
+              <p className="text-xs text-gray-300 dark:text-gray-500">Active departments</p>
             </div>
           </div>
         </div>
@@ -186,8 +186,8 @@ const HRDashboard: React.FC = () => {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{Number(metrics.attendance_rate ?? 0).toFixed(1)}%</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Attendance Rate</p>
-              <p className="text-xs text-gray-400 dark:text-gray-500">Last 30 days</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Attendance Rate</p>
+              <p className="text-xs text-gray-300 dark:text-gray-500">Last 30 days</p>
             </div>
           </div>
         </div>
@@ -198,8 +198,8 @@ const HRDashboard: React.FC = () => {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{metrics.pending_leave_requests}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Pending Leave</p>
-              <p className="text-xs text-gray-400 dark:text-gray-500">Requests awaiting approval</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Pending Leave</p>
+              <p className="text-xs text-gray-300 dark:text-gray-500">Requests awaiting approval</p>
             </div>
           </div>
         </div>
@@ -216,7 +216,7 @@ const HRDashboard: React.FC = () => {
               <p className="text-xl font-bold text-gray-900 dark:text-white">
                 {Math.floor(metrics.avg_tenure_months / 12)}y {metrics.avg_tenure_months % 12}m
               </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Average Tenure</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Average Tenure</p>
             </div>
           </div>
         </div>
@@ -229,7 +229,7 @@ const HRDashboard: React.FC = () => {
               <p className={`text-xl font-bold ${metrics.turnover_rate > 15 ? 'text-red-600 dark:text-red-400' : 'text-gray-900 dark:text-white'}`}>
                 {Number(metrics.turnover_rate ?? 0).toFixed(1)}%
               </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Turnover Rate</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Turnover Rate</p>
             </div>
           </div>
         </div>
@@ -240,7 +240,7 @@ const HRDashboard: React.FC = () => {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{metrics.open_positions}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Open Positions</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Open Positions</p>
             </div>
           </div>
         </div>
@@ -250,7 +250,7 @@ const HRDashboard: React.FC = () => {
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
         <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Recent Activity</h2>
         {recentActivity.length === 0 ? (
-          <div className="text-center py-8 text-gray-500 dark:text-gray-400">No recent activity</div>
+          <div className="text-center py-8 text-gray-500 dark:text-gray-300">No recent activity</div>
         ) : (
           <div className="space-y-3">
             {recentActivity.slice(0, 10).map((activity) => (
@@ -265,11 +265,11 @@ const HRDashboard: React.FC = () => {
                   <div className="font-medium text-gray-900 dark:text-white truncate">
                     {activity.employee_name}
                   </div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                  <div className="text-xs text-gray-500 dark:text-gray-300 truncate">
                     {activity.description}
                   </div>
                 </div>
-                <div className="text-xs text-gray-400 dark:text-gray-500 flex-shrink-0">
+                <div className="text-xs text-gray-300 dark:text-gray-500 flex-shrink-0">
                   {formatDate(activity.date)}
                 </div>
               </div>

@@ -177,7 +177,7 @@ export default function SalesOrderDetail() {
   if (loading) {
     return (
       <div className="p-8 text-center">
-        <div className="text-lg text-gray-500 dark:text-gray-400">Loading sales order details...</div>
+        <div className="text-lg text-gray-500 dark:text-gray-300">Loading sales order details...</div>
       </div>
     );
   }
@@ -239,11 +239,11 @@ export default function SalesOrderDetail() {
                 {order.status.toUpperCase()}
               </span>
               {order.quote_number && (
-                <span className="text-xs text-gray-500 dark:text-gray-400">
+                <span className="text-xs text-gray-500 dark:text-gray-300">
                   From Quote: <a href={`/erp/quotes/${order.quote_id}`} className="text-blue-600 dark:text-blue-400 underline">{order.quote_number}</a>
                 </span>
               )}
-              <span className="text-xs text-gray-500 dark:text-gray-400">
+              <span className="text-xs text-gray-500 dark:text-gray-300">
                 Created {(order.created_at ? new Date(order.created_at).toLocaleDateString() : "-")}
               </span>
             </div>
@@ -307,30 +307,30 @@ export default function SalesOrderDetail() {
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
               <div>
-                <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Customer</div>
+                <div className="text-xs text-gray-500 dark:text-gray-300 mb-1">Customer</div>
                 <div className="font-medium text-gray-900 dark:text-white flex items-center gap-2">
-                  <User size={16} className="text-gray-400" />
+                  <User size={16} className="text-gray-300" />
                   {order.customer_name}
                 </div>
               </div>
               {order.customer_email && (
                 <div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Email</div>
+                  <div className="text-xs text-gray-500 dark:text-gray-300 mb-1">Email</div>
                   <div className="font-medium text-gray-900 dark:text-white">{order.customer_email}</div>
                 </div>
               )}
               <div>
-                <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Order Date</div>
+                <div className="text-xs text-gray-500 dark:text-gray-300 mb-1">Order Date</div>
                 <div className="font-medium text-gray-900 dark:text-white flex items-center gap-2">
-                  <Calendar size={16} className="text-gray-400" />
+                  <Calendar size={16} className="text-gray-300" />
                   {(order.order_date ? new Date(order.order_date).toLocaleDateString() : "-")}
                 </div>
               </div>
               {order.required_date && (
                 <div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Required Date</div>
+                  <div className="text-xs text-gray-500 dark:text-gray-300 mb-1">Required Date</div>
                   <div className="font-medium text-gray-900 dark:text-white flex items-center gap-2">
-                    <Calendar size={16} className="text-gray-400" />
+                    <Calendar size={16} className="text-gray-300" />
                     {(order.required_date ? new Date(order.required_date).toLocaleDateString() : "-")}
                   </div>
                 </div>
@@ -340,7 +340,7 @@ export default function SalesOrderDetail() {
             {order.notes && (
               <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
                 <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Notes</div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">{order.notes}</div>
+                <div className="text-sm text-gray-600 dark:text-gray-300">{order.notes}</div>
               </div>
             )}
           </div>
@@ -360,13 +360,13 @@ export default function SalesOrderDetail() {
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Audit Trail</h2>
             <div className="flex flex-col gap-3">
               <div className="flex justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
-                <span className="text-xs text-gray-500 dark:text-gray-400">Created</span>
+                <span className="text-xs text-gray-500 dark:text-gray-300">Created</span>
                 <span className="text-sm font-medium text-gray-900 dark:text-white">
                   {order.created_at ? new Date(order.created_at).toLocaleString() : '-'}
                 </span>
               </div>
               <div className="flex justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
-                <span className="text-xs text-gray-500 dark:text-gray-400">Last Updated</span>
+                <span className="text-xs text-gray-500 dark:text-gray-300">Last Updated</span>
                 <span className="text-sm font-medium text-gray-900 dark:text-white">
                   {order.updated_at ? new Date(order.updated_at).toLocaleString() : '-'}
                 </span>
@@ -402,7 +402,7 @@ export default function SalesOrderDetail() {
               Deliveries ({deliveries.length})
             </h3>
             {deliveries.length === 0 ? (
-              <p className="text-xs text-gray-500 dark:text-gray-400">No deliveries yet</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">No deliveries yet</p>
             ) : (
               <div className="flex flex-col gap-3">
                 {deliveries.map((delivery) => (
@@ -413,9 +413,9 @@ export default function SalesOrderDetail() {
                   >
                     <div className="flex justify-between mb-1">
                       <span className="text-sm font-medium text-gray-900 dark:text-white">{delivery.delivery_number}</span>
-                      <span className="text-xs text-gray-500 dark:text-gray-400">{delivery.status}</span>
+                      <span className="text-xs text-gray-500 dark:text-gray-300">{delivery.status}</span>
                     </div>
-                    <div className="text-xs text-gray-500 dark:text-gray-400">
+                    <div className="text-xs text-gray-500 dark:text-gray-300">
                       {(delivery.delivery_date ? new Date(delivery.delivery_date).toLocaleDateString() : "-")}
                     </div>
                   </div>
@@ -431,7 +431,7 @@ export default function SalesOrderDetail() {
               Invoices ({invoices.length})
             </h3>
             {invoices.length === 0 ? (
-              <p className="text-xs text-gray-500 dark:text-gray-400">No invoices yet</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">No invoices yet</p>
             ) : (
               <div className="flex flex-col gap-3">
                 {invoices.map((invoice) => (
@@ -442,10 +442,10 @@ export default function SalesOrderDetail() {
                   >
                     <div className="flex justify-between mb-1">
                       <span className="text-sm font-medium text-gray-900 dark:text-white">{invoice.invoice_number}</span>
-                      <span className="text-xs text-gray-500 dark:text-gray-400">{invoice.status}</span>
+                      <span className="text-xs text-gray-500 dark:text-gray-300">{invoice.status}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-xs text-gray-500 dark:text-gray-400">
+                      <span className="text-xs text-gray-500 dark:text-gray-300">
                         {(invoice.invoice_date ? new Date(invoice.invoice_date).toLocaleDateString() : "-")}
                       </span>
                       <span className="text-sm font-medium text-gray-900 dark:text-white">
@@ -468,25 +468,25 @@ export default function SalesOrderDetail() {
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Order Summary</h3>
             <div className="flex flex-col gap-3">
               <div className="flex justify-between">
-                <span className="text-xs text-gray-500 dark:text-gray-400">Total Items</span>
+                <span className="text-xs text-gray-500 dark:text-gray-300">Total Items</span>
                 <span className="text-sm font-medium text-gray-900 dark:text-white">
                   {order.lines.reduce((sum, line) => sum + line.quantity, 0)}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-xs text-gray-500 dark:text-gray-400">Items Delivered</span>
+                <span className="text-xs text-gray-500 dark:text-gray-300">Items Delivered</span>
                 <span className="text-sm font-medium text-emerald-600 dark:text-emerald-400">
                   {order.lines.reduce((sum, line) => sum + line.quantity_delivered, 0)}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-xs text-gray-500 dark:text-gray-400">Items Remaining</span>
+                <span className="text-xs text-gray-500 dark:text-gray-300">Items Remaining</span>
                 <span className="text-sm font-medium text-amber-600 dark:text-amber-400">
                   {order.lines.reduce((sum, line) => sum + line.quantity_remaining, 0)}
                 </span>
               </div>
               <div className="flex justify-between pt-3 border-t border-gray-200 dark:border-gray-700">
-                <span className="text-xs text-gray-500 dark:text-gray-400">Order Value</span>
+                <span className="text-xs text-gray-500 dark:text-gray-300">Order Value</span>
                 <span className="text-base font-semibold text-gray-900 dark:text-white">
                   R {Number(order.total_amount ?? 0).toFixed(2)}
                 </span>

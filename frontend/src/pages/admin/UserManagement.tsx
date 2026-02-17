@@ -205,7 +205,7 @@ export default function UserManagementPage() {
             <div className="font-medium text-gray-900 dark:text-white">
               {user.first_name} {user.last_name}
             </div>
-            <div className="text-xs text-gray-500 dark:text-gray-400">{user.email}</div>
+            <div className="text-xs text-gray-500 dark:text-gray-300">{user.email}</div>
           </div>
         </div>
       )
@@ -244,7 +244,7 @@ export default function UserManagementPage() {
           </button>
           <button
             onClick={() => handleResetPassword(user.id)}
-            className="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900 rounded"
+            className="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900 rounded"
             title="Reset Password"
           >
             <RotateCcw className="h-4 w-4" />
@@ -288,7 +288,7 @@ export default function UserManagementPage() {
             <Users className="h-8 w-8" />
             User Management
           </h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-2">Manage team members and their permissions</p>
+          <p className="text-gray-600 dark:text-gray-300 mt-2">Manage team members and their permissions</p>
         </div>
         <Button
           onClick={() => setInviteModal({ ...inviteModal, isOpen: true })}
@@ -309,7 +309,7 @@ export default function UserManagementPage() {
           { label: 'Inactive', value: users.filter(u => u.status === 'inactive').length, color: 'red', testId: 'stat-inactive' }
         ].map((stat, idx) => (
           <div key={idx} className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4" data-testid={stat.testId}>
-            <div className="text-sm font-medium text-gray-600 dark:text-gray-400">{stat.label}</div>
+            <div className="text-sm font-medium text-gray-600 dark:text-gray-300">{stat.label}</div>
             <div className={`text-2xl font-bold mt-2 text-${stat.color}-600`}>{stat.value}</div>
           </div>
         ))}
@@ -414,7 +414,7 @@ export default function UserManagementPage() {
                   <option value="hr">HR</option>
                   <option value="admin">Admin</option>
                 </select>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                <p className="text-xs text-gray-500 dark:text-gray-300 mt-1">
                   {inviteModal.role === 'admin' && 'Full system access'}
                   {inviteModal.role === 'manager' && 'Can approve workflows and view reports'}
                   {inviteModal.role === 'finance' && 'Access to financial data and reports'}
@@ -455,7 +455,7 @@ export default function UserManagementPage() {
             </h2>
 
             <div className="mb-4">
-              <p className="text-gray-600 dark:text-gray-400">
+              <p className="text-gray-600 dark:text-gray-300">
                 Change role for <strong>{selectedUser.first_name} {selectedUser.last_name}</strong>
               </p>
             </div>
@@ -470,7 +470,7 @@ export default function UserManagementPage() {
                   }`}
                 >
                   <div className="font-medium text-gray-900 dark:text-white capitalize">{role}</div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  <div className="text-xs text-gray-500 dark:text-gray-300 mt-1">
                     {role === 'admin' && 'Full system access and configuration'}
                     {role === 'manager' && 'Approve workflows, view reports'}
                     {role === 'finance' && 'Access financial data and reports'}

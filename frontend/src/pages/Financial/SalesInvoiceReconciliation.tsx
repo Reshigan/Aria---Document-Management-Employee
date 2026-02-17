@@ -238,7 +238,7 @@ export default function SalesInvoiceReconciliation() {
               <FileText className="h-8 w-8 text-indigo-600" />
               Sales to Invoice Reconciliation
             </h1>
-            <p className="text-gray-600 dark:text-gray-400 mt-1">
+            <p className="text-gray-600 dark:text-gray-300 mt-1">
               Match sales orders with invoices and resolve exceptions
             </p>
           </div>
@@ -266,7 +266,7 @@ export default function SalesInvoiceReconciliation() {
             <div className="grid grid-cols-4 gap-6 mb-6">
               <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
                 <div className="flex items-center justify-between mb-2">
-                  <div className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Sales Orders</div>
+                  <div className="text-sm font-medium text-gray-600 dark:text-gray-300">Total Sales Orders</div>
                   <FileText className="h-5 w-5 text-blue-600" />
                 </div>
                 <div className="text-xl font-bold text-gray-900 dark:text-white">{summary.summary.total_orders}</div>
@@ -277,7 +277,7 @@ export default function SalesInvoiceReconciliation() {
 
               <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
                 <div className="flex items-center justify-between mb-2">
-                  <div className="text-sm font-medium text-gray-600 dark:text-gray-400">Fully Invoiced</div>
+                  <div className="text-sm font-medium text-gray-600 dark:text-gray-300">Fully Invoiced</div>
                   <CheckCircle className="h-5 w-5 text-green-600" />
                 </div>
                 <div className="text-2xl font-bold text-green-600">{summary.summary.fully_invoiced}</div>
@@ -288,7 +288,7 @@ export default function SalesInvoiceReconciliation() {
 
               <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
                 <div className="flex items-center justify-between mb-2">
-                  <div className="text-sm font-medium text-gray-600 dark:text-gray-400">Pending Invoice</div>
+                  <div className="text-sm font-medium text-gray-600 dark:text-gray-300">Pending Invoice</div>
                   <Clock className="h-5 w-5 text-yellow-600" />
                 </div>
                 <div className="text-2xl font-bold text-yellow-600">
@@ -301,7 +301,7 @@ export default function SalesInvoiceReconciliation() {
 
               <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
                 <div className="flex items-center justify-between mb-2">
-                  <div className="text-sm font-medium text-gray-600 dark:text-gray-400">Exceptions</div>
+                  <div className="text-sm font-medium text-gray-600 dark:text-gray-300">Exceptions</div>
                   <AlertTriangle className="h-5 w-5 text-red-600" />
                 </div>
                 <div className="text-2xl font-bold text-red-600">{summary.exceptions.total}</div>
@@ -399,43 +399,43 @@ export default function SalesInvoiceReconciliation() {
               <div className="p-4 space-y-4">
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="text-xs text-gray-500 dark:text-gray-400">Sales Order</label>
+                    <label className="text-xs text-gray-500 dark:text-gray-300">Sales Order</label>
                     <p className="font-medium text-gray-900 dark:text-white">{selectedException.order_number}</p>
                   </div>
                   <div>
-                    <label className="text-xs text-gray-500 dark:text-gray-400">Customer</label>
+                    <label className="text-xs text-gray-500 dark:text-gray-300">Customer</label>
                     <p className="font-medium text-gray-900 dark:text-white">{selectedException.customer_name}</p>
                   </div>
                   <div>
-                    <label className="text-xs text-gray-500 dark:text-gray-400">Invoice</label>
+                    <label className="text-xs text-gray-500 dark:text-gray-300">Invoice</label>
                     <p className="font-medium text-gray-900 dark:text-white">{selectedException.invoice_id || 'Not Created'}</p>
                   </div>
                   <div>
-                    <label className="text-xs text-gray-500 dark:text-gray-400">Exception Type</label>
+                    <label className="text-xs text-gray-500 dark:text-gray-300">Exception Type</label>
                     <p className="font-medium text-gray-900 dark:text-white">{getExceptionTypeLabel(selectedException.exception_type)}</p>
                   </div>
                   <div>
-                    <label className="text-xs text-gray-500 dark:text-gray-400">Expected Amount</label>
+                    <label className="text-xs text-gray-500 dark:text-gray-300">Expected Amount</label>
                     <p className="font-medium text-gray-900 dark:text-white">R {Number(selectedException.expected_amount ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
                   </div>
                   <div>
-                    <label className="text-xs text-gray-500 dark:text-gray-400">Actual Amount</label>
+                    <label className="text-xs text-gray-500 dark:text-gray-300">Actual Amount</label>
                     <p className="font-medium text-gray-900 dark:text-white">R {Number(selectedException.actual_amount ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
                   </div>
                   <div>
-                    <label className="text-xs text-gray-500 dark:text-gray-400">Variance</label>
+                    <label className="text-xs text-gray-500 dark:text-gray-300">Variance</label>
                     <p className={`font-medium ${selectedException.variance_amount < 0 ? 'text-red-600' : 'text-green-600'}`}>
                       R {Number(selectedException.variance_amount ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </p>
                   </div>
                   <div>
-                    <label className="text-xs text-gray-500 dark:text-gray-400">Status</label>
+                    <label className="text-xs text-gray-500 dark:text-gray-300">Status</label>
                     <p>{getStatusBadge(selectedException.status)}</p>
                   </div>
                 </div>
                 {selectedException.notes && (
                   <div>
-                    <label className="text-xs text-gray-500 dark:text-gray-400">Notes</label>
+                    <label className="text-xs text-gray-500 dark:text-gray-300">Notes</label>
                     <p className="font-medium text-gray-900 dark:text-white">{selectedException.notes}</p>
                   </div>
                 )}

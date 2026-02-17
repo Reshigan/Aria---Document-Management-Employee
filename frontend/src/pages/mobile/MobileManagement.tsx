@@ -109,11 +109,11 @@ export default function MobileManagement() {
             </div>
             Mobile Management
           </h1>
-          <p className="text-gray-500 dark:text-gray-400 ml-14">Manage mobile devices and offline sync</p>
+          <p className="text-gray-500 dark:text-gray-300 ml-14">Manage mobile devices and offline sync</p>
         </div>
         <button
           onClick={fetchMobileData}
-          className="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+          className="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
         >
           <RefreshCw className={`h-5 w-5 ${loading ? 'animate-spin' : ''}`} />
         </button>

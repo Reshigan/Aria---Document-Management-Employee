@@ -431,7 +431,7 @@ export default function PriceLists() {
           <div className="p-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center">
             <div>
               <h2 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{selectedPriceList.name}</h2>
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              <p className="text-xs text-gray-500 dark:text-gray-300 mt-1">
                 {selectedPriceList.type.charAt(0).toUpperCase() + selectedPriceList.type.slice(1)} Price List
               </p>
             </div>
@@ -441,7 +441,7 @@ export default function PriceLists() {
                 setSelectedPriceList(null);
                 setPriceListItems([]);
               }}
-              className="text-gray-400 hover:text-gray-600 dark:text-gray-400"
+              className="text-gray-300 hover:text-gray-600 dark:text-gray-300"
             >
               <X className="w-6 h-6" />
             </button>
@@ -453,7 +453,7 @@ export default function PriceLists() {
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Price List Details</h3>
                 <dl className="space-y-2">
                   <div>
-                    <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">Type</dt>
+                    <dt className="text-sm font-medium text-gray-500 dark:text-gray-300">Type</dt>
                     <dd className="text-sm text-gray-900 dark:text-white">
                       <span className={`px-2 py-1 text-xs font-medium rounded-full ${getTypeBadgeColor(selectedPriceList.type)}`}>
                         {selectedPriceList.type.charAt(0).toUpperCase() + selectedPriceList.type.slice(1)}
@@ -462,26 +462,26 @@ export default function PriceLists() {
                   </div>
                   {selectedPriceList.customer_name && (
                     <div>
-                      <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">Customer</dt>
+                      <dt className="text-sm font-medium text-gray-500 dark:text-gray-300">Customer</dt>
                       <dd className="text-sm text-gray-900 dark:text-white">{selectedPriceList.customer_name}</dd>
                     </div>
                   )}
                   <div>
-                    <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">Valid From</dt>
+                    <dt className="text-sm font-medium text-gray-500 dark:text-gray-300">Valid From</dt>
                     <dd className="text-sm text-gray-900 dark:text-white">{(selectedPriceList.valid_from ? new Date(selectedPriceList.valid_from).toLocaleDateString('en-ZA') : "-")}</dd>
                   </div>
                   {selectedPriceList.valid_to && (
                     <div>
-                      <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">Valid To</dt>
+                      <dt className="text-sm font-medium text-gray-500 dark:text-gray-300">Valid To</dt>
                       <dd className="text-sm text-gray-900 dark:text-white">{(selectedPriceList.valid_to ? new Date(selectedPriceList.valid_to).toLocaleDateString('en-ZA') : "-")}</dd>
                     </div>
                   )}
                   <div>
-                    <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">Priority</dt>
+                    <dt className="text-sm font-medium text-gray-500 dark:text-gray-300">Priority</dt>
                     <dd className="text-sm text-gray-900 dark:text-white">{selectedPriceList.priority}</dd>
                   </div>
                   <div>
-                    <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">Status</dt>
+                    <dt className="text-sm font-medium text-gray-500 dark:text-gray-300">Status</dt>
                     <dd className="text-sm text-gray-900 dark:text-white">
                       <span className={`px-2 py-1 text-xs font-medium rounded-full ${
                         selectedPriceList.is_active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
@@ -568,18 +568,18 @@ export default function PriceLists() {
                 <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                   <thead className="bg-gray-50 dark:bg-gray-900">
                     <tr>
-                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Product Code</th>
-                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Product Name</th>
-                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Unit Price</th>
-                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Min Qty</th>
-                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Discount %</th>
-                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Actions</th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Product Code</th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Product Name</th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Unit Price</th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Min Qty</th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Discount %</th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                     {priceListItems.length === 0 ? (
                       <tr>
-                        <td colSpan={6} className="px-6 py-4 text-center text-xs text-gray-500 dark:text-gray-400">
+                        <td colSpan={6} className="px-6 py-4 text-center text-xs text-gray-500 dark:text-gray-300">
                           No items in this price list
                         </td>
                       </tr>
@@ -595,10 +595,10 @@ export default function PriceLists() {
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                             R {Number(item.unit_price ?? 0).toFixed(2)}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">
+                          <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-300">
                             {item.min_quantity || 1}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">
+                          <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-300">
                             {item.discount_percent ? `${item.discount_percent}%` : '-'}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -636,7 +636,7 @@ export default function PriceLists() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-gray-500 dark:text-gray-400">Loading price lists...</div>
+        <div className="text-gray-500 dark:text-gray-300">Loading price lists...</div>
       </div>
     );
   }
@@ -645,14 +645,14 @@ export default function PriceLists() {
     <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4">
       <div className="mb-6">
         <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Price Lists</h1>
-        <p className="text-gray-500 dark:text-gray-400 mt-1">Manage pricing by customer, customer group, or promotional campaigns</p>
+        <p className="text-gray-500 dark:text-gray-300 mt-1">Manage pricing by customer, customer group, or promotional campaigns</p>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-3 gap-6 mb-6">
         <div className="bg-white dark:bg-gray-800 p-4 rounded-lg-sm border border-gray-200 dark:border-gray-700">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Total Price Lists</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Total Price Lists</p>
               <p className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mt-1">{priceLists.length}</p>
             </div>
             <DollarSign className="w-8 h-8 text-blue-500" />
@@ -662,7 +662,7 @@ export default function PriceLists() {
         <div className="bg-white dark:bg-gray-800 p-4 rounded-lg-sm border border-gray-200 dark:border-gray-700">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Active Price Lists</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Active Price Lists</p>
               <p className="text-2xl font-bold text-green-600 dark:text-green-400 mt-1">{activePriceLists}</p>
             </div>
             <DollarSign className="w-8 h-8 text-green-500" />
@@ -672,10 +672,10 @@ export default function PriceLists() {
         <div className="bg-white dark:bg-gray-800 p-4 rounded-lg-sm border border-gray-200 dark:border-gray-700">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Inactive Price Lists</p>
-              <p className="text-2xl font-bold text-gray-600 dark:text-gray-400 mt-1">{inactivePriceLists}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Inactive Price Lists</p>
+              <p className="text-2xl font-bold text-gray-600 dark:text-gray-300 mt-1">{inactivePriceLists}</p>
             </div>
-            <DollarSign className="w-8 h-8 text-gray-500 dark:text-gray-400" />
+            <DollarSign className="w-8 h-8 text-gray-500 dark:text-gray-300" />
           </div>
         </div>
       </div>
@@ -684,7 +684,7 @@ export default function PriceLists() {
         <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
           <div className="flex-1 max-w-md">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-300 w-5 h-5" />
               <input
                 type="text"
                 placeholder="Search by name, description, or customer..."
@@ -724,20 +724,20 @@ export default function PriceLists() {
         <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
           <thead className="bg-gray-50 dark:bg-gray-900">
             <tr>
-              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Name</th>
-              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Type</th>
-              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Customer</th>
-              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Valid From</th>
-              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Valid To</th>
-              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Priority</th>
-              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
-              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Name</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Type</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Customer</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Valid From</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Valid To</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Priority</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
             </tr>
           </thead>
           <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
             {filteredPriceLists.length === 0 ? (
               <tr>
-                <td colSpan={8} className="px-6 py-4 text-center text-xs text-gray-500 dark:text-gray-400">
+                <td colSpan={8} className="px-6 py-4 text-center text-xs text-gray-500 dark:text-gray-300">
                   No price lists found
                 </td>
               </tr>
@@ -752,16 +752,16 @@ export default function PriceLists() {
                       {priceList.type.charAt(0).toUpperCase() + priceList.type.slice(1)}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">
+                  <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-300">
                     {priceList.customer_name || '-'}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">
+                  <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-300">
                     {(priceList.valid_from ? new Date(priceList.valid_from).toLocaleDateString('en-ZA') : "-")}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">
+                  <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-300">
                     {priceList.valid_to ? new Date(priceList.valid_to).toLocaleDateString('en-ZA') : '-'}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">
+                  <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-300">
                     {priceList.priority}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">

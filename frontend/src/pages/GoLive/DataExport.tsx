@@ -60,7 +60,7 @@ export default function DataExport() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2"><FileSpreadsheet className="h-6 w-6 text-indigo-600" />Data Export</h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400">Export data from any module as CSV</p>
+          <p className="text-sm text-gray-500 dark:text-gray-300">Export data from any module as CSV</p>
         </div>
         <button onClick={handleExportAll} className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 text-sm font-medium">
           <Download className="h-4 w-4" />Export All
@@ -77,7 +77,7 @@ export default function DataExport() {
             ) : exported.includes(entity.key) ? (
               <Check className="h-4 w-4 text-green-600" />
             ) : (
-              <Download className="h-4 w-4 text-gray-400" />
+              <Download className="h-4 w-4 text-gray-300" />
             )}
           </button>
         ))}

@@ -187,7 +187,7 @@ export const AriaVoiceInterface: React.FC = () => {
             <h1 className="text-2xl font-bold text-gray-800 dark:text-white">
               Aria
             </h1>
-            <p className="text-sm text-gray-600 dark:text-gray-400">
+            <p className="text-sm text-gray-600 dark:text-gray-300">
               Your AI Process Orchestrator
             </p>
           </div>
@@ -210,10 +210,10 @@ export const AriaVoiceInterface: React.FC = () => {
       <div className="flex-1 overflow-y-auto p-6 space-y-4">
         {messages.length === 0 && (
           <div className="text-center py-12">
-            <p className="text-gray-500 dark:text-gray-400 text-lg">
+            <p className="text-gray-500 dark:text-gray-300 text-lg">
               👋 Hello! I'm Aria. How can I help you today?
             </p>
-            <p className="text-sm text-gray-400 dark:text-gray-500 mt-2">
+            <p className="text-sm text-gray-300 dark:text-gray-500 mt-2">
               You can type or use voice to communicate with me
             </p>
           </div>
@@ -233,7 +233,7 @@ export const AriaVoiceInterface: React.FC = () => {
               `}
             >
               <p className="whitespace-pre-wrap">{message.content}</p>
-              <p className={`text-xs mt-2 ${message.role === 'user' ? 'text-indigo-200' : 'text-gray-400'}`}>
+              <p className={`text-xs mt-2 ${message.role === 'user' ? 'text-indigo-200' : 'text-gray-300'}`}>
                 {message.timestamp.toLocaleTimeString()}
               </p>
               
@@ -317,7 +317,7 @@ export const AriaVoiceInterface: React.FC = () => {
           </button>
         </div>
         
-        <p className="text-xs text-center text-gray-500 dark:text-gray-400 mt-2">
+        <p className="text-xs text-center text-gray-500 dark:text-gray-300 mt-2">
           {isRecording 
             ? '🎙️ Recording... Release to send' 
             : 'Press and hold to record, or type your message'}

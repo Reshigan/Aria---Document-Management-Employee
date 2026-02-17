@@ -118,7 +118,7 @@ export default function FixedAssetsDashboard() {
       <div className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-slate-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-500 dark:text-gray-400">Loading fixed assets...</p>
+          <p className="text-gray-500 dark:text-gray-300">Loading fixed assets...</p>
         </div>
       </div>
     );
@@ -134,14 +134,14 @@ export default function FixedAssetsDashboard() {
           </div>
           Fixed Assets
         </h1>
-        <p className="text-gray-500 dark:text-gray-400 mt-1">Manage fixed assets, depreciation, and asset disposals</p>
+        <p className="text-gray-500 dark:text-gray-300 mt-1">Manage fixed assets, depreciation, and asset disposals</p>
       </div>
 
       {/* Action Bar */}
       <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 mb-6">
         <div className="flex flex-col md:flex-row gap-3">
           <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-300" />
             <input
               type="text"
               placeholder="Search assets..."
@@ -169,7 +169,7 @@ export default function FixedAssetsDashboard() {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{summary.total_assets}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Total Assets</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Total Assets</p>
             </div>
           </div>
         </div>
@@ -180,7 +180,7 @@ export default function FixedAssetsDashboard() {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{formatCurrency(summary.total_book_value)}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Book Value</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Book Value</p>
             </div>
           </div>
         </div>
@@ -191,7 +191,7 @@ export default function FixedAssetsDashboard() {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{formatCurrency(summary.total_depreciation)}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Accumulated Depreciation</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Accumulated Depreciation</p>
             </div>
           </div>
         </div>
@@ -202,7 +202,7 @@ export default function FixedAssetsDashboard() {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{formatCurrency(summary.total_cost)}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Total Cost</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Total Cost</p>
             </div>
           </div>
         </div>
@@ -213,7 +213,7 @@ export default function FixedAssetsDashboard() {
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-12 text-center">
           <FolderOpen className="h-16 w-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No fixed assets yet</h3>
-          <p className="text-gray-500 dark:text-gray-400 mb-6">
+          <p className="text-gray-500 dark:text-gray-300 mb-6">
             Start by adding your first fixed asset to track depreciation and book value
           </p>
           <button
@@ -228,14 +228,14 @@ export default function FixedAssetsDashboard() {
           <table className="w-full">
             <thead className="bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-700">
               <tr>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Asset Number</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Description</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Category</th>
-                <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Acquisition Cost</th>
-                <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Depreciation</th>
-                <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Book Value</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Acquisition Date</th>
-                <th className="px-6 py-4 text-center text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Asset Number</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Description</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Category</th>
+                <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Acquisition Cost</th>
+                <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Depreciation</th>
+                <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Book Value</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Acquisition Date</th>
+                <th className="px-6 py-4 text-center text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
@@ -243,11 +243,11 @@ export default function FixedAssetsDashboard() {
                 <tr key={asset.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors">
                   <td className="px-6 py-4 font-semibold text-gray-900 dark:text-white">{asset.asset_number}</td>
                   <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{asset.description}</td>
-                  <td className="px-6 py-4 text-gray-500 dark:text-gray-400 text-sm">{asset.category_name}</td>
+                  <td className="px-6 py-4 text-gray-500 dark:text-gray-300 text-sm">{asset.category_name}</td>
                   <td className="px-6 py-4 text-right text-gray-600 dark:text-gray-300">{formatCurrency(asset.acquisition_cost)}</td>
                   <td className="px-6 py-4 text-right text-red-600 dark:text-red-400">{formatCurrency(asset.accumulated_depreciation)}</td>
                   <td className="px-6 py-4 text-right font-semibold text-emerald-600 dark:text-emerald-400">{formatCurrency(asset.book_value)}</td>
-                  <td className="px-6 py-4 text-gray-500 dark:text-gray-400 text-sm">{formatDate(asset.acquisition_date)}</td>
+                  <td className="px-6 py-4 text-gray-500 dark:text-gray-300 text-sm">{formatDate(asset.acquisition_date)}</td>
                   <td className="px-6 py-4 text-center">
                     <span className={`px-2.5 py-1 text-xs font-semibold rounded-full ${
                       asset.status === 'active' 
