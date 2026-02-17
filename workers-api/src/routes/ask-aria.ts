@@ -197,6 +197,42 @@ function parseNaturalLanguageOrder(message: string): ParsedOrder | null {
     }
   }
 
+  if (items.length === 0) {
+    const withProduct = /(?:with\s+)?(?:product|item)\s+(.+?)\s+(?:quantity|qty)\s+(\d+)/gi;
+    while ((m = withProduct.exec(msg)) !== null) {
+      items.push({
+        productRef: m[1].trim().replace(/,+$/, ''),
+        quantity: parseInt(m[2]),
+        price: 0,
+      });
+    }
+  }
+
+  if (items.length === 0) {
+    const qtyProduct = /(\d+)\s*(?:x|units?\s+of|pcs?\s+of|of)\s+(?:product|item)\s+(.+?)(?:\s*$|,)/gi;
+    while ((m = qtyProduct.exec(msg)) !== null) {
+      items.push({
+        productRef: m[2].trim().replace(/,+$/, ''),
+        quantity: parseInt(m[1]),
+        price: 0,
+      });
+    }
+  }
+
+  if (items.length === 0) {
+    const simpleProduct = /(?:with\s+)?(?:product|item)\s+(.+?)(?:\s*$|,)/gi;
+    while ((m = simpleProduct.exec(msg)) !== null) {
+      const ref = m[1].trim().replace(/,+$/, '');
+      if (ref) {
+        items.push({
+          productRef: ref,
+          quantity: 1,
+          price: 0,
+        });
+      }
+    }
+  }
+
   if (items.length > 0) {
     const trailingQty = msg.match(/(?:and\s+)?(?:they|the|i|we)\s+needs?\s+(\d+)\s*$/i)
       || msg.match(/\bqty\s+(\d+)\s*$/i)

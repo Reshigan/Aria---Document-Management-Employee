@@ -482,7 +482,7 @@ const leaveTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
   const handleMouseLeave = () => {
     leaveTimeoutRef.current = setTimeout(() => {
       setActiveDropdown(null);
-    }, 200);
+    }, 500);
   };
 
   const handleClick = (menu: string) => {
