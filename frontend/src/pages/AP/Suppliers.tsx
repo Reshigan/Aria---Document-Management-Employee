@@ -159,8 +159,8 @@ export default function Suppliers() {
   };
 
   const filteredSuppliers = suppliers.filter(s =>
-    s.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    s.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (s.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (s.code || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
     (s.email && s.email.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
@@ -487,7 +487,7 @@ export default function Suppliers() {
                   <td className="px-6 py-4 text-center">
                     {supplier.bbbee_level ? (
                       <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${getBBBEEBadge(supplier.bbbee_level)}`}>
-                        {supplier.bbbee_level.replace('_', ' ').replace('level ', 'Level ')}
+                        {String(supplier.bbbee_level).replace('_', ' ').replace('level ', 'Level ')}
                       </span>
                     ) : (
                       <span className="text-xs text-gray-400">-</span>
