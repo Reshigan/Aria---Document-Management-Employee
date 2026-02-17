@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { FolderOpen, Plus, Search, X, Edit2, Trash2, DollarSign, TrendingUp, Activity } from 'lucide-react';
 
+const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev/api';
+
 interface Project {
   id: number;
   name: string;
@@ -45,7 +47,7 @@ export default function ProjectsDashboard() {
   const fetchProjects = async () => {
     try {
       setLoading(true);
-      const response = await fetch('https://aria.vantax.co.za/api/new-pages/projects');
+      const response = await fetch(`${API_BASE}/new-pages/projects`);
       const ct = response.headers.get('content-type');
       if (!response.ok || !ct?.includes('application/json')) { setProjects([]); return; }
       const data = await response.json();
@@ -91,7 +93,7 @@ export default function ProjectsDashboard() {
   const handleDelete = async (projectId: number) => {
     if (!confirm('Are you sure you want to delete this project?')) return;
     try {
-      await fetch(`https://aria.vantax.co.za/api/new-pages/projects/${projectId}`, {
+      await fetch(`${API_BASE}/new-pages/projects/${projectId}`, {
         method: 'DELETE'
       });
       fetchProjects();
@@ -104,8 +106,8 @@ export default function ProjectsDashboard() {
     e.preventDefault();
     try {
       const url = editingProject 
-        ? `https://aria.vantax.co.za/api/new-pages/projects/${editingProject.id}`
-        : 'https://aria.vantax.co.za/api/new-pages/projects';
+                ? `${API_BASE}/new-pages/projects/${editingProject.id}`
+                : `${API_BASE}/new-pages/projects`;
       const method = editingProject ? 'PUT' : 'POST';
       
       await fetch(url, {

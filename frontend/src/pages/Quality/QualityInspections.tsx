@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, CheckCircle, X, Edit, Trash2 } from 'lucide-react';
 
+const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev/api';
+
 interface Inspection {
   inspection_id: string;
   work_order_id: string;
@@ -38,7 +40,7 @@ const QualityInspections: React.FC = () => {
 
   const fetchInspections = async () => {
     try {
-      const response = await fetch('https://aria.vantax.co.za/api/erp/quality/inspections');
+      const response = await fetch(`${API_BASE}/erp/quality/inspections`);
       const ct = response.headers.get('content-type');
       if (!response.ok || !ct?.includes('application/json')) { setInspections([]); return; }
       const data = await response.json();
@@ -82,7 +84,7 @@ const QualityInspections: React.FC = () => {
   const handleDelete = async (inspectionId: string) => {
     if (!confirm('Are you sure you want to delete this inspection?')) return;
     try {
-      await fetch(`https://aria.vantax.co.za/api/erp/quality/inspections/${inspectionId}`, {
+      await fetch(`${API_BASE}/erp/quality/inspections/${inspectionId}`, {
         method: 'DELETE'
       });
       fetchInspections();
@@ -95,8 +97,8 @@ const QualityInspections: React.FC = () => {
     e.preventDefault();
     try {
       const url = editingInspection 
-        ? `https://aria.vantax.co.za/api/erp/quality/inspections/${editingInspection.inspection_id}`
-        : 'https://aria.vantax.co.za/api/erp/quality/inspections';
+                ? `${API_BASE}/erp/quality/inspections/${editingInspection.inspection_id}`
+                : `${API_BASE}/erp/quality/inspections`;
       const method = editingInspection ? 'PUT' : 'POST';
       
       await fetch(url, {

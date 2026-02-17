@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, FileText, X, Edit, Trash2, Send, CheckCircle, XCircle, AlertTriangle, Clock, Users, DollarSign, Search, Layers, ShoppingCart } from 'lucide-react';
 
+const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev/api';
+
 interface SupplierQuote {
   supplier_id: string;
   supplier_name: string;
@@ -77,7 +79,7 @@ const RFQManagement: React.FC = () => {
 
   const fetchRFQs = async () => {
     try {
-      const response = await fetch('https://aria.vantax.co.za/api/erp/procurement/rfq');
+      const response = await fetch(`${API_BASE}/erp/procurement/rfq`);
       const data = await response.json();
       setRFQs(data.rfqs || []);
     } catch (error) {
@@ -121,8 +123,8 @@ const RFQManagement: React.FC = () => {
   const handleDelete = async (rfqId: string) => {
     if (!confirm('Are you sure you want to delete this RFQ?')) return;
     try {
-      await fetch(`https://aria.vantax.co.za/api/erp/procurement/rfq/${rfqId}`, {
-        method: 'DELETE'
+            await fetch(`${API_BASE}/erp/procurement/rfq/${rfqId}`, {
+              method: 'DELETE'
       });
       setSuccess('RFQ deleted successfully');
       fetchRFQs();
@@ -142,10 +144,10 @@ const RFQManagement: React.FC = () => {
       return;
     }
     try {
-      await fetch(`https://aria.vantax.co.za/api/erp/procurement/rfq/${rfq.rfq_id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...rfq, status: 'sent' })
+            await fetch(`${API_BASE}/erp/procurement/rfq/${rfq.rfq_id}`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ ...rfq, status: 'sent' })
       });
       setSuccess('RFQ sent to suppliers');
       fetchRFQs();
@@ -175,10 +177,10 @@ const RFQManagement: React.FC = () => {
     }
     try {
       const updatedQuotes = [...(selectedRfq.quotes || []), { ...quoteData, received_date: new Date().toISOString() }];
-      await fetch(`https://aria.vantax.co.za/api/erp/procurement/rfq/${selectedRfq.rfq_id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...selectedRfq, quotes: updatedQuotes, status: 'received' })
+            await fetch(`${API_BASE}/erp/procurement/rfq/${selectedRfq.rfq_id}`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ ...selectedRfq, quotes: updatedQuotes, status: 'received' })
       });
       setShowQuoteModal(false);
       setSuccess('Quote recorded successfully');
@@ -192,13 +194,13 @@ const RFQManagement: React.FC = () => {
   const handleAwardAndConvertToPO = async (rfq: RFQ, supplierName: string, quotedAmount: number) => {
     try {
       // Update RFQ status to awarded
-      await fetch(`https://aria.vantax.co.za/api/erp/procurement/rfq/${rfq.rfq_id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...rfq, status: 'awarded', selected_supplier: supplierName })
-      });
-      // Create Purchase Order
-      await fetch('https://aria.vantax.co.za/api/erp/purchase-orders', {
+            await fetch(`${API_BASE}/erp/procurement/rfq/${rfq.rfq_id}`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ ...rfq, status: 'awarded', selected_supplier: supplierName })
+            });
+            // Create Purchase Order
+            await fetch(`${API_BASE}/erp/purchase-orders`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -224,10 +226,10 @@ const RFQManagement: React.FC = () => {
     }
     if (!confirm('Are you sure you want to cancel this RFQ?')) return;
     try {
-      await fetch(`https://aria.vantax.co.za/api/erp/procurement/rfq/${rfq.rfq_id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...rfq, status: 'cancelled' })
+            await fetch(`${API_BASE}/erp/procurement/rfq/${rfq.rfq_id}`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ ...rfq, status: 'cancelled' })
       });
       setSuccess('RFQ cancelled');
       fetchRFQs();
@@ -244,8 +246,8 @@ const RFQManagement: React.FC = () => {
     }
     try {
       const url = editingRfq 
-        ? `https://aria.vantax.co.za/api/erp/procurement/rfq/${editingRfq.rfq_id}`
-        : 'https://aria.vantax.co.za/api/erp/procurement/rfq';
+                ? `${API_BASE}/erp/procurement/rfq/${editingRfq.rfq_id}`
+                : `${API_BASE}/erp/procurement/rfq`;
       const method = editingRfq ? 'PUT' : 'POST';
       
       const payload = {

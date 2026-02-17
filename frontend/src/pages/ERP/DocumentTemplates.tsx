@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { useCompany } from '../../lib/company';
 import { FileText, Plus, Download, Eye, Edit, X, RefreshCw, AlertCircle, Check, File, Layers } from 'lucide-react';
 
+const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev/api';
+
 interface DocumentTemplate {
   id: string;
   company_id: string;
@@ -55,7 +57,7 @@ export default function DocumentTemplates() {
     try {
       setLoading(true);
       const typeParam = selectedType !== 'all' ? `&document_type=${selectedType}` : '';
-      const response = await fetch(`https://aria.vantax.co.za/api/erp/documents/templates?company_id=${currentCompany.id}${typeParam}`);
+      const response = await fetch(`${API_BASE}/erp/documents/templates?company_id=${currentCompany.id}${typeParam}`);
       const ct = response.headers.get('content-type');
       if (!response.ok || !ct?.includes('application/json')) { setTemplates([]); setError(null); setLoading(false); return; }
       const data = await response.json();
@@ -70,7 +72,7 @@ export default function DocumentTemplates() {
   const generateDocument = async (templateId: string, type: string) => {
     if (!currentCompany) return;
     try {
-      const response = await fetch('https://aria.vantax.co.za/api/erp/documents/generate', {
+      const response = await fetch(`${API_BASE}/erp/documents/generate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -114,7 +116,7 @@ export default function DocumentTemplates() {
     if (!currentCompany || !formData.name) return;
     setSaving(true);
     try {
-      const response = await fetch('https://aria.vantax.co.za/api/erp/documents/templates', {
+      const response = await fetch(`${API_BASE}/erp/documents/templates`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ company_id: currentCompany.id, ...formData }),
@@ -132,7 +134,7 @@ export default function DocumentTemplates() {
     if (!currentCompany || !selectedTemplate || !formData.name) return;
     setSaving(true);
     try {
-      const response = await fetch(`https://aria.vantax.co.za/api/erp/documents/templates/${selectedTemplate.id}`, {
+      const response = await fetch(`${API_BASE}/erp/documents/templates/${selectedTemplate.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ company_id: currentCompany.id, ...formData }),

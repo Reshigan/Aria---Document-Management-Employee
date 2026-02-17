@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Wrench, Settings, CheckCircle, AlertTriangle, Package } from 'lucide-react';
 
+const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev/api';
+
 const AssetManagement: React.FC = () => {
   const [assets, setAssets] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -11,7 +13,7 @@ const AssetManagement: React.FC = () => {
 
   const fetchAssets = async () => {
     try {
-      const response = await fetch('https://aria.vantax.co.za/api/erp/maintenance/assets');
+      const response = await fetch(`${API_BASE}/erp/maintenance/assets`);
       const ct = response.headers.get('content-type');
       if (!response.ok || !ct?.includes('application/json')) { setAssets([]); return; }
       const data = await response.json();

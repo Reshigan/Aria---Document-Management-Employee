@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Package, Edit, Trash2, X, CheckCircle, XCircle, Copy, Play, AlertTriangle, DollarSign, Layers, Clock, FileText } from 'lucide-react';
 
+const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev/api';
+
 interface BOMItem {
   material_id: string;
   material_name: string;
@@ -64,7 +66,7 @@ const BOMManagement: React.FC = () => {
 
   const fetchBOMs = async () => {
     try {
-      const response = await fetch('https://aria.vantax.co.za/api/erp/manufacturing/bom');
+      const response = await fetch(`${API_BASE}/erp/manufacturing/bom`);
       const ct = response.headers.get('content-type');
       if (!response.ok || !ct?.includes('application/json')) { setBOMs([]); return; }
       const data = await response.json();
@@ -108,8 +110,8 @@ const BOMManagement: React.FC = () => {
   const handleDelete = async (bomId: string) => {
     if (!confirm('Are you sure you want to delete this BOM?')) return;
     try {
-      await fetch(`https://aria.vantax.co.za/api/erp/manufacturing/bom/${bomId}`, {
-        method: 'DELETE'
+            await fetch(`${API_BASE}/erp/manufacturing/bom/${bomId}`, {
+              method: 'DELETE'
       });
       setSuccess('BOM deleted successfully');
       fetchBOMs();
@@ -129,10 +131,10 @@ const BOMManagement: React.FC = () => {
       return;
     }
     try {
-      await fetch(`https://aria.vantax.co.za/api/erp/manufacturing/bom/${bom.bom_id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...bom, status: 'approved' })
+            await fetch(`${API_BASE}/erp/manufacturing/bom/${bom.bom_id}`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ ...bom, status: 'approved' })
       });
       setSuccess('BOM approved successfully');
       fetchBOMs();
@@ -150,17 +152,17 @@ const BOMManagement: React.FC = () => {
     // Deactivate any other active BOM for the same product
     const existingActive = boms.find(b => b.product_name === bom.product_name && b.status === 'active' && b.bom_id !== bom.bom_id);
     if (existingActive) {
-      await fetch(`https://aria.vantax.co.za/api/erp/manufacturing/bom/${existingActive.bom_id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...existingActive, status: 'obsolete' })
+            await fetch(`${API_BASE}/erp/manufacturing/bom/${existingActive.bom_id}`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ ...existingActive, status: 'obsolete' })
       });
     }
     try {
-      await fetch(`https://aria.vantax.co.za/api/erp/manufacturing/bom/${bom.bom_id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...bom, status: 'active', is_active: true })
+            await fetch(`${API_BASE}/erp/manufacturing/bom/${bom.bom_id}`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ ...bom, status: 'active', is_active: true })
       });
       setSuccess('BOM activated successfully. Previous active version marked as obsolete.');
       fetchBOMs();
@@ -173,10 +175,10 @@ const BOMManagement: React.FC = () => {
   const handleObsolete = async (bom: BOM) => {
     if (!confirm('Are you sure you want to mark this BOM as obsolete? This cannot be undone.')) return;
     try {
-      await fetch(`https://aria.vantax.co.za/api/erp/manufacturing/bom/${bom.bom_id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...bom, status: 'obsolete', is_active: false })
+            await fetch(`${API_BASE}/erp/manufacturing/bom/${bom.bom_id}`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ ...bom, status: 'obsolete', is_active: false })
       });
       setSuccess('BOM marked as obsolete');
       fetchBOMs();
@@ -190,13 +192,13 @@ const BOMManagement: React.FC = () => {
     const currentVersion = parseFloat(bom.version) || 1.0;
     const newVersion = (currentVersion + 0.1).toFixed(1);
     try {
-      await fetch('https://aria.vantax.co.za/api/erp/manufacturing/bom', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          product_name: bom.product_name,
-          product_id: bom.product_id,
-          version: newVersion,
+            await fetch(`${API_BASE}/erp/manufacturing/bom`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                product_name: bom.product_name,
+                product_id: bom.product_id,
+                version: newVersion,
           status: 'draft',
           items: bom.items,
           notes: `Copied from version ${bom.version}`
@@ -216,7 +218,7 @@ const BOMManagement: React.FC = () => {
       return;
     }
     try {
-      await fetch('https://aria.vantax.co.za/api/erp/manufacturing/work-orders', {
+      await fetch(`${API_BASE}/erp/manufacturing/work-orders`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -246,8 +248,8 @@ const BOMManagement: React.FC = () => {
     }
     try {
       const url = editingBom 
-        ? `https://aria.vantax.co.za/api/erp/manufacturing/bom/${editingBom.bom_id}`
-        : 'https://aria.vantax.co.za/api/erp/manufacturing/bom';
+                ? `${API_BASE}/erp/manufacturing/bom/${editingBom.bom_id}`
+                : `${API_BASE}/erp/manufacturing/bom`;
       const method = editingBom ? 'PUT' : 'POST';
       
       // Calculate total cost
