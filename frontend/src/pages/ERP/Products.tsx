@@ -202,8 +202,10 @@ export default function Products() {
   };
 
   const marginPercent = (product: Product) => {
-    if (product.selling_price === 0) return 0;
-    return ((product.selling_price - product.cost_price) / product.selling_price * 100);
+    const sp = Number(product.selling_price) || 0;
+    const cp = Number(product.cost_price) || 0;
+    if (sp === 0) return 0;
+    return ((sp - cp) / sp * 100);
   };
 
   const renderFormModal = (isEdit: boolean) => {

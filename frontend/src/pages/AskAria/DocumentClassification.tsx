@@ -396,8 +396,8 @@ const DocumentClassification: React.FC = () => {
                       Confidence
                     </Typography>
                     <Chip
-                      label={`${(documentData.classification!.confidence * 100).toFixed(0)}%`}
-                      color={documentData.classification!.confidence > 0.7 ? 'success' : 'warning'}
+                      label={`${((documentData.classification?.confidence || 0) * 100).toFixed(0)}%`}
+                      color={(documentData.classification?.confidence || 0) > 0.7 ? 'success' : 'warning'}
                       sx={{ mt: 1 }}
                     />
                   </Grid>

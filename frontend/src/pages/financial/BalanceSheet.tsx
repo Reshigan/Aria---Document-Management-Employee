@@ -275,7 +275,7 @@ export default function BalanceSheetPage() {
                 </span>
               ) : (
                 <span className="px-3 py-1 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 rounded-full text-sm font-medium">
-                  Out of Balance: R {(data.assets.total - data.liabilities.total - data.equity.total).toLocaleString()}
+                  Out of Balance: R {Number((data.assets.total ?? 0) - (data.liabilities.total ?? 0) - (data.equity.total ?? 0)).toLocaleString()}
                 </span>
               )}
             </div>
