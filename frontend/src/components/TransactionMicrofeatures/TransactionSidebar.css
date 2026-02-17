@@ -8,8 +8,17 @@
   flex-direction: column;
 }
 
+.dark .transaction-sidebar {
+  background: #1f2937;
+  border-left-color: #374151;
+}
+
 .sidebar-section {
   border-bottom: 1px solid #e5e7eb;
+}
+
+.dark .sidebar-section {
+  border-bottom-color: #374151;
 }
 
 .sidebar-section-header {
@@ -18,6 +27,10 @@
   justify-content: space-between;
   padding: 14px 16px;
   background: #f9fafb;
+}
+
+.dark .sidebar-section-header {
+  background: #111827;
 }
 
 .sidebar-section-header.clickable {
@@ -39,6 +52,10 @@
   margin: 0;
 }
 
+.dark .sidebar-section-header h3 {
+  color: #d1d5db;
+}
+
 .add-btn {
   width: 24px;
   height: 24px;
@@ -51,6 +68,12 @@
   cursor: pointer;
   color: #6b7280;
   transition: all 0.2s ease;
+}
+
+.dark .add-btn {
+  background: #374151;
+  border-color: #4b5563;
+  color: #9ca3af;
 }
 
 .add-btn:hover {
@@ -84,6 +107,12 @@
   color: #4b5563;
   font-size: 11px;
   transition: all 0.2s ease;
+}
+
+.dark .quick-action-btn {
+  background: #374151;
+  border-color: #4b5563;
+  color: #9ca3af;
 }
 
 .quick-action-btn:hover {
@@ -204,6 +233,14 @@
   background: #f3f4f6;
 }
 
+.dark .attachment-item {
+  background: #374151;
+}
+
+.dark .attachment-item:hover {
+  background: #4b5563;
+}
+
 .attachment-info {
   flex: 1;
   min-width: 0;
@@ -217,6 +254,10 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.dark .attachment-name {
+  color: #f3f4f6;
 }
 
 .attachment-meta {
@@ -258,6 +299,12 @@
   font-size: 13px;
   resize: none;
   transition: border-color 0.2s ease;
+}
+
+.dark .comment-input-area textarea {
+  background: #374151;
+  border-color: #4b5563;
+  color: #f3f4f6;
 }
 
 .comment-input-area textarea:focus {
@@ -360,6 +407,10 @@
   color: #1f2937;
 }
 
+.dark .comment-author {
+  color: #f3f4f6;
+}
+
 .comment-time {
   font-size: 10px;
   color: #9ca3af;
@@ -370,6 +421,10 @@
   color: #4b5563;
   line-height: 1.4;
   margin: 0;
+}
+
+.dark .comment-text {
+  color: #9ca3af;
 }
 
 .internal-badge {
@@ -397,6 +452,10 @@
   border-bottom: 1px solid #f3f4f6;
 }
 
+.dark .activity-item {
+  border-bottom-color: #374151;
+}
+
 .activity-item:last-child {
   border-bottom: none;
 }
@@ -413,6 +472,11 @@
   flex-shrink: 0;
 }
 
+.dark .activity-icon {
+  background: #374151;
+  color: #9ca3af;
+}
+
 .activity-content {
   flex: 1;
   min-width: 0;
@@ -423,6 +487,10 @@
   font-size: 12px;
   font-weight: 500;
   color: #1f2937;
+}
+
+.dark .activity-description {
+  color: #f3f4f6;
 }
 
 .activity-details {
@@ -461,6 +529,14 @@
   background: #f3f4f6;
 }
 
+.dark .related-doc-item {
+  background: #374151;
+}
+
+.dark .related-doc-item:hover {
+  background: #4b5563;
+}
+
 .related-doc-type {
   padding: 4px 8px;
   font-size: 9px;
@@ -479,6 +555,10 @@
   font-size: 12px;
   font-weight: 500;
   color: #1f2937;
+}
+
+.dark .related-doc-number {
+  color: #f3f4f6;
 }
 
 .related-doc-meta {
@@ -516,10 +596,45 @@
   color: #d97706;
 }
 
+.dark .attachment-download {
+  background: #374151;
+  border-color: #4b5563;
+  color: #9ca3af;
+}
+
+.dark .attachment-download:hover {
+  background: #6366f1;
+  border-color: #6366f1;
+  color: white;
+}
+
+.dark .send-comment-btn:disabled {
+  background: #374151;
+}
+
+.dark .upload-area {
+  border-color: #4b5563;
+  color: #6b7280;
+}
+
+.dark .upload-area:hover {
+  border-color: #6366f1;
+  color: #6366f1;
+  background: rgba(99, 102, 241, 0.1);
+}
+
+.dark .tag-picker {
+  border-top-color: #374151;
+}
+
 @media (max-width: 1024px) {
   .transaction-sidebar {
     width: 100%;
     border-left: none;
     border-top: 1px solid #e5e7eb;
+  }
+
+  .dark .transaction-sidebar {
+    border-top-color: #374151;
   }
 }

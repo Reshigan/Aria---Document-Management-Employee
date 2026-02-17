@@ -39,18 +39,7 @@ export function ActionBar({
       {showPrint && (
         <button
           onClick={handlePrint}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-            padding: '0.5rem 1rem',
-            background: 'white',
-            border: '1px solid #d1d5db',
-            borderRadius: '0.375rem',
-            cursor: 'pointer',
-            fontSize: '0.875rem',
-            fontWeight: '500'
-          }}
+          className="bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 rounded-md text-sm font-medium flex items-center gap-2 px-3 py-2 cursor-pointer"
         >
           <Printer size={16} />
           Print
@@ -59,18 +48,7 @@ export function ActionBar({
       {showExport && (
         <button
           onClick={handleExport}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-            padding: '0.5rem 1rem',
-            background: 'white',
-            border: '1px solid #d1d5db',
-            borderRadius: '0.375rem',
-            cursor: 'pointer',
-            fontSize: '0.875rem',
-            fontWeight: '500'
-          }}
+          className="bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 rounded-md text-sm font-medium flex items-center gap-2 px-3 py-2 cursor-pointer"
         >
           <Download size={16} />
           Export CSV

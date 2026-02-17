@@ -163,9 +163,9 @@ export function DocumentDetail({ config }: DocumentDetailProps) {
 
   if (loading) {
     return (
-      <div style={{ padding: '2rem' }}>
-        <div style={{ textAlign: 'center', padding: '3rem' }}>
-          <div style={{ fontSize: '1.125rem', color: '#6b7280' }}>Loading {config.title}...</div>
+      <div className="p-8">
+        <div className="text-center p-12">
+          <div className="text-lg text-gray-500 dark:text-gray-400">Loading {config.title}...</div>
         </div>
       </div>
     );
@@ -173,26 +173,13 @@ export function DocumentDetail({ config }: DocumentDetailProps) {
 
   if (error || !document) {
     return (
-      <div style={{ padding: '2rem' }}>
-        <div style={{
-          padding: '1rem',
-          background: '#fee2e2',
-          border: '1px solid #fecaca',
-          borderRadius: '0.375rem',
-          color: '#991b1b',
-          marginBottom: '1rem'
-        }}>
+      <div className="p-8">
+        <div className="p-4 bg-red-100 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-md text-red-800 dark:text-red-300 mb-4">
           {error || `${config.title} not found`}
         </div>
         <Link
           to={config.listPath}
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-            color: '#2563eb',
-            textDecoration: 'none'
-          }}
+          className="inline-flex items-center gap-2 text-blue-600 dark:text-blue-400 no-underline"
         >
           <ArrowLeft size={16} />
           Back to List
@@ -204,51 +191,36 @@ export function DocumentDetail({ config }: DocumentDetailProps) {
   const lines = document[config.lineItems.arrayKey] || [];
 
   return (
-    <div style={{ padding: '2rem' }}>
+    <div className="p-8">
       {/* Header */}
-      <div style={{ marginBottom: '2rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <div className="mb-8 flex items-center justify-between">
         <div>
           <Link
             to={config.listPath}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.5rem',
-              color: '#6b7280',
-              textDecoration: 'none',
-              marginBottom: '0.5rem',
-              fontSize: '0.875rem'
-            }}
+            className="inline-flex items-center gap-2 text-gray-500 dark:text-gray-400 no-underline mb-2 text-sm"
           >
             <ArrowLeft size={16} />
             Back to {config.title}s
           </Link>
-          <h1 style={{ fontSize: '2rem', fontWeight: 'bold', margin: '0.5rem 0' }}>
+          <h1 className="text-3xl font-bold my-2 text-gray-900 dark:text-white">
             {document[config.fields.number]}
           </h1>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <div className="flex items-center gap-4">
             <span
-              style={{
-                display: 'inline-block',
-                padding: '0.25rem 0.75rem',
-                borderRadius: '9999px',
-                fontSize: '0.875rem',
-                fontWeight: '500',
-                color: 'white',
-                background: getStatusColor(document[config.fields.status])
-              }}
+              className="inline-block px-3 py-1 rounded-full text-sm font-medium text-white"
+              style={{ background: getStatusColor(document[config.fields.status]) }}
             >
               {document[config.fields.status]?.toUpperCase()}
             </span>
             {config.fields.date && (
-              <span style={{ color: '#6b7280', fontSize: '0.875rem' }}>
+              <span className="text-gray-500 dark:text-gray-400 text-sm">
                 {new Date(document[config.fields.date]).toLocaleDateString()}
               </span>
             )}
           </div>
         </div>
 
-        <div style={{ display: 'flex', gap: '0.75rem' }}>
+        <div className="flex gap-3">
           {config.actions?.customActions?.map((action, idx) => {
             if (action.condition && !action.condition(document)) return null;
             const Icon = action.icon;
@@ -256,19 +228,8 @@ export function DocumentDetail({ config }: DocumentDetailProps) {
               <button
                 key={idx}
                 onClick={() => action.onClick(document, loadDocument)}
-                style={{
-                  padding: '0.5rem 1rem',
-                  background: action.color,
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '0.375rem',
-                  fontSize: '0.875rem',
-                  fontWeight: '500',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.5rem'
-                }}
+                className="px-4 py-2 text-white border-none rounded-md text-sm font-medium cursor-pointer flex items-center gap-2"
+                style={{ background: action.color }}
               >
                 <Icon size={16} />
                 {action.label}
@@ -278,19 +239,7 @@ export function DocumentDetail({ config }: DocumentDetailProps) {
           {config.actions?.canEdit && !isEditing && document.status === 'draft' && (
             <button
               onClick={handleEdit}
-              style={{
-                padding: '0.5rem 1rem',
-                background: '#3b82f6',
-                color: 'white',
-                border: 'none',
-                borderRadius: '0.375rem',
-                fontSize: '0.875rem',
-                fontWeight: '500',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.5rem'
-              }}
+              className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white border-none rounded-md text-sm font-medium cursor-pointer flex items-center gap-2"
             >
               <Edit size={16} />
               Edit
@@ -300,38 +249,14 @@ export function DocumentDetail({ config }: DocumentDetailProps) {
             <>
               <button
                 onClick={handleSaveEdit}
-                style={{
-                  padding: '0.5rem 1rem',
-                  background: '#10b981',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '0.375rem',
-                  fontSize: '0.875rem',
-                  fontWeight: '500',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.5rem'
-                }}
+                className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white border-none rounded-md text-sm font-medium cursor-pointer flex items-center gap-2"
               >
                 <Check size={16} />
                 Save
               </button>
               <button
                 onClick={handleCancelEdit}
-                style={{
-                  padding: '0.5rem 1rem',
-                  background: '#6b7280',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '0.375rem',
-                  fontSize: '0.875rem',
-                  fontWeight: '500',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.5rem'
-                }}
+                className="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white border-none rounded-md text-sm font-medium cursor-pointer flex items-center gap-2"
               >
                 <ArrowLeft size={16} />
                 Cancel
@@ -341,19 +266,7 @@ export function DocumentDetail({ config }: DocumentDetailProps) {
           {config.actions?.canDelete && (
             <button
               onClick={handleDelete}
-              style={{
-                padding: '0.5rem 1rem',
-                background: '#ef4444',
-                color: 'white',
-                border: 'none',
-                borderRadius: '0.375rem',
-                fontSize: '0.875rem',
-                fontWeight: '500',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.5rem'
-              }}
+              className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white border-none rounded-md text-sm font-medium cursor-pointer flex items-center gap-2"
             >
               <Trash2 size={16} />
               Delete
@@ -363,92 +276,66 @@ export function DocumentDetail({ config }: DocumentDetailProps) {
       </div>
 
       {/* Document Details */}
-      <div style={{
-        background: 'white',
-        borderRadius: '0.5rem',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-        padding: '1.5rem',
-        marginBottom: '2rem'
-      }}>
-        <h2 style={{ fontSize: '1.25rem', fontWeight: '600', marginBottom: '1rem' }}>Details</h2>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem' }}>
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 mb-8">
+        <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Details</h2>
+        <div className="grid grid-cols-2 gap-4">
           {config.fields.party && document[config.fields.party] && (
             <div>
-              <div style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.25rem' }}>
+              <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">
                 {config.fields.partyLabel || 'Party'}
               </div>
-              <div style={{ fontWeight: '500' }}>{document[config.fields.party]}</div>
+              <div className="font-medium text-gray-900 dark:text-white">{document[config.fields.party]}</div>
             </div>
           )}
           {config.fields.reference && document[config.fields.reference] && (
             <div>
-              <div style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.25rem' }}>Reference</div>
-              <div style={{ fontWeight: '500' }}>{document[config.fields.reference]}</div>
+              <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">Reference</div>
+              <div className="font-medium text-gray-900 dark:text-white">{document[config.fields.reference]}</div>
             </div>
           )}
           {config.fields.date && (
             <div>
-              <div style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.25rem' }}>Date</div>
-              <div style={{ fontWeight: '500' }}>
+              <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">Date</div>
+              <div className="font-medium text-gray-900 dark:text-white">
                 {new Date(document[config.fields.date]).toLocaleDateString()}
               </div>
             </div>
           )}
         </div>
         {config.fields.notes && (document[config.fields.notes] || isEditing) && (
-          <div style={{ marginTop: '1rem' }}>
-            <div style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.25rem' }}>Notes</div>
+          <div className="mt-4">
+            <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">Notes</div>
             {isEditing ? (
               <textarea
                 value={editedDocument[config.fields.notes] || ''}
                 onChange={(e) => setEditedDocument({ ...editedDocument, [config.fields.notes]: e.target.value })}
-                style={{
-                  width: '100%',
-                  minHeight: '80px',
-                  padding: '0.5rem',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '0.375rem',
-                  fontSize: '0.875rem',
-                  fontFamily: 'inherit'
-                }}
+                className="w-full min-h-[80px] p-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-md text-sm font-inherit"
               />
             ) : (
-              <div style={{ color: '#374151' }}>{document[config.fields.notes]}</div>
+              <div className="text-gray-700 dark:text-gray-300">{document[config.fields.notes]}</div>
             )}
           </div>
         )}
       </div>
 
       {/* Line Items */}
-      <div style={{
-        background: 'white',
-        borderRadius: '0.5rem',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-        marginBottom: '2rem'
-      }}>
-        <div style={{ padding: '1.5rem', borderBottom: '1px solid #e5e7eb' }}>
-          <h2 style={{ fontSize: '1.25rem', fontWeight: '600', margin: 0 }}>Line Items</h2>
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm mb-8">
+        <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+          <h2 className="text-xl font-semibold m-0 text-gray-900 dark:text-white">Line Items</h2>
         </div>
         {lines.length === 0 ? (
-          <div style={{ padding: '2rem', textAlign: 'center', color: '#6b7280' }}>
+          <div className="p-8 text-center text-gray-500 dark:text-gray-400">
             No line items found
           </div>
         ) : (
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-              <thead style={{ background: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse">
+              <thead className="bg-gray-50 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700">
                 <tr>
                   {config.lineItems.columns.map((col) => (
                     <th
                       key={col.key}
-                      style={{
-                        padding: '0.75rem 1rem',
-                        textAlign: 'left',
-                        fontSize: '0.75rem',
-                        fontWeight: '600',
-                        color: '#6b7280',
-                        textTransform: 'uppercase'
-                      }}
+                      className="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase"
                     >
                       {col.label}
                     </th>
@@ -457,15 +344,11 @@ export function DocumentDetail({ config }: DocumentDetailProps) {
               </thead>
               <tbody>
                 {lines.map((line: any, idx: number) => (
-                  <tr key={line.id || idx} style={{ borderBottom: '1px solid #e5e7eb' }}>
+                  <tr key={line.id || idx} className="border-b border-gray-200 dark:border-gray-700">
                     {config.lineItems.columns.map((col) => (
                       <td
                         key={col.key}
-                        style={{
-                          padding: '0.75rem 1rem',
-                          fontSize: '0.875rem',
-                          color: '#374151'
-                        }}
+                        className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"
                       >
                         {col.format ? col.format(line[col.key]) : line[col.key] || '-'}
                       </td>
@@ -480,36 +363,23 @@ export function DocumentDetail({ config }: DocumentDetailProps) {
 
       {/* Totals */}
       {(config.fields.subtotal || config.fields.taxAmount || config.fields.totalAmount) && (
-        <div style={{
-          background: 'white',
-          borderRadius: '0.5rem',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-          padding: '1.5rem',
-          maxWidth: '400px',
-          marginLeft: 'auto'
-        }}>
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 max-w-[400px] ml-auto">
           {config.fields.subtotal && (
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-              <span style={{ color: '#6b7280' }}>Subtotal:</span>
-              <span style={{ fontWeight: '500' }}>{formatCurrency(document[config.fields.subtotal])}</span>
+            <div className="flex justify-between mb-2">
+              <span className="text-gray-500 dark:text-gray-400">Subtotal:</span>
+              <span className="font-medium text-gray-900 dark:text-white">{formatCurrency(document[config.fields.subtotal])}</span>
             </div>
           )}
           {config.fields.taxAmount && (
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-              <span style={{ color: '#6b7280' }}>Tax:</span>
-              <span style={{ fontWeight: '500' }}>{formatCurrency(document[config.fields.taxAmount])}</span>
+            <div className="flex justify-between mb-2">
+              <span className="text-gray-500 dark:text-gray-400">Tax:</span>
+              <span className="font-medium text-gray-900 dark:text-white">{formatCurrency(document[config.fields.taxAmount])}</span>
             </div>
           )}
           {config.fields.totalAmount && (
-            <div style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              paddingTop: '0.5rem',
-              borderTop: '1px solid #e5e7eb',
-              marginTop: '0.5rem'
-            }}>
-              <span style={{ fontWeight: '600', fontSize: '1.125rem' }}>Total:</span>
-              <span style={{ fontWeight: '600', fontSize: '1.125rem' }}>
+            <div className="flex justify-between pt-2 border-t border-gray-200 dark:border-gray-700 mt-2">
+              <span className="font-semibold text-lg text-gray-900 dark:text-white">Total:</span>
+              <span className="font-semibold text-lg text-gray-900 dark:text-white">
                 {formatCurrency(document[config.fields.totalAmount])}
               </span>
             </div>
