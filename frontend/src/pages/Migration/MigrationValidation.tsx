@@ -55,7 +55,7 @@ export default function MigrationValidation() {
       const data = response.data.data || response.data || [];
       setJobs(Array.isArray(data) ? data : []);
     } catch (error) {
-      console.error('Error loading jobs:', error);
+      console.error('Error loading jobs:', String(error));
     }
   };
 
@@ -71,8 +71,8 @@ export default function MigrationValidation() {
       const data = response.data.data || response.data || [];
       setResults(Array.isArray(data) ? data : []);
     } catch (error) {
-      console.error('Error loading validation results:', error);
-    } finally {
+      console.error('Error loading validation results:', String(error));
+    }finally {
       setLoading(false);
     }
   };

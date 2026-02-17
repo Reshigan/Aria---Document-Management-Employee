@@ -86,7 +86,7 @@ export default function ERPDashboard() {
 
       setLoading(false);
     } catch (error) {
-      console.error('Error fetching data:', error);
+      console.error('Error fetching data:', String(error));
       setLoading(false);
     }
   };

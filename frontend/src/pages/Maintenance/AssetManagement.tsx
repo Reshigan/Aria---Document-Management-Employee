@@ -12,6 +12,8 @@ const AssetManagement: React.FC = () => {
   const fetchAssets = async () => {
     try {
       const response = await fetch('https://aria.vantax.co.za/api/erp/maintenance/assets');
+      const ct = response.headers.get('content-type');
+      if (!response.ok || !ct?.includes('application/json')) { setAssets([]); return; }
       const data = await response.json();
       setAssets(data.assets || []);
     } catch (error) {

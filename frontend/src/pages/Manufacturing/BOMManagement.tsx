@@ -65,6 +65,8 @@ const BOMManagement: React.FC = () => {
   const fetchBOMs = async () => {
     try {
       const response = await fetch('https://aria.vantax.co.za/api/erp/manufacturing/bom');
+      const ct = response.headers.get('content-type');
+      if (!response.ok || !ct?.includes('application/json')) { setBOMs([]); return; }
       const data = await response.json();
       setBOMs(data.boms || []);
     } catch (error) {

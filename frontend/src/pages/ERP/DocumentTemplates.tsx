@@ -56,7 +56,8 @@ export default function DocumentTemplates() {
       setLoading(true);
       const typeParam = selectedType !== 'all' ? `&document_type=${selectedType}` : '';
       const response = await fetch(`https://aria.vantax.co.za/api/erp/documents/templates?company_id=${currentCompany.id}${typeParam}`);
-      if (!response.ok) throw new Error('Failed to fetch templates');
+      const ct = response.headers.get('content-type');
+      if (!response.ok || !ct?.includes('application/json')) { setTemplates([]); setError(null); setLoading(false); return; }
       const data = await response.json();
       setTemplates(data.templates || []);
       setError(null);

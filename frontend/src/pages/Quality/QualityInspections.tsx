@@ -39,6 +39,8 @@ const QualityInspections: React.FC = () => {
   const fetchInspections = async () => {
     try {
       const response = await fetch('https://aria.vantax.co.za/api/erp/quality/inspections');
+      const ct = response.headers.get('content-type');
+      if (!response.ok || !ct?.includes('application/json')) { setInspections([]); return; }
       const data = await response.json();
       setInspections(data.inspections || []);
     } catch (error) {
