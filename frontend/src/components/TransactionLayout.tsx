@@ -64,9 +64,9 @@ export function TransactionLayout({
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800">
       {/* Header */}
-      <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-[100]" style={{ padding: '1rem 2rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+      <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-[100] px-4 py-3 md:px-8 md:py-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div className="flex items-center gap-3 min-w-0">
             {backUrl && (
               <button
                 onClick={() => navigate(backUrl)}
@@ -109,7 +109,7 @@ export function TransactionLayout({
           </div>
 
           {showActions && (
-            <div style={{ display: 'flex', gap: '0.5rem' }}>
+            <div className="flex flex-wrap gap-2">
               {onPrint && (
                 <button
                   onClick={onPrint}
@@ -218,7 +218,7 @@ export function TransactionLayout({
       </div>
 
       {/* Content */}
-      <div style={{ padding: '2rem' }}>
+      <div className="p-4 md:p-8">
         {children}
       </div>
     </div>

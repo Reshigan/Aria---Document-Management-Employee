@@ -214,18 +214,38 @@ export function useOnboarding() {
   const [showTour, setShowTour] = useState(false);
 
   useEffect(() => {
-    const completed = localStorage.getItem('aria-onboarding-complete');
-    if (!completed) {
-      // Delay showing tour to let the app load
-      const timer = setTimeout(() => setShowTour(true), 1000);
+    try {
+      const completed = localStorage.getItem('aria-onboarding-complete');
+      if (completed === 'true') {
+        setShowTour(false);
+        return;
+      }
+      const timer = setTimeout(() => {
+        const recheck = localStorage.getItem('aria-onboarding-complete');
+        if (recheck !== 'true') {
+          setShowTour(true);
+        }
+      }, 1500);
       return () => clearTimeout(timer);
+    } catch {
+      setShowTour(false);
     }
   }, []);
 
+  const dismissTour = () => {
+    try {
+      localStorage.setItem('aria-onboarding-complete', 'true');
+      document.cookie = 'aria-onboarding-complete=true;max-age=31536000;path=/';
+    } catch {}
+    setShowTour(false);
+  };
+
   const resetTour = () => {
-    localStorage.removeItem('aria-onboarding-complete');
+    try {
+      localStorage.removeItem('aria-onboarding-complete');
+    } catch {}
     setShowTour(true);
   };
 
-  return { showTour, setShowTour, resetTour };
+  return { showTour, setShowTour, dismissTour, resetTour };
 }
