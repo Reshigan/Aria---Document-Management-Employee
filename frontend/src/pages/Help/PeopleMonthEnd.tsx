@@ -12,14 +12,16 @@ interface ChecklistItem {
 const PeopleMonthEnd: React.FC = () => {
   const [activeStep, setActiveStep] = useState(0);
   const [checklist, setChecklist] = useState<ChecklistItem[]>([
-    { id: '1', task: 'Timesheet Approval', description: 'Review and approve all employee timesheets', completed: false },
-    { id: '2', task: 'Leave Balance Verification', description: 'Verify leave balances and accruals are correct', completed: false },
-    { id: '3', task: 'Payroll Processing', description: 'Process monthly payroll and verify calculations', completed: false },
-    { id: '4', task: 'Tax Submissions', description: 'Submit PAYE and other statutory deductions', completed: false },
-    { id: '5', task: 'Benefits Reconciliation', description: 'Reconcile medical aid, pension, and other benefit deductions', completed: false },
-    { id: '6', task: 'New Hire Documentation', description: 'Ensure all new hire paperwork is complete', completed: false },
-    { id: '7', task: 'Training Compliance Check', description: 'Review mandatory training completion status', completed: false },
-    { id: '8', task: 'HR Reports Generation', description: 'Generate monthly HR reports and metrics', completed: false },
+    { id: '1', task: 'Timesheet Approval', description: 'Go to People > Payroll. Review and approve all employee timesheets and overtime claims. Reject or query any discrepancies before payroll processing.', completed: false },
+    { id: '2', task: 'Leave Balance Verification', description: 'Navigate to HR > Leave Management. Verify leave balances are accurate. Ensure all approved leave is recorded. Check annual leave accruals are calculating correctly per company policy.', completed: false },
+    { id: '3', task: 'Payroll Processing', description: 'Run payroll via Payroll > Payroll Runs. Review gross-to-net calculations, verify PAYE brackets, check UIF (1% employee + 1% employer), and SDL (1%). Process allowances, deductions, and bonuses. Generate payslips.', completed: false },
+    { id: '4', task: 'PAYE & Statutory Submissions', description: 'Generate EMP201 return from Payroll > PAYE Returns. Verify PAYE, UIF, and SDL totals match payroll. Submit to SARS by the 7th of the following month. File proof of submission.', completed: false },
+    { id: '5', task: 'Benefits Reconciliation', description: 'Reconcile medical aid contributions, pension/provident fund deductions, and group life premiums to provider statements. Ensure employee and employer portions are correct.', completed: false },
+    { id: '6', task: 'New Hire & Termination Processing', description: 'Ensure all new starters have completed onboarding: signed contracts, bank details captured, tax numbers registered. Process any terminations: final pay, leave payouts, and exit documentation.', completed: false },
+    { id: '7', task: 'Training Compliance Check', description: 'Review mandatory training completion under People > Talent > Training. Follow up on overdue courses. Ensure health & safety, compliance, and skills development training is on track.', completed: false },
+    { id: '8', task: 'Attendance & Absence Review', description: 'Review attendance records for the month. Flag excessive absenteeism. Verify sick leave certificates are on file. Update records for any unpaid leave taken.', completed: false },
+    { id: '9', task: 'HR Metrics & Reporting', description: 'Generate monthly HR reports: headcount, turnover rate, leave utilisation, overtime analysis, and training compliance. Present to management for review. Archive for annual reporting.', completed: false },
+    { id: '10', task: 'Payroll Journal Posting', description: 'Ensure payroll journals are posted to the General Ledger. Reconcile salary clearing account, PAYE/UIF/SDL control accounts, and net pay bank account. Clear any differences.', completed: false },
   ]);
 
   const handleToggle = (id: string) => {
@@ -31,9 +33,9 @@ const PeopleMonthEnd: React.FC = () => {
 
   const steps = [
     { label: 'Time & Leave', items: checklist.slice(0, 2) },
-    { label: 'Payroll & Tax', items: checklist.slice(2, 4) },
-    { label: 'Benefits & Onboarding', items: checklist.slice(4, 6) },
-    { label: 'Training & Reporting', items: checklist.slice(6, 8) },
+    { label: 'Payroll & Statutory', items: checklist.slice(2, 5) },
+    { label: 'Staff & Training', items: checklist.slice(5, 8) },
+    { label: 'Reporting & Journals', items: checklist.slice(8, 10) },
   ];
 
   return (

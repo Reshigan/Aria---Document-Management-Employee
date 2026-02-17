@@ -12,14 +12,16 @@ interface ChecklistItem {
 const ComplianceMonthEnd: React.FC = () => {
   const [activeStep, setActiveStep] = useState(0);
   const [checklist, setChecklist] = useState<ChecklistItem[]>([
-    { id: '1', task: 'Review Access Logs', description: 'Review all system access logs for unauthorized access attempts', completed: false },
-    { id: '2', task: 'Data Retention Check', description: 'Verify data retention policies are being followed', completed: false },
-    { id: '3', task: 'Audit Trail Export', description: 'Export audit trails for compliance records', completed: false },
-    { id: '4', task: 'POPIA Compliance Review', description: 'Review POPIA compliance status and any pending DSARs', completed: false },
-    { id: '5', task: 'Security Incident Review', description: 'Review and close any security incidents from the month', completed: false },
-    { id: '6', task: 'Policy Updates', description: 'Review and update compliance policies if needed', completed: false },
-    { id: '7', task: 'Training Compliance', description: 'Verify all staff have completed required compliance training', completed: false },
-    { id: '8', task: 'Generate Compliance Report', description: 'Generate and submit monthly compliance report', completed: false },
+    { id: '1', task: 'Review Access Logs', description: 'Navigate to Compliance > Audit Trails. Review all login attempts, failed access, and unusual activity. Flag and investigate any unauthorized access or suspicious patterns.', completed: false },
+    { id: '2', task: 'VAT Return Preparation', description: 'Reconcile VAT output (sales) and input (purchases) to control accounts. Generate the VAT201 return data. Ensure all tax invoices meet SARS requirements (VAT number, line item details).', completed: false },
+    { id: '3', task: 'Audit Trail Export', description: 'Export monthly audit trails for all modules to Excel/PDF. Archive securely for the statutory retention period. Ensure audit logs are complete with user, timestamp, action, and document reference.', completed: false },
+    { id: '4', task: 'POPIA Compliance Review', description: 'Review any pending Data Subject Access Requests (DSARs). Verify personal data processing activities are documented. Check consent records are current. Update the Information Officer register if needed.', completed: false },
+    { id: '5', task: 'B-BBEE Tracking Update', description: 'Update B-BBEE scorecard elements: procurement spend with qualifying suppliers, skills development hours, enterprise development contributions. Ensure supporting documentation is filed for annual verification.', completed: false },
+    { id: '6', task: 'Security Incident Review', description: 'Review and close any security incidents from the month. Document root causes and corrective actions. Verify POPIA breach notifications were sent within 72 hours if applicable.', completed: false },
+    { id: '7', task: 'Policy & Regulatory Updates', description: 'Check for any changes to SA tax rates, labour law amendments, or regulatory requirements. Update system configurations and policies accordingly. Communicate changes to affected teams.', completed: false },
+    { id: '8', task: 'Compliance Training Check', description: 'Verify all staff have completed mandatory compliance training (POPIA awareness, anti-fraud, health & safety). Follow up on overdue completions. Schedule refresher training where needed.', completed: false },
+    { id: '9', task: 'Data Retention Review', description: 'Check for documents approaching retention expiry. Process approved deletions or archival. Verify retention policies are being followed across all modules.', completed: false },
+    { id: '10', task: 'Monthly Compliance Report', description: 'Generate the monthly compliance summary: tax filings status, audit findings, incident summary, training completion rates, and outstanding regulatory actions. Submit to compliance committee.', completed: false },
   ]);
 
   const handleToggle = (id: string) => {
@@ -30,10 +32,10 @@ const ComplianceMonthEnd: React.FC = () => {
   const progress = (completedCount / checklist.length) * 100;
 
   const steps = [
-    { label: 'Access & Security Review', items: checklist.slice(0, 2) },
-    { label: 'Audit & Documentation', items: checklist.slice(2, 4) },
-    { label: 'Incident & Policy Review', items: checklist.slice(4, 6) },
-    { label: 'Training & Reporting', items: checklist.slice(6, 8) },
+    { label: 'Access & VAT', items: checklist.slice(0, 3) },
+    { label: 'POPIA & B-BBEE', items: checklist.slice(3, 6) },
+    { label: 'Policy & Training', items: checklist.slice(6, 8) },
+    { label: 'Retention & Reporting', items: checklist.slice(8, 10) },
   ];
 
   return (
