@@ -140,8 +140,8 @@ export default function BankAccounts() {
     }
   };
 
-  const totalBalance = accounts.reduce((sum, acc) => sum + acc.current_balance, 0);
-  const totalReconciled = accounts.reduce((sum, acc) => sum + acc.reconciled_balance, 0);
+  const totalBalance = accounts.reduce((sum, acc) => sum + (acc.current_balance || 0), 0);
+  const totalReconciled = accounts.reduce((sum, acc) => sum + (acc.reconciled_balance || 0), 0);
   const unreconciled = totalBalance - totalReconciled;
 
   if (loading) {

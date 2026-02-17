@@ -363,9 +363,9 @@ export default function Products() {
   const renderDetailModal = () => {
     if (!selectedProduct || !showDetailModal) return null;
 
-    const totalOnHand = stockLevels.reduce((sum, level) => sum + level.on_hand, 0);
-    const totalAllocated = stockLevels.reduce((sum, level) => sum + level.allocated, 0);
-    const totalAvailable = stockLevels.reduce((sum, level) => sum + level.available, 0);
+    const totalOnHand = stockLevels.reduce((sum, level) => sum + (level.on_hand || 0), 0);
+    const totalAllocated = stockLevels.reduce((sum, level) => sum + (level.allocated || 0), 0);
+    const totalAvailable = stockLevels.reduce((sum, level) => sum + (level.available || 0), 0);
 
     return (
       <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setShowDetailModal(false)}>

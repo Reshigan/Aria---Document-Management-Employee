@@ -125,7 +125,7 @@ export default function CustomerGroups() {
           <div className="text-xs text-gray-500 dark:text-gray-300">Avg Discount</div>
           <div className="text-2xl font-bold text-orange-600">
             {groups.length > 0 
-              ? (groups.reduce((sum, g) => sum + g.discount_percentage, 0) / groups.length).toFixed(1)
+              ? (groups.reduce((sum, g) => sum + (g.discount_percentage || 0), 0) / groups.length).toFixed(1)
               : 0}%
           </div>
         </div>

@@ -62,7 +62,7 @@ export default function Requisitions() {
     total: requisitions.length,
     pending: requisitions.filter(r => r.status === 'pending').length,
     approved: requisitions.filter(r => r.status === 'approved').length,
-    totalValue: requisitions.reduce((sum, r) => sum + r.total_amount, 0),
+    totalValue: requisitions.reduce((sum, r) => sum + (r.total_amount || 0), 0),
   };
 
   return (

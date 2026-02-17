@@ -225,9 +225,9 @@ export default function AccountsReceivable() {
     totalCustomers: customers.length,
     activeCustomers: customers.filter(c => c.is_active).length,
     totalInvoices: invoices.length,
-    totalReceivable: invoices.reduce((sum, inv) => sum + inv.balance, 0),
+    totalReceivable: invoices.reduce((sum, inv) => sum + (inv.balance || 0), 0),
     overdueInvoices: invoices.filter(inv => inv.status === 'overdue').length,
-    totalPayments: payments.reduce((sum, p) => sum + p.amount, 0)
+    totalPayments: payments.reduce((sum, p) => sum + (p.amount || 0), 0)
   };
 
   const renderCustomerModal = (isEdit: boolean) => {

@@ -88,7 +88,7 @@ export default function ProductionPlanning() {
     total: plans.length,
     scheduled: plans.filter(p => p.status === 'scheduled').length,
     inProgress: plans.filter(p => p.status === 'in_progress').length,
-    avgCapacity: plans.length > 0 ? Math.round(plans.reduce((sum, p) => sum + p.capacity_utilization, 0) / plans.length) : 0,
+    avgCapacity: plans.length > 0 ? Math.round(plans.reduce((sum, p) => sum + (p.capacity_utilization || 0), 0) / plans.length) : 0,
   };
 
   return (

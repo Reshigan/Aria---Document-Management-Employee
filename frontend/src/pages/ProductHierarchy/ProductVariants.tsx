@@ -122,7 +122,7 @@ export default function ProductVariants() {
     (v.barcode && v.barcode.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
-  const totalStock = variants.reduce((sum, v) => sum + v.stock_quantity, 0);
+  const totalStock = variants.reduce((sum, v) => sum + (v.stock_quantity || 0), 0);
   const totalValue = variants.reduce((sum, v) => sum + (v.stock_quantity * (v.cost_price || 0)), 0);
 
   return (

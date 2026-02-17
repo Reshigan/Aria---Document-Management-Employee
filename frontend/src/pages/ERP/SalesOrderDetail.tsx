@@ -169,8 +169,8 @@ export default function SalesOrderDetail() {
 
   const calculateFulfillmentProgress = () => {
     if (!order) return 0;
-    const totalQuantity = order.lines.reduce((sum, line) => sum + line.quantity, 0);
-    const deliveredQuantity = order.lines.reduce((sum, line) => sum + line.quantity_delivered, 0);
+    const totalQuantity = order.lines.reduce((sum, line) => sum + (line.quantity || 0), 0);
+    const deliveredQuantity = order.lines.reduce((sum, line) => sum + (line.quantity_delivered || 0), 0);
     return totalQuantity > 0 ? (deliveredQuantity / totalQuantity) * 100 : 0;
   };
 
@@ -470,19 +470,19 @@ export default function SalesOrderDetail() {
               <div className="flex justify-between">
                 <span className="text-xs text-gray-500 dark:text-gray-300">Total Items</span>
                 <span className="text-sm font-medium text-gray-900 dark:text-white">
-                  {order.lines.reduce((sum, line) => sum + line.quantity, 0)}
+                  {order.lines.reduce((sum, line) => sum + (line.quantity || 0), 0)}
                 </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-xs text-gray-500 dark:text-gray-300">Items Delivered</span>
                 <span className="text-sm font-medium text-emerald-600 dark:text-emerald-400">
-                  {order.lines.reduce((sum, line) => sum + line.quantity_delivered, 0)}
+                  {order.lines.reduce((sum, line) => sum + (line.quantity_delivered || 0), 0)}
                 </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-xs text-gray-500 dark:text-gray-300">Items Remaining</span>
                 <span className="text-sm font-medium text-amber-600 dark:text-amber-400">
-                  {order.lines.reduce((sum, line) => sum + line.quantity_remaining, 0)}
+                  {order.lines.reduce((sum, line) => sum + (line.quantity_remaining || 0), 0)}
                 </span>
               </div>
               <div className="flex justify-between pt-3 border-t border-gray-200 dark:border-gray-700">

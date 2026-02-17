@@ -195,7 +195,7 @@ const Payments: React.FC = () => {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">
-                {formatCurrency(payments.reduce((sum, p) => sum + p.amount, 0))}
+                {formatCurrency(payments.reduce((sum, p) => sum + (p.amount || 0), 0))}
               </p>
               <p className="text-xs text-gray-500 dark:text-gray-300">Total Paid</p>
             </div>

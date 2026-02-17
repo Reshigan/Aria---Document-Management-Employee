@@ -105,9 +105,9 @@ export default function VATReturnsPage() {
     }
   };
 
-  const totalOutput = returns.reduce((sum, r) => sum + r.output_tax, 0);
-  const totalInput = returns.reduce((sum, r) => sum + r.input_tax, 0);
-  const totalNet = returns.reduce((sum, r) => sum + r.net_vat, 0);
+  const totalOutput = returns.reduce((sum, r) => sum + (r.output_tax || 0), 0);
+  const totalInput = returns.reduce((sum, r) => sum + (r.input_tax || 0), 0);
+  const totalNet = returns.reduce((sum, r) => sum + (r.net_vat || 0), 0);
   const pendingCount = returns.filter(r => r.status === 'DRAFT').length;
 
   const getStatusClasses = (status: string) => {

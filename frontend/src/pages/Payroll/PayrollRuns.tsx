@@ -90,7 +90,7 @@ export default function PayrollRuns() {
     return styles[status] || styles.DRAFT;
   };
 
-  const stats = { total: runs.length, completed: runs.filter(r => r.status === 'COMPLETED' || r.status === 'PAID').length, totalPaid: runs.filter(r => r.status === 'PAID').reduce((sum, r) => sum + r.total_net, 0), processing: runs.filter(r => r.status === 'PROCESSING').length };
+  const stats = { total: runs.length, completed: runs.filter(r => r.status === 'COMPLETED' || r.status === 'PAID').length, totalPaid: runs.filter(r => r.status === 'PAID').reduce((sum, r) => sum + (r.total_net || 0), 0), processing: runs.filter(r => r.status === 'PROCESSING').length };
 
   return (
     <div className="bg-gradient-to-br from-gray-50 to-emerald-50 dark:from-gray-900 dark:to-gray-800 p-4" data-testid="payroll-runs">

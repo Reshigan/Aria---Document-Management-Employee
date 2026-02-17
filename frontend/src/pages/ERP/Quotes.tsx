@@ -357,7 +357,7 @@ export default function Quotes() {
     draft: quotes.filter(q => q.status === 'draft').length,
     sent: quotes.filter(q => q.status === 'sent').length,
     accepted: quotes.filter(q => q.status === 'accepted').length,
-    totalValue: quotes.reduce((sum, q) => sum + q.total_amount, 0)
+    totalValue: quotes.reduce((sum, q) => sum + (q.total_amount || 0), 0)
   };
 
   return (

@@ -118,7 +118,7 @@ const Timesheets: React.FC = () => {
 
   const formatDate = (dateString: string) => { if (!dateString) return "-"; const _d = new Date(dateString); return isNaN(_d.getTime()) ? dateString : _d.toLocaleDateString("en-ZA"); };
 
-  const totalHours = timesheets.reduce((sum, t) => sum + t.hours, 0);
+  const totalHours = timesheets.reduce((sum, t) => sum + (t.hours || 0), 0);
 
   if (loading) {
     return (

@@ -79,8 +79,8 @@ export default function Commissions() {
 
   const stats = {
     total: commissions.length,
-    totalCommissions: commissions.reduce((sum, c) => sum + c.commission_amount, 0),
-    totalSales: commissions.reduce((sum, c) => sum + c.total_sales, 0),
+    totalCommissions: commissions.reduce((sum, c) => sum + (c.commission_amount || 0), 0),
+    totalSales: commissions.reduce((sum, c) => sum + (c.total_sales || 0), 0),
     pending: commissions.filter(c => c.status === 'pending').length,
   };
 

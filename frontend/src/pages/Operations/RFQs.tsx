@@ -85,7 +85,7 @@ export default function RFQs() {
     total: rfqs.length,
     sent: rfqs.filter(r => r.status === 'sent').length,
     closed: rfqs.filter(r => r.status === 'closed').length,
-    totalValue: rfqs.reduce((sum, r) => sum + r.total_value, 0),
+    totalValue: rfqs.reduce((sum, r) => sum + (r.total_value || 0), 0),
   };
 
   return (

@@ -84,8 +84,8 @@ export default function StockAdjustments() {
 
   const stats = {
     total: adjustments.length,
-    increases: adjustments.filter(a => a.adjustment_type === 'increase').reduce((sum, a) => sum + a.quantity, 0),
-    decreases: adjustments.filter(a => a.adjustment_type === 'decrease').reduce((sum, a) => sum + a.quantity, 0),
+    increases: adjustments.filter(a => a.adjustment_type === 'increase').reduce((sum, a) => sum + (a.quantity || 0), 0),
+    decreases: adjustments.filter(a => a.adjustment_type === 'decrease').reduce((sum, a) => sum + (a.quantity || 0), 0),
     pending: adjustments.filter(a => a.status === 'pending').length,
   };
 

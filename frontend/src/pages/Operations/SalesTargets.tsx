@@ -87,8 +87,8 @@ export default function SalesTargets() {
 
   const stats = {
     total: targets.length,
-    totalTarget: targets.reduce((sum, t) => sum + t.target_amount, 0),
-    totalAchieved: targets.reduce((sum, t) => sum + t.achieved_amount, 0),
+    totalTarget: targets.reduce((sum, t) => sum + (t.target_amount || 0), 0),
+    totalAchieved: targets.reduce((sum, t) => sum + (t.achieved_amount || 0), 0),
     exceeded: targets.filter(t => t.status === 'exceeded').length,
   };
 

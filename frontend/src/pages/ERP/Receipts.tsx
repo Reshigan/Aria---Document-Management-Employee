@@ -53,11 +53,11 @@ export default function Receipts() {
       const data = Array.isArray(raw) ? raw : raw.receipts || raw.data || [];
       setReceipts(data);
       
-      const totalAmount = data.reduce((sum: number, r: Receipt) => sum + r.amount, 0);
+      const totalAmount = data.reduce((sum: number, r: Receipt) => sum + (r.amount || 0), 0);
       const postedReceipts = data.filter((r: Receipt) => r.status === 'posted');
-      const postedAmount = postedReceipts.reduce((sum: number, r: Receipt) => sum + r.amount, 0);
+      const postedAmount = postedReceipts.reduce((sum: number, r: Receipt) => sum + (r.amount || 0), 0);
       const draftReceipts = data.filter((r: Receipt) => r.status === 'draft');
-      const draftAmount = draftReceipts.reduce((sum: number, r: Receipt) => sum + r.amount, 0);
+      const draftAmount = draftReceipts.reduce((sum: number, r: Receipt) => sum + (r.amount || 0), 0);
 
       setStats({
         total_receipts: data.length,

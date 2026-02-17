@@ -88,7 +88,7 @@ export default function BOMs() {
     total: boms.length,
     active: boms.filter(b => b.status === 'ACTIVE').length,
     draft: boms.filter(b => b.status === 'DRAFT').length,
-    totalCost: boms.reduce((sum, b) => sum + b.total_cost, 0),
+    totalCost: boms.reduce((sum, b) => sum + (b.total_cost || 0), 0),
   };
 
   return (
