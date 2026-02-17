@@ -232,7 +232,7 @@ const MessageBubble: React.FC<{ message: Message; isStreaming?: boolean }> = ({ 
           {isStreaming && <span className="inline-block w-2 h-4 bg-purple-500 ml-1 animate-pulse" />}
         </div>
         <p className={`text-xs text-slate-500 mt-1 ${isUser ? 'text-right' : 'text-left'}`}>
-          {new Date(message.timestamp).toLocaleTimeString()}
+          {message.timestamp ? new Date(message.timestamp).toLocaleTimeString() : '-'}
         </p>
       </div>
     </div>

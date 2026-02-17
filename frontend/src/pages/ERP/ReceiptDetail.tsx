@@ -480,12 +480,12 @@ export default function ReceiptDetail() {
                 <div>
                   <span className="text-gray-500 dark:text-gray-400">Created:</span>
                   <br />
-                  <span className="text-gray-900 dark:text-white">{new Date(receipt.created_at).toLocaleString()}</span>
+                  <span className="text-gray-900 dark:text-white">{receipt.created_at ? new Date(receipt.created_at).toLocaleString() : '-'}</span>
                 </div>
                 <div>
                   <span className="text-gray-500 dark:text-gray-400">Last Updated:</span>
                   <br />
-                  <span className="text-gray-900 dark:text-white">{new Date(receipt.updated_at).toLocaleString()}</span>
+                  <span className="text-gray-900 dark:text-white">{receipt.updated_at ? new Date(receipt.updated_at).toLocaleString() : '-'}</span>
                 </div>
               </div>
             </TransactionCard>

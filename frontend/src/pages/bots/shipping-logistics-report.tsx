@@ -146,7 +146,7 @@ export default function ShippingLogisticsReport() {
                 {activities.map((activity, index) => (
                   <TableRow key={index}>
                     <TableCell>
-                      {new Date(activity.timestamp).toLocaleString()}
+                      {activity.timestamp ? new Date(activity.timestamp).toLocaleString() : '-'}
                     </TableCell>
                     <TableCell>
                       {activity.success ? (

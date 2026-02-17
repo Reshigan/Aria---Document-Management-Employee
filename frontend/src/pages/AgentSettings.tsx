@@ -349,7 +349,7 @@ export default function AgentSettings() {
                 <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
                   <div className="text-sm text-gray-600 dark:text-gray-400">Last Run</div>
                   <div className="text-lg font-semibold">
-                    {new Date(usage.last_run).toLocaleString()}
+                    {usage.last_run ? new Date(usage.last_run).toLocaleString() : '-'}
                   </div>
                 </div>
               )}

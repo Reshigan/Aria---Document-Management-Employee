@@ -680,7 +680,7 @@ const AskAriaChat: React.FC = () => {
                                       )}
                                     </div>
                   <p className="text-purple-400/60 text-xs mt-2 px-2">
-                    {new Date(message.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    {message.created_at ? new Date(message.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '-'}
                   </p>
                 </div>
               </div>

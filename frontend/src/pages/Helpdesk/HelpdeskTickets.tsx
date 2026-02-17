@@ -644,7 +644,7 @@ function TicketDetailModal({ ticket, onClose, onUpdate }: {
                     )}
                   </span>
                   <span className="text-xs text-gray-500">
-                    {new Date(msg.created_at).toLocaleString()}
+                    {msg.created_at ? new Date(msg.created_at).toLocaleString() : '-'}
                   </span>
                 </div>
                 <div className="text-sm text-gray-700">{msg.body}</div>

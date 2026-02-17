@@ -140,7 +140,7 @@ export default function SystemSettingsPage() {
   };
 
   const auditColumns = [
-    { key: 'timestamp', label: 'Date/Time', render: (log: AuditLog) => new Date(log.timestamp).toLocaleString() },
+    { key: 'timestamp', label: 'Date/Time', render: (log: AuditLog) => log.timestamp ? new Date(log.timestamp).toLocaleString() : '-' },
     { key: 'user', label: 'User', render: (log: AuditLog) => log.user_email },
     { key: 'action', label: 'Action', render: (log: AuditLog) => log.action },
     { key: 'resource', label: 'Resource', render: (log: AuditLog) => log.resource },

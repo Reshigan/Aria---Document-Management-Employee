@@ -133,7 +133,7 @@ export default function Mailroom() {
               <Clock className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-xl font-bold text-gray-900 dark:text-white">{new Date(mailboxStatus.last_poll).toLocaleTimeString()}</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{mailboxStatus.last_poll ? new Date(mailboxStatus.last_poll).toLocaleTimeString() : '-'}</p>
               <p className="text-xs text-gray-500 dark:text-gray-400">Last Poll</p>
             </div>
           </div>
@@ -195,7 +195,7 @@ export default function Mailroom() {
                   </div>
                   <div className="text-right">
                     <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
-                      {new Date(message.received_at).toLocaleString()}
+                      {message.received_at ? new Date(message.received_at).toLocaleString() : '-'}
                     </p>
                     {message.processed && (
                       <span className="inline-flex items-center px-2 py-1 rounded-lg text-xs font-medium bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300">

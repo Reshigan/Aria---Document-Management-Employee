@@ -302,12 +302,12 @@ export default function PurchaseOrderDetail() {
                 <div>
                   <span className="text-gray-500 dark:text-gray-400">Created:</span>
                   <br />
-                  <span className="text-gray-900 dark:text-white">{new Date(purchaseOrder.created_at).toLocaleString()}</span>
+                  <span className="text-gray-900 dark:text-white">{purchaseOrder.created_at ? new Date(purchaseOrder.created_at).toLocaleString() : '-'}</span>
                 </div>
                 <div>
                   <span className="text-gray-500 dark:text-gray-400">Last Updated:</span>
                   <br />
-                  <span className="text-gray-900 dark:text-white">{new Date(purchaseOrder.updated_at).toLocaleString()}</span>
+                  <span className="text-gray-900 dark:text-white">{purchaseOrder.updated_at ? new Date(purchaseOrder.updated_at).toLocaleString() : '-'}</span>
                 </div>
               </div>
             </TransactionCard>

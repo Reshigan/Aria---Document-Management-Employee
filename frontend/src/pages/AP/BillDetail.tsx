@@ -372,12 +372,12 @@ export default function BillDetail() {
                 <div>
                   <span className="text-gray-500 dark:text-gray-400">Created:</span>
                   <br />
-                  <span className="text-gray-900 dark:text-white">{new Date(bill.created_at).toLocaleString()}</span>
+                  <span className="text-gray-900 dark:text-white">{bill.created_at ? new Date(bill.created_at).toLocaleString() : '-'}</span>
                 </div>
                 <div>
                   <span className="text-gray-500 dark:text-gray-400">Last Updated:</span>
                   <br />
-                  <span className="text-gray-900 dark:text-white">{new Date(bill.updated_at).toLocaleString()}</span>
+                  <span className="text-gray-900 dark:text-white">{bill.updated_at ? new Date(bill.updated_at).toLocaleString() : '-'}</span>
                 </div>
               </div>
             </TransactionCard>

@@ -365,13 +365,13 @@ export default function QuoteDetail() {
               <div className="flex justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
                 <span className="text-xs text-gray-500 dark:text-gray-400">Created</span>
                 <span className="text-sm font-medium text-gray-900 dark:text-white">
-                  {new Date(quote.created_at).toLocaleString()}
+                  {quote.created_at ? new Date(quote.created_at).toLocaleString() : '-'}
                 </span>
               </div>
               <div className="flex justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
                 <span className="text-xs text-gray-500 dark:text-gray-400">Last Updated</span>
                 <span className="text-sm font-medium text-gray-900 dark:text-white">
-                  {new Date(quote.updated_at).toLocaleString()}
+                  {quote.updated_at ? new Date(quote.updated_at).toLocaleString() : '-'}
                 </span>
               </div>
               {quote.created_by && (

@@ -566,12 +566,12 @@ export default function InvoiceDetail() {
                 <div>
                   <span className="text-gray-500 dark:text-gray-400">Created:</span>
                   <br />
-                  <span className="text-gray-900 dark:text-white">{new Date(invoice.created_at).toLocaleString()}</span>
+                  <span className="text-gray-900 dark:text-white">{invoice.created_at ? new Date(invoice.created_at).toLocaleString() : '-'}</span>
                 </div>
                 <div>
                   <span className="text-gray-500 dark:text-gray-400">Last Updated:</span>
                   <br />
-                  <span className="text-gray-900 dark:text-white">{new Date(invoice.updated_at).toLocaleString()}</span>
+                  <span className="text-gray-900 dark:text-white">{invoice.updated_at ? new Date(invoice.updated_at).toLocaleString() : '-'}</span>
                 </div>
               </div>
             </TransactionCard>
