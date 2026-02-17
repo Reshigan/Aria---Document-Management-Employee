@@ -12,14 +12,16 @@ interface ChecklistItem {
 const ServicesMonthEnd: React.FC = () => {
   const [activeStep, setActiveStep] = useState(0);
   const [checklist, setChecklist] = useState<ChecklistItem[]>([
-    { id: '1', task: 'Close Completed Tickets', description: 'Review and close all resolved service tickets', completed: false },
-    { id: '2', task: 'SLA Compliance Review', description: 'Review SLA performance and document any breaches', completed: false },
-    { id: '3', task: 'Field Service Completion', description: 'Ensure all field service jobs are completed and documented', completed: false },
-    { id: '4', task: 'Time Entry Review', description: 'Review and approve all technician time entries', completed: false },
-    { id: '5', task: 'Parts Usage Reconciliation', description: 'Reconcile parts used against inventory', completed: false },
-    { id: '6', task: 'Contract Billing', description: 'Generate invoices for contract-based services', completed: false },
-    { id: '7', task: 'Customer Satisfaction Review', description: 'Review customer feedback and satisfaction scores', completed: false },
-    { id: '8', task: 'Service Reports Generation', description: 'Generate monthly service performance reports', completed: false },
+    { id: '1', task: 'Close Completed Tickets', description: 'Go to Services > Helpdesk. Review all resolved tickets — verify resolution notes are complete and customer has been notified. Close tickets that have been confirmed resolved. Escalate any reopened issues.', completed: false },
+    { id: '2', task: 'SLA Compliance Review', description: 'Review SLA performance metrics: first response time, resolution time, and uptime. Document any SLA breaches with root cause analysis. Calculate SLA compliance percentage for client reporting.', completed: false },
+    { id: '3', task: 'Field Service Job Completion', description: 'Ensure all field service work orders are closed with technician notes, parts used, and travel time recorded. Verify job sign-offs from customers. Flag incomplete jobs for follow-up.', completed: false },
+    { id: '4', task: 'Timesheet & Time Entry Review', description: 'Go to Services > Timesheets. Review and approve all technician and consultant time entries. Verify billable vs non-billable hours. Ensure project time is allocated to correct cost centres.', completed: false },
+    { id: '5', task: 'Parts & Inventory Reconciliation', description: 'Reconcile parts and materials used on service jobs against inventory records. Process stock adjustments for consumed items. Reorder parts that have fallen below minimum levels.', completed: false },
+    { id: '6', task: 'Project Progress Review', description: 'Review all active projects in Services > Projects. Update completion percentages and milestone statuses. Check budget vs actual spend. Flag at-risk projects for management review.', completed: false },
+    { id: '7', task: 'Contract & Subscription Billing', description: 'Generate invoices for all active service contracts and subscriptions. Review contract renewals due next month. Update pricing where annual escalations apply. Process any credit notes.', completed: false },
+    { id: '8', task: 'Customer Satisfaction Review', description: 'Compile customer satisfaction survey results and feedback scores. Identify recurring complaints or praise. Create action items for service improvement. Recognise top-performing technicians.', completed: false },
+    { id: '9', task: 'Equipment & Asset Review', description: 'Review all service equipment assignments and condition reports. Schedule preventive maintenance for next month. Process any equipment write-offs or replacements needed.', completed: false },
+    { id: '10', task: 'Service Performance Reports', description: 'Generate monthly reports: ticket volume, average resolution time, SLA compliance, revenue per technician, project profitability, and customer retention. Present to management and archive.', completed: false },
   ]);
 
   const handleToggle = (id: string) => {
@@ -30,10 +32,10 @@ const ServicesMonthEnd: React.FC = () => {
   const progress = (completedCount / checklist.length) * 100;
 
   const steps = [
-    { label: 'Ticket & SLA Review', items: checklist.slice(0, 2) },
-    { label: 'Field Service & Time', items: checklist.slice(2, 4) },
-    { label: 'Parts & Billing', items: checklist.slice(4, 6) },
-    { label: 'Satisfaction & Reporting', items: checklist.slice(6, 8) },
+    { label: 'Tickets & SLA', items: checklist.slice(0, 2) },
+    { label: 'Field Service & Time', items: checklist.slice(2, 5) },
+    { label: 'Projects & Billing', items: checklist.slice(5, 8) },
+    { label: 'Equipment & Reporting', items: checklist.slice(8, 10) },
   ];
 
   return (

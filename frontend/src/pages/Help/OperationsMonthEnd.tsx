@@ -12,14 +12,16 @@ interface ChecklistItem {
 const OperationsMonthEnd: React.FC = () => {
   const [activeStep, setActiveStep] = useState(0);
   const [checklist, setChecklist] = useState<ChecklistItem[]>([
-    { id: '1', task: 'Physical Inventory Count', description: 'Conduct physical inventory count and reconcile with system', completed: false },
-    { id: '2', task: 'Inventory Adjustments', description: 'Process any inventory adjustments from count discrepancies', completed: false },
-    { id: '3', task: 'Open PO Review', description: 'Review all open purchase orders and follow up on overdue deliveries', completed: false },
-    { id: '4', task: 'Goods Receipt Verification', description: 'Ensure all received goods are properly recorded', completed: false },
-    { id: '5', task: 'Production Order Closure', description: 'Close completed production orders and review WIP', completed: false },
-    { id: '6', task: 'Scrap and Waste Review', description: 'Review and record any scrap or waste from production', completed: false },
-    { id: '7', task: 'Supplier Performance Review', description: 'Review supplier delivery and quality performance', completed: false },
-    { id: '8', task: 'Logistics Cost Review', description: 'Review shipping and logistics costs for the month', completed: false },
+    { id: '1', task: 'Physical Inventory Count', description: 'Run cycle counts or full stock take via Inventory > Items. Compare physical counts to system quantities. Document variances for each warehouse location.', completed: false },
+    { id: '2', task: 'Inventory Adjustments', description: 'Go to Inventory > Stock Adjustments. Process write-offs for damaged/expired stock and corrections for count discrepancies. Ensure all adjustments have supervisor approval.', completed: false },
+    { id: '3', task: 'Open PO Review', description: 'Review all open Purchase Orders in Procurement. Follow up on overdue deliveries with suppliers. Cancel or amend POs that are no longer required. Update expected delivery dates.', completed: false },
+    { id: '4', task: 'Goods Receipt Verification', description: 'Ensure all goods received this month have matching Goods Receipts. Check for unmatched delivery notes. Verify three-way match (PO, GRN, Invoice) for all procurement transactions.', completed: false },
+    { id: '5', task: 'Sales Order Fulfilment Review', description: 'Review all open Sales Orders. Check delivery status and backorder quantities. Follow up on partially fulfilled orders. Update customers on expected delivery dates.', completed: false },
+    { id: '6', task: 'Production Order Closure', description: 'Close all completed Work Orders in Manufacturing. Review work-in-progress (WIP) for accuracy. Reconcile raw material consumption against BOMs. Record any production variances.', completed: false },
+    { id: '7', task: 'Scrap and Waste Recording', description: 'Record all production scrap, defective items, and waste in Inventory > Adjustments. Review scrap rates against targets. Investigate any unusual waste levels.', completed: false },
+    { id: '8', task: 'Quality Review', description: 'Review all quality inspection results for the month. Close resolved quality issues. Ensure non-conformance reports are documented and corrective actions assigned.', completed: false },
+    { id: '9', task: 'Supplier Performance Review', description: 'Evaluate supplier delivery performance (on-time %, quality rejection rate). Update supplier ratings. Flag underperforming suppliers for review or replacement.', completed: false },
+    { id: '10', task: 'Logistics and Shipping Costs', description: 'Review all shipping and logistics expenses. Reconcile carrier invoices against delivery records. Identify cost-saving opportunities for next month.', completed: false },
   ]);
 
   const handleToggle = (id: string) => {
@@ -30,10 +32,10 @@ const OperationsMonthEnd: React.FC = () => {
   const progress = (completedCount / checklist.length) * 100;
 
   const steps = [
-    { label: 'Inventory Count', items: checklist.slice(0, 2) },
-    { label: 'Procurement Review', items: checklist.slice(2, 4) },
-    { label: 'Production Closure', items: checklist.slice(4, 6) },
-    { label: 'Performance & Costs', items: checklist.slice(6, 8) },
+    { label: 'Inventory Count & Adjustments', items: checklist.slice(0, 2) },
+    { label: 'Procurement & Receipts', items: checklist.slice(2, 5) },
+    { label: 'Production & Quality', items: checklist.slice(5, 8) },
+    { label: 'Supplier & Logistics Review', items: checklist.slice(8, 10) },
   ];
 
   return (

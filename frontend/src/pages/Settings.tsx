@@ -712,6 +712,22 @@ const Settings: React.FC = () => {
               />
             </Grid>
             <Grid item xs={12}>
+              <Divider sx={{ my: 2 }} />
+              <Typography variant="h6" sx={{ mb: 1 }}>Onboarding Tour</Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                Replay the guided tour that introduces ARIA's key features, navigation, and capabilities.
+              </Typography>
+              <Button
+                variant="outlined"
+                onClick={() => {
+                  try { localStorage.removeItem('aria-onboarding-complete'); } catch {}
+                  window.location.href = '/';
+                }}
+              >
+                Restart Tour
+              </Button>
+            </Grid>
+            <Grid item xs={12}>
                             <Button variant="contained" startIcon={saving ? <CircularProgress size={20} color="inherit" /> : <Save />} onClick={handleSave} disabled={saving}>
                               {saving ? 'Saving...' : 'Save Appearance Settings'}
               </Button>

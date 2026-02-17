@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, ChevronRight, ChevronLeft, Sparkles, LayoutDashboard, Search, Bot, FileText, Settings } from 'lucide-react';
+import { X, ChevronRight, ChevronLeft, Sparkles, LayoutDashboard, Search, Bot, FileText, Settings, CreditCard, Users, Package, ShieldCheck, BarChart3, HelpCircle } from 'lucide-react';
 
 interface TourStep {
   id: string;
@@ -14,48 +14,90 @@ const tourSteps: TourStep[] = [
   {
     id: 'welcome',
     title: 'Welcome to ARIA ERP',
-    description: 'ARIA is your AI-powered business management platform. Let us show you around the key features that will help you run your business more efficiently.',
+    description: 'ARIA is your complete AI-powered ERP platform built for South African businesses. Manage finance, sales, procurement, inventory, HR, payroll, manufacturing, and compliance all in one place. This quick tour will show you the essentials.',
     icon: <Sparkles className="h-8 w-8 text-blue-500" />,
   },
   {
     id: 'dashboard',
     title: 'Executive Dashboard',
-    description: 'Your dashboard gives you a real-time overview of your business. View key metrics, pending approvals, alerts, and recent activity all in one place.',
+    description: 'Your real-time business command centre. Track revenue, expenses, outstanding invoices, and cash flow at a glance. View pending approvals, overdue tasks, and alerts. Click any KPI card to drill down into the detail.',
     icon: <LayoutDashboard className="h-8 w-8 text-green-500" />,
     target: '[data-tour="dashboard"]',
   },
   {
+    id: 'navigation',
+    title: 'Mega Menu Navigation',
+    description: 'The top navigation bar organises everything into five sections: Financial (GL, AR, AP, Banking), Operations (Sales, Inventory, Procurement, Manufacturing), People (HR, Payroll, Recruitment), Services (Field Service, Helpdesk, Projects), and Compliance (Tax, Audit, POPIA). Hover over any section to explore.',
+    icon: <FileText className="h-8 w-8 text-orange-500" />,
+    target: '[data-tour="menu"]',
+  },
+  {
+    id: 'financial',
+    title: 'Financial Management',
+    description: 'Full double-entry accounting with General Ledger, Chart of Accounts, and Journal Entries. Manage Accounts Receivable (invoices, receipts, credit notes) and Accounts Payable (bills, payments, expense claims). Run bank reconciliation and generate financial statements.',
+    icon: <CreditCard className="h-8 w-8 text-emerald-500" />,
+    target: '[data-tour="menu"]',
+  },
+  {
+    id: 'operations',
+    title: 'Sales & Operations',
+    description: 'Create quotes, convert to sales orders, generate delivery notes, and issue invoices in a seamless workflow. Manage inventory with real-time stock levels, warehouses, and reorder points. Handle procurement with purchase orders, goods receipts, and supplier management.',
+    icon: <Package className="h-8 w-8 text-violet-500" />,
+    target: '[data-tour="menu"]',
+  },
+  {
+    id: 'people',
+    title: 'People & Payroll',
+    description: 'Full HR management: employee records, departments, leave management, attendance tracking, and performance reviews. Process payroll with PAYE, UIF, and SDL calculations. Manage recruitment, onboarding, and training programmes.',
+    icon: <Users className="h-8 w-8 text-amber-500" />,
+    target: '[data-tour="menu"]',
+  },
+  {
     id: 'search',
     title: 'Quick Search (Ctrl+K)',
-    description: 'Press Ctrl+K (or Cmd+K on Mac) anytime to open the command palette. Search for anything, navigate quickly, or create new records instantly.',
+    description: 'Press Ctrl+K anytime to open the command palette. Instantly search for customers, invoices, products, employees, or any record. Navigate to any page, run commands, or create new records without leaving your keyboard.',
     icon: <Search className="h-8 w-8 text-purple-500" />,
     target: '[data-tour="search"]',
   },
   {
     id: 'aria-ai',
     title: 'Ask ARIA - AI Assistant',
-    description: 'ARIA is your intelligent assistant. Ask questions about your data, get insights, generate reports, or let ARIA help you with complex tasks.',
+    description: 'Your intelligent business assistant. Ask questions in natural language like "Create a sales order for Customer X with 5 units of Product Y at R1,500 each." ARIA can generate reports, look up data, explain transactions, and execute multi-step workflows.',
     icon: <Bot className="h-8 w-8 text-indigo-500" />,
     target: '[data-tour="aria"]',
   },
   {
-    id: 'modules',
-    title: 'Business Modules',
-    description: 'Access all your business functions from the navigation menu: Sales, Purchasing, Inventory, Manufacturing, HR, Finance, and more. Everything is connected.',
-    icon: <FileText className="h-8 w-8 text-orange-500" />,
-    target: '[data-tour="menu"]',
-  },
-  {
     id: 'automation',
-    title: 'Automation Bots',
-    description: 'ARIA includes 67 automation bots that work 24/7 to handle routine tasks: invoice processing, collections, inventory alerts, and more. They run automatically every hour.',
+    title: '67 Automation Bots',
+    description: 'ARIA runs 67 intelligent bots that automate routine tasks around the clock: send payment reminders, reconcile bank transactions, flag overdue invoices, check inventory levels, process payroll deductions, and more. Monitor them all from the Bots dashboard.',
     icon: <Bot className="h-8 w-8 text-cyan-500" />,
     target: '[data-tour="bots"]',
   },
   {
+    id: 'reports',
+    title: 'Reports & Analytics',
+    description: 'Generate financial statements (P&L, Balance Sheet, Cash Flow, Trial Balance), sales analytics, inventory valuation, AR/AP aging, and HR metrics. Export to PDF or Excel. Every module includes built-in reporting with drill-down capability.',
+    icon: <BarChart3 className="h-8 w-8 text-rose-500" />,
+    target: '[data-tour="menu"]',
+  },
+  {
+    id: 'compliance',
+    title: 'SA Compliance & Tax',
+    description: 'Stay compliant with South African regulations: VAT returns, PAYE submissions, UIF/SDL filings, B-BBEE reporting, and POPIA data protection. Built-in audit trails track every action for accountability and regulatory reporting.',
+    icon: <ShieldCheck className="h-8 w-8 text-teal-500" />,
+    target: '[data-tour="menu"]',
+  },
+  {
+    id: 'help',
+    title: 'Help & Training',
+    description: 'Every menu section includes a Help & Training category with overviews, step-by-step guides, video tutorials, month-end checklists, and FAQs. Visit Settings to restart this tour anytime, or press Ctrl+K and search for help.',
+    icon: <HelpCircle className="h-8 w-8 text-sky-500" />,
+    target: '[data-tour="settings"]',
+  },
+  {
     id: 'settings',
     title: 'Customize Your Experience',
-    description: 'Personalize ARIA to fit your workflow. Toggle dark mode, set up keyboard shortcuts, configure notifications, and more in Settings.',
+    description: 'Configure your profile, company details, notifications, security (2FA, session timeout), appearance (dark mode, language, timezone), and integrations. You can restart this tour anytime from Settings > Appearance. Enjoy using ARIA!',
     icon: <Settings className="h-8 w-8 text-gray-500" />,
     target: '[data-tour="settings"]',
   },
