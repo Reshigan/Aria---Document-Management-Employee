@@ -73,8 +73,8 @@ export default function BillDetail() {
         api.get('/erp/master-data/suppliers'),
         api.get('/erp/order-to-cash/products')
       ]);
-      setSuppliers(suppliersRes.data);
-      setProducts(productsRes.data);
+      setSuppliers(Array.isArray(suppliersRes.data) ? suppliersRes.data : suppliersRes.data?.data || suppliersRes.data?.suppliers || []);
+      setProducts(Array.isArray(productsRes.data) ? productsRes.data : productsRes.data?.data || productsRes.data?.products || []);
     } catch (err) {
       console.error('Error loading master data:', err);
     }

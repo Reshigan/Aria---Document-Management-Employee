@@ -51,7 +51,7 @@ export default function SalesForecastingReport() {
       // Load activities
       const activitiesResponse = await fetch(`${API_BASE}/api/agents/sales_forecasting/activities`, { headers });
       const activitiesData = await activitiesResponse.json();
-      setActivities(activitiesData);
+      setActivities(Array.isArray(activitiesData) ? activitiesData : activitiesData?.results || activitiesData?.data || []);
     } catch (error) {
       console.error('Failed to load data:', error);
     } finally {

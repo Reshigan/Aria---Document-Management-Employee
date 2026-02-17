@@ -182,7 +182,7 @@ export default function BotsLive() {
                 </div>
 
                 <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-                  {agent.type.replace(/Agent$/, '').replace(/([A-Z])/g, ' $1').trim()}
+                  {(agent.type || agent.name || '').replace(/Agent$/, '').replace(/([A-Z])/g, ' $1').trim()}
                 </h3>
                 
                 <p className="text-gray-600 dark:text-gray-400 text-sm mb-4">

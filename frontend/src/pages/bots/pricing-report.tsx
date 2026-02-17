@@ -51,7 +51,7 @@ export default function PricingReport() {
       // Load activities
       const activitiesResponse = await fetch(`${API_BASE}/api/agents/pricing/activities`, { headers });
       const activitiesData = await activitiesResponse.json();
-      setActivities(activitiesData);
+      setActivities(Array.isArray(activitiesData) ? activitiesData : activitiesData?.results || activitiesData?.data || []);
     } catch (error) {
       console.error('Failed to load data:', error);
     } finally {

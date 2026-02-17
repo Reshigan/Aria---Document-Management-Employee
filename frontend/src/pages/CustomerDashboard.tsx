@@ -133,7 +133,7 @@ export const CustomerDashboard: React.FC = () => {
             </div>
             {metrics && (
               <span className={`inline-block mt-2 px-2 py-1 rounded-full text-xs font-medium ${getEmbeddingStatusColor(metrics.status)}`}>
-                {metrics.status.replace('_', ' ').toUpperCase()}
+                {(metrics.status || '').replace('_', ' ').toUpperCase()}
               </span>
             )}
           </div>
@@ -285,7 +285,7 @@ export const CustomerDashboard: React.FC = () => {
                     </div>
                   </div>
                   <div className="flex items-center justify-between text-xs text-gray-500">
-                    <span>Type: {opp.type.replace('_', ' ')}</span>
+                    <span>Type: {(opp.type || '').replace('_', ' ')}</span>
                     <span className="flex items-center">
                       <span className={`
                         inline-block w-2 h-2 rounded-full mr-1

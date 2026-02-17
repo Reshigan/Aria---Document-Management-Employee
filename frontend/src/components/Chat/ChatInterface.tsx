@@ -3,7 +3,7 @@
  * Features: Streaming responses, markdown rendering, code highlighting, file attachments
  */
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Bot, User, Loader, Sparkles, FileText, X, Copy, Check } from 'lucide-react';
+import { Send, Bot, User, Loader, Sparkles, FileText, X, Copy, Check, Bot as Agent } from 'lucide-react';
 import api from '@/lib/api';
 
 interface Message {

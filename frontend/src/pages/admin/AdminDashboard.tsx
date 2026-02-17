@@ -56,8 +56,8 @@ export default function AdminDashboard() {
         api.get('/admin/dashboard/metrics'),
         api.get('/admin/performance/metrics')
       ]);
-      setMetrics(metricsData);
-      setPerformance(perfData);
+      setMetrics(metricsData?.data || metricsData);
+      setPerformance(perfData?.data || perfData);
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
     } finally {

@@ -58,9 +58,9 @@ export default function PurchaseOrders() {
         api.get('/erp/master-data/suppliers'),
         api.get('/erp/order-to-cash/products')
       ]);
-      setPurchaseOrders(posRes.data);
-      setSuppliers(suppliersRes.data);
-      setProducts(productsRes.data);
+      setPurchaseOrders(Array.isArray(posRes.data) ? posRes.data : posRes.data?.data || posRes.data?.purchase_orders || []);
+      setSuppliers(Array.isArray(suppliersRes.data) ? suppliersRes.data : suppliersRes.data?.data || suppliersRes.data?.suppliers || []);
+      setProducts(Array.isArray(productsRes.data) ? productsRes.data : productsRes.data?.data || productsRes.data?.products || []);
     } catch (error) {
       console.error('Error loading data:', error);
     } finally {
