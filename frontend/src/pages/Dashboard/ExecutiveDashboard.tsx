@@ -83,7 +83,7 @@ export const ExecutiveDashboard: React.FC = () => {
   const LoadingSkeleton = () => (
     <div className="flex items-center justify-center p-12">
       <Loader2 className="animate-spin h-8 w-8 mr-3 text-amber-500" />
-      <span className="text-gray-400 text-lg">Loading dashboard data...</span>
+      <span className="text-gray-300 text-lg">Loading dashboard data...</span>
     </div>
   );
 
@@ -194,7 +194,7 @@ export const ExecutiveDashboard: React.FC = () => {
               </div>
               <div className="flex items-center gap-2 p-3 bg-slate-900/50 rounded-xl">
                 <Bot className="h-4 w-4 text-amber-500" />
-                <span className="text-xs text-gray-400">
+                <span className="text-xs text-gray-300">
                   {metrics?.invoices_processed_today > 0 
                     ? `Invoice Reconciliation Agent: ${metrics.invoices_processed_today} invoices processed today`
                     : 'Invoice Reconciliation Agent: No invoices processed today'}
@@ -214,7 +214,7 @@ export const ExecutiveDashboard: React.FC = () => {
               </div>
               <div className="flex items-center gap-2 p-3 bg-slate-900/50 rounded-xl">
                 <Bot className="h-4 w-4 text-amber-500" />
-                <span className="text-xs text-gray-400">
+                <span className="text-xs text-gray-300">
                   {metrics?.pending_payments > 0 
                     ? `Payment Prediction Agent: ${metrics.pending_payments} payments pending`
                     : 'Payment Prediction Agent: No pending payments'}
@@ -267,14 +267,14 @@ export const ExecutiveDashboard: React.FC = () => {
                     </span>
                   </div>
                   <h4 className="font-semibold text-sm text-white mb-2">{agent.name}</h4>
-                  <p className="text-xs text-gray-400 line-clamp-2">{agent.description}</p>
+                  <p className="text-xs text-gray-300 line-clamp-2">{agent.description}</p>
                 </div>
               )) : (
                 <div className="col-span-full text-center p-8">
                   <div className="p-4 bg-amber-500/10 rounded-2xl inline-block mb-4">
                     <Bot className="h-8 w-8 text-amber-500" />
                   </div>
-                  <p className="text-gray-400">No agents configured yet. Visit the Bots page to set up automation.</p>
+                  <p className="text-gray-300">No agents configured yet. Visit the Bots page to set up automation.</p>
                 </div>
               )}
             </div>

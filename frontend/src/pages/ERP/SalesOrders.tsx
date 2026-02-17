@@ -381,7 +381,9 @@ export default function SalesOrders() {
     const getStatusConfig= (status: string) => {
     const configs: Record<string, { bg: string; text: string; border: string }> = {
       draft: { bg: 'bg-gray-100 dark:bg-gray-800', text: 'text-gray-700 dark:text-gray-300', border: 'border-gray-200 dark:border-gray-700' },
+      pending: { bg: 'bg-amber-100 dark:bg-amber-900/30', text: 'text-amber-700 dark:text-amber-300', border: 'border-amber-200 dark:border-amber-800' },
       approved: { bg: 'bg-blue-100 dark:bg-blue-900/30', text: 'text-blue-700 dark:text-blue-300', border: 'border-blue-200 dark:border-blue-800' },
+      confirmed: { bg: 'bg-emerald-100 dark:bg-emerald-900/30', text: 'text-emerald-700 dark:text-emerald-300', border: 'border-emerald-200 dark:border-emerald-800' },
       in_progress: { bg: 'bg-purple-100 dark:bg-purple-900/30', text: 'text-purple-700 dark:text-purple-300', border: 'border-purple-200 dark:border-purple-800' },
       completed: { bg: 'bg-green-100 dark:bg-green-900/30', text: 'text-green-700 dark:text-green-300', border: 'border-green-200 dark:border-green-800' },
       cancelled: { bg: 'bg-red-100 dark:bg-red-900/30', text: 'text-red-700 dark:text-red-300', border: 'border-red-200 dark:border-red-800' }
@@ -391,10 +393,10 @@ export default function SalesOrders() {
 
   const stats = {
     total: orders.length,
-    draft: orders.filter(o => o.status === 'draft').length,
-    approved: orders.filter(o => o.status === 'approved').length,
+    draft: orders.filter(o => o.status === 'draft' || o.status === 'pending').length,
+    approved: orders.filter(o => o.status === 'approved' || o.status === 'confirmed').length,
     completed: orders.filter(o => o.status === 'completed').length,
-    totalValue: orders.reduce((sum, o) => sum + o.total_amount, 0)
+    totalValue: orders.reduce((sum, o) => sum + Number(o.total_amount ?? 0), 0)
   };
 
   const renderFormModal = (isEdit: boolean) => {
@@ -533,7 +535,9 @@ export default function SalesOrders() {
               <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all min-w-[180px]">
                 <option value="">All Statuses</option>
                 <option value="draft">Draft</option>
+                <option value="pending">Pending</option>
                 <option value="approved">Approved</option>
+                <option value="confirmed">Confirmed</option>
                 <option value="in_progress">In Progress</option>
                 <option value="completed">Completed</option>
                 <option value="cancelled">Cancelled</option>
