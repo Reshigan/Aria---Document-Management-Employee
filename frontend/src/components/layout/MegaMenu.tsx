@@ -465,7 +465,6 @@ export const MegaMenu: React.FC<MegaMenuProps> = ({ onSearchClick }) => {
 const leaveTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
 
   const handleMouseEnter = (menu: string) => {
-    // Cancel any pending close timeout when entering a menu
     if (leaveTimeoutRef.current) {
       clearTimeout(leaveTimeoutRef.current);
       leaveTimeoutRef.current = null;
@@ -474,10 +473,13 @@ const leaveTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
   };
 
   const handleMouseLeave = () => {
-    // Add a delay to prevent accidental closing when moving to submenu
     leaveTimeoutRef.current = setTimeout(() => {
       setActiveDropdown(null);
-    }, 150);
+    }, 200);
+  };
+
+  const handleClick = (menu: string) => {
+    setActiveDropdown(prev => prev === menu ? null : menu);
   };
 
   const isActive = (path: string) => {
@@ -538,7 +540,10 @@ const leaveTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
               onMouseEnter={() => handleMouseEnter(menuName)}
               onMouseLeave={handleMouseLeave}
             >
-              <button className={`mega-menu-item ${activeDropdown === menuName ? 'active' : ''}`}>
+              <button
+                className={`mega-menu-item ${activeDropdown === menuName ? 'active' : ''}`}
+                onClick={() => handleClick(menuName)}
+              >
                 <span>{menuName}</span>
                 <ChevronDown size={12} />
               </button>
