@@ -130,7 +130,7 @@ export const ExecutiveDashboard: React.FC = () => {
       ) : (
         <>
           {/* Financial KPI Cards */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
             <div data-testid="metric-revenue" className="bg-slate-800/50 backdrop-blur-sm rounded-xl p-3 border border-white/5 hover:border-amber-500/30 transition-all group">
               <div className="flex items-center justify-between mb-4">
                 <div className="p-2 bg-emerald-500/10 rounded-xl">
@@ -235,7 +235,7 @@ export const ExecutiveDashboard: React.FC = () => {
             </div>
             
             {/* Agent Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 mb-6">
               <div className="bg-slate-900/50 rounded-xl p-4 border border-white/5">
                 <div className="text-sm text-gray-300 mb-1">Total Agents</div>
                 <div className="text-2xl font-bold text-white">{metrics?.bot_count || 109}</div>
@@ -255,7 +255,7 @@ export const ExecutiveDashboard: React.FC = () => {
             </div>
 
             {/* Agent Cards */}
-            <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {agents.length > 0 ? agents.map((agent, index) => (
                 <div key={index} className="bg-slate-900/50 rounded-xl p-4 border border-white/5 hover:border-amber-500/30 transition-all">
                   <div className="flex justify-between mb-3">
