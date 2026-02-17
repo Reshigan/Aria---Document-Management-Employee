@@ -11,7 +11,7 @@ interface MainLayoutProps {
 
 export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   const commandPalette = useCommandPalette();
-  const { showTour, setShowTour } = useOnboarding();
+  const { showTour, dismissTour } = useOnboarding();
   
   // Initialize keyboard shortcuts
   useKeyboardShortcuts({
@@ -23,8 +23,8 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
       <CommandPalette isOpen={commandPalette.isOpen} onClose={commandPalette.close} />
       {showTour && (
         <OnboardingTour
-          onComplete={() => setShowTour(false)}
-          onSkip={() => setShowTour(false)}
+          onComplete={dismissTour}
+          onSkip={dismissTour}
         />
       )}
       <MegaMenu onSearchClick={commandPalette.open} />

@@ -5,7 +5,7 @@ import {
   Bot, FileText, Settings, MessageSquare, FileSpreadsheet, ShoppingCart, Truck,
   ShoppingBag, Factory, Shield, Wrench, ClipboardList, Scale, Briefcase, 
   FolderOpen, TrendingUp, ChevronDown, LogOut, Search, BarChart3, Command,
-  HelpCircle, GraduationCap, Video, FileQuestion, BookMarked
+  HelpCircle, GraduationCap, Video, FileQuestion, BookMarked, Menu, X
 } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import { NotificationsBell } from '../NotificationsBell/NotificationsBell';
@@ -430,8 +430,15 @@ export const MegaMenu: React.FC<MegaMenuProps> = ({ onSearchClick }) => {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [menuData, setMenuData] = useState<Record<string, MegaMenuCategory[]>>(fallbackMenuData);
   const [isLoading, setIsLoading] = useState(true);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [mobileExpanded, setMobileExpanded] = useState<string | null>(null);
   const location = useLocation();
   const { user, logout } = useAuthStore();
+
+  useEffect(() => {
+    setMobileOpen(false);
+    setMobileExpanded(null);
+  }, [location.pathname]);
 
   useEffect(() => {
     const fetchMenuStructure = async () => {
@@ -490,6 +497,10 @@ const leaveTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
   return (
     <div className="mega-menu-container">
       <div className="mega-menu-header">
+        <button className="mega-menu-hamburger" onClick={() => setMobileOpen(!mobileOpen)} aria-label="Toggle menu">
+          {mobileOpen ? <X size={20} /> : <Menu size={20} />}
+        </button>
+
         <div className="mega-menu-logo">
           <Link to="/dashboard">
             <div className="mega-menu-brand">ARIA</div>
@@ -497,7 +508,7 @@ const leaveTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
           </Link>
         </div>
 
-        <nav className="mega-menu-nav">
+        <nav className="mega-menu-nav mega-menu-desktop-nav">
           <Link 
             to="/dashboard" 
             className={`mega-menu-item ${isActive('/dashboard') ? 'active' : ''}`}
@@ -506,7 +517,6 @@ const leaveTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
             <span>Dashboard</span>
           </Link>
 
-                    {/* Command Palette Search Button */}
                     <button 
                       onClick={onSearchClick}
                       className="mega-menu-item mega-menu-search"
@@ -603,7 +613,7 @@ const leaveTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
 
                 <div className="mega-menu-user" data-testid="user-menu">
                   <NotificationsBell />
-                  <div className="mega-menu-user-info">
+                  <div className="mega-menu-user-info mega-menu-desktop-only">
                     <span className="mega-menu-user-name" data-testid="user-name">{user?.full_name || 'User'}</span>
                     <span className="mega-menu-user-role">{user?.email}</span>
                   </div>
@@ -612,6 +622,73 @@ const leaveTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
                   </button>
                 </div>
       </div>
+
+      {mobileOpen && (
+        <>
+          <div className="mega-menu-mobile-backdrop" onClick={() => setMobileOpen(false)} />
+          <div className="mega-menu-mobile-drawer">
+            <div className="mega-menu-mobile-user">
+              <span className="mega-menu-mobile-user-name">{user?.full_name || 'User'}</span>
+              <span className="mega-menu-mobile-user-email">{user?.email}</span>
+            </div>
+            <nav className="mega-menu-mobile-nav">
+              <Link to="/dashboard" className="mega-menu-mobile-link" onClick={() => setMobileOpen(false)}>
+                <LayoutDashboard size={16} /> Dashboard
+              </Link>
+              <Link to="/aria" className="mega-menu-mobile-link mega-menu-mobile-link-special" onClick={() => setMobileOpen(false)}>
+                <MessageSquare size={16} /> Ask ARIA
+              </Link>
+              <Link to="/analytics" className="mega-menu-mobile-link" onClick={() => setMobileOpen(false)}>
+                <BarChart3 size={16} /> Analytics
+              </Link>
+
+              {Object.entries(menuData).map(([menuName, categories]) => (
+                <div key={menuName} className="mega-menu-mobile-section">
+                  <button
+                    className="mega-menu-mobile-section-btn"
+                    onClick={() => setMobileExpanded(mobileExpanded === menuName ? null : menuName)}
+                  >
+                    <span>{menuName}</span>
+                    <ChevronDown size={14} className={mobileExpanded === menuName ? 'rotate-180' : ''} style={{ transition: 'transform 0.2s' }} />
+                  </button>
+                  {mobileExpanded === menuName && (
+                    <div className="mega-menu-mobile-submenu">
+                      {categories.map((category) => (
+                        <div key={category.title} className="mega-menu-mobile-category">
+                          <div className="mega-menu-mobile-category-header" style={{ color: category.color }}>
+                            {category.icon}
+                            <span>{category.title}</span>
+                          </div>
+                          {category.items.map((item) => (
+                            <Link
+                              key={item.path}
+                              to={item.path}
+                              className="mega-menu-mobile-sublink"
+                              onClick={() => setMobileOpen(false)}
+                            >
+                              {item.label}
+                            </Link>
+                          ))}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+
+              <Link to="/reports" className="mega-menu-mobile-link" onClick={() => setMobileOpen(false)}>
+                <FileText size={16} /> Reports
+              </Link>
+              <Link to="/agents" className="mega-menu-mobile-link" onClick={() => setMobileOpen(false)}>
+                <Bot size={16} /> Agents
+              </Link>
+            </nav>
+            <button className="mega-menu-mobile-logout" onClick={() => { logout(); setMobileOpen(false); }}>
+              <LogOut size={16} /> Sign Out
+            </button>
+          </div>
+        </>
+      )}
     </div>
   );
 };
