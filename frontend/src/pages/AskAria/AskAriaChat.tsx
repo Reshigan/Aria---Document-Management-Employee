@@ -250,7 +250,9 @@ const AskAriaChat: React.FC = () => {
   };
 
   useEffect(() => {
-    scrollToBottom();
+    if (messages.length > 1) {
+      scrollToBottom();
+    }
   }, [messages]);
 
   useEffect(() => {
@@ -467,7 +469,7 @@ const AskAriaChat: React.FC = () => {
   }
 
   return (
-    <div className="bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex flex-col" style={{ height: 'calc(100vh - 5rem)' }}>
+    <div className="bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex flex-col" style={{ height: 'calc(100vh - 7.5rem)' }}>
       {/* Modern Header */}
       <div className="bg-black/20 backdrop-blur-xl border-b border-white/10 px-6 py-3">
         <div className="mx-auto flex items-center justify-between">
