@@ -336,6 +336,13 @@ import AccountsRedirect from './pages/Accounts';
 import AriaChat from './pages/Aria/AriaChat';
 import InvoicesRedirect from './pages/Invoices';
 import PricingComplete from './pages/PricingComplete';
+import { Landing } from './pages/Landing';
+import BotShowcase from './pages/BotShowcase';
+import BotDetailPage from './pages/BotDetail';
+import PricingPage from './pages/Pricing';
+import BotsLive from './pages/BotsLive';
+import Register from './pages/Register';
+import DocumentProcessing from './pages/DocumentProcessing';
 import './styles/design-system.css';
 import './styles/dark-mode.css';
 
@@ -348,7 +355,11 @@ function App() {
       <Routes>
                 {/* Public routes */}
                 <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
                 <Route path="/setup" element={<SetupWizard />} />
+                <Route path="/landing" element={<Landing />} />
+                <Route path="/pricing" element={<PricingPage />} />
+                <Route path="/bots-showcase" element={<BotShowcase />} />
         
                 {/* Protected routes */}
         <Route path="/*" element={
@@ -937,6 +948,11 @@ function App() {
                     <Route path="/aria/chat" element={<AriaChat />} />
                     <Route path="/invoices" element={<InvoicesRedirect />} />
                     <Route path="/pricing/plans" element={<PricingComplete />} />
+
+                    {/* Bots Extended */}
+                    <Route path="/bots/live" element={<BotsLive />} />
+                    <Route path="/bots/:id" element={<BotDetailPage />} />
+                    <Route path="/document-processing" element={<DocumentProcessing />} />
 
                     {/* Go-Live Features */}
                     <Route path="/admin/data-export" element={<DataExport />} />

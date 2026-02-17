@@ -34,4 +34,22 @@ api.interceptors.response.use(
   }
 )
 
+export const botsAPI = {
+  list: () => api.get('/bots'),
+  execute: (botName: string, data: Record<string, unknown> = {}) => api.post(`/bots/${botName}/execute`, data),
+  getStatus: (botName: string) => api.get(`/bots/${botName}/status`),
+  getHistory: (botName: string) => api.get(`/bots/${botName}/history`),
+};
+
+export const erpAPI = {
+  getCustomers: () => api.get('/erp/master-data/customers'),
+  getProducts: () => api.get('/erp/order-to-cash/products'),
+  getInvoices: () => api.get('/erp/invoices'),
+  getSalesOrders: () => api.get('/erp/order-to-cash/sales-orders'),
+};
+
+export const healthAPI = {
+  check: () => api.get('/health'),
+};
+
 export default api

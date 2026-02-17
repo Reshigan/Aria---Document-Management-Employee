@@ -545,6 +545,7 @@ const leaveTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
 
               {activeDropdown === menuName && (
                 <div className="mega-menu-panel">
+                  <div className="mega-menu-panel-inner">
                   <div className="mega-menu-panel-content">
                     {categories.map((category) => (
                       <div key={category.title} className="mega-menu-category">
@@ -567,6 +568,7 @@ const leaveTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
                         </ul>
                       </div>
                     ))}
+                  </div>
                   </div>
                 </div>
               )}
