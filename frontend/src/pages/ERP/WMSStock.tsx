@@ -304,8 +304,8 @@ export default function WMSStock() {
                         <td className="px-6 py-4 font-semibold text-teal-600 dark:text-teal-400">{product.code}</td>
                         <td className="px-6 py-4 text-gray-900 dark:text-white">{product.name}</td>
                         <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{product.unit_of_measure}</td>
-                        <td className="px-6 py-4 text-right text-gray-600 dark:text-gray-300">R {Number(product.cost_price ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</td>
-                        <td className="px-6 py-4 text-right font-semibold text-gray-900 dark:text-white">R {Number(product.selling_price ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</td>
+                        <td className="px-6 py-4 text-right text-gray-600 dark:text-gray-300">R {Number(product.cost_price ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                        <td className="px-6 py-4 text-right font-semibold text-gray-900 dark:text-white">R {Number(product.selling_price ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                         <td className="px-6 py-4"><span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${product.is_active ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600'}`}>{product.is_active ? 'Active' : 'Inactive'}</span></td>
                         <td className="px-6 py-4"><div className="flex items-center justify-end gap-2"><button onClick={() => handleEdit(product)} className="p-2 hover:bg-teal-100 dark:hover:bg-teal-900/30 text-teal-600 dark:text-teal-400 rounded-lg transition-colors"><Edit className="h-4 w-4" /></button><button onClick={() => handleDelete(product)} className="p-2 hover:bg-red-100 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg transition-colors"><Trash2 className="h-4 w-4" /></button></div></td>
                       </tr>
@@ -346,7 +346,7 @@ export default function WMSStock() {
                         <td className="px-6 py-4"><span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border capitalize ${getMovementTypeBadge(mov.movement_type)}`}>{mov.movement_type}</span></td>
                         <td className="px-6 py-4"><div><span className="text-gray-900 dark:text-white">{mov.product_code}</span><p className="text-xs text-gray-500 dark:text-gray-400">{mov.product_name}</p></div></td>
                         <td className="px-6 py-4 text-right font-semibold text-gray-900 dark:text-white">{Number(mov.quantity ?? 0).toLocaleString()}</td>
-                        <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{new Date(mov.movement_date).toLocaleDateString()}</td>
+                        <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{(mov.movement_date ? new Date(mov.movement_date).toLocaleDateString() : "-")}</td>
                         <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{mov.reference || '-'}</td>
                       </tr>
                     ))}

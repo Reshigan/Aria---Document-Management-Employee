@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '../../components/ui/button';
-import { Bot, Settings, Bell, CheckCircle, XCircle, DollarSign, Mail, MessageSquare } from 'lucide-react';
+import { Bot, Bot as Agent, Settings, Bell, CheckCircle, XCircle, DollarSign, Mail, MessageSquare } from 'lucide-react';
 import api from '../../lib/api';
 
 interface BotConfig {

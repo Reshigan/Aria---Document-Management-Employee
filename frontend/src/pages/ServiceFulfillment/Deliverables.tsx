@@ -316,7 +316,7 @@ export default function Deliverables() {
                     {deliverable.due_date ? (
                       <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                         <Calendar size={14} className="text-gray-400" />
-                        {new Date(deliverable.due_date).toLocaleDateString()}
+                        {(deliverable.due_date ? new Date(deliverable.due_date).toLocaleDateString() : "-")}
                       </div>
                     ) : (
                       <span className="text-xs text-gray-400">-</span>

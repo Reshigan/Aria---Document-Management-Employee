@@ -39,6 +39,8 @@ const QualityInspections: React.FC = () => {
   const fetchInspections = async () => {
     try {
       const response = await fetch('https://aria.vantax.co.za/api/erp/quality/inspections');
+      const ct = response.headers.get('content-type');
+      if (!response.ok || !ct?.includes('application/json')) { setInspections([]); return; }
       const data = await response.json();
       setInspections(data.inspections || []);
     } catch (error) {
@@ -182,7 +184,7 @@ const QualityInspections: React.FC = () => {
                         {inspection.result}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-sm">{new Date(inspection.inspection_date).toLocaleDateString()}</td>
+                    <td className="px-6 py-4 text-sm">{(inspection.inspection_date ? new Date(inspection.inspection_date).toLocaleDateString() : "-")}</td>
                     <td className="px-6 py-4 text-sm">
                       <div className="flex items-center space-x-2">
                         <button onClick={() => handleEdit(inspection)} className="text-gray-600 hover:text-blue-600">

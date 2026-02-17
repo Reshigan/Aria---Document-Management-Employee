@@ -287,7 +287,7 @@ export function AutomationPanel({
                     {execution.bot_name}
                   </div>
                   <div style={{ color: '#6b7280' }}>
-                    {new Date(execution.started_at).toLocaleTimeString()}
+                    {execution.started_at ? new Date(execution.started_at).toLocaleTimeString() : '-'}
                   </div>
                 </div>
                 {execution.error && (

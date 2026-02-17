@@ -407,7 +407,7 @@ export default function Customers() {
                         <tr key={txn.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50">
                           <td className="px-4 py-3 text-sm capitalize text-gray-900 dark:text-white">{txn.type.replace('_', ' ')}</td>
                           <td className="px-4 py-3 text-sm font-medium text-cyan-600 dark:text-cyan-400">{txn.number}</td>
-                          <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-300">{new Date(txn.date).toLocaleDateString()}</td>
+                          <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-300">{(txn.date ? new Date(txn.date).toLocaleDateString() : "-")}</td>
                           <td className="px-4 py-3 text-sm text-right font-medium text-gray-900 dark:text-white">R {Number(txn.amount ?? 0).toLocaleString()}</td>
                           <td className="px-4 py-3"><span className="px-2 py-1 text-xs font-medium rounded-full bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 capitalize">{txn.status}</span></td>
                         </tr>

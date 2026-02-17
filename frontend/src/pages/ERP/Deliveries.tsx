@@ -299,7 +299,7 @@ export default function Deliveries() {
                       <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{delivery.sales_order_number || '-'}</td>
                       <td className="px-6 py-4 text-gray-900 dark:text-white">{delivery.customer_name || '-'}</td>
                       <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{delivery.warehouse_name || '-'}</td>
-                      <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{new Date(delivery.delivery_date).toLocaleDateString()}</td>
+                      <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{(delivery.delivery_date ? new Date(delivery.delivery_date).toLocaleDateString() : "-")}</td>
                       <td className="px-6 py-4">
                         {delivery.tracking_number ? (
                           <div>

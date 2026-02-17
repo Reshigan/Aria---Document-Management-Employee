@@ -244,7 +244,7 @@ export default function SalesOrderDetail() {
                 </span>
               )}
               <span className="text-xs text-gray-500 dark:text-gray-400">
-                Created {new Date(order.created_at).toLocaleDateString()}
+                Created {(order.created_at ? new Date(order.created_at).toLocaleDateString() : "-")}
               </span>
             </div>
           </div>
@@ -323,7 +323,7 @@ export default function SalesOrderDetail() {
                 <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Order Date</div>
                 <div className="font-medium text-gray-900 dark:text-white flex items-center gap-2">
                   <Calendar size={16} className="text-gray-400" />
-                  {new Date(order.order_date).toLocaleDateString()}
+                  {(order.order_date ? new Date(order.order_date).toLocaleDateString() : "-")}
                 </div>
               </div>
               {order.required_date && (
@@ -331,7 +331,7 @@ export default function SalesOrderDetail() {
                   <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Required Date</div>
                   <div className="font-medium text-gray-900 dark:text-white flex items-center gap-2">
                     <Calendar size={16} className="text-gray-400" />
-                    {new Date(order.required_date).toLocaleDateString()}
+                    {(order.required_date ? new Date(order.required_date).toLocaleDateString() : "-")}
                   </div>
                 </div>
               )}
@@ -362,13 +362,13 @@ export default function SalesOrderDetail() {
               <div className="flex justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
                 <span className="text-xs text-gray-500 dark:text-gray-400">Created</span>
                 <span className="text-sm font-medium text-gray-900 dark:text-white">
-                  {new Date(order.created_at).toLocaleString()}
+                  {order.created_at ? new Date(order.created_at).toLocaleString() : '-'}
                 </span>
               </div>
               <div className="flex justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
                 <span className="text-xs text-gray-500 dark:text-gray-400">Last Updated</span>
                 <span className="text-sm font-medium text-gray-900 dark:text-white">
-                  {new Date(order.updated_at).toLocaleString()}
+                  {order.updated_at ? new Date(order.updated_at).toLocaleString() : '-'}
                 </span>
               </div>
             </div>
@@ -416,7 +416,7 @@ export default function SalesOrderDetail() {
                       <span className="text-xs text-gray-500 dark:text-gray-400">{delivery.status}</span>
                     </div>
                     <div className="text-xs text-gray-500 dark:text-gray-400">
-                      {new Date(delivery.delivery_date).toLocaleDateString()}
+                      {(delivery.delivery_date ? new Date(delivery.delivery_date).toLocaleDateString() : "-")}
                     </div>
                   </div>
                 ))}
@@ -446,7 +446,7 @@ export default function SalesOrderDetail() {
                     </div>
                     <div className="flex justify-between">
                       <span className="text-xs text-gray-500 dark:text-gray-400">
-                        {new Date(invoice.invoice_date).toLocaleDateString()}
+                        {(invoice.invoice_date ? new Date(invoice.invoice_date).toLocaleDateString() : "-")}
                       </span>
                       <span className="text-sm font-medium text-gray-900 dark:text-white">
                         R {Number(invoice.total_amount ?? 0).toFixed(2)}

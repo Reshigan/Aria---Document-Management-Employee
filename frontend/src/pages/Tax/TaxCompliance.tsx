@@ -4,12 +4,16 @@ import api from '../../lib/api';
 import { ConfirmDialog } from '../../components/ConfirmDialog';
 
 interface TaxObligation {
-  id: number;
-  tax_type: string;
-  period: string;
-  due_date: string;
-  amount: number;
-  status: 'PENDING' | 'FILED' | 'PAID' | 'OVERDUE';
+  id: string;
+  type: string;
+  description: string;
+  frequency: string;
+  next_due: string;
+  status: string;
+  tax_type?: string;
+  period?: string;
+  due_date?: string;
+  amount?: number;
 }
 
 const TaxCompliance: React.FC = () => {
@@ -63,11 +67,11 @@ const TaxCompliance: React.FC = () => {
   const handleEdit = (obligation: TaxObligation) => {
     setEditingObligation(obligation);
     setForm({
-      tax_type: obligation.tax_type,
-      period: obligation.period,
-      due_date: obligation.due_date,
-      amount: obligation.amount.toString(),
-      status: obligation.status
+      tax_type: obligation.type || obligation.tax_type || '',
+      period: obligation.frequency || obligation.period || '',
+      due_date: obligation.next_due || obligation.due_date || '',
+      amount: (obligation.amount || 0).toString(),
+      status: (obligation.status || 'PENDING').toUpperCase() as any
     });
     setShowModal(true);
   };
@@ -116,12 +120,16 @@ const TaxCompliance: React.FC = () => {
     );
   };
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR' }).format(amount);
+  const formatCurrency = (amount: number | undefined | null) => {
+    if (amount == null || isNaN(Number(amount))) return 'R 0.00';
+    return new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR' }).format(Number(amount));
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-ZA');
+  const formatDate = (dateString: string | undefined | null) => {
+    if (!dateString) return '-';
+    const d = new Date(dateString);
+    if (isNaN(d.getTime())) return dateString;
+    return d.toLocaleDateString('en-ZA');
   };
 
   if (loading && obligations.length === 0) {
@@ -255,9 +263,9 @@ const TaxCompliance: React.FC = () => {
             ) : (
               obligations.map((obligation) => (
                 <tr key={obligation.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors">
-                  <td className="px-6 py-4 font-semibold text-gray-900 dark:text-white">{obligation.tax_type}</td>
-                  <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{obligation.period}</td>
-                  <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{formatDate(obligation.due_date)}</td>
+                  <td className="px-6 py-4 font-semibold text-gray-900 dark:text-white">{obligation.type || obligation.tax_type || '-'}</td>
+                  <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{obligation.frequency || obligation.period || '-'}</td>
+                  <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{formatDate(obligation.next_due || obligation.due_date)}</td>
                   <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{formatCurrency(obligation.amount)}</td>
                   <td className="px-6 py-4">{getStatusBadge(obligation.status)}</td>
                   <td className="px-6 py-4 text-right">

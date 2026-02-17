@@ -204,7 +204,7 @@ export default function Bills() {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">
-                R {Number(totalBills ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
+                R {Number(totalBills ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </p>
               <p className="text-xs text-gray-500 dark:text-gray-400">Total Bills</p>
             </div>
@@ -218,7 +218,7 @@ export default function Bills() {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">
-                R {Number(totalPaid ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
+                R {Number(totalPaid ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </p>
               <p className="text-xs text-gray-500 dark:text-gray-400">Paid</p>
             </div>
@@ -232,7 +232,7 @@ export default function Bills() {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">
-                R {Number(totalDue ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
+                R {Number(totalDue ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </p>
               <p className="text-xs text-gray-500 dark:text-gray-400">Outstanding</p>
             </div>
@@ -288,16 +288,16 @@ export default function Bills() {
                   <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">{bill.bill_number}</td>
                   <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{bill.supplier_name || `Supplier ${bill.supplier_id}`}</td>
                   <td className="px-6 py-4 text-gray-500 dark:text-gray-400">
-                    {new Date(bill.bill_date).toLocaleDateString('en-ZA')}
+                    {(bill.bill_date ? new Date(bill.bill_date).toLocaleDateString('en-ZA') : "-")}
                   </td>
                   <td className="px-6 py-4 text-gray-500 dark:text-gray-400">
-                    {new Date(bill.due_date).toLocaleDateString('en-ZA')}
+                    {(bill.due_date ? new Date(bill.due_date).toLocaleDateString('en-ZA') : "-")}
                   </td>
                   <td className="px-6 py-4 text-right font-medium text-gray-900 dark:text-white">
-                    R {Number(bill.total_amount ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
+                    R {Number(bill.total_amount ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </td>
                   <td className="px-6 py-4 text-right text-gray-500 dark:text-gray-400">
-                    R {Number(bill.amount_due ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
+                    R {Number(bill.amount_due ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </td>
                   <td className="px-6 py-4 text-center">
                     <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${getStatusBadge(bill.status)}`}>

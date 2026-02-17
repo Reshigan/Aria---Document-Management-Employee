@@ -75,7 +75,12 @@ export function CompanyProvider({ children }: { children: ReactNode }) {
 export function useCompany() {
   const context = useContext(CompanyContext);
   if (context === undefined) {
-    throw new Error('useCompany must be used within a CompanyProvider');
+    return {
+      currentCompany: { id: '00000000-0000-0000-0000-000000000001', name: 'Default Company', code: 'DEFAULT' },
+      companies: [],
+      setCurrentCompany: () => {},
+      loading: false,
+    } as CompanyContextType;
   }
   return context;
 }

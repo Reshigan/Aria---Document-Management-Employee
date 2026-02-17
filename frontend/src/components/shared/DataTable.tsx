@@ -14,8 +14,9 @@ import { ChevronUp, ChevronDown, Search, Download } from 'lucide-react';
 
 export interface Column<T> {
   key: string;
-  header: string;
-  accessor: (row: T) => any;
+  header?: string;
+  label?: string;
+  accessor?: (row: T) => any;
   sortable?: boolean;
   render?: (value: any, row: T) => React.ReactNode;
 }
@@ -43,20 +44,28 @@ export function DataTable<T extends Record<string, any>>({
   emptyMessage = 'No data available',
   pageSize = 10,
 }: DataTableProps<T>) {
+  const safeData = Array.isArray(data) ? data : [];
   const [searchQuery, setSearchQuery] = useState('');
   const [sortColumn, setSortColumn] = useState<string | null>(null);
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const [currentPage, setCurrentPage] = useState(1);
 
+  const getAccessor = (col: Column<T>) => (row: T) => {
+    if (col.accessor) return col.accessor(row);
+    return (row as any)[col.key];
+  };
+
+  const getHeader = (col: Column<T>) => col.header || col.label || col.key;
+
   const filteredData = useMemo(() => {
-    if (!searchQuery) return data;
-    return data.filter((row) =>
+    if (!searchQuery) return safeData;
+    return safeData.filter((row) =>
       columns.some((col) => {
-        const value = col.accessor(row);
-        return String(value).toLowerCase().includes(searchQuery.toLowerCase());
+        const value = getAccessor(col)(row);
+        return String(value ?? '').toLowerCase().includes(searchQuery.toLowerCase());
       })
     );
-  }, [data, searchQuery, columns]);
+  }, [safeData, searchQuery, columns]);
 
   const sortedData = useMemo(() => {
     if (!sortColumn) return filteredData;
@@ -64,8 +73,8 @@ export function DataTable<T extends Record<string, any>>({
     if (!column) return filteredData;
 
     return [...filteredData].sort((a, b) => {
-      const aValue = column.accessor(a);
-      const bValue = column.accessor(b);
+      const aValue = getAccessor(column)(a);
+      const bValue = getAccessor(column)(b);
       if (aValue === bValue) return 0;
       const comparison = aValue > bValue ? 1 : -1;
       return sortDirection === 'asc' ? comparison : -comparison;
@@ -89,12 +98,12 @@ export function DataTable<T extends Record<string, any>>({
   };
 
   const handleExport = () => {
-    const headers = columns.map((col) => col.header).join(',');
+    const headers = columns.map((col) => getHeader(col)).join(',');
     const rows = sortedData
       .map((row) =>
         columns
           .map((col) => {
-            const value = col.accessor(row);
+            const value = getAccessor(col)(row);
             return typeof value === 'string' && value.includes(',')
               ? `"${value.replace(/"/g, '""')}"`
               : value;
@@ -152,7 +161,7 @@ export function DataTable<T extends Record<string, any>>({
                   onClick={() => column.sortable && handleSort(column.key)}
                 >
                   <div className="flex items-center gap-2">
-                    {column.header}
+                    {getHeader(column)}
                     {column.sortable && (
                       <div className="flex flex-col">
                         <ChevronUp
@@ -191,7 +200,7 @@ export function DataTable<T extends Record<string, any>>({
                   onClick={() => onRowClick?.(row)}
                 >
                   {columns.map((column) => {
-                    const value = column.accessor(row);
+                    const value = getAccessor(column)(row);
                     return (
                       <td key={column.key} className="px-4 py-3 text-sm text-gray-900">
                         {column.render ? column.render(value, row) : value}

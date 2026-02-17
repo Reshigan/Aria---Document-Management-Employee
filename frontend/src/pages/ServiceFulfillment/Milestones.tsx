@@ -277,7 +277,7 @@ export default function Milestones() {
                     {milestone.due_date ? (
                       <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                         <Calendar size={14} className="text-gray-400" />
-                        {new Date(milestone.due_date).toLocaleDateString()}
+                        {(milestone.due_date ? new Date(milestone.due_date).toLocaleDateString() : "-")}
                       </div>
                     ) : (
                       <span className="text-xs text-gray-400">-</span>

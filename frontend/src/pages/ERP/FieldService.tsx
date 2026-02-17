@@ -227,7 +227,7 @@ export default function FieldService() {
                     <div><p className="text-xs text-gray-500 dark:text-gray-400">Type</p><p className="font-semibold text-gray-900 dark:text-white capitalize">{selectedItem.request_type}</p></div>
                     <div><p className="text-xs text-gray-500 dark:text-gray-400">Priority</p><span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${getPriorityBadge(selectedItem.priority)}`}>{selectedItem.priority}</span></div>
                     <div><p className="text-xs text-gray-500 dark:text-gray-400">Status</p><span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${getStatusBadge(selectedItem.status)}`}>{selectedItem.status}</span></div>
-                    <div><p className="text-xs text-gray-500 dark:text-gray-400">Reported</p><p className="font-semibold text-gray-900 dark:text-white">{new Date(selectedItem.reported_date).toLocaleDateString()}</p></div>
+                    <div><p className="text-xs text-gray-500 dark:text-gray-400">Reported</p><p className="font-semibold text-gray-900 dark:text-white">{(selectedItem.reported_date ? new Date(selectedItem.reported_date).toLocaleDateString() : "-")}</p></div>
                   </div>
                   <div><p className="text-xs text-gray-500 dark:text-gray-400">Description</p><p className="text-gray-900 dark:text-white">{selectedItem.description || 'No description'}</p></div>
                 </>
@@ -242,7 +242,7 @@ export default function FieldService() {
                     <div><p className="text-xs text-gray-500 dark:text-gray-400">Status</p><span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${getStatusBadge(selectedItem.status)}`}>{selectedItem.status}</span></div>
                     <div><p className="text-xs text-gray-500 dark:text-gray-400">Scheduled</p><p className="font-semibold text-gray-900 dark:text-white">{selectedItem.scheduled_date ? new Date(selectedItem.scheduled_date).toLocaleDateString() : '-'}</p></div>
                     <div><p className="text-xs text-gray-500 dark:text-gray-400">Technician</p><p className="font-semibold text-gray-900 dark:text-white">{selectedItem.technician_name || 'Unassigned'}</p></div>
-                    <div><p className="text-xs text-gray-500 dark:text-gray-400">Total Cost</p><p className="font-semibold text-gray-900 dark:text-white">R {(selectedItem.total_cost || 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</p></div>
+                    <div><p className="text-xs text-gray-500 dark:text-gray-400">Total Cost</p><p className="font-semibold text-gray-900 dark:text-white">R {(selectedItem.total_cost || 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p></div>
                   </div>
                 </>
               )}
@@ -488,7 +488,7 @@ export default function FieldService() {
                         <td className="px-6 py-4 text-gray-600 dark:text-gray-300 capitalize">{sr.request_type}</td>
                         <td className="px-6 py-4"><span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${getPriorityBadge(sr.priority)}`}>{sr.priority}</span></td>
                         <td className="px-6 py-4"><span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${getStatusBadge(sr.status)}`}>{sr.status}</span></td>
-                        <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{new Date(sr.reported_date).toLocaleDateString()}</td>
+                        <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{(sr.reported_date ? new Date(sr.reported_date).toLocaleDateString() : "-")}</td>
                         <td className="px-6 py-4">
                           <div className="flex items-center justify-end">
                             <button onClick={() => handleViewDetails(sr)} className="p-2 hover:bg-cyan-100 dark:hover:bg-cyan-900/30 text-cyan-600 dark:text-cyan-400 rounded-lg transition-colors"><Eye className="h-4 w-4" /></button>

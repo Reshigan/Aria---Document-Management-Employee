@@ -29,7 +29,7 @@ export default function CashForecast() {
     } catch (err) { setError('Failed to load cash forecast'); } finally { setLoading(false); }
   };
 
-  const formatCurrency = (amount: number) => new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR' }).format(amount);
+  const formatCurrency = (amount: number) => new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR' }).format(Number(amount) || 0);
 
   const stats = {
     totalInflows: forecast.reduce((sum, f) => sum + f.expected_inflows, 0),

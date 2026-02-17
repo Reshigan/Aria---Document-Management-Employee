@@ -247,7 +247,7 @@ const ProductionMonitoring: React.FC = () => {
                   <td className="px-6 py-4 whitespace-nowrap">{getStatusBadge(job.status)}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">{job.retry_count}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">
-                    {new Date(job.scheduled_at).toLocaleString()}
+                    {job.scheduled_at ? new Date(job.scheduled_at).toLocaleString() : '-'}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">
                     <button className="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:text-blue-100">View</button>
@@ -351,7 +351,7 @@ const ProductionMonitoring: React.FC = () => {
                 </td>
                 <td className="px-6 py-4 text-sm text-red-600 dark:text-red-400">{check.error_message || '-'}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">
-                  {new Date(check.created_at).toLocaleString()}
+                  {check.created_at ? new Date(check.created_at).toLocaleString() : '-'}
                 </td>
               </tr>
             ))}
@@ -392,7 +392,7 @@ const ProductionMonitoring: React.FC = () => {
                 <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">{log.entity_id || '-'}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">{log.ip_address || '-'}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">
-                  {new Date(log.created_at).toLocaleString()}
+                  {log.created_at ? new Date(log.created_at).toLocaleString() : '-'}
                 </td>
               </tr>
             ))}
@@ -448,7 +448,7 @@ const ProductionMonitoring: React.FC = () => {
                     {error.resolved_at ? new Date(error.resolved_at).toLocaleString() : '-'}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">
-                    {new Date(error.created_at).toLocaleString()}
+                    {error.created_at ? new Date(error.created_at).toLocaleString() : '-'}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">
                     {!error.is_resolved && (
@@ -494,7 +494,7 @@ const ProductionMonitoring: React.FC = () => {
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{Number(metric.metric_value ?? 0).toFixed(2)}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">{metric.metric_unit}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">
-                  {new Date(metric.created_at).toLocaleString()}
+                  {metric.created_at ? new Date(metric.created_at).toLocaleString() : '-'}
                 </td>
               </tr>
             ))}

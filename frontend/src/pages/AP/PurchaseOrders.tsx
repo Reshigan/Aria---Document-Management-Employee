@@ -58,9 +58,9 @@ export default function PurchaseOrders() {
         api.get('/erp/master-data/suppliers'),
         api.get('/erp/order-to-cash/products')
       ]);
-      setPurchaseOrders(posRes.data);
-      setSuppliers(suppliersRes.data);
-      setProducts(productsRes.data);
+      setPurchaseOrders(Array.isArray(posRes.data) ? posRes.data : posRes.data?.data || posRes.data?.purchase_orders || []);
+      setSuppliers(Array.isArray(suppliersRes.data) ? suppliersRes.data : suppliersRes.data?.data || suppliersRes.data?.suppliers || []);
+      setProducts(Array.isArray(productsRes.data) ? productsRes.data : productsRes.data?.data || productsRes.data?.products || []);
     } catch (error) {
       console.error('Error loading data:', error);
     } finally {
@@ -250,7 +250,7 @@ export default function PurchaseOrders() {
                 <p className="text-xl font-bold text-gray-900 dark:text-white">{pos.length}</p>
                 <p className="text-xs text-gray-500 dark:text-gray-400 capitalize">{status.replace('_', ' ')} POs</p>
                 <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
-                  R {pos.reduce((sum, po) => sum + po.total_amount, 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
+                  R {pos.reduce((sum, po) => sum + po.total_amount, 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </p>
               </div>
             </div>
@@ -295,8 +295,8 @@ export default function PurchaseOrders() {
                   >
                     <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">{po.po_number}</td>
                     <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{supplier?.supplier_name || 'Unknown'}</td>
-                    <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{new Date(po.order_date).toLocaleDateString()}</td>
-                    <td className="px-6 py-4 text-right font-medium text-gray-900 dark:text-white">R {Number(po.total_amount ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</td>
+                    <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{(po.order_date ? new Date(po.order_date).toLocaleDateString() : "-")}</td>
+                    <td className="px-6 py-4 text-right font-medium text-gray-900 dark:text-white">R {Number(po.total_amount ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                     <td className="px-6 py-4 text-center">
                       <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium capitalize ${getStatusBadge(po.status)}`}>
                         {po.status.replace('_', ' ')}

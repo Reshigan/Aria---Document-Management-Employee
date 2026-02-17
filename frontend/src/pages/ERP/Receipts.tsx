@@ -150,7 +150,7 @@ export default function Receipts() {
                 <div>
                   <p className="text-xl font-bold text-gray-900 dark:text-white">{stats.total_receipts}</p>
                   <p className="text-xs text-gray-500 dark:text-gray-400">Total Receipts</p>
-                  <p className="text-xs text-gray-400 dark:text-gray-500">R {Number(stats.total_amount ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</p>
+                  <p className="text-xs text-gray-400 dark:text-gray-500">R {Number(stats.total_amount ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
                 </div>
               </div>
             </div>
@@ -160,7 +160,7 @@ export default function Receipts() {
                 <div>
                   <p className="text-xl font-bold text-gray-900 dark:text-white">{stats.posted_count}</p>
                   <p className="text-xs text-gray-500 dark:text-gray-400">Posted</p>
-                  <p className="text-xs text-gray-400 dark:text-gray-500">R {Number(stats.posted_amount ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</p>
+                  <p className="text-xs text-gray-400 dark:text-gray-500">R {Number(stats.posted_amount ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
                 </div>
               </div>
             </div>
@@ -170,7 +170,7 @@ export default function Receipts() {
                 <div>
                   <p className="text-xl font-bold text-gray-900 dark:text-white">{stats.draft_count}</p>
                   <p className="text-xs text-gray-500 dark:text-gray-400">Draft</p>
-                  <p className="text-xs text-gray-400 dark:text-gray-500">R {Number(stats.draft_amount ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</p>
+                  <p className="text-xs text-gray-400 dark:text-gray-500">R {Number(stats.draft_amount ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
                 </div>
               </div>
             </div>
@@ -178,7 +178,7 @@ export default function Receipts() {
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl "><TrendingUp className="h-5 w-5 text-white" /></div>
                 <div>
-                  <p className="text-xl font-bold text-gray-900 dark:text-white">R {stats.total_receipts > 0 ? (stats.total_amount / stats.total_receipts).toLocaleString('en-ZA', { minimumFractionDigits: 2 }) : '0.00'}</p>
+                  <p className="text-xl font-bold text-gray-900 dark:text-white">R {stats.total_receipts > 0 ? (stats.total_amount / stats.total_receipts).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0.00'}</p>
                   <p className="text-xs text-gray-500 dark:text-gray-400">Avg Receipt</p>
                 </div>
               </div>
@@ -236,10 +236,10 @@ export default function Receipts() {
                     <tr key={receipt.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                       <td className="px-6 py-4 font-semibold text-green-600 dark:text-green-400">{receipt.receipt_number}</td>
                       <td className="px-6 py-4 text-gray-900 dark:text-white">{receipt.customer_name || `Customer ${receipt.customer_id}`}</td>
-                      <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{new Date(receipt.payment_date).toLocaleDateString()}</td>
+                      <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{(receipt.payment_date ? new Date(receipt.payment_date).toLocaleDateString() : "-")}</td>
                       <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{getPaymentMethodLabel(receipt.payment_method)}</td>
                       <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{receipt.reference || '-'}</td>
-                      <td className="px-6 py-4 text-right font-semibold text-gray-900 dark:text-white">R {Number(receipt.amount ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</td>
+                      <td className="px-6 py-4 text-right font-semibold text-gray-900 dark:text-white">R {Number(receipt.amount ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                       <td className="px-6 py-4">
                         <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${getStatusBadge(receipt.status)}`}>{receipt.status}</span>
                       </td>

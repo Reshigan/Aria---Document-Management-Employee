@@ -56,7 +56,8 @@ export default function DocumentTemplates() {
       setLoading(true);
       const typeParam = selectedType !== 'all' ? `&document_type=${selectedType}` : '';
       const response = await fetch(`https://aria.vantax.co.za/api/erp/documents/templates?company_id=${currentCompany.id}${typeParam}`);
-      if (!response.ok) throw new Error('Failed to fetch templates');
+      const ct = response.headers.get('content-type');
+      if (!response.ok || !ct?.includes('application/json')) { setTemplates([]); setError(null); setLoading(false); return; }
       const data = await response.json();
       setTemplates(data.templates || []);
       setError(null);
@@ -223,7 +224,7 @@ export default function DocumentTemplates() {
                   <p className="text-gray-700 dark:text-gray-300"><span className="font-semibold">Format:</span> {selectedTemplate.template_format.toUpperCase()}</p>
                   <p className="text-gray-700 dark:text-gray-300"><span className="font-semibold">Status:</span> <span className={selectedTemplate.is_active ? 'text-green-600 dark:text-green-400' : 'text-gray-500'}>{selectedTemplate.is_active ? 'Active' : 'Inactive'}</span></p>
                   <p className="text-gray-700 dark:text-gray-300"><span className="font-semibold">Default:</span> {selectedTemplate.is_default ? 'Yes' : 'No'}</p>
-                  <p className="text-gray-700 dark:text-gray-300"><span className="font-semibold">Created:</span> {new Date(selectedTemplate.created_at).toLocaleDateString()}</p>
+                  <p className="text-gray-700 dark:text-gray-300"><span className="font-semibold">Created:</span> {(selectedTemplate.created_at ? new Date(selectedTemplate.created_at).toLocaleDateString() : "-")}</p>
                 </div>
                 <div className="mt-8 p-4 bg-gray-50 dark:bg-gray-900/50 rounded-xl"><p className="text-gray-500 dark:text-gray-400 text-sm text-center">This is a preview of the template metadata. Click "Generate Sample" to create a sample document.</p></div>
               </div>

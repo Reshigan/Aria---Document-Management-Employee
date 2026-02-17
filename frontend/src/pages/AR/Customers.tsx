@@ -429,7 +429,7 @@ export default function Customers() {
                       {customer.city && customer.country ? `${customer.city}, ${customer.country}` : customer.country || '-'}
                     </td>
                     <td className="px-6 py-4 text-sm text-right font-medium text-gray-900 dark:text-white">
-                      R {customer.credit_limit?.toLocaleString('en-ZA', { minimumFractionDigits: 2 }) || '0.00'}
+                      R {customer.credit_limit?.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || '0.00'}
                     </td>
                     <td className="px-6 py-4 text-center">
                       <span className={`px-2.5 py-1 rounded-lg text-xs font-medium ${customer.is_active ? 'bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300' : 'bg-red-100 dark:bg-red-900/50 text-red-700 dark:text-red-300'}`}>

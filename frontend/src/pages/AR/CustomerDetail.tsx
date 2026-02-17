@@ -151,9 +151,7 @@ export default function CustomerDetail() {
     return new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR' }).format(amount);
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-ZA');
-  };
+  const formatDate = (dateString: string) => { if (!dateString) return "-"; const _d = new Date(dateString); return isNaN(_d.getTime()) ? dateString : _d.toLocaleDateString("en-ZA"); };
 
   const getStatusBadge = (status: string, type: string) => {
     const statusColors: Record<string, string> = {

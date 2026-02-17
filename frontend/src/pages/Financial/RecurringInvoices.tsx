@@ -69,8 +69,8 @@ export default function RecurringInvoices() {
     } catch (err) { setError('Failed to delete recurring invoice'); }
   };
 
-  const formatCurrency = (amount: number) => new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR' }).format(amount);
-  const formatDate = (date: string) => new Date(date).toLocaleDateString('en-ZA');
+  const formatCurrency = (amount: number) => new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR' }).format(Number(amount) || 0);
+  const formatDate = (date: string) => { if (!date) return "-"; const _d = new Date(date); return isNaN(_d.getTime()) ? date : _d.toLocaleDateString("en-ZA"); };
 
   const getStatusBadge = (status: string) => {
     const styles: Record<string, string> = {

@@ -51,7 +51,7 @@ export default function SalesCommissionReport() {
       // Load activities
       const activitiesResponse = await fetch(`${API_BASE}/api/agents/sales_commission/activities`, { headers });
       const activitiesData = await activitiesResponse.json();
-      setActivities(activitiesData);
+      setActivities(Array.isArray(activitiesData) ? activitiesData : activitiesData?.results || activitiesData?.data || []);
     } catch (error) {
       console.error('Failed to load data:', error);
     } finally {
@@ -146,7 +146,7 @@ export default function SalesCommissionReport() {
                 {activities.map((activity, index) => (
                   <TableRow key={index}>
                     <TableCell>
-                      {new Date(activity.timestamp).toLocaleString()}
+                      {activity.timestamp ? new Date(activity.timestamp).toLocaleString() : '-'}
                     </TableCell>
                     <TableCell>
                       {activity.success ? (

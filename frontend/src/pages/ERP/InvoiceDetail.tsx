@@ -285,8 +285,8 @@ export default function InvoiceDetail() {
             </div>
             <div class="info-box">
               <h3>Invoice Details</h3>
-              <p><strong>Invoice Date:</strong> ${new Date(invoice.invoice_date).toLocaleDateString()}</p>
-              <p><strong>Due Date:</strong> ${new Date(invoice.due_date).toLocaleDateString()}</p>
+              <p><strong>Invoice Date:</strong> ${(invoice.invoice_date ? new Date(invoice.invoice_date).toLocaleDateString() : "-")}</p>
+              <p><strong>Due Date:</strong> ${(invoice.due_date ? new Date(invoice.due_date).toLocaleDateString() : "-")}</p>
               <p><strong>Status:</strong> ${invoice.status.toUpperCase()}</p>
             </div>
           </div>
@@ -351,15 +351,15 @@ export default function InvoiceDetail() {
       setEmailSubject(`Invoice ${invoice.invoice_number} from ARIA ERP`);
       setEmailBody(`Dear ${customer?.name || 'Customer'},
 
-  Please find attached Invoice ${invoice.invoice_number} dated ${new Date(invoice.invoice_date).toLocaleDateString()}.
+  Please find attached Invoice ${invoice.invoice_number} dated ${(invoice.invoice_date ? new Date(invoice.invoice_date).toLocaleDateString() : "-")}.
 
   Invoice Details:
   - Invoice Number: ${invoice.invoice_number}
-  - Invoice Date: ${new Date(invoice.invoice_date).toLocaleDateString()}
-  - Due Date: ${new Date(invoice.due_date).toLocaleDateString()}
+  - Invoice Date: ${(invoice.invoice_date ? new Date(invoice.invoice_date).toLocaleDateString() : "-")}
+  - Due Date: ${(invoice.due_date ? new Date(invoice.due_date).toLocaleDateString() : "-")}
   - Total Amount: R ${Number(invoice.total_amount ?? 0).toFixed(2)}
 
-  Payment is due by ${new Date(invoice.due_date).toLocaleDateString()}.
+  Payment is due by ${(invoice.due_date ? new Date(invoice.due_date).toLocaleDateString() : "-")}.
 
   Thank you for your business.
 
@@ -566,12 +566,12 @@ export default function InvoiceDetail() {
                 <div>
                   <span className="text-gray-500 dark:text-gray-400">Created:</span>
                   <br />
-                  <span className="text-gray-900 dark:text-white">{new Date(invoice.created_at).toLocaleString()}</span>
+                  <span className="text-gray-900 dark:text-white">{invoice.created_at ? new Date(invoice.created_at).toLocaleString() : '-'}</span>
                 </div>
                 <div>
                   <span className="text-gray-500 dark:text-gray-400">Last Updated:</span>
                   <br />
-                  <span className="text-gray-900 dark:text-white">{new Date(invoice.updated_at).toLocaleString()}</span>
+                  <span className="text-gray-900 dark:text-white">{invoice.updated_at ? new Date(invoice.updated_at).toLocaleString() : '-'}</span>
                 </div>
               </div>
             </TransactionCard>

@@ -129,14 +129,14 @@ export default function BbbeeComplianceReportPage() {
               </div>
               <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
                 <div className="text-sm font-medium text-gray-600 dark:text-gray-400">Certificate Expiry</div>
-                <div className="text-xl font-bold text-gray-900 dark:text-white mt-2">{new Date(data.certificate_expiry).toLocaleDateString()}</div>
+                <div className="text-xl font-bold text-gray-900 dark:text-white mt-2">{(data.certificate_expiry ? new Date(data.certificate_expiry).toLocaleDateString() : "-")}</div>
               </div>
             </div>
 
             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
               <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-6">Scorecard Elements</h3>
               <div className="space-y-3">
-                {data.scorecard_elements.map((element) => (
+                {(data.scorecard_elements || []).map((element) => (
                   <div key={element.name}>
                     <div className="flex justify-between text-sm mb-2">
                       <span className="font-medium text-gray-700 dark:text-gray-300">{element.name}</span>

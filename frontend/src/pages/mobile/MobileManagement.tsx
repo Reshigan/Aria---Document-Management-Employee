@@ -55,10 +55,10 @@ export default function MobileManagement() {
         fetch(`${API_BASE}/mobile/offline-documents`),
         fetch(`${API_BASE}/mobile/stats`)
       ]);
-      if (devicesRes.ok) setDevices(await devicesRes.json());
-      if (sessionsRes.ok) setSyncSessions(await sessionsRes.json());
-      if (docsRes.ok) setOfflineDocuments(await docsRes.json());
-      if (statsRes.ok) setStats(await statsRes.json());
+      if (devicesRes.ok) { const d = await devicesRes.json(); setDevices(Array.isArray(d) ? d : d?.devices || d?.data || []); }
+      if (sessionsRes.ok) { const s = await sessionsRes.json(); setSyncSessions(Array.isArray(s) ? s : s?.sessions || s?.data || []); }
+      if (docsRes.ok) { const o = await docsRes.json(); setOfflineDocuments(Array.isArray(o) ? o : o?.documents || o?.data || []); }
+      if (statsRes.ok) { const st = await statsRes.json(); setStats(st?.data || st); }
     } catch (err) {
       console.error('Error fetching mobile data:', err);
       // Fallback data

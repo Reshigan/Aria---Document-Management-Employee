@@ -294,7 +294,7 @@ export default function AriaChat() {
                 flexShrink: 0
               }}>
                 {message.role === 'assistant' ? (
-                  <Agent size={20} style={{ color: 'white' }} />
+                  <Bot size={20} style={{ color: 'white' }} />
                 ) : (
                   <User size={20} style={{ color: '#6b7280' }} />
                 )}
@@ -682,7 +682,7 @@ export default function AriaChat() {
                 alignItems: 'center',
                 justifyContent: 'center'
               }}>
-                <Agent size={20} style={{ color: 'white' }} />
+                <Bot size={20} style={{ color: 'white' }} />
               </div>
               <div style={{
                 padding: '1rem 1.25rem',

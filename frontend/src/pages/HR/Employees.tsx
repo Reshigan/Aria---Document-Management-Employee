@@ -131,9 +131,7 @@ const Employees: React.FC = () => {
     return styles[type] || 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300';
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-ZA');
-  };
+  const formatDate = (dateString: string) => { if (!dateString) return "-"; const _d = new Date(dateString); return isNaN(_d.getTime()) ? dateString : _d.toLocaleDateString("en-ZA"); };
 
   if (loading) {
     return (

@@ -306,7 +306,7 @@ export default function PricingRules() {
                         <>
                           <DollarSign size={14} className="text-green-500" />
                           <span className="text-sm font-medium">
-                            R {(rule.fixed_price || 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
+                            R {(rule.fixed_price || 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                           </span>
                         </>
                       ) : rule.compute_price === 'percentage' ? (

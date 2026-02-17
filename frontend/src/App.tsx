@@ -462,6 +462,18 @@ function App() {
           <Route path="/master-data/products" element={<ProductCatalog />} />
           <Route path="/customers" element={<Customers />} />
           <Route path="/suppliers" element={<Suppliers />} />
+          <Route path="/purchase-orders" element={<PurchaseOrders />} />
+          <Route path="/receipts" element={<Receipts />} />
+          <Route path="/credit-notes" element={<InvoiceList />} />
+          <Route path="/products" element={<Products />} />
+          <Route path="/warehouses" element={<Warehouses />} />
+          <Route path="/employees" element={<Employees />} />
+          <Route path="/departments" element={<Departments />} />
+          <Route path="/bills" element={<Bills />} />
+          <Route path="/payments" element={<Payments />} />
+          <Route path="/price-lists" element={<ERPPriceLists />} />
+          <Route path="/stock-movements" element={<StockMovements />} />
+          <Route path="/stock-adjustments" element={<StockAdjustments />} />
           
                     {/* Procurement */}
                     <Route path="/procurement" element={<PurchaseOrders />} />

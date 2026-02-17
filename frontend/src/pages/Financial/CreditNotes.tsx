@@ -47,7 +47,7 @@ export default function CreditNotes() {
     try { await creditNotesApi.issue(id); fetchCreditNotes(); } catch (err) { setError('Failed to issue credit note'); }
   };
 
-  const formatCurrency = (amount: number, currency: string) => new Intl.NumberFormat('en-ZA', { style: 'currency', currency }).format(amount);
+  const formatCurrency = (amount: number, currency: string) => new Intl.NumberFormat('en-ZA', { style: 'currency', currency }).format(Number(amount) || 0);
 
   const getStatusBadge = (status: string) => {
     const styles: Record<string, string> = {

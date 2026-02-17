@@ -139,9 +139,7 @@ const ServiceOrders: React.FC = () => {
     );
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-ZA');
-  };
+  const formatDate = (dateString: string) => { if (!dateString) return "-"; const _d = new Date(dateString); return isNaN(_d.getTime()) ? dateString : _d.toLocaleDateString("en-ZA"); };
 
   if (loading && orders.length === 0) {
     return (

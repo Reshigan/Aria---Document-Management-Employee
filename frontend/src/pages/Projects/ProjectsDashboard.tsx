@@ -46,6 +46,8 @@ export default function ProjectsDashboard() {
     try {
       setLoading(true);
       const response = await fetch('https://aria.vantax.co.za/api/new-pages/projects');
+      const ct = response.headers.get('content-type');
+      if (!response.ok || !ct?.includes('application/json')) { setProjects([]); return; }
       const data = await response.json();
       setProjects(data.projects || []);
     } catch (error) {

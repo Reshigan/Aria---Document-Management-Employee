@@ -521,13 +521,13 @@ export default function Invoices() {
                         <td className="px-6 py-4">
                           <div><p className="font-medium text-gray-900 dark:text-white">{invoice.customer_name}</p>{invoice.customer_email && (<p className="text-xs text-gray-500 dark:text-gray-400">{invoice.customer_email}</p>)}</div>
                         </td>
-                        <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{new Date(invoice.invoice_date).toLocaleDateString()}</td>
+                        <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{(invoice.invoice_date ? new Date(invoice.invoice_date).toLocaleDateString() : "-")}</td>
                         <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{invoice.due_date ? new Date(invoice.due_date).toLocaleDateString() : '-'}</td>
                         <td className="px-6 py-4">
                           <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${statusConfig.bg} ${statusConfig.text} border ${statusConfig.border}`}>{invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1)}</span>
                         </td>
-                        <td className="px-6 py-4 text-right font-semibold text-gray-900 dark:text-white">R {Number(invoice.total_amount ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
-                        <td className={`px-6 py-4 text-right font-semibold ${balance > 0 ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'}`}>R {Number(balance ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
+                        <td className="px-6 py-4 text-right font-semibold text-gray-900 dark:text-white">R {Number(invoice.total_amount ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                        <td className={`px-6 py-4 text-right font-semibold ${balance > 0 ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'}`}>R {Number(balance ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                         <td className="px-6 py-4">
                                                     <div className="flex items-center justify-end gap-1">
                                                       <button onClick={() => handleDownloadPDF(invoice)} title="Download PDF" className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-lg transition-colors"><Download className="h-4 w-4" /></button>

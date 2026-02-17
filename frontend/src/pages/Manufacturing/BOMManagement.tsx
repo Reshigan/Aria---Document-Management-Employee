@@ -65,6 +65,8 @@ const BOMManagement: React.FC = () => {
   const fetchBOMs = async () => {
     try {
       const response = await fetch('https://aria.vantax.co.za/api/erp/manufacturing/bom');
+      const ct = response.headers.get('content-type');
+      if (!response.ok || !ct?.includes('application/json')) { setBOMs([]); return; }
       const data = await response.json();
       setBOMs(data.boms || []);
     } catch (error) {
@@ -438,7 +440,7 @@ const BOMManagement: React.FC = () => {
                       <td className="px-6 py-4 text-sm font-medium">
                         <span className="flex items-center gap-1">
                           <DollarSign size={14} className="text-gray-400" />
-                          {(bom.total_cost || 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
+                          {(bom.total_cost || 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </span>
                       </td>
                       <td className="px-6 py-4 text-sm">

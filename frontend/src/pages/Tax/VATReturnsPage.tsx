@@ -151,7 +151,7 @@ export default function VATReturnsPage() {
             <div>
               <div className="text-sm font-medium text-gray-500 dark:text-gray-400">Output Tax</div>
               <div className="text-xl font-bold text-gray-900 dark:text-white">
-                R {Number(totalOutput ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
+                R {Number(totalOutput ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </div>
             </div>
           </div>
@@ -165,7 +165,7 @@ export default function VATReturnsPage() {
             <div>
               <div className="text-sm font-medium text-gray-500 dark:text-gray-400">Input Tax</div>
               <div className="text-xl font-bold text-gray-900 dark:text-white">
-                R {Number(totalInput ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
+                R {Number(totalInput ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </div>
             </div>
           </div>
@@ -179,7 +179,7 @@ export default function VATReturnsPage() {
             <div>
               <div className="text-sm font-medium text-gray-500 dark:text-gray-400">Net VAT {totalNet >= 0 ? 'Payable' : 'Refund'}</div>
               <div className="text-xl font-bold text-gray-900 dark:text-white">
-                R {Math.abs(totalNet).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
+                R {Math.abs(totalNet).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </div>
             </div>
           </div>
@@ -228,16 +228,16 @@ export default function VATReturnsPage() {
                   <tr key={vatReturn.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                     <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">{vatReturn.return_number}</td>
                     <td className="px-6 py-4 text-gray-600 dark:text-gray-400">
-                      {new Date(vatReturn.period_start).toLocaleDateString('en-ZA')} - {new Date(vatReturn.period_end).toLocaleDateString('en-ZA')}
+                      {(vatReturn.period_start ? new Date(vatReturn.period_start).toLocaleDateString('en-ZA') : "-")} - {(vatReturn.period_end ? new Date(vatReturn.period_end).toLocaleDateString('en-ZA') : "-")}
                     </td>
                     <td className="px-6 py-4 text-right text-green-600 dark:text-green-400">
-                      R {Number(vatReturn.output_tax ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
+                      R {Number(vatReturn.output_tax ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </td>
                     <td className="px-6 py-4 text-right text-blue-600 dark:text-blue-400">
-                      R {Number(vatReturn.input_tax ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
+                      R {Number(vatReturn.input_tax ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </td>
                     <td className={`px-6 py-4 text-right font-medium ${vatReturn.net_vat >= 0 ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'}`}>
-                      R {Number(vatReturn.net_vat ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
+                      R {Number(vatReturn.net_vat ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </td>
                     <td className="px-6 py-4 text-center">
                       <span className={`inline-flex px-3 py-1 rounded-full text-xs font-medium ${getStatusClasses(vatReturn.status)}`}>

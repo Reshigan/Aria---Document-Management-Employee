@@ -133,7 +133,7 @@ export const CustomerDashboard: React.FC = () => {
             </div>
             {metrics && (
               <span className={`inline-block mt-2 px-2 py-1 rounded-full text-xs font-medium ${getEmbeddingStatusColor(metrics.status)}`}>
-                {metrics.status.replace('_', ' ').toUpperCase()}
+                {(metrics.status || '').replace('_', ' ').toUpperCase()}
               </span>
             )}
           </div>
@@ -154,7 +154,7 @@ export const CustomerDashboard: React.FC = () => {
             </div>
             {health && (
               <span className={`inline-block mt-2 px-2 py-1 rounded-full text-xs font-medium ${getRiskColor(health.churnRisk)}`}>
-                {health.churnRisk.toUpperCase()} RISK
+                {(health.churnRisk || '').toUpperCase()} RISK
               </span>
             )}
           </div>
@@ -212,7 +212,7 @@ export const CustomerDashboard: React.FC = () => {
                 ✅ Positive Signals
               </h4>
               <div className="space-y-2">
-                {health?.positiveIndicators.map((indicator, i) => (
+                {(health?.positiveIndicators || []).map((indicator, i) => (
                   <div key={i} className="flex items-start space-x-2 text-sm text-green-700 dark:text-green-400">
                     <CheckCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
                     <span>{indicator}</span>
@@ -222,13 +222,13 @@ export const CustomerDashboard: React.FC = () => {
             </div>
 
             {/* Risk Factors */}
-            {health && health.riskFactors.length > 0 && (
+            {health && (health.riskFactors || []).length > 0 && (
               <div>
                 <h4 className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
                   ⚠️ Risk Factors
                 </h4>
                 <div className="space-y-2">
-                  {health.riskFactors.map((factor, i) => (
+                  {(health.riskFactors || []).map((factor, i) => (
                     <div key={i} className="flex items-start space-x-2 text-sm text-red-700 dark:text-red-400">
                       <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
                       <span>{factor}</span>
@@ -244,7 +244,7 @@ export const CustomerDashboard: React.FC = () => {
                 Recommended Actions
               </h4>
               <ul className="space-y-1">
-                {health?.recommendedActions.map((action, i) => (
+                {(health?.recommendedActions || []).map((action, i) => (
                   <li key={i} className="text-sm text-gray-600 dark:text-gray-400">
                     • {action}
                   </li>
@@ -271,7 +271,7 @@ export const CustomerDashboard: React.FC = () => {
                           opp.priority === 'medium' ? 'bg-yellow-100 text-yellow-700' : 
                           'bg-gray-100 text-gray-700'}
                       `}>
-                        {opp.priority.toUpperCase()}
+                        {(opp.priority || '').toUpperCase()}
                       </span>
                       <p className="text-sm font-medium text-gray-900 dark:text-white">
                         {opp.description}
@@ -285,7 +285,7 @@ export const CustomerDashboard: React.FC = () => {
                     </div>
                   </div>
                   <div className="flex items-center justify-between text-xs text-gray-500">
-                    <span>Type: {opp.type.replace('_', ' ')}</span>
+                    <span>Type: {(opp.type || '').replace('_', ' ')}</span>
                     <span className="flex items-center">
                       <span className={`
                         inline-block w-2 h-2 rounded-full mr-1

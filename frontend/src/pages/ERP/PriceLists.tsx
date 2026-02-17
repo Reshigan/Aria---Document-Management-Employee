@@ -468,12 +468,12 @@ export default function PriceLists() {
                   )}
                   <div>
                     <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">Valid From</dt>
-                    <dd className="text-sm text-gray-900 dark:text-white">{new Date(selectedPriceList.valid_from).toLocaleDateString('en-ZA')}</dd>
+                    <dd className="text-sm text-gray-900 dark:text-white">{(selectedPriceList.valid_from ? new Date(selectedPriceList.valid_from).toLocaleDateString('en-ZA') : "-")}</dd>
                   </div>
                   {selectedPriceList.valid_to && (
                     <div>
                       <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">Valid To</dt>
-                      <dd className="text-sm text-gray-900 dark:text-white">{new Date(selectedPriceList.valid_to).toLocaleDateString('en-ZA')}</dd>
+                      <dd className="text-sm text-gray-900 dark:text-white">{(selectedPriceList.valid_to ? new Date(selectedPriceList.valid_to).toLocaleDateString('en-ZA') : "-")}</dd>
                     </div>
                   )}
                   <div>
@@ -756,7 +756,7 @@ export default function PriceLists() {
                     {priceList.customer_name || '-'}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">
-                    {new Date(priceList.valid_from).toLocaleDateString('en-ZA')}
+                    {(priceList.valid_from ? new Date(priceList.valid_from).toLocaleDateString('en-ZA') : "-")}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">
                     {priceList.valid_to ? new Date(priceList.valid_to).toLocaleDateString('en-ZA') : '-'}

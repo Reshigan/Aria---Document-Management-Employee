@@ -380,7 +380,7 @@ export default function WorkOrders() {
                       <div className="flex items-center gap-2 text-sm text-gray-600">
                         <Calendar size={14} className="text-gray-400" />
                         <div>
-                          <div>{new Date(order.scheduled_date).toLocaleDateString()}</div>
+                          <div>{(order.scheduled_date ? new Date(order.scheduled_date).toLocaleDateString() : "-")}</div>
                           {order.scheduled_time && (
                             <div className="text-xs text-gray-500">{order.scheduled_time}</div>
                           )}
@@ -403,7 +403,7 @@ export default function WorkOrders() {
                   <td className="px-6 py-4 text-right">
                     {order.total_cost ? (
                       <span className="text-sm font-medium text-gray-900">
-                        R {Number(order.total_cost ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
+                        R {Number(order.total_cost ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                       </span>
                     ) : (
                       <span className="text-xs text-gray-400">-</span>

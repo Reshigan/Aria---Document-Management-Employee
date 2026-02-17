@@ -249,7 +249,7 @@ export default function QuoteDetail() {
                 {quote.status.toUpperCase()}
               </span>
               <span className="text-xs text-gray-500 dark:text-gray-400">
-                Created {new Date(quote.created_at).toLocaleDateString()}
+                Created {(quote.created_at ? new Date(quote.created_at).toLocaleDateString() : "-")}
               </span>
             </div>
           </div>
@@ -328,14 +328,14 @@ export default function QuoteDetail() {
                 <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Quote Date</div>
                 <div className="font-medium text-gray-900 dark:text-white flex items-center gap-2">
                   <Calendar size={16} className="text-gray-400" />
-                  {new Date(quote.quote_date).toLocaleDateString()}
+                  {(quote.quote_date ? new Date(quote.quote_date).toLocaleDateString() : "-")}
                 </div>
               </div>
               <div>
                 <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Valid Until</div>
                 <div className="font-medium text-gray-900 dark:text-white flex items-center gap-2">
                   <Clock size={16} className="text-gray-400" />
-                  {new Date(quote.valid_until).toLocaleDateString()}
+                  {(quote.valid_until ? new Date(quote.valid_until).toLocaleDateString() : "-")}
                 </div>
               </div>
             </div>
@@ -365,13 +365,13 @@ export default function QuoteDetail() {
               <div className="flex justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
                 <span className="text-xs text-gray-500 dark:text-gray-400">Created</span>
                 <span className="text-sm font-medium text-gray-900 dark:text-white">
-                  {new Date(quote.created_at).toLocaleString()}
+                  {quote.created_at ? new Date(quote.created_at).toLocaleString() : '-'}
                 </span>
               </div>
               <div className="flex justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
                 <span className="text-xs text-gray-500 dark:text-gray-400">Last Updated</span>
                 <span className="text-sm font-medium text-gray-900 dark:text-white">
-                  {new Date(quote.updated_at).toLocaleString()}
+                  {quote.updated_at ? new Date(quote.updated_at).toLocaleString() : '-'}
                 </span>
               </div>
               {quote.created_by && (
@@ -475,7 +475,7 @@ export default function QuoteDetail() {
                     </div>
                     <div className="flex justify-between">
                       <span className="text-xs text-gray-500 dark:text-gray-400">
-                        {new Date(order.order_date).toLocaleDateString()}
+                        {(order.order_date ? new Date(order.order_date).toLocaleDateString() : "-")}
                       </span>
                       <span className="text-sm font-medium text-gray-900 dark:text-white">
                         R {Number(order.total_amount ?? 0).toFixed(2)}
