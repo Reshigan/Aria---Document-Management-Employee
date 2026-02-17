@@ -151,7 +151,7 @@ export default function SalesInvoiceReconciliation() {
       
       if (response.ok) {
         const result = await response.json();
-        alert(`Variance posted successfully!\n\nJournal ID: ${result.journal_id}\nAmount: R ${Math.abs(result.amount).toFixed(2)}\nGL Account: ${result.gl_account}`);
+        alert(`Variance posted successfully!\n\nJournal ID: ${result.journal_id}\nAmount: R ${Math.abs(Number(result.amount ?? 0)).toFixed(2)}\nGL Account: ${result.gl_account}`);
         setShowPostModal(false);
         setSelectedException(null);
         fetchData();
@@ -282,7 +282,7 @@ export default function SalesInvoiceReconciliation() {
                 </div>
                 <div className="text-2xl font-bold text-green-600">{summary.summary.fully_invoiced}</div>
                 <div className="text-xs text-gray-500 mt-1">
-                  {Number(((summary.summary.fully_invoiced / summary.summary.total_orders) * 100) || 0).toFixed(1)}% complete
+                  {Number(summary.summary.total_orders ? ((summary.summary.fully_invoiced / summary.summary.total_orders) * 100) : 0).toFixed(1)}% complete
                 </div>
               </div>
 

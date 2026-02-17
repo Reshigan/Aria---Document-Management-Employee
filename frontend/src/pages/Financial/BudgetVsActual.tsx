@@ -134,8 +134,8 @@ export default function BudgetVsActual() {
             </div>
 
             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-5">
-              <div className="flex justify-between text-sm text-gray-600 dark:text-gray-300 mb-3"><span>Budget Utilization</span><span className="font-semibold">{Number(((report.total_actual / report.total_budget) * 100) || 0).toFixed(1)}%</span></div>
-              <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-4 overflow-hidden"><div className={`h-4 rounded-full bg-gradient-to-r ${getProgressColor((report.total_actual / report.total_budget) * 100)} transition-all`} style={{ width: `${Math.min((report.total_actual / report.total_budget) * 100, 100)}%` }}></div></div>
+              <div className="flex justify-between text-sm text-gray-600 dark:text-gray-300 mb-3"><span>Budget Utilization</span><span className="font-semibold">              {Number(report.total_budget ? ((report.total_actual / report.total_budget) * 100) : 0).toFixed(1)}%</span></div>
+                            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-4 overflow-hidden"><div className={`h-4 rounded-full bg-gradient-to-r ${getProgressColor(report.total_budget ? (report.total_actual / report.total_budget) * 100 : 0)} transition-all`} style={{ width: `${Math.min(report.total_budget ? (report.total_actual / report.total_budget) * 100 : 0, 100)}%` }}></div></div>
             </div>
 
             <div className="flex bg-white dark:bg-gray-800 rounded-xl p-1 shadow-sm border border-gray-200 dark:border-gray-700 w-fit">

@@ -214,7 +214,7 @@ export default function ProfitLossStatementPage() {
                 </span>
               </div>
               <div className="text-sm text-gray-600 dark:text-gray-300 text-right">
-                {Number(((data.gross_profit / data.total_revenue) * 100) || 0).toFixed(1)}% gross margin
+                {Number(data.total_revenue ? ((data.gross_profit / data.total_revenue) * 100) : 0).toFixed(1)}% gross margin
               </div>
             </div>
 
@@ -240,7 +240,7 @@ export default function ProfitLossStatementPage() {
                 </span>
               </div>
               <div className="text-sm text-gray-600 dark:text-gray-300 text-right">
-                {Number(((data.net_profit / data.total_revenue) * 100) || 0).toFixed(1)}% net profit margin
+                {Number(data.total_revenue ? ((data.net_profit / data.total_revenue) * 100) : 0).toFixed(1)}% net profit margin
               </div>
             </div>
           </div>

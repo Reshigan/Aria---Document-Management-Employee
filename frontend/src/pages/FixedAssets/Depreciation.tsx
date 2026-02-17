@@ -193,11 +193,11 @@ const Depreciation: React.FC = () => {
             <Grid item xs={12} sm={6}><TextField fullWidth label="Asset Code" value={formData.assetCode || ''} InputProps={{ readOnly: true }} /></Grid>
             <Grid item xs={12} sm={6}><TextField fullWidth label="Category" value={formData.category || ''} InputProps={{ readOnly: true }} /></Grid>
             <Grid item xs={12} sm={6}><TextField fullWidth label="Depreciation Method" value={formData.depreciationMethod?.replace(/_/g, ' ') || ''} InputProps={{ readOnly: true }} /></Grid>
-            <Grid item xs={12} sm={6}><TextField fullWidth label="Purchase Value" value={`R ${formData.purchaseValue?.toLocaleString() || 0}`} InputProps={{ readOnly: true }} /></Grid>
-            <Grid item xs={12} sm={6}><TextField fullWidth label="Current Value" value={`R ${formData.currentValue?.toLocaleString() || 0}`} InputProps={{ readOnly: true }} /></Grid>
+            <Grid item xs={12} sm={6}><TextField fullWidth label="Purchase Value" value={`R ${Number(formData.purchaseValue ?? 0).toLocaleString()}`} InputProps={{ readOnly: true }} /></Grid>
+            <Grid item xs={12} sm={6}><TextField fullWidth label="Current Value" value={`R ${Number(formData.currentValue ?? 0).toLocaleString()}`} InputProps={{ readOnly: true }} /></Grid>
             <Grid item xs={12} sm={6}><TextField fullWidth label="Useful Life (Years)" value={formData.usefulLife || ''} InputProps={{ readOnly: true }} /></Grid>
-            <Grid item xs={12} sm={6}><TextField fullWidth label="Annual Depreciation" value={`R ${formData.annualDepreciation?.toLocaleString() || 0}`} InputProps={{ readOnly: true }} /></Grid>
-            <Grid item xs={12} sm={6}><TextField fullWidth label="Accumulated Depreciation" value={`R ${formData.accumulatedDepreciation?.toLocaleString() || 0}`} InputProps={{ readOnly: true }} /></Grid>
+            <Grid item xs={12} sm={6}><TextField fullWidth label="Annual Depreciation" value={`R ${Number(formData.annualDepreciation ?? 0).toLocaleString()}`} InputProps={{ readOnly: true }} /></Grid>
+            <Grid item xs={12} sm={6}><TextField fullWidth label="Accumulated Depreciation" value={`R ${Number(formData.accumulatedDepreciation ?? 0).toLocaleString()}`} InputProps={{ readOnly: true }} /></Grid>
             <Grid item xs={12} sm={6}><TextField fullWidth label="Last Calculated" value={formData.lastCalculated || ''} InputProps={{ readOnly: true }} /></Grid>
           </Grid>
         </DialogContent>
