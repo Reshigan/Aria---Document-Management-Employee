@@ -212,7 +212,7 @@ export default function WorkOrders() {
       <div className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-500 dark:text-gray-400">Loading work orders...</p>
+          <p className="text-gray-500 dark:text-gray-300">Loading work orders...</p>
         </div>
       </div>
     );
@@ -228,7 +228,7 @@ export default function WorkOrders() {
           </div>
           Work Orders
         </h1>
-        <p className="text-gray-500 dark:text-gray-400 mt-1">Manage field service work orders and technician dispatch</p>
+        <p className="text-gray-500 dark:text-gray-300 mt-1">Manage field service work orders and technician dispatch</p>
       </div>
 
       {/* Stats Cards */}
@@ -240,7 +240,7 @@ export default function WorkOrders() {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{workOrders.length}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Total Orders</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Total Orders</p>
             </div>
           </div>
         </div>
@@ -251,7 +251,7 @@ export default function WorkOrders() {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{scheduledToday.length}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Scheduled Today</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Scheduled Today</p>
             </div>
           </div>
         </div>
@@ -262,7 +262,7 @@ export default function WorkOrders() {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{workOrders.filter(o => o.status === 'in_progress').length}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">In Progress</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">In Progress</p>
             </div>
           </div>
         </div>
@@ -273,7 +273,7 @@ export default function WorkOrders() {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">R {Number(totalRevenue ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 0 })}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Total Revenue</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Total Revenue</p>
             </div>
           </div>
         </div>
@@ -283,7 +283,7 @@ export default function WorkOrders() {
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 mb-6">
         <div className="p-4 flex flex-col md:flex-row gap-3">
           <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-300" />
             <input
               type="text"
               placeholder="Search work orders..."
@@ -331,14 +331,14 @@ export default function WorkOrders() {
           <table className="w-full">
             <thead className="bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-700">
               <tr>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Order</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Location</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Technician</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Schedule</th>
-                <th className="px-6 py-4 text-center text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Priority</th>
-                <th className="px-6 py-4 text-center text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
-                <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Cost</th>
-                <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Order</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Location</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Technician</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Schedule</th>
+                <th className="px-6 py-4 text-center text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Priority</th>
+                <th className="px-6 py-4 text-center text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
+                <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Cost</th>
+                <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
@@ -346,12 +346,12 @@ export default function WorkOrders() {
                 <tr key={order.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors">
                   <td className="px-6 py-4">
                     <div className="font-semibold text-gray-900 dark:text-white">#{order.order_number}</div>
-                    <div className="text-sm text-gray-600 dark:text-gray-400">{order.title}</div>
+                    <div className="text-sm text-gray-600 dark:text-gray-300">{order.title}</div>
                   </td>
                   <td className="px-6 py-4">
                     {order.location_name ? (
                       <div className="flex items-center gap-2">
-                        <MapPin size={16} className="text-gray-400" />
+                        <MapPin size={16} className="text-gray-300" />
                         <div>
                           <div className="text-sm text-gray-900">{order.location_name}</div>
                           {order.location_address && (
@@ -362,23 +362,23 @@ export default function WorkOrders() {
                         </div>
                       </div>
                     ) : (
-                      <span className="text-xs text-gray-400">-</span>
+                      <span className="text-xs text-gray-300">-</span>
                     )}
                   </td>
                   <td className="px-6 py-4">
                     {order.technician_name ? (
                       <div className="flex items-center gap-2">
-                        <User size={16} className="text-gray-400" />
+                        <User size={16} className="text-gray-300" />
                         <span className="text-sm text-gray-900">{order.technician_name}</span>
                       </div>
                     ) : (
-                      <span className="text-xs text-gray-400">Unassigned</span>
+                      <span className="text-xs text-gray-300">Unassigned</span>
                     )}
                   </td>
                   <td className="px-6 py-4">
                     {order.scheduled_date ? (
                       <div className="flex items-center gap-2 text-sm text-gray-600">
-                        <Calendar size={14} className="text-gray-400" />
+                        <Calendar size={14} className="text-gray-300" />
                         <div>
                           <div>{(order.scheduled_date ? new Date(order.scheduled_date).toLocaleDateString() : "-")}</div>
                           {order.scheduled_time && (
@@ -387,7 +387,7 @@ export default function WorkOrders() {
                         </div>
                       </div>
                     ) : (
-                      <span className="text-xs text-gray-400">Not scheduled</span>
+                      <span className="text-xs text-gray-300">Not scheduled</span>
                     )}
                   </td>
                   <td className="px-6 py-4 text-center">
@@ -406,7 +406,7 @@ export default function WorkOrders() {
                         R {Number(order.total_cost ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                       </span>
                     ) : (
-                      <span className="text-xs text-gray-400">-</span>
+                      <span className="text-xs text-gray-300">-</span>
                     )}
                   </td>
                   <td className="px-6 py-4 text-right">

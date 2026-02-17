@@ -80,8 +80,8 @@ const BotDetail: React.FC = () => {
     return (
       <div className="bg-white dark:bg-gray-800 flex items-center justify-center">
         <div className="text-center">
-          <Bot className="w-12 h-12 text-gray-400 animate-pulse mx-auto mb-4" />
-          <p className="text-gray-600 dark:text-gray-400">Loading agent details...</p>
+          <Bot className="w-12 h-12 text-gray-300 animate-pulse mx-auto mb-4" />
+          <p className="text-gray-600 dark:text-gray-300">Loading agent details...</p>
         </div>
       </div>
     );
@@ -91,7 +91,7 @@ const BotDetail: React.FC = () => {
     return (
       <div className="bg-white dark:bg-gray-800 flex items-center justify-center">
         <div className="text-center">
-          <p className="text-gray-600 dark:text-gray-400 mb-4">Agent not found</p>
+          <p className="text-gray-600 dark:text-gray-300 mb-4">Agent not found</p>
           <Link to="/agents" className="text-blue-600 dark:text-blue-400 hover:underline">
             ← Back to Agent Showcase
           </Link>
@@ -113,10 +113,10 @@ const BotDetail: React.FC = () => {
           </Link>
           
           <div className="flex items-center space-x-8">
-            <Link to="/agents" className="text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:text-white transition">
+            <Link to="/agents" className="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:text-white transition">
               ← All Agents
             </Link>
-            <Link to="/login" className="text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:text-white transition">
+            <Link to="/login" className="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:text-white transition">
               Sign In
             </Link>
             <Link 
@@ -147,7 +147,7 @@ const BotDetail: React.FC = () => {
                   <span>LIVE NOW</span>
                 </span>
               ) : (
-                <span className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 text-xs font-semibold rounded-full">
+                <span className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-xs font-semibold rounded-full">
                   COMING SOON
                 </span>
               )}
@@ -157,7 +157,7 @@ const BotDetail: React.FC = () => {
               {botData.name}
             </h1>
             
-            <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-400 mb-8 font-light">
+            <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 mb-8 font-light">
               {botData.tagline}
             </p>
 
@@ -166,17 +166,17 @@ const BotDetail: React.FC = () => {
               <div className="text-center p-4 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
                 <TrendingUp className="w-8 h-8 text-green-600 dark:text-green-400 mx-auto mb-3" />
                 <div className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-1">{botData.roi}%</div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">ROI</div>
+                <div className="text-sm text-gray-600 dark:text-gray-300">ROI</div>
               </div>
               <div className="text-center p-4 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
                 <Clock className="w-8 h-8 text-blue-600 dark:text-blue-400 mx-auto mb-3" />
                 <div className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-1">{botData.deploymentTime}</div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">Deploy Time</div>
+                <div className="text-sm text-gray-600 dark:text-gray-300">Deploy Time</div>
               </div>
               <div className="text-center p-4 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
                 <Zap className="w-8 h-8 text-yellow-600 dark:text-yellow-400 mx-auto mb-3" />
                 <div className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-1">95%+</div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">Accuracy</div>
+                <div className="text-sm text-gray-600 dark:text-gray-300">Accuracy</div>
               </div>
             </div>
 
@@ -242,7 +242,7 @@ const BotDetail: React.FC = () => {
                 <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
                   {feature.title}
                 </h3>
-                <p className="text-gray-600 dark:text-gray-400">
+                <p className="text-gray-600 dark:text-gray-300">
                   {feature.description}
                 </p>
               </motion.div>
@@ -278,11 +278,11 @@ const BotDetail: React.FC = () => {
                   </div>
                   <div className="ml-8 text-right">
                     <div className="mb-4">
-                      <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">Time Saved</div>
+                      <div className="text-sm text-gray-600 dark:text-gray-300 mb-1">Time Saved</div>
                       <div className="text-2xl font-bold text-green-600 dark:text-green-400">{useCase.savingsTime}</div>
                     </div>
                     <div>
-                      <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">Cost Saved</div>
+                      <div className="text-sm text-gray-600 dark:text-gray-300 mb-1">Cost Saved</div>
                       <div className="text-2xl font-bold text-green-600 dark:text-green-400">{useCase.savingsCost}</div>
                     </div>
                   </div>
@@ -326,7 +326,7 @@ const BotDetail: React.FC = () => {
                 <div className="text-4xl font-bold text-gray-900 dark:text-white mb-1">
                   {botData.pricing.starter}
                 </div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">per month</div>
+                <div className="text-sm text-gray-600 dark:text-gray-300">per month</div>
               </div>
               <ul className="space-y-3 mb-8">
                 <li className="flex items-center space-x-2 text-gray-700 dark:text-gray-300">
@@ -397,7 +397,7 @@ const BotDetail: React.FC = () => {
                 <div className="text-4xl font-bold text-gray-900 dark:text-white mb-1">
                   {botData.pricing.enterprise}
                 </div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">custom pricing</div>
+                <div className="text-sm text-gray-600 dark:text-gray-300">custom pricing</div>
               </div>
               <ul className="space-y-3 mb-8">
                 <li className="flex items-center space-x-2 text-gray-700 dark:text-gray-300">
@@ -445,7 +445,7 @@ const BotDetail: React.FC = () => {
                 <div className="font-semibold text-gray-900 dark:text-white">
                   {botData.testimonial.author}
                 </div>
-                <div className="text-gray-600 dark:text-gray-400">
+                <div className="text-gray-600 dark:text-gray-300">
                   {botData.testimonial.role}, {botData.testimonial.company}
                 </div>
               </div>
@@ -479,7 +479,7 @@ const BotDetail: React.FC = () => {
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6 tracking-tight">
             Ready to get started?
           </h2>
-          <p className="text-xl text-gray-600 dark:text-gray-400 mb-10">
+          <p className="text-xl text-gray-600 dark:text-gray-300 mb-10">
             Deploy {botData.name} in {botData.deploymentTime}. No credit card required for trial.
           </p>
           <div className="flex flex-wrap justify-center gap-3">
@@ -503,7 +503,7 @@ const BotDetail: React.FC = () => {
       {/* Footer */}
       <footer className="py-16 px-6 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
         <div className="mx-auto text-center">
-          <p className="text-xs text-gray-500 dark:text-gray-400">&copy; 2025 Vanta X Pty Ltd. All rights reserved.</p>
+          <p className="text-xs text-gray-500 dark:text-gray-300">&copy; 2025 Vanta X Pty Ltd. All rights reserved.</p>
         </div>
       </footer>
     </div>

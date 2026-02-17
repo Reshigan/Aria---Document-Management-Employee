@@ -66,12 +66,7 @@ export function PostingStatus({
   const config = getStatusConfig(status);
 
   return (
-    <div style={{
-      padding: '1rem',
-      background: 'white',
-      borderRadius: '0.5rem',
-      border: '1px solid #e5e7eb'
-    }}>
+    <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
       <div style={{
         display: 'flex',
         alignItems: 'center',
@@ -117,7 +112,7 @@ export function PostingStatus({
           
           {glEntryId ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <span style={{ fontSize: '0.75rem', color: '#6b7280' }}>
+              <span className="text-gray-500 dark:text-gray-400" style={{ fontSize: '0.75rem' }}>
                 Journal Entry: {glEntryId.substring(0, 8)}...
               </span>
               {onViewJournal && (
@@ -142,19 +137,19 @@ export function PostingStatus({
               )}
             </div>
           ) : (
-            <div style={{ fontSize: '0.75rem', color: '#6b7280', fontStyle: 'italic' }}>
+            <div className="text-gray-500 dark:text-gray-400" style={{ fontSize: '0.75rem', fontStyle: 'italic' }}>
               GL journal entry link unavailable
             </div>
           )}
 
           {postedAt && (
-            <div style={{ fontSize: '0.75rem', color: '#6b7280', marginTop: '0.25rem' }}>
+            <div className="text-gray-500 dark:text-gray-400" style={{ fontSize: '0.75rem', marginTop: '0.25rem' }}>
               Posted: {new Date(postedAt).toLocaleString()}
             </div>
           )}
 
           {postedBy && (
-            <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>
+            <div className="text-gray-500 dark:text-gray-400" style={{ fontSize: '0.75rem' }}>
               By: {postedBy}
             </div>
           )}
@@ -196,7 +191,7 @@ export function PostingStatus({
               Posting Error
             </span>
           </div>
-          <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>
+          <div className="text-gray-500 dark:text-gray-400" style={{ fontSize: '0.75rem' }}>
             {error}
           </div>
         </div>

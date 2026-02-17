@@ -200,11 +200,11 @@ export default function GoodsReceipts() {
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
           <div>
             <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Goods Receipts</h1>
-            <p className="text-gray-500 dark:text-gray-400 mt-1">Manage incoming goods and inventory receipts</p>
+            <p className="text-gray-500 dark:text-gray-300 mt-1">Manage incoming goods and inventory receipts</p>
           </div>
           <div className="flex items-center gap-3">
             <button onClick={() => loadReceipts()} className="p-3 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-200 dark:border-gray-700">
-              <RefreshCw className={`h-5 w-5 text-gray-600 dark:text-gray-400 ${loading ? 'animate-spin' : ''}`} />
+              <RefreshCw className={`h-5 w-5 text-gray-600 dark:text-gray-300 ${loading ? 'animate-spin' : ''}`} />
             </button>
             <button onClick={handleCreate} className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-medium hover:from-indigo-700 hover:to-purple-700 transition-all ">
               <Plus className="h-5 w-5" />Create Receipt
@@ -224,25 +224,25 @@ export default function GoodsReceipts() {
           <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl "><Package className="h-5 w-5 text-white" /></div>
-              <div><p className="text-xl font-bold text-gray-900 dark:text-white">{stats.total}</p><p className="text-xs text-gray-500 dark:text-gray-400">Total Receipts</p></div>
+              <div><p className="text-xl font-bold text-gray-900 dark:text-white">{stats.total}</p><p className="text-xs text-gray-500 dark:text-gray-300">Total Receipts</p></div>
             </div>
           </div>
           <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-gradient-to-br from-gray-500 to-gray-600 rounded-xl "><Clock className="h-5 w-5 text-white" /></div>
-              <div><p className="text-xl font-bold text-gray-900 dark:text-white">{stats.draft}</p><p className="text-xs text-gray-500 dark:text-gray-400">Draft</p></div>
+              <div><p className="text-xl font-bold text-gray-900 dark:text-white">{stats.draft}</p><p className="text-xs text-gray-500 dark:text-gray-300">Draft</p></div>
             </div>
           </div>
           <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl "><CheckCircle className="h-5 w-5 text-white" /></div>
-              <div><p className="text-xl font-bold text-gray-900 dark:text-white">{stats.posted}</p><p className="text-xs text-gray-500 dark:text-gray-400">Posted</p></div>
+              <div><p className="text-xl font-bold text-gray-900 dark:text-white">{stats.posted}</p><p className="text-xs text-gray-500 dark:text-gray-300">Posted</p></div>
             </div>
           </div>
           <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-gradient-to-br from-red-500 to-rose-500 rounded-xl "><X className="h-5 w-5 text-white" /></div>
-              <div><p className="text-xl font-bold text-gray-900 dark:text-white">{stats.cancelled}</p><p className="text-xs text-gray-500 dark:text-gray-400">Cancelled</p></div>
+              <div><p className="text-xl font-bold text-gray-900 dark:text-white">{stats.cancelled}</p><p className="text-xs text-gray-500 dark:text-gray-300">Cancelled</p></div>
             </div>
           </div>
         </div>
@@ -251,7 +251,7 @@ export default function GoodsReceipts() {
           <div className="p-3 border-b border-gray-100 dark:border-gray-700">
             <div className="flex flex-col md:flex-row gap-3">
               <div className="flex-1 relative">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-300" />
                 <input type="text" placeholder="Search by receipt number or supplier..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-12 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all" />
               </div>
               <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all min-w-[150px]">
@@ -266,13 +266,13 @@ export default function GoodsReceipts() {
           {loading ? (
             <div className="p-12 text-center">
               <RefreshCw className="h-8 w-8 animate-spin text-indigo-500 mx-auto mb-4" />
-              <p className="text-gray-500 dark:text-gray-400">Loading goods receipts...</p>
+              <p className="text-gray-500 dark:text-gray-300">Loading goods receipts...</p>
             </div>
           ) : filteredReceipts.length === 0 ? (
             <div className="p-12 text-center">
-              <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-2xl flex items-center justify-center mx-auto mb-4"><Package className="h-8 w-8 text-gray-400" /></div>
+              <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-2xl flex items-center justify-center mx-auto mb-4"><Package className="h-8 w-8 text-gray-300" /></div>
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No goods receipts found</h3>
-              <p className="text-gray-500 dark:text-gray-400 mb-6">{searchTerm || statusFilter ? 'Try adjusting your filters' : 'Get started by creating your first goods receipt'}</p>
+              <p className="text-gray-500 dark:text-gray-300 mb-6">{searchTerm || statusFilter ? 'Try adjusting your filters' : 'Get started by creating your first goods receipt'}</p>
               {!searchTerm && !statusFilter && (
                 <button onClick={handleCreate} className="px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-medium hover:from-indigo-700 hover:to-purple-700 transition-all">Create First Receipt</button>
               )}
@@ -282,11 +282,11 @@ export default function GoodsReceipts() {
               <table className="w-full">
                 <thead className="bg-gray-50 dark:bg-gray-900/50">
                   <tr>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Receipt #</th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Supplier</th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Receipt Date</th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
-                    <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Receipt #</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Supplier</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Receipt Date</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
+                    <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100 dark:divide-gray-700">

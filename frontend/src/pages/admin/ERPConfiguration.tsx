@@ -167,13 +167,13 @@ export default function ERPConfigurationPage() {
       case 'connected':
         return <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400" />;
       case 'disconnected':
-        return <XCircle className="h-5 w-5 text-gray-400" />;
+        return <XCircle className="h-5 w-5 text-gray-300" />;
       case 'error':
         return <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400" />;
       case 'testing':
         return <RefreshCw className="h-5 w-5 text-blue-600 dark:text-blue-400 animate-spin" />;
       default:
-        return <XCircle className="h-5 w-5 text-gray-400" />;
+        return <XCircle className="h-5 w-5 text-gray-300" />;
     }
   };
 
@@ -207,7 +207,7 @@ export default function ERPConfigurationPage() {
           <Database className="h-8 w-8 text-blue-600 dark:text-blue-400" />
           ERP Configuration
         </h1>
-        <p className="text-gray-600 dark:text-gray-400 mt-2">
+        <p className="text-gray-600 dark:text-gray-300 mt-2">
           Configure connections to external ERP systems (Xero, QuickBooks, Sage, Odoo, NetSuite, SAP ECC)
         </p>
       </div>
@@ -232,7 +232,7 @@ export default function ERPConfigurationPage() {
                     <div className="text-4xl">{erp.logo}</div>
                     <div>
                       <h3 className="text-xl font-bold text-gray-900 dark:text-white">{erp.name}</h3>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">{erp.description}</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-300">{erp.description}</p>
                       <div className="flex items-center gap-3 mt-2">
                         <span className="text-xs bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">
                           {erp.authType}
@@ -616,7 +616,7 @@ export default function ERPConfigurationPage() {
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                           Last Sync
                         </label>
-                        <div className="px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-md text-sm text-gray-600 dark:text-gray-400">
+                        <div className="px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-md text-sm text-gray-600 dark:text-gray-300">
                           {connection.lastSync || 'Never'}
                         </div>
                       </div>

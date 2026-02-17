@@ -107,10 +107,10 @@ export default function WorkflowManagementPage() {
             </div>
             Approval Workflows
           </h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400 ml-14">Manage approval workflows and pending approvals</p>
+          <p className="text-sm text-gray-500 dark:text-gray-300 ml-14">Manage approval workflows and pending approvals</p>
         </div>
         <div className="flex gap-2">
-          <button onClick={fetchData} className="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
+          <button onClick={fetchData} className="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
             <RefreshCw className={`h-5 w-5 ${loading ? 'animate-spin' : ''}`} />
           </button>
           <button onClick={() => setShowCreateModal(true)} className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-xl font-medium text-sm hover:shadow-lg transition-all">
@@ -142,7 +142,7 @@ export default function WorkflowManagementPage() {
             {workflows.map((wf) => (
               <div key={wf.id} className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-3 hover:shadow-md transition-shadow">
                 <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-1">{wf.workflow_name}</h3>
-                <p className="text-xs text-gray-500 dark:text-gray-400 capitalize mb-2">{(wf.document_type || '').replace(/_/g, ' ')}</p>
+                <p className="text-xs text-gray-500 dark:text-gray-300 capitalize mb-2">{(wf.document_type || '').replace(/_/g, ' ')}</p>
                 <div className="flex items-center gap-2">
                   <span className={`text-xs px-2 py-0.5 rounded-full ${wf.is_active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
                     {wf.is_active ? 'Active' : 'Inactive'}
@@ -160,7 +160,7 @@ export default function WorkflowManagementPage() {
             <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-3">Pending Approvals</h3>
             {approvals.length === 0 ? (
               <div className="text-center py-8 text-gray-500">
-                <Clock className="h-8 w-8 mx-auto mb-2 text-gray-400" />
+                <Clock className="h-8 w-8 mx-auto mb-2 text-gray-300" />
                 <p>No pending approvals</p>
               </div>
             ) : (

@@ -182,7 +182,7 @@ export default function ServiceLocations() {
       <div className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-500 dark:text-gray-400">Loading locations...</p>
+          <p className="text-gray-500 dark:text-gray-300">Loading locations...</p>
         </div>
       </div>
     );
@@ -197,7 +197,7 @@ export default function ServiceLocations() {
           </div>
           Service Locations
         </h1>
-        <p className="text-gray-500 dark:text-gray-400 ml-14">Manage customer service locations for field service dispatch</p>
+        <p className="text-gray-500 dark:text-gray-300 ml-14">Manage customer service locations for field service dispatch</p>
       </div>
 
       {/* Stats Cards */}
@@ -209,7 +209,7 @@ export default function ServiceLocations() {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{locations.length}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Total Locations</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Total Locations</p>
             </div>
           </div>
         </div>
@@ -220,7 +220,7 @@ export default function ServiceLocations() {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{locations.filter(l => l.is_active).length}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Active</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Active</p>
             </div>
           </div>
         </div>
@@ -231,7 +231,7 @@ export default function ServiceLocations() {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{new Set(locations.map(l => l.customer_id).filter(Boolean)).size}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Unique Customers</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Unique Customers</p>
             </div>
           </div>
         </div>
@@ -242,7 +242,7 @@ export default function ServiceLocations() {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{locations.reduce((sum, l) => sum + (l.work_order_count || 0), 0)}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Total Work Orders</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Total Work Orders</p>
             </div>
           </div>
         </div>
@@ -252,7 +252,7 @@ export default function ServiceLocations() {
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 mb-6">
         <div className="p-4 flex gap-3 flex-wrap">
           <div className="flex-1 min-w-[200px] relative">
-            <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+            <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-300" />
             <input
               type="text"
               placeholder="Search locations..."
@@ -293,7 +293,7 @@ export default function ServiceLocations() {
                 <div>
                   <div className="font-semibold text-gray-900 dark:text-white">{location.name}</div>
                   {location.customer_name && (
-                    <div className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                    <div className="text-xs text-gray-500 dark:text-gray-300 flex items-center gap-1">
                       <Building size={12} />
                       {location.customer_name}
                     </div>
@@ -319,23 +319,23 @@ export default function ServiceLocations() {
             <div className="space-y-2 text-sm">
               {(location.address_line1 || location.city) && (
                 <div className="flex items-start gap-2 text-gray-600 dark:text-gray-300">
-                  <Globe size={14} className="text-gray-400 mt-0.5" />
+                  <Globe size={14} className="text-gray-300 mt-0.5" />
                   <span className="line-clamp-2">{getFullAddress(location)}</span>
                 </div>
               )}
               {location.contact_phone && (
                 <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300">
-                  <Phone size={14} className="text-gray-400" />
+                  <Phone size={14} className="text-gray-300" />
                   {location.contact_phone}
                 </div>
               )}
             </div>
 
             <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700 flex justify-between items-center">
-              <span className={`px-2.5 py-1 text-xs font-semibold rounded-full ${location.is_active ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-400'}`}>
+              <span className={`px-2.5 py-1 text-xs font-semibold rounded-full ${location.is_active ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300'}`}>
                 {location.is_active ? 'Active' : 'Inactive'}
               </span>
-              <span className="text-xs text-gray-500 dark:text-gray-400">
+              <span className="text-xs text-gray-500 dark:text-gray-300">
                 {location.work_order_count || 0} work orders
               </span>
             </div>
@@ -345,7 +345,7 @@ export default function ServiceLocations() {
       {filteredLocations.length === 0 && (
         <div className="bg-white dark:bg-gray-800 rounded-2xl p-12 text-center shadow-sm border border-gray-100 dark:border-gray-700">
           <MapPin className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
-          <p className="text-gray-500 dark:text-gray-400">
+          <p className="text-gray-500 dark:text-gray-300">
             {searchTerm || filterCustomer 
               ? 'No locations found matching your criteria' 
               : 'No locations yet. Add your first one!'}

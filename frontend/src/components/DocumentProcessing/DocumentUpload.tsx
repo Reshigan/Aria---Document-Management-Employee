@@ -295,7 +295,7 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({
             }`}
           >
             <input {...getInputProps()} />
-            <Upload className="w-12 h-12 mx-auto mb-4 text-gray-400" />
+            <Upload className="w-12 h-12 mx-auto mb-4 text-gray-300" />
             {isDragActive ? (
               <p className="text-blue-600">Drop the files here...</p>
             ) : (
@@ -306,7 +306,7 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({
                 <p className="text-sm text-gray-500">
                   Supports PDF, images (JPG, PNG, TIFF), Word documents, and text files
                 </p>
-                <p className="text-xs text-gray-400 mt-1">
+                <p className="text-xs text-gray-300 mt-1">
                   Maximum file size: 50MB
                 </p>
               </div>

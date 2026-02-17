@@ -50,19 +50,16 @@ export function ConfirmDialog({
     >
       <div
         onClick={(e) => e.stopPropagation()}
+        className="bg-white dark:bg-gray-800 rounded-lg shadow-2xl"
         style={{
-          background: 'white',
-          borderRadius: '0.5rem',
-          boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)',
           maxWidth: '500px',
           width: '90%',
           maxHeight: '90vh',
           overflow: 'auto'
         }}
       >
-        <div style={{
+        <div className="border-b border-gray-200 dark:border-gray-700" style={{
           padding: '1.5rem',
-          borderBottom: '1px solid #e5e7eb',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between'
@@ -75,15 +72,15 @@ export function ConfirmDialog({
             }}>
               <AlertTriangle size={20} style={{ color: colors.text }} />
             </div>
-            <h2 style={{ fontSize: '1.125rem', fontWeight: '600', margin: 0 }}>{title}</h2>
+            <h2 className="text-gray-900 dark:text-white" style={{ fontSize: '1.125rem', fontWeight: '600', margin: 0 }}>{title}</h2>
           </div>
           <button
             onClick={onClose}
+            className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
             style={{
               padding: '0.25rem',
               background: 'transparent',
               border: 'none',
-              color: '#6b7280',
               cursor: 'pointer'
             }}
           >
@@ -92,30 +89,20 @@ export function ConfirmDialog({
         </div>
 
         <div style={{ padding: '1.5rem' }}>
-          <p style={{ fontSize: '0.875rem', color: '#6b7280', margin: 0 }}>
+          <p className="text-gray-600 dark:text-gray-300" style={{ fontSize: '0.875rem', margin: 0 }}>
             {message}
           </p>
         </div>
 
-        <div style={{
+        <div className="border-t border-gray-200 dark:border-gray-700" style={{
           padding: '1.5rem',
-          borderTop: '1px solid #e5e7eb',
           display: 'flex',
           gap: '0.75rem',
           justifyContent: 'flex-end'
         }}>
           <button
             onClick={onClose}
-            style={{
-              padding: '0.5rem 1rem',
-              background: 'white',
-              border: '1px solid #d1d5db',
-              borderRadius: '0.375rem',
-              fontSize: '0.875rem',
-              fontWeight: '500',
-              color: '#374151',
-              cursor: 'pointer'
-            }}
+            className="bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 rounded-md text-sm font-medium px-3 py-2 cursor-pointer"
           >
             {cancelText}
           </button>

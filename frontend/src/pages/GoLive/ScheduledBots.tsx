@@ -69,7 +69,7 @@ export default function ScheduledBots() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2"><Clock className="h-6 w-6 text-indigo-600" />Scheduled Bot Runs</h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400">Configure automated bot execution schedules</p>
+          <p className="text-sm text-gray-500 dark:text-gray-300">Configure automated bot execution schedules</p>
         </div>
         <button onClick={fetchSchedules} className="p-2 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:shadow-md">
           <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
@@ -97,7 +97,7 @@ export default function ScheduledBots() {
           <div className="text-center py-8"><RefreshCw className="h-6 w-6 animate-spin text-indigo-600 mx-auto" /></div>
         ) : schedules.length === 0 ? (
           <div className="text-center py-8 text-gray-500">
-            <Bot className="h-8 w-8 mx-auto mb-2 text-gray-400" />
+            <Bot className="h-8 w-8 mx-auto mb-2 text-gray-300" />
             <p>No scheduled bots yet. Add one above.</p>
           </div>
         ) : schedules.map((s, i) => (

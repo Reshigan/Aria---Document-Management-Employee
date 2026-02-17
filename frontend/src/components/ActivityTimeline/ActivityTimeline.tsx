@@ -143,7 +143,7 @@ export default function ActivityTimeline({
           </div>
         )}
         <div className="p-6 flex items-center justify-center">
-          <RefreshCw className="h-6 w-6 text-gray-400 animate-spin" />
+          <RefreshCw className="h-6 w-6 text-gray-300 animate-spin" />
         </div>
       </div>
     );
@@ -158,7 +158,7 @@ export default function ActivityTimeline({
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Activity Timeline</h3>
           <button 
             onClick={fetchActivities}
-            className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+            className="p-2 text-gray-300 hover:text-gray-600 dark:hover:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
           >
             <RefreshCw className="h-4 w-4" />
           </button>
@@ -167,7 +167,7 @@ export default function ActivityTimeline({
       
       <div className="p-6">
         {activities.length === 0 ? (
-          <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+          <div className="text-center py-8 text-gray-500 dark:text-gray-300">
             <Clock className="h-12 w-12 mx-auto mb-3 opacity-50" />
             <p>No recent activity</p>
           </div>
@@ -175,7 +175,7 @@ export default function ActivityTimeline({
           <div className="space-y-6">
             {Object.entries(groupedActivities).map(([date, dateActivities]) => (
               <div key={date}>
-                <h4 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">
+                <h4 className="text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider mb-3">
                   {date}
                 </h4>
                 <div className="space-y-4">
@@ -202,12 +202,12 @@ export default function ActivityTimeline({
                               {' '}{activity.description}
                             </p>
                             {activity.old_value && activity.new_value && (
-                              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                              <p className="text-xs text-gray-500 dark:text-gray-300 mt-1">
                                 {activity.old_value} → {activity.new_value}
                               </p>
                             )}
                           </div>
-                          <span className="text-xs text-gray-400 dark:text-gray-500 whitespace-nowrap ml-2">
+                          <span className="text-xs text-gray-300 dark:text-gray-500 whitespace-nowrap ml-2">
                             {formatTime(activity.created_at)}
                           </span>
                         </div>

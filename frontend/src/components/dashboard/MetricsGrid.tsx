@@ -74,7 +74,7 @@ const MetricsGrid: React.FC<MetricsGridProps> = ({ data }) => {
               {metric.change}
             </span>
           </div>
-          <h3 className="text-gray-400 text-sm mb-2">{metric.label}</h3>
+          <h3 className="text-gray-300 text-sm mb-2">{metric.label}</h3>
           <p className={`text-3xl font-bold bg-gradient-to-r ${metric.color} bg-clip-text text-transparent`}>
             {metric.value}
           </p>

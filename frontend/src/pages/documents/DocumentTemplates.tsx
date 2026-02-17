@@ -96,7 +96,7 @@ export default function DocumentTemplatesPage() {
 
       <div className="mb-6">
         <div className="flex-1 relative mb-4">
-          <Search className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+          <Search className="absolute left-3 top-3 h-5 w-5 text-gray-300" />
           <input
             type="text"
             name="search"
@@ -139,7 +139,7 @@ export default function DocumentTemplatesPage() {
               data-testid={category.testId}
             >
               <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">{category.name}</h3>
-              <p className="text-gray-600 dark:text-gray-400 text-sm mb-4">{category.templates.length} templates</p>
+              <p className="text-gray-600 dark:text-gray-300 text-sm mb-4">{category.templates.length} templates</p>
               <ul className="space-y-2">
                 {category.templates.map((template) => (
                   <li 

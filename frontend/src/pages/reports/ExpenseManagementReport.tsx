@@ -121,7 +121,7 @@ export default function ExpenseManagementReportPage() {
             </div>
             <button
               onClick={fetchExpenseData}
-              className="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+              className="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
             >
               <RefreshCw className={`h-5 w-5 ${loading ? 'animate-spin' : ''}`} />
             </button>
@@ -144,7 +144,7 @@ export default function ExpenseManagementReportPage() {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
               {stats.map((stat) => (
                 <div key={stat.label} className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
-                  <div className="text-sm font-medium text-gray-600 dark:text-gray-400">{stat.label}</div>
+                  <div className="text-sm font-medium text-gray-600 dark:text-gray-300">{stat.label}</div>
                   <div className={`text-2xl font-bold mt-2 ${
                     stat.color === 'indigo' ? 'text-indigo-600 dark:text-indigo-400' :
                     stat.color === 'green' ? 'text-green-600 dark:text-green-400' :
@@ -157,7 +157,7 @@ export default function ExpenseManagementReportPage() {
 
             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 mb-6">
               <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Auto-Coding Accuracy: {summary?.auto_coding_accuracy || 0}%</h3>
-              <p className="text-gray-600 dark:text-gray-400">{summary?.auto_coded_count || 0} of {summary?.total_claims || 0} claims auto-coded successfully</p>
+              <p className="text-gray-600 dark:text-gray-300">{summary?.auto_coded_count || 0} of {summary?.total_claims || 0} claims auto-coded successfully</p>
               <div className="mt-4 w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
                 <div 
                   className="bg-gradient-to-r from-indigo-600 to-purple-600 h-3 rounded-full" 

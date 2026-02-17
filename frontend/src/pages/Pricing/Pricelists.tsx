@@ -151,28 +151,28 @@ export default function Pricelists() {
           <Tag size={28} className="text-green-500" />
           Pricelists
         </h1>
-        <p className="text-gray-600 dark:text-gray-400 mt-1">Manage pricing strategies with date ranges and customer segments</p>
+        <p className="text-gray-600 dark:text-gray-300 mt-1">Manage pricing strategies with date ranges and customer segments</p>
       </div>
 
       <div className="grid grid-cols-4 gap-3 mb-6">
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
-          <div className="text-xs text-gray-500 dark:text-gray-400">Total Pricelists</div>
+          <div className="text-xs text-gray-500 dark:text-gray-300">Total Pricelists</div>
           <div className="text-2xl font-bold text-green-600 dark:text-green-400">{pricelists.length}</div>
         </div>
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
-          <div className="text-xs text-gray-500 dark:text-gray-400">Active Now</div>
+          <div className="text-xs text-gray-500 dark:text-gray-300">Active Now</div>
           <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
             {pricelists.filter(isActive).length}
           </div>
         </div>
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
-          <div className="text-xs text-gray-500 dark:text-gray-400">Default Pricelist</div>
+          <div className="text-xs text-gray-500 dark:text-gray-300">Default Pricelist</div>
           <div className="text-lg font-bold text-purple-600 dark:text-purple-400 truncate">
             {pricelists.find(p => p.is_default)?.name || 'None'}
           </div>
         </div>
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
-          <div className="text-xs text-gray-500 dark:text-gray-400">Total Rules</div>
+          <div className="text-xs text-gray-500 dark:text-gray-300">Total Rules</div>
           <div className="text-2xl font-bold text-orange-600">
             {pricelists.reduce((sum, p) => sum + (p.rule_count || 0), 0)}
           </div>
@@ -182,7 +182,7 @@ export default function Pricelists() {
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
         <div className="p-4 border-b flex gap-3">
           <div className="flex-1 relative">
-            <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+            <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-300" />
             <input
               type="text"
               placeholder="Search pricelists..."
@@ -204,13 +204,13 @@ export default function Pricelists() {
           <table className="w-full">
             <thead className="bg-gray-50 dark:bg-gray-900">
               <tr>
-                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Pricelist</th>
-                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Currency</th>
-                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Customer Group</th>
-                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Valid Period</th>
-                <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Rules</th>
-                <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Status</th>
-                <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Actions</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Pricelist</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Currency</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Customer Group</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Valid Period</th>
+                <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Rules</th>
+                <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Status</th>
+                <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
@@ -222,7 +222,7 @@ export default function Pricelists() {
                       <div>
                         <div className="font-medium text-gray-900 dark:text-white">{pricelist.name}</div>
                         {pricelist.code && (
-                          <div className="text-xs text-gray-500 dark:text-gray-400">{pricelist.code}</div>
+                          <div className="text-xs text-gray-500 dark:text-gray-300">{pricelist.code}</div>
                         )}
                       </div>
                       {pricelist.is_default && (
@@ -232,27 +232,27 @@ export default function Pricelists() {
                       )}
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">{pricelist.currency}</td>
+                  <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{pricelist.currency}</td>
                   <td className="px-6 py-4">
                     {pricelist.customer_group_name ? (
                       <div className="flex items-center gap-2">
-                        <Users size={14} className="text-gray-400" />
-                        <span className="text-sm text-gray-600 dark:text-gray-400">{pricelist.customer_group_name}</span>
+                        <Users size={14} className="text-gray-300" />
+                        <span className="text-sm text-gray-600 dark:text-gray-300">{pricelist.customer_group_name}</span>
                       </div>
                     ) : (
-                      <span className="text-xs text-gray-400">All Customers</span>
+                      <span className="text-xs text-gray-300">All Customers</span>
                     )}
                   </td>
                   <td className="px-6 py-4">
                     {pricelist.start_date || pricelist.end_date ? (
-                      <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                        <Calendar size={14} className="text-gray-400" />
+                      <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+                        <Calendar size={14} className="text-gray-300" />
                         {pricelist.start_date ? new Date(pricelist.start_date).toLocaleDateString() : 'Start'} 
                         {' - '}
                         {pricelist.end_date ? new Date(pricelist.end_date).toLocaleDateString() : 'No End'}
                       </div>
                     ) : (
-                      <span className="text-xs text-gray-400">Always Valid</span>
+                      <span className="text-xs text-gray-300">Always Valid</span>
                     )}
                   </td>
                   <td className="px-6 py-4 text-center">
@@ -286,7 +286,7 @@ export default function Pricelists() {
             </tbody>
           </table>
           {filteredPricelists.length === 0 && (
-            <div className="p-8 text-center text-gray-500 dark:text-gray-400">
+            <div className="p-8 text-center text-gray-500 dark:text-gray-300">
               {searchTerm ? 'No pricelists found matching your search' : 'No pricelists yet. Create your first one!'}
             </div>
           )}

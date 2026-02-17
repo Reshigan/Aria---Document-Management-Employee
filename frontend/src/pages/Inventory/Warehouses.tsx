@@ -120,7 +120,7 @@ const Warehouses: React.FC = () => {
           </div>
           <div>
             <h1 className="text-xl font-bold text-gray-900 dark:text-white">Warehouses</h1>
-            <p className="text-gray-600 dark:text-gray-400">Manage warehouse locations and inventory</p>
+            <p className="text-gray-600 dark:text-gray-300">Manage warehouse locations and inventory</p>
           </div>
         </div>
         <button
@@ -147,7 +147,7 @@ const Warehouses: React.FC = () => {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{warehouses.filter(w => w.is_active).length}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Active Warehouses</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Active Warehouses</p>
             </div>
           </div>
         </div>
@@ -160,7 +160,7 @@ const Warehouses: React.FC = () => {
               <p className="text-xl font-bold text-gray-900 dark:text-white">
                 {warehouses.reduce((sum, w) => sum + (Number(w.capacity) || 0), 0).toLocaleString()}
               </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Total Capacity</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Total Capacity</p>
             </div>
           </div>
         </div>
@@ -173,7 +173,7 @@ const Warehouses: React.FC = () => {
               <p className="text-xl font-bold text-gray-900 dark:text-white">
                 {formatCurrency(warehouses.reduce((sum, w) => sum + (Number(w.current_stock_value) || 0), 0))}
               </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Total Stock Value</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Total Stock Value</p>
             </div>
           </div>
         </div>
@@ -194,9 +194,9 @@ const Warehouses: React.FC = () => {
           </thead>
           <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
             {loading ? (
-              <tr><td colSpan={7} className="px-6 py-12 text-center text-gray-500 dark:text-gray-400">Loading...</td></tr>
+              <tr><td colSpan={7} className="px-6 py-12 text-center text-gray-500 dark:text-gray-300">Loading...</td></tr>
             ) : warehouses.length === 0 ? (
-              <tr><td colSpan={7} className="px-6 py-12 text-center text-gray-500 dark:text-gray-400">No warehouses found</td></tr>
+              <tr><td colSpan={7} className="px-6 py-12 text-center text-gray-500 dark:text-gray-300">No warehouses found</td></tr>
             ) : (
               warehouses.map((warehouse) => (
                 <tr key={warehouse.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors">

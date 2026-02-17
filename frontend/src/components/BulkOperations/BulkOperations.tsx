@@ -227,7 +227,7 @@ export default function BulkOperations<T>({
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                   Confirm Delete
                 </h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
+                <p className="text-sm text-gray-500 dark:text-gray-300">
                   Are you sure you want to delete {selectedIds.length} item{selectedIds.length > 1 ? 's' : ''}?
                 </p>
               </div>

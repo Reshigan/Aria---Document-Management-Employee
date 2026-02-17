@@ -101,7 +101,7 @@ export default function AgedReportsPage() {
             />
             <button
               onClick={fetchAgedReports}
-              className="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+              className="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
             >
               <RefreshCw className={`h-5 w-5 ${loading ? 'animate-spin' : ''}`} />
             </button>
@@ -136,7 +136,7 @@ export default function AgedReportsPage() {
               const value = totals[keys[idx]];
               return (
                 <div key={label} className="bg-white dark:bg-gray-800 rounded-lg border border-gray-100 dark:border-gray-700 p-4">
-                  <p className="text-sm text-gray-600 dark:text-gray-400">{label}</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">{label}</p>
                   <p className={`text-xl font-bold ${idx === 4 ? 'text-indigo-600 dark:text-indigo-400' : idx >= 2 ? 'text-red-600 dark:text-red-400' : 'text-gray-900 dark:text-white'}`}>
                     R {Number(value ?? 0).toLocaleString()}
                   </p>

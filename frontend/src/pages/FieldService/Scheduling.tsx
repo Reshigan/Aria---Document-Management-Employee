@@ -129,7 +129,7 @@ const Scheduling: React.FC = () => {
       <div className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-500 dark:text-gray-400">Loading schedules...</p>
+          <p className="text-gray-500 dark:text-gray-300">Loading schedules...</p>
         </div>
       </div>
     );
@@ -144,7 +144,7 @@ const Scheduling: React.FC = () => {
           </div>
           Service Scheduling
         </h1>
-        <p className="text-gray-500 dark:text-gray-400 ml-14">View and manage field service schedules</p>
+        <p className="text-gray-500 dark:text-gray-300 ml-14">View and manage field service schedules</p>
       </div>
 
       {error && (
@@ -183,7 +183,7 @@ const Scheduling: React.FC = () => {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{schedules.filter(s => s.status === 'SCHEDULED').length}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Scheduled</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Scheduled</p>
             </div>
           </div>
         </div>
@@ -194,7 +194,7 @@ const Scheduling: React.FC = () => {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{schedules.filter(s => s.status === 'CONFIRMED').length}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Confirmed</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Confirmed</p>
             </div>
           </div>
         </div>
@@ -205,7 +205,7 @@ const Scheduling: React.FC = () => {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{schedules.filter(s => s.status === 'IN_PROGRESS').length}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">In Progress</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">In Progress</p>
             </div>
           </div>
         </div>
@@ -216,7 +216,7 @@ const Scheduling: React.FC = () => {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{schedules.length}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Total</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Total</p>
             </div>
           </div>
         </div>
@@ -227,23 +227,23 @@ const Scheduling: React.FC = () => {
         <table className="w-full" data-testid="schedules-table">
           <thead className="bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-700">
             <tr>
-              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Time</th>
-              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Technician</th>
-              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Order #</th>
-              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Customer</th>
-              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Duration</th>
-              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
-              <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Time</th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Technician</th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Order #</th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Customer</th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Duration</th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
+              <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
             {loading ? (
-              <tr><td colSpan={7} className="px-6 py-12 text-center text-gray-500 dark:text-gray-400">Loading...</td></tr>
+              <tr><td colSpan={7} className="px-6 py-12 text-center text-gray-500 dark:text-gray-300">Loading...</td></tr>
             ) : schedules.length === 0 ? (
               <tr>
                 <td colSpan={7} className="px-6 py-12 text-center">
                   <Calendar className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
-                  <p className="text-gray-500 dark:text-gray-400">No schedules for this date</p>
+                  <p className="text-gray-500 dark:text-gray-300">No schedules for this date</p>
                 </td>
               </tr>
             ) : (

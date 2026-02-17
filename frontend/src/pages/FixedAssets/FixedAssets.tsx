@@ -141,11 +141,11 @@ const FixedAssets: React.FC = () => {
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
           <div>
             <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Fixed Assets</h1>
-            <p className="text-gray-500 dark:text-gray-400 mt-1">Manage company fixed assets and depreciation</p>
+            <p className="text-gray-500 dark:text-gray-300 mt-1">Manage company fixed assets and depreciation</p>
           </div>
           <div className="flex items-center gap-3">
             <button onClick={loadAssets} className="p-3 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-200 dark:border-gray-700">
-              <RefreshCw className={`h-5 w-5 text-gray-600 dark:text-gray-400 ${loading ? 'animate-spin' : ''}`} />
+              <RefreshCw className={`h-5 w-5 text-gray-600 dark:text-gray-300 ${loading ? 'animate-spin' : ''}`} />
             </button>
             <button onClick={handleCreate} className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-medium hover:from-blue-700 hover:to-indigo-700 transition-all " data-testid="create-button">
               <Plus className="h-5 w-5" />New Fixed Asset
@@ -170,7 +170,7 @@ const FixedAssets: React.FC = () => {
               </div>
               <div>
                 <p className="text-xl font-bold text-gray-900 dark:text-white">{assets.length}</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">Total Assets</p>
+                <p className="text-xs text-gray-500 dark:text-gray-300">Total Assets</p>
               </div>
             </div>
           </div>
@@ -181,7 +181,7 @@ const FixedAssets: React.FC = () => {
               </div>
               <div>
                 <p className="text-xl font-bold text-gray-900 dark:text-white">{formatCurrency(totalPurchaseCost)}</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">Purchase Cost</p>
+                <p className="text-xs text-gray-500 dark:text-gray-300">Purchase Cost</p>
               </div>
             </div>
           </div>
@@ -192,7 +192,7 @@ const FixedAssets: React.FC = () => {
               </div>
               <div>
                 <p className="text-2xl font-bold text-red-600 dark:text-red-400">{formatCurrency(totalDepreciation)}</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">Depreciation</p>
+                <p className="text-xs text-gray-500 dark:text-gray-300">Depreciation</p>
               </div>
             </div>
           </div>
@@ -203,7 +203,7 @@ const FixedAssets: React.FC = () => {
               </div>
               <div>
                 <p className="text-2xl font-bold text-green-600 dark:text-green-400">{formatCurrency(totalBookValue)}</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">Book Value</p>
+                <p className="text-xs text-gray-500 dark:text-gray-300">Book Value</p>
               </div>
             </div>
           </div>
@@ -214,21 +214,21 @@ const FixedAssets: React.FC = () => {
             <table className="w-full" data-testid="assets-table">
               <thead className="bg-gray-50 dark:bg-gray-900/50">
                 <tr>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Asset Code</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Asset Name</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Category</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Purchase Date</th>
-                  <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Purchase Cost</th>
-                  <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Book Value</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
-                  <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Asset Code</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Asset Name</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Category</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Purchase Date</th>
+                  <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Purchase Cost</th>
+                  <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Book Value</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
+                  <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
                 {loading ? (
-                  <tr><td colSpan={8} className="px-6 py-12 text-center text-gray-500 dark:text-gray-400"><RefreshCw className="h-8 w-8 animate-spin mx-auto mb-2 text-blue-500" />Loading...</td></tr>
+                  <tr><td colSpan={8} className="px-6 py-12 text-center text-gray-500 dark:text-gray-300"><RefreshCw className="h-8 w-8 animate-spin mx-auto mb-2 text-blue-500" />Loading...</td></tr>
                 ) : assets.length === 0 ? (
-                  <tr><td colSpan={8} className="px-6 py-12 text-center text-gray-500 dark:text-gray-400"><Package className="h-12 w-12 mx-auto mb-2 text-gray-300" />No fixed assets found</td></tr>
+                  <tr><td colSpan={8} className="px-6 py-12 text-center text-gray-500 dark:text-gray-300"><Package className="h-12 w-12 mx-auto mb-2 text-gray-300" />No fixed assets found</td></tr>
                 ) : (
                   assets.map((asset) => (
                     <tr key={asset.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">

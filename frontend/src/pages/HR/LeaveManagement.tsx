@@ -141,7 +141,7 @@ const LeaveManagement: React.FC = () => {
             </div>
             Leave Management
           </h1>
-          <p className="text-gray-500 dark:text-gray-400 mt-1">Manage employee leave requests and approvals</p>
+          <p className="text-gray-500 dark:text-gray-300 mt-1">Manage employee leave requests and approvals</p>
         </div>
         <button
           onClick={handleCreate}
@@ -187,7 +187,7 @@ const LeaveManagement: React.FC = () => {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{pendingCount}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Pending</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Pending</p>
             </div>
           </div>
         </div>
@@ -198,7 +198,7 @@ const LeaveManagement: React.FC = () => {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{approvedCount}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Approved</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Approved</p>
             </div>
           </div>
         </div>
@@ -209,7 +209,7 @@ const LeaveManagement: React.FC = () => {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{rejectedCount}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Rejected</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Rejected</p>
             </div>
           </div>
         </div>
@@ -220,7 +220,7 @@ const LeaveManagement: React.FC = () => {
         {filtered.length === 0 ? (
           <div className="px-6 py-12 text-center">
             <Calendar className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
-            <p className="text-gray-500 dark:text-gray-400">No leave requests found</p>
+            <p className="text-gray-500 dark:text-gray-300">No leave requests found</p>
           </div>
         ) : (
           <table className="w-full" data-testid="leave-table">
@@ -240,9 +240,9 @@ const LeaveManagement: React.FC = () => {
                 <tr key={request.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                   <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">{request.employee_name}</td>
                   <td className="px-6 py-4">{getTypeBadge(request.leave_type)}</td>
-                  <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{formatDate(request.start_date)}</td>
-                  <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{formatDate(request.end_date)}</td>
-                  <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{request.days}</td>
+                  <td className="px-6 py-4 text-gray-500 dark:text-gray-300">{formatDate(request.start_date)}</td>
+                  <td className="px-6 py-4 text-gray-500 dark:text-gray-300">{formatDate(request.end_date)}</td>
+                  <td className="px-6 py-4 text-gray-500 dark:text-gray-300">{request.days}</td>
                   <td className="px-6 py-4">{getStatusBadge(request.status)}</td>
                   <td className="px-6 py-4">
                     {request.status === 'PENDING' && (

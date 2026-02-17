@@ -170,13 +170,14 @@ const Settings: React.FC = () => {
     } catch (err) {
       console.error('Error fetching settings:', err);
       // Use fallback data
+      const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
       setProfile({
-        fullName: 'Demo User',
-        email: 'demo@aria.vantax.co.za',
-        phone: '+27 82 123 4567',
-        jobTitle: 'Financial Manager',
-        department: 'Finance',
-        avatar: '',
+        fullName: storedUser.full_name || storedUser.name || 'User',
+        email: storedUser.email || '',
+        phone: storedUser.phone || '',
+        jobTitle: storedUser.job_title || '',
+        department: storedUser.department || '',
+        avatar: storedUser.avatar || '',
       });
       setCompany({
         name: 'Demo Company Pty Ltd',

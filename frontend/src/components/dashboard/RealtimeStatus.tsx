@@ -63,7 +63,7 @@ const RealtimeStatus: React.FC = () => {
         </div>
       </div>
 
-      <div className="mt-4 text-center text-gray-400 text-xs">
+      <div className="mt-4 text-center text-gray-300 text-xs">
         Last updated: {status.lastUpdate.toLocaleTimeString()}
       </div>
     </motion.div>

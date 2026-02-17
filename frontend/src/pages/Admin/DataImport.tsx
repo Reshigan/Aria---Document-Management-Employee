@@ -99,7 +99,7 @@ const DataImport: React.FC = () => {
     <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4 mx-auto">
       <div className="mb-6">
         <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Data Import</h1>
-        <p className="text-gray-600 dark:text-gray-400 mt-2">
+        <p className="text-gray-600 dark:text-gray-300 mt-2">
           Import bulk data from CSV files into your ERP system
         </p>
       </div>
@@ -155,7 +155,7 @@ const DataImport: React.FC = () => {
             </button>
           </div>
           {file && (
-            <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
+            <p className="text-sm text-gray-600 dark:text-gray-300 mt-2">
               Selected: {file.name} ({Number((file.size / 1024) || 0).toFixed(2)} KB)
             </p>
           )}
@@ -177,15 +177,15 @@ const DataImport: React.FC = () => {
 
           <div className="grid grid-cols-3 gap-3 mb-6">
             <div className="bg-blue-50 dark:bg-blue-900/30 p-4 rounded-lg">
-              <p className="text-sm text-gray-600 dark:text-gray-400">Total Rows</p>
+              <p className="text-sm text-gray-600 dark:text-gray-300">Total Rows</p>
               <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">{result.total_rows}</p>
             </div>
             <div className="bg-green-50 dark:bg-green-900/30 p-4 rounded-lg">
-              <p className="text-sm text-gray-600 dark:text-gray-400">Successful</p>
+              <p className="text-sm text-gray-600 dark:text-gray-300">Successful</p>
               <p className="text-2xl font-bold text-green-600 dark:text-green-400">{result.successful}</p>
             </div>
             <div className="bg-red-50 dark:bg-red-900/30 p-4 rounded-lg">
-              <p className="text-sm text-gray-600 dark:text-gray-400">Failed</p>
+              <p className="text-sm text-gray-600 dark:text-gray-300">Failed</p>
               <p className="text-2xl font-bold text-red-600 dark:text-red-400">{result.failed}</p>
             </div>
           </div>
@@ -200,13 +200,13 @@ const DataImport: React.FC = () => {
                 <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                   <thead className="bg-gray-50 dark:bg-gray-900">
                     <tr>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
                         Row
                       </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
                         Field
                       </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
                         Error Message
                       </th>
                     </tr>

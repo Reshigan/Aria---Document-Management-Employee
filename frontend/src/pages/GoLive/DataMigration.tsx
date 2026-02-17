@@ -88,7 +88,7 @@ export default function DataMigration() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2"><Database className="h-6 w-6 text-indigo-600" />Data Migration</h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400">Import real data from CSV files</p>
+          <p className="text-sm text-gray-500 dark:text-gray-300">Import real data from CSV files</p>
         </div>
         <button onClick={fetchStatus} className="p-2 bg-white dark:bg-gray-800 rounded-lg border hover:shadow-md">
           <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />

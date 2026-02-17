@@ -34,7 +34,7 @@ export default function ThemeToggle({ variant = 'icon', className = '' }: ThemeT
           className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm transition-colors ${
             theme === 'light' 
               ? 'bg-white dark:bg-gray-700 shadow text-gray-900 dark:text-white' 
-              : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+              : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'
           }`}
         >
           <Sun className="h-4 w-4" />
@@ -45,7 +45,7 @@ export default function ThemeToggle({ variant = 'icon', className = '' }: ThemeT
           className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm transition-colors ${
             theme === 'dark' 
               ? 'bg-white dark:bg-gray-700 shadow text-gray-900 dark:text-white' 
-              : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+              : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'
           }`}
         >
           <Moon className="h-4 w-4" />
@@ -56,7 +56,7 @@ export default function ThemeToggle({ variant = 'icon', className = '' }: ThemeT
           className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm transition-colors ${
             theme === 'system' 
               ? 'bg-white dark:bg-gray-700 shadow text-gray-900 dark:text-white' 
-              : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+              : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'
           }`}
         >
           <Monitor className="h-4 w-4" />

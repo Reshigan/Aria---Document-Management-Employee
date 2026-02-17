@@ -94,7 +94,7 @@ export default function BbbeeComplianceReportPage() {
           <div className="flex gap-3 items-center">
             <button
               onClick={fetchBbbeeData}
-              className="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+              className="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
             >
               <RefreshCw className={`h-5 w-5 ${loading ? 'animate-spin' : ''}`} />
             </button>
@@ -116,19 +116,19 @@ export default function BbbeeComplianceReportPage() {
           <>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
               <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
-                <div className="text-sm font-medium text-gray-600 dark:text-gray-400">Current Level</div>
+                <div className="text-sm font-medium text-gray-600 dark:text-gray-300">Current Level</div>
                 <div className={`text-4xl font-bold mt-2 ${getLevelColor(data.current_level)}`}>Level {data.current_level}</div>
               </div>
               <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
-                <div className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Score</div>
+                <div className="text-sm font-medium text-gray-600 dark:text-gray-300">Total Score</div>
                 <div className="text-4xl font-bold text-indigo-600 dark:text-indigo-400 mt-2">{data.total_score}</div>
               </div>
               <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
-                <div className="text-sm font-medium text-gray-600 dark:text-gray-400">Procurement Recognition</div>
+                <div className="text-sm font-medium text-gray-600 dark:text-gray-300">Procurement Recognition</div>
                 <div className="text-4xl font-bold text-purple-600 dark:text-purple-400 mt-2">{data.procurement_recognition}%</div>
               </div>
               <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
-                <div className="text-sm font-medium text-gray-600 dark:text-gray-400">Certificate Expiry</div>
+                <div className="text-sm font-medium text-gray-600 dark:text-gray-300">Certificate Expiry</div>
                 <div className="text-xl font-bold text-gray-900 dark:text-white mt-2">{(data.certificate_expiry ? new Date(data.certificate_expiry).toLocaleDateString() : "-")}</div>
               </div>
             </div>
@@ -141,7 +141,7 @@ export default function BbbeeComplianceReportPage() {
                     <div className="flex justify-between text-sm mb-2">
                       <span className="font-medium text-gray-700 dark:text-gray-300">{element.name}</span>
                       <div className="flex items-center gap-3">
-                        <span className="text-gray-600 dark:text-gray-400">{element.achieved_points} / {element.max_points} points</span>
+                        <span className="text-gray-600 dark:text-gray-300">{element.achieved_points} / {element.max_points} points</span>
                         <span className={`font-bold ${
                           element.percentage >= 80 ? 'text-green-600 dark:text-green-400' :
                           element.percentage >= 60 ? 'text-yellow-600 dark:text-yellow-400' :
@@ -168,11 +168,11 @@ export default function BbbeeComplianceReportPage() {
               <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Verification Details</h3>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Verification Agency</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">Verification Agency</p>
                   <p className="font-medium text-gray-900 dark:text-white">{data.verification_agency}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Assessment Year</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">Assessment Year</p>
                   <p className="font-medium text-gray-900 dark:text-white">{data.year}</p>
                 </div>
               </div>
@@ -180,7 +180,7 @@ export default function BbbeeComplianceReportPage() {
           </>
         ) : (
           <div className="text-center py-12">
-            <p className="text-gray-600 dark:text-gray-400">No BBBEE data available</p>
+            <p className="text-gray-600 dark:text-gray-300">No BBBEE data available</p>
           </div>
         )}
       </div>

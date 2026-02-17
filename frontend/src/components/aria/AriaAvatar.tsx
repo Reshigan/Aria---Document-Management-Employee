@@ -130,7 +130,7 @@ export const AriaAvatar: React.FC<AriaAvatarProps> = ({
         <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">
           {getStatusText()}
         </p>
-        <p className="text-xs text-gray-500 dark:text-gray-400">
+        <p className="text-xs text-gray-500 dark:text-gray-300">
           AI Orchestrator
         </p>
       </div>

@@ -27,7 +27,7 @@ const BotBreakdown: React.FC<{ data?: any }> = ({ data }) => {
         {chartData.map((agent, idx) => (
           <div key={idx} className="text-center">
             <p className="text-2xl font-bold" style={{ color: agent.color }}>{agent.value}</p>
-            <p className="text-gray-400 text-xs">{agent.name}</p>
+            <p className="text-gray-300 text-xs">{agent.name}</p>
           </div>
         ))}
       </div>

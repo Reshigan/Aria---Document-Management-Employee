@@ -191,13 +191,9 @@ export function LineItemsTable({
         )}
       </div>
 
-      <div style={{ 
-        overflowX: 'auto',
-        border: '1px solid #e5e7eb',
-        borderRadius: '0.5rem'
-      }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-          <thead style={{ background: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
+      <div className="overflow-x-auto border border-gray-200 dark:border-gray-700 rounded-lg">
+        <table className="w-full" style={{ borderCollapse: 'collapse' }}>
+          <thead className="bg-gray-50 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700">
             <tr>
               <th style={{ padding: '0.75rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', width: '50px' }}>#</th>
               <th style={{ padding: '0.75rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', minWidth: '200px' }}>Product</th>
@@ -231,13 +227,12 @@ export function LineItemsTable({
                       <>
                         <div
                           onClick={() => setShowProductSearch(index)}
+                          className="bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white"
                           style={{
                             padding: '0.5rem',
-                            border: '1px solid #d1d5db',
                             borderRadius: '0.375rem',
                             fontSize: '0.875rem',
-                            cursor: 'pointer',
-                            background: 'white'
+                            cursor: 'pointer'
                           }}
                         >
                           {item.product_code ? (
@@ -253,21 +248,18 @@ export function LineItemsTable({
                           )}
                         </div>
                         {showProductSearch === index && (
-                          <div style={{
+                          <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 shadow-lg" style={{
                             position: 'absolute',
                             top: '100%',
                             left: 0,
                             zIndex: 50,
                             marginTop: '0.25rem',
                             width: '300px',
-                            background: 'white',
-                            border: '1px solid #d1d5db',
                             borderRadius: '0.5rem',
-                            boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)',
                             maxHeight: '300px',
                             overflow: 'auto'
                           }}>
-                            <div style={{ padding: '0.75rem', borderBottom: '1px solid #e5e7eb' }}>
+                            <div className="border-b border-gray-200 dark:border-gray-700" style={{ padding: '0.75rem' }}>
                               <input
                                 type="text"
                                 placeholder="Search products..."
@@ -277,10 +269,9 @@ export function LineItemsTable({
                                   onProductSearch?.(e.target.value);
                                 }}
                                 autoFocus
+                                className="w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white placeholder-gray-400"
                                 style={{
-                                  width: '100%',
                                   padding: '0.5rem',
-                                  border: '1px solid #d1d5db',
                                   borderRadius: '0.375rem',
                                   fontSize: '0.875rem'
                                 }}
@@ -297,8 +288,8 @@ export function LineItemsTable({
                                     borderBottom: '1px solid #f3f4f6',
                                     fontSize: '0.875rem'
                                   }}
-                                  onMouseEnter={(e) => e.currentTarget.style.background = '#f9fafb'}
-                                  onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
+                                  onMouseEnter={(e) => { e.currentTarget.style.background = document.documentElement.classList.contains('dark') ? '#374151' : '#f9fafb'; }}
+                                  onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
                                 >
                                   <div style={{ fontWeight: '500' }}>{product.code || ''}</div>
                                   <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>{product.name || ''}</div>
@@ -326,13 +317,7 @@ export function LineItemsTable({
                         type="text"
                         value={item.description || ''}
                         onChange={(e) => updateItem(index, { description: e.target.value })}
-                        style={{
-                          width: '100%',
-                          padding: '0.5rem',
-                          border: '1px solid #d1d5db',
-                          borderRadius: '0.375rem',
-                          fontSize: '0.875rem'
-                        }}
+                        className="w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-md text-sm px-2 py-1.5"
                       />
                     )}
                   </td>
@@ -346,14 +331,7 @@ export function LineItemsTable({
                         onChange={(e) => updateItem(index, { quantity: parseFloat(e.target.value) || 0 })}
                         min="0"
                         step="0.01"
-                        style={{
-                          width: '100%',
-                          padding: '0.5rem',
-                          border: '1px solid #d1d5db',
-                          borderRadius: '0.375rem',
-                          fontSize: '0.875rem',
-                          textAlign: 'right'
-                        }}
+                        className="w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-md text-sm px-2 py-1.5 text-right"
                       />
                     )}
                   </td>
@@ -372,14 +350,7 @@ export function LineItemsTable({
                                           onChange={(e) => updateItem(index, { unit_price: parseFloat(e.target.value) || 0 })}
                                           min="0"
                                           step="0.01"
-                                          style={{
-                                            width: '100%',
-                                            padding: '0.5rem',
-                                            border: '1px solid #d1d5db',
-                                            borderRadius: '0.375rem',
-                                            fontSize: '0.875rem',
-                                            textAlign: 'right'
-                                          }}
+                                          className="w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-md text-sm px-2 py-1.5 text-right"
                                         />
                                       )}
                                     </td>
@@ -394,14 +365,7 @@ export function LineItemsTable({
                         min="0"
                         max="100"
                         step="0.01"
-                        style={{
-                          width: '100%',
-                          padding: '0.5rem',
-                          border: '1px solid #d1d5db',
-                          borderRadius: '0.375rem',
-                          fontSize: '0.875rem',
-                          textAlign: 'right'
-                        }}
+                        className="w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-md text-sm px-2 py-1.5 text-right"
                       />
                     )}
                   </td>
@@ -416,14 +380,7 @@ export function LineItemsTable({
                         min="0"
                         max="100"
                         step="0.01"
-                        style={{
-                          width: '100%',
-                          padding: '0.5rem',
-                          border: '1px solid #d1d5db',
-                          borderRadius: '0.375rem',
-                          fontSize: '0.875rem',
-                          textAlign: 'right'
-                        }}
+                        className="w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-md text-sm px-2 py-1.5 text-right"
                       />
                     )}
                   </td>
@@ -454,16 +411,7 @@ export function LineItemsTable({
         </table>
       </div>
 
-      <div style={{
-        marginTop: '1rem',
-        padding: '1rem',
-        background: '#f9fafb',
-        borderRadius: '0.5rem',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'flex-end',
-        gap: '0.5rem'
-      }}>
+      <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-900/50 rounded-lg flex flex-col items-end gap-2">
         <div style={{ display: 'flex', justifyContent: 'space-between', width: '300px' }}>
           <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>Subtotal:</span>
           <span style={{ fontSize: '0.875rem', fontWeight: '500' }}>R {Number(subtotal ?? 0).toFixed(2)}</span>

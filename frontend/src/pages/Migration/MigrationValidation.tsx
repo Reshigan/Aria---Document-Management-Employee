@@ -131,28 +131,28 @@ export default function MigrationValidation() {
           <ShieldCheck size={28} className="text-purple-500" />
           Data Validation
         </h1>
-        <p className="text-gray-600 dark:text-gray-400 mt-1">Review and fix data quality issues before migration</p>
+        <p className="text-gray-600 dark:text-gray-300 mt-1">Review and fix data quality issues before migration</p>
       </div>
 
       <div className="grid grid-cols-4 gap-3 mb-6">
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
-          <div className="text-xs text-gray-500 dark:text-gray-400">Total Records</div>
+          <div className="text-xs text-gray-500 dark:text-gray-300">Total Records</div>
           <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">{results.length}</div>
         </div>
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
-          <div className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
+          <div className="text-xs text-gray-500 dark:text-gray-300 flex items-center gap-1">
             <CheckCircle size={14} className="text-green-600 dark:text-green-400" /> Valid
           </div>
           <div className="text-2xl font-bold text-green-600 dark:text-green-400">{validCount}</div>
         </div>
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
-          <div className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
+          <div className="text-xs text-gray-500 dark:text-gray-300 flex items-center gap-1">
             <AlertTriangle size={14} className="text-yellow-600 dark:text-yellow-400" /> Warnings
           </div>
           <div className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">{warningCount}</div>
         </div>
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
-          <div className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
+          <div className="text-xs text-gray-500 dark:text-gray-300 flex items-center gap-1">
             <XCircle size={14} className="text-red-600 dark:text-red-400" /> Errors
           </div>
           <div className="text-2xl font-bold text-red-600 dark:text-red-400">{errorCount}</div>
@@ -162,7 +162,7 @@ export default function MigrationValidation() {
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
         <div className="p-4 border-b flex gap-3 flex-wrap">
           <div className="flex-1 min-w-[200px] relative">
-            <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+            <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-300" />
             <input
               type="text"
               placeholder="Search by job or record..."
@@ -206,11 +206,11 @@ export default function MigrationValidation() {
           <table className="w-full">
             <thead className="bg-gray-50 dark:bg-gray-900">
               <tr>
-                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Record</th>
-                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Job</th>
-                <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Status</th>
-                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Issues</th>
-                <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Actions</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Record</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Job</th>
+                <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Status</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Issues</th>
+                <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
@@ -219,7 +219,7 @@ export default function MigrationValidation() {
                   <td className="px-6 py-4">
                     <div className="font-medium text-gray-900 dark:text-white">#{result.record_number}</div>
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
+                  <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">
                     {result.job_name || result.job_id}
                   </td>
                   <td className="px-6 py-4 text-center">
@@ -256,7 +256,7 @@ export default function MigrationValidation() {
             </tbody>
           </table>
           {filteredResults.length === 0 && (
-            <div className="p-8 text-center text-gray-500 dark:text-gray-400">
+            <div className="p-8 text-center text-gray-500 dark:text-gray-300">
               {searchTerm || filterJob || filterStatus 
                 ? 'No validation results found matching your criteria' 
                 : 'No validation results yet. Run a migration job to see results.'}
@@ -271,7 +271,7 @@ export default function MigrationValidation() {
             <div className="flex justify-between items-start mb-4">
               <div>
                 <h2 className="text-xl font-bold">Record #{selectedResult.record_number}</h2>
-                <p className="text-xs text-gray-500 dark:text-gray-400">{selectedResult.job_name}</p>
+                <p className="text-xs text-gray-500 dark:text-gray-300">{selectedResult.job_name}</p>
               </div>
               <span className={`inline-flex items-center gap-1 px-2 py-1 text-xs rounded-full ${statusColors[selectedResult.validation_status]}`}>
                 {statusIcons[selectedResult.validation_status]}

@@ -155,7 +155,7 @@ export default function FieldService() {
 
   const getPriorityBadge = (priority: string) => {
     const styles: Record<string, string> = {
-      low: 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-600',
+      low: 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-600',
       medium: 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800',
       high: 'bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 border-orange-200 dark:border-orange-800',
       urgent: 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 border-red-200 dark:border-red-800',
@@ -222,27 +222,27 @@ export default function FieldService() {
               {activeTab === 'requests' && selectedItem && 'request_number' in selectedItem && (
                 <>
                   <div className="grid grid-cols-2 gap-3">
-                    <div><p className="text-xs text-gray-500 dark:text-gray-400">Request #</p><p className="font-semibold text-gray-900 dark:text-white">{selectedItem.request_number}</p></div>
-                    <div><p className="text-xs text-gray-500 dark:text-gray-400">Customer</p><p className="font-semibold text-gray-900 dark:text-white">{selectedItem.customer_name}</p></div>
-                    <div><p className="text-xs text-gray-500 dark:text-gray-400">Type</p><p className="font-semibold text-gray-900 dark:text-white capitalize">{selectedItem.request_type}</p></div>
-                    <div><p className="text-xs text-gray-500 dark:text-gray-400">Priority</p><span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${getPriorityBadge(selectedItem.priority)}`}>{selectedItem.priority}</span></div>
-                    <div><p className="text-xs text-gray-500 dark:text-gray-400">Status</p><span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${getStatusBadge(selectedItem.status)}`}>{selectedItem.status}</span></div>
-                    <div><p className="text-xs text-gray-500 dark:text-gray-400">Reported</p><p className="font-semibold text-gray-900 dark:text-white">{(selectedItem.reported_date ? new Date(selectedItem.reported_date).toLocaleDateString() : "-")}</p></div>
+                    <div><p className="text-xs text-gray-500 dark:text-gray-300">Request #</p><p className="font-semibold text-gray-900 dark:text-white">{selectedItem.request_number}</p></div>
+                    <div><p className="text-xs text-gray-500 dark:text-gray-300">Customer</p><p className="font-semibold text-gray-900 dark:text-white">{selectedItem.customer_name}</p></div>
+                    <div><p className="text-xs text-gray-500 dark:text-gray-300">Type</p><p className="font-semibold text-gray-900 dark:text-white capitalize">{selectedItem.request_type}</p></div>
+                    <div><p className="text-xs text-gray-500 dark:text-gray-300">Priority</p><span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${getPriorityBadge(selectedItem.priority)}`}>{selectedItem.priority}</span></div>
+                    <div><p className="text-xs text-gray-500 dark:text-gray-300">Status</p><span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${getStatusBadge(selectedItem.status)}`}>{selectedItem.status}</span></div>
+                    <div><p className="text-xs text-gray-500 dark:text-gray-300">Reported</p><p className="font-semibold text-gray-900 dark:text-white">{(selectedItem.reported_date ? new Date(selectedItem.reported_date).toLocaleDateString() : "-")}</p></div>
                   </div>
-                  <div><p className="text-xs text-gray-500 dark:text-gray-400">Description</p><p className="text-gray-900 dark:text-white">{selectedItem.description || 'No description'}</p></div>
+                  <div><p className="text-xs text-gray-500 dark:text-gray-300">Description</p><p className="text-gray-900 dark:text-white">{selectedItem.description || 'No description'}</p></div>
                 </>
               )}
               {activeTab === 'workorders' && selectedItem && 'work_order_number' in selectedItem && (
                 <>
                   <div className="grid grid-cols-2 gap-3">
-                    <div><p className="text-xs text-gray-500 dark:text-gray-400">WO #</p><p className="font-semibold text-gray-900 dark:text-white">{selectedItem.work_order_number}</p></div>
-                    <div><p className="text-xs text-gray-500 dark:text-gray-400">Customer</p><p className="font-semibold text-gray-900 dark:text-white">{selectedItem.customer_name}</p></div>
-                    <div><p className="text-xs text-gray-500 dark:text-gray-400">Work Type</p><p className="font-semibold text-gray-900 dark:text-white capitalize">{selectedItem.work_type}</p></div>
-                    <div><p className="text-xs text-gray-500 dark:text-gray-400">Priority</p><span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${getPriorityBadge(selectedItem.priority)}`}>{selectedItem.priority}</span></div>
-                    <div><p className="text-xs text-gray-500 dark:text-gray-400">Status</p><span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${getStatusBadge(selectedItem.status)}`}>{selectedItem.status}</span></div>
-                    <div><p className="text-xs text-gray-500 dark:text-gray-400">Scheduled</p><p className="font-semibold text-gray-900 dark:text-white">{selectedItem.scheduled_date ? new Date(selectedItem.scheduled_date).toLocaleDateString() : '-'}</p></div>
-                    <div><p className="text-xs text-gray-500 dark:text-gray-400">Technician</p><p className="font-semibold text-gray-900 dark:text-white">{selectedItem.technician_name || 'Unassigned'}</p></div>
-                    <div><p className="text-xs text-gray-500 dark:text-gray-400">Total Cost</p><p className="font-semibold text-gray-900 dark:text-white">R {(selectedItem.total_cost || 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p></div>
+                    <div><p className="text-xs text-gray-500 dark:text-gray-300">WO #</p><p className="font-semibold text-gray-900 dark:text-white">{selectedItem.work_order_number}</p></div>
+                    <div><p className="text-xs text-gray-500 dark:text-gray-300">Customer</p><p className="font-semibold text-gray-900 dark:text-white">{selectedItem.customer_name}</p></div>
+                    <div><p className="text-xs text-gray-500 dark:text-gray-300">Work Type</p><p className="font-semibold text-gray-900 dark:text-white capitalize">{selectedItem.work_type}</p></div>
+                    <div><p className="text-xs text-gray-500 dark:text-gray-300">Priority</p><span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${getPriorityBadge(selectedItem.priority)}`}>{selectedItem.priority}</span></div>
+                    <div><p className="text-xs text-gray-500 dark:text-gray-300">Status</p><span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${getStatusBadge(selectedItem.status)}`}>{selectedItem.status}</span></div>
+                    <div><p className="text-xs text-gray-500 dark:text-gray-300">Scheduled</p><p className="font-semibold text-gray-900 dark:text-white">{selectedItem.scheduled_date ? new Date(selectedItem.scheduled_date).toLocaleDateString() : '-'}</p></div>
+                    <div><p className="text-xs text-gray-500 dark:text-gray-300">Technician</p><p className="font-semibold text-gray-900 dark:text-white">{selectedItem.technician_name || 'Unassigned'}</p></div>
+                    <div><p className="text-xs text-gray-500 dark:text-gray-300">Total Cost</p><p className="font-semibold text-gray-900 dark:text-white">R {(selectedItem.total_cost || 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p></div>
                   </div>
                 </>
               )}
@@ -327,11 +327,11 @@ export default function FieldService() {
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
           <div>
             <h1 className="text-2xl font-bold bg-gradient-to-r from-cyan-600 to-teal-600 bg-clip-text text-transparent">Field Service</h1>
-            <p className="text-gray-500 dark:text-gray-400 mt-1">Manage service requests and field work orders</p>
+            <p className="text-gray-500 dark:text-gray-300 mt-1">Manage service requests and field work orders</p>
           </div>
           <div className="flex items-center gap-3">
             <button onClick={() => loadData()} className="p-3 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-200 dark:border-gray-700">
-              <RefreshCw className={`h-5 w-5 text-gray-600 dark:text-gray-400 ${loading ? 'animate-spin' : ''}`} />
+              <RefreshCw className={`h-5 w-5 text-gray-600 dark:text-gray-300 ${loading ? 'animate-spin' : ''}`} />
             </button>
             <button onClick={handleCreate} className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-cyan-600 to-teal-600 text-white rounded-xl font-medium hover:from-cyan-700 hover:to-teal-700 transition-all ">
               <Plus className="h-5 w-5" />Create {activeTab === 'requests' ? 'Request' : 'Work Order'}
@@ -348,8 +348,8 @@ export default function FieldService() {
         )}
 
         <div className="flex gap-2 border-b border-gray-200 dark:border-gray-700">
-          <button onClick={() => setActiveTab('requests')} className={`px-4 py-2 font-medium transition-all ${activeTab === 'requests' ? 'text-cyan-600 dark:text-cyan-400 border-b-2 border-cyan-600 dark:border-cyan-400' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'}`}>Service Requests</button>
-          <button onClick={() => setActiveTab('workorders')} className={`px-4 py-2 font-medium transition-all ${activeTab === 'workorders' ? 'text-cyan-600 dark:text-cyan-400 border-b-2 border-cyan-600 dark:border-cyan-400' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'}`}>Work Orders</button>
+          <button onClick={() => setActiveTab('requests')} className={`px-4 py-2 font-medium transition-all ${activeTab === 'requests' ? 'text-cyan-600 dark:text-cyan-400 border-b-2 border-cyan-600 dark:border-cyan-400' : 'text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-300'}`}>Service Requests</button>
+          <button onClick={() => setActiveTab('workorders')} className={`px-4 py-2 font-medium transition-all ${activeTab === 'workorders' ? 'text-cyan-600 dark:text-cyan-400 border-b-2 border-cyan-600 dark:border-cyan-400' : 'text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-300'}`}>Work Orders</button>
         </div>
 
         {activeTab === 'requests' ? (
@@ -357,31 +357,31 @@ export default function FieldService() {
             <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-gradient-to-br from-cyan-500 to-teal-500 rounded-xl "><Wrench className="h-5 w-5 text-white" /></div>
-                <div><p className="text-xl font-bold text-gray-900 dark:text-white">{requestStats.total}</p><p className="text-xs text-gray-500 dark:text-gray-400">Total Requests</p></div>
+                <div><p className="text-xl font-bold text-gray-900 dark:text-white">{requestStats.total}</p><p className="text-xs text-gray-500 dark:text-gray-300">Total Requests</p></div>
               </div>
             </div>
             <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl "><Clock className="h-5 w-5 text-white" /></div>
-                <div><p className="text-xl font-bold text-gray-900 dark:text-white">{requestStats.new}</p><p className="text-xs text-gray-500 dark:text-gray-400">New</p></div>
+                <div><p className="text-xl font-bold text-gray-900 dark:text-white">{requestStats.new}</p><p className="text-xs text-gray-500 dark:text-gray-300">New</p></div>
               </div>
             </div>
             <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-gradient-to-br from-purple-500 to-violet-500 rounded-xl "><Users className="h-5 w-5 text-white" /></div>
-                <div><p className="text-xl font-bold text-gray-900 dark:text-white">{requestStats.assigned}</p><p className="text-xs text-gray-500 dark:text-gray-400">Assigned</p></div>
+                <div><p className="text-xl font-bold text-gray-900 dark:text-white">{requestStats.assigned}</p><p className="text-xs text-gray-500 dark:text-gray-300">Assigned</p></div>
               </div>
             </div>
             <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl "><Truck className="h-5 w-5 text-white" /></div>
-                <div><p className="text-xl font-bold text-gray-900 dark:text-white">{requestStats.in_progress}</p><p className="text-xs text-gray-500 dark:text-gray-400">In Progress</p></div>
+                <div><p className="text-xl font-bold text-gray-900 dark:text-white">{requestStats.in_progress}</p><p className="text-xs text-gray-500 dark:text-gray-300">In Progress</p></div>
               </div>
             </div>
             <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl "><CheckCircle className="h-5 w-5 text-white" /></div>
-                <div><p className="text-xl font-bold text-gray-900 dark:text-white">{requestStats.completed}</p><p className="text-xs text-gray-500 dark:text-gray-400">Completed</p></div>
+                <div><p className="text-xl font-bold text-gray-900 dark:text-white">{requestStats.completed}</p><p className="text-xs text-gray-500 dark:text-gray-300">Completed</p></div>
               </div>
             </div>
           </div>
@@ -390,31 +390,31 @@ export default function FieldService() {
             <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-gradient-to-br from-cyan-500 to-teal-500 rounded-xl "><Wrench className="h-5 w-5 text-white" /></div>
-                <div><p className="text-xl font-bold text-gray-900 dark:text-white">{woStats.total}</p><p className="text-xs text-gray-500 dark:text-gray-400">Total WOs</p></div>
+                <div><p className="text-xl font-bold text-gray-900 dark:text-white">{woStats.total}</p><p className="text-xs text-gray-500 dark:text-gray-300">Total WOs</p></div>
               </div>
             </div>
             <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl "><Calendar className="h-5 w-5 text-white" /></div>
-                <div><p className="text-xl font-bold text-gray-900 dark:text-white">{woStats.scheduled}</p><p className="text-xs text-gray-500 dark:text-gray-400">Scheduled</p></div>
+                <div><p className="text-xl font-bold text-gray-900 dark:text-white">{woStats.scheduled}</p><p className="text-xs text-gray-500 dark:text-gray-300">Scheduled</p></div>
               </div>
             </div>
             <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-gradient-to-br from-purple-500 to-violet-500 rounded-xl "><Send className="h-5 w-5 text-white" /></div>
-                <div><p className="text-xl font-bold text-gray-900 dark:text-white">{woStats.dispatched}</p><p className="text-xs text-gray-500 dark:text-gray-400">Dispatched</p></div>
+                <div><p className="text-xl font-bold text-gray-900 dark:text-white">{woStats.dispatched}</p><p className="text-xs text-gray-500 dark:text-gray-300">Dispatched</p></div>
               </div>
             </div>
             <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl "><Truck className="h-5 w-5 text-white" /></div>
-                <div><p className="text-xl font-bold text-gray-900 dark:text-white">{woStats.in_progress}</p><p className="text-xs text-gray-500 dark:text-gray-400">In Progress</p></div>
+                <div><p className="text-xl font-bold text-gray-900 dark:text-white">{woStats.in_progress}</p><p className="text-xs text-gray-500 dark:text-gray-300">In Progress</p></div>
               </div>
             </div>
             <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl "><CheckCircle className="h-5 w-5 text-white" /></div>
-                <div><p className="text-xl font-bold text-gray-900 dark:text-white">{woStats.completed}</p><p className="text-xs text-gray-500 dark:text-gray-400">Completed</p></div>
+                <div><p className="text-xl font-bold text-gray-900 dark:text-white">{woStats.completed}</p><p className="text-xs text-gray-500 dark:text-gray-300">Completed</p></div>
               </div>
             </div>
           </div>
@@ -424,7 +424,7 @@ export default function FieldService() {
           <div className="p-3 border-b border-gray-100 dark:border-gray-700">
             <div className="flex flex-col md:flex-row gap-3">
               <div className="flex-1 relative">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-300" />
                 <input type="text" placeholder={`Search by ${activeTab === 'requests' ? 'request' : 'work order'} number or customer...`} value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-12 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all" />
               </div>
               <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all min-w-[150px]">
@@ -454,14 +454,14 @@ export default function FieldService() {
           {loading ? (
             <div className="p-12 text-center">
               <RefreshCw className="h-8 w-8 animate-spin text-cyan-500 mx-auto mb-4" />
-              <p className="text-gray-500 dark:text-gray-400">Loading...</p>
+              <p className="text-gray-500 dark:text-gray-300">Loading...</p>
             </div>
           ) : activeTab === 'requests' ? (
             filteredRequests.length === 0 ? (
               <div className="p-12 text-center">
-                <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-2xl flex items-center justify-center mx-auto mb-4"><Wrench className="h-8 w-8 text-gray-400" /></div>
+                <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-2xl flex items-center justify-center mx-auto mb-4"><Wrench className="h-8 w-8 text-gray-300" /></div>
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No service requests found</h3>
-                <p className="text-gray-500 dark:text-gray-400 mb-6">{searchTerm || statusFilter ? 'Try adjusting your filters' : 'Get started by creating your first service request'}</p>
+                <p className="text-gray-500 dark:text-gray-300 mb-6">{searchTerm || statusFilter ? 'Try adjusting your filters' : 'Get started by creating your first service request'}</p>
                 {!searchTerm && !statusFilter && (
                   <button onClick={handleCreate} className="px-4 py-2 bg-gradient-to-r from-cyan-600 to-teal-600 text-white rounded-xl font-medium hover:from-cyan-700 hover:to-teal-700 transition-all">Create First Request</button>
                 )}
@@ -471,13 +471,13 @@ export default function FieldService() {
                 <table className="w-full">
                   <thead className="bg-gray-50 dark:bg-gray-900/50">
                     <tr>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Request #</th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Customer</th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Type</th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Priority</th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Reported</th>
-                      <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Request #</th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Customer</th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Type</th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Priority</th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Reported</th>
+                      <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
@@ -503,9 +503,9 @@ export default function FieldService() {
           ) : (
             filteredWorkOrders.length === 0 ? (
               <div className="p-12 text-center">
-                <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-2xl flex items-center justify-center mx-auto mb-4"><Wrench className="h-8 w-8 text-gray-400" /></div>
+                <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-2xl flex items-center justify-center mx-auto mb-4"><Wrench className="h-8 w-8 text-gray-300" /></div>
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No work orders found</h3>
-                <p className="text-gray-500 dark:text-gray-400 mb-6">{searchTerm || statusFilter ? 'Try adjusting your filters' : 'Get started by creating your first work order'}</p>
+                <p className="text-gray-500 dark:text-gray-300 mb-6">{searchTerm || statusFilter ? 'Try adjusting your filters' : 'Get started by creating your first work order'}</p>
                 {!searchTerm && !statusFilter && (
                   <button onClick={handleCreate} className="px-4 py-2 bg-gradient-to-r from-cyan-600 to-teal-600 text-white rounded-xl font-medium hover:from-cyan-700 hover:to-teal-700 transition-all">Create First Work Order</button>
                 )}
@@ -515,13 +515,13 @@ export default function FieldService() {
                 <table className="w-full">
                   <thead className="bg-gray-50 dark:bg-gray-900/50">
                     <tr>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">WO #</th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Customer</th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Work Type</th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Priority</th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Scheduled</th>
-                      <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">WO #</th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Customer</th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Work Type</th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Priority</th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Scheduled</th>
+                      <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-100 dark:divide-gray-700">

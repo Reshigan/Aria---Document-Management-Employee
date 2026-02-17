@@ -599,14 +599,6 @@ const leaveTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
             <Bot size={14} />
             <span>Agents</span>
           </Link>
-
-          <Link 
-            to="/admin/system" 
-            className={`mega-menu-item ${isActive('/admin') ? 'active' : ''}`}
-          >
-            <Shield size={14} />
-            <span>Admin</span>
-          </Link>
         </nav>
 
                 <div className="mega-menu-user" data-testid="user-menu">

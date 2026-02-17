@@ -189,7 +189,7 @@ export default function SystemSettingsPage() {
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
           <div className="p-4 border-b border-gray-100 dark:border-gray-700">
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white">System Audit Logs</h2>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">Track all system activities and user actions</p>
+            <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">Track all system activities and user actions</p>
           </div>
           <DataTable data={auditLogs} columns={auditColumns} searchable={true} exportable={true} exportFilename="audit-logs" />
         </div>
@@ -406,7 +406,7 @@ export default function SystemSettingsPage() {
           <div className="flex items-center justify-between mb-6">
             <div>
               <h3 className="text-lg font-medium">API Keys</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">Manage API keys for external integrations</p>
+              <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">Manage API keys for external integrations</p>
             </div>
             <Button onClick={() => setShowNewKeyModal(true)} className="bg-blue-600 dark:bg-blue-500 text-white">
               <Plus className="h-4 w-4 mr-2" />Create API Key
@@ -428,8 +428,8 @@ export default function SystemSettingsPage() {
             </div>
           ) : (
             <div className="text-center py-12">
-              <Key className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-600 dark:text-gray-400">No API keys created yet</p>
+              <Key className="h-12 w-12 text-gray-300 mx-auto mb-4" />
+              <p className="text-gray-600 dark:text-gray-300">No API keys created yet</p>
             </div>
           )}
           {showNewKeyModal && (

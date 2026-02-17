@@ -506,11 +506,11 @@ export default function InvoiceDetail() {
             <TransactionCard title="Payment Status">
               <div className="flex flex-col gap-3">
                 <div className="flex justify-between">
-                  <span className="text-gray-500 dark:text-gray-400">Total Amount:</span>
+                  <span className="text-gray-500 dark:text-gray-300">Total Amount:</span>
                   <span className="font-medium text-gray-900 dark:text-white">R {Number(invoice.total_amount ?? 0).toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-500 dark:text-gray-400">Amount Paid:</span>
+                  <span className="text-gray-500 dark:text-gray-300">Amount Paid:</span>
                   <span className="font-medium text-emerald-600 dark:text-emerald-400">R {Number(invoice.amount_paid ?? 0).toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between pt-3 border-t-2 border-gray-200 dark:border-gray-700 text-lg font-semibold">
@@ -533,11 +533,11 @@ export default function InvoiceDetail() {
           <TransactionCard title="Totals">
             <div className="flex flex-col gap-3">
               <div className="flex justify-between">
-                <span className="text-gray-500 dark:text-gray-400">Subtotal:</span>
+                <span className="text-gray-500 dark:text-gray-300">Subtotal:</span>
                 <span className="font-medium text-gray-900 dark:text-white">R {Number(totals.subtotal ?? 0).toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-500 dark:text-gray-400">Tax (VAT):</span>
+                <span className="text-gray-500 dark:text-gray-300">Tax (VAT):</span>
                 <span className="font-medium text-gray-900 dark:text-white">R {Number(totals.taxAmount ?? 0).toFixed(2)}</span>
               </div>
               <div className="flex justify-between pt-3 border-t-2 border-gray-200 dark:border-gray-700 text-lg font-semibold">
@@ -564,12 +564,12 @@ export default function InvoiceDetail() {
             <TransactionCard title="Metadata">
               <div className="flex flex-col gap-2 text-sm">
                 <div>
-                  <span className="text-gray-500 dark:text-gray-400">Created:</span>
+                  <span className="text-gray-500 dark:text-gray-300">Created:</span>
                   <br />
                   <span className="text-gray-900 dark:text-white">{invoice.created_at ? new Date(invoice.created_at).toLocaleString() : '-'}</span>
                 </div>
                 <div>
-                  <span className="text-gray-500 dark:text-gray-400">Last Updated:</span>
+                  <span className="text-gray-500 dark:text-gray-300">Last Updated:</span>
                   <br />
                   <span className="text-gray-900 dark:text-white">{invoice.updated_at ? new Date(invoice.updated_at).toLocaleString() : '-'}</span>
                 </div>
@@ -588,7 +588,7 @@ export default function InvoiceDetail() {
                 <Mail size={20} />
                 Send Invoice via Email
               </h2>
-              <button onClick={() => setShowEmailModal(false)} className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+              <button onClick={() => setShowEmailModal(false)} className="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-200">
                 <X size={20} />
               </button>
             </div>

@@ -386,7 +386,7 @@ const BankingDashboard: React.FC = () => {
           </div>
           <div>
             <h1 className="text-xl font-bold text-gray-900 dark:text-white">Banking & Cash Management</h1>
-            <p className="text-gray-600 dark:text-gray-400">Manage bank accounts, transactions, and reconciliations</p>
+            <p className="text-gray-600 dark:text-gray-300">Manage bank accounts, transactions, and reconciliations</p>
           </div>
         </div>
       </div>
@@ -406,7 +406,7 @@ const BankingDashboard: React.FC = () => {
             className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium transition-all ${
               activeTab === 'accounts'
                 ? 'bg-gradient-to-r from-teal-500 to-cyan-500 text-white '
-                : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
+                : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
             }`}
           >
             <CreditCard className="h-4 w-4" />
@@ -417,7 +417,7 @@ const BankingDashboard: React.FC = () => {
             className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium transition-all ${
               activeTab === 'transactions'
                 ? 'bg-gradient-to-r from-teal-500 to-cyan-500 text-white '
-                : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
+                : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
             }`}
           >
             <ArrowUpDown className="h-4 w-4" />
@@ -428,7 +428,7 @@ const BankingDashboard: React.FC = () => {
             className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium transition-all ${
               activeTab === 'reconciliation'
                 ? 'bg-gradient-to-r from-teal-500 to-cyan-500 text-white '
-                : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
+                : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
             }`}
           >
             <CheckCircle className="h-4 w-4" />
@@ -443,7 +443,7 @@ const BankingDashboard: React.FC = () => {
           {/* Actions Bar */}
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-6">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-300" />
               <input
                 type="text"
                 placeholder="Search bank accounts..."
@@ -470,7 +470,7 @@ const BankingDashboard: React.FC = () => {
                 </div>
                 <div>
                   <p className="text-xl font-bold text-gray-900 dark:text-white">{accounts.length}</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">Total Accounts</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-300">Total Accounts</p>
                 </div>
               </div>
             </div>
@@ -481,7 +481,7 @@ const BankingDashboard: React.FC = () => {
                 </div>
                 <div>
                   <p className="text-xl font-bold text-gray-900 dark:text-white">{accounts.filter(a => a.is_active).length}</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">Active Accounts</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-300">Active Accounts</p>
                 </div>
               </div>
             </div>
@@ -494,7 +494,7 @@ const BankingDashboard: React.FC = () => {
                   <p className="text-xl font-bold text-gray-900 dark:text-white">
                     {formatCurrency(accounts.filter(a => a.currency === 'ZAR').reduce((sum, a) => sum + Number(a.balance ?? 0), 0))}
                   </p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">Total Balance (ZAR)</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-300">Total Balance (ZAR)</p>
                 </div>
               </div>
             </div>
@@ -505,7 +505,7 @@ const BankingDashboard: React.FC = () => {
                 </div>
                 <div>
                   <p className="text-xl font-bold text-gray-900 dark:text-white">{accounts.filter(a => a.currency !== 'ZAR').length}</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">Foreign Currency</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-300">Foreign Currency</p>
                 </div>
               </div>
             </div>
@@ -528,11 +528,11 @@ const BankingDashboard: React.FC = () => {
               <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
                 {accountsLoading ? (
                   <tr>
-                    <td colSpan={7} className="px-6 py-12 text-center text-gray-500 dark:text-gray-400">Loading bank accounts...</td>
+                    <td colSpan={7} className="px-6 py-12 text-center text-gray-500 dark:text-gray-300">Loading bank accounts...</td>
                   </tr>
                 ) : filteredAccounts.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="px-6 py-12 text-center text-gray-500 dark:text-gray-400">No bank accounts found</td>
+                    <td colSpan={7} className="px-6 py-12 text-center text-gray-500 dark:text-gray-300">No bank accounts found</td>
                   </tr>
                 ) : (
                   filteredAccounts.map((account) => (
@@ -572,7 +572,7 @@ const BankingDashboard: React.FC = () => {
           {/* Actions Bar */}
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-6">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-300" />
               <input
                 type="text"
                 placeholder="Search transactions..."
@@ -599,7 +599,7 @@ const BankingDashboard: React.FC = () => {
                 </div>
                 <div>
                   <p className="text-xl font-bold text-gray-900 dark:text-white">{transactions.length}</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">Total Transactions</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-300">Total Transactions</p>
                 </div>
               </div>
             </div>
@@ -612,7 +612,7 @@ const BankingDashboard: React.FC = () => {
                   <p className="text-xl font-bold text-gray-900 dark:text-white">
                     {formatCurrency(transactions.reduce((sum, t) => sum + Number(t.debit ?? 0), 0))}
                   </p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">Total Debits</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-300">Total Debits</p>
                 </div>
               </div>
             </div>
@@ -625,7 +625,7 @@ const BankingDashboard: React.FC = () => {
                   <p className="text-xl font-bold text-gray-900 dark:text-white">
                     {formatCurrency(transactions.reduce((sum, t) => sum + Number(t.credit ?? 0), 0))}
                   </p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">Total Credits</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-300">Total Credits</p>
                 </div>
               </div>
             </div>
@@ -636,7 +636,7 @@ const BankingDashboard: React.FC = () => {
                 </div>
                 <div>
                   <p className="text-xl font-bold text-gray-900 dark:text-white">{transactions.filter(t => !t.reconciled).length}</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">Unreconciled</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-300">Unreconciled</p>
                 </div>
               </div>
             </div>
@@ -661,11 +661,11 @@ const BankingDashboard: React.FC = () => {
               <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
                 {transactionsLoading ? (
                   <tr>
-                    <td colSpan={9} className="px-6 py-12 text-center text-gray-500 dark:text-gray-400">Loading transactions...</td>
+                    <td colSpan={9} className="px-6 py-12 text-center text-gray-500 dark:text-gray-300">Loading transactions...</td>
                   </tr>
                 ) : filteredTransactions.length === 0 ? (
                   <tr>
-                    <td colSpan={9} className="px-6 py-12 text-center text-gray-500 dark:text-gray-400">No transactions found</td>
+                    <td colSpan={9} className="px-6 py-12 text-center text-gray-500 dark:text-gray-300">No transactions found</td>
                   </tr>
                 ) : (
                   filteredTransactions.map((transaction) => (
@@ -723,7 +723,7 @@ const BankingDashboard: React.FC = () => {
           {/* Actions Bar */}
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-6">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-300" />
               <input
                 type="text"
                 placeholder="Search reconciliations..."
@@ -750,7 +750,7 @@ const BankingDashboard: React.FC = () => {
                 </div>
                 <div>
                   <p className="text-xl font-bold text-gray-900 dark:text-white">{reconciliations.length}</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">Total Reconciliations</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-300">Total Reconciliations</p>
                 </div>
               </div>
             </div>
@@ -761,7 +761,7 @@ const BankingDashboard: React.FC = () => {
                 </div>
                 <div>
                   <p className="text-xl font-bold text-gray-900 dark:text-white">{reconciliations.filter(r => r.status === 'IN_PROGRESS').length}</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">In Progress</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-300">In Progress</p>
                 </div>
               </div>
             </div>
@@ -772,7 +772,7 @@ const BankingDashboard: React.FC = () => {
                 </div>
                 <div>
                   <p className="text-xl font-bold text-gray-900 dark:text-white">{reconciliations.filter(r => r.status === 'COMPLETED').length}</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">Completed</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-300">Completed</p>
                 </div>
               </div>
             </div>
@@ -796,11 +796,11 @@ const BankingDashboard: React.FC = () => {
               <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
                 {reconciliationsLoading ? (
                   <tr>
-                    <td colSpan={8} className="px-6 py-12 text-center text-gray-500 dark:text-gray-400">Loading reconciliations...</td>
+                    <td colSpan={8} className="px-6 py-12 text-center text-gray-500 dark:text-gray-300">Loading reconciliations...</td>
                   </tr>
                 ) : filteredReconciliations.length === 0 ? (
                   <tr>
-                    <td colSpan={8} className="px-6 py-12 text-center text-gray-500 dark:text-gray-400">No reconciliations found</td>
+                    <td colSpan={8} className="px-6 py-12 text-center text-gray-500 dark:text-gray-300">No reconciliations found</td>
                   </tr>
                 ) : (
                   filteredReconciliations.map((reconciliation) => (

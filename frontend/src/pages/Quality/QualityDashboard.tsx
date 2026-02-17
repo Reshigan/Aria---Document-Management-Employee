@@ -147,7 +147,7 @@ const QualityDashboard: React.FC = () => {
       <div className="mx-auto">
         <div className="mb-8">
           <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Quality Management</h1>
-          <p className="text-gray-500 dark:text-gray-400 mt-1">Monitor quality inspections and metrics</p>
+          <p className="text-gray-500 dark:text-gray-300 mt-1">Monitor quality inspections and metrics</p>
         </div>
 
         {error && (
@@ -158,19 +158,19 @@ const QualityDashboard: React.FC = () => {
 
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
           <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
-            <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Quality Score</div>
+            <div className="text-xs text-gray-500 dark:text-gray-300 mb-1">Quality Score</div>
             <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">{metrics.overall_quality_score}%</div>
           </div>
           <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
-            <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Completed</div>
+            <div className="text-xs text-gray-500 dark:text-gray-300 mb-1">Completed</div>
             <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{metrics.inspections_completed}</div>
           </div>
           <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
-            <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Pass Rate</div>
+            <div className="text-xs text-gray-500 dark:text-gray-300 mb-1">Pass Rate</div>
             <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">{metrics.pass_rate}%</div>
           </div>
           <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
-            <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Non-Conformances</div>
+            <div className="text-xs text-gray-500 dark:text-gray-300 mb-1">Non-Conformances</div>
             <div className="text-2xl font-bold text-red-600 dark:text-red-400">{metrics.non_conformances}</div>
           </div>
         </div>
@@ -190,32 +190,32 @@ const QualityDashboard: React.FC = () => {
           <table className="w-full" data-testid="inspections-table">
             <thead className="bg-gray-50 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700">
               <tr>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Inspection #</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Type</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Product</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Batch</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Inspector</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Date</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Defects</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Status</th>
-                <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Actions</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase">Inspection #</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase">Type</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase">Product</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase">Batch</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase">Inspector</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase">Date</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase">Defects</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase">Status</th>
+                <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
               {loading ? (
-                <tr><td colSpan={9} className="py-10 text-center text-gray-500 dark:text-gray-400">Loading...</td></tr>
+                <tr><td colSpan={9} className="py-10 text-center text-gray-500 dark:text-gray-300">Loading...</td></tr>
               ) : inspections.length === 0 ? (
-                <tr><td colSpan={9} className="py-10 text-center text-gray-500 dark:text-gray-400">No inspections found</td></tr>
+                <tr><td colSpan={9} className="py-10 text-center text-gray-500 dark:text-gray-300">No inspections found</td></tr>
               ) : (
                 inspections.map((inspection) => (
                   <tr key={inspection.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                     <td className="px-4 py-3 text-sm font-semibold text-gray-900 dark:text-white">{inspection.inspection_number}</td>
-                    <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-400">{inspection.inspection_type}</td>
-                    <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-400">{inspection.product_name}</td>
-                    <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-400">{inspection.batch_number}</td>
-                    <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-400">{inspection.inspector}</td>
-                    <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-400">{formatDate(inspection.inspection_date)}</td>
-                    <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-400">{inspection.defects_found}</td>
+                    <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-300">{inspection.inspection_type}</td>
+                    <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-300">{inspection.product_name}</td>
+                    <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-300">{inspection.batch_number}</td>
+                    <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-300">{inspection.inspector}</td>
+                    <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-300">{formatDate(inspection.inspection_date)}</td>
+                    <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-300">{inspection.defects_found}</td>
                     <td className="px-4 py-3">{getStatusBadge(inspection.status)}</td>
                     <td className="px-4 py-3 text-right">
                       <button

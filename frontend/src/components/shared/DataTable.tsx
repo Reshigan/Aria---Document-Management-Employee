@@ -127,7 +127,7 @@ export function DataTable<T extends Record<string, any>>({
       <div className="flex items-center justify-between">
         {searchable && (
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-300" />
             <input
               type="text"
               placeholder={searchPlaceholder}
@@ -168,14 +168,14 @@ export function DataTable<T extends Record<string, any>>({
                           className={`h-3 w-3 ${
                             sortColumn === column.key && sortDirection === 'asc'
                               ? 'text-blue-600'
-                              : 'text-gray-400'
+                              : 'text-gray-300'
                           }`}
                         />
                         <ChevronDown
                           className={`h-3 w-3 -mt-1 ${
                             sortColumn === column.key && sortDirection === 'desc'
                               ? 'text-blue-600'
-                              : 'text-gray-400'
+                              : 'text-gray-300'
                           }`}
                         />
                       </div>

@@ -127,7 +127,7 @@ export default function PaymentTerms() {
               </div>
               <div className="space-y-2">
                 <div className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                  <span className="text-sm text-gray-600 dark:text-gray-400">Due</span>
+                  <span className="text-sm text-gray-600 dark:text-gray-300">Due</span>
                   <span className="font-medium">{term.term_type === 'due_on_receipt' ? 'Immediately' : term.term_type === 'net_days' ? `${term.days} days` : `Day ${term.day_of_month}`}</span>
                 </div>
                 {term.early_payment_discount_percent && (

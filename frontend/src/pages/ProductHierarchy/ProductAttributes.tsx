@@ -188,7 +188,7 @@ export default function ProductAttributes() {
           <Sliders size={28} className="text-purple-500" />
           Product Attributes
         </h1>
-        <p className="text-gray-600 dark:text-gray-400 mt-1">Define product attributes like Size, Color, Material for variant generation</p>
+        <p className="text-gray-600 dark:text-gray-300 mt-1">Define product attributes like Size, Color, Material for variant generation</p>
       </div>
 
       <div className="grid grid-cols-2 gap-6">
@@ -196,7 +196,7 @@ export default function ProductAttributes() {
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
           <div className="p-4 border-b flex gap-3">
             <div className="flex-1 relative">
-              <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+              <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-300" />
               <input
                 type="text"
                 placeholder="Search attributes..."
@@ -215,9 +215,9 @@ export default function ProductAttributes() {
           </div>
 
           {loading ? (
-            <div className="p-8 text-center text-gray-500 dark:text-gray-400">Loading attributes...</div>
+            <div className="p-8 text-center text-gray-500 dark:text-gray-300">Loading attributes...</div>
           ) : filteredAttributes.length === 0 ? (
-            <div className="p-8 text-center text-gray-500 dark:text-gray-400">
+            <div className="p-8 text-center text-gray-500 dark:text-gray-300">
               {searchTerm ? 'No attributes found' : 'No attributes yet. Create your first one!'}
             </div>
           ) : (
@@ -233,7 +233,7 @@ export default function ProductAttributes() {
                   <div className="flex items-center justify-between">
                     <div>
                       <div className="font-medium text-gray-900 dark:text-white">{attr.name}</div>
-                      <div className="text-xs text-gray-500 dark:text-gray-400">
+                      <div className="text-xs text-gray-500 dark:text-gray-300">
                         {displayTypeLabels[attr.display_type]} | {variantLabels[attr.create_variant]}
                       </div>
                     </div>
@@ -285,11 +285,11 @@ export default function ProductAttributes() {
           </div>
 
           {!selectedAttribute ? (
-            <div className="p-8 text-center text-gray-500 dark:text-gray-400">
+            <div className="p-8 text-center text-gray-500 dark:text-gray-300">
               Select an attribute to view and manage its values
             </div>
           ) : values.length === 0 ? (
-            <div className="p-8 text-center text-gray-500 dark:text-gray-400">
+            <div className="p-8 text-center text-gray-500 dark:text-gray-300">
               No values yet. Add values to this attribute.
             </div>
           ) : (
@@ -303,7 +303,7 @@ export default function ProductAttributes() {
                         style={{ backgroundColor: value.html_color }}
                       />
                     )}
-                    <Tag size={16} className="text-gray-400" />
+                    <Tag size={16} className="text-gray-300" />
                     <span className="font-medium text-gray-900 dark:text-white">{value.name}</span>
                   </div>
                   <div className="flex items-center gap-2">

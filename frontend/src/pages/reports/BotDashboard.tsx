@@ -106,7 +106,7 @@ export default function BotDashboardPage() {
       <div className="grid grid-cols-4 gap-6 mb-8">
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4" data-testid="metric-total-actions">
           <div className="flex items-center justify-between mb-2">
-            <div className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Actions</div>
+            <div className="text-sm font-medium text-gray-600 dark:text-gray-300">Total Actions</div>
             <BarChart3 className="h-5 w-5 text-blue-600 dark:text-blue-400" />
           </div>
           <div className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{stats.total_actions}</div>
@@ -115,7 +115,7 @@ export default function BotDashboardPage() {
 
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4" data-testid="metric-success-rate">
           <div className="flex items-center justify-between mb-2">
-            <div className="text-sm font-medium text-gray-600 dark:text-gray-400">Success Rate</div>
+            <div className="text-sm font-medium text-gray-600 dark:text-gray-300">Success Rate</div>
             <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400" />
           </div>
           <div className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{stats.success_rate}%</div>
@@ -124,20 +124,20 @@ export default function BotDashboardPage() {
 
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4" data-testid="metric-time-saved">
           <div className="flex items-center justify-between mb-2">
-            <div className="text-sm font-medium text-gray-600 dark:text-gray-400">Time Saved</div>
+            <div className="text-sm font-medium text-gray-600 dark:text-gray-300">Time Saved</div>
             <Clock className="h-5 w-5 text-purple-600 dark:text-purple-400" />
           </div>
           <div className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{stats.time_saved_hours}h</div>
-          <div className="text-sm text-gray-600 dark:text-gray-400 mt-2">This month</div>
+          <div className="text-sm text-gray-600 dark:text-gray-300 mt-2">This month</div>
         </div>
 
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4" data-testid="metric-cost-saved">
           <div className="flex items-center justify-between mb-2">
-            <div className="text-sm font-medium text-gray-600 dark:text-gray-400">Cost Saved</div>
+            <div className="text-sm font-medium text-gray-600 dark:text-gray-300">Cost Saved</div>
             <TrendingUp className="h-5 w-5 text-orange-600" />
           </div>
           <div className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">R {(stats.time_saved_hours * 500).toLocaleString()}</div>
-          <div className="text-sm text-gray-600 dark:text-gray-400 mt-2">Based on R500/hour</div>
+          <div className="text-sm text-gray-600 dark:text-gray-300 mt-2">Based on R500/hour</div>
         </div>
       </div>
 
@@ -162,14 +162,14 @@ export default function BotDashboardPage() {
               <div key={agent.name}>
                 <div className="flex justify-between text-sm mb-1">
                   <span className="font-medium">{agent.name}</span>
-                  <span className="text-gray-600 dark:text-gray-400">{agent.success}% success</span>
+                  <span className="text-gray-600 dark:text-gray-300">{agent.success}% success</span>
                 </div>
                 <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2">
                   <div className="bg-blue-600 dark:bg-blue-500 h-2 rounded-full" style={{ width: `${agent.success}%` }}></div>
                 </div>
               </div>
             )) : (
-              <div className="text-gray-500 dark:text-gray-400 text-center py-4">No agent performance data available</div>
+              <div className="text-gray-500 dark:text-gray-300 text-center py-4">No agent performance data available</div>
             )}
           </div>
         </div>
@@ -182,12 +182,12 @@ export default function BotDashboardPage() {
                 <Bot className="h-5 w-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
                 <div className="flex-1">
                   <div className="text-sm font-medium text-gray-900 dark:text-white">{item.agent}</div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">{item.action}</div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">{item.time}</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-300">{item.action}</div>
+                  <div className="text-xs text-gray-500 dark:text-gray-300 mt-1">{item.time}</div>
                 </div>
               </div>
             )) : (
-              <div className="text-gray-500 dark:text-gray-400 text-center py-4">No recent actions available</div>
+              <div className="text-gray-500 dark:text-gray-300 text-center py-4">No recent actions available</div>
             )}
           </div>
         </div>

@@ -187,7 +187,7 @@ export default function QuoteDetail() {
   if (loading) {
     return (
       <div className="p-8 text-center">
-        <div className="text-lg text-gray-500 dark:text-gray-400">Loading quote details...</div>
+        <div className="text-lg text-gray-500 dark:text-gray-300">Loading quote details...</div>
       </div>
     );
   }
@@ -248,7 +248,7 @@ export default function QuoteDetail() {
               }`}>
                 {quote.status.toUpperCase()}
               </span>
-              <span className="text-xs text-gray-500 dark:text-gray-400">
+              <span className="text-xs text-gray-500 dark:text-gray-300">
                 Created {(quote.created_at ? new Date(quote.created_at).toLocaleDateString() : "-")}
               </span>
             </div>
@@ -314,27 +314,27 @@ export default function QuoteDetail() {
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
               <div>
-                <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Customer</div>
+                <div className="text-xs text-gray-500 dark:text-gray-300 mb-1">Customer</div>
                 <div className="font-medium text-gray-900 dark:text-white flex items-center gap-2">
-                  <User size={16} className="text-gray-400" />
+                  <User size={16} className="text-gray-300" />
                   {quote.customer_name}
                 </div>
               </div>
               <div>
-                <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Email</div>
+                <div className="text-xs text-gray-500 dark:text-gray-300 mb-1">Email</div>
                 <div className="font-medium text-gray-900 dark:text-white">{quote.customer_email}</div>
               </div>
               <div>
-                <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Quote Date</div>
+                <div className="text-xs text-gray-500 dark:text-gray-300 mb-1">Quote Date</div>
                 <div className="font-medium text-gray-900 dark:text-white flex items-center gap-2">
-                  <Calendar size={16} className="text-gray-400" />
+                  <Calendar size={16} className="text-gray-300" />
                   {(quote.quote_date ? new Date(quote.quote_date).toLocaleDateString() : "-")}
                 </div>
               </div>
               <div>
-                <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Valid Until</div>
+                <div className="text-xs text-gray-500 dark:text-gray-300 mb-1">Valid Until</div>
                 <div className="font-medium text-gray-900 dark:text-white flex items-center gap-2">
-                  <Clock size={16} className="text-gray-400" />
+                  <Clock size={16} className="text-gray-300" />
                   {(quote.valid_until ? new Date(quote.valid_until).toLocaleDateString() : "-")}
                 </div>
               </div>
@@ -343,7 +343,7 @@ export default function QuoteDetail() {
             {quote.notes && (
               <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
                 <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Notes</div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">{quote.notes}</div>
+                <div className="text-sm text-gray-600 dark:text-gray-300">{quote.notes}</div>
               </div>
             )}
           </div>
@@ -363,20 +363,20 @@ export default function QuoteDetail() {
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Audit Trail</h2>
             <div className="flex flex-col gap-3">
               <div className="flex justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
-                <span className="text-xs text-gray-500 dark:text-gray-400">Created</span>
+                <span className="text-xs text-gray-500 dark:text-gray-300">Created</span>
                 <span className="text-sm font-medium text-gray-900 dark:text-white">
                   {quote.created_at ? new Date(quote.created_at).toLocaleString() : '-'}
                 </span>
               </div>
               <div className="flex justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
-                <span className="text-xs text-gray-500 dark:text-gray-400">Last Updated</span>
+                <span className="text-xs text-gray-500 dark:text-gray-300">Last Updated</span>
                 <span className="text-sm font-medium text-gray-900 dark:text-white">
                   {quote.updated_at ? new Date(quote.updated_at).toLocaleString() : '-'}
                 </span>
               </div>
               {quote.created_by && (
                 <div className="flex justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
-                  <span className="text-xs text-gray-500 dark:text-gray-400">Created By</span>
+                  <span className="text-xs text-gray-500 dark:text-gray-300">Created By</span>
                   <span className="text-sm font-medium text-gray-900 dark:text-white">{quote.created_by}</span>
                 </div>
               )}
@@ -410,36 +410,36 @@ export default function QuoteDetail() {
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Customer Information</h3>
               <div className="flex flex-col gap-3">
                 <div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Name</div>
+                  <div className="text-xs text-gray-500 dark:text-gray-300 mb-1">Name</div>
                   <div className="text-sm font-medium text-gray-900 dark:text-white">{customer.customer_name}</div>
                 </div>
                 <div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Code</div>
+                  <div className="text-xs text-gray-500 dark:text-gray-300 mb-1">Code</div>
                   <div className="text-sm font-medium text-gray-900 dark:text-white">{customer.customer_code}</div>
                 </div>
                 <div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Email</div>
+                  <div className="text-xs text-gray-500 dark:text-gray-300 mb-1">Email</div>
                   <div className="text-sm text-gray-900 dark:text-white">{customer.email}</div>
                 </div>
                 {customer.phone && (
                   <div>
-                    <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Phone</div>
+                    <div className="text-xs text-gray-500 dark:text-gray-300 mb-1">Phone</div>
                     <div className="text-sm text-gray-900 dark:text-white">{customer.phone}</div>
                   </div>
                 )}
                 <div className="mt-2 pt-3 border-t border-gray-200 dark:border-gray-700">
-                  <div className="text-xs text-gray-500 dark:text-gray-400 mb-2">Customer Stats</div>
+                  <div className="text-xs text-gray-500 dark:text-gray-300 mb-2">Customer Stats</div>
                   <div className="flex flex-col gap-2">
                     <div className="flex justify-between">
-                      <span className="text-xs text-gray-500 dark:text-gray-400">Total Quotes</span>
+                      <span className="text-xs text-gray-500 dark:text-gray-300">Total Quotes</span>
                       <span className="text-sm font-medium text-gray-900 dark:text-white">{customer.total_quotes}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-xs text-gray-500 dark:text-gray-400">Total Orders</span>
+                      <span className="text-xs text-gray-500 dark:text-gray-300">Total Orders</span>
                       <span className="text-sm font-medium text-gray-900 dark:text-white">{customer.total_orders}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-xs text-gray-500 dark:text-gray-400">Total Revenue</span>
+                      <span className="text-xs text-gray-500 dark:text-gray-300">Total Revenue</span>
                       <span className="text-sm font-medium text-gray-900 dark:text-white">
                         R {Number(customer.total_revenue ?? 0).toFixed(2)}
                       </span>
@@ -460,7 +460,7 @@ export default function QuoteDetail() {
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Related Sales Orders</h3>
             {relatedOrders.length === 0 ? (
-              <p className="text-xs text-gray-500 dark:text-gray-400">No sales orders yet</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">No sales orders yet</p>
             ) : (
               <div className="flex flex-col gap-3">
                 {relatedOrders.slice(0, 5).map((order) => (
@@ -471,10 +471,10 @@ export default function QuoteDetail() {
                   >
                     <div className="flex justify-between mb-1">
                       <span className="text-sm font-medium text-gray-900 dark:text-white">{order.order_number}</span>
-                      <span className="text-xs text-gray-500 dark:text-gray-400">{order.status}</span>
+                      <span className="text-xs text-gray-500 dark:text-gray-300">{order.status}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-xs text-gray-500 dark:text-gray-400">
+                      <span className="text-xs text-gray-500 dark:text-gray-300">
                         {(order.order_date ? new Date(order.order_date).toLocaleDateString() : "-")}
                       </span>
                       <span className="text-sm font-medium text-gray-900 dark:text-white">

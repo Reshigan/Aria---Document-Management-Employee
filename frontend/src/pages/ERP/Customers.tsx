@@ -373,17 +373,17 @@ export default function Customers() {
               <div className="bg-gray-50 dark:bg-gray-900/50 rounded-xl p-5">
                 <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4">Contact Information</h3>
                 <div className="space-y-3">
-                  <div><span className="text-xs text-gray-500 dark:text-gray-400">Email:</span><p className="font-medium text-gray-900 dark:text-white">{selectedCustomer.email}</p></div>
-                  <div><span className="text-xs text-gray-500 dark:text-gray-400">Phone:</span><p className="font-medium text-gray-900 dark:text-white">{selectedCustomer.phone || '-'}</p></div>
-                  <div><span className="text-xs text-gray-500 dark:text-gray-400">Address:</span><p className="font-medium text-gray-900 dark:text-white">{selectedCustomer.address || '-'}, {selectedCustomer.city || ''} {selectedCustomer.postal_code || ''}</p></div>
+                  <div><span className="text-xs text-gray-500 dark:text-gray-300">Email:</span><p className="font-medium text-gray-900 dark:text-white">{selectedCustomer.email}</p></div>
+                  <div><span className="text-xs text-gray-500 dark:text-gray-300">Phone:</span><p className="font-medium text-gray-900 dark:text-white">{selectedCustomer.phone || '-'}</p></div>
+                  <div><span className="text-xs text-gray-500 dark:text-gray-300">Address:</span><p className="font-medium text-gray-900 dark:text-white">{selectedCustomer.address || '-'}, {selectedCustomer.city || ''} {selectedCustomer.postal_code || ''}</p></div>
                 </div>
               </div>
               <div className="bg-gray-50 dark:bg-gray-900/50 rounded-xl p-5">
                 <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4">Payment Details</h3>
                 <div className="space-y-3">
-                  <div><span className="text-xs text-gray-500 dark:text-gray-400">Payment Terms:</span><p className="font-medium text-gray-900 dark:text-white">{selectedCustomer.payment_terms || 'Net 30'}</p></div>
-                  <div><span className="text-xs text-gray-500 dark:text-gray-400">Credit Limit:</span><p className="font-medium text-gray-900 dark:text-white">R {(selectedCustomer.credit_limit || 0).toLocaleString()}</p></div>
-                  <div><span className="text-xs text-gray-500 dark:text-gray-400">VAT Number:</span><p className="font-medium text-gray-900 dark:text-white">{selectedCustomer.tax_number || '-'}</p></div>
+                  <div><span className="text-xs text-gray-500 dark:text-gray-300">Payment Terms:</span><p className="font-medium text-gray-900 dark:text-white">{selectedCustomer.payment_terms || 'Net 30'}</p></div>
+                  <div><span className="text-xs text-gray-500 dark:text-gray-300">Credit Limit:</span><p className="font-medium text-gray-900 dark:text-white">R {(selectedCustomer.credit_limit || 0).toLocaleString()}</p></div>
+                  <div><span className="text-xs text-gray-500 dark:text-gray-300">VAT Number:</span><p className="font-medium text-gray-900 dark:text-white">{selectedCustomer.tax_number || '-'}</p></div>
                 </div>
               </div>
             </div>
@@ -395,11 +395,11 @@ export default function Customers() {
                   <table className="w-full">
                     <thead className="bg-gray-50 dark:bg-gray-900/50">
                       <tr>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Type</th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Number</th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Date</th>
-                        <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Amount</th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Status</th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase">Type</th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase">Number</th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase">Date</th>
+                        <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase">Amount</th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase">Status</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
@@ -429,11 +429,11 @@ export default function Customers() {
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
           <div>
             <h1 className="text-2xl font-bold bg-gradient-to-r from-cyan-600 to-blue-600 bg-clip-text text-transparent">Customers</h1>
-            <p className="text-gray-500 dark:text-gray-400 mt-1">Manage your customer database</p>
+            <p className="text-gray-500 dark:text-gray-300 mt-1">Manage your customer database</p>
           </div>
           <div className="flex items-center gap-3">
             <button onClick={() => loadCustomers()} className="p-3 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-200 dark:border-gray-700">
-              <RefreshCw className={`h-5 w-5 text-gray-600 dark:text-gray-400 ${loading ? 'animate-spin' : ''}`} />
+              <RefreshCw className={`h-5 w-5 text-gray-600 dark:text-gray-300 ${loading ? 'animate-spin' : ''}`} />
             </button>
             <button onClick={handleCreate} className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-cyan-600 to-blue-600 text-white rounded-xl font-medium hover:from-cyan-700 hover:to-blue-700 transition-all ">
               <Plus className="h-5 w-5" />New Customer
@@ -453,25 +453,25 @@ export default function Customers() {
           <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-xl "><Users className="h-5 w-5 text-white" /></div>
-              <div><p className="text-xl font-bold text-gray-900 dark:text-white">{stats.total}</p><p className="text-xs text-gray-500 dark:text-gray-400">Total Customers</p></div>
+              <div><p className="text-xl font-bold text-gray-900 dark:text-white">{stats.total}</p><p className="text-xs text-gray-500 dark:text-gray-300">Total Customers</p></div>
             </div>
           </div>
           <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl "><CheckCircle className="h-5 w-5 text-white" /></div>
-              <div><p className="text-xl font-bold text-gray-900 dark:text-white">{stats.active}</p><p className="text-xs text-gray-500 dark:text-gray-400">Active</p></div>
+              <div><p className="text-xl font-bold text-gray-900 dark:text-white">{stats.active}</p><p className="text-xs text-gray-500 dark:text-gray-300">Active</p></div>
             </div>
           </div>
           <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-gradient-to-br from-gray-500 to-gray-600 rounded-xl "><Building2 className="h-5 w-5 text-white" /></div>
-              <div><p className="text-xl font-bold text-gray-900 dark:text-white">{stats.inactive}</p><p className="text-xs text-gray-500 dark:text-gray-400">Inactive</p></div>
+              <div><p className="text-xl font-bold text-gray-900 dark:text-white">{stats.inactive}</p><p className="text-xs text-gray-500 dark:text-gray-300">Inactive</p></div>
             </div>
           </div>
           <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl "><TrendingUp className="h-5 w-5 text-white" /></div>
-              <div><p className="text-xl font-bold text-gray-900 dark:text-white">R {Number(stats.totalCredit ?? 0).toLocaleString()}</p><p className="text-xs text-gray-500 dark:text-gray-400">Total Credit</p></div>
+              <div><p className="text-xl font-bold text-gray-900 dark:text-white">R {Number(stats.totalCredit ?? 0).toLocaleString()}</p><p className="text-xs text-gray-500 dark:text-gray-300">Total Credit</p></div>
             </div>
           </div>
         </div>
@@ -480,7 +480,7 @@ export default function Customers() {
           <div className="p-3 border-b border-gray-100 dark:border-gray-700">
             <div className="flex flex-col md:flex-row gap-3">
               <div className="flex-1 relative">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-300" />
                 <input type="text" placeholder="Search by name, email, or code..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-12 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all" />
               </div>
               <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all min-w-[180px]">
@@ -494,13 +494,13 @@ export default function Customers() {
           {loading ? (
             <div className="p-12 text-center">
               <RefreshCw className="h-8 w-8 animate-spin text-cyan-500 mx-auto mb-4" />
-              <p className="text-gray-500 dark:text-gray-400">Loading customers...</p>
+              <p className="text-gray-500 dark:text-gray-300">Loading customers...</p>
             </div>
           ) : filteredCustomers.length === 0 ? (
             <div className="p-12 text-center">
-              <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-2xl flex items-center justify-center mx-auto mb-4"><Users className="h-8 w-8 text-gray-400" /></div>
+              <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-2xl flex items-center justify-center mx-auto mb-4"><Users className="h-8 w-8 text-gray-300" /></div>
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No customers found</h3>
-              <p className="text-gray-500 dark:text-gray-400 mb-6">{searchTerm || statusFilter !== 'all' ? 'Try adjusting your filters' : 'Get started by adding your first customer'}</p>
+              <p className="text-gray-500 dark:text-gray-300 mb-6">{searchTerm || statusFilter !== 'all' ? 'Try adjusting your filters' : 'Get started by adding your first customer'}</p>
               {!searchTerm && statusFilter === 'all' && (
                 <button onClick={handleCreate} className="px-4 py-2 bg-gradient-to-r from-cyan-600 to-blue-600 text-white rounded-xl font-medium hover:from-cyan-700 hover:to-blue-700 transition-all">Add First Customer</button>
               )}
@@ -510,22 +510,22 @@ export default function Customers() {
               <table className="w-full">
                 <thead className="bg-gray-50 dark:bg-gray-900/50">
                   <tr>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Customer</th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Contact</th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Payment Terms</th>
-                    <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Credit Limit</th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
-                    <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Customer</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Contact</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Payment Terms</th>
+                    <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Credit Limit</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
+                    <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
                   {filteredCustomers.map((customer) => (
                     <tr key={customer.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                       <td className="px-6 py-4">
-                        <div><p className="font-semibold text-gray-900 dark:text-white">{customer.name}</p><p className="text-xs text-gray-500 dark:text-gray-400">{customer.code}</p></div>
+                        <div><p className="font-semibold text-gray-900 dark:text-white">{customer.name}</p><p className="text-xs text-gray-500 dark:text-gray-300">{customer.code}</p></div>
                       </td>
                       <td className="px-6 py-4">
-                        <div><p className="text-gray-900 dark:text-white">{customer.email}</p>{customer.phone && (<p className="text-xs text-gray-500 dark:text-gray-400">{customer.phone}</p>)}</div>
+                        <div><p className="text-gray-900 dark:text-white">{customer.email}</p>{customer.phone && (<p className="text-xs text-gray-500 dark:text-gray-300">{customer.phone}</p>)}</div>
                       </td>
                       <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{customer.payment_terms || 'Net 30'}</td>
                       <td className="px-6 py-4 text-right font-semibold text-gray-900 dark:text-white">R {(customer.credit_limit || 0).toLocaleString()}</td>

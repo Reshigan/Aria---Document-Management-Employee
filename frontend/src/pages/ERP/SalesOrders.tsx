@@ -381,7 +381,9 @@ export default function SalesOrders() {
     const getStatusConfig= (status: string) => {
     const configs: Record<string, { bg: string; text: string; border: string }> = {
       draft: { bg: 'bg-gray-100 dark:bg-gray-800', text: 'text-gray-700 dark:text-gray-300', border: 'border-gray-200 dark:border-gray-700' },
+      pending: { bg: 'bg-amber-100 dark:bg-amber-900/30', text: 'text-amber-700 dark:text-amber-300', border: 'border-amber-200 dark:border-amber-800' },
       approved: { bg: 'bg-blue-100 dark:bg-blue-900/30', text: 'text-blue-700 dark:text-blue-300', border: 'border-blue-200 dark:border-blue-800' },
+      confirmed: { bg: 'bg-emerald-100 dark:bg-emerald-900/30', text: 'text-emerald-700 dark:text-emerald-300', border: 'border-emerald-200 dark:border-emerald-800' },
       in_progress: { bg: 'bg-purple-100 dark:bg-purple-900/30', text: 'text-purple-700 dark:text-purple-300', border: 'border-purple-200 dark:border-purple-800' },
       completed: { bg: 'bg-green-100 dark:bg-green-900/30', text: 'text-green-700 dark:text-green-300', border: 'border-green-200 dark:border-green-800' },
       cancelled: { bg: 'bg-red-100 dark:bg-red-900/30', text: 'text-red-700 dark:text-red-300', border: 'border-red-200 dark:border-red-800' }
@@ -391,10 +393,10 @@ export default function SalesOrders() {
 
   const stats = {
     total: orders.length,
-    draft: orders.filter(o => o.status === 'draft').length,
-    approved: orders.filter(o => o.status === 'approved').length,
+    draft: orders.filter(o => o.status === 'draft' || o.status === 'pending').length,
+    approved: orders.filter(o => o.status === 'approved' || o.status === 'confirmed').length,
     completed: orders.filter(o => o.status === 'completed').length,
-    totalValue: orders.reduce((sum, o) => sum + o.total_amount, 0)
+    totalValue: orders.reduce((sum, o) => sum + Number(o.total_amount ?? 0), 0)
   };
 
   const renderFormModal = (isEdit: boolean) => {
@@ -476,11 +478,11 @@ export default function SalesOrders() {
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
           <div>
             <h1 className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">Sales Orders</h1>
-            <p className="text-gray-500 dark:text-gray-400 text-sm">Manage customer orders and fulfillment</p>
+            <p className="text-gray-500 dark:text-gray-300 text-sm">Manage customer orders and fulfillment</p>
           </div>
           <div className="flex items-center gap-3">
             <button onClick={() => loadOrders()} className="p-3 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-200 dark:border-gray-700">
-              <RefreshCw className={`h-5 w-5 text-gray-600 dark:text-gray-400 ${loading ? 'animate-spin' : ''}`} />
+              <RefreshCw className={`h-5 w-5 text-gray-600 dark:text-gray-300 ${loading ? 'animate-spin' : ''}`} />
             </button>
             <button onClick={handleCreate} className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-xl font-medium hover:from-emerald-700 hover:to-teal-700 transition-all ">
               <Plus className="h-5 w-5" />New Order
@@ -500,25 +502,25 @@ export default function SalesOrders() {
           <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-lg"><ShoppingBag className="h-5 w-5 text-white" /></div>
-              <div><p className="text-xl font-bold text-gray-900 dark:text-white">{stats.total}</p><p className="text-xs text-gray-500 dark:text-gray-400">Total Orders</p></div>
+              <div><p className="text-xl font-bold text-gray-900 dark:text-white">{stats.total}</p><p className="text-xs text-gray-500 dark:text-gray-300">Total Orders</p></div>
             </div>
           </div>
           <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-gradient-to-br from-gray-500 to-gray-600 rounded-lg"><Clock className="h-5 w-5 text-white" /></div>
-              <div><p className="text-xl font-bold text-gray-900 dark:text-white">{stats.draft}</p><p className="text-xs text-gray-500 dark:text-gray-400">Draft</p></div>
+              <div><p className="text-xl font-bold text-gray-900 dark:text-white">{stats.draft}</p><p className="text-xs text-gray-500 dark:text-gray-300">Draft</p></div>
             </div>
           </div>
           <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-lg"><Check className="h-5 w-5 text-white" /></div>
-              <div><p className="text-xl font-bold text-gray-900 dark:text-white">{stats.approved}</p><p className="text-xs text-gray-500 dark:text-gray-400">Approved</p></div>
+              <div><p className="text-xl font-bold text-gray-900 dark:text-white">{stats.approved}</p><p className="text-xs text-gray-500 dark:text-gray-300">Approved</p></div>
             </div>
           </div>
           <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-500 rounded-lg"><TrendingUp className="h-5 w-5 text-white" /></div>
-              <div><p className="text-xl font-bold text-gray-900 dark:text-white">R {Number(stats.totalValue ?? 0).toLocaleString()}</p><p className="text-xs text-gray-500 dark:text-gray-400">Total Value</p></div>
+              <div><p className="text-xl font-bold text-gray-900 dark:text-white">R {Number(stats.totalValue ?? 0).toLocaleString()}</p><p className="text-xs text-gray-500 dark:text-gray-300">Total Value</p></div>
             </div>
           </div>
         </div>
@@ -527,13 +529,15 @@ export default function SalesOrders() {
           <div className="p-3 border-b border-gray-100 dark:border-gray-700">
             <div className="flex flex-col md:flex-row gap-3">
               <div className="flex-1 relative">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-300" />
                 <input type="text" placeholder="Search by order number or customer..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-12 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all" />
               </div>
               <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all min-w-[180px]">
                 <option value="">All Statuses</option>
                 <option value="draft">Draft</option>
+                <option value="pending">Pending</option>
                 <option value="approved">Approved</option>
+                <option value="confirmed">Confirmed</option>
                 <option value="in_progress">In Progress</option>
                 <option value="completed">Completed</option>
                 <option value="cancelled">Cancelled</option>
@@ -544,13 +548,13 @@ export default function SalesOrders() {
           {loading ? (
             <div className="p-12 text-center">
               <RefreshCw className="h-8 w-8 animate-spin text-emerald-500 mx-auto mb-4" />
-              <p className="text-gray-500 dark:text-gray-400">Loading sales orders...</p>
+              <p className="text-gray-500 dark:text-gray-300">Loading sales orders...</p>
             </div>
           ) : orders.length === 0 ? (
             <div className="p-12 text-center">
-              <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-2xl flex items-center justify-center mx-auto mb-4"><ShoppingBag className="h-8 w-8 text-gray-400" /></div>
+              <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-2xl flex items-center justify-center mx-auto mb-4"><ShoppingBag className="h-8 w-8 text-gray-300" /></div>
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No sales orders found</h3>
-              <p className="text-gray-500 dark:text-gray-400 mb-6">{searchTerm || statusFilter ? 'Try adjusting your filters' : 'Get started by creating your first sales order'}</p>
+              <p className="text-gray-500 dark:text-gray-300 mb-6">{searchTerm || statusFilter ? 'Try adjusting your filters' : 'Get started by creating your first sales order'}</p>
               {!searchTerm && !statusFilter && (
                 <button onClick={handleCreate} className="px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-xl font-medium hover:from-emerald-700 hover:to-teal-700 transition-all">Create First Order</button>
               )}
@@ -560,13 +564,13 @@ export default function SalesOrders() {
               <table className="w-full">
                 <thead className="bg-gray-50 dark:bg-gray-900/50">
                   <tr>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Order #</th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Customer</th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Order Date</th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Required Date</th>
-                    <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Total</th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
-                    <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Order #</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Customer</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Order Date</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Required Date</th>
+                    <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Total</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
+                    <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
@@ -578,7 +582,7 @@ export default function SalesOrders() {
                           <Link to={`/sales/orders/${order.id}`} className="font-semibold text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300">{order.order_number}</Link>
                         </td>
                         <td className="px-6 py-4">
-                          <div><p className="font-medium text-gray-900 dark:text-white">{order.customer_name}</p>{order.customer_email && (<p className="text-xs text-gray-500 dark:text-gray-400">{order.customer_email}</p>)}</div>
+                          <div><p className="font-medium text-gray-900 dark:text-white">{order.customer_name}</p>{order.customer_email && (<p className="text-xs text-gray-500 dark:text-gray-300">{order.customer_email}</p>)}</div>
                         </td>
                         <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{(order.order_date ? new Date(order.order_date).toLocaleDateString() : "-")}</td>
                         <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{order.required_date ? new Date(order.required_date).toLocaleDateString() : '-'}</td>
@@ -588,10 +592,10 @@ export default function SalesOrders() {
                         </td>
                                                 <td className="px-6 py-4">
                                                   <div className="flex items-center justify-end gap-1">
-                                                    <button onClick={() => handleDownloadPDF(order)} title="Download PDF" className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-lg transition-colors"><Download className="h-4 w-4" /></button>
-                                                    <button onClick={() => handlePrintOrder(order)} title="Print" className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-lg transition-colors"><Printer className="h-4 w-4" /></button>
+                                                    <button onClick={() => handleDownloadPDF(order)} title="Download PDF" className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-lg transition-colors"><Download className="h-4 w-4" /></button>
+                                                    <button onClick={() => handlePrintOrder(order)} title="Print" className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-lg transition-colors"><Printer className="h-4 w-4" /></button>
                                                     {order.customer_email && (
-                                                      <button onClick={() => handleEmailOrder(order)} title="Email Order" className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-lg transition-colors"><Mail className="h-4 w-4" /></button>
+                                                      <button onClick={() => handleEmailOrder(order)} title="Email Order" className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-lg transition-colors"><Mail className="h-4 w-4" /></button>
                                                     )}
                                                     {order.status === 'draft' && (
                                                       <>

@@ -166,7 +166,7 @@ export default function Customers() {
           </div>
           <div>
             <h1 className="text-xl font-bold text-gray-900 dark:text-white">Customers</h1>
-            <p className="text-gray-600 dark:text-gray-400">Manage customer master data and credit limits</p>
+            <p className="text-gray-600 dark:text-gray-300">Manage customer master data and credit limits</p>
           </div>
         </div>
       </div>
@@ -174,7 +174,7 @@ export default function Customers() {
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 mb-6">
         <div className="flex flex-col md:flex-row gap-3">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-300" />
             <input
               type="text"
               placeholder="Search customers..."
@@ -205,7 +205,7 @@ export default function Customers() {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{customers.length}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Total Customers</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Total Customers</p>
             </div>
           </div>
         </div>
@@ -216,7 +216,7 @@ export default function Customers() {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{customers.filter(c => c.is_active).length}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Active Customers</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Active Customers</p>
             </div>
           </div>
         </div>
@@ -379,13 +379,13 @@ export default function Customers() {
         {loading ? (
           <div className="p-12 text-center">
             <Users className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3 animate-pulse" />
-            <p className="text-gray-500 dark:text-gray-400">Loading customers...</p>
+            <p className="text-gray-500 dark:text-gray-300">Loading customers...</p>
           </div>
         ) : filteredCustomers.length === 0 ? (
           <div className="p-12 text-center">
             <Users className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">No customers found</h3>
-            <p className="text-gray-500 dark:text-gray-400">
+            <p className="text-gray-500 dark:text-gray-300">
               {searchTerm ? 'Try adjusting your search' : 'Start by adding your first customer'}
             </p>
           </div>
@@ -409,23 +409,23 @@ export default function Customers() {
                     <td className="px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">{customer.code}</td>
                     <td className="px-6 py-4">
                       <div className="font-medium text-gray-900 dark:text-white">{customer.name}</div>
-                      <div className="text-xs text-gray-500 dark:text-gray-400">{customer.payment_terms}</div>
+                      <div className="text-xs text-gray-500 dark:text-gray-300">{customer.payment_terms}</div>
                     </td>
                     <td className="px-6 py-4">
                       {customer.email && (
                         <div className="flex items-center gap-2 mb-1">
-                          <Mail className="h-3.5 w-3.5 text-gray-400" />
+                          <Mail className="h-3.5 w-3.5 text-gray-300" />
                           <span className="text-xs text-gray-600 dark:text-gray-300">{customer.email}</span>
                         </div>
                       )}
                       {customer.phone && (
                         <div className="flex items-center gap-2">
-                          <Phone className="h-3.5 w-3.5 text-gray-400" />
+                          <Phone className="h-3.5 w-3.5 text-gray-300" />
                           <span className="text-xs text-gray-600 dark:text-gray-300">{customer.phone}</span>
                         </div>
                       )}
                     </td>
-                    <td className="px-6 py-4 text-xs text-gray-500 dark:text-gray-400">
+                    <td className="px-6 py-4 text-xs text-gray-500 dark:text-gray-300">
                       {customer.city && customer.country ? `${customer.city}, ${customer.country}` : customer.country || '-'}
                     </td>
                     <td className="px-6 py-4 text-sm text-right font-medium text-gray-900 dark:text-white">

@@ -56,7 +56,7 @@ const ComplianceDashboard: React.FC = () => {
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
           <div>
             <h1 className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">Compliance Dashboard</h1>
-            <p className="text-gray-500 dark:text-gray-400 mt-1">Monitor tax, legal, and regulatory compliance</p>
+            <p className="text-gray-500 dark:text-gray-300 mt-1">Monitor tax, legal, and regulatory compliance</p>
           </div>
           <button onClick={loadMetrics} className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-xl font-medium hover:from-emerald-700 hover:to-teal-700 transition-all ">
             <RefreshCw className={`h-5 w-5 ${loading ? 'animate-spin' : ''}`} />Refresh
@@ -79,7 +79,7 @@ const ComplianceDashboard: React.FC = () => {
                 </div>
                 <div>
                   <p className="font-semibold text-gray-900 dark:text-white">Tax Compliance</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">Manage tax obligations</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-300">Manage tax obligations</p>
                 </div>
               </div>
             </div>
@@ -92,7 +92,7 @@ const ComplianceDashboard: React.FC = () => {
                 </div>
                 <div>
                   <p className="font-semibold text-gray-900 dark:text-white">Legal Compliance</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">Manage legal documents</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-300">Manage legal documents</p>
                 </div>
               </div>
             </div>
@@ -105,7 +105,7 @@ const ComplianceDashboard: React.FC = () => {
                 </div>
                 <div>
                   <p className="font-semibold text-gray-900 dark:text-white">Fixed Assets</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">Track asset depreciation</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-300">Track asset depreciation</p>
                 </div>
               </div>
             </div>
@@ -117,7 +117,7 @@ const ComplianceDashboard: React.FC = () => {
               </div>
               <div>
                 <p className="font-semibold text-gray-900 dark:text-white">Alerts</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">View compliance alerts</p>
+                <p className="text-xs text-gray-500 dark:text-gray-300">View compliance alerts</p>
               </div>
             </div>
           </div>
@@ -131,7 +131,7 @@ const ComplianceDashboard: React.FC = () => {
               </div>
               <div>
                 <p className={`text-2xl font-bold ${getScoreColor(metrics.compliance_score)}`}>{metrics.compliance_score}%</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">Compliance Score</p>
+                <p className="text-xs text-gray-500 dark:text-gray-300">Compliance Score</p>
               </div>
             </div>
           </div>
@@ -142,7 +142,7 @@ const ComplianceDashboard: React.FC = () => {
               </div>
               <div>
                 <p className={`text-2xl font-bold ${metrics.tax_obligations_pending > 0 ? 'text-amber-600 dark:text-amber-400' : 'text-green-600 dark:text-green-400'}`}>{metrics.tax_obligations_pending}</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">Pending Tax Obligations</p>
+                <p className="text-xs text-gray-500 dark:text-gray-300">Pending Tax Obligations</p>
               </div>
             </div>
           </div>
@@ -153,7 +153,7 @@ const ComplianceDashboard: React.FC = () => {
               </div>
               <div>
                 <p className={`text-2xl font-bold ${metrics.legal_documents_expiring > 0 ? 'text-amber-600 dark:text-amber-400' : 'text-green-600 dark:text-green-400'}`}>{metrics.legal_documents_expiring}</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">Expiring Documents</p>
+                <p className="text-xs text-gray-500 dark:text-gray-300">Expiring Documents</p>
               </div>
             </div>
           </div>
@@ -164,7 +164,7 @@ const ComplianceDashboard: React.FC = () => {
               </div>
               <div>
                 <p className="text-xl font-bold text-gray-900 dark:text-white">{metrics.fixed_assets_count}</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">Fixed Assets</p>
+                <p className="text-xs text-gray-500 dark:text-gray-300">Fixed Assets</p>
               </div>
             </div>
           </div>
@@ -182,7 +182,7 @@ const ComplianceDashboard: React.FC = () => {
           {loading ? (
             <div className="p-12 text-center">
               <RefreshCw className="h-8 w-8 animate-spin text-emerald-500 mx-auto mb-4" />
-              <p className="text-gray-500 dark:text-gray-400">Loading...</p>
+              <p className="text-gray-500 dark:text-gray-300">Loading...</p>
             </div>
           ) : (
             <div className="p-4 space-y-4">
@@ -191,7 +191,7 @@ const ComplianceDashboard: React.FC = () => {
                   <FileText className="h-5 w-5 text-blue-500" />
                   <div>
                     <p className="font-medium text-gray-900 dark:text-white">Tax Compliance</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">All tax obligations up to date</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-300">All tax obligations up to date</p>
                   </div>
                 </div>
                 <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium ${metrics.tax_obligations_pending === 0 ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300' : 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300'}`}>
@@ -204,7 +204,7 @@ const ComplianceDashboard: React.FC = () => {
                   <Scale className="h-5 w-5 text-green-500" />
                   <div>
                     <p className="font-medium text-gray-900 dark:text-white">Legal Compliance</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">All legal documents current</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-300">All legal documents current</p>
                   </div>
                 </div>
                 <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium ${metrics.legal_documents_expiring === 0 ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300' : 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300'}`}>
@@ -217,7 +217,7 @@ const ComplianceDashboard: React.FC = () => {
                   <Building className="h-5 w-5 text-amber-500" />
                   <div>
                     <p className="font-medium text-gray-900 dark:text-white">Asset Management</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">Fixed assets properly tracked</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-300">Fixed assets properly tracked</p>
                   </div>
                 </div>
                 <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300">

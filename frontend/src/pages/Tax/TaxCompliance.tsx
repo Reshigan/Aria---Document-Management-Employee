@@ -137,7 +137,7 @@ const TaxCompliance: React.FC = () => {
       <div className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-red-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-500 dark:text-gray-400">Loading tax obligations...</p>
+          <p className="text-gray-500 dark:text-gray-300">Loading tax obligations...</p>
         </div>
       </div>
     );
@@ -153,7 +153,7 @@ const TaxCompliance: React.FC = () => {
           </div>
           Tax Compliance
         </h1>
-        <p className="text-gray-500 dark:text-gray-400 mt-1">Manage tax obligations and filings</p>
+        <p className="text-gray-500 dark:text-gray-300 mt-1">Manage tax obligations and filings</p>
       </div>
 
       {/* Error Message */}
@@ -185,7 +185,7 @@ const TaxCompliance: React.FC = () => {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{obligations.filter(o => o.status === 'PENDING').length}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Pending</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Pending</p>
             </div>
           </div>
         </div>
@@ -196,7 +196,7 @@ const TaxCompliance: React.FC = () => {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{obligations.filter(o => o.status === 'FILED').length}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Filed</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Filed</p>
             </div>
           </div>
         </div>
@@ -207,7 +207,7 @@ const TaxCompliance: React.FC = () => {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{obligations.filter(o => o.status === 'PAID').length}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Paid</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Paid</p>
             </div>
           </div>
         </div>
@@ -218,7 +218,7 @@ const TaxCompliance: React.FC = () => {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{obligations.filter(o => o.status === 'OVERDUE').length}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Overdue</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Overdue</p>
             </div>
           </div>
         </div>
@@ -229,18 +229,18 @@ const TaxCompliance: React.FC = () => {
         <table className="w-full" data-testid="obligations-table">
           <thead className="bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-700">
             <tr>
-              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Tax Type</th>
-              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Period</th>
-              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Due Date</th>
-              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Amount</th>
-              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
-              <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Tax Type</th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Period</th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Due Date</th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Amount</th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
+              <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
             {loading ? (
               <tr>
-                <td colSpan={6} className="px-6 py-12 text-center text-gray-500 dark:text-gray-400">
+                <td colSpan={6} className="px-6 py-12 text-center text-gray-500 dark:text-gray-300">
                   <div className="flex items-center justify-center gap-2">
                     <div className="w-5 h-5 border-2 border-red-500 border-t-transparent rounded-full animate-spin"></div>
                     Loading...
@@ -251,7 +251,7 @@ const TaxCompliance: React.FC = () => {
               <tr>
                 <td colSpan={6} className="px-6 py-12 text-center">
                   <FileSpreadsheet className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
-                  <p className="text-gray-500 dark:text-gray-400">No tax obligations found</p>
+                  <p className="text-gray-500 dark:text-gray-300">No tax obligations found</p>
                   <button
                     onClick={handleCreate}
                     className="mt-3 text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 font-medium"
@@ -272,13 +272,13 @@ const TaxCompliance: React.FC = () => {
                     <div className="flex items-center justify-end gap-2">
                       <button
                         onClick={() => handleEdit(obligation)}
-                        className="p-2 text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
+                        className="p-2 text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
                       >
                         <Edit2 className="h-4 w-4" />
                       </button>
                       <button
                         onClick={() => setDeleteConfirm({ show: true, id: obligation.id, type: obligation.tax_type })}
-                        className="p-2 text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                        className="p-2 text-gray-300 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
                       >
                         <Trash2 className="h-4 w-4" />
                       </button>

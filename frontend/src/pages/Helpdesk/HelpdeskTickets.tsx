@@ -209,7 +209,7 @@ export default function HelpdeskTickets() {
       <div className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-500 dark:text-gray-400">Loading tickets...</p>
+          <p className="text-gray-500 dark:text-gray-300">Loading tickets...</p>
         </div>
       </div>
     );
@@ -225,7 +225,7 @@ export default function HelpdeskTickets() {
           </div>
           Helpdesk Tickets
         </h1>
-        <p className="text-gray-500 dark:text-gray-400 mt-1">Manage customer support tickets with SLA tracking</p>
+        <p className="text-gray-500 dark:text-gray-300 mt-1">Manage customer support tickets with SLA tracking</p>
       </div>
 
       {/* Stats Cards */}
@@ -237,7 +237,7 @@ export default function HelpdeskTickets() {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{tickets.length}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Total Tickets</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Total Tickets</p>
             </div>
           </div>
         </div>
@@ -248,7 +248,7 @@ export default function HelpdeskTickets() {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{openTickets.length}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Open Tickets</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Open Tickets</p>
             </div>
           </div>
         </div>
@@ -259,7 +259,7 @@ export default function HelpdeskTickets() {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{breachedTickets.length}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">SLA Breached</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">SLA Breached</p>
             </div>
           </div>
         </div>
@@ -270,7 +270,7 @@ export default function HelpdeskTickets() {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{tickets.filter(t => t.priority === 'urgent').length}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Urgent</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Urgent</p>
             </div>
           </div>
         </div>
@@ -280,7 +280,7 @@ export default function HelpdeskTickets() {
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 mb-6">
         <div className="p-4 flex flex-col md:flex-row gap-3">
           <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-300" />
             <input
               type="text"
               placeholder="Search tickets..."
@@ -327,14 +327,14 @@ export default function HelpdeskTickets() {
           <table className="w-full">
             <thead className="bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-700">
               <tr>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Ticket</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Customer</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Team</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Assigned</th>
-                <th className="px-6 py-4 text-center text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Priority</th>
-                <th className="px-6 py-4 text-center text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Stage</th>
-                <th className="px-6 py-4 text-center text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">SLA</th>
-                <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Ticket</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Customer</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Team</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Assigned</th>
+                <th className="px-6 py-4 text-center text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Priority</th>
+                <th className="px-6 py-4 text-center text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Stage</th>
+                <th className="px-6 py-4 text-center text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">SLA</th>
+                <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
@@ -353,7 +353,7 @@ export default function HelpdeskTickets() {
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-2">
-                      <User size={16} className="text-gray-400" />
+                      <User size={16} className="text-gray-300" />
                       <div>
                         <div className="text-sm text-gray-900">{ticket.customer_name || '-'}</div>
                         <div className="text-xs text-gray-500">{ticket.customer_email}</div>
@@ -391,7 +391,7 @@ export default function HelpdeskTickets() {
                         </span>
                       </div>
                     ) : (
-                      <span className="text-xs text-gray-400">No SLA</span>
+                      <span className="text-xs text-gray-300">No SLA</span>
                     )}
                   </td>
                                     <td className="px-6 py-4 text-right">
@@ -608,7 +608,7 @@ function TicketDetailModal({ ticket, onClose, onUpdate }: {
               {ticket.customer_name || ticket.customer_email || 'Unknown Customer'}
             </div>
           </div>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+          <button onClick={onClose} className="text-gray-300 hover:text-gray-600">
             <span className="text-2xl">&times;</span>
           </button>
         </div>

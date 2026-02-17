@@ -81,7 +81,7 @@ const PricingComplete: React.FC = () => {
           <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
             Simple, Transparent Pricing
           </h1>
-          <p className="text-xl text-gray-600 dark:text-gray-400">
+          <p className="text-xl text-gray-600 dark:text-gray-300">
             Choose the plan that fits your business needs
           </p>
         </div>
@@ -104,14 +104,14 @@ const PricingComplete: React.FC = () => {
                 <h3 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2">
                   {tier.name}
                 </h3>
-                <p className="text-gray-600 dark:text-gray-400 text-sm">{tier.description}</p>
+                <p className="text-gray-600 dark:text-gray-300 text-sm">{tier.description}</p>
               </div>
 
               <div className="mb-6">
                 <span className="text-4xl font-bold text-gray-900 dark:text-white">
                   {tier.price}
                 </span>
-                <span className="text-gray-600 dark:text-gray-400">{tier.period}</span>
+                <span className="text-gray-600 dark:text-gray-300">{tier.period}</span>
               </div>
 
               <ul className="space-y-3 mb-8">
@@ -120,10 +120,10 @@ const PricingComplete: React.FC = () => {
                     {feature.included ? (
                       <Check className="text-green-500 mr-2 flex-shrink-0 mt-0.5" size={20} />
                     ) : (
-                      <X className="text-gray-400 mr-2 flex-shrink-0 mt-0.5" size={20} />
+                      <X className="text-gray-300 mr-2 flex-shrink-0 mt-0.5" size={20} />
                     )}
                     <span className={`text-sm ${
-                      feature.included ? 'text-gray-900 dark:text-white' : 'text-gray-400'
+                      feature.included ? 'text-gray-900 dark:text-white' : 'text-gray-300'
                     }`}>
                       {feature.text}
                     </span>
@@ -143,7 +143,7 @@ const PricingComplete: React.FC = () => {
         </div>
 
         <div className="mt-16 text-center">
-          <p className="text-gray-600 dark:text-gray-400 mb-4">
+          <p className="text-gray-600 dark:text-gray-300 mb-4">
             All plans include 14-day free trial • No credit card required
           </p>
           <p className="text-xs text-gray-500 dark:text-gray-500">

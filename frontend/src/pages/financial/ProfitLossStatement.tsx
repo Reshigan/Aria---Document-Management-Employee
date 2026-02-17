@@ -157,7 +157,7 @@ export default function ProfitLossStatementPage() {
             </div>
             <button
               onClick={fetchPL}
-              className="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+              className="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
             >
               <RefreshCw className={`h-5 w-5 ${loading ? 'animate-spin' : ''}`} />
             </button>
@@ -213,7 +213,7 @@ export default function ProfitLossStatementPage() {
                   R {Number(data.gross_profit ?? 0).toLocaleString()}
                 </span>
               </div>
-              <div className="text-sm text-gray-600 dark:text-gray-400 text-right">
+              <div className="text-sm text-gray-600 dark:text-gray-300 text-right">
                 {Number(((data.gross_profit / data.total_revenue) * 100) || 0).toFixed(1)}% gross margin
               </div>
             </div>
@@ -239,14 +239,14 @@ export default function ProfitLossStatementPage() {
                   R {Number(data.net_profit ?? 0).toLocaleString()}
                 </span>
               </div>
-              <div className="text-sm text-gray-600 dark:text-gray-400 text-right">
+              <div className="text-sm text-gray-600 dark:text-gray-300 text-right">
                 {Number(((data.net_profit / data.total_revenue) * 100) || 0).toFixed(1)}% net profit margin
               </div>
             </div>
           </div>
         ) : (
           <div className="text-center py-12">
-            <p className="text-gray-600 dark:text-gray-400">No data available</p>
+            <p className="text-gray-600 dark:text-gray-300">No data available</p>
           </div>
         )}
       </div>

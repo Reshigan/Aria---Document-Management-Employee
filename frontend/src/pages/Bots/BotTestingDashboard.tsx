@@ -74,7 +74,7 @@ const BotTestingDashboard: React.FC = () => {
       case 'running':
         return <Clock className="w-5 h-5 text-blue-600 animate-spin" />;
       default:
-        return <PlayCircle className="w-5 h-5 text-gray-400" />;
+        return <PlayCircle className="w-5 h-5 text-gray-300" />;
     }
   };
 
@@ -136,11 +136,11 @@ const BotTestingDashboard: React.FC = () => {
             </div>
             AI Bot Testing Dashboard
           </h1>
-          <p className="text-gray-500 dark:text-gray-400 ml-14">Test all AI agents for accuracy and performance</p>
+          <p className="text-gray-500 dark:text-gray-300 ml-14">Test all AI agents for accuracy and performance</p>
         </div>
         <button
           onClick={fetchAgents}
-          className="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+          className="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
         >
           <RefreshCw className={`h-5 w-5 ${loading ? 'animate-spin' : ''}`} />
         </button>
@@ -155,21 +155,21 @@ const BotTestingDashboard: React.FC = () => {
           {/* Summary */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mb-6">
             <div className="bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-100 dark:border-gray-700">
-              <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Agents Tested</div>
+              <div className="text-xs text-gray-500 dark:text-gray-300 mb-1">Agents Tested</div>
               <div className="text-xl font-bold text-gray-900 dark:text-white">{completedBots} / {agents.length}</div>
             </div>
             <div className="bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-100 dark:border-gray-700">
-              <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Overall Accuracy</div>
+              <div className="text-xs text-gray-500 dark:text-gray-300 mb-1">Overall Accuracy</div>
               <div className={`text-2xl font-bold ${overallAccuracy >= 85 ? 'text-green-600' : 'text-yellow-600'}`}>
                 {formatPercentage(overallAccuracy)}
               </div>
             </div>
             <div className="bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-100 dark:border-gray-700">
-              <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Tests Passed</div>
+              <div className="text-xs text-gray-500 dark:text-gray-300 mb-1">Tests Passed</div>
               <div className="text-2xl font-bold text-green-600">{totalPassed} / {totalTests}</div>
             </div>
             <div className="bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-100 dark:border-gray-700">
-              <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Unique Agents</div>
+              <div className="text-xs text-gray-500 dark:text-gray-300 mb-1">Unique Agents</div>
               <div className="text-2xl font-bold text-purple-600">{agents.filter(b => b.unique_feature).length}</div>
             </div>
           </div>
@@ -191,7 +191,7 @@ const BotTestingDashboard: React.FC = () => {
                   </span>
                 )}
                 {agent.accuracy !== null && (
-                  <div className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                  <div className="text-sm text-gray-600 dark:text-gray-300 mb-2">
                     Accuracy: <span className="font-bold">{formatPercentage(agent.accuracy)}</span>
                   </div>
                 )}
@@ -200,7 +200,7 @@ const BotTestingDashboard: React.FC = () => {
                   disabled={agent.status === 'running'}
                   className={`w-full px-3 py-2 rounded-lg text-sm transition-colors ${
                     agent.status === 'running'
-                      ? 'bg-gray-100 dark:bg-gray-700 text-gray-400'
+                      ? 'bg-gray-100 dark:bg-gray-700 text-gray-300'
                       : 'bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700'
                   }`}
                 >

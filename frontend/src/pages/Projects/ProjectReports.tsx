@@ -59,7 +59,7 @@ const ProjectReports: React.FC = () => {
           </div>
           Project Reports
         </h1>
-        <p className="text-gray-500 dark:text-gray-400 mt-1">View project performance and budget analysis</p>
+        <p className="text-gray-500 dark:text-gray-300 mt-1">View project performance and budget analysis</p>
       </div>
 
       {error && (
@@ -74,7 +74,7 @@ const ProjectReports: React.FC = () => {
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-12 text-center">
           <BarChart3 className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No project reports found</h3>
-          <p className="text-gray-500 dark:text-gray-400">Reports will appear here once projects have data</p>
+          <p className="text-gray-500 dark:text-gray-300">Reports will appear here once projects have data</p>
         </div>
       ) : (
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
@@ -94,8 +94,8 @@ const ProjectReports: React.FC = () => {
               {reports.map((report, index) => (
                 <tr key={index} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                   <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">{report.project_name}</td>
-                  <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{formatCurrency(report.budget)}</td>
-                  <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{formatCurrency(report.actual_cost)}</td>
+                  <td className="px-6 py-4 text-gray-500 dark:text-gray-300">{formatCurrency(report.budget)}</td>
+                  <td className="px-6 py-4 text-gray-500 dark:text-gray-300">{formatCurrency(report.actual_cost)}</td>
                   <td className="px-6 py-4">
                     <span className={`inline-flex items-center gap-1 ${report.variance < 0 ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'}`}>
                       {report.variance < 0 ? <TrendingDown className="h-4 w-4" /> : <TrendingUp className="h-4 w-4" />}
@@ -110,7 +110,7 @@ const ProjectReports: React.FC = () => {
                           style={{ width: `${report.progress}%` }}
                         />
                       </div>
-                      <span className="text-xs text-gray-500 dark:text-gray-400">{report.progress}%</span>
+                      <span className="text-xs text-gray-500 dark:text-gray-300">{report.progress}%</span>
                     </div>
                   </td>
                   <td className="px-6 py-4">

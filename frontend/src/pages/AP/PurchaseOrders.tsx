@@ -198,7 +198,7 @@ export default function PurchaseOrders() {
             </div>
             Purchase Orders
           </h1>
-          <p className="text-gray-500 dark:text-gray-400 mt-1">Manage purchase orders and track supplier deliveries</p>
+          <p className="text-gray-500 dark:text-gray-300 mt-1">Manage purchase orders and track supplier deliveries</p>
         </div>
         <button
           onClick={() => navigate('/ap/purchase-orders/new')}
@@ -213,7 +213,7 @@ export default function PurchaseOrders() {
       <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 mb-6">
         <div className="flex flex-col md:flex-row gap-3">
           <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-300" />
             <input
               type="text"
               placeholder="Search purchase orders..."
@@ -248,8 +248,8 @@ export default function PurchaseOrders() {
               </div>
               <div>
                 <p className="text-xl font-bold text-gray-900 dark:text-white">{pos.length}</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400 capitalize">{status.replace('_', ' ')} POs</p>
-                <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
+                <p className="text-xs text-gray-500 dark:text-gray-300 capitalize">{status.replace('_', ' ')} POs</p>
+                <p className="text-xs text-gray-300 dark:text-gray-500 mt-0.5">
                   R {pos.reduce((sum, po) => sum + po.total_amount, 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </p>
               </div>
@@ -263,8 +263,8 @@ export default function PurchaseOrders() {
         {filteredPOs.length === 0 ? (
           <div className="px-6 py-12 text-center">
             <ShoppingCart className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
-            <p className="text-gray-500 dark:text-gray-400">No purchase orders found</p>
-            <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">Create your first purchase order to order from suppliers</p>
+            <p className="text-gray-500 dark:text-gray-300">No purchase orders found</p>
+            <p className="text-xs text-gray-300 dark:text-gray-500 mt-1">Create your first purchase order to order from suppliers</p>
             <button
               onClick={() => navigate('/ap/purchase-orders/new')}
               className="mt-4 px-5 py-2 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-xl font-medium hover:from-orange-600 hover:to-red-600 transition-all "
@@ -295,7 +295,7 @@ export default function PurchaseOrders() {
                   >
                     <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">{po.po_number}</td>
                     <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{supplier?.supplier_name || 'Unknown'}</td>
-                    <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{(po.order_date ? new Date(po.order_date).toLocaleDateString() : "-")}</td>
+                    <td className="px-6 py-4 text-gray-500 dark:text-gray-300">{(po.order_date ? new Date(po.order_date).toLocaleDateString() : "-")}</td>
                     <td className="px-6 py-4 text-right font-medium text-gray-900 dark:text-white">R {Number(po.total_amount ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                     <td className="px-6 py-4 text-center">
                       <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium capitalize ${getStatusBadge(po.status)}`}>

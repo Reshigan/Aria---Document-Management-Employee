@@ -134,7 +134,7 @@ export default function BalanceSheetPage() {
             </div>
             <button
               onClick={fetchBalanceSheet}
-              className="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+              className="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
             >
               <RefreshCw className={`h-5 w-5 ${loading ? 'animate-spin' : ''}`} />
             </button>
@@ -168,7 +168,7 @@ export default function BalanceSheetPage() {
                   <h4 className="font-medium text-gray-700 dark:text-gray-300 mb-2">Current Assets</h4>
                   {data.assets.current.map((account) => (
                     <div key={account.account_code} className="flex justify-between py-1">
-                      <span className="text-sm text-gray-600 dark:text-gray-400">{account.account_code} - {account.account_name}</span>
+                      <span className="text-sm text-gray-600 dark:text-gray-300">{account.account_code} - {account.account_name}</span>
                       <span className="text-sm text-gray-900 dark:text-white">R {Number(account.balance ?? 0).toLocaleString()}</span>
                     </div>
                   ))}
@@ -182,7 +182,7 @@ export default function BalanceSheetPage() {
                   <h4 className="font-medium text-gray-700 dark:text-gray-300 mb-2">Fixed Assets</h4>
                   {data.assets.fixed.map((account) => (
                     <div key={account.account_code} className="flex justify-between py-1">
-                      <span className="text-sm text-gray-600 dark:text-gray-400">{account.account_code} - {account.account_name}</span>
+                      <span className="text-sm text-gray-600 dark:text-gray-300">{account.account_code} - {account.account_name}</span>
                       <span className="text-sm text-gray-900 dark:text-white">R {Number(account.balance ?? 0).toLocaleString()}</span>
                     </div>
                   ))}
@@ -207,7 +207,7 @@ export default function BalanceSheetPage() {
                   <h4 className="font-medium text-gray-700 dark:text-gray-300 mb-2">Current Liabilities</h4>
                   {data.liabilities.current.map((account) => (
                     <div key={account.account_code} className="flex justify-between py-1">
-                      <span className="text-sm text-gray-600 dark:text-gray-400">{account.account_code} - {account.account_name}</span>
+                      <span className="text-sm text-gray-600 dark:text-gray-300">{account.account_code} - {account.account_name}</span>
                       <span className="text-sm text-gray-900 dark:text-white">R {Number(account.balance ?? 0).toLocaleString()}</span>
                     </div>
                   ))}
@@ -221,7 +221,7 @@ export default function BalanceSheetPage() {
                   <h4 className="font-medium text-gray-700 dark:text-gray-300 mb-2">Long-term Liabilities</h4>
                   {data.liabilities.long_term.map((account) => (
                     <div key={account.account_code} className="flex justify-between py-1">
-                      <span className="text-sm text-gray-600 dark:text-gray-400">{account.account_code} - {account.account_name}</span>
+                      <span className="text-sm text-gray-600 dark:text-gray-300">{account.account_code} - {account.account_name}</span>
                       <span className="text-sm text-gray-900 dark:text-white">R {Number(account.balance ?? 0).toLocaleString()}</span>
                     </div>
                   ))}
@@ -242,12 +242,12 @@ export default function BalanceSheetPage() {
                   <h4 className="font-medium text-gray-700 dark:text-gray-300 mb-2">Equity</h4>
                   {data.equity.accounts.map((account) => (
                     <div key={account.account_code} className="flex justify-between py-1">
-                      <span className="text-sm text-gray-600 dark:text-gray-400">{account.account_code} - {account.account_name}</span>
+                      <span className="text-sm text-gray-600 dark:text-gray-300">{account.account_code} - {account.account_name}</span>
                       <span className="text-sm text-gray-900 dark:text-white">R {Number(account.balance ?? 0).toLocaleString()}</span>
                     </div>
                   ))}
                   <div className="flex justify-between py-1">
-                    <span className="text-sm text-gray-600 dark:text-gray-400">Retained Earnings</span>
+                    <span className="text-sm text-gray-600 dark:text-gray-300">Retained Earnings</span>
                     <span className="text-sm text-gray-900 dark:text-white">R {Number(data.equity.retained_earnings ?? 0).toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between py-1 font-bold text-lg pt-2 border-t-2 border-gray-300 dark:border-gray-600" data-testid="total-equity">
@@ -260,7 +260,7 @@ export default function BalanceSheetPage() {
           </div>
         ) : (
           <div className="text-center py-12">
-            <p className="text-gray-600 dark:text-gray-400">No data available</p>
+            <p className="text-gray-600 dark:text-gray-300">No data available</p>
           </div>
         )}
 

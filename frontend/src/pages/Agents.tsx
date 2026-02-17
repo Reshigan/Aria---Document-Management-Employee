@@ -82,7 +82,7 @@ export default function Agents() {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">AI Agents</h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-1">
+          <p className="text-gray-600 dark:text-gray-300 mt-1">
             {agents.length} AI-powered automation agents available
           </p>
         </div>
@@ -105,7 +105,7 @@ export default function Agents() {
               : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 bg-white dark:bg-gray-800'
           }`}
         >
-          <div className="text-sm font-medium text-gray-600 dark:text-gray-400">All Agents</div>
+          <div className="text-sm font-medium text-gray-600 dark:text-gray-300">All Agents</div>
           <div className="text-xl font-bold text-gray-900 dark:text-white">{agents.length}</div>
         </button>
         {Object.entries(categories)
@@ -120,7 +120,7 @@ export default function Agents() {
                   : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 bg-white dark:bg-gray-800'
               }`}
             >
-              <div className="text-sm font-medium text-gray-600 dark:text-gray-400">{category}</div>
+              <div className="text-sm font-medium text-gray-600 dark:text-gray-300">{category}</div>
               <div className="text-xl font-bold text-gray-900 dark:text-white">{count}</div>
             </button>
           ))}
@@ -171,7 +171,7 @@ export default function Agents() {
                 </span>
               </div>
               <h3 className="font-semibold text-gray-900 dark:text-white mb-1">{agent.name}</h3>
-              <p className="text-xs text-gray-600 dark:text-gray-400 mb-3">{agent.category}</p>
+              <p className="text-xs text-gray-600 dark:text-gray-300 mb-3">{agent.category}</p>
               <div className="flex space-x-2">
                 <button
                   onClick={(e) => {
@@ -198,7 +198,7 @@ export default function Agents() {
         </div>
 
         {filteredBots.length === 0 && (
-          <div className="text-center py-12 text-gray-500 dark:text-gray-400">
+          <div className="text-center py-12 text-gray-500 dark:text-gray-300">
             No agents found in this category
           </div>
         )}
@@ -262,12 +262,12 @@ function BotDetailsModal({
               </div>
               <div>
                 <h2 className="text-xl font-bold text-gray-900 dark:text-white">{agent.name}</h2>
-                <p className="text-sm text-gray-600 dark:text-gray-400">{agent.category}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-300">{agent.category}</p>
               </div>
             </div>
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 text-2xl"
+              className="text-gray-300 hover:text-gray-600 dark:hover:text-gray-300 text-2xl"
             >
               ×
             </button>
@@ -281,7 +281,7 @@ function BotDetailsModal({
             <div className="space-y-4">
               <div>
                 <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Description</h3>
-                <p className="text-gray-600 dark:text-gray-400 text-sm">
+                <p className="text-gray-600 dark:text-gray-300 text-sm">
                   {details?.description || 'This agent automates business processes efficiently.'}
                 </p>
               </div>
@@ -291,7 +291,7 @@ function BotDetailsModal({
                   <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Capabilities</h3>
                   <ul className="list-disc list-inside space-y-1">
                     {details.capabilities.map((cap: string, idx: number) => (
-                      <li key={idx} className="text-gray-600 dark:text-gray-400 text-sm">
+                      <li key={idx} className="text-gray-600 dark:text-gray-300 text-sm">
                         {cap}
                       </li>
                     ))}
@@ -308,7 +308,7 @@ function BotDetailsModal({
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Module</span>
-                  <span className="text-xs text-gray-600 dark:text-gray-400 font-mono">{agent.module}</span>
+                  <span className="text-xs text-gray-600 dark:text-gray-300 font-mono">{agent.module}</span>
                 </div>
               </div>
 

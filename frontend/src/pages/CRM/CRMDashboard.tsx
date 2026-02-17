@@ -401,7 +401,7 @@ const CRMDashboard: React.FC = () => {
           </div>
           CRM
         </h1>
-        <p className="text-gray-500 dark:text-gray-400 ml-14">Manage leads, opportunities, and customer relationships</p>
+        <p className="text-gray-500 dark:text-gray-300 ml-14">Manage leads, opportunities, and customer relationships</p>
       </div>
 
       {/* Error Display */}
@@ -416,19 +416,19 @@ const CRMDashboard: React.FC = () => {
         <div className="flex gap-1">
           <button
             onClick={() => setActiveTab('leads')}
-            className={`px-4 py-3 text-sm font-semibold rounded-t-lg transition-colors ${activeTab === 'leads' ? 'bg-white dark:bg-gray-800 text-rose-600 dark:text-rose-400 border-b-2 border-rose-500' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'}`}
+            className={`px-4 py-3 text-sm font-semibold rounded-t-lg transition-colors ${activeTab === 'leads' ? 'bg-white dark:bg-gray-800 text-rose-600 dark:text-rose-400 border-b-2 border-rose-500' : 'text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-300'}`}
           >
             <span className="flex items-center gap-2"><Target className="h-4 w-4" />Leads ({leads.length})</span>
           </button>
           <button
             onClick={() => setActiveTab('opportunities')}
-            className={`px-4 py-3 text-sm font-semibold rounded-t-lg transition-colors ${activeTab === 'opportunities' ? 'bg-white dark:bg-gray-800 text-rose-600 dark:text-rose-400 border-b-2 border-rose-500' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'}`}
+            className={`px-4 py-3 text-sm font-semibold rounded-t-lg transition-colors ${activeTab === 'opportunities' ? 'bg-white dark:bg-gray-800 text-rose-600 dark:text-rose-400 border-b-2 border-rose-500' : 'text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-300'}`}
           >
             <span className="flex items-center gap-2"><TrendingUp className="h-4 w-4" />Opportunities ({opportunities.length})</span>
           </button>
           <button
             onClick={() => setActiveTab('customers')}
-            className={`px-4 py-3 text-sm font-semibold rounded-t-lg transition-colors ${activeTab === 'customers' ? 'bg-white dark:bg-gray-800 text-rose-600 dark:text-rose-400 border-b-2 border-rose-500' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'}`}
+            className={`px-4 py-3 text-sm font-semibold rounded-t-lg transition-colors ${activeTab === 'customers' ? 'bg-white dark:bg-gray-800 text-rose-600 dark:text-rose-400 border-b-2 border-rose-500' : 'text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-300'}`}
           >
             <span className="flex items-center gap-2"><Building2 className="h-4 w-4" />Customers ({customers.length})</span>
           </button>
@@ -441,7 +441,7 @@ const CRMDashboard: React.FC = () => {
           {/* Actions Bar */}
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
             <div className="relative w-full sm:w-80">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-300" />
               <input
                 type="text"
                 placeholder="Search leads..."
@@ -464,22 +464,22 @@ const CRMDashboard: React.FC = () => {
             <table className="w-full">
               <thead className="bg-gray-50 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700">
                 <tr>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Company</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Contact</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Email</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Score</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Company</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Contact</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Email</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Score</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                 {leadsLoading ? (
                   <tr>
-                    <td colSpan={6} className="px-6 py-8 text-center text-gray-500 dark:text-gray-400">Loading leads...</td>
+                    <td colSpan={6} className="px-6 py-8 text-center text-gray-500 dark:text-gray-300">Loading leads...</td>
                   </tr>
                 ) : filteredLeads.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="px-6 py-8 text-center text-gray-500 dark:text-gray-400">No leads found</td>
+                    <td colSpan={6} className="px-6 py-8 text-center text-gray-500 dark:text-gray-300">No leads found</td>
                   </tr>
                 ) : (
                   filteredLeads.map((lead) => (
@@ -513,7 +513,7 @@ const CRMDashboard: React.FC = () => {
           {/* Actions Bar */}
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
             <div className="relative w-full sm:w-80">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-300" />
               <input
                 type="text"
                 placeholder="Search opportunities..."
@@ -540,7 +540,7 @@ const CRMDashboard: React.FC = () => {
                 </div>
                 <div>
                   <p className="text-xl font-bold text-gray-900 dark:text-white">{formatCurrency(opportunities.reduce((sum, o) => sum + Number(o.amount ?? 0), 0))}</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">Total Pipeline</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-300">Total Pipeline</p>
                 </div>
               </div>
             </div>
@@ -551,7 +551,7 @@ const CRMDashboard: React.FC = () => {
                 </div>
                 <div>
                   <p className="text-xl font-bold text-gray-900 dark:text-white">{formatCurrency(opportunities.reduce((sum, o) => sum + (Number(o.amount ?? 0) * Number(o.probability ?? 0) / 100), 0))}</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">Weighted Value</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-300">Weighted Value</p>
                 </div>
               </div>
             </div>
@@ -562,7 +562,7 @@ const CRMDashboard: React.FC = () => {
                 </div>
                 <div>
                   <p className="text-xl font-bold text-gray-900 dark:text-white">{opportunities.filter(o => o.status === 'OPEN').length}</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">Open Opportunities</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-300">Open Opportunities</p>
                 </div>
               </div>
             </div>
@@ -573,23 +573,23 @@ const CRMDashboard: React.FC = () => {
             <table className="w-full">
               <thead className="bg-gray-50 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700">
                 <tr>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Title</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Customer</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Amount</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Stage</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Probability</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Close Date</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Title</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Customer</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Amount</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Stage</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Probability</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Close Date</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                 {oppsLoading ? (
                   <tr>
-                    <td colSpan={7} className="px-6 py-8 text-center text-gray-500 dark:text-gray-400">Loading opportunities...</td>
+                    <td colSpan={7} className="px-6 py-8 text-center text-gray-500 dark:text-gray-300">Loading opportunities...</td>
                   </tr>
                 ) : filteredOpportunities.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="px-6 py-8 text-center text-gray-500 dark:text-gray-400">No opportunities found</td>
+                    <td colSpan={7} className="px-6 py-8 text-center text-gray-500 dark:text-gray-300">No opportunities found</td>
                   </tr>
                 ) : (
                   filteredOpportunities.map((opp) => (
@@ -624,7 +624,7 @@ const CRMDashboard: React.FC = () => {
           {/* Actions Bar */}
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
             <div className="relative w-full sm:w-80">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-300" />
               <input
                 type="text"
                 placeholder="Search customers..."
@@ -647,23 +647,23 @@ const CRMDashboard: React.FC = () => {
             <table className="w-full">
               <thead className="bg-gray-50 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700">
                 <tr>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Code</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Name</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Contact</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Email</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">BBBEE</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Credit Limit</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Code</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Name</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Contact</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Email</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">BBBEE</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Credit Limit</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                 {customersLoading ? (
                   <tr>
-                    <td colSpan={7} className="px-6 py-8 text-center text-gray-500 dark:text-gray-400">Loading customers...</td>
+                    <td colSpan={7} className="px-6 py-8 text-center text-gray-500 dark:text-gray-300">Loading customers...</td>
                   </tr>
                 ) : filteredCustomers.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="px-6 py-8 text-center text-gray-500 dark:text-gray-400">No customers found</td>
+                    <td colSpan={7} className="px-6 py-8 text-center text-gray-500 dark:text-gray-300">No customers found</td>
                   </tr>
                 ) : (
                   filteredCustomers.map((customer) => (

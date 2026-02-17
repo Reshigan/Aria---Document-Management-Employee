@@ -138,7 +138,7 @@ export default function EmailTemplates() {
                     <span className={`px-2 py-0.5 rounded-full text-xs ${template.is_active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>{template.is_active ? 'Active' : 'Inactive'}</span>
                   </div>
                   <div className="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg mb-3">
-                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Subject:</p>
+                    <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Subject:</p>
                     <p className="text-sm truncate">{template.subject}</p>
                   </div>
                   <div className="flex flex-wrap gap-1 mb-3">

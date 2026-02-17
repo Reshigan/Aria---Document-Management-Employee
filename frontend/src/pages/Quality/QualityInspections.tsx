@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, CheckCircle, X, Edit, Trash2 } from 'lucide-react';
 
+const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev/api';
+
 interface Inspection {
   inspection_id: string;
   work_order_id: string;
@@ -38,7 +40,7 @@ const QualityInspections: React.FC = () => {
 
   const fetchInspections = async () => {
     try {
-      const response = await fetch('https://aria.vantax.co.za/api/erp/quality/inspections');
+      const response = await fetch(`${API_BASE}/erp/quality/inspections`);
       const ct = response.headers.get('content-type');
       if (!response.ok || !ct?.includes('application/json')) { setInspections([]); return; }
       const data = await response.json();
@@ -82,7 +84,7 @@ const QualityInspections: React.FC = () => {
   const handleDelete = async (inspectionId: string) => {
     if (!confirm('Are you sure you want to delete this inspection?')) return;
     try {
-      await fetch(`https://aria.vantax.co.za/api/erp/quality/inspections/${inspectionId}`, {
+      await fetch(`${API_BASE}/erp/quality/inspections/${inspectionId}`, {
         method: 'DELETE'
       });
       fetchInspections();
@@ -95,8 +97,8 @@ const QualityInspections: React.FC = () => {
     e.preventDefault();
     try {
       const url = editingInspection 
-        ? `https://aria.vantax.co.za/api/erp/quality/inspections/${editingInspection.inspection_id}`
-        : 'https://aria.vantax.co.za/api/erp/quality/inspections';
+                ? `${API_BASE}/erp/quality/inspections/${editingInspection.inspection_id}`
+                : `${API_BASE}/erp/quality/inspections`;
       const method = editingInspection ? 'PUT' : 'POST';
       
       await fetch(url, {
@@ -119,7 +121,7 @@ const QualityInspections: React.FC = () => {
         <div className="flex justify-between items-center mb-6">
           <div>
             <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Quality Inspections</h1>
-            <p className="text-gray-600 dark:text-gray-400 mt-1">Track quality control inspections</p>
+            <p className="text-gray-600 dark:text-gray-300 mt-1">Track quality control inspections</p>
           </div>
           <button onClick={handleCreate} className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
             <Plus size={20} />
@@ -129,23 +131,23 @@ const QualityInspections: React.FC = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mb-6">
           <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border">
-            <p className="text-sm text-gray-600 dark:text-gray-400">Total Inspections</p>
+            <p className="text-sm text-gray-600 dark:text-gray-300">Total Inspections</p>
             <p className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{inspections.length}</p>
           </div>
           <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border">
-            <p className="text-sm text-gray-600 dark:text-gray-400">Passed</p>
+            <p className="text-sm text-gray-600 dark:text-gray-300">Passed</p>
             <p className="text-2xl font-bold text-green-600">
               {inspections.filter(i => i.result === 'passed').length}
             </p>
           </div>
           <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border">
-            <p className="text-sm text-gray-600 dark:text-gray-400">Failed</p>
+            <p className="text-sm text-gray-600 dark:text-gray-300">Failed</p>
             <p className="text-2xl font-bold text-red-600">
               {inspections.filter(i => i.result === 'failed').length}
             </p>
           </div>
           <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border">
-            <p className="text-sm text-gray-600 dark:text-gray-400">Pending</p>
+            <p className="text-sm text-gray-600 dark:text-gray-300">Pending</p>
             <p className="text-2xl font-bold text-yellow-600">
               {inspections.filter(i => i.result === 'pending').length}
             </p>

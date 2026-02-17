@@ -206,7 +206,7 @@ const DocumentProcessing: React.FC = () => {
       case 'in_progress':
         return <RefreshCw className="w-4 h-4 animate-spin text-blue-500" />;
       default:
-        return <Clock className="w-4 h-4 text-gray-500 dark:text-gray-400" />;
+        return <Clock className="w-4 h-4 text-gray-500 dark:text-gray-300" />;
     }
   };
 
@@ -239,7 +239,7 @@ const DocumentProcessing: React.FC = () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Document Processing</h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-1">
+          <p className="text-gray-600 dark:text-gray-300 mt-1">
             Upload and analyze documents with advanced OCR and AI capabilities
           </p>
         </div>
@@ -306,11 +306,11 @@ const DocumentProcessing: React.FC = () => {
                                 {job.status}
                               </Badge>
                             </div>
-                            <p className="text-xs text-gray-500 dark:text-gray-400">
+                            <p className="text-xs text-gray-500 dark:text-gray-300">
                               {job.processing_type} • {formatDate(job.created_at)}
                             </p>
                             {job.processing_time && (
-                              <p className="text-xs text-gray-400">
+                              <p className="text-xs text-gray-300">
                                 Processing time: {formatProcessingTime(job.processing_time)}
                               </p>
                             )}
@@ -319,7 +319,7 @@ const DocumentProcessing: React.FC = () => {
                         
                         <div className="flex items-center space-x-2">
                           {job.progress !== undefined && job.status === 'processing' && (
-                            <div className="text-xs text-gray-500 dark:text-gray-400">
+                            <div className="text-xs text-gray-500 dark:text-gray-300">
                               {Number(job.progress ?? 0).toFixed(0)}%
                             </div>
                           )}
@@ -340,9 +340,9 @@ const DocumentProcessing: React.FC = () => {
                 </ScrollArea>
               ) : (
                 <div className="text-center py-8">
-                  <FileText className="w-12 h-12 mx-auto text-gray-400 mb-4" />
-                  <p className="text-gray-500 dark:text-gray-400">No processing jobs found</p>
-                  <p className="text-xs text-gray-400 mt-1">
+                  <FileText className="w-12 h-12 mx-auto text-gray-300 mb-4" />
+                  <p className="text-gray-500 dark:text-gray-300">No processing jobs found</p>
+                  <p className="text-xs text-gray-300 mt-1">
                     Upload a document to get started
                   </p>
                 </div>
@@ -374,20 +374,20 @@ const DocumentProcessing: React.FC = () => {
                   <div className="grid grid-cols-2 gap-3 text-sm">
                     <div>
                       <p className="font-medium">Processing Type:</p>
-                      <p className="text-gray-600 dark:text-gray-400">{selectedJob.processing_type}</p>
+                      <p className="text-gray-600 dark:text-gray-300">{selectedJob.processing_type}</p>
                     </div>
                     <div>
                       <p className="font-medium">Document ID:</p>
-                      <p className="text-gray-600 dark:text-gray-400">{selectedJob.document_id}</p>
+                      <p className="text-gray-600 dark:text-gray-300">{selectedJob.document_id}</p>
                     </div>
                     <div>
                       <p className="font-medium">Started:</p>
-                      <p className="text-gray-600 dark:text-gray-400">{formatDate(selectedJob.created_at)}</p>
+                      <p className="text-gray-600 dark:text-gray-300">{formatDate(selectedJob.created_at)}</p>
                     </div>
                     {selectedJob.completed_at && (
                       <div>
                         <p className="font-medium">Completed:</p>
-                        <p className="text-gray-600 dark:text-gray-400">{formatDate(selectedJob.completed_at)}</p>
+                        <p className="text-gray-600 dark:text-gray-300">{formatDate(selectedJob.completed_at)}</p>
                       </div>
                     )}
                   </div>
@@ -410,9 +410,9 @@ const DocumentProcessing: React.FC = () => {
           ) : (
             <Card>
               <CardContent className="text-center py-8">
-                <Brain className="w-12 h-12 mx-auto text-gray-400 mb-4" />
-                <p className="text-gray-500 dark:text-gray-400">No results selected</p>
-                <p className="text-xs text-gray-400 mt-1">
+                <Brain className="w-12 h-12 mx-auto text-gray-300 mb-4" />
+                <p className="text-gray-500 dark:text-gray-300">No results selected</p>
+                <p className="text-xs text-gray-300 mt-1">
                   Select a job from the history to view results
                 </p>
               </CardContent>

@@ -140,7 +140,7 @@ const Timesheets: React.FC = () => {
           </div>
           Timesheets
         </h1>
-        <p className="text-gray-500 dark:text-gray-400 mt-1">Track time spent on projects and tasks</p>
+        <p className="text-gray-500 dark:text-gray-300 mt-1">Track time spent on projects and tasks</p>
       </div>
 
       {error && (
@@ -171,7 +171,7 @@ const Timesheets: React.FC = () => {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{Number(totalHours ?? 0).toFixed(1)}h</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Total Hours</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Total Hours</p>
             </div>
           </div>
         </div>
@@ -182,7 +182,7 @@ const Timesheets: React.FC = () => {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{timesheets.filter(t => t.status === 'SUBMITTED').length}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Pending Approval</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Pending Approval</p>
             </div>
           </div>
         </div>
@@ -193,7 +193,7 @@ const Timesheets: React.FC = () => {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{timesheets.filter(t => t.status === 'APPROVED').length}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Approved</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Approved</p>
             </div>
           </div>
         </div>
@@ -204,7 +204,7 @@ const Timesheets: React.FC = () => {
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-12 text-center">
           <Clock className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No timesheets yet</h3>
-          <p className="text-gray-500 dark:text-gray-400 mb-6">Start tracking your time on projects</p>
+          <p className="text-gray-500 dark:text-gray-300 mb-6">Start tracking your time on projects</p>
           <button
             onClick={handleCreate}
             className="px-6 py-2.5 bg-gradient-to-r from-cyan-500 to-teal-500 text-white rounded-xl hover:from-cyan-600 hover:to-teal-600 transition-all  font-medium"
@@ -231,8 +231,8 @@ const Timesheets: React.FC = () => {
                 <tr key={timesheet.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                   <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">{timesheet.employee_name}</td>
                   <td className="px-6 py-4 text-cyan-600 dark:text-cyan-400">{timesheet.project_name}</td>
-                  <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{timesheet.task_name}</td>
-                  <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{formatDate(timesheet.date)}</td>
+                  <td className="px-6 py-4 text-gray-500 dark:text-gray-300">{timesheet.task_name}</td>
+                  <td className="px-6 py-4 text-gray-500 dark:text-gray-300">{formatDate(timesheet.date)}</td>
                   <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">{timesheet.hours}h</td>
                   <td className="px-6 py-4">{getStatusBadge(timesheet.status)}</td>
                   <td className="px-6 py-4">

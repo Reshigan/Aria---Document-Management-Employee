@@ -252,10 +252,10 @@ export default function WMSStock() {
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
           <div>
             <h1 className="text-2xl font-bold bg-gradient-to-r from-teal-600 to-cyan-600 bg-clip-text text-transparent">WMS - Inventory Management</h1>
-            <p className="text-gray-500 dark:text-gray-400 mt-1">Manage products, stock levels, and inventory movements</p>
+            <p className="text-gray-500 dark:text-gray-300 mt-1">Manage products, stock levels, and inventory movements</p>
           </div>
           <div className="flex items-center gap-3">
-            <button onClick={() => { if (activeTab === 'products') loadProducts(); else if (activeTab === 'stock') loadStock(); else loadMovements(); }} className="p-3 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-200 dark:border-gray-700"><RefreshCw className={`h-5 w-5 text-gray-600 dark:text-gray-400 ${loading ? 'animate-spin' : ''}`} /></button>
+            <button onClick={() => { if (activeTab === 'products') loadProducts(); else if (activeTab === 'stock') loadStock(); else loadMovements(); }} className="p-3 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-200 dark:border-gray-700"><RefreshCw className={`h-5 w-5 text-gray-600 dark:text-gray-300 ${loading ? 'animate-spin' : ''}`} /></button>
             {getCreateButton()}
           </div>
         </div>
@@ -264,40 +264,40 @@ export default function WMSStock() {
 
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
           <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
-            <div className="flex items-center gap-3"><div className="p-2 bg-gradient-to-br from-teal-500 to-cyan-500 rounded-xl "><Package className="h-5 w-5 text-white" /></div><div><p className="text-xl font-bold text-gray-900 dark:text-white">{stats.totalProducts}</p><p className="text-xs text-gray-500 dark:text-gray-400">Total Products</p></div></div>
+            <div className="flex items-center gap-3"><div className="p-2 bg-gradient-to-br from-teal-500 to-cyan-500 rounded-xl "><Package className="h-5 w-5 text-white" /></div><div><p className="text-xl font-bold text-gray-900 dark:text-white">{stats.totalProducts}</p><p className="text-xs text-gray-500 dark:text-gray-300">Total Products</p></div></div>
           </div>
           <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
-            <div className="flex items-center gap-3"><div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl "><Warehouse className="h-5 w-5 text-white" /></div><div><p className="text-xl font-bold text-gray-900 dark:text-white">{Number(stats.totalStock ?? 0).toLocaleString()}</p><p className="text-xs text-gray-500 dark:text-gray-400">Total Stock</p></div></div>
+            <div className="flex items-center gap-3"><div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl "><Warehouse className="h-5 w-5 text-white" /></div><div><p className="text-xl font-bold text-gray-900 dark:text-white">{Number(stats.totalStock ?? 0).toLocaleString()}</p><p className="text-xs text-gray-500 dark:text-gray-300">Total Stock</p></div></div>
           </div>
           <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
-            <div className="flex items-center gap-3"><div className="p-2 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl "><AlertTriangle className="h-5 w-5 text-white" /></div><div><p className="text-xl font-bold text-gray-900 dark:text-white">{stats.lowStock}</p><p className="text-xs text-gray-500 dark:text-gray-400">Low Stock Items</p></div></div>
+            <div className="flex items-center gap-3"><div className="p-2 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl "><AlertTriangle className="h-5 w-5 text-white" /></div><div><p className="text-xl font-bold text-gray-900 dark:text-white">{stats.lowStock}</p><p className="text-xs text-gray-500 dark:text-gray-300">Low Stock Items</p></div></div>
           </div>
           <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
-            <div className="flex items-center gap-3"><div className="p-2 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl "><TrendingUp className="h-5 w-5 text-white" /></div><div><p className="text-xl font-bold text-gray-900 dark:text-white">R {Number(stats.totalValue ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 0 })}</p><p className="text-xs text-gray-500 dark:text-gray-400">Stock Value</p></div></div>
+            <div className="flex items-center gap-3"><div className="p-2 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl "><TrendingUp className="h-5 w-5 text-white" /></div><div><p className="text-xl font-bold text-gray-900 dark:text-white">R {Number(stats.totalValue ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 0 })}</p><p className="text-xs text-gray-500 dark:text-gray-300">Stock Value</p></div></div>
           </div>
         </div>
 
         <div className="flex gap-2 border-b border-gray-200 dark:border-gray-700">
           {(['products', 'stock', 'movements'] as const).map(tab => (
-            <button key={tab} onClick={() => setActiveTab(tab)} className={`px-4 py-2 font-medium capitalize transition-all ${activeTab === tab ? 'text-teal-600 dark:text-teal-400 border-b-2 border-teal-600 dark:border-teal-400' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'}`}>{tab === 'stock' ? 'Stock on Hand' : tab === 'movements' ? 'Stock Movements' : tab}</button>
+            <button key={tab} onClick={() => setActiveTab(tab)} className={`px-4 py-2 font-medium capitalize transition-all ${activeTab === tab ? 'text-teal-600 dark:text-teal-400 border-b-2 border-teal-600 dark:border-teal-400' : 'text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-300'}`}>{tab === 'stock' ? 'Stock on Hand' : tab === 'movements' ? 'Stock Movements' : tab}</button>
           ))}
         </div>
 
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
           <div className="p-3 border-b border-gray-100 dark:border-gray-700">
             <div className="flex flex-col md:flex-row gap-3">
-              <div className="flex-1 relative"><Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" /><input type="text" placeholder="Search..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-12 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all" /></div>
+              <div className="flex-1 relative"><Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-300" /><input type="text" placeholder="Search..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-12 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all" /></div>
               {activeTab === 'stock' && (<select value={warehouseFilter} onChange={(e) => setWarehouseFilter(e.target.value)} className="px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all min-w-[180px]"><option value="">All Warehouses</option>{warehouses.map(wh => <option key={wh.id} value={wh.id}>{wh.name}</option>)}</select>)}
             </div>
           </div>
 
           {loading ? (
-            <div className="p-12 text-center"><RefreshCw className="h-8 w-8 animate-spin text-teal-500 mx-auto mb-4" /><p className="text-gray-500 dark:text-gray-400">Loading...</p></div>
+            <div className="p-12 text-center"><RefreshCw className="h-8 w-8 animate-spin text-teal-500 mx-auto mb-4" /><p className="text-gray-500 dark:text-gray-300">Loading...</p></div>
           ) : activeTab === 'products' ? (
-            products.length === 0 ? (<div className="p-12 text-center"><div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-2xl flex items-center justify-center mx-auto mb-4"><Package className="h-8 w-8 text-gray-400" /></div><h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No products found</h3><p className="text-gray-500 dark:text-gray-400 mb-6">Get started by adding your first product</p><button onClick={handleCreate} className="px-4 py-2 bg-gradient-to-r from-teal-600 to-cyan-600 text-white rounded-xl font-medium hover:from-teal-700 hover:to-cyan-700 transition-all">Add First Product</button></div>) : (
+            products.length === 0 ? (<div className="p-12 text-center"><div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-2xl flex items-center justify-center mx-auto mb-4"><Package className="h-8 w-8 text-gray-300" /></div><h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No products found</h3><p className="text-gray-500 dark:text-gray-300 mb-6">Get started by adding your first product</p><button onClick={handleCreate} className="px-4 py-2 bg-gradient-to-r from-teal-600 to-cyan-600 text-white rounded-xl font-medium hover:from-teal-700 hover:to-cyan-700 transition-all">Add First Product</button></div>) : (
               <div className="overflow-x-auto">
                 <table className="w-full">
-                  <thead className="bg-gray-50 dark:bg-gray-900/50"><tr><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Code</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Name</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">UOM</th><th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Cost</th><th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Selling</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th><th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th></tr></thead>
+                  <thead className="bg-gray-50 dark:bg-gray-900/50"><tr><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Code</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Name</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">UOM</th><th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Cost</th><th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Selling</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th><th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th></tr></thead>
                   <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
                     {products.map(product => (
                       <tr key={product.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
@@ -315,14 +315,14 @@ export default function WMSStock() {
               </div>
             )
           ) : activeTab === 'stock' ? (
-            stock.length === 0 ? (<div className="p-12 text-center"><div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-2xl flex items-center justify-center mx-auto mb-4"><Warehouse className="h-8 w-8 text-gray-400" /></div><h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No stock data</h3><p className="text-gray-500 dark:text-gray-400">No stock on hand to display</p></div>) : (
+            stock.length === 0 ? (<div className="p-12 text-center"><div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-2xl flex items-center justify-center mx-auto mb-4"><Warehouse className="h-8 w-8 text-gray-300" /></div><h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No stock data</h3><p className="text-gray-500 dark:text-gray-300">No stock on hand to display</p></div>) : (
               <div className="overflow-x-auto">
                 <table className="w-full">
-                  <thead className="bg-gray-50 dark:bg-gray-900/50"><tr><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Product</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Warehouse</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Location</th><th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">On Hand</th><th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Reserved</th><th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Available</th></tr></thead>
+                  <thead className="bg-gray-50 dark:bg-gray-900/50"><tr><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Product</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Warehouse</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Location</th><th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">On Hand</th><th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Reserved</th><th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Available</th></tr></thead>
                   <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
                     {stock.map(item => (
                       <tr key={item.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-                        <td className="px-6 py-4"><div><span className="font-semibold text-teal-600 dark:text-teal-400">{item.product_code}</span><p className="text-xs text-gray-500 dark:text-gray-400">{item.product_name}</p></div></td>
+                        <td className="px-6 py-4"><div><span className="font-semibold text-teal-600 dark:text-teal-400">{item.product_code}</span><p className="text-xs text-gray-500 dark:text-gray-300">{item.product_name}</p></div></td>
                         <td className="px-6 py-4 text-gray-900 dark:text-white">{item.warehouse_name}</td>
                         <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{item.location_name}</td>
                         <td className="px-6 py-4 text-right font-semibold text-gray-900 dark:text-white">{Number(item.quantity_on_hand ?? 0).toLocaleString()}</td>
@@ -335,19 +335,19 @@ export default function WMSStock() {
               </div>
             )
           ) : (
-            movements.length === 0 ? (<div className="p-12 text-center"><div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-2xl flex items-center justify-center mx-auto mb-4"><ArrowUpDown className="h-8 w-8 text-gray-400" /></div><h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No movements</h3><p className="text-gray-500 dark:text-gray-400">No stock movements to display</p></div>) : (
+            movements.length === 0 ? (<div className="p-12 text-center"><div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-2xl flex items-center justify-center mx-auto mb-4"><ArrowUpDown className="h-8 w-8 text-gray-300" /></div><h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No movements</h3><p className="text-gray-500 dark:text-gray-300">No stock movements to display</p></div>) : (
               <div className="overflow-x-auto">
                 <table className="w-full">
-                  <thead className="bg-gray-50 dark:bg-gray-900/50"><tr><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Movement #</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Type</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Product</th><th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Quantity</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Date</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Reference</th></tr></thead>
+                  <thead className="bg-gray-50 dark:bg-gray-900/50"><tr><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Movement #</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Type</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Product</th><th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Quantity</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Date</th><th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Reference</th></tr></thead>
                   <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
                     {movements.map(mov => (
                       <tr key={mov.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                         <td className="px-6 py-4 font-semibold text-teal-600 dark:text-teal-400">{mov.movement_number}</td>
                         <td className="px-6 py-4"><span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border capitalize ${getMovementTypeBadge(mov.movement_type)}`}>{mov.movement_type}</span></td>
-                        <td className="px-6 py-4"><div><span className="text-gray-900 dark:text-white">{mov.product_code}</span><p className="text-xs text-gray-500 dark:text-gray-400">{mov.product_name}</p></div></td>
+                        <td className="px-6 py-4"><div><span className="text-gray-900 dark:text-white">{mov.product_code}</span><p className="text-xs text-gray-500 dark:text-gray-300">{mov.product_name}</p></div></td>
                         <td className="px-6 py-4 text-right font-semibold text-gray-900 dark:text-white">{Number(mov.quantity ?? 0).toLocaleString()}</td>
                         <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{(mov.movement_date ? new Date(mov.movement_date).toLocaleDateString() : "-")}</td>
-                        <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{mov.reference || '-'}</td>
+                        <td className="px-6 py-4 text-gray-500 dark:text-gray-300">{mov.reference || '-'}</td>
                       </tr>
                     ))}
                   </tbody>

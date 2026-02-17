@@ -216,7 +216,7 @@ const SAPIntegration: React.FC = () => {
                 </div>
                 <div>
                   <h4 className="font-semibold text-gray-900 dark:text-white">{connection.connection_name}</h4>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">{connection.sap_system_type}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-300">{connection.sap_system_type}</p>
                 </div>
               </div>
               {connection.is_active ? (
@@ -228,19 +228,19 @@ const SAPIntegration: React.FC = () => {
             
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <span className="text-gray-500 dark:text-gray-400">Host:</span>
+                <span className="text-gray-500 dark:text-gray-300">Host:</span>
                 <span className="font-medium">{connection.host}:{connection.port}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-gray-500 dark:text-gray-400">Client:</span>
+                <span className="text-gray-500 dark:text-gray-300">Client:</span>
                 <span className="font-medium">{connection.client}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-gray-500 dark:text-gray-400">Type:</span>
+                <span className="text-gray-500 dark:text-gray-300">Type:</span>
                 <span className="font-medium">{connection.connection_type}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-gray-500 dark:text-gray-400">Last Tested:</span>
+                <span className="text-gray-500 dark:text-gray-300">Last Tested:</span>
                 <span className="font-medium">
                   {connection.last_tested_at ? new Date(connection.last_tested_at).toLocaleDateString() : 'Never'}
                 </span>
@@ -255,7 +255,7 @@ const SAPIntegration: React.FC = () => {
                 <Link2 className="w-3 h-3" />
                 Test Connection
               </button>
-              <button className="flex-1 px-3 py-2 text-sm bg-gray-50 dark:bg-gray-900 text-gray-600 dark:text-gray-400 rounded hover:bg-gray-100 dark:hover:bg-gray-700 dark:bg-gray-700">
+              <button className="flex-1 px-3 py-2 text-sm bg-gray-50 dark:bg-gray-900 text-gray-600 dark:text-gray-300 rounded hover:bg-gray-100 dark:hover:bg-gray-700 dark:bg-gray-700">
                 Edit
               </button>
             </div>
@@ -265,8 +265,8 @@ const SAPIntegration: React.FC = () => {
 
       {connections.length === 0 && !loading && (
         <div className="text-center py-12 bg-gray-50 dark:bg-gray-900 rounded-lg">
-          <Server className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-          <p className="text-gray-600 dark:text-gray-400">No SAP connections configured</p>
+          <Server className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+          <p className="text-gray-600 dark:text-gray-300">No SAP connections configured</p>
           <button className="mt-4 px-4 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-lg hover:bg-blue-700">
             Add Your First SAP Connection
           </button>
@@ -289,21 +289,21 @@ const SAPIntegration: React.FC = () => {
         <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
           <thead className="bg-gray-50 dark:bg-gray-900">
             <tr>
-              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Document Type</th>
-              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">ARIA Field</th>
-              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">SAP Field</th>
-              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Transformation</th>
-              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Status</th>
-              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Actions</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Document Type</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">ARIA Field</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">SAP Field</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Transformation</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Status</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Actions</th>
             </tr>
           </thead>
           <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
             {fieldMappings.map((mapping) => (
               <tr key={mapping.id} className="hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900">
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{mapping.document_type}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400 font-mono">{mapping.aria_field}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400 font-mono">{mapping.sap_field}</td>
-                <td className="px-6 py-4 text-xs text-gray-500 dark:text-gray-400">{mapping.transformation_rule || '-'}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-300 font-mono">{mapping.aria_field}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-300 font-mono">{mapping.sap_field}</td>
+                <td className="px-6 py-4 text-xs text-gray-500 dark:text-gray-300">{mapping.transformation_rule || '-'}</td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   {mapping.is_active ? (
                     <span className="px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 text-xs rounded-full">Active</span>
@@ -311,7 +311,7 @@ const SAPIntegration: React.FC = () => {
                     <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-100 text-xs rounded-full">Inactive</span>
                   )}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">
+                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-300">
                   <button className="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:text-blue-100 mr-3">Edit</button>
                   <button className="text-red-600 dark:text-red-400 hover:text-red-900">Delete</button>
                 </td>
@@ -361,25 +361,25 @@ const SAPIntegration: React.FC = () => {
         <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
           <thead className="bg-gray-50 dark:bg-gray-900">
             <tr>
-              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Document Type</th>
-              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Document ID</th>
-              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Export Method</th>
-              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Priority</th>
-              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Retry Count</th>
-              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Status</th>
-              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Actions</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Document Type</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Document ID</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Export Method</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Priority</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Retry Count</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Status</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Actions</th>
             </tr>
           </thead>
           <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
             {exportQueue.map((item) => (
               <tr key={item.id} className="hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900">
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{item.document_type}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">{item.document_id}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">{item.export_method}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-300">{item.document_id}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-300">{item.export_method}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{item.priority}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">{item.retry_count}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-300">{item.retry_count}</td>
                 <td className="px-6 py-4 whitespace-nowrap">{getStatusBadge(item.status)}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">
+                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-300">
                   {item.status === 'pending' && (
                     <button className="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:text-blue-100">Process</button>
                   )}
@@ -409,10 +409,10 @@ const SAPIntegration: React.FC = () => {
         <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
           <thead className="bg-gray-50 dark:bg-gray-900">
             <tr>
-              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">ARIA GL Account</th>
-              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">SAP GL Account</th>
-              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Status</th>
-              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Actions</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">ARIA GL Account</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">SAP GL Account</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Status</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Actions</th>
             </tr>
           </thead>
           <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
@@ -427,7 +427,7 @@ const SAPIntegration: React.FC = () => {
                     <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-100 text-xs rounded-full">Inactive</span>
                   )}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">
+                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-300">
                   <button className="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:text-blue-100 mr-3">Edit</button>
                   <button className="text-red-600 dark:text-red-400 hover:text-red-900">Delete</button>
                 </td>
@@ -444,7 +444,7 @@ const SAPIntegration: React.FC = () => {
       <div className="flex items-center justify-center h-64">
         <div className="text-center">
           <AlertCircle className="w-12 h-12 text-yellow-500 mx-auto mb-4" />
-          <p className="text-gray-600 dark:text-gray-400">Please select a company to view SAP integration data</p>
+          <p className="text-gray-600 dark:text-gray-300">Please select a company to view SAP integration data</p>
         </div>
       </div>
     );
@@ -455,7 +455,7 @@ const SAPIntegration: React.FC = () => {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">SAP Integration</h1>
-          <p className="text-gray-600 dark:text-gray-400">Connect to SAP ECC and S/4HANA with CSV export for manual upload</p>
+          <p className="text-gray-600 dark:text-gray-300">Connect to SAP ECC and S/4HANA with CSV export for manual upload</p>
         </div>
       </div>
 

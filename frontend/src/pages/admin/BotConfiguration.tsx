@@ -90,7 +90,7 @@ export default function BotConfigurationPage() {
           <Agent className="h-8 w-8" />
           Agent Configuration
         </h1>
-        <p className="text-gray-600 dark:text-gray-400 mt-2">Configure AI agents and automation settings</p>
+        <p className="text-gray-600 dark:text-gray-300 mt-2">Configure AI agents and automation settings</p>
       </div>
 
       <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4 space-y-3">
@@ -106,13 +106,13 @@ export default function BotConfigurationPage() {
                       Enabled
                     </span>
                   ) : (
-                    <span className="flex items-center gap-1 text-gray-600 dark:text-gray-400 text-sm">
+                    <span className="flex items-center gap-1 text-gray-600 dark:text-gray-300 text-sm">
                       <XCircle className="h-4 w-4" />
                       Disabled
                     </span>
                   )}
                 </div>
-                <p className="text-gray-600 dark:text-gray-400">{agent.description}</p>
+                <p className="text-gray-600 dark:text-gray-300">{agent.description}</p>
               </div>
               <label className="relative inline-flex items-center cursor-pointer">
                 <input
@@ -140,7 +140,7 @@ export default function BotConfigurationPage() {
                       className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md"
                       placeholder="10000"
                     />
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                    <p className="text-xs text-gray-500 dark:text-gray-300 mt-1">
                       Automatically approve transactions below this amount
                     </p>
                   </div>
@@ -159,7 +159,7 @@ export default function BotConfigurationPage() {
                         onChange={(e) => handleUpdateNotifications(agent.id, 'email', e.target.checked)}
                         className="w-4 h-4 text-blue-600 dark:text-blue-400 rounded"
                       />
-                      <Mail className="h-4 w-4 text-gray-600 dark:text-gray-400" />
+                      <Mail className="h-4 w-4 text-gray-600 dark:text-gray-300" />
                       <span className="text-gray-700 dark:text-gray-300">Email Notifications</span>
                     </label>
                     <label className="flex items-center gap-3">
@@ -169,7 +169,7 @@ export default function BotConfigurationPage() {
                         onChange={(e) => handleUpdateNotifications(agent.id, 'whatsapp', e.target.checked)}
                         className="w-4 h-4 text-blue-600 dark:text-blue-400 rounded"
                       />
-                      <MessageSquare className="h-4 w-4 text-gray-600 dark:text-gray-400" />
+                      <MessageSquare className="h-4 w-4 text-gray-600 dark:text-gray-300" />
                       <span className="text-gray-700 dark:text-gray-300">WhatsApp Notifications</span>
                     </label>
                     <label className="flex items-center gap-3">
@@ -179,7 +179,7 @@ export default function BotConfigurationPage() {
                         onChange={(e) => handleUpdateNotifications(agent.id, 'in_app', e.target.checked)}
                         className="w-4 h-4 text-blue-600 dark:text-blue-400 rounded"
                       />
-                      <Bell className="h-4 w-4 text-gray-600 dark:text-gray-400" />
+                      <Bell className="h-4 w-4 text-gray-600 dark:text-gray-300" />
                       <span className="text-gray-700 dark:text-gray-300">In-App Notifications</span>
                     </label>
                   </div>
@@ -197,7 +197,7 @@ export default function BotConfigurationPage() {
                       defaultValue="95"
                       className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md"
                     />
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                    <p className="text-xs text-gray-500 dark:text-gray-300 mt-1">
                       Minimum confidence level for auto-matching invoices
                     </p>
                   </div>

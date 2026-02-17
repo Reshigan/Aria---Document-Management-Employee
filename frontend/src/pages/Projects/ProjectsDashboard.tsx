@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { FolderOpen, Plus, Search, X, Edit2, Trash2, DollarSign, TrendingUp, Activity } from 'lucide-react';
 
+const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev/api';
+
 interface Project {
   id: number;
   name: string;
@@ -45,7 +47,7 @@ export default function ProjectsDashboard() {
   const fetchProjects = async () => {
     try {
       setLoading(true);
-      const response = await fetch('https://aria.vantax.co.za/api/new-pages/projects');
+      const response = await fetch(`${API_BASE}/new-pages/projects`);
       const ct = response.headers.get('content-type');
       if (!response.ok || !ct?.includes('application/json')) { setProjects([]); return; }
       const data = await response.json();
@@ -91,7 +93,7 @@ export default function ProjectsDashboard() {
   const handleDelete = async (projectId: number) => {
     if (!confirm('Are you sure you want to delete this project?')) return;
     try {
-      await fetch(`https://aria.vantax.co.za/api/new-pages/projects/${projectId}`, {
+      await fetch(`${API_BASE}/new-pages/projects/${projectId}`, {
         method: 'DELETE'
       });
       fetchProjects();
@@ -104,8 +106,8 @@ export default function ProjectsDashboard() {
     e.preventDefault();
     try {
       const url = editingProject 
-        ? `https://aria.vantax.co.za/api/new-pages/projects/${editingProject.id}`
-        : 'https://aria.vantax.co.za/api/new-pages/projects';
+                ? `${API_BASE}/new-pages/projects/${editingProject.id}`
+                : `${API_BASE}/new-pages/projects`;
       const method = editingProject ? 'PUT' : 'POST';
       
       await fetch(url, {
@@ -162,7 +164,7 @@ export default function ProjectsDashboard() {
           </div>
           Projects
         </h1>
-        <p className="text-gray-500 dark:text-gray-400 mt-1">
+        <p className="text-gray-500 dark:text-gray-300 mt-1">
           Manage projects, track time, expenses, and profitability
         </p>
       </div>
@@ -170,7 +172,7 @@ export default function ProjectsDashboard() {
       {/* Action Bar */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-6">
         <div className="relative w-full md:w-80">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-300" />
           <input
             type="text"
             placeholder="Search projects..."
@@ -197,7 +199,7 @@ export default function ProjectsDashboard() {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{projects.filter(p => p.status === 'active').length}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Active Projects</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Active Projects</p>
             </div>
           </div>
         </div>
@@ -208,7 +210,7 @@ export default function ProjectsDashboard() {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">R {Number(totalRevenue ?? 0).toLocaleString()}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Total Revenue</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Total Revenue</p>
             </div>
           </div>
         </div>
@@ -219,7 +221,7 @@ export default function ProjectsDashboard() {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">R {Number(totalCosts ?? 0).toLocaleString()}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Total Costs</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Total Costs</p>
             </div>
           </div>
         </div>
@@ -230,7 +232,7 @@ export default function ProjectsDashboard() {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{profitMargin}%</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Profit Margin</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Profit Margin</p>
             </div>
           </div>
         </div>
@@ -241,7 +243,7 @@ export default function ProjectsDashboard() {
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-12 text-center">
           <FolderOpen className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No projects yet</h3>
-          <p className="text-gray-500 dark:text-gray-400 mb-6">
+          <p className="text-gray-500 dark:text-gray-300 mb-6">
             Create your first project to track time, expenses, and profitability
           </p>
           <button
@@ -267,7 +269,7 @@ export default function ProjectsDashboard() {
               {filteredProjects.map((project) => (
                 <tr key={project.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                   <td className="px-6 py-4 font-medium text-indigo-600 dark:text-indigo-400">{project.name}</td>
-                  <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{project.client}</td>
+                  <td className="px-6 py-4 text-gray-500 dark:text-gray-300">{project.client}</td>
                   <td className="px-6 py-4">{getStatusBadge(project.status)}</td>
                   <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">R {project.budget?.toLocaleString() || '0'}</td>
                   <td className="px-6 py-4">

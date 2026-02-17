@@ -139,7 +139,7 @@ export default function Products() {
           </div>
           <div>
             <h1 className="text-xl font-bold text-gray-900 dark:text-white">Products</h1>
-            <p className="text-gray-600 dark:text-gray-400">Manage product catalog with pricing and inventory levels</p>
+            <p className="text-gray-600 dark:text-gray-300">Manage product catalog with pricing and inventory levels</p>
           </div>
         </div>
       </div>
@@ -147,7 +147,7 @@ export default function Products() {
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 mb-6">
         <div className="flex flex-col md:flex-row gap-3">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-300" />
             <input
               type="text"
               placeholder="Search products..."
@@ -180,7 +180,7 @@ export default function Products() {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{products.length}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Total Products</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Total Products</p>
             </div>
           </div>
         </div>
@@ -191,7 +191,7 @@ export default function Products() {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{products.filter(p => p.is_active).length}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Active Products</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Active Products</p>
             </div>
           </div>
         </div>
@@ -202,7 +202,7 @@ export default function Products() {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">R {Number(totalValue ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Inventory Value</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Inventory Value</p>
             </div>
           </div>
         </div>
@@ -393,14 +393,14 @@ export default function Products() {
       {/* Products Table */}
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
         {loading ? (
-          <div className="p-12 text-center text-gray-500 dark:text-gray-400">
+          <div className="p-12 text-center text-gray-500 dark:text-gray-300">
             Loading products...
           </div>
         ) : filteredProducts.length === 0 ? (
           <div className="p-12 text-center">
             <Package className="h-12 w-12 mx-auto mb-4 text-gray-300 dark:text-gray-600" />
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No products found</h3>
-            <p className="text-gray-500 dark:text-gray-400 mb-6">
+            <p className="text-gray-500 dark:text-gray-300 mb-6">
               {searchTerm ? 'Try adjusting your search' : 'Start by adding your first product'}
             </p>
           </div>
@@ -429,7 +429,7 @@ export default function Products() {
                       <td className="px-6 py-4 text-sm">
                         <div className="font-medium text-gray-900 dark:text-white">{product.name}</div>
                         {product.description && (
-                          <div className="text-xs text-gray-500 dark:text-gray-400">{product.description}</div>
+                          <div className="text-xs text-gray-500 dark:text-gray-300">{product.description}</div>
                         )}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-700 dark:text-gray-300 capitalize">

@@ -369,7 +369,7 @@ export default function ReceiptDetail() {
             }
           >
             {allocations.length === 0 ? (
-              <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+              <div className="text-center py-8 text-gray-500 dark:text-gray-300">
                 No allocations added. Click "Add Allocation" to allocate payment to invoices.
               </div>
             ) : (
@@ -453,11 +453,11 @@ export default function ReceiptDetail() {
           <TransactionCard title="Allocation Summary">
             <div className="flex flex-col gap-3">
               <div className="flex justify-between">
-                <span className="text-gray-500 dark:text-gray-400">Payment Amount:</span>
+                <span className="text-gray-500 dark:text-gray-300">Payment Amount:</span>
                 <span className="font-medium text-gray-900 dark:text-white">R {parseFloat(amount).toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-500 dark:text-gray-400">Total Allocated:</span>
+                <span className="text-gray-500 dark:text-gray-300">Total Allocated:</span>
                 <span className="font-medium text-gray-900 dark:text-white">R {Number(totalAllocated ?? 0).toFixed(2)}</span>
               </div>
               <div className="flex justify-between pt-3 border-t-2 border-gray-200 dark:border-gray-700 text-lg font-semibold">
@@ -478,12 +478,12 @@ export default function ReceiptDetail() {
             <TransactionCard title="Metadata">
               <div className="flex flex-col gap-2 text-sm">
                 <div>
-                  <span className="text-gray-500 dark:text-gray-400">Created:</span>
+                  <span className="text-gray-500 dark:text-gray-300">Created:</span>
                   <br />
                   <span className="text-gray-900 dark:text-white">{receipt.created_at ? new Date(receipt.created_at).toLocaleString() : '-'}</span>
                 </div>
                 <div>
-                  <span className="text-gray-500 dark:text-gray-400">Last Updated:</span>
+                  <span className="text-gray-500 dark:text-gray-300">Last Updated:</span>
                   <br />
                   <span className="text-gray-900 dark:text-white">{receipt.updated_at ? new Date(receipt.updated_at).toLocaleString() : '-'}</span>
                 </div>

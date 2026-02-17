@@ -148,7 +148,7 @@ export default function Dashboard() {
             <h1 className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
               {getGreeting()}
             </h1>
-            <p className="text-gray-600 dark:text-gray-400 mt-1 flex items-center gap-2">
+            <p className="text-gray-600 dark:text-gray-300 mt-1 flex items-center gap-2">
               <Calendar className="w-4 h-4" />
               {new Date().toLocaleDateString('en-ZA', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
             </p>
@@ -174,7 +174,7 @@ export default function Dashboard() {
                 </div>
                 <ArrowUpRight className="w-5 h-5 text-emerald-500" />
               </div>
-              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Receivables</p>
+              <p className="text-sm font-medium text-gray-500 dark:text-gray-300">Total Receivables</p>
               <p className="text-xl font-bold text-gray-900 dark:text-white mt-1">{formatCurrency(stats?.total_receivables || 0)}</p>
               <p className="text-xs text-orange-500 mt-2">Overdue: {formatCurrency(stats?.overdue_receivables || 0)}</p>
             </div>
@@ -189,7 +189,7 @@ export default function Dashboard() {
                 </div>
                 <ArrowDownRight className="w-5 h-5 text-red-500" />
               </div>
-              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Payables</p>
+              <p className="text-sm font-medium text-gray-500 dark:text-gray-300">Total Payables</p>
               <p className="text-xl font-bold text-gray-900 dark:text-white mt-1">{formatCurrency(stats?.total_payables || 0)}</p>
               <p className="text-xs text-red-500 mt-2">Overdue: {formatCurrency(stats?.overdue_payables || 0)}</p>
             </div>
@@ -207,7 +207,7 @@ export default function Dashboard() {
                   {stats?.revenue_growth?.toFixed(1) || 0}%
                 </span>
               </div>
-              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Revenue (MTD)</p>
+              <p className="text-sm font-medium text-gray-500 dark:text-gray-300">Revenue (MTD)</p>
               <p className="text-xl font-bold text-gray-900 dark:text-white mt-1">{formatCurrency(stats?.total_revenue || 0)}</p>
               <p className="text-xs text-emerald-500 mt-2">Growth this month</p>
             </div>
@@ -222,7 +222,7 @@ export default function Dashboard() {
                 </div>
                 <Activity className="w-5 h-5 text-purple-500" />
               </div>
-              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Profit (MTD)</p>
+              <p className="text-sm font-medium text-gray-500 dark:text-gray-300">Profit (MTD)</p>
               <p className="text-xl font-bold text-gray-900 dark:text-white mt-1">{formatCurrency(stats?.profit || 0)}</p>
               <p className="text-xs text-purple-500 mt-2">Net profit this month</p>
             </div>
@@ -236,22 +236,22 @@ export default function Dashboard() {
               <BarChart3 className="w-5 h-5 text-blue-500" />
               Cash Flow Summary
             </h2>
-            <span className="text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-slate-700 px-3 py-1 rounded-full">This Month</span>
+            <span className="text-xs text-gray-500 dark:text-gray-300 bg-gray-100 dark:bg-slate-700 px-3 py-1 rounded-full">This Month</span>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
             <div className="text-center p-4 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-800">
               <ArrowUpRight className="w-8 h-8 text-emerald-500 mx-auto mb-2" />
-              <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Cash In</p>
+              <p className="text-sm text-gray-600 dark:text-gray-300 mb-1">Cash In</p>
               <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">{formatCurrency(stats?.cash_in || 0)}</p>
             </div>
             <div className="text-center p-4 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800">
               <ArrowDownRight className="w-8 h-8 text-red-500 mx-auto mb-2" />
-              <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Cash Out</p>
+              <p className="text-sm text-gray-600 dark:text-gray-300 mb-1">Cash Out</p>
               <p className="text-2xl font-bold text-red-600 dark:text-red-400">{formatCurrency(stats?.cash_out || 0)}</p>
             </div>
             <div className={`text-center p-4 rounded-xl border ${(stats?.net_cash_flow || 0) >= 0 ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-100 dark:border-blue-800' : 'bg-orange-50 dark:bg-orange-900/20 border-orange-100 dark:border-orange-800'}`}>
               <Activity className={`w-8 h-8 mx-auto mb-2 ${(stats?.net_cash_flow || 0) >= 0 ? 'text-blue-500' : 'text-orange-500'}`} />
-              <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Net Cash Flow</p>
+              <p className="text-sm text-gray-600 dark:text-gray-300 mb-1">Net Cash Flow</p>
               <p className={`text-2xl font-bold ${(stats?.net_cash_flow || 0) >= 0 ? 'text-blue-600 dark:text-blue-400' : 'text-orange-600 dark:text-orange-400'}`}>
                 {formatCurrency(stats?.net_cash_flow || 0)}
               </p>
@@ -289,7 +289,7 @@ export default function Dashboard() {
                     </div>
                     <div>
                       <p className="font-medium text-gray-900 dark:text-white">{item.title}</p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">{item.description}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-300">{item.description}</p>
                     </div>
                   </div>
                   <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
@@ -304,7 +304,7 @@ export default function Dashboard() {
               {pendingApprovals.length === 0 && (
                 <div className="text-center py-8">
                   <CheckCircle className="w-12 h-12 text-emerald-300 dark:text-emerald-600 mx-auto mb-2" />
-                  <p className="text-gray-500 dark:text-gray-400">No pending approvals</p>
+                  <p className="text-gray-500 dark:text-gray-300">No pending approvals</p>
                 </div>
               )}
             </div>
@@ -340,7 +340,7 @@ export default function Dashboard() {
                     </div>
                     <div>
                       <p className="font-medium text-gray-900 dark:text-white capitalize">{alert.type.replace('_', ' ')}</p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">{alert.message}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-300">{alert.message}</p>
                     </div>
                   </div>
                   <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
@@ -355,7 +355,7 @@ export default function Dashboard() {
               {alerts.length === 0 && (
                 <div className="text-center py-8">
                   <CheckCircle className="w-12 h-12 text-emerald-300 dark:text-emerald-600 mx-auto mb-2" />
-                  <p className="text-gray-500 dark:text-gray-400">No alerts</p>
+                  <p className="text-gray-500 dark:text-gray-300">No alerts</p>
                 </div>
               )}
             </div>
@@ -381,7 +381,7 @@ export default function Dashboard() {
                     </div>
                     <div>
                       <p className="font-medium text-gray-900 dark:text-white">{invoice.invoice_number}</p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">{formatDate(invoice.invoice_date)}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-300">{formatDate(invoice.invoice_date)}</p>
                     </div>
                   </div>
                   <div className="text-right">
@@ -399,7 +399,7 @@ export default function Dashboard() {
               {!activity?.recent_invoices?.length && (
                 <div className="text-center py-8">
                   <FileText className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-2" />
-                  <p className="text-gray-500 dark:text-gray-400">No recent invoices</p>
+                  <p className="text-gray-500 dark:text-gray-300">No recent invoices</p>
                 </div>
               )}
             </div>
@@ -422,19 +422,19 @@ export default function Dashboard() {
                     </div>
                     <div>
                       <p className="font-medium text-gray-900 dark:text-white">{payment.payment_number}</p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">{formatDate(payment.payment_date)}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-300">{formatDate(payment.payment_date)}</p>
                     </div>
                   </div>
                   <div className="text-right">
                     <p className="font-semibold text-emerald-600 dark:text-emerald-400">{formatCurrency(payment.amount)}</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">{payment.payment_method}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-300">{payment.payment_method}</p>
                   </div>
                 </div>
               ))}
               {!activity?.recent_payments?.length && (
                 <div className="text-center py-8">
                   <CreditCard className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-2" />
-                  <p className="text-gray-500 dark:text-gray-400">No recent payments</p>
+                  <p className="text-gray-500 dark:text-gray-300">No recent payments</p>
                 </div>
               )}
             </div>
@@ -452,7 +452,7 @@ export default function Dashboard() {
               {Object.entries(liveCounts).filter(([k]) => !k.startsWith('total_')).map(([key, count]) => (
                 <div key={key} className="text-center p-3 rounded-xl bg-gray-50 dark:bg-slate-700/50 border border-gray-100 dark:border-slate-600">
                   <p className="text-xl font-bold text-gray-900 dark:text-white">{count}</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 capitalize">{key.replace(/_/g, ' ')}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-300 capitalize">{key.replace(/_/g, ' ')}</p>
                 </div>
               ))}
             </div>

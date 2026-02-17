@@ -83,7 +83,7 @@ export const ExecutiveDashboard: React.FC = () => {
   const LoadingSkeleton = () => (
     <div className="flex items-center justify-center p-12">
       <Loader2 className="animate-spin h-8 w-8 mr-3 text-amber-500" />
-      <span className="text-gray-400 text-lg">Loading dashboard data...</span>
+      <span className="text-gray-300 text-lg">Loading dashboard data...</span>
     </div>
   );
 
@@ -111,7 +111,7 @@ export const ExecutiveDashboard: React.FC = () => {
             </div>
             <div>
               <h1 className="text-2xl font-bold text-white">Executive Dashboard</h1>
-              <p className="text-gray-400">Real-time financial overview powered by <span className="text-amber-500 font-semibold">{metrics?.active_bots || 109}</span> AI automation agents</p>
+              <p className="text-gray-300">Real-time financial overview powered by <span className="text-amber-500 font-semibold">{metrics?.active_bots || 109}</span> AI automation agents</p>
             </div>
           </div>
           <div className="hidden md:flex items-center gap-3">
@@ -139,7 +139,7 @@ export const ExecutiveDashboard: React.FC = () => {
                 <span className="text-xs text-emerald-500 font-medium bg-emerald-500/10 px-2 py-1 rounded-lg">+12.5%</span>
               </div>
               <div className="text-2xl font-bold text-white mb-1">{formatCurrency(metrics?.total_revenue || 0)}</div>
-              <div className="text-xs text-gray-400">Total Revenue (YTD)</div>
+              <div className="text-sm text-gray-300">Total Revenue (YTD)</div>
             </div>
             
             <div data-testid="metric-expenses" className="bg-slate-800/50 backdrop-blur-sm rounded-xl p-3 border border-white/5 hover:border-amber-500/30 transition-all group">
@@ -152,7 +152,7 @@ export const ExecutiveDashboard: React.FC = () => {
                 </span>
               </div>
               <div className="text-2xl font-bold text-white mb-1">{formatCurrency(Math.abs(metrics?.net_profit || 0))}</div>
-              <div className="text-xs text-gray-400">{metrics?.is_loss ? "Net Loss" : "Net Profit"}</div>
+              <div className="text-sm text-gray-300">{metrics?.is_loss ? "Net Loss" : "Net Profit"}</div>
             </div>
             
             <div data-testid="metric-profit" className="bg-slate-800/50 backdrop-blur-sm rounded-xl p-3 border border-white/5 hover:border-amber-500/30 transition-all group">
@@ -165,7 +165,7 @@ export const ExecutiveDashboard: React.FC = () => {
                 </span>
               </div>
               <div className="text-2xl font-bold text-white mb-1">{formatCurrency(metrics?.cash_position || 0)}</div>
-              <div className="text-xs text-gray-400">Cash Position</div>
+              <div className="text-sm text-gray-300">Cash Position</div>
             </div>
             
             <div className="bg-slate-800/50 backdrop-blur-sm rounded-xl p-3 border border-white/5 hover:border-amber-500/30 transition-all group">
@@ -176,7 +176,7 @@ export const ExecutiveDashboard: React.FC = () => {
                 <span className="text-xs text-blue-500 font-medium bg-blue-500/10 px-2 py-1 rounded-lg">Outstanding</span>
               </div>
               <div className="text-2xl font-bold text-white mb-1">{formatCurrency(metrics?.ar_outstanding || 0)}</div>
-              <div className="text-xs text-gray-400">AR Outstanding</div>
+              <div className="text-sm text-gray-300">AR Outstanding</div>
             </div>
           </div>
 
@@ -194,7 +194,7 @@ export const ExecutiveDashboard: React.FC = () => {
               </div>
               <div className="flex items-center gap-2 p-3 bg-slate-900/50 rounded-xl">
                 <Bot className="h-4 w-4 text-amber-500" />
-                <span className="text-xs text-gray-400">
+                <span className="text-xs text-gray-300">
                   {metrics?.invoices_processed_today > 0 
                     ? `Invoice Reconciliation Agent: ${metrics.invoices_processed_today} invoices processed today`
                     : 'Invoice Reconciliation Agent: No invoices processed today'}
@@ -214,7 +214,7 @@ export const ExecutiveDashboard: React.FC = () => {
               </div>
               <div className="flex items-center gap-2 p-3 bg-slate-900/50 rounded-xl">
                 <Bot className="h-4 w-4 text-amber-500" />
-                <span className="text-xs text-gray-400">
+                <span className="text-xs text-gray-300">
                   {metrics?.pending_payments > 0 
                     ? `Payment Prediction Agent: ${metrics.pending_payments} payments pending`
                     : 'Payment Prediction Agent: No pending payments'}
@@ -237,20 +237,20 @@ export const ExecutiveDashboard: React.FC = () => {
             {/* Agent Stats */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
               <div className="bg-slate-900/50 rounded-xl p-4 border border-white/5">
-                <div className="text-xs text-gray-400 mb-1">Total Agents</div>
+                <div className="text-sm text-gray-300 mb-1">Total Agents</div>
                 <div className="text-2xl font-bold text-white">{metrics?.bot_count || 109}</div>
               </div>
               <div className="bg-slate-900/50 rounded-xl p-4 border border-white/5">
-                <div className="text-xs text-gray-400 mb-1">Active</div>
+                <div className="text-sm text-gray-300 mb-1">Active</div>
                 <div className="text-2xl font-bold text-emerald-500">{metrics?.active_bots || 109}</div>
               </div>
               <div className="bg-slate-900/50 rounded-xl p-4 border border-white/5">
-                <div className="text-xs text-gray-400 mb-1">Transactions Today</div>
+                <div className="text-sm text-gray-300 mb-1">Transactions Today</div>
                 <div className="text-2xl font-bold text-white">{metrics?.transactions_today?.toLocaleString() || '0'}</div>
               </div>
               <div className="bg-slate-900/50 rounded-xl p-4 border border-white/5">
-                <div className="text-xs text-gray-400 mb-1">Success Rate</div>
-                <div className={`text-2xl font-bold ${metrics?.success_rate >= 90 ? 'text-emerald-500' : 'text-amber-500'}`}>{metrics?.success_rate || 100}%</div>
+                <div className="text-sm text-gray-300 mb-1">Success Rate</div>
+                <div className={`text-2xl font-bold ${metrics?.transactions_today > 0 ? (metrics?.success_rate >= 90 ? 'text-emerald-500' : 'text-amber-500') : 'text-gray-300'}`}>{metrics?.transactions_today > 0 ? `${metrics?.success_rate || 0}%` : 'N/A'}</div>
               </div>
             </div>
 
@@ -262,19 +262,19 @@ export const ExecutiveDashboard: React.FC = () => {
                     <div className="p-2 bg-amber-500/10 rounded-lg">
                       <Bot className="h-4 w-4 text-amber-500" />
                     </div>
-                    <span className={`text-xs font-medium px-2 py-1 rounded-lg ${agent.status === 'active' ? 'text-emerald-400 bg-emerald-500/10' : 'text-gray-400 bg-gray-500/10'}`}>
+                    <span className={`text-xs font-medium px-2 py-1 rounded-lg ${agent.status === 'active' ? 'text-emerald-400 bg-emerald-500/10' : 'text-gray-300 bg-gray-500/10'}`}>
                       {agent.status}
                     </span>
                   </div>
                   <h4 className="font-semibold text-sm text-white mb-2">{agent.name}</h4>
-                  <p className="text-xs text-gray-400 line-clamp-2">{agent.description}</p>
+                  <p className="text-xs text-gray-300 line-clamp-2">{agent.description}</p>
                 </div>
               )) : (
                 <div className="col-span-full text-center p-8">
                   <div className="p-4 bg-amber-500/10 rounded-2xl inline-block mb-4">
                     <Bot className="h-8 w-8 text-amber-500" />
                   </div>
-                  <p className="text-gray-400">No agents configured yet. Visit the Bots page to set up automation.</p>
+                  <p className="text-gray-300">No agents configured yet. Visit the Bots page to set up automation.</p>
                 </div>
               )}
             </div>

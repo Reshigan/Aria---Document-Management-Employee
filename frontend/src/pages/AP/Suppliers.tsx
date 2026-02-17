@@ -194,7 +194,7 @@ export default function Suppliers() {
             </div>
             Suppliers
           </h1>
-          <p className="text-gray-500 dark:text-gray-400 mt-1">Manage supplier master data and BBBEE compliance</p>
+          <p className="text-gray-500 dark:text-gray-300 mt-1">Manage supplier master data and BBBEE compliance</p>
         </div>
         <button
           onClick={() => {
@@ -212,7 +212,7 @@ export default function Suppliers() {
       {/* Search Bar */}
       <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 mb-6">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-300" />
           <input
             type="text"
             placeholder="Search suppliers..."
@@ -232,7 +232,7 @@ export default function Suppliers() {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{suppliers.length}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Total Suppliers</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Total Suppliers</p>
             </div>
           </div>
         </div>
@@ -244,7 +244,7 @@ export default function Suppliers() {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{suppliers.filter(s => s.is_active).length}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Active Suppliers</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Active Suppliers</p>
             </div>
           </div>
         </div>
@@ -256,7 +256,7 @@ export default function Suppliers() {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{suppliers.filter(s => s.bbbee_level).length}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">BBBEE Compliant</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">BBBEE Compliant</p>
             </div>
           </div>
         </div>
@@ -439,8 +439,8 @@ export default function Suppliers() {
         {filteredSuppliers.length === 0 ? (
           <div className="px-6 py-12 text-center">
             <Building2 className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
-            <p className="text-gray-500 dark:text-gray-400">No suppliers found</p>
-            <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+            <p className="text-gray-500 dark:text-gray-300">No suppliers found</p>
+            <p className="text-xs text-gray-300 dark:text-gray-500 mt-1">
               {searchTerm ? 'Try adjusting your search' : 'Start by adding your first supplier'}
             </p>
           </div>
@@ -464,7 +464,7 @@ export default function Suppliers() {
                   <td className="px-6 py-4">
                     <div className="font-medium text-gray-900 dark:text-white">{supplier.name}</div>
                     {supplier.vat_number && (
-                      <div className="text-xs text-gray-500 dark:text-gray-400">VAT: {supplier.vat_number}</div>
+                      <div className="text-xs text-gray-500 dark:text-gray-300">VAT: {supplier.vat_number}</div>
                     )}
                   </td>
                   <td className="px-6 py-4 text-gray-600 dark:text-gray-300 capitalize">
@@ -473,13 +473,13 @@ export default function Suppliers() {
                   <td className="px-6 py-4">
                     {supplier.email && (
                       <div className="flex items-center gap-2 mb-1">
-                        <Mail className="h-3.5 w-3.5 text-gray-400" />
+                        <Mail className="h-3.5 w-3.5 text-gray-300" />
                         <span className="text-xs text-gray-600 dark:text-gray-300">{supplier.email}</span>
                       </div>
                     )}
                     {supplier.phone && (
                       <div className="flex items-center gap-2">
-                        <Phone className="h-3.5 w-3.5 text-gray-400" />
+                        <Phone className="h-3.5 w-3.5 text-gray-300" />
                         <span className="text-xs text-gray-600 dark:text-gray-300">{supplier.phone}</span>
                       </div>
                     )}
@@ -490,7 +490,7 @@ export default function Suppliers() {
                         {String(supplier.bbbee_level).replace('_', ' ').replace('level ', 'Level ')}
                       </span>
                     ) : (
-                      <span className="text-xs text-gray-400">-</span>
+                      <span className="text-xs text-gray-300">-</span>
                     )}
                   </td>
                   <td className="px-6 py-4 text-center">

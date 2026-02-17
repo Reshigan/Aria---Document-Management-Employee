@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { useCompany } from '../../lib/company';
 import { FileText, Plus, Download, Eye, Edit, X, RefreshCw, AlertCircle, Check, File, Layers } from 'lucide-react';
 
+const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev/api';
+
 interface DocumentTemplate {
   id: string;
   company_id: string;
@@ -55,7 +57,7 @@ export default function DocumentTemplates() {
     try {
       setLoading(true);
       const typeParam = selectedType !== 'all' ? `&document_type=${selectedType}` : '';
-      const response = await fetch(`https://aria.vantax.co.za/api/erp/documents/templates?company_id=${currentCompany.id}${typeParam}`);
+      const response = await fetch(`${API_BASE}/erp/documents/templates?company_id=${currentCompany.id}${typeParam}`);
       const ct = response.headers.get('content-type');
       if (!response.ok || !ct?.includes('application/json')) { setTemplates([]); setError(null); setLoading(false); return; }
       const data = await response.json();
@@ -70,7 +72,7 @@ export default function DocumentTemplates() {
   const generateDocument = async (templateId: string, type: string) => {
     if (!currentCompany) return;
     try {
-      const response = await fetch('https://aria.vantax.co.za/api/erp/documents/generate', {
+      const response = await fetch(`${API_BASE}/erp/documents/generate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -114,7 +116,7 @@ export default function DocumentTemplates() {
     if (!currentCompany || !formData.name) return;
     setSaving(true);
     try {
-      const response = await fetch('https://aria.vantax.co.za/api/erp/documents/templates', {
+      const response = await fetch(`${API_BASE}/erp/documents/templates`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ company_id: currentCompany.id, ...formData }),
@@ -132,7 +134,7 @@ export default function DocumentTemplates() {
     if (!currentCompany || !selectedTemplate || !formData.name) return;
     setSaving(true);
     try {
-      const response = await fetch(`https://aria.vantax.co.za/api/erp/documents/templates/${selectedTemplate.id}`, {
+      const response = await fetch(`${API_BASE}/erp/documents/templates/${selectedTemplate.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ company_id: currentCompany.id, ...formData }),
@@ -218,7 +220,7 @@ export default function DocumentTemplates() {
           <div className="p-6">
             <div className="bg-gray-50 dark:bg-gray-900/50 rounded-xl p-4">
               <div className="bg-white dark:bg-gray-800 rounded-xl p-8 border border-gray-200 dark:border-gray-700">
-                <div className="text-center mb-8"><h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">{selectedTemplate.type.replace('_', ' ').toUpperCase()}</h3><p className="text-gray-500 dark:text-gray-400">Template: {selectedTemplate.name}</p></div>
+                <div className="text-center mb-8"><h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">{selectedTemplate.type.replace('_', ' ').toUpperCase()}</h3><p className="text-gray-500 dark:text-gray-300">Template: {selectedTemplate.name}</p></div>
                 <div className="border-t border-gray-200 dark:border-gray-700 pt-6 space-y-3">
                   <p className="text-gray-700 dark:text-gray-300"><span className="font-semibold">Document Type:</span> {selectedTemplate.type.replace('_', ' ')}</p>
                   <p className="text-gray-700 dark:text-gray-300"><span className="font-semibold">Format:</span> {selectedTemplate.template_format.toUpperCase()}</p>
@@ -226,7 +228,7 @@ export default function DocumentTemplates() {
                   <p className="text-gray-700 dark:text-gray-300"><span className="font-semibold">Default:</span> {selectedTemplate.is_default ? 'Yes' : 'No'}</p>
                   <p className="text-gray-700 dark:text-gray-300"><span className="font-semibold">Created:</span> {(selectedTemplate.created_at ? new Date(selectedTemplate.created_at).toLocaleDateString() : "-")}</p>
                 </div>
-                <div className="mt-8 p-4 bg-gray-50 dark:bg-gray-900/50 rounded-xl"><p className="text-gray-500 dark:text-gray-400 text-sm text-center">This is a preview of the template metadata. Click "Generate Sample" to create a sample document.</p></div>
+                <div className="mt-8 p-4 bg-gray-50 dark:bg-gray-900/50 rounded-xl"><p className="text-gray-500 dark:text-gray-300 text-sm text-center">This is a preview of the template metadata. Click "Generate Sample" to create a sample document.</p></div>
               </div>
             </div>
           </div>
@@ -245,10 +247,10 @@ export default function DocumentTemplates() {
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
           <div>
             <h1 className="text-2xl font-bold bg-gradient-to-r from-violet-600 to-purple-600 bg-clip-text text-transparent">Document Templates</h1>
-            <p className="text-gray-500 dark:text-gray-400 mt-1">Manage document templates with QR codes and company branding</p>
+            <p className="text-gray-500 dark:text-gray-300 mt-1">Manage document templates with QR codes and company branding</p>
           </div>
           <div className="flex items-center gap-3">
-            <button onClick={loadTemplates} className="p-3 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-200 dark:border-gray-700"><RefreshCw className={`h-5 w-5 text-gray-600 dark:text-gray-400 ${loading ? 'animate-spin' : ''}`} /></button>
+            <button onClick={loadTemplates} className="p-3 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-200 dark:border-gray-700"><RefreshCw className={`h-5 w-5 text-gray-600 dark:text-gray-300 ${loading ? 'animate-spin' : ''}`} /></button>
             <button onClick={handleCreate} className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-xl font-medium hover:from-violet-700 hover:to-purple-700 transition-all "><Plus className="h-5 w-5" />New Template</button>
           </div>
         </div>
@@ -257,16 +259,16 @@ export default function DocumentTemplates() {
 
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
           <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
-            <div className="flex items-center gap-3"><div className="p-2 bg-gradient-to-br from-violet-500 to-purple-500 rounded-xl "><FileText className="h-5 w-5 text-white" /></div><div><p className="text-xl font-bold text-gray-900 dark:text-white">{stats.total}</p><p className="text-xs text-gray-500 dark:text-gray-400">Total Templates</p></div></div>
+            <div className="flex items-center gap-3"><div className="p-2 bg-gradient-to-br from-violet-500 to-purple-500 rounded-xl "><FileText className="h-5 w-5 text-white" /></div><div><p className="text-xl font-bold text-gray-900 dark:text-white">{stats.total}</p><p className="text-xs text-gray-500 dark:text-gray-300">Total Templates</p></div></div>
           </div>
           <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
-            <div className="flex items-center gap-3"><div className="p-2 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl "><Check className="h-5 w-5 text-white" /></div><div><p className="text-xl font-bold text-gray-900 dark:text-white">{stats.active}</p><p className="text-xs text-gray-500 dark:text-gray-400">Active</p></div></div>
+            <div className="flex items-center gap-3"><div className="p-2 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl "><Check className="h-5 w-5 text-white" /></div><div><p className="text-xl font-bold text-gray-900 dark:text-white">{stats.active}</p><p className="text-xs text-gray-500 dark:text-gray-300">Active</p></div></div>
           </div>
           <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
-            <div className="flex items-center gap-3"><div className="p-2 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl "><File className="h-5 w-5 text-white" /></div><div><p className="text-xl font-bold text-gray-900 dark:text-white">{stats.defaults}</p><p className="text-xs text-gray-500 dark:text-gray-400">Defaults</p></div></div>
+            <div className="flex items-center gap-3"><div className="p-2 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl "><File className="h-5 w-5 text-white" /></div><div><p className="text-xl font-bold text-gray-900 dark:text-white">{stats.defaults}</p><p className="text-xs text-gray-500 dark:text-gray-300">Defaults</p></div></div>
           </div>
           <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
-            <div className="flex items-center gap-3"><div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl "><Layers className="h-5 w-5 text-white" /></div><div><p className="text-xl font-bold text-gray-900 dark:text-white">{stats.types}</p><p className="text-xs text-gray-500 dark:text-gray-400">Document Types</p></div></div>
+            <div className="flex items-center gap-3"><div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl "><Layers className="h-5 w-5 text-white" /></div><div><p className="text-xl font-bold text-gray-900 dark:text-white">{stats.types}</p><p className="text-xs text-gray-500 dark:text-gray-300">Document Types</p></div></div>
           </div>
         </div>
 
@@ -276,9 +278,9 @@ export default function DocumentTemplates() {
           </div>
 
           {loading ? (
-            <div className="p-12 text-center"><RefreshCw className="h-8 w-8 animate-spin text-violet-500 mx-auto mb-4" /><p className="text-gray-500 dark:text-gray-400">Loading templates...</p></div>
+            <div className="p-12 text-center"><RefreshCw className="h-8 w-8 animate-spin text-violet-500 mx-auto mb-4" /><p className="text-gray-500 dark:text-gray-300">Loading templates...</p></div>
           ) : templates.length === 0 ? (
-            <div className="p-12 text-center"><div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-2xl flex items-center justify-center mx-auto mb-4"><FileText className="h-8 w-8 text-gray-400" /></div><h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No templates found</h3><p className="text-gray-500 dark:text-gray-400 mb-6">Create your first document template to get started</p><button onClick={handleCreate} className="px-4 py-2 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-xl font-medium hover:from-violet-700 hover:to-purple-700 transition-all">Create Template</button></div>
+            <div className="p-12 text-center"><div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-2xl flex items-center justify-center mx-auto mb-4"><FileText className="h-8 w-8 text-gray-300" /></div><h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No templates found</h3><p className="text-gray-500 dark:text-gray-300 mb-6">Create your first document template to get started</p><button onClick={handleCreate} className="px-4 py-2 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-xl font-medium hover:from-violet-700 hover:to-purple-700 transition-all">Create Template</button></div>
           ) : (
             <div className="p-4 grid grid-cols-2 lg:grid-cols-3 gap-6">
               {templates.map((template) => (
@@ -290,7 +292,7 @@ export default function DocumentTemplates() {
                     </div>
                     {template.is_default && (<span className="px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 text-xs font-medium rounded-lg border border-green-200 dark:border-green-800">Default</span>)}
                   </div>
-                  <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 mb-4">
+                  <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-300 mb-4">
                     <span className={`w-2 h-2 rounded-full ${template.is_active ? 'bg-green-500' : 'bg-gray-400'}`}></span>
                     <span>{template.is_active ? 'Active' : 'Inactive'}</span>
                     <span className="mx-2">|</span>

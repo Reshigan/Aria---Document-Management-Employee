@@ -108,7 +108,7 @@ export default function Mailroom() {
           </div>
           <div>
             <h1 className="text-xl font-bold text-gray-900 dark:text-white">Aria Mailroom</h1>
-            <p className="text-gray-600 dark:text-gray-400">Monitor email-driven automation at aria@vantax.co.za</p>
+            <p className="text-gray-600 dark:text-gray-300">Monitor email-driven automation at aria@vantax.co.za</p>
           </div>
         </div>
       </div>
@@ -123,7 +123,7 @@ export default function Mailroom() {
               <p className={`text-xl font-bold ${mailboxStatus.connected ? 'text-green-700 dark:text-green-300' : 'text-red-700 dark:text-red-300'}`}>
                 {mailboxStatus.connected ? 'Connected' : 'Disconnected'}
               </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Mailbox Status</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Mailbox Status</p>
             </div>
           </div>
         </div>
@@ -134,7 +134,7 @@ export default function Mailroom() {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{mailboxStatus.last_poll ? new Date(mailboxStatus.last_poll).toLocaleTimeString() : '-'}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Last Poll</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Last Poll</p>
             </div>
           </div>
         </div>
@@ -145,7 +145,7 @@ export default function Mailroom() {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{mailboxStatus.unread_count}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Unread Messages</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Unread Messages</p>
             </div>
           </div>
         </div>
@@ -156,7 +156,7 @@ export default function Mailroom() {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{mailboxStatus.processed_today}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Processed Today</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Processed Today</p>
             </div>
           </div>
         </div>
@@ -169,14 +169,14 @@ export default function Mailroom() {
 
         {loading ? (
           <div className="p-12 text-center">
-            <RefreshCw className="h-8 w-8 text-gray-400 animate-spin mx-auto mb-2" />
-            <p className="text-gray-500 dark:text-gray-400">Loading messages...</p>
+            <RefreshCw className="h-8 w-8 text-gray-300 animate-spin mx-auto mb-2" />
+            <p className="text-gray-500 dark:text-gray-300">Loading messages...</p>
           </div>
         ) : messages.length === 0 ? (
           <div className="p-12 text-center">
             <Inbox className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">No messages yet</h3>
-            <p className="text-gray-500 dark:text-gray-400">Emails sent to aria@vantax.co.za will appear here</p>
+            <p className="text-gray-500 dark:text-gray-300">Emails sent to aria@vantax.co.za will appear here</p>
           </div>
         ) : (
           <div className="divide-y divide-gray-200 dark:divide-gray-700">
@@ -191,10 +191,10 @@ export default function Mailroom() {
                       <h3 className="font-semibold text-gray-900 dark:text-white">{message.subject}</h3>
                       {getStatusIcon(message.status)}
                     </div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">From: {message.from}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-300">From: {message.from}</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
+                    <p className="text-xs text-gray-500 dark:text-gray-300 mb-1">
                       {message.received_at ? new Date(message.received_at).toLocaleString() : '-'}
                     </p>
                     {message.processed && (

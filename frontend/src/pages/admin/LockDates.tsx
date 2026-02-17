@@ -105,7 +105,7 @@ export default function LockDates() {
           <h1 className="text-2xl font-bold bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent">
             Lock Dates & Financial Settings
           </h1>
-          <p className="text-gray-500 dark:text-gray-400 mt-1">
+          <p className="text-gray-500 dark:text-gray-300 mt-1">
             Control when transactions can be edited and set your financial year
           </p>
         </div>

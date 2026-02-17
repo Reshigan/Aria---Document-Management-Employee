@@ -374,7 +374,7 @@ const ProcurementDashboard: React.FC = () => {
         {/* Header */}
         <div>
           <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Procurement</h1>
-          <p className="text-gray-500 dark:text-gray-400 mt-1">Manage suppliers, purchase orders, and RFQs</p>
+          <p className="text-gray-500 dark:text-gray-300 mt-1">Manage suppliers, purchase orders, and RFQs</p>
         </div>
 
         {/* Error Display */}
@@ -392,7 +392,7 @@ const ProcurementDashboard: React.FC = () => {
               className={`px-4 py-3 text-sm font-semibold border-b-2 transition-colors ${
                 activeTab === 'suppliers' 
                   ? 'border-blue-600 text-blue-600 dark:text-blue-400' 
-                  : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                  : 'border-transparent text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-300'
               }`}
             >
               Suppliers ({suppliers.length})
@@ -402,7 +402,7 @@ const ProcurementDashboard: React.FC = () => {
               className={`px-4 py-3 text-sm font-semibold border-b-2 transition-colors ${
                 activeTab === 'purchase_orders' 
                   ? 'border-blue-600 text-blue-600 dark:text-blue-400' 
-                  : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                  : 'border-transparent text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-300'
               }`}
             >
               Purchase Orders ({purchaseOrders.length})
@@ -412,7 +412,7 @@ const ProcurementDashboard: React.FC = () => {
               className={`px-4 py-3 text-sm font-semibold border-b-2 transition-colors ${
                 activeTab === 'rfqs' 
                   ? 'border-blue-600 text-blue-600 dark:text-blue-400' 
-                  : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                  : 'border-transparent text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-300'
               }`}
             >
               RFQs ({rfqs.length})
@@ -445,32 +445,32 @@ const ProcurementDashboard: React.FC = () => {
             <table className="w-full">
               <thead className="bg-gray-50 dark:bg-gray-900/50 border-b border-gray-100 dark:border-gray-700">
                 <tr>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Supplier Code</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Name</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Contact</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Email</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Payment Terms</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">BBBEE</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Supplier Code</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Name</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Contact</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Email</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Payment Terms</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">BBBEE</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
                 {suppliersLoading ? (
                   <tr>
-                    <td colSpan={7} className="px-6 py-8 text-center text-gray-500 dark:text-gray-400">Loading suppliers...</td>
+                    <td colSpan={7} className="px-6 py-8 text-center text-gray-500 dark:text-gray-300">Loading suppliers...</td>
                   </tr>
                 ) : filteredSuppliers.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="px-6 py-8 text-center text-gray-500 dark:text-gray-400">No suppliers found</td>
+                    <td colSpan={7} className="px-6 py-8 text-center text-gray-500 dark:text-gray-300">No suppliers found</td>
                   </tr>
                 ) : (
                   filteredSuppliers.map((supplier) => (
                     <tr key={supplier.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                       <td className="px-6 py-4 text-sm font-semibold text-blue-600 dark:text-blue-400">{supplier.supplier_code}</td>
                       <td className="px-6 py-4 text-sm text-gray-900 dark:text-white">{supplier.supplier_name}</td>
-                      <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">{supplier.contact_person}</td>
-                      <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">{supplier.email}</td>
-                      <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">{supplier.payment_terms} days</td>
+                      <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{supplier.contact_person}</td>
+                      <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{supplier.email}</td>
+                      <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{supplier.payment_terms} days</td>
                       <td className="px-6 py-4">{getBbbeeBadge(supplier.bbbee_level)}</td>
                       <td className="px-6 py-4">
                         <div className="flex gap-2">
@@ -510,23 +510,23 @@ const ProcurementDashboard: React.FC = () => {
           {/* Summary Cards */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
             <div className="bg-white dark:bg-gray-800 p-5 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
-              <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Total POs</div>
+              <div className="text-xs text-gray-500 dark:text-gray-300 mb-1">Total POs</div>
               <div className="text-xl font-bold text-gray-900 dark:text-white">{purchaseOrders.length}</div>
             </div>
             <div className="bg-white dark:bg-gray-800 p-5 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
-              <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Draft</div>
-              <div className="text-2xl font-bold text-gray-500 dark:text-gray-400">
+              <div className="text-xs text-gray-500 dark:text-gray-300 mb-1">Draft</div>
+              <div className="text-2xl font-bold text-gray-500 dark:text-gray-300">
                 {purchaseOrders.filter(po => po.status === 'DRAFT').length}
               </div>
             </div>
             <div className="bg-white dark:bg-gray-800 p-5 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
-              <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Sent</div>
+              <div className="text-xs text-gray-500 dark:text-gray-300 mb-1">Sent</div>
               <div className="text-2xl font-bold text-amber-500">
                 {purchaseOrders.filter(po => po.status === 'SENT').length}
               </div>
             </div>
             <div className="bg-white dark:bg-gray-800 p-5 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
-              <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Total Value</div>
+              <div className="text-xs text-gray-500 dark:text-gray-300 mb-1">Total Value</div>
               <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
                 {formatCurrency(purchaseOrders.reduce((sum, po) => sum + po.total_amount, 0))}
               </div>
@@ -538,31 +538,31 @@ const ProcurementDashboard: React.FC = () => {
             <table className="w-full">
               <thead className="bg-gray-50 dark:bg-gray-900/50 border-b border-gray-100 dark:border-gray-700">
                 <tr>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">PO Number</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Supplier</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Order Date</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Delivery Date</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Amount</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">PO Number</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Supplier</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Order Date</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Delivery Date</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Amount</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
                 {posLoading ? (
                   <tr>
-                    <td colSpan={7} className="px-6 py-8 text-center text-gray-500 dark:text-gray-400">Loading purchase orders...</td>
+                    <td colSpan={7} className="px-6 py-8 text-center text-gray-500 dark:text-gray-300">Loading purchase orders...</td>
                   </tr>
                 ) : filteredPos.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="px-6 py-8 text-center text-gray-500 dark:text-gray-400">No purchase orders found</td>
+                    <td colSpan={7} className="px-6 py-8 text-center text-gray-500 dark:text-gray-300">No purchase orders found</td>
                   </tr>
                 ) : (
                   filteredPos.map((po) => (
                     <tr key={po.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                       <td className="px-6 py-4 text-sm font-semibold text-blue-600 dark:text-blue-400">{po.po_number}</td>
                       <td className="px-6 py-4 text-sm text-gray-900 dark:text-white">{po.supplier_name || `Supplier #${po.supplier_id}`}</td>
-                      <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">{formatDate(po.order_date)}</td>
-                      <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">{formatDate(po.delivery_date)}</td>
+                      <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{formatDate(po.order_date)}</td>
+                      <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{formatDate(po.delivery_date)}</td>
                       <td className="px-6 py-4 text-sm font-semibold text-gray-900 dark:text-white">{formatCurrency(po.total_amount)}</td>
                       <td className="px-6 py-4">{getStatusBadge(po.status)}</td>
                       <td className="px-6 py-4">
@@ -611,30 +611,30 @@ const ProcurementDashboard: React.FC = () => {
             <table className="w-full">
               <thead className="bg-gray-50 dark:bg-gray-900/50 border-b border-gray-100 dark:border-gray-700">
                 <tr>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">RFQ Number</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Title</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Issue Date</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Closing Date</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">RFQ Number</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Title</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Issue Date</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Closing Date</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
                 {rfqsLoading ? (
                   <tr>
-                    <td colSpan={6} className="px-6 py-8 text-center text-gray-500 dark:text-gray-400">Loading RFQs...</td>
+                    <td colSpan={6} className="px-6 py-8 text-center text-gray-500 dark:text-gray-300">Loading RFQs...</td>
                   </tr>
                 ) : filteredRfqs.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="px-6 py-8 text-center text-gray-500 dark:text-gray-400">No RFQs found</td>
+                    <td colSpan={6} className="px-6 py-8 text-center text-gray-500 dark:text-gray-300">No RFQs found</td>
                   </tr>
                 ) : (
                   filteredRfqs.map((rfq) => (
                     <tr key={rfq.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                       <td className="px-6 py-4 text-sm font-semibold text-blue-600 dark:text-blue-400">{rfq.rfq_number}</td>
                       <td className="px-6 py-4 text-sm text-gray-900 dark:text-white">{rfq.title}</td>
-                      <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">{formatDate(rfq.issue_date)}</td>
-                      <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">{formatDate(rfq.closing_date)}</td>
+                      <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{formatDate(rfq.issue_date)}</td>
+                      <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{formatDate(rfq.closing_date)}</td>
                       <td className="px-6 py-4">{getStatusBadge(rfq.status)}</td>
                       <td className="px-6 py-4">
                         <div className="flex gap-2">
