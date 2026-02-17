@@ -107,8 +107,8 @@
 }
 
 .mega-menu-panel {
-  position: absolute;
-  top: 100%;
+  position: fixed;
+  top: 36px;
   left: 50%;
   transform: translateX(-50%);
   padding-top: 4px;
@@ -149,11 +149,11 @@
 @keyframes slideDown {
   from {
     opacity: 0;
-    transform: translateX(-50%) translateY(-10px);
+    transform: translateY(-10px);
   }
   to {
     opacity: 1;
-    transform: translateX(-50%) translateY(0);
+    transform: translateY(0);
   }
 }
 
@@ -264,7 +264,7 @@
 
 /* Responsive */
 @media (max-width: 1400px) {
-  .mega-menu-panel {
+  .mega-menu-panel-inner {
     min-width: 700px;
   }
   
@@ -284,7 +284,7 @@
     font-size: 0.65rem;
   }
   
-  .mega-menu-panel {
+  .mega-menu-panel-inner {
     min-width: 600px;
   }
 }
@@ -306,6 +306,9 @@
     left: 0;
     right: 0;
     transform: none;
+  }
+
+  .mega-menu-panel-inner {
     min-width: auto;
     max-width: 100%;
   }
