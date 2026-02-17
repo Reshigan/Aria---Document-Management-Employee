@@ -65,7 +65,7 @@ export default function AssetRegister() {
     return styles[status] || styles.disposed;
   };
 
-  const stats = { total: assets.length, active: assets.filter(a => a.status === 'active').length, totalCost: assets.reduce((sum, a) => sum + a.purchase_cost, 0), totalValue: assets.reduce((sum, a) => sum + a.current_value, 0) };
+  const stats = { total: assets.length, active: assets.filter(a => a.status === 'active').length, totalCost: assets.reduce((sum, a) => sum + (a.purchase_cost || 0), 0), totalValue: assets.reduce((sum, a) => sum + (a.current_value || 0), 0) };
 
   return (
     <div className="bg-gradient-to-br from-gray-50 to-amber-50 dark:from-gray-900 dark:to-gray-800 p-4">

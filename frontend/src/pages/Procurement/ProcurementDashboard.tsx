@@ -528,7 +528,7 @@ const ProcurementDashboard: React.FC = () => {
             <div className="bg-white dark:bg-gray-800 p-5 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
               <div className="text-xs text-gray-500 dark:text-gray-300 mb-1">Total Value</div>
               <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
-                {formatCurrency(purchaseOrders.reduce((sum, po) => sum + po.total_amount, 0))}
+                {formatCurrency(purchaseOrders.reduce((sum, po) => sum + (po.total_amount || 0), 0))}
               </div>
             </div>
           </div>

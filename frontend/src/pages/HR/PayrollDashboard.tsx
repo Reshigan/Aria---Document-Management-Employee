@@ -464,7 +464,7 @@ const PayrollDashboard: React.FC = () => {
                   <DollarSign className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <p className="text-xl font-bold text-gray-900 dark:text-white">{formatCurrency(employees.filter(e => e.is_active).reduce((sum, e) => sum + e.salary, 0))}</p>
+                  <p className="text-xl font-bold text-gray-900 dark:text-white">{formatCurrency(employees.filter(e => e.is_active).reduce((sum, e) => sum + (e.salary || 0), 0))}</p>
                   <p className="text-xs text-gray-500 dark:text-gray-300">Total Payroll</p>
                 </div>
               </div>
@@ -588,7 +588,7 @@ const PayrollDashboard: React.FC = () => {
                   <DollarSign className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <p className="text-xl font-bold text-gray-900 dark:text-white">{formatCurrency(payslips.reduce((sum, p) => sum + p.net_salary, 0))}</p>
+                  <p className="text-xl font-bold text-gray-900 dark:text-white">{formatCurrency(payslips.reduce((sum, p) => sum + (p.net_salary || 0), 0))}</p>
                   <p className="text-xs text-gray-500 dark:text-gray-300">Total Net Pay</p>
                 </div>
               </div>
