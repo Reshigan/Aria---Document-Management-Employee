@@ -359,6 +359,12 @@ function enhancedRuleBasedClassification(message: string): IntentClassification 
     { patterns: [/process\s+approval/i, /workflow\s+task/i, /pending\s+approval/i], bot_id: 'workflow_automation', name: 'Workflow Automation Bot', confidence: 0.9 },
     { patterns: [/process\s+document/i, /classify\s+document/i, /ocr/i], bot_id: 'document_processing', name: 'Document Processing Bot', confidence: 0.9 },
     { patterns: [/send\s+email/i, /email\s+notification/i, /automated\s+email/i], bot_id: 'email_automation', name: 'Email Automation Bot', confidence: 0.9 },
+    
+    // Helpdesk Commands
+    { patterns: [/(?:create|open|raise|log)\s+(?:a\s+)?(?:support\s+)?ticket/i, /(?:create|open)\s+(?:a\s+)?helpdesk\s+ticket/i, /helpdesk.*ticket/i], bot_id: 'helpdesk_bot', name: 'Helpdesk Bot', confidence: 0.95 },
+    { patterns: [/(?:assign|escalate)\s+ticket/i, /ticket\s+assign/i], bot_id: 'helpdesk_bot', name: 'Helpdesk Bot', confidence: 0.9 },
+    { patterns: [/(?:resolve|close)\s+ticket/i, /ticket\s+(?:resolved|closed)/i], bot_id: 'helpdesk_bot', name: 'Helpdesk Bot', confidence: 0.9 },
+    { patterns: [/(?:show|list|view)\s+(?:support\s+)?tickets/i, /helpdesk\s+status/i, /open\s+tickets/i], bot_id: 'helpdesk_bot', name: 'Helpdesk Bot', confidence: 0.9 },
   ];
   
   // Check direct command patterns first

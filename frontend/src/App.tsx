@@ -114,6 +114,9 @@ import ServiceProjects from './pages/ServiceFulfillment/Projects';
 import ServiceTimesheets from './pages/ServiceFulfillment/Timesheets';
 import HelpdeskTeams from './pages/Helpdesk/HelpdeskTeams';
 import HelpdeskTickets from './pages/Helpdesk/HelpdeskTickets';
+import HelpdeskDashboard from './pages/Helpdesk/HelpdeskDashboard';
+import HelpdeskKnowledgeBase from './pages/Helpdesk/HelpdeskKnowledgeBase';
+import HelpdeskSLAPolicies from './pages/Helpdesk/HelpdeskSLAPolicies';
 import FieldServiceWorkOrders from './pages/FieldService/WorkOrders';
 import ServiceLocations from './pages/FieldService/ServiceLocations';
 import Milestones from './pages/ServiceFulfillment/Milestones';
@@ -528,9 +531,12 @@ function App() {
                     <Route path="/services/timesheets" element={<ServiceTimesheets />} />
           
                                         {/* Helpdesk (Odoo Parity) */}
-                                        <Route path="/helpdesk" element={<HelpdeskTickets />} />
+                                        <Route path="/helpdesk" element={<HelpdeskDashboard />} />
+                                        <Route path="/helpdesk/dashboard" element={<HelpdeskDashboard />} />
                                         <Route path="/helpdesk/teams" element={<HelpdeskTeams />} />
                                         <Route path="/helpdesk/tickets" element={<HelpdeskTickets />} />
+                                        <Route path="/helpdesk/knowledge-base" element={<HelpdeskKnowledgeBase />} />
+                                        <Route path="/helpdesk/sla-policies" element={<HelpdeskSLAPolicies />} />
           
                                         {/* Service Fulfillment Extended (Odoo Parity) */}
                                         <Route path="/services/milestones" element={<Milestones />} />

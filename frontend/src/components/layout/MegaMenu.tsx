@@ -294,15 +294,15 @@ const fallbackMenuData: Record<string, MegaMenuCategory[]> = {
       ]
     },
       {
-        title: 'Support',
+        title: 'Helpdesk',
         icon: <MessageSquare size={18} />,
         color: '#ec4899',
         items: [
-          { label: 'Support Tickets', path: '/support/tickets' },
-          { label: 'Knowledge Base', path: '/support/knowledge-base' },
-          { label: 'Customer Portal', path: '/support/customer-portal' },
-          { label: 'SLA Management', path: '/support/sla' },
-          { label: 'Escalations', path: '/support/escalations' },
+          { label: 'Helpdesk Dashboard', path: '/helpdesk' },
+          { label: 'Tickets', path: '/helpdesk/tickets' },
+          { label: 'Teams', path: '/helpdesk/teams' },
+          { label: 'Knowledge Base', path: '/helpdesk/knowledge-base' },
+          { label: 'SLA Policies', path: '/helpdesk/sla-policies' },
         ]
       },
       {
