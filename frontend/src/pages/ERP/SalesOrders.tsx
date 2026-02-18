@@ -579,7 +579,7 @@ export default function SalesOrders() {
                     return (
                       <tr key={order.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                         <td className="px-6 py-4">
-                          <Link to={`/sales/orders/${order.id}`} className="font-semibold text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300">{order.order_number}</Link>
+                          <Link to={`/sales-orders/${order.id}`} className="font-semibold text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300">{order.order_number}</Link>
                         </td>
                         <td className="px-6 py-4">
                           <div><p className="font-medium text-gray-900 dark:text-white">{order.customer_name}</p>{order.customer_email && (<p className="text-xs text-gray-500 dark:text-gray-300">{order.customer_email}</p>)}</div>
