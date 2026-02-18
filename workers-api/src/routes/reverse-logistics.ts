@@ -5,6 +5,7 @@
  */
 
 import { Hono } from 'hono';
+import { jwtVerify } from 'jose';
 
 interface Env {
   DB: D1Database;
@@ -19,6 +20,20 @@ interface JWTPayload {
 }
 
 const app = new Hono<{ Bindings: Env; Variables: { user: JWTPayload } }>();
+
+app.use('*', async (c, next) => {
+  const authHeader = c.req.header('Authorization');
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    try {
+      const token = authHeader.substring(7);
+      const secret = new TextEncoder().encode(c.env.JWT_SECRET);
+      const { payload } = await jwtVerify(token, secret);
+      c.set('user', payload as unknown as JWTPayload);
+    } catch (e) {
+    }
+  }
+  await next();
+});
 
 function getCompanyId(c: any): string {
     const user = c.get('user') as JWTPayload | undefined;
