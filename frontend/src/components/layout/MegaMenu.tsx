@@ -89,6 +89,8 @@ const fallbackMenuData: Record<string, MegaMenuCategory[]> = {
         { label: 'Sales Orders', path: '/sales-orders' },
         { label: 'Receipts', path: '/ar/receipts' },
         { label: 'Credit Notes', path: '/ar/credit-notes' },
+        { label: 'Sales Returns', path: '/ar/returns' },
+        { label: 'Refunds', path: '/ar/refunds' },
         { label: 'AR Aging', path: '/reports/ar-ap/ar-aging' },
         { label: 'Collections', path: '/ar/collections' },
       ]
