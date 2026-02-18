@@ -40,7 +40,7 @@ app.get('/returns', async (c) => {
     const offset = parseInt(c.req.query('offset') || '0');
 
     let query = `
-      SELECT sr.*, c.name as customer_name
+      SELECT sr.*, c.customer_name as customer_name
       FROM sales_returns sr
       LEFT JOIN customers c ON sr.customer_id = c.id
       WHERE sr.company_id = ?
@@ -94,7 +94,7 @@ app.get('/returns/:id', async (c) => {
     const id = c.req.param('id');
 
     const ret = await c.env.DB.prepare(`
-      SELECT sr.*, c.name as customer_name
+      SELECT sr.*, c.customer_name as customer_name
       FROM sales_returns sr
       LEFT JOIN customers c ON sr.customer_id = c.id
       WHERE sr.id = ? AND sr.company_id = ?
@@ -103,7 +103,7 @@ app.get('/returns/:id', async (c) => {
     if (!ret) return c.json({ error: 'Return not found' }, 404);
 
     const items = await c.env.DB.prepare(`
-      SELECT sri.*, p.name as product_name, p.sku as product_sku
+      SELECT sri.*, p.product_name as product_name, p.product_code as product_sku
       FROM sales_return_items sri
       LEFT JOIN products p ON sri.product_id = p.id
       WHERE sri.return_id = ? AND sri.company_id = ?
@@ -366,7 +366,7 @@ app.get('/refunds', async (c) => {
     const offset = parseInt(c.req.query('offset') || '0');
 
     let query = `
-      SELECT cr.*, c.name as customer_name
+      SELECT cr.*, c.customer_name as customer_name
       FROM customer_refunds cr
       LEFT JOIN customers c ON cr.customer_id = c.id
       WHERE cr.company_id = ?
@@ -414,7 +414,7 @@ app.get('/refunds/:id', async (c) => {
     const id = c.req.param('id');
 
     const refund = await c.env.DB.prepare(`
-      SELECT cr.*, c.name as customer_name,
+      SELECT cr.*, c.customer_name as customer_name,
         sr.return_number, cn.credit_note_number
       FROM customer_refunds cr
       LEFT JOIN customers c ON cr.customer_id = c.id
@@ -625,7 +625,7 @@ app.get('/credit-notes', async (c) => {
     const offset = parseInt(c.req.query('offset') || '0');
 
     let query = `
-      SELECT cn.*, c.name as customer_name
+      SELECT cn.*, c.customer_name as customer_name
       FROM credit_notes cn
       LEFT JOIN customers c ON cn.customer_id = c.id
       WHERE cn.company_id = ?
@@ -668,7 +668,7 @@ app.get('/credit-notes/:id', async (c) => {
     const id = c.req.param('id');
 
     const cn = await c.env.DB.prepare(`
-      SELECT cn.*, c.name as customer_name
+      SELECT cn.*, c.customer_name as customer_name
       FROM credit_notes cn
       LEFT JOIN customers c ON cn.customer_id = c.id
       WHERE cn.id = ? AND cn.company_id = ?
