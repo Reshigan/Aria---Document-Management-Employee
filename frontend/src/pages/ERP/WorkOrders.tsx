@@ -174,8 +174,8 @@ export default function WorkOrders() {
     released: workOrders.filter(wo => wo.status === 'released').length,
     in_progress: workOrders.filter(wo => wo.status === 'in_progress').length,
     completed: workOrders.filter(wo => wo.status === 'completed').length,
-    totalUnits: workOrders.reduce((sum, wo) => sum + wo.quantity_to_produce, 0),
-    producedUnits: workOrders.reduce((sum, wo) => sum + wo.quantity_produced, 0)
+    totalUnits: workOrders.reduce((sum, wo) => sum + (wo.quantity_to_produce || 0), 0),
+    producedUnits: workOrders.reduce((sum, wo) => sum + (wo.quantity_produced || 0), 0)
   };
 
   const renderCreateModal = () => {

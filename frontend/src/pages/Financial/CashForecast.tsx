@@ -32,9 +32,9 @@ export default function CashForecast() {
   const formatCurrency = (amount: number) => new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR' }).format(Number(amount) || 0);
 
   const stats = {
-    totalInflows: forecast.reduce((sum, f) => sum + f.expected_inflows, 0),
-    totalOutflows: forecast.reduce((sum, f) => sum + f.expected_outflows, 0),
-    netChange: forecast.reduce((sum, f) => sum + f.net_change, 0),
+        totalInflows: forecast.reduce((sum, f) => sum + (f.expected_inflows || 0), 0),
+        totalOutflows: forecast.reduce((sum, f) => sum + (f.expected_outflows || 0), 0),
+        netChange: forecast.reduce((sum, f) => sum + (f.net_change || 0), 0),
     endingBalance: forecast.length > 0 ? forecast[forecast.length - 1].closing_balance : 0,
   };
 

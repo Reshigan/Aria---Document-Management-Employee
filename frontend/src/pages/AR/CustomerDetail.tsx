@@ -139,7 +139,7 @@ export default function CustomerDetail() {
         totalRevenue,
         outstandingBalance: allTransactions
           .filter(t => t.type === 'invoice' && t.status !== 'paid')
-          .reduce((sum, t) => sum + t.total, 0),
+          .reduce((sum, t) => sum + (t.total || 0), 0),
         avgOrderValue: totalOrders > 0 ? totalRevenue / totalOrders : 0
       });
     } catch (error) {

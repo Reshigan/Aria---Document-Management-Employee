@@ -111,7 +111,7 @@ export default function TaxFilings() {
     return styles[type] || 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300';
   };
 
-  const stats = { paye: filings.filter(f => f.tax_type === 'PAYE').reduce((sum, f) => sum + f.amount, 0), uif: filings.filter(f => f.tax_type === 'UIF').reduce((sum, f) => sum + f.amount, 0), sdl: filings.filter(f => f.tax_type === 'SDL').reduce((sum, f) => sum + f.amount, 0), pending: filings.filter(f => f.status === 'PENDING').length };
+  const stats = { paye: filings.filter(f => f.tax_type === 'PAYE').reduce((sum, f) => sum + (f.amount || 0), 0), uif: filings.filter(f => f.tax_type === 'UIF').reduce((sum, f) => sum + (f.amount || 0), 0), sdl: filings.filter(f => f.tax_type === 'SDL').reduce((sum, f) => sum + (f.amount || 0), 0), pending: filings.filter(f => f.status === 'PENDING').length };
 
   return (
     <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4" data-testid="payroll-tax">

@@ -161,7 +161,7 @@ const Receipts: React.FC = () => {
             </div>
             <div>
               <p className="text-xl font-bold text-gray-900 dark:text-white">
-                {formatCurrency(receipts.reduce((sum, r) => sum + r.amount, 0))}
+                {formatCurrency(receipts.reduce((sum, r) => sum + (r.amount || 0), 0))}
               </p>
               <p className="text-xs text-gray-500 dark:text-gray-300">Total Received</p>
             </div>

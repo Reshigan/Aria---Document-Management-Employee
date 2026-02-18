@@ -111,8 +111,8 @@ export default function Customers() {
       setCustomerTransactions([...orders, ...quotes, ...invoices].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
       
       // Calculate stats from the loaded data
-      const totalRevenue = invoices.filter((i: { status: string }) => i.status === 'paid').reduce((sum: number, i: { amount: number }) => sum + i.amount, 0);
-      const outstandingBalance = invoices.filter((i: { status: string }) => i.status !== 'paid').reduce((sum: number, i: { amount: number }) => sum + i.amount, 0);
+      const totalRevenue = invoices.filter((i: { status: string }) => i.status === 'paid').reduce((sum: number, i: { amount: number }) => sum + (i.amount || 0), 0);
+      const outstandingBalance = invoices.filter((i: { status: string }) => i.status !== 'paid').reduce((sum: number, i: { amount: number }) => sum + (i.amount || 0), 0);
       setCustomerStats({
         total_quotes: quotes.length,
         total_orders: orders.length,

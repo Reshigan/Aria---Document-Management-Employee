@@ -83,7 +83,7 @@ export default function PriceLists() {
     total: priceLists.length,
     active: priceLists.filter(p => p.status === 'active').length,
     draft: priceLists.filter(p => p.status === 'draft').length,
-    totalProducts: priceLists.reduce((sum, p) => sum + p.products_count, 0),
+    totalProducts: priceLists.reduce((sum, p) => sum + (p.products_count || 0), 0),
   };
 
   return (

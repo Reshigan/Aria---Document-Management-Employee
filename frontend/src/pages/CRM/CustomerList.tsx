@@ -165,7 +165,7 @@ export default function CustomerList() {
     return <span className={`px-2 py-1 text-xs font-medium rounded-full ${colorClass}`}>Level {level}</span>;
   };
 
-  const stats = { total: customers.length, active: customers.filter(c => c.is_active).length, totalCredit: customers.reduce((sum, c) => sum + c.credit_limit, 0) };
+  const stats = { total: customers.length, active: customers.filter(c => c.is_active).length, totalCredit: customers.reduce((sum, c) => sum + (c.credit_limit || 0), 0) };
 
   return (
     <div className="bg-gradient-to-br from-gray-50 to-cyan-50 dark:from-gray-900 dark:to-gray-800 p-4">

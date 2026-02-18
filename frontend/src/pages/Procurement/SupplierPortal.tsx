@@ -107,7 +107,7 @@ const SupplierPortal: React.FC = () => {
   const stats = {
     totalOrders: orders.length,
     pendingOrders: orders.filter(o => o.status === 'pending' || o.status === 'confirmed').length,
-    totalInvoices: invoices.reduce((sum, i) => sum + i.amount, 0),
+    totalInvoices: invoices.reduce((sum, i) => sum + (i.amount || 0), 0),
     overdueInvoices: invoices.filter(i => i.status === 'overdue').length
   };
 

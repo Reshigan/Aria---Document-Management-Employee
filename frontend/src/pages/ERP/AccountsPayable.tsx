@@ -251,9 +251,9 @@ export default function AccountsPayable() {
     totalVendors: vendors.length,
     activeVendors: vendors.filter(v => v.is_active).length,
     totalInvoices: invoices.length,
-    totalOwed: invoices.reduce((sum, inv) => sum + inv.balance, 0),
+    totalOwed: invoices.reduce((sum, inv) => sum + (inv.balance || 0), 0),
     overdueInvoices: invoices.filter(inv => inv.status === 'overdue').length,
-    totalPayments: payments.reduce((sum, p) => sum + p.amount, 0)
+    totalPayments: payments.reduce((sum, p) => sum + (p.amount || 0), 0)
   };
 
   const renderVendorModal = (isEdit: boolean) => {

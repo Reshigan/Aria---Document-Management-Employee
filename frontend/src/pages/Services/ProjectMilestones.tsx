@@ -69,7 +69,7 @@ export default function ProjectMilestones() {
     return styles[status] || styles.pending;
   };
 
-  const stats = { total: milestones.length, completed: milestones.filter(m => m.status === 'completed').length, inProgress: milestones.filter(m => m.status === 'in_progress').length, totalBudget: milestones.reduce((sum, m) => sum + m.budget_amount, 0) };
+  const stats = { total: milestones.length, completed: milestones.filter(m => m.status === 'completed').length, inProgress: milestones.filter(m => m.status === 'in_progress').length, totalBudget: milestones.reduce((sum, m) => sum + (m.budget_amount || 0), 0) };
 
   return (
     <div className="bg-gradient-to-br from-gray-50 to-violet-50 dark:from-gray-900 dark:to-gray-800 p-4">

@@ -128,9 +128,9 @@ export default function Bills() {
     }
   };
 
-  const totalBills = bills.reduce((sum, bill) => sum + bill.total_amount, 0);
-  const totalPaid = bills.reduce((sum, bill) => sum + bill.amount_paid, 0);
-  const totalDue = bills.reduce((sum, bill) => sum + bill.amount_due, 0);
+  const totalBills = bills.reduce((sum, bill) => sum + (bill.total_amount || 0), 0);
+  const totalPaid = bills.reduce((sum, bill) => sum + (bill.amount_paid || 0), 0);
+  const totalDue = bills.reduce((sum, bill) => sum + (bill.amount_due || 0), 0);
   const overdueCount = bills.filter(b => new Date(b.due_date) < new Date() && b.status !== 'PAID').length;
 
   const getStatusBadge = (status: string) => {

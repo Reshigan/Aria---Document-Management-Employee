@@ -171,8 +171,8 @@ export default function Timesheets() {
     (t.description && t.description.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
-  const totalHours = timesheets.reduce((sum, t) => sum + t.hours, 0);
-  const billableHours = timesheets.filter(t => t.billable).reduce((sum, t) => sum + t.hours, 0);
+  const totalHours = timesheets.reduce((sum, t) => sum + (t.hours || 0), 0);
+  const billableHours = timesheets.filter(t => t.billable).reduce((sum, t) => sum + (t.hours || 0), 0);
   const totalBilling = timesheets.reduce((sum, t) => sum + (t.billing_amount || 0), 0);
 
   const statusColors: Record<string, string> = {

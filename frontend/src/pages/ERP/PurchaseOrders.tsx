@@ -332,7 +332,7 @@ export default function PurchaseOrders() {
     draft: orders.filter(o => o.status === 'draft').length,
     approved: orders.filter(o => o.status === 'approved').length,
     received: orders.filter(o => o.status === 'received').length,
-    totalValue: orders.reduce((sum, o) => sum + o.total_amount, 0)
+    totalValue: orders.reduce((sum, o) => sum + (o.total_amount || 0), 0)
   };
 
   return (

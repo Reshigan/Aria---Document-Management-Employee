@@ -121,8 +121,8 @@ const BotTestingDashboard: React.FC = () => {
     }
   };
 
-  const totalTests = agents.reduce((sum, agent) => sum + agent.tests_run, 0);
-  const totalPassed = agents.reduce((sum, agent) => sum + agent.tests_passed, 0);
+  const totalTests = agents.reduce((sum, agent) => sum + (agent.tests_run || 0), 0);
+  const totalPassed = agents.reduce((sum, agent) => sum + (agent.tests_passed || 0), 0);
   const overallAccuracy = totalTests > 0 ? (totalPassed / totalTests) * 100 : 0;
   const completedBots = agents.filter(agent => agent.status === 'passed' || agent.status === 'failed').length;
 

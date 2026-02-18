@@ -90,8 +90,8 @@ export default function CustomerStatements() {
 
   const stats = {
     totalCustomers: customers.length,
-    totalOutstanding: customers.reduce((sum, c) => sum + c.outstanding_balance, 0),
-    totalOverdue: customers.reduce((sum, c) => sum + c.overdue_amount, 0),
+    totalOutstanding: customers.reduce((sum, c) => sum + (c.outstanding_balance || 0), 0),
+    totalOverdue: customers.reduce((sum, c) => sum + (c.overdue_amount || 0), 0),
     statementsSent: statements.filter(s => s.status === 'sent' || s.status === 'viewed').length,
   };
 

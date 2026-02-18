@@ -94,7 +94,7 @@ export default function BotsHub() {
         query,
         context: {}
       });
-      alert(`Bot executed successfully!\n\nResponse: ${response.data.response}\n\nConfidence: ${(response.data.confidence * 100).toFixed(0)}%`);
+      alert(`Bot executed successfully!\n\nResponse: ${response.data.response}\n\nConfidence: ${((response.data.confidence || 0) * 100).toFixed(0)}%`);
       loadBots();
     } catch (err: any) {
       console.error('Error running agent:', err);
@@ -247,7 +247,7 @@ export default function BotsHub() {
                     </div>
                     <div className="flex items-center gap-1">
                       <CheckCircle className="h-3.5 w-3.5 text-green-500" />
-                      {agent.success_rate?.toFixed(0)}% success
+                      {(agent.success_rate ?? 0).toFixed(0)}% success
                     </div>
                   </div>
                   <button

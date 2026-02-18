@@ -194,7 +194,7 @@ export default function WMSStock() {
   const stats = {
     totalProducts: products.length,
     activeProducts: products.filter(p => p.is_active).length,
-    totalStock: stock.reduce((sum, s) => sum + s.quantity_on_hand, 0),
+    totalStock: stock.reduce((sum, s) => sum + (s.quantity_on_hand || 0), 0),
     lowStock: getLowStockCount(),
     totalValue: getTotalValue()
   };

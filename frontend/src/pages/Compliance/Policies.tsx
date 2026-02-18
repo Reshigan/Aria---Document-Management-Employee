@@ -67,7 +67,7 @@ export default function Policies() {
     return styles[status] || styles.draft;
   };
 
-  const stats = { total: policies.length, published: policies.filter(p => p.status === 'published').length, draft: policies.filter(p => p.status === 'draft').length, totalAcknowledged: policies.reduce((sum, p) => sum + p.acknowledged_count, 0) };
+  const stats = { total: policies.length, published: policies.filter(p => p.status === 'published').length, draft: policies.filter(p => p.status === 'draft').length, totalAcknowledged: policies.reduce((sum, p) => sum + (p.acknowledged_count || 0), 0) };
 
   return (
     <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4">

@@ -73,7 +73,7 @@ export default function TrainingCourses() {
     return styles[status] || styles.scheduled;
   };
 
-  const stats = { total: courses.length, scheduled: courses.filter(c => c.status === 'scheduled').length, inProgress: courses.filter(c => c.status === 'in_progress').length, totalEnrolled: courses.reduce((sum, c) => sum + c.enrolled, 0) };
+  const stats = { total: courses.length, scheduled: courses.filter(c => c.status === 'scheduled').length, inProgress: courses.filter(c => c.status === 'in_progress').length, totalEnrolled: courses.reduce((sum, c) => sum + (c.enrolled || 0), 0) };
 
   return (
     <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4">

@@ -76,7 +76,7 @@ export default function BBBEE() {
     return 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300';
   };
 
-  const stats = { total: scorecards.length, verified: scorecards.filter(s => s.status === 'verified').length, avgScore: scorecards.length > 0 ? Math.round(scorecards.reduce((sum, s) => sum + s.total_score, 0) / scorecards.length) : 0, bestLevel: scorecards.length > 0 ? Math.min(...scorecards.map(s => s.level)) : 0 };
+  const stats = { total: scorecards.length, verified: scorecards.filter(s => s.status === 'verified').length, avgScore: scorecards.length > 0 ? Math.round(scorecards.reduce((sum, s) => sum + (s.total_score || 0), 0) / scorecards.length) : 0, bestLevel: scorecards.length > 0 ? Math.min(...scorecards.map(s => s.level)) : 0 };
 
   return (
     <div className="bg-gradient-to-br from-gray-50 to-green-50 dark:from-gray-900 dark:to-gray-800 p-4">

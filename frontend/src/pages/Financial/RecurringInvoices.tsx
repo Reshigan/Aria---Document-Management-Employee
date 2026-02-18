@@ -98,7 +98,7 @@ export default function RecurringInvoices() {
       const multiplier = { weekly: 4, monthly: 1, quarterly: 1/3, annually: 1/12 }[i.frequency] || 1;
       return sum + (i.amount * multiplier);
     }, 0),
-    totalInvoiced: invoices.reduce((sum, i) => sum + i.total_invoiced, 0),
+    totalInvoiced: invoices.reduce((sum, i) => sum + (i.total_invoiced || 0), 0),
   };
 
   return (

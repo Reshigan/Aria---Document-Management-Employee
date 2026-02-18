@@ -374,8 +374,8 @@ const VATReporting: React.FC = () => {
   );
 
   const renderBBBEE = () => {
-    const totalSpend = bbbeeReport.reduce((sum, item) => sum + item.total_spend, 0);
-    const totalRecognized = bbbeeReport.reduce((sum, item) => sum + item.recognized_spend, 0);
+    const totalSpend = bbbeeReport.reduce((sum, item) => sum + (item.total_spend || 0), 0);
+    const totalRecognized = bbbeeReport.reduce((sum, item) => sum + (item.recognized_spend || 0), 0);
     const overallRecognition = totalSpend > 0 ? (totalRecognized / totalSpend) * 100 : 0;
 
     return (

@@ -79,9 +79,9 @@ export default function InvoiceList() {
 
   const stats = {
     total: invoices.length,
-    totalAmount: invoices.reduce((sum, inv) => sum + inv.total_amount, 0),
-    outstanding: invoices.reduce((sum, inv) => sum + inv.balance, 0),
-    overdue: invoices.filter(inv => isOverdue(inv.due_date, inv.status)).reduce((sum, inv) => sum + inv.balance, 0),
+        totalAmount: invoices.reduce((sum, inv) => sum + (inv.total_amount || 0), 0),
+        outstanding: invoices.reduce((sum, inv) => sum + (inv.balance || 0), 0),
+        overdue: invoices.filter(inv => isOverdue(inv.due_date, inv.status)).reduce((sum, inv) => sum + (inv.balance || 0), 0),
   };
 
   return (

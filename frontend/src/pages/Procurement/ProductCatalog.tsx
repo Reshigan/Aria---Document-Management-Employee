@@ -129,7 +129,7 @@ const ProductCatalog: React.FC = () => {
               <Boxes className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-xl font-bold text-gray-900 dark:text-white">{products.reduce((sum, p) => sum + p.stock_on_hand, 0)}</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{products.reduce((sum, p) => sum + (p.stock_on_hand || 0), 0)}</p>
               <p className="text-xs text-gray-500 dark:text-gray-300">Total Units</p>
             </div>
           </div>

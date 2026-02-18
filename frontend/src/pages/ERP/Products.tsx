@@ -202,8 +202,10 @@ export default function Products() {
   };
 
   const marginPercent = (product: Product) => {
-    if (product.selling_price === 0) return 0;
-    return ((product.selling_price - product.cost_price) / product.selling_price * 100);
+    const sp = Number(product.selling_price) || 0;
+    const cp = Number(product.cost_price) || 0;
+    if (sp === 0) return 0;
+    return ((sp - cp) / sp * 100);
   };
 
   const renderFormModal = (isEdit: boolean) => {
@@ -361,9 +363,9 @@ export default function Products() {
   const renderDetailModal = () => {
     if (!selectedProduct || !showDetailModal) return null;
 
-    const totalOnHand = stockLevels.reduce((sum, level) => sum + level.on_hand, 0);
-    const totalAllocated = stockLevels.reduce((sum, level) => sum + level.allocated, 0);
-    const totalAvailable = stockLevels.reduce((sum, level) => sum + level.available, 0);
+    const totalOnHand = stockLevels.reduce((sum, level) => sum + (level.on_hand || 0), 0);
+    const totalAllocated = stockLevels.reduce((sum, level) => sum + (level.allocated || 0), 0);
+    const totalAvailable = stockLevels.reduce((sum, level) => sum + (level.available || 0), 0);
 
     return (
       <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setShowDetailModal(false)}>

@@ -204,7 +204,7 @@ export default function Dashboard() {
                 </div>
                 <span className="flex items-center text-emerald-500 text-sm font-medium">
                   <ArrowUpRight className="w-4 h-4 mr-1" />
-                  {stats?.revenue_growth?.toFixed(1) || 0}%
+                  {Number(stats?.revenue_growth ?? 0).toFixed(1)}%
                 </span>
               </div>
               <p className="text-sm font-medium text-gray-500 dark:text-gray-300">Revenue (MTD)</p>

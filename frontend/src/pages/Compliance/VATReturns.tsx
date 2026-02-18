@@ -63,7 +63,7 @@ export default function VATReturns() {
     return styles[status] || styles.draft;
   };
 
-  const stats = { total: returns.length, filed: returns.filter(r => r.status === 'filed').length, totalOutput: returns.reduce((sum, r) => sum + r.output_vat, 0), totalNet: returns.reduce((sum, r) => sum + r.net_vat, 0) };
+  const stats = { total: returns.length, filed: returns.filter(r => r.status === 'filed').length, totalOutput: returns.reduce((sum, r) => sum + (r.output_vat || 0), 0), totalNet: returns.reduce((sum, r) => sum + (r.net_vat || 0), 0) };
 
   return (
     <div className="bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 p-4">

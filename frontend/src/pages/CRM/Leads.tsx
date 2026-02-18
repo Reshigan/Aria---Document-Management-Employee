@@ -130,7 +130,7 @@ const Leads: React.FC = () => {
     total: leads.length,
     new: leads.filter(l => l.status === 'new').length,
     qualified: leads.filter(l => l.status === 'qualified').length,
-    totalValue: leads.reduce((sum, l) => sum + l.value, 0)
+    totalValue: leads.reduce((sum, l) => sum + (l.value || 0), 0)
   };
 
   return (

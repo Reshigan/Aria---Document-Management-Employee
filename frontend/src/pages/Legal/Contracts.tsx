@@ -126,7 +126,7 @@ const Contracts: React.FC = () => {
     total: contracts.length,
     active: contracts.filter(c => c.status === 'active').length,
     expiringSoon: contracts.filter(c => c.status === 'active' && new Date(c.endDate) < new Date(Date.now() + 90 * 24 * 60 * 60 * 1000)).length,
-    totalValue: contracts.reduce((sum, c) => sum + c.value, 0)
+    totalValue: contracts.reduce((sum, c) => sum + (c.value || 0), 0)
   };
 
   return (

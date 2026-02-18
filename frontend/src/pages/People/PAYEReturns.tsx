@@ -73,7 +73,7 @@ export default function PAYEReturns() {
     return styles[status] || styles.draft;
   };
 
-  const stats = { total: returns.length, submitted: returns.filter(r => r.status === 'submitted' || r.status === 'accepted').length, totalPAYE: returns.reduce((sum, r) => sum + r.paye_deducted, 0), draft: returns.filter(r => r.status === 'draft').length };
+  const stats = { total: returns.length, submitted: returns.filter(r => r.status === 'submitted' || r.status === 'accepted').length, totalPAYE: returns.reduce((sum, r) => sum + (r.paye_deducted || 0), 0), draft: returns.filter(r => r.status === 'draft').length };
 
   return (
     <div className="bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 p-4">

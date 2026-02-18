@@ -90,7 +90,7 @@ export default function Discounts() {
   const stats = {
     total: discounts.length,
     active: discounts.filter(d => d.status === 'active').length,
-    totalUsage: discounts.reduce((sum, d) => sum + d.usage_count, 0),
+    totalUsage: discounts.reduce((sum, d) => sum + (d.usage_count || 0), 0),
     expired: discounts.filter(d => d.status === 'expired').length,
   };
 

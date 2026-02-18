@@ -417,7 +417,7 @@ const AskAriaChat: React.FC = () => {
 
       const classifyResponse = await api.post(`/ask-aria/classify/${documentId}`);
 
-      const message = `I've uploaded and classified your document "${file.name}" as a ${classifyResponse.data.document_class} with ${(classifyResponse.data.confidence * 100).toFixed(0)}% confidence. How would you like to proceed?`;
+      const message = `I've uploaded and classified your document "${file.name}" as a ${classifyResponse.data.document_class} with ${((classifyResponse.data.confidence || 0) * 100).toFixed(0)}% confidence. How would you like to proceed?`;
 
       const assistantMessage: Message = {
         id: Date.now().toString(),

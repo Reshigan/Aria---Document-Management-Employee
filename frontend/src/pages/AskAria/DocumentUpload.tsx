@@ -365,7 +365,7 @@ export default function DocumentUpload() {
                   </h2>
                 </div>
                 <span className={`px-3 py-1 rounded-full text-sm font-medium ${getConfidenceColor(processedDoc.classification_confidence)}`}>
-                  {(processedDoc.classification_confidence * 100).toFixed(0)}% confidence
+                  {((processedDoc.classification_confidence || 0) * 100).toFixed(0)}% confidence
                 </span>
               </div>
 

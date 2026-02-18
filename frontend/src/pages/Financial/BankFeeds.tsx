@@ -94,7 +94,7 @@ export default function BankFeeds() {
 
   const formatCurrency = (amount: number) => new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR' }).format(Number(amount) || 0);
   const formatDate = (date: string) => { if (!date) return "-"; const _d = new Date(date); return isNaN(_d.getTime()) ? date : _d.toLocaleDateString("en-ZA"); };
-  const formatDateTime = (date: string) => new Date(date).toLocaleString('en-ZA');
+  const formatDateTime = (date: string) => { if (!date) return "-"; const _d = new Date(date); return isNaN(_d.getTime()) ? date : _d.toLocaleString("en-ZA"); };
 
   const getStatusBadge = (status: string) => {
     const styles: Record<string, string> = {

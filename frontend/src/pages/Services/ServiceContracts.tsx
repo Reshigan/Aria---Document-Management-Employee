@@ -63,7 +63,7 @@ export default function ServiceContracts() {
     return styles[status] || styles.pending;
   };
 
-  const stats = { total: contracts.length, active: contracts.filter(c => c.status === 'active').length, totalValue: contracts.reduce((sum, c) => sum + c.contract_value, 0), expiring: contracts.filter(c => c.status === 'active' && new Date(c.end_date) < new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)).length };
+  const stats = { total: contracts.length, active: contracts.filter(c => c.status === 'active').length, totalValue: contracts.reduce((sum, c) => sum + (c.contract_value || 0), 0), expiring: contracts.filter(c => c.status === 'active' && new Date(c.end_date) < new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)).length };
 
   return (
     <div className="bg-gradient-to-br from-gray-50 to-teal-50 dark:from-gray-900 dark:to-gray-800 p-4">

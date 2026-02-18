@@ -64,7 +64,7 @@ export default function KnowledgeBase() {
     return styles[status] || styles.draft;
   };
 
-  const stats = { total: articles.length, published: articles.filter(a => a.status === 'published').length, totalViews: articles.reduce((sum, a) => sum + a.view_count, 0), totalHelpful: articles.reduce((sum, a) => sum + a.helpful_count, 0) };
+  const stats = { total: articles.length, published: articles.filter(a => a.status === 'published').length, totalViews: articles.reduce((sum, a) => sum + (a.view_count || 0), 0), totalHelpful: articles.reduce((sum, a) => sum + (a.helpful_count || 0), 0) };
 
   return (
     <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4">

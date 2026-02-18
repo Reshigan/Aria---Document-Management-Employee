@@ -77,7 +77,7 @@ export default function ExpenseClaims() {
 
   const stats = {
     total: claims.length,
-    totalAmount: claims.reduce((sum, c) => sum + c.total_amount, 0),
+    totalAmount: claims.reduce((sum, c) => sum + (c.total_amount || 0), 0),
     pending: claims.filter(c => c.status === 'submitted').length,
     approved: claims.filter(c => c.status === 'approved').length,
   };

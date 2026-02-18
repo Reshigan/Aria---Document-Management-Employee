@@ -125,9 +125,9 @@ const Opportunities: React.FC = () => {
 
   const stats = {
     total: opportunities.length,
-    totalValue: opportunities.reduce((sum, o) => sum + o.value, 0),
+    totalValue: opportunities.reduce((sum, o) => sum + (o.value || 0), 0),
     weightedValue: opportunities.reduce((sum, o) => sum + (o.value * o.probability / 100), 0),
-    wonValue: opportunities.filter(o => o.stage === 'closed_won').reduce((sum, o) => sum + o.value, 0)
+    wonValue: opportunities.filter(o => o.stage === 'closed_won').reduce((sum, o) => sum + (o.value || 0), 0)
   };
 
   return (

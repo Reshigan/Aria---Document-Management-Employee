@@ -71,7 +71,7 @@ export default function SalaryStructures() {
     return styles[status] || styles.inactive;
   };
 
-  const stats = { total: structures.length, active: structures.filter(s => s.status === 'active').length, totalEmployees: structures.reduce((sum, s) => sum + s.employees_count, 0), avgCTC: structures.length > 0 ? structures.reduce((sum, s) => sum + s.total_ctc, 0) / structures.length : 0 };
+  const stats = { total: structures.length, active: structures.filter(s => s.status === 'active').length, totalEmployees: structures.reduce((sum, s) => sum + (s.employees_count || 0), 0), avgCTC: structures.length > 0 ? structures.reduce((sum, s) => sum + (s.total_ctc || 0), 0) / structures.length : 0 };
 
   return (
     <div className="bg-gradient-to-br from-gray-50 to-green-50 dark:from-gray-900 dark:to-gray-800 p-4">
