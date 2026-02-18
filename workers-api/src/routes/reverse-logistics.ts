@@ -560,8 +560,8 @@ app.put('/refunds/:id/process', async (c) => {
     ).bind(id, companyId).first<{ id: string; status: string; amount: number }>();
 
     if (!existing) return c.json({ error: 'Refund not found' }, 404);
-    if (existing.status !== 'approved') {
-      return c.json({ error: 'Refund must be approved before processing' }, 400);
+    if (existing.status !== 'approved' && existing.status !== 'processing') {
+      return c.json({ error: 'Refund must be approved or processing before completing' }, 400);
     }
 
     const now = new Date().toISOString();
