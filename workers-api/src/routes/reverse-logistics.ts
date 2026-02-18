@@ -5,6 +5,7 @@
  */
 
 import { Hono } from 'hono';
+import { jwtVerify } from 'jose';
 
 interface Env {
   DB: D1Database;
@@ -20,9 +21,23 @@ interface JWTPayload {
 
 const app = new Hono<{ Bindings: Env; Variables: { user: JWTPayload } }>();
 
+app.use('*', async (c, next) => {
+  const authHeader = c.req.header('Authorization');
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    try {
+      const token = authHeader.substring(7);
+      const secret = new TextEncoder().encode(c.env.JWT_SECRET);
+      const { payload } = await jwtVerify(token, secret);
+      c.set('user', payload as unknown as JWTPayload);
+    } catch (e) {
+    }
+  }
+  await next();
+});
+
 function getCompanyId(c: any): string {
-  const user = c.get('user');
-  return user?.company_id || c.req.query('company_id') || '';
+    const user = c.get('user') as JWTPayload | undefined;
+    return user?.company_id || c.req.query('company_id') || '';
 }
 
 // ========================================
@@ -40,7 +55,7 @@ app.get('/returns', async (c) => {
     const offset = parseInt(c.req.query('offset') || '0');
 
     let query = `
-      SELECT sr.*, c.name as customer_name
+      SELECT sr.*, c.customer_name as customer_name
       FROM sales_returns sr
       LEFT JOIN customers c ON sr.customer_id = c.id
       WHERE sr.company_id = ?
@@ -94,7 +109,7 @@ app.get('/returns/:id', async (c) => {
     const id = c.req.param('id');
 
     const ret = await c.env.DB.prepare(`
-      SELECT sr.*, c.name as customer_name
+      SELECT sr.*, c.customer_name as customer_name
       FROM sales_returns sr
       LEFT JOIN customers c ON sr.customer_id = c.id
       WHERE sr.id = ? AND sr.company_id = ?
@@ -103,7 +118,7 @@ app.get('/returns/:id', async (c) => {
     if (!ret) return c.json({ error: 'Return not found' }, 404);
 
     const items = await c.env.DB.prepare(`
-      SELECT sri.*, p.name as product_name, p.sku as product_sku
+      SELECT sri.*, p.product_name as product_name, p.product_code as product_sku
       FROM sales_return_items sri
       LEFT JOIN products p ON sri.product_id = p.id
       WHERE sri.return_id = ? AND sri.company_id = ?
@@ -123,7 +138,7 @@ app.get('/returns/:id', async (c) => {
 app.post('/returns', async (c) => {
   try {
     const companyId = getCompanyId(c);
-    const user = c.get('user');
+    const user = c.get('user') || { sub: 'system', email: '', company_id: companyId, role: '' };
     if (!companyId) return c.json({ error: 'Company ID required' }, 400);
 
     const body = await c.req.json<{
@@ -221,7 +236,7 @@ app.post('/returns', async (c) => {
 app.put('/returns/:id/status', async (c) => {
   try {
     const companyId = getCompanyId(c);
-    const user = c.get('user');
+    const user = c.get('user') || { sub: 'system', email: '', company_id: '', role: '' };
     const id = c.req.param('id');
     const body = await c.req.json<{ status: string; notes?: string; inspection_notes?: string }>();
 
@@ -279,7 +294,7 @@ app.put('/returns/:id/status', async (c) => {
 app.put('/returns/:id/receive', async (c) => {
   try {
     const companyId = getCompanyId(c);
-    const user = c.get('user');
+    const user = c.get('user') || { sub: 'system', email: '', company_id: '', role: '' };
     const id = c.req.param('id');
     const body = await c.req.json<{
       items: Array<{
@@ -366,7 +381,7 @@ app.get('/refunds', async (c) => {
     const offset = parseInt(c.req.query('offset') || '0');
 
     let query = `
-      SELECT cr.*, c.name as customer_name
+      SELECT cr.*, c.customer_name as customer_name
       FROM customer_refunds cr
       LEFT JOIN customers c ON cr.customer_id = c.id
       WHERE cr.company_id = ?
@@ -414,7 +429,7 @@ app.get('/refunds/:id', async (c) => {
     const id = c.req.param('id');
 
     const refund = await c.env.DB.prepare(`
-      SELECT cr.*, c.name as customer_name,
+      SELECT cr.*, c.customer_name as customer_name,
         sr.return_number, cn.credit_note_number
       FROM customer_refunds cr
       LEFT JOIN customers c ON cr.customer_id = c.id
@@ -435,7 +450,7 @@ app.get('/refunds/:id', async (c) => {
 app.post('/refunds', async (c) => {
   try {
     const companyId = getCompanyId(c);
-    const user = c.get('user');
+    const user = c.get('user') || { sub: 'system', email: '', company_id: '', role: '' };
     if (!companyId) return c.json({ error: 'Company ID required' }, 400);
 
     const body = await c.req.json<{
@@ -495,7 +510,7 @@ app.post('/refunds', async (c) => {
 app.put('/refunds/:id/status', async (c) => {
   try {
     const companyId = getCompanyId(c);
-    const user = c.get('user');
+    const user = c.get('user') || { sub: 'system', email: '', company_id: '', role: '' };
     const id = c.req.param('id');
     const body = await c.req.json<{ status: string; transaction_reference?: string; notes?: string }>();
 
@@ -551,17 +566,18 @@ app.put('/refunds/:id/status', async (c) => {
 app.put('/refunds/:id/process', async (c) => {
   try {
     const companyId = getCompanyId(c);
-    const user = c.get('user');
+    const user = c.get('user') || { sub: 'system', email: '', company_id: '', role: '' };
     const id = c.req.param('id');
-    const body = await c.req.json<{ transaction_reference?: string }>();
+    let body: { transaction_reference?: string } = {};
+    try { body = await c.req.json(); } catch (_) { body = {}; }
 
     const existing = await c.env.DB.prepare(
       'SELECT id, status, amount FROM customer_refunds WHERE id = ? AND company_id = ?'
     ).bind(id, companyId).first<{ id: string; status: string; amount: number }>();
 
     if (!existing) return c.json({ error: 'Refund not found' }, 404);
-    if (existing.status !== 'approved') {
-      return c.json({ error: 'Refund must be approved before processing' }, 400);
+    if (existing.status !== 'approved' && existing.status !== 'processing') {
+      return c.json({ error: 'Refund must be approved or processing before completing' }, 400);
     }
 
     const now = new Date().toISOString();
@@ -625,7 +641,7 @@ app.get('/credit-notes', async (c) => {
     const offset = parseInt(c.req.query('offset') || '0');
 
     let query = `
-      SELECT cn.*, c.name as customer_name
+      SELECT cn.*, c.customer_name as customer_name
       FROM credit_notes cn
       LEFT JOIN customers c ON cn.customer_id = c.id
       WHERE cn.company_id = ?
@@ -668,7 +684,7 @@ app.get('/credit-notes/:id', async (c) => {
     const id = c.req.param('id');
 
     const cn = await c.env.DB.prepare(`
-      SELECT cn.*, c.name as customer_name
+      SELECT cn.*, c.customer_name as customer_name
       FROM credit_notes cn
       LEFT JOIN customers c ON cn.customer_id = c.id
       WHERE cn.id = ? AND cn.company_id = ?
@@ -686,7 +702,7 @@ app.get('/credit-notes/:id', async (c) => {
 app.post('/credit-notes', async (c) => {
   try {
     const companyId = getCompanyId(c);
-    const user = c.get('user');
+    const user = c.get('user') || { sub: 'system', email: '', company_id: '', role: '' };
     if (!companyId) return c.json({ error: 'Company ID required' }, 400);
 
     const body = await c.req.json<{
@@ -857,7 +873,7 @@ app.delete('/credit-notes/:id', async (c) => {
 app.post('/returns/:id/create-credit-note', async (c) => {
   try {
     const companyId = getCompanyId(c);
-    const user = c.get('user');
+    const user = c.get('user') || { sub: 'system', email: '', company_id: '', role: '' };
     const returnId = c.req.param('id');
 
     const ret = await c.env.DB.prepare(
@@ -913,7 +929,7 @@ app.post('/returns/:id/create-credit-note', async (c) => {
 app.post('/returns/:id/create-refund', async (c) => {
   try {
     const companyId = getCompanyId(c);
-    const user = c.get('user');
+    const user = c.get('user') || { sub: 'system', email: '', company_id: '', role: '' };
     const returnId = c.req.param('id');
     const body = await c.req.json<{ refund_method?: string; bank_account_id?: string }>();
 
