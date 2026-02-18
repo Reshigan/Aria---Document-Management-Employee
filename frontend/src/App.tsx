@@ -129,6 +129,8 @@ import CostCenters from './pages/Financial/CostCenters';
 import PaymentBatches from './pages/Financial/PaymentBatches';
 import ExpenseClaims from './pages/Financial/ExpenseClaims';
 import CreditNotes from './pages/Financial/CreditNotes';
+import SalesReturns from './pages/Financial/SalesReturns';
+import CustomerRefunds from './pages/Financial/CustomerRefunds';
 import Collections from './pages/Financial/Collections';
 import CashForecast from './pages/Financial/CashForecast';
 import BankTransfers from './pages/Financial/BankTransfers';
@@ -588,6 +590,10 @@ function App() {
                     <Route path="/ap/payment-batches" element={<PaymentBatches />} />
                     <Route path="/ap/expense-claims" element={<ExpenseClaims />} />
                     <Route path="/ar/credit-notes" element={<CreditNotes />} />
+                    <Route path="/ar/returns" element={<SalesReturns />} />
+                    <Route path="/ar/refunds" element={<CustomerRefunds />} />
+                    <Route path="/financial/returns" element={<SalesReturns />} />
+                    <Route path="/financial/refunds" element={<CustomerRefunds />} />
                     <Route path="/ar/collections" element={<Collections />} />
                                         <Route path="/banking/cash-forecast" element={<CashForecast />} />
                                         <Route path="/banking/transfers" element={<BankTransfers />} />

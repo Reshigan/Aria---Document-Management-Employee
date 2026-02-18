@@ -52,6 +52,7 @@ import inventory from './routes/inventory';
 import crossModule from './routes/cross-module';
 import goLive from './routes/go-live';
 import missingEndpoints from './routes/missing-endpoints';
+import reverseLogistics from './routes/reverse-logistics';
 import { executeScheduledBots as runScheduledBots } from './services/bot-executor';
 import { processPendingDeliveries } from './services/webhook-service';
 import { processDueScheduledReports } from './services/report-builder-service';
@@ -568,6 +569,12 @@ app.route('/attachments', microfeatures);
 // New Pages routes (Financial, Operations, People, Services, Compliance modules)
 app.route('/api/new-pages', newPages);
 app.route('/new-pages', newPages);
+
+// Reverse Logistics routes (Sales Returns, Customer Refunds, Credit Notes)
+app.route('/api/reverse-logistics', reverseLogistics);
+app.route('/reverse-logistics', reverseLogistics);
+app.route('/api/erp/reverse-logistics', reverseLogistics);
+app.route('/erp/reverse-logistics', reverseLogistics);
 
 // Xero Parity routes (Recurring Invoices, Reminders, Statements, Portal, Budgets, Bank Feeds)
 app.route('/api/xero', xeroParity);
