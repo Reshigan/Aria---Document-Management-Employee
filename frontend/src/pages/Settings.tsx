@@ -254,10 +254,10 @@ const Settings: React.FC = () => {
       {/* Header */}
       <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <Box>
-          <Typography variant="h4" sx={{ mb: 1, fontWeight: 600 }}>
+          <Typography variant="h4" sx={{ mb: 1, fontWeight: 600, color: 'text.primary' }}>
             Settings
           </Typography>
-          <Typography variant="body1" color="text.secondary">
+          <Typography variant="body1" sx={{ color: 'text.secondary' }}>
             Manage your account, company, and system preferences
           </Typography>
         </Box>
