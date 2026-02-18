@@ -568,7 +568,8 @@ app.put('/refunds/:id/process', async (c) => {
     const companyId = getCompanyId(c);
     const user = c.get('user') || { sub: 'system', email: '', company_id: '', role: '' };
     const id = c.req.param('id');
-    const body = await c.req.json<{ transaction_reference?: string }>();
+    let body: { transaction_reference?: string } = {};
+    try { body = await c.req.json(); } catch (_) { body = {}; }
 
     const existing = await c.env.DB.prepare(
       'SELECT id, status, amount FROM customer_refunds WHERE id = ? AND company_id = ?'
