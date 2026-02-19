@@ -545,6 +545,8 @@ app.route('/marketing', marketing);
 // Critical Features routes (Token Vault, Connectors, Bank, Tax, SSO, Accounting Sync, E-Commerce, Shipping, Fixed Assets, Payroll, E-Invoicing, MRP, Monitoring, Admin, Backup)
 app.route('/api/critical', criticalFeatures);
 app.route('/critical', criticalFeatures);
+app.route('/api/critical/fixed-assets', criticalFeatures);
+app.route('/critical/fixed-assets', criticalFeatures);
 
 // Odoo Parity routes (Product Hierarchy, Pricing, Service Fulfillment, Helpdesk, Field Service, Migration)
 app.route('/api/odoo', odooParity);
