@@ -202,7 +202,7 @@ inventory.get('/items', async (c) => {
     }
     
     if (search) {
-      conditions.push('(name LIKE ? OR code LIKE ?)');
+      conditions.push('(product_name LIKE ? OR product_code LIKE ?)');
       params.push(`%${search}%`, `%${search}%`);
     }
     
@@ -210,7 +210,7 @@ inventory.get('/items', async (c) => {
       query += ' WHERE ' + conditions.join(' AND ');
     }
     
-    query += ' ORDER BY name ASC LIMIT 100';
+    query += ' ORDER BY product_name ASC LIMIT 100';
     
     const result = await c.env.DB.prepare(query).bind(...params).all();
     
@@ -311,8 +311,8 @@ inventory.get('/valuation', async (c) => {
     let query = `
       SELECT 
         COUNT(*) as total_items,
-        SUM(COALESCE(stock_quantity, 0)) as total_quantity,
-        SUM(COALESCE(stock_quantity, 0) * COALESCE(cost_price, 0)) as total_value
+        SUM(COALESCE(quantity_on_hand, 0)) as total_quantity,
+        SUM(COALESCE(quantity_on_hand, 0) * COALESCE(cost_price, 0)) as total_value
       FROM products
     `;
     const params: string[] = [];
