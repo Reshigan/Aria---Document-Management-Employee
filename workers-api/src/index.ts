@@ -53,6 +53,7 @@ import crossModule from './routes/cross-module';
 import goLive from './routes/go-live';
 import missingEndpoints from './routes/missing-endpoints';
 import reverseLogistics from './routes/reverse-logistics';
+import integration from './routes/integration';
 import { executeScheduledBots as runScheduledBots } from './services/bot-executor';
 import { processPendingDeliveries } from './services/webhook-service';
 import { processDueScheduledReports } from './services/report-builder-service';
@@ -575,6 +576,10 @@ app.route('/api/reverse-logistics', reverseLogistics);
 app.route('/reverse-logistics', reverseLogistics);
 app.route('/api/erp/reverse-logistics', reverseLogistics);
 app.route('/erp/reverse-logistics', reverseLogistics);
+
+// Cross-Module Integration routes (Delivery→GL, GoodsReceipt→GL, PaymentAlloc, BankMatch, Recurring, Approvals, Intercompany)
+app.route('/api/integration', integration);
+app.route('/integration', integration);
 
 // Xero Parity routes (Recurring Invoices, Reminders, Statements, Portal, Budgets, Bank Feeds)
 app.route('/api/xero', xeroParity);

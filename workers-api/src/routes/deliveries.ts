@@ -4,8 +4,9 @@
  */
 
 import { Hono } from 'hono';
-import { getSecureCompanyId } from '../middleware/auth';
+import { getSecureCompanyId, getSecureUserId } from '../middleware/auth';
 import { validateDelivery, validateStatusTransition, safeNumber } from '../services/business-rules';
+import { onDeliveryConfirmed } from '../services/cross-module-integration';
 
 interface Env {
   DB: D1Database;
@@ -318,14 +319,13 @@ deliveries.post('/:id/ship', async (c) => {
   }
 });
 
-// Complete delivery
+// Complete delivery — automatically deducts stock + posts COGS to GL
 deliveries.post('/:id/complete', async (c) => {
   const db = c.env.DB;
   const companyId = await getSecureCompanyId(c);
   const id = c.req.param('id');
   
   try {
-    // Check if delivery exists
     const delivery = await db.prepare(`
       SELECT id, status FROM deliveries WHERE id = ? AND company_id = ?
     `).bind(id, companyId).first();
@@ -334,15 +334,22 @@ deliveries.post('/:id/complete', async (c) => {
       return c.json({ error: 'Delivery not found' }, 404);
     }
     
-    // Update delivery status to completed
     await db.prepare(`
       UPDATE deliveries SET
         status = 'completed',
         updated_at = datetime('now')
       WHERE id = ? AND company_id = ?
     `).bind(id, companyId).run();
+
+    let integrationResult = null;
+    try {
+      const userId = await getSecureUserId(c);
+      integrationResult = await onDeliveryConfirmed(db, companyId, userId, id);
+    } catch (e) {
+      console.error('Cross-module integration error (non-blocking):', e);
+    }
     
-    return c.json({ success: true, status: 'completed' });
+    return c.json({ success: true, status: 'completed', integration: integrationResult });
   } catch (error) {
     console.error('Error completing delivery:', error);
     return c.json({ error: 'Failed to complete delivery' }, 500);

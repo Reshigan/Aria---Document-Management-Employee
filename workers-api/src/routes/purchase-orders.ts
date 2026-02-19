@@ -4,8 +4,9 @@
  */
 
 import { Hono } from 'hono';
-import { getSecureCompanyId } from '../middleware/auth';
+import { getSecureCompanyId, getSecureUserId } from '../middleware/auth';
 import { validatePurchaseOrder, validateStatusTransition, calculateLineTotals, safeNumber } from '../services/business-rules';
+import { onGoodsReceived } from '../services/cross-module-integration';
 
 interface Env {
   DB: D1Database;
@@ -335,7 +336,15 @@ purchaseOrders.post('/:id/receive', async (c) => {
       'UPDATE purchase_orders SET status = ?, updated_at = ? WHERE id = ?'
     ).bind(newStatus, now, poId).run();
 
-    return c.json({ message: 'Goods received successfully', status: newStatus });
+    let integrationResult = null;
+    try {
+      const userId = await getSecureUserId(c);
+      integrationResult = await onGoodsReceived(c.env.DB, companyId, userId, poId, body.items);
+    } catch (e) {
+      console.error('Cross-module integration error (non-blocking):', e);
+    }
+
+    return c.json({ message: 'Goods received successfully', status: newStatus, integration: integrationResult });
   } catch (error) {
     console.error('Receive goods error:', error);
     return c.json({ error: 'Internal server error' }, 500);
