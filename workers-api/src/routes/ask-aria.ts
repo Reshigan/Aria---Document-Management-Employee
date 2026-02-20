@@ -2516,6 +2516,587 @@ const skills: Skill[] = [
       }
     },
   },
+
+  // ============================================================
+  // Business Intelligence / Analytics Skills
+  // ============================================================
+
+  {
+    name: 'bi_best_customer',
+    description: 'Find the best/top customer by revenue',
+    patterns: [
+      /(?:who|what|which)\s+(?:is|are)\s+(?:my|our|the)\s+(?:best|top|biggest|largest|highest|most\s+valuable|most\s+important|number\s+one|#1)\s+customer/i,
+      /(?:best|top|biggest|largest|highest)\s+customer/i,
+      /(?:customer|client)\s+(?:with\s+)?(?:the\s+)?(?:most|highest)\s+(?:revenue|sales|orders|spend|purchases)/i,
+      /top\s+\d+\s+customers?/i,
+      /(?:rank|ranking)\s+(?:my|our|the)?\s*customers?/i,
+    ],
+    slots: [],
+    execute: async (ctx) => {
+      try {
+        const topN = parseInt((ctx.message.match(/top\s+(\d+)/i) || ['', '5'])[1]) || 5;
+
+        const result = await ctx.db.prepare(`
+          SELECT c.customer_name, c.customer_code,
+                 COUNT(DISTINCT so.id) as order_count,
+                 COALESCE(SUM(so.total_amount), 0) as total_revenue,
+                 COALESCE(SUM(CASE WHEN so.order_date >= date('now', '-30 days') THEN so.total_amount ELSE 0 END), 0) as revenue_30d,
+                 MAX(so.order_date) as last_order_date
+          FROM customers c
+          LEFT JOIN sales_orders so ON so.customer_id = c.id AND so.company_id = c.company_id
+          WHERE c.company_id = ?
+          GROUP BY c.id
+          ORDER BY total_revenue DESC
+          LIMIT ?
+        `).bind(ctx.companyId, topN).all();
+
+        const customers = result.results || [];
+        if (customers.length === 0) {
+          return { response: `No customer data found. Start creating sales orders to build analytics.` };
+        }
+
+        const best = customers[0] as any;
+        let table = `| # | Customer | Orders | Total Revenue | Last 30 Days | Last Order |\n|---|----------|--------|---------------|-------------|------------|\n`;
+        customers.forEach((c: any, i: number) => {
+          table += `| ${i + 1} | ${c.customer_name} (${c.customer_code}) | ${c.order_count} | R ${(c.total_revenue ?? 0).toFixed(2)} | R ${(c.revenue_30d ?? 0).toFixed(2)} | ${c.last_order_date || 'N/A'} |\n`;
+        });
+
+        const reasons: string[] = [];
+        if ((best.total_revenue ?? 0) > 0) reasons.push(`R ${(best.total_revenue).toFixed(2)} total revenue`);
+        if ((best.order_count ?? 0) > 0) reasons.push(`${best.order_count} orders placed`);
+        if ((best.revenue_30d ?? 0) > 0) reasons.push(`R ${(best.revenue_30d).toFixed(2)} in the last 30 days`);
+
+        return {
+          response: `**Your Best Customer: ${best.customer_name}** (${best.customer_code})\n\n` +
+            `**Why?** ${reasons.length > 0 ? reasons.join(', ') : 'Highest ranked by total order value'}.\n\n` +
+            `**Top ${topN} Customers by Revenue:**\n\n${table}`,
+          data: { top_customers: customers },
+          action: 'bi_query',
+        };
+      } catch (e) {
+        return { response: `**Error analyzing customers.** ${String(e)}` };
+      }
+    },
+  },
+
+  {
+    name: 'bi_worst_customer',
+    description: 'Find worst/lowest-spending customer',
+    patterns: [
+      /(?:who|what|which)\s+(?:is|are)\s+(?:my|our|the)\s+(?:worst|lowest|smallest|least)\s+customer/i,
+      /(?:worst|lowest|smallest|least\s+active)\s+customer/i,
+      /customer\s+(?:with\s+)?(?:the\s+)?(?:least|lowest|fewest)\s+(?:revenue|sales|orders)/i,
+    ],
+    slots: [],
+    execute: async (ctx) => {
+      try {
+        const result = await ctx.db.prepare(`
+          SELECT c.customer_name, c.customer_code,
+                 COUNT(DISTINCT so.id) as order_count,
+                 COALESCE(SUM(so.total_amount), 0) as total_revenue,
+                 MAX(so.order_date) as last_order_date
+          FROM customers c
+          LEFT JOIN sales_orders so ON so.customer_id = c.id AND so.company_id = c.company_id
+          WHERE c.company_id = ?
+          GROUP BY c.id
+          ORDER BY total_revenue ASC
+          LIMIT 5
+        `).bind(ctx.companyId).all();
+
+        const customers = result.results || [];
+        if (customers.length === 0) {
+          return { response: `No customer data found.` };
+        }
+
+        let table = `| # | Customer | Orders | Total Revenue | Last Order |\n|---|----------|--------|---------------|------------|\n`;
+        customers.forEach((c: any, i: number) => {
+          table += `| ${i + 1} | ${c.customer_name} (${c.customer_code}) | ${c.order_count} | R ${(c.total_revenue ?? 0).toFixed(2)} | ${c.last_order_date || 'Never'} |\n`;
+        });
+
+        return {
+          response: `**Lowest-Revenue Customers:**\n\n${table}\n\n_Consider targeted promotions or outreach to re-engage these customers._`,
+          data: { bottom_customers: customers },
+          action: 'bi_query',
+        };
+      } catch (e) {
+        return { response: `**Error analyzing customers.** ${String(e)}` };
+      }
+    },
+  },
+
+  {
+    name: 'bi_top_products',
+    description: 'Find best/worst selling products',
+    patterns: [
+      /(?:which|what)\s+(?:product|item)s?\s+(?:is|are)\s+(?:selling|performing)\s+(?:the\s+)?(?:most|best)/i,
+      /(?:best|top|most)\s+sell(?:ing|er)\s+(?:product|item)s?/i,
+      /(?:which|what)\s+(?:product|item)s?\s+(?:is|are)\s+(?:selling|performing)\s+(?:the\s+)?(?:least|worst)/i,
+      /(?:worst|least|slow(?:est)?|bottom)\s+sell(?:ing|er)\s+(?:product|item)s?/i,
+      /(?:product|item)\s+(?:sales\s+)?(?:performance|ranking|analysis)/i,
+      /(?:most|least)\s+(?:popular|sold|ordered)\s+(?:product|item)s?/i,
+      /(?:top|bottom)\s+\d+\s+(?:product|item)s?/i,
+      /(?:which|what)\s+(?:product|item)s?\s+sell\s+(?:the\s+)?(?:most|least)/i,
+    ],
+    slots: [],
+    execute: async (ctx) => {
+      try {
+        const msg = ctx.message.toLowerCase();
+        const isWorst = /(?:worst|least|slow|bottom|poorl)/.test(msg);
+        const topN = parseInt((msg.match(/(?:top|bottom)\s+(\d+)/i) || ['', '10'])[1]) || 10;
+        const sortDir = isWorst ? 'ASC' : 'DESC';
+
+        const result = await ctx.db.prepare(`
+          SELECT p.product_name, p.product_code, p.unit_price,
+                 COALESCE(SUM(soi.quantity), 0) as total_qty_sold,
+                 COALESCE(SUM(soi.line_total), 0) as total_revenue,
+                 COUNT(DISTINCT soi.id) as times_ordered
+          FROM products p
+          LEFT JOIN sales_order_items soi ON soi.product_id = p.id
+          LEFT JOIN sales_orders so ON so.id = soi.sales_order_id AND so.company_id = p.company_id
+          WHERE p.company_id = ?
+          GROUP BY p.id
+          ORDER BY total_revenue ${sortDir}
+          LIMIT ?
+        `).bind(ctx.companyId, topN).all();
+
+        const products = result.results || [];
+        if (products.length === 0) {
+          return { response: `No product sales data found. Create sales orders to build product analytics.` };
+        }
+
+        const label = isWorst ? 'Slowest-Selling' : 'Best-Selling';
+        let table = `| # | Product | Code | Unit Price | Qty Sold | Revenue | Orders |\n|---|---------|------|-----------|----------|---------|--------|\n`;
+        products.forEach((p: any, i: number) => {
+          table += `| ${i + 1} | ${p.product_name} | ${p.product_code} | R ${(p.unit_price ?? 0).toFixed(2)} | ${p.total_qty_sold} | R ${(p.total_revenue ?? 0).toFixed(2)} | ${p.times_ordered} |\n`;
+        });
+
+        const best = products[0] as any;
+        const insight = isWorst
+          ? `_"${best.product_name}" has the lowest sales. Consider discontinuing, repricing, or promoting it._`
+          : `_"${best.product_name}" is your star product with R ${(best.total_revenue ?? 0).toFixed(2)} in revenue from ${best.total_qty_sold} units sold._`;
+
+        return {
+          response: `**${label} Products (Top ${topN}):**\n\n${table}\n\n${insight}`,
+          data: { products, sort: label },
+          action: 'bi_query',
+        };
+      } catch (e) {
+        return { response: `**Error analyzing products.** ${String(e)}` };
+      }
+    },
+  },
+
+  {
+    name: 'bi_inventory_status',
+    description: 'Show inventory levels, low stock, and valuation',
+    patterns: [
+      /(?:what|how)\s+(?:is|are)\s+(?:my|our|the)\s+(?:inventory|stock)\s*(?:level|status|situation|look)/i,
+      /(?:show|get|check|view)\s+(?:my|our|the)?\s*(?:inventory|stock)\s*(?:level|status|summary|overview)?/i,
+      /(?:inventory|stock)\s+(?:level|status|summary|overview|report|check)/i,
+      /(?:what|how\s+much)\s+(?:stock|inventory)\s+(?:do\s+(?:we|i)\s+have|is\s+(?:there|left))/i,
+      /(?:low|out\s+of)\s+stock\s*(?:items?|products?|alert)?/i,
+      /(?:what|which)\s+(?:items?|products?)\s+(?:are\s+)?(?:low|out)\s+(?:of\s+)?stock/i,
+    ],
+    slots: [],
+    execute: async (ctx) => {
+      try {
+        const summary = await ctx.db.prepare(`
+          SELECT
+            COUNT(*) as total_products,
+            SUM(CASE WHEN quantity_on_hand > 0 THEN 1 ELSE 0 END) as in_stock,
+            SUM(CASE WHEN quantity_on_hand <= 0 THEN 1 ELSE 0 END) as out_of_stock,
+            SUM(CASE WHEN quantity_on_hand > 0 AND quantity_on_hand <= 10 THEN 1 ELSE 0 END) as low_stock,
+            COALESCE(SUM(quantity_on_hand), 0) as total_units,
+            COALESCE(SUM(quantity_on_hand * unit_price), 0) as total_value
+          FROM products WHERE company_id = ?
+        `).bind(ctx.companyId).first<any>();
+
+        const lowStockItems = await ctx.db.prepare(`
+          SELECT product_name, product_code, quantity_on_hand, unit_price
+          FROM products
+          WHERE company_id = ? AND quantity_on_hand > 0 AND quantity_on_hand <= 10
+          ORDER BY quantity_on_hand ASC
+          LIMIT 10
+        `).bind(ctx.companyId).all();
+
+        const outOfStockItems = await ctx.db.prepare(`
+          SELECT product_name, product_code
+          FROM products
+          WHERE company_id = ? AND (quantity_on_hand IS NULL OR quantity_on_hand <= 0)
+          ORDER BY product_name
+          LIMIT 10
+        `).bind(ctx.companyId).all();
+
+        let resp = `**Inventory Summary**\n\n` +
+          `| Metric | Value |\n|--------|-------|\n` +
+          `| Total Products | ${summary?.total_products ?? 0} |\n` +
+          `| In Stock | ${summary?.in_stock ?? 0} |\n` +
+          `| Low Stock (<=10 units) | ${summary?.low_stock ?? 0} |\n` +
+          `| Out of Stock | ${summary?.out_of_stock ?? 0} |\n` +
+          `| Total Units on Hand | ${(summary?.total_units ?? 0).toLocaleString()} |\n` +
+          `| Total Inventory Value | R ${(summary?.total_value ?? 0).toFixed(2)} |\n`;
+
+        if ((lowStockItems.results || []).length > 0) {
+          resp += `\n**Low Stock Alerts:**\n\n| Product | Code | Qty | Value |\n|---------|------|-----|-------|\n`;
+          (lowStockItems.results || []).forEach((p: any) => {
+            resp += `| ${p.product_name} | ${p.product_code} | ${p.quantity_on_hand} | R ${((p.quantity_on_hand ?? 0) * (p.unit_price ?? 0)).toFixed(2)} |\n`;
+          });
+        }
+
+        if ((outOfStockItems.results || []).length > 0) {
+          resp += `\n**Out of Stock:** ${(outOfStockItems.results || []).map((p: any) => p.product_name).join(', ')}`;
+          if ((summary?.out_of_stock ?? 0) > 10) resp += ` ... and ${(summary?.out_of_stock ?? 0) - 10} more`;
+        }
+
+        return {
+          response: resp,
+          data: { summary, low_stock: lowStockItems.results, out_of_stock: outOfStockItems.results },
+          action: 'bi_query',
+        };
+      } catch (e) {
+        return { response: `**Error checking inventory.** ${String(e)}` };
+      }
+    },
+  },
+
+  {
+    name: 'bi_revenue_summary',
+    description: 'Revenue/sales summary and trends',
+    patterns: [
+      /(?:what|how)\s+(?:is|are)\s+(?:my|our|the)\s+(?:revenue|sales|income|turnover)/i,
+      /(?:revenue|sales|income|turnover)\s+(?:summary|overview|report|status|trend|this\s+month|today|this\s+year)/i,
+      /how\s+(?:much|many)\s+(?:have\s+(?:we|i)\s+)?(?:sold|earned|made|invoiced)/i,
+      /(?:show|get)\s+(?:my|our)?\s*(?:revenue|sales)\s*(?:data|numbers|figures|stats)?/i,
+      /(?:total|monthly|daily|weekly)\s+(?:revenue|sales)/i,
+      /how\s+is\s+(?:business|the\s+business)\s+(?:doing|going|performing)/i,
+    ],
+    slots: [],
+    execute: async (ctx) => {
+      try {
+        const overall = await ctx.db.prepare(`
+          SELECT
+            COUNT(*) as total_orders,
+            COALESCE(SUM(total_amount), 0) as total_revenue,
+            COALESCE(AVG(total_amount), 0) as avg_order_value
+          FROM sales_orders WHERE company_id = ?
+        `).bind(ctx.companyId).first<any>();
+
+        const thisMonth = await ctx.db.prepare(`
+          SELECT COUNT(*) as orders, COALESCE(SUM(total_amount), 0) as revenue
+          FROM sales_orders
+          WHERE company_id = ? AND order_date >= date('now', 'start of month')
+        `).bind(ctx.companyId).first<any>();
+
+        const last30 = await ctx.db.prepare(`
+          SELECT COUNT(*) as orders, COALESCE(SUM(total_amount), 0) as revenue
+          FROM sales_orders
+          WHERE company_id = ? AND order_date >= date('now', '-30 days')
+        `).bind(ctx.companyId).first<any>();
+
+        const invoiceStats = await ctx.db.prepare(`
+          SELECT
+            COUNT(*) as total_invoices,
+            COALESCE(SUM(total_amount), 0) as total_invoiced,
+            SUM(CASE WHEN status = 'paid' THEN total_amount ELSE 0 END) as total_paid,
+            SUM(CASE WHEN status IN ('sent', 'overdue') THEN total_amount ELSE 0 END) as outstanding
+          FROM customer_invoices WHERE company_id = ?
+        `).bind(ctx.companyId).first<any>();
+
+        return {
+          response: `**Revenue & Sales Summary**\n\n` +
+            `| Metric | Value |\n|--------|-------|\n` +
+            `| **Total Revenue (All Time)** | **R ${(overall?.total_revenue ?? 0).toFixed(2)}** |\n` +
+            `| Total Orders | ${overall?.total_orders ?? 0} |\n` +
+            `| Average Order Value | R ${(overall?.avg_order_value ?? 0).toFixed(2)} |\n` +
+            `| Revenue (This Month) | R ${(thisMonth?.revenue ?? 0).toFixed(2)} |\n` +
+            `| Orders (This Month) | ${thisMonth?.orders ?? 0} |\n` +
+            `| Revenue (Last 30 Days) | R ${(last30?.revenue ?? 0).toFixed(2)} |\n` +
+            `| Orders (Last 30 Days) | ${last30?.orders ?? 0} |\n\n` +
+            `**Invoicing:**\n\n` +
+            `| Metric | Value |\n|--------|-------|\n` +
+            `| Total Invoiced | R ${(invoiceStats?.total_invoiced ?? 0).toFixed(2)} |\n` +
+            `| Paid | R ${(invoiceStats?.total_paid ?? 0).toFixed(2)} |\n` +
+            `| Outstanding | R ${(invoiceStats?.outstanding ?? 0).toFixed(2)} |\n`,
+          data: { overall, thisMonth, last30, invoiceStats },
+          action: 'bi_query',
+        };
+      } catch (e) {
+        return { response: `**Error fetching revenue data.** ${String(e)}` };
+      }
+    },
+  },
+
+  {
+    name: 'bi_profit_analysis',
+    description: 'Profit margin and cost analysis',
+    patterns: [
+      /(?:what|how)\s+(?:is|are)\s+(?:my|our|the)\s+(?:profit|margin|profitability)/i,
+      /(?:profit|margin)\s+(?:analysis|report|summary)/i,
+      /(?:am\s+(?:i|we)\s+)?(?:making|losing)\s+(?:money|profit)/i,
+      /(?:gross|net)\s+(?:profit|margin)/i,
+    ],
+    slots: [],
+    execute: async (ctx) => {
+      try {
+        const productMargins = await ctx.db.prepare(`
+          SELECT p.product_name, p.product_code, p.unit_price, p.cost_price,
+                 CASE WHEN p.unit_price > 0 THEN ((p.unit_price - COALESCE(p.cost_price, 0)) / p.unit_price * 100) ELSE 0 END as margin_pct,
+                 COALESCE(SUM(soi.quantity), 0) as qty_sold,
+                 COALESCE(SUM(soi.line_total), 0) as revenue,
+                 COALESCE(SUM(soi.quantity * p.cost_price), 0) as cost,
+                 COALESCE(SUM(soi.line_total) - SUM(soi.quantity * COALESCE(p.cost_price, 0)), 0) as gross_profit
+          FROM products p
+          LEFT JOIN sales_order_items soi ON soi.product_id = p.id
+          WHERE p.company_id = ?
+          GROUP BY p.id
+          HAVING qty_sold > 0
+          ORDER BY gross_profit DESC
+          LIMIT 10
+        `).bind(ctx.companyId).all();
+
+        const products = productMargins.results || [];
+        if (products.length === 0) {
+          return { response: `No sales data yet to calculate profit margins. Start creating sales orders to build analytics.` };
+        }
+
+        let totalRevenue = 0, totalCost = 0;
+        products.forEach((p: any) => { totalRevenue += (p.revenue ?? 0); totalCost += (p.cost ?? 0); });
+        const totalProfit = totalRevenue - totalCost;
+        const overallMargin = totalRevenue > 0 ? (totalProfit / totalRevenue * 100) : 0;
+
+        let table = `| Product | Revenue | Cost | Profit | Margin |\n|---------|---------|------|--------|--------|\n`;
+        products.forEach((p: any) => {
+          table += `| ${p.product_name} | R ${(p.revenue ?? 0).toFixed(2)} | R ${(p.cost ?? 0).toFixed(2)} | R ${(p.gross_profit ?? 0).toFixed(2)} | ${(p.margin_pct ?? 0).toFixed(1)}% |\n`;
+        });
+
+        return {
+          response: `**Profit Analysis**\n\n` +
+            `| Metric | Value |\n|--------|-------|\n` +
+            `| Total Revenue | R ${totalRevenue.toFixed(2)} |\n` +
+            `| Total Cost | R ${totalCost.toFixed(2)} |\n` +
+            `| **Gross Profit** | **R ${totalProfit.toFixed(2)}** |\n` +
+            `| **Overall Margin** | **${overallMargin.toFixed(1)}%** |\n\n` +
+            `**Product-Level Margins:**\n\n${table}`,
+          data: { totalRevenue, totalCost, totalProfit, overallMargin, products },
+          action: 'bi_query',
+        };
+      } catch (e) {
+        return { response: `**Error analyzing profit.** ${String(e)}` };
+      }
+    },
+  },
+
+  {
+    name: 'bi_outstanding_payments',
+    description: 'Show outstanding/overdue payments and AR aging',
+    patterns: [
+      /(?:what|how\s+much)\s+(?:is|are)\s+(?:outstanding|overdue|unpaid|owed)/i,
+      /(?:outstanding|overdue|unpaid)\s+(?:invoices?|payments?|amounts?|balance)/i,
+      /(?:who|which\s+customer)\s+owes?\s+(?:me|us)\s+(?:money|the\s+most)/i,
+      /(?:ar|accounts?\s+receivable)\s+(?:aging|report|status|summary)/i,
+      /(?:aged|aging)\s+(?:receivable|debtor)s?\s*(?:report)?/i,
+    ],
+    slots: [],
+    execute: async (ctx) => {
+      try {
+        const aging = await ctx.db.prepare(`
+          SELECT c.customer_name, c.customer_code,
+                 COUNT(ci.id) as invoice_count,
+                 COALESCE(SUM(ci.total_amount), 0) as total_outstanding,
+                 SUM(CASE WHEN julianday('now') - julianday(ci.created_at) <= 30 THEN ci.total_amount ELSE 0 END) as current_0_30,
+                 SUM(CASE WHEN julianday('now') - julianday(ci.created_at) > 30 AND julianday('now') - julianday(ci.created_at) <= 60 THEN ci.total_amount ELSE 0 END) as days_31_60,
+                 SUM(CASE WHEN julianday('now') - julianday(ci.created_at) > 60 AND julianday('now') - julianday(ci.created_at) <= 90 THEN ci.total_amount ELSE 0 END) as days_61_90,
+                 SUM(CASE WHEN julianday('now') - julianday(ci.created_at) > 90 THEN ci.total_amount ELSE 0 END) as days_90_plus
+          FROM customer_invoices ci
+          JOIN customers c ON c.id = ci.customer_id
+          WHERE ci.company_id = ? AND ci.status NOT IN ('paid', 'void', 'cancelled')
+          GROUP BY c.id
+          ORDER BY total_outstanding DESC
+          LIMIT 10
+        `).bind(ctx.companyId).all();
+
+        const customers = aging.results || [];
+
+        const totals = await ctx.db.prepare(`
+          SELECT
+            COALESCE(SUM(total_amount), 0) as total_outstanding,
+            COUNT(*) as total_invoices
+          FROM customer_invoices
+          WHERE company_id = ? AND status NOT IN ('paid', 'void', 'cancelled')
+        `).bind(ctx.companyId).first<any>();
+
+        let table = `| Customer | Invoices | Current | 31-60 | 61-90 | 90+ | Total |\n|----------|----------|---------|-------|-------|-----|-------|\n`;
+        customers.forEach((c: any) => {
+          table += `| ${c.customer_name} | ${c.invoice_count} | R ${(c.current_0_30 ?? 0).toFixed(0)} | R ${(c.days_31_60 ?? 0).toFixed(0)} | R ${(c.days_61_90 ?? 0).toFixed(0)} | R ${(c.days_90_plus ?? 0).toFixed(0)} | R ${(c.total_outstanding ?? 0).toFixed(2)} |\n`;
+        });
+
+        return {
+          response: `**Accounts Receivable Aging**\n\n` +
+            `**Total Outstanding: R ${(totals?.total_outstanding ?? 0).toFixed(2)}** (${totals?.total_invoices ?? 0} invoices)\n\n` +
+            `${table}\n` +
+            `_Tip: Use "Run AR collections bot" to automatically send reminders._`,
+          data: { totals, aging: customers },
+          action: 'bi_query',
+        };
+      } catch (e) {
+        return { response: `**Error fetching AR data.** ${String(e)}` };
+      }
+    },
+  },
+
+  {
+    name: 'bi_supplier_analysis',
+    description: 'Analyze supplier spending and performance',
+    patterns: [
+      /(?:who|what|which)\s+(?:is|are)\s+(?:my|our|the)\s+(?:best|top|biggest|main)\s+supplier/i,
+      /(?:supplier|vendor)\s+(?:analysis|spending|performance|ranking)/i,
+      /(?:how\s+much)\s+(?:am\s+(?:i|we)\s+)?spend(?:ing)?\s+(?:on|with)\s+suppliers?/i,
+      /(?:top|biggest)\s+suppliers?/i,
+      /(?:accounts?\s+payable|ap)\s+(?:summary|status|report)/i,
+    ],
+    slots: [],
+    execute: async (ctx) => {
+      try {
+        const result = await ctx.db.prepare(`
+          SELECT s.supplier_name, s.supplier_code,
+                 COUNT(DISTINCT po.id) as po_count,
+                 COALESCE(SUM(po.total_amount), 0) as total_spend,
+                 MAX(po.order_date) as last_order
+          FROM suppliers s
+          LEFT JOIN purchase_orders po ON po.supplier_id = s.id AND po.company_id = s.company_id
+          WHERE s.company_id = ?
+          GROUP BY s.id
+          ORDER BY total_spend DESC
+          LIMIT 10
+        `).bind(ctx.companyId).all();
+
+        const suppliers = result.results || [];
+        if (suppliers.length === 0) {
+          return { response: `No supplier data found.` };
+        }
+
+        let table = `| # | Supplier | POs | Total Spend | Last Order |\n|---|----------|-----|-------------|------------|\n`;
+        suppliers.forEach((s: any, i: number) => {
+          table += `| ${i + 1} | ${s.supplier_name} (${s.supplier_code}) | ${s.po_count} | R ${(s.total_spend ?? 0).toFixed(2)} | ${s.last_order || 'N/A'} |\n`;
+        });
+
+        const topSupplier = suppliers[0] as any;
+        return {
+          response: `**Top Suppliers by Spend:**\n\n${table}\n\n` +
+            `**Top Supplier:** ${topSupplier.supplier_name} with R ${(topSupplier.total_spend ?? 0).toFixed(2)} across ${topSupplier.po_count} purchase orders.`,
+          data: { suppliers },
+          action: 'bi_query',
+        };
+      } catch (e) {
+        return { response: `**Error analyzing suppliers.** ${String(e)}` };
+      }
+    },
+  },
+
+  {
+    name: 'bi_cash_position',
+    description: 'Show cash position, bank balances, cash flow',
+    patterns: [
+      /(?:what|how\s+much)\s+(?:is|cash|money)\s+(?:in\s+)?(?:my|our|the)\s+(?:bank|cash|account)/i,
+      /(?:cash|bank)\s+(?:position|balance|status|flow)/i,
+      /(?:how\s+much\s+)?(?:cash|money)\s+(?:do\s+(?:we|i)\s+have|is\s+(?:there|available|left))/i,
+      /(?:show|check)\s+(?:my|our)?\s*(?:bank|cash)\s*(?:balance|position)?/i,
+    ],
+    slots: [],
+    execute: async (ctx) => {
+      try {
+        const banks = await ctx.db.prepare(`
+          SELECT account_name, bank_name, COALESCE(balance, 0) as balance, currency
+          FROM bank_accounts WHERE company_id = ?
+          ORDER BY balance DESC
+        `).bind(ctx.companyId).all();
+
+        const arTotal = await ctx.db.prepare(`
+          SELECT COALESCE(SUM(total_amount), 0) as outstanding
+          FROM customer_invoices WHERE company_id = ? AND status NOT IN ('paid', 'void', 'cancelled')
+        `).bind(ctx.companyId).first<any>();
+
+        const apTotal = await ctx.db.prepare(`
+          SELECT COALESCE(SUM(total_amount), 0) as outstanding
+          FROM supplier_invoices WHERE company_id = ? AND status NOT IN ('paid', 'void', 'cancelled')
+        `).bind(ctx.companyId).first<any>();
+
+        const bankAccounts = banks.results || [];
+        let totalCash = 0;
+        let bankTable = '';
+        if (bankAccounts.length > 0) {
+          bankTable = `\n**Bank Accounts:**\n\n| Account | Bank | Balance |\n|---------|------|--------|\n`;
+          bankAccounts.forEach((b: any) => {
+            totalCash += (b.balance ?? 0);
+            bankTable += `| ${b.account_name} | ${b.bank_name || '-'} | R ${(b.balance ?? 0).toFixed(2)} |\n`;
+          });
+        }
+
+        return {
+          response: `**Cash Position**\n\n` +
+            `| Metric | Amount |\n|--------|--------|\n` +
+            `| **Total Cash in Bank** | **R ${totalCash.toFixed(2)}** |\n` +
+            `| AR Outstanding (owed to you) | R ${(arTotal?.outstanding ?? 0).toFixed(2)} |\n` +
+            `| AP Outstanding (you owe) | R ${(apTotal?.outstanding ?? 0).toFixed(2)} |\n` +
+            `| Net Position | R ${(totalCash + (arTotal?.outstanding ?? 0) - (apTotal?.outstanding ?? 0)).toFixed(2)} |\n` +
+            `${bankTable}`,
+          data: { totalCash, ar: arTotal?.outstanding, ap: apTotal?.outstanding, banks: bankAccounts },
+          action: 'bi_query',
+        };
+      } catch (e) {
+        return { response: `**Error fetching cash position.** ${String(e)}` };
+      }
+    },
+  },
+
+  {
+    name: 'bi_business_health',
+    description: 'Overall business health dashboard',
+    patterns: [
+      /(?:business|company)\s+(?:health|overview|snapshot|pulse|status)/i,
+      /(?:give|show)\s+(?:me\s+)?(?:a\s+)?(?:business|company)\s+(?:overview|summary|snapshot|health\s+check)/i,
+      /(?:kpi|key\s+performance|metric)s?\s*(?:report|summary|dashboard)?/i,
+      /(?:how\s+is|how's)\s+(?:my|our|the)\s+(?:business|company)\s+(?:doing|going|performing)/i,
+    ],
+    slots: [],
+    execute: async (ctx) => {
+      try {
+        const customerCount = await ctx.db.prepare('SELECT COUNT(*) as c FROM customers WHERE company_id = ?').bind(ctx.companyId).first<any>();
+        const supplierCount = await ctx.db.prepare('SELECT COUNT(*) as c FROM suppliers WHERE company_id = ?').bind(ctx.companyId).first<any>();
+        const productCount = await ctx.db.prepare('SELECT COUNT(*) as c FROM products WHERE company_id = ?').bind(ctx.companyId).first<any>();
+        const soCount = await ctx.db.prepare('SELECT COUNT(*) as c, COALESCE(SUM(total_amount),0) as total FROM sales_orders WHERE company_id = ?').bind(ctx.companyId).first<any>();
+        const poCount = await ctx.db.prepare('SELECT COUNT(*) as c, COALESCE(SUM(total_amount),0) as total FROM purchase_orders WHERE company_id = ?').bind(ctx.companyId).first<any>();
+        const invCount = await ctx.db.prepare('SELECT COUNT(*) as c, COALESCE(SUM(total_amount),0) as total FROM customer_invoices WHERE company_id = ?').bind(ctx.companyId).first<any>();
+        const empCount = await ctx.db.prepare('SELECT COUNT(*) as c FROM employees WHERE company_id = ?').bind(ctx.companyId).first<any>();
+
+        const so30 = await ctx.db.prepare(`SELECT COUNT(*) as c, COALESCE(SUM(total_amount),0) as total FROM sales_orders WHERE company_id = ? AND order_date >= date('now','-30 days')`).bind(ctx.companyId).first<any>();
+        const inv30 = await ctx.db.prepare(`SELECT COALESCE(SUM(total_amount),0) as total FROM customer_invoices WHERE company_id = ? AND created_at >= date('now','-30 days')`).bind(ctx.companyId).first<any>();
+
+        return {
+          response: `**Business Health Dashboard**\n\n` +
+            `**Master Data:**\n` +
+            `| Metric | Count |\n|--------|-------|\n` +
+            `| Customers | ${customerCount?.c ?? 0} |\n` +
+            `| Suppliers | ${supplierCount?.c ?? 0} |\n` +
+            `| Products | ${productCount?.c ?? 0} |\n` +
+            `| Employees | ${empCount?.c ?? 0} |\n\n` +
+            `**All-Time Transactions:**\n` +
+            `| Type | Count | Value |\n|------|-------|-------|\n` +
+            `| Sales Orders | ${soCount?.c ?? 0} | R ${(soCount?.total ?? 0).toFixed(2)} |\n` +
+            `| Purchase Orders | ${poCount?.c ?? 0} | R ${(poCount?.total ?? 0).toFixed(2)} |\n` +
+            `| Invoices | ${invCount?.c ?? 0} | R ${(invCount?.total ?? 0).toFixed(2)} |\n\n` +
+            `**Last 30 Days:**\n` +
+            `| Metric | Value |\n|--------|-------|\n` +
+            `| Sales Orders | ${so30?.c ?? 0} (R ${(so30?.total ?? 0).toFixed(2)}) |\n` +
+            `| Invoiced | R ${(inv30?.total ?? 0).toFixed(2)} |\n`,
+          data: { customerCount: customerCount?.c, supplierCount: supplierCount?.c, productCount: productCount?.c },
+          action: 'bi_query',
+        };
+      } catch (e) {
+        return { response: `**Error fetching business health.** ${String(e)}` };
+      }
+    },
+  },
 ];
 
 // Find matching skill
@@ -2541,6 +3122,11 @@ function getDefaultResponse(): SkillResult {
       `- "Show customers" / "Show products" / "Show invoices"\n` +
       `- "Create a sales order" (step-by-step)\n` +
       `- "Run payroll" / "Run reconciliation"\n\n` +
+      `Ask business questions:\n` +
+      `- "Who is my best customer and why?"\n` +
+      `- "Which product is selling the most?"\n` +
+      `- "What is my inventory status?"\n` +
+      `- "How is my business doing?"\n\n` +
       `Type **"help"** for the full list of commands.`,
   };
 }
