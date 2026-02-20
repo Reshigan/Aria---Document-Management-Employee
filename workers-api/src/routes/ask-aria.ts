@@ -800,7 +800,7 @@ const skills: Skill[] = [
       /list\s+(all\s+)?products?/i,
       /product\s+list/i,
       /get\s+products?/i,
-      /inventory/i,
+      /(?:show|list|get)\s+(?:my\s+)?inventory$/i,
       /items?\s+list/i,
     ],
     slots: [],
