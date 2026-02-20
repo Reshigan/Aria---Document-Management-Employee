@@ -2553,8 +2553,16 @@ app.post('/session', async (c) => {
     let companyId = 'b0598135-52fd-4f67-ac56-8f0237e6355e'; // Default demo company
     
     if (authHeader && authHeader.startsWith('Bearer ')) {
-      // Extract user info from token if available
-      // For now, use defaults
+      try {
+        const token = authHeader.substring(7);
+        const { jwtVerify } = await import('jose');
+        const secretKey = new TextEncoder().encode(c.env.JWT_SECRET);
+        const { payload } = await jwtVerify(token, secretKey);
+        if (payload.sub) userId = payload.sub as string;
+        if ((payload as any).company_id) companyId = (payload as any).company_id as string;
+      } catch (e) {
+        // Token decode failed, use defaults
+      }
     }
     
     const conversationId = generateUUID();
@@ -2639,7 +2647,10 @@ app.post('/message', async (c) => {
     // Check if we're in a multi-step flow first (these need special handling)
     const inMultiStepFlow = conversationState.currentFlow && conversationState.step;
     
-    if (!inMultiStepFlow && c.env.AI) {
+    // Check if message matches NL order pattern — bypass AI orchestrator for these
+    const isNLOrder = parseNaturalLanguageOrder(message) !== null;
+    
+    if (!inMultiStepFlow && !isNLOrder && c.env.AI) {
       // Use AI orchestrator for intelligent intent classification
       try {
         // Get recent conversation history for context

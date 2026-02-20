@@ -152,21 +152,25 @@ salesOrders.get('/:id', async (c) => {
       ORDER BY soi.sort_order
     `).bind(orderId).all<SalesOrderItem & { product_name: string; product_code: string }>();
 
+    const mappedItems = items.results.map(item => ({
+      id: item.id,
+      product_id: item.product_id,
+      product_name: item.product_name,
+      product_code: item.product_code,
+      description: item.description,
+      quantity: item.quantity,
+      unit_price: item.unit_price,
+      discount_percent: item.discount_percent,
+      tax_rate: item.tax_rate,
+      line_total: item.line_total,
+      quantity_delivered: item.quantity_delivered,
+    }));
+
     return c.json({
       ...order,
-      items: items.results.map(item => ({
-        id: item.id,
-        product_id: item.product_id,
-        product_name: item.product_name,
-        product_code: item.product_code,
-        description: item.description,
-        quantity: item.quantity,
-        unit_price: item.unit_price,
-        discount_percent: item.discount_percent,
-        tax_rate: item.tax_rate,
-        line_total: item.line_total,
-        quantity_delivered: item.quantity_delivered,
-      })),
+      items: mappedItems,
+      lines: mappedItems,
+      line_items: mappedItems,
     });
   } catch (error) {
     console.error('Get sales order error:', error);
