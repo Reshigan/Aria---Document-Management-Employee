@@ -2961,7 +2961,7 @@ const skills: Skill[] = [
           SELECT s.supplier_name, s.supplier_code,
                  COUNT(DISTINCT po.id) as po_count,
                  COALESCE(SUM(po.total_amount), 0) as total_spend,
-                 MAX(po.order_date) as last_order
+                 MAX(po.po_date) as last_order
           FROM suppliers s
           LEFT JOIN purchase_orders po ON po.supplier_id = s.id AND po.company_id = s.company_id
           WHERE s.company_id = ?
@@ -3006,9 +3006,9 @@ const skills: Skill[] = [
     execute: async (ctx) => {
       try {
         const banks = await ctx.db.prepare(`
-          SELECT account_name, bank_name, COALESCE(balance, 0) as balance, currency
+          SELECT account_name, bank_name, COALESCE(current_balance, 0) as balance, currency
           FROM bank_accounts WHERE company_id = ?
-          ORDER BY balance DESC
+          ORDER BY current_balance DESC
         `).bind(ctx.companyId).all();
 
         const arTotal = await ctx.db.prepare(`
