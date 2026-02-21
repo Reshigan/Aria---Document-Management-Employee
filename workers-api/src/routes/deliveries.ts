@@ -72,11 +72,11 @@ deliveries.get('/', async (c) => {
     
     const result = await db.prepare(query).bind(...params).all();
     
-    return c.json(result.results || []);
+    const data = result.results || [];
+    return c.json({ data, meta: { total: data.length } });
   } catch (error) {
     console.error('Error fetching deliveries:', error);
-    // Return empty array on error (table might not exist)
-    return c.json([]);
+    return c.json({ data: [], meta: { total: 0 } });
   }
 });
 

@@ -264,6 +264,74 @@ salesOrders.post('/', async (c) => {
   }
 });
 
+// Update sales order (general)
+salesOrders.put('/:id', async (c) => {
+  try {
+    const orderId = c.req.param('id');
+    const companyId = await getSecureCompanyId(c);
+    const body = await c.req.json<Partial<SalesOrder> & { items?: Partial<SalesOrderItem>[]; lines?: Partial<SalesOrderItem>[] }>();
+
+    const existing = await c.env.DB.prepare(
+      'SELECT * FROM sales_orders WHERE id = ? AND company_id = ?'
+    ).bind(orderId, companyId).first<SalesOrder>();
+    if (!existing) return c.json({ error: 'Sales order not found' }, 404);
+
+    if (existing.status === 'invoiced' || existing.status === 'completed' || existing.status === 'cancelled') {
+      return c.json({ error: `Cannot edit a ${existing.status} order` }, 400);
+    }
+
+    const now = new Date().toISOString();
+    const items = body.items || body.lines || [];
+
+    let subtotal = existing.subtotal;
+    let taxAmount = existing.tax_amount;
+    let discountAmount = safeNumber(body.discount_amount ?? existing.discount_amount);
+    let totalAmount = existing.total_amount;
+
+    if (items.length > 0) {
+      const totals = calculateLineTotals(items as Array<{ quantity?: number; unit_price?: number; discount_percent?: number; tax_rate?: number }>);
+      subtotal = totals.subtotal;
+      taxAmount = totals.tax_amount;
+      totalAmount = totals.total_amount - discountAmount;
+
+      await c.env.DB.prepare('DELETE FROM sales_order_items WHERE sales_order_id = ?').bind(orderId).run();
+      for (let i = 0; i < items.length; i++) {
+        const item = items[i];
+        const lineTotal = (item.quantity || 1) * (item.unit_price || 0) * (1 - (item.discount_percent || 0) / 100);
+        await c.env.DB.prepare(`
+          INSERT INTO sales_order_items (id, sales_order_id, product_id, description, quantity, unit_price, discount_percent, tax_rate, line_total, sort_order, created_at)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `).bind(
+          crypto.randomUUID(), orderId, item.product_id || null, item.description || '',
+          item.quantity || 1, item.unit_price || 0, item.discount_percent || 0,
+          item.tax_rate || 15, lineTotal, i, now
+        ).run();
+      }
+    }
+
+    await c.env.DB.prepare(`
+      UPDATE sales_orders SET
+        customer_id = ?, order_date = ?, expected_delivery_date = ?,
+        subtotal = ?, tax_amount = ?, discount_amount = ?, total_amount = ?,
+        shipping_address = ?, notes = ?, updated_at = ?
+      WHERE id = ? AND company_id = ?
+    `).bind(
+      body.customer_id ?? existing.customer_id,
+      body.order_date ?? existing.order_date,
+      body.expected_delivery_date ?? (body as any).required_date ?? existing.expected_delivery_date,
+      subtotal, taxAmount, discountAmount, totalAmount,
+      body.shipping_address ?? existing.shipping_address,
+      body.notes ?? existing.notes,
+      now, orderId, companyId
+    ).run();
+
+    return c.json({ message: 'Sales order updated successfully', id: orderId });
+  } catch (error) {
+    console.error('Update sales order error:', error);
+    return c.json({ error: 'Internal server error' }, 500);
+  }
+});
+
 // Update sales order status
 salesOrders.put('/:id/status', async (c) => {
   try {
