@@ -4,7 +4,7 @@
  */
 
 import { Hono } from 'hono';
-import { jwtVerify } from 'jose';
+import { getSecureCompanyId } from '../middleware/auth';
 
 interface Env {
   DB: D1Database;
@@ -13,27 +13,10 @@ interface Env {
 
 const app = new Hono<{ Bindings: Env }>();
 
-// Helper to verify JWT and get company_id
-async function getAuthenticatedCompanyId(c: any): Promise<string | null> {
-  const authHeader = c.req.header('Authorization');
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return null;
-  }
-  
-  try {
-    const token = authHeader.substring(7);
-    const secretKey = new TextEncoder().encode(c.env.JWT_SECRET);
-    const { payload } = await jwtVerify(token, secretKey);
-    return (payload as any).company_id || null;
-  } catch {
-    return null;
-  }
-}
-
 // ==================== TRIAL BALANCE ====================
 
 app.get('/trial-balance', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
+  const companyId = await getSecureCompanyId(c);
   if (!companyId) {
     return c.json({ error: 'Authentication required' }, 401);
   }
@@ -105,7 +88,7 @@ app.get('/trial-balance', async (c) => {
 // ==================== INCOME STATEMENT ====================
 
 app.get('/income-statement', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
+  const companyId = await getSecureCompanyId(c);
   if (!companyId) {
     return c.json({ error: 'Authentication required' }, 401);
   }
@@ -173,7 +156,7 @@ app.get('/income-statement', async (c) => {
 // ==================== BALANCE SHEET ====================
 
 app.get('/balance-sheet', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
+  const companyId = await getSecureCompanyId(c);
   if (!companyId) {
     return c.json({ error: 'Authentication required' }, 401);
   }
@@ -265,7 +248,7 @@ app.get('/balance-sheet', async (c) => {
 // ==================== AGENT/BOT DASHBOARD ====================
 
 app.get('/agents/dashboard', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
+  const companyId = await getSecureCompanyId(c);
   if (!companyId) {
     return c.json({ error: 'Authentication required' }, 401);
   }
@@ -303,7 +286,7 @@ app.get('/agents/dashboard', async (c) => {
 });
 
 app.get('/agents/activity-chart', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
+  const companyId = await getSecureCompanyId(c);
   if (!companyId) {
     return c.json({ error: 'Authentication required' }, 401);
   }
@@ -338,7 +321,7 @@ app.get('/agents/activity-chart', async (c) => {
 });
 
 app.get('/agents/performance', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
+  const companyId = await getSecureCompanyId(c);
   if (!companyId) {
     return c.json({ error: 'Authentication required' }, 401);
   }
@@ -370,7 +353,7 @@ app.get('/agents/performance', async (c) => {
 });
 
 app.get('/agents/recent-actions', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
+  const companyId = await getSecureCompanyId(c);
   if (!companyId) {
     return c.json({ error: 'Authentication required' }, 401);
   }
@@ -418,7 +401,7 @@ app.get('/agents/recent-actions', async (c) => {
 // ==================== AR AGING REPORT ====================
 
 app.get('/ar-aging', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
+  const companyId = await getSecureCompanyId(c);
   if (!companyId) return c.json({ error: 'Authentication required' }, 401);
   try {
     const aging = await c.env.DB.prepare(`
@@ -451,7 +434,7 @@ app.get('/ar-aging', async (c) => {
 // ==================== AP AGING REPORT ====================
 
 app.get('/ap-aging', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
+  const companyId = await getSecureCompanyId(c);
   if (!companyId) return c.json({ error: 'Authentication required' }, 401);
   try {
     const aging = await c.env.DB.prepare(`
@@ -484,7 +467,7 @@ app.get('/ap-aging', async (c) => {
 // ==================== PROFIT & LOSS (alias for income-statement) ====================
 
 app.get('/profit-loss', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
+  const companyId = await getSecureCompanyId(c);
   if (!companyId) return c.json({ error: 'Authentication required' }, 401);
   try {
     const startDate = c.req.query('start_date') || new Date(new Date().getFullYear(), 0, 1).toISOString().split('T')[0];
@@ -514,7 +497,7 @@ app.get('/profit-loss', async (c) => {
 // ==================== CASH FLOW ====================
 
 app.get('/cash-flow', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
+  const companyId = await getSecureCompanyId(c);
   if (!companyId) return c.json({ error: 'Authentication required' }, 401);
   try {
     const startDate = c.req.query('start_date') || new Date(new Date().getFullYear(), 0, 1).toISOString().split('T')[0];
@@ -528,7 +511,7 @@ app.get('/cash-flow', async (c) => {
 // ==================== AGED RECEIVABLES ====================
 
 app.get('/aged-receivables', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
+  const companyId = await getSecureCompanyId(c);
   if (!companyId) return c.json({ error: 'Authentication required' }, 401);
   try {
     const aging = await c.env.DB.prepare(`
@@ -546,7 +529,7 @@ app.get('/aged-receivables', async (c) => {
 // ==================== STOCK VALUATION ====================
 
 app.get('/stock-valuation', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
+  const companyId = await getSecureCompanyId(c);
   if (!companyId) return c.json({ error: 'Authentication required' }, 401);
   try {
     const products = await c.env.DB.prepare(`
@@ -563,7 +546,7 @@ app.get('/stock-valuation', async (c) => {
 // ==================== VAT SUMMARY ====================
 
 app.get('/vat-summary', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
+  const companyId = await getSecureCompanyId(c);
   if (!companyId) return c.json({ error: 'Authentication required' }, 401);
   try {
     return c.json({ output_vat: 0, input_vat: 0, net_vat: 0, periods: [] });
@@ -575,7 +558,7 @@ app.get('/vat-summary', async (c) => {
 // ==================== AGED (generic) ====================
 
 app.get('/aged', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
+  const companyId = await getSecureCompanyId(c);
   if (!companyId) return c.json({ error: 'Authentication required' }, 401);
   try {
     const asOfDate = c.req.query('as_of_date') || new Date().toISOString().split('T')[0];
