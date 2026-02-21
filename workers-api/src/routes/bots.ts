@@ -9,6 +9,7 @@
 
 import { Hono } from 'hono';
 import { jwtVerify } from 'jose';
+import { getSecureCompanyId, getSecureUserId } from '../middleware/auth';
 import { 
   postCustomerInvoice, 
   postSupplierInvoice, 
@@ -47,22 +48,6 @@ async function verifyToken(token: string, secret: string): Promise<TokenPayload 
   }
 }
 
-// Get authenticated company ID from request
-async function getAuthenticatedCompanyId(c: any): Promise<{ companyId: string; userId: string } | null> {
-  const authHeader = c.req.header('Authorization');
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return null;
-  }
-  
-  const token = authHeader.substring(7);
-  const payload = await verifyToken(token, c.env.JWT_SECRET);
-  
-  if (!payload || !payload.company_id) {
-    return null;
-  }
-  
-  return { companyId: payload.company_id, userId: payload.sub };
-}
 
 interface BotDefinition {
   id: string;
@@ -92,10 +77,6 @@ interface BotOutput {
 
 const app = new Hono<{ Bindings: Env }>();
 
-// Generate UUID
-function generateUUID(): string {
-  return crypto.randomUUID();
-}
 
 // Complete Bot Registry - 67 bots matching frontend BotRegistry.tsx exactly
 const botRegistry: BotDefinition[] = [
@@ -3092,16 +3073,12 @@ app.get('/marketplace/:botId', async (c) => {
 app.post('/marketplace/:botId/execute', async (c) => {
   try {
     // Require authentication
-    const auth = await getAuthenticatedCompanyId(c);
-    if (!auth) {
-      return c.json({ error: 'Authentication required. Please login first.' }, 401);
-    }
+    const companyId = await getSecureCompanyId(c);
+    const userId = await getSecureUserId(c);
     
     const botId = c.req.param('botId');
     const body = await c.req.json().catch(() => ({}));
     const config = body.config || {};
-    // Use company_id from JWT token, not from request body (tenant isolation)
-    const companyId = auth.companyId;
     
     const bot = botRegistry.find(b => b.id === botId);
     if (!bot) {
@@ -3115,13 +3092,13 @@ app.post('/marketplace/:botId/execute', async (c) => {
       await c.env.DB.prepare(`
         INSERT INTO bot_runs (id, bot_id, company_id, status, config, started_at, created_at, user_id)
         VALUES (?, ?, ?, 'running', ?, ?, datetime('now'), ?)
-      `).bind(runId, botId, companyId, JSON.stringify(config), startedAt, auth.userId).run();
+      `).bind(runId, botId, companyId, JSON.stringify(config), startedAt, userId).run();
     } catch (dbError) {
       console.error('DB insert error:', dbError);
     }
     
     // Execute bot with state changes
-    const result = await executeBotWithStateChanges(botId, companyId, config, c.env.DB, auth.userId, c.env.AI);
+    const result = await executeBotWithStateChanges(botId, companyId, config, c.env.DB, userId, c.env.AI);
     const completedAt = new Date().toISOString();
     
     try {
@@ -3151,16 +3128,12 @@ app.post('/marketplace/:botId/execute', async (c) => {
 app.post('/execute', async (c) => {
   try {
     // Require authentication
-    const auth = await getAuthenticatedCompanyId(c);
-    if (!auth) {
-      return c.json({ error: 'Authentication required. Please login first.' }, 401);
-    }
+    const companyId = await getSecureCompanyId(c);
+    const userId = await getSecureUserId(c);
     
     const body = await c.req.json().catch(() => ({}));
     const botId = body.bot_id;
     const config = body.data || body.config || {};
-    // Use company_id from JWT token, not from request body (tenant isolation)
-    const companyId = auth.companyId;
     
     if (!botId) {
       return c.json({ error: 'bot_id is required' }, 400);
@@ -3172,7 +3145,7 @@ app.post('/execute', async (c) => {
     }
     
     // Execute bot with state changes
-    const result = await executeBotWithStateChanges(botId, companyId, config, c.env.DB, auth.userId, c.env.AI);
+    const result = await executeBotWithStateChanges(botId, companyId, config, c.env.DB, userId, c.env.AI);
     
     return c.json({
       success: true,
@@ -3403,10 +3376,7 @@ app.get('/workflows/:workflowId', async (c) => {
 // Execute a workflow (bot chain)
 app.post('/workflows/:workflowId/execute', async (c) => {
   try {
-    const auth = await getAuthenticatedCompanyId(c);
-    if (!auth) {
-      return c.json({ error: 'Unauthorized' }, 401);
-    }
+    const companyId = await getSecureCompanyId(c);
     
     const workflowId = c.req.param('workflowId');
     const body = await c.req.json<{ dry_run?: boolean; config?: Record<string, any> }>().catch(() => ({ dry_run: false, config: {} }));
@@ -3418,9 +3388,9 @@ app.post('/workflows/:workflowId/execute', async (c) => {
       return c.json({ error: 'Workflow not found' }, 404);
     }
     
-    console.log(`Executing workflow ${workflowId} for company ${auth.companyId} (dry_run: ${dryRun})`);
+    console.log(`Executing workflow ${workflowId} for company ${companyId} (dry_run: ${dryRun})`);
     
-    const result = await executeWorkflow(workflowId, auth.companyId, config, c.env.DB, dryRun);
+    const result = await executeWorkflow(workflowId, companyId, config, c.env.DB, dryRun);
     
     return c.json({
       success: result.success,
@@ -3444,10 +3414,7 @@ app.post('/workflows/:workflowId/execute', async (c) => {
 // Execute bot with dry_run support
 app.post('/execute-dry-run', async (c) => {
   try {
-    const auth = await getAuthenticatedCompanyId(c);
-    if (!auth) {
-      return c.json({ error: 'Unauthorized' }, 401);
-    }
+    const companyId = await getSecureCompanyId(c);
     
     const body = await c.req.json<{ bot_id: string; config?: Record<string, any>; dry_run?: boolean }>();
     const { bot_id: botId, config = {}, dry_run = true } = body;
@@ -3461,7 +3428,7 @@ app.post('/execute-dry-run', async (c) => {
       return c.json({ error: 'Bot not found' }, 404);
     }
     
-    const result = await executeBotWithDryRun(botId, auth.companyId, { ...config, dry_run }, c.env.DB, 'manual');
+    const result = await executeBotWithDryRun(botId, companyId, { ...config, dry_run }, c.env.DB, 'manual');
     
     return c.json({
       success: result.success,
@@ -3480,8 +3447,7 @@ app.post('/execute-dry-run', async (c) => {
 // Get workflow run history
 app.get('/workflows/runs', async (c) => {
   try {
-    const auth = await getAuthenticatedCompanyId(c);
-    const companyId = auth?.companyId || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+    const companyId = await getSecureCompanyId(c);
     const limit = parseInt(c.req.query('limit') || '50');
     
     const runs = await c.env.DB.prepare(`

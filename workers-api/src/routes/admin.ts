@@ -4,7 +4,7 @@
  */
 
 import { Hono } from 'hono';
-import { jwtVerify } from 'jose';
+import { getSecureCompanyId } from '../middleware/auth';
 
 interface Env {
   DB: D1Database;
@@ -14,33 +14,11 @@ interface Env {
 
 const app = new Hono<{ Bindings: Env }>();
 
-// Helper to verify JWT and get company_id
-async function getAuthenticatedCompanyId(c: any): Promise<string | null> {
-  const authHeader = c.req.header('Authorization');
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return null;
-  }
-  
-  try {
-    const token = authHeader.substring(7);
-    const secretKey = new TextEncoder().encode(c.env.JWT_SECRET);
-    const { payload } = await jwtVerify(token, secretKey);
-    return (payload as any).company_id || null;
-  } catch {
-    return null;
-  }
-}
-
-// Generate UUID
-function generateUUID(): string {
-  return crypto.randomUUID();
-}
-
 // ==================== COMPANY SETTINGS ====================
 
 // Get company settings
 app.get('/company', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
+  const companyId = await getSecureCompanyId(c);
   if (!companyId) {
     return c.json({ error: 'Authentication required' }, 401);
   }
@@ -137,7 +115,7 @@ app.get('/company', async (c) => {
 
 // Update company settings
 app.put('/company', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
+  const companyId = await getSecureCompanyId(c);
   if (!companyId) {
     return c.json({ error: 'Authentication required' }, 401);
   }
@@ -247,7 +225,7 @@ app.put('/company', async (c) => {
 
 // Upload company logo
 app.post('/company/logo', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
+  const companyId = await getSecureCompanyId(c);
   if (!companyId) {
     return c.json({ error: 'Authentication required' }, 401);
   }
@@ -287,7 +265,7 @@ app.post('/company/logo', async (c) => {
 // ==================== USERS ====================
 
 app.get('/users', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
+  const companyId = await getSecureCompanyId(c);
   if (!companyId) return c.json({ error: 'Authentication required' }, 401);
   try {
     const result = await c.env.DB.prepare(
@@ -301,11 +279,11 @@ app.get('/users', async (c) => {
 });
 
 app.post('/users/invite', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
+  const companyId = await getSecureCompanyId(c);
   if (!companyId) return c.json({ error: 'Authentication required' }, 401);
   try {
     const body = await c.req.json();
-    const id = generateUUID();
+    const id = crypto.randomUUID();
     const now = new Date().toISOString();
     await c.env.DB.prepare(
       'INSERT INTO users (id, email, full_name, role, company_id, is_active, password_hash, created_at, updated_at) VALUES (?, ?, ?, ?, ?, 1, ?, ?, ?)'
@@ -320,7 +298,7 @@ app.post('/users/invite', async (c) => {
 // ==================== SECURITY SETTINGS ====================
 
 app.get('/security-settings', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
+  const companyId = await getSecureCompanyId(c);
   if (!companyId) return c.json({ error: 'Authentication required' }, 401);
   return c.json({
     password_policy: { min_length: 8, require_uppercase: true, require_numbers: true, require_special: true },
@@ -332,7 +310,7 @@ app.get('/security-settings', async (c) => {
 });
 
 app.put('/security-settings', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
+  const companyId = await getSecureCompanyId(c);
   if (!companyId) return c.json({ error: 'Authentication required' }, 401);
   return c.json({ message: 'Security settings updated successfully' });
 });
@@ -340,7 +318,7 @@ app.put('/security-settings', async (c) => {
 // ==================== NOTIFICATION SETTINGS ====================
 
 app.get('/notification-settings', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
+  const companyId = await getSecureCompanyId(c);
   if (!companyId) return c.json({ error: 'Authentication required' }, 401);
   return c.json({
     email: { enabled: true, digest: 'daily', types: ['invoices', 'payments', 'approvals', 'alerts'] },
@@ -351,7 +329,7 @@ app.get('/notification-settings', async (c) => {
 });
 
 app.put('/notification-settings', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
+  const companyId = await getSecureCompanyId(c);
   if (!companyId) return c.json({ error: 'Authentication required' }, 401);
   return c.json({ message: 'Notification settings updated successfully' });
 });
@@ -359,7 +337,7 @@ app.put('/notification-settings', async (c) => {
 // ==================== BACKUP SETTINGS ====================
 
 app.get('/backup-settings', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
+  const companyId = await getSecureCompanyId(c);
   if (!companyId) return c.json({ error: 'Authentication required' }, 401);
   return c.json({
     auto_backup: { enabled: true, frequency: 'daily', time: '02:00', retention_days: 30 },
@@ -371,7 +349,7 @@ app.get('/backup-settings', async (c) => {
 });
 
 app.put('/backup-settings', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
+  const companyId = await getSecureCompanyId(c);
   if (!companyId) return c.json({ error: 'Authentication required' }, 401);
   return c.json({ message: 'Backup settings updated successfully' });
 });
@@ -379,7 +357,7 @@ app.put('/backup-settings', async (c) => {
 // ==================== ERP CONNECTIONS ====================
 
 app.get('/erp-connections', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
+  const companyId = await getSecureCompanyId(c);
   if (!companyId) return c.json({ error: 'Authentication required' }, 401);
   return c.json({
     connections: [],
@@ -394,7 +372,7 @@ app.get('/erp-connections', async (c) => {
 });
 
 app.post('/erp-connections', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
+  const companyId = await getSecureCompanyId(c);
   if (!companyId) return c.json({ error: 'Authentication required' }, 401);
   return c.json({ message: 'Connection created successfully' });
 });
@@ -402,7 +380,7 @@ app.post('/erp-connections', async (c) => {
 // ==================== DASHBOARD METRICS ====================
 
 app.get('/dashboard/metrics', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
+  const companyId = await getSecureCompanyId(c);
   if (!companyId) return c.json({ error: 'Authentication required' }, 401);
   try {
     const userCount = await c.env.DB.prepare('SELECT COUNT(*) as count FROM users WHERE company_id = ?').bind(companyId).first<{count: number}>();
@@ -422,7 +400,7 @@ app.get('/dashboard/metrics', async (c) => {
 // ==================== PERFORMANCE METRICS ====================
 
 app.get('/performance/metrics', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
+  const companyId = await getSecureCompanyId(c);
   if (!companyId) return c.json({ error: 'Authentication required' }, 401);
   return c.json({
     response_time_ms: 45,

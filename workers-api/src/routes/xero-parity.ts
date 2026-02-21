@@ -11,7 +11,7 @@
  */
 
 import { Hono } from 'hono';
-import { jwtVerify } from 'jose';
+import { getSecureCompanyId, getSecureUserId } from '../middleware/auth';
 
 // Import services
 import * as recurringInvoiceService from '../services/recurring-invoice-service';
@@ -31,39 +31,6 @@ interface Env {
 
 const app = new Hono<{ Bindings: Env }>();
 
-// Helper to verify JWT and get company_id
-async function getAuthenticatedCompanyId(c: any): Promise<string | null> {
-  const authHeader = c.req.header('Authorization');
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return null;
-  }
-  
-  try {
-    const token = authHeader.substring(7);
-    const secretKey = new TextEncoder().encode(c.env.JWT_SECRET);
-    const { payload } = await jwtVerify(token, secretKey);
-    return (payload as any).company_id || null;
-  } catch {
-    return null;
-  }
-}
-
-// Helper to get user ID from token
-async function getAuthenticatedUserId(c: any): Promise<string | null> {
-  const authHeader = c.req.header('Authorization');
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return null;
-  }
-  
-  try {
-    const token = authHeader.substring(7);
-    const secretKey = new TextEncoder().encode(c.env.JWT_SECRET);
-    const { payload } = await jwtVerify(token, secretKey);
-    return (payload as any).sub || null;
-  } catch {
-    return null;
-  }
-}
 
 // Dummy email service for now
 const dummyEmailService = {
@@ -77,7 +44,7 @@ const dummyEmailService = {
 
 // List recurring invoices
 app.get('/recurring-invoices', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
+  const companyId = await getSecureCompanyId(c);
   if (!companyId) {
     return c.json({ error: 'Authentication required' }, 401);
   }
@@ -104,7 +71,7 @@ app.get('/recurring-invoices', async (c) => {
 
 // Create recurring invoice
 app.post('/recurring-invoices', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
+  const companyId = await getSecureCompanyId(c);
   if (!companyId) {
     return c.json({ error: 'Authentication required' }, 401);
   }
@@ -138,7 +105,7 @@ app.post('/recurring-invoices', async (c) => {
 
 // Get recurring invoice
 app.get('/recurring-invoices/:id', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
+  const companyId = await getSecureCompanyId(c);
   if (!companyId) {
     return c.json({ error: 'Authentication required' }, 401);
   }
@@ -160,7 +127,7 @@ app.get('/recurring-invoices/:id', async (c) => {
 
 // Update recurring invoice
 app.put('/recurring-invoices/:id', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
+  const companyId = await getSecureCompanyId(c);
   if (!companyId) {
     return c.json({ error: 'Authentication required' }, 401);
   }
@@ -180,7 +147,7 @@ app.put('/recurring-invoices/:id', async (c) => {
 
 // Pause recurring invoice
 app.post('/recurring-invoices/:id/pause', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
+  const companyId = await getSecureCompanyId(c);
   if (!companyId) {
     return c.json({ error: 'Authentication required' }, 401);
   }
@@ -198,7 +165,7 @@ app.post('/recurring-invoices/:id/pause', async (c) => {
 
 // Resume recurring invoice
 app.post('/recurring-invoices/:id/resume', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
+  const companyId = await getSecureCompanyId(c);
   if (!companyId) {
     return c.json({ error: 'Authentication required' }, 401);
   }
@@ -216,8 +183,8 @@ app.post('/recurring-invoices/:id/resume', async (c) => {
 
 // Generate invoice from recurring
 app.post('/recurring-invoices/:id/generate', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
-  const userId = await getAuthenticatedUserId(c);
+  const companyId = await getSecureCompanyId(c);
+  const userId = await getSecureUserId(c);
   if (!companyId || !userId) {
     return c.json({ error: 'Authentication required' }, 401);
   }
@@ -246,7 +213,7 @@ app.post('/recurring-invoices/process-due', async (c) => {
 
 // Delete recurring invoice
 app.delete('/recurring-invoices/:id', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
+  const companyId = await getSecureCompanyId(c);
   if (!companyId) {
     return c.json({ error: 'Authentication required' }, 401);
   }
@@ -266,7 +233,7 @@ app.delete('/recurring-invoices/:id', async (c) => {
 
 // List reminder schedules
 app.get('/invoice-reminders/schedules', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
+  const companyId = await getSecureCompanyId(c);
   if (!companyId) {
     return c.json({ error: 'Authentication required' }, 401);
   }
@@ -282,7 +249,7 @@ app.get('/invoice-reminders/schedules', async (c) => {
 
 // Create reminder schedule
 app.post('/invoice-reminders/schedules', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
+  const companyId = await getSecureCompanyId(c);
   if (!companyId) {
     return c.json({ error: 'Authentication required' }, 401);
   }
@@ -308,7 +275,7 @@ app.post('/invoice-reminders/schedules', async (c) => {
 
 // Update reminder schedule
 app.put('/invoice-reminders/schedules/:id', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
+  const companyId = await getSecureCompanyId(c);
   if (!companyId) {
     return c.json({ error: 'Authentication required' }, 401);
   }
@@ -336,7 +303,7 @@ app.put('/invoice-reminders/schedules/:id', async (c) => {
 
 // Delete reminder schedule
 app.delete('/invoice-reminders/schedules/:id', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
+  const companyId = await getSecureCompanyId(c);
   if (!companyId) {
     return c.json({ error: 'Authentication required' }, 401);
   }
@@ -354,7 +321,7 @@ app.delete('/invoice-reminders/schedules/:id', async (c) => {
 
 // Get reminder history for an invoice
 app.get('/invoice-reminders/history/:invoiceId', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
+  const companyId = await getSecureCompanyId(c);
   if (!companyId) {
     return c.json({ error: 'Authentication required' }, 401);
   }
@@ -372,7 +339,7 @@ app.get('/invoice-reminders/history/:invoiceId', async (c) => {
 
 // Send manual reminder
 app.post('/invoice-reminders/send/:invoiceId', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
+  const companyId = await getSecureCompanyId(c);
   if (!companyId) {
     return c.json({ error: 'Authentication required' }, 401);
   }
@@ -414,7 +381,7 @@ app.post('/invoice-reminders/process-due', async (c) => {
 
 // Create default schedules for a company
 app.post('/invoice-reminders/create-defaults', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
+  const companyId = await getSecureCompanyId(c);
   if (!companyId) {
     return c.json({ error: 'Authentication required' }, 401);
   }
@@ -432,7 +399,7 @@ app.post('/invoice-reminders/create-defaults', async (c) => {
 
 // Generate statement for a customer
 app.post('/statements/generate', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
+  const companyId = await getSecureCompanyId(c);
   if (!companyId) {
     return c.json({ error: 'Authentication required' }, 401);
   }
@@ -457,7 +424,7 @@ app.post('/statements/generate', async (c) => {
 
 // Get statement HTML
 app.get('/statements/:customerId/html', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
+  const companyId = await getSecureCompanyId(c);
   if (!companyId) {
     return c.json({ error: 'Authentication required' }, 401);
   }
@@ -496,7 +463,7 @@ app.get('/statements/:customerId/html', async (c) => {
 
 // Email statement to customer
 app.post('/statements/:customerId/email', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
+  const companyId = await getSecureCompanyId(c);
   if (!companyId) {
     return c.json({ error: 'Authentication required' }, 401);
   }
@@ -541,7 +508,7 @@ app.post('/statements/:customerId/email', async (c) => {
 
 // Get statement history
 app.get('/statements/history', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
+  const companyId = await getSecureCompanyId(c);
   if (!companyId) {
     return c.json({ error: 'Authentication required' }, 401);
   }
@@ -562,7 +529,7 @@ app.get('/statements/history', async (c) => {
 
 // Bulk generate statements
 app.post('/statements/bulk-generate', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
+  const companyId = await getSecureCompanyId(c);
   if (!companyId) {
     return c.json({ error: 'Authentication required' }, 401);
   }
@@ -588,7 +555,7 @@ app.post('/statements/bulk-generate', async (c) => {
 
 // List portal users
 app.get('/portal/users', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
+  const companyId = await getSecureCompanyId(c);
   if (!companyId) {
     return c.json({ error: 'Authentication required' }, 401);
   }
@@ -604,7 +571,7 @@ app.get('/portal/users', async (c) => {
 
 // Invite customer to portal
 app.post('/portal/invite', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
+  const companyId = await getSecureCompanyId(c);
   if (!companyId) {
     return c.json({ error: 'Authentication required' }, 401);
   }
@@ -780,7 +747,7 @@ app.post('/portal/invoices/:id/pay', async (c) => {
 
 // Disable portal user
 app.delete('/portal/users/:id', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
+  const companyId = await getSecureCompanyId(c);
   if (!companyId) {
     return c.json({ error: 'Authentication required' }, 401);
   }
@@ -800,7 +767,7 @@ app.delete('/portal/users/:id', async (c) => {
 
 // List budgets
 app.get('/budgets', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
+  const companyId = await getSecureCompanyId(c);
   if (!companyId) {
     return c.json({ error: 'Authentication required' }, 401);
   }
@@ -823,8 +790,8 @@ app.get('/budgets', async (c) => {
 
 // Create budget
 app.post('/budgets', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
-  const userId = await getAuthenticatedUserId(c);
+  const companyId = await getSecureCompanyId(c);
+  const userId = await getSecureUserId(c);
   if (!companyId || !userId) {
     return c.json({ error: 'Authentication required' }, 401);
   }
@@ -852,7 +819,7 @@ app.post('/budgets', async (c) => {
 
 // Get budget
 app.get('/budgets/:id', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
+  const companyId = await getSecureCompanyId(c);
   if (!companyId) {
     return c.json({ error: 'Authentication required' }, 401);
   }
@@ -876,7 +843,7 @@ app.get('/budgets/:id', async (c) => {
 
 // Add budget line
 app.post('/budgets/:id/lines', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
+  const companyId = await getSecureCompanyId(c);
   if (!companyId) {
     return c.json({ error: 'Authentication required' }, 401);
   }
@@ -902,7 +869,7 @@ app.post('/budgets/:id/lines', async (c) => {
 
 // Update budget line
 app.put('/budgets/lines/:lineId', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
+  const companyId = await getSecureCompanyId(c);
   if (!companyId) {
     return c.json({ error: 'Authentication required' }, 401);
   }
@@ -922,7 +889,7 @@ app.put('/budgets/lines/:lineId', async (c) => {
 
 // Delete budget line
 app.delete('/budgets/lines/:lineId', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
+  const companyId = await getSecureCompanyId(c);
   if (!companyId) {
     return c.json({ error: 'Authentication required' }, 401);
   }
@@ -940,8 +907,8 @@ app.delete('/budgets/lines/:lineId', async (c) => {
 
 // Approve budget
 app.post('/budgets/:id/approve', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
-  const userId = await getAuthenticatedUserId(c);
+  const companyId = await getSecureCompanyId(c);
+  const userId = await getSecureUserId(c);
   if (!companyId || !userId) {
     return c.json({ error: 'Authentication required' }, 401);
   }
@@ -959,7 +926,7 @@ app.post('/budgets/:id/approve', async (c) => {
 
 // Activate budget
 app.post('/budgets/:id/activate', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
+  const companyId = await getSecureCompanyId(c);
   if (!companyId) {
     return c.json({ error: 'Authentication required' }, 401);
   }
@@ -977,7 +944,7 @@ app.post('/budgets/:id/activate', async (c) => {
 
 // Get budget vs actual report
 app.get('/budgets/:id/vs-actual', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
+  const companyId = await getSecureCompanyId(c);
   if (!companyId) {
     return c.json({ error: 'Authentication required' }, 401);
   }
@@ -1001,8 +968,8 @@ app.get('/budgets/:id/vs-actual', async (c) => {
 
 // Copy budget
 app.post('/budgets/:id/copy', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
-  const userId = await getAuthenticatedUserId(c);
+  const companyId = await getSecureCompanyId(c);
+  const userId = await getSecureUserId(c);
   if (!companyId || !userId) {
     return c.json({ error: 'Authentication required' }, 401);
   }
@@ -1029,7 +996,7 @@ app.post('/budgets/:id/copy', async (c) => {
 
 // Get budget variance alerts
 app.get('/budgets/alerts', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
+  const companyId = await getSecureCompanyId(c);
   if (!companyId) {
     return c.json({ error: 'Authentication required' }, 401);
   }
@@ -1053,7 +1020,7 @@ app.get('/budgets/alerts', async (c) => {
 
 // List bank connections
 app.get('/bank-feeds/connections', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
+  const companyId = await getSecureCompanyId(c);
   if (!companyId) {
     return c.json({ error: 'Authentication required' }, 401);
   }
@@ -1069,8 +1036,8 @@ app.get('/bank-feeds/connections', async (c) => {
 
 // Create Plaid link token
 app.post('/bank-feeds/link-token', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
-  const userId = await getAuthenticatedUserId(c);
+  const companyId = await getSecureCompanyId(c);
+  const userId = await getSecureUserId(c);
   if (!companyId || !userId) {
     return c.json({ error: 'Authentication required' }, 401);
   }
@@ -1100,7 +1067,7 @@ app.post('/bank-feeds/link-token', async (c) => {
 
 // Exchange Plaid public token
 app.post('/bank-feeds/exchange-token', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
+  const companyId = await getSecureCompanyId(c);
   if (!companyId) {
     return c.json({ error: 'Authentication required' }, 401);
   }
@@ -1133,7 +1100,7 @@ app.post('/bank-feeds/exchange-token', async (c) => {
 
 // Sync transactions for a connection
 app.post('/bank-feeds/connections/:id/sync', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
+  const companyId = await getSecureCompanyId(c);
   if (!companyId) {
     return c.json({ error: 'Authentication required' }, 401);
   }
@@ -1167,7 +1134,7 @@ app.post('/bank-feeds/connections/:id/sync', async (c) => {
 
 // Get unmatched transactions
 app.get('/bank-feeds/transactions/unmatched', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
+  const companyId = await getSecureCompanyId(c);
   if (!companyId) {
     return c.json({ error: 'Authentication required' }, 401);
   }
@@ -1189,7 +1156,7 @@ app.get('/bank-feeds/transactions/unmatched', async (c) => {
 
 // Match transaction
 app.post('/bank-feeds/transactions/:id/match', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
+  const companyId = await getSecureCompanyId(c);
   if (!companyId) {
     return c.json({ error: 'Authentication required' }, 401);
   }
@@ -1214,7 +1181,7 @@ app.post('/bank-feeds/transactions/:id/match', async (c) => {
 
 // Auto-match transactions
 app.post('/bank-feeds/auto-match', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
+  const companyId = await getSecureCompanyId(c);
   if (!companyId) {
     return c.json({ error: 'Authentication required' }, 401);
   }
@@ -1237,7 +1204,7 @@ app.post('/bank-feeds/auto-match', async (c) => {
 
 // Disconnect bank
 app.delete('/bank-feeds/connections/:id', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
+  const companyId = await getSecureCompanyId(c);
   if (!companyId) {
     return c.json({ error: 'Authentication required' }, 401);
   }
@@ -1261,7 +1228,7 @@ app.delete('/bank-feeds/connections/:id', async (c) => {
 
 // Get bank balance
 app.get('/bank-feeds/connections/:id/balance', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
+  const companyId = await getSecureCompanyId(c);
   if (!companyId) {
     return c.json({ error: 'Authentication required' }, 401);
   }
