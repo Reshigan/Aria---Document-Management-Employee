@@ -122,12 +122,14 @@ export default function Suppliers() {
                     <button
                       onClick={() => { setEditingSupplier(supplier); setShowModal(true) }}
                       className="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:text-blue-100 mr-3"
+                      aria-label={`Edit ${supplier.supplier_name}`}
                     >
                       <Edit className="h-5 w-5" />
                     </button>
                     <button
                       onClick={() => handleDelete(supplier.id)}
                       className="text-red-600 dark:text-red-400 hover:text-red-900"
+                      aria-label={`Delete ${supplier.supplier_name}`}
                     >
                       <Trash2 className="h-5 w-5" />
                     </button>
@@ -208,6 +210,7 @@ function SupplierModal({ supplier, onClose, onSave }: { supplier: Supplier | nul
                   required
                   value={formData.supplier_code}
                   onChange={(e) => setFormData({ ...formData, supplier_code: e.target.value })}
+                  aria-label="Supplier code"
                   className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
                   disabled={!!supplier}
                 />
@@ -220,6 +223,7 @@ function SupplierModal({ supplier, onClose, onSave }: { supplier: Supplier | nul
                   required
                   value={formData.supplier_name}
                   onChange={(e) => setFormData({ ...formData, supplier_name: e.target.value })}
+                  aria-label="Supplier name"
                   className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
                 />
               </div>
@@ -230,6 +234,7 @@ function SupplierModal({ supplier, onClose, onSave }: { supplier: Supplier | nul
                   name="email"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  aria-label="Email address"
                   className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
                 />
               </div>
@@ -240,6 +245,7 @@ function SupplierModal({ supplier, onClose, onSave }: { supplier: Supplier | nul
                   name="phone"
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  aria-label="Phone number"
                   className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
                 />
               </div>
@@ -250,6 +256,7 @@ function SupplierModal({ supplier, onClose, onSave }: { supplier: Supplier | nul
                   value={formData.address}
                   onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                   rows={2}
+                  aria-label="Address"
                   className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
                 />
               </div>
@@ -260,6 +267,7 @@ function SupplierModal({ supplier, onClose, onSave }: { supplier: Supplier | nul
                   name="tax_number"
                   value={formData.tax_number}
                   onChange={(e) => setFormData({ ...formData, tax_number: e.target.value })}
+                  aria-label="Tax number"
                   className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
                 />
               </div>
@@ -270,6 +278,7 @@ function SupplierModal({ supplier, onClose, onSave }: { supplier: Supplier | nul
                   name="payment_terms"
                   value={formData.payment_terms}
                   onChange={(e) => setFormData({ ...formData, payment_terms: parseInt(e.target.value) })}
+                  aria-label="Payment terms in days"
                   className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
                 />
               </div>

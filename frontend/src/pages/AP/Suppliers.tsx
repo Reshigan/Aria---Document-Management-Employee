@@ -300,6 +300,7 @@ export default function Suppliers() {
                     required
                     value={formData.code}
                     onChange={(e) => setFormData({ ...formData, code: e.target.value })}
+                    aria-label="Supplier code"
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-slate-500 focus:border-transparent"
                   />
                 </div>
@@ -312,6 +313,7 @@ export default function Suppliers() {
                     required
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    aria-label="Supplier name"
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-slate-500 focus:border-transparent"
                   />
                 </div>
@@ -324,6 +326,7 @@ export default function Suppliers() {
                 <select
                   value={formData.supplier_type}
                   onChange={(e) => setFormData({ ...formData, supplier_type: e.target.value })}
+                  aria-label="Supplier type"
                   className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-slate-500 focus:border-transparent"
                 >
                   <option value="manufacturer">Manufacturer</option>
@@ -341,6 +344,7 @@ export default function Suppliers() {
                     type="email"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    aria-label="Email address"
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-slate-500 focus:border-transparent"
                   />
                 </div>
@@ -352,6 +356,7 @@ export default function Suppliers() {
                     type="tel"
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                    aria-label="Phone number"
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-slate-500 focus:border-transparent"
                   />
                 </div>
@@ -365,6 +370,7 @@ export default function Suppliers() {
                   type="text"
                   value={formData.vat_number}
                   onChange={(e) => setFormData({ ...formData, vat_number: e.target.value })}
+                  aria-label="VAT number"
                   className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-slate-500 focus:border-transparent"
                 />
               </div>
@@ -382,6 +388,7 @@ export default function Suppliers() {
                     <select
                       value={formData.bbbee_level}
                       onChange={(e) => setFormData({ ...formData, bbbee_level: e.target.value })}
+                      aria-label="BBBEE level"
                       className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-slate-500 focus:border-transparent"
                     >
                       <option value="">Not Specified</option>
@@ -404,6 +411,7 @@ export default function Suppliers() {
                       type="date"
                       value={formData.bbbee_expiry_date}
                       onChange={(e) => setFormData({ ...formData, bbbee_expiry_date: e.target.value })}
+                      aria-label="BBBEE certificate expiry date"
                       className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-slate-500 focus:border-transparent"
                     />
                   </div>

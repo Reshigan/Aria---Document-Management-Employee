@@ -274,12 +274,14 @@ const Payments: React.FC = () => {
                       <button
                         onClick={() => handleEdit(payment)}
                         className="p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors"
+                        aria-label={`Edit payment ${payment.payment_number}`}
                       >
                         <Edit2 className="h-4 w-4" />
                       </button>
                       <button
                         onClick={() => setDeleteConfirm({ show: true, id: payment.id, number: payment.payment_number })}
                         className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors"
+                        aria-label={`Delete payment ${payment.payment_number}`}
                       >
                         <Trash2 className="h-4 w-4" />
                       </button>
@@ -310,6 +312,7 @@ const Payments: React.FC = () => {
                     type="text"
                     value={form.payment_number}
                     onChange={(e) => setForm({ ...form, payment_number: e.target.value })}
+                    aria-label="Payment number"
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                   />
                 </div>
@@ -319,6 +322,7 @@ const Payments: React.FC = () => {
                     type="text"
                     value={form.supplier_name}
                     onChange={(e) => setForm({ ...form, supplier_name: e.target.value })}
+                    aria-label="Supplier name"
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                   />
                 </div>
@@ -330,6 +334,7 @@ const Payments: React.FC = () => {
                   type="text"
                   value={form.bill_number}
                   onChange={(e) => setForm({ ...form, bill_number: e.target.value })}
+                  aria-label="Bill number"
                   className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                 />
               </div>
@@ -342,6 +347,7 @@ const Payments: React.FC = () => {
                     step="0.01"
                     value={form.amount}
                     onChange={(e) => setForm({ ...form, amount: e.target.value })}
+                    aria-label="Payment amount"
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                   />
                 </div>
@@ -351,6 +357,7 @@ const Payments: React.FC = () => {
                     type="date"
                     value={form.payment_date}
                     onChange={(e) => setForm({ ...form, payment_date: e.target.value })}
+                    aria-label="Payment date"
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                   />
                 </div>
@@ -362,6 +369,7 @@ const Payments: React.FC = () => {
                   <select
                     value={form.payment_method}
                     onChange={(e) => setForm({ ...form, payment_method: e.target.value as any })}
+                    aria-label="Payment method"
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                   >
                     <option value="BANK_TRANSFER">Bank Transfer</option>
@@ -375,6 +383,7 @@ const Payments: React.FC = () => {
                   <select
                     value={form.status}
                     onChange={(e) => setForm({ ...form, status: e.target.value as any })}
+                    aria-label="Payment status"
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                   >
                     <option value="PENDING">Pending</option>

@@ -33,6 +33,7 @@ import ProcurementDashboard from './pages/Procurement/ProcurementDashboard';
 import ProductCatalog from './pages/Procurement/ProductCatalog';
 import Products from './pages/Inventory/Products';
 import RFQManagement from './pages/Procurement/RFQManagement';
+import VendorInvoices from './pages/Procurement/VendorInvoices';
 import ManufacturingDashboard from './pages/Manufacturing/ManufacturingDashboard';
 import BOMManagement from './pages/Manufacturing/BOMManagement';
 import WorkOrders from './pages/Manufacturing/WorkOrders';
@@ -189,6 +190,7 @@ import ComingSoon from './pages/ComingSoon';
 // CRM Pages
 import CRMLeads from './pages/CRM/Leads';
 import CRMOpportunities from './pages/CRM/Opportunities';
+import CRMContacts from './pages/CRM/Contacts';
 // Field Service Pages
 import FieldServiceEquipment from './pages/FieldService/Equipment';
 // Fixed Assets Pages
@@ -408,8 +410,9 @@ function App() {
           
                     {/* Accounts Payable */}
                     <Route path="/ap" element={<InvoiceList />} />
-                    <Route path="/ap/invoices" element={<InvoiceList />} />
+                    <Route path="/ap/invoices" element={<VendorInvoices />} />
                     <Route path="/ap/invoices/new" element={<InvoiceForm />} />
+                    <Route path="/finance/ap/invoices" element={<VendorInvoices />} />
                     <Route path="/ap/bills" element={<Bills />} />
                     <Route path="/ap/bills/new" element={<APBillDetail />} />
                     <Route path="/ap/bills/:id" element={<APBillDetail />} />
@@ -417,7 +420,10 @@ function App() {
                     <Route path="/ap/purchase-orders/new" element={<APPurchaseOrderDetail />} />
                     <Route path="/ap/purchase-orders/:id" element={<APPurchaseOrderDetail />} />
                     <Route path="/ap/payments" element={<Payments />} />
+                    <Route path="/finance/ap/payments" element={<Payments />} />
                     <Route path="/ap/suppliers" element={<Suppliers />} />
+                    <Route path="/finance/ap/vendors" element={<Suppliers />} />
+                    <Route path="/finance/ap/suppliers" element={<Suppliers />} />
           
                                         {/* Accounts Receivable */}
                                         <Route path="/ar" element={<AccountsReceivable />} />
@@ -426,6 +432,9 @@ function App() {
                                         <Route path="/ar/invoices" element={<InvoiceList />} />
                                         <Route path="/ar/invoices/new" element={<InvoiceForm />} />
                                         <Route path="/ar/receipts" element={<Receipts />} />
+                                        <Route path="/finance/ar/invoices" element={<InvoiceList />} />
+                                        <Route path="/finance/ar/customers" element={<Customers />} />
+                                        <Route path="/finance/ar/collections" element={<Collections />} />
           
           {/* Banking */}
           <Route path="/banking" element={<BankingDashboard />} />
@@ -440,6 +449,7 @@ function App() {
           <Route path="/hr/departments" element={<Departments />} />
           <Route path="/hr/attendance" element={<Attendance />} />
           <Route path="/hr/leave" element={<LeaveManagement />} />
+          <Route path="/hr/payroll" element={<PayrollDashboard />} />
           
           {/* Payroll */}
           <Route path="/payroll" element={<PayrollDashboard />} />
@@ -467,6 +477,7 @@ function App() {
           <Route path="/master-data/products" element={<ProductCatalog />} />
           <Route path="/customers" element={<Customers />} />
           <Route path="/suppliers" element={<Suppliers />} />
+          <Route path="/vendors" element={<Suppliers />} />
           <Route path="/purchase-orders" element={<PurchaseOrders />} />
           <Route path="/receipts" element={<Receipts />} />
           <Route path="/credit-notes" element={<InvoiceList />} />
@@ -489,6 +500,7 @@ function App() {
                     <Route path="/procurement/suppliers" element={<ProcurementDashboard />} />
                     <Route path="/procurement/rfq" element={<ProcurementDashboard />} />
                     <Route path="/procurement/products" element={<ProductCatalog />} />
+                    <Route path="/vendor-invoices" element={<VendorInvoices />} />
           
                     {/* ERP Procure-to-Pay Routes (alias for menu links) */}
                     <Route path="/erp/procure-to-pay/purchase-orders" element={<PurchaseOrders />} />
@@ -755,6 +767,8 @@ function App() {
                                         {/* Missing Routes - CRM */}
                                         <Route path="/crm/leads" element={<CRMLeads />} />
                                         <Route path="/crm/opportunities" element={<CRMOpportunities />} />
+                                        <Route path="/crm/quotes" element={<Quotes />} />
+                                        <Route path="/crm/contacts" element={<CRMContacts />} />
           
                     {/* Missing Routes - Field Service */}
                     <Route path="/field-service/contracts" element={<ServiceContracts />} />

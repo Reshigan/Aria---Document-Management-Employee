@@ -273,12 +273,16 @@ const TaxCompliance: React.FC = () => {
                       <button
                         onClick={() => handleEdit(obligation)}
                         className="p-2 text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
+                        aria-label="Edit tax obligation"
+                        title="Edit"
                       >
                         <Edit2 className="h-4 w-4" />
                       </button>
                       <button
                         onClick={() => setDeleteConfirm({ show: true, id: obligation.id, type: obligation.tax_type })}
                         className="p-2 text-gray-300 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                        aria-label="Delete tax obligation"
+                        title="Delete"
                       >
                         <Trash2 className="h-4 w-4" />
                       </button>
@@ -330,6 +334,7 @@ const TaxCompliance: React.FC = () => {
                     value={form.due_date}
                     onChange={(e) => setForm({ ...form, due_date: e.target.value })}
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all"
+                    aria-label="Due date"
                   />
                 </div>
                 <div>
@@ -338,6 +343,7 @@ const TaxCompliance: React.FC = () => {
                     type="number"
                     step="0.01"
                     value={form.amount}
+                    aria-label="Amount"
                     onChange={(e) => setForm({ ...form, amount: e.target.value })}
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all"
                   />
@@ -349,6 +355,7 @@ const TaxCompliance: React.FC = () => {
                   value={form.status}
                   onChange={(e) => setForm({ ...form, status: e.target.value as any })}
                   className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all"
+                  aria-label="Status"
                 >
                   <option value="PENDING">Pending</option>
                   <option value="FILED">Filed</option>

@@ -130,6 +130,7 @@ export default function AnalyticsDashboard() {
             className="px-4 py-2 border rounded-lg"
             onChange={(e) => exportReport(e.target.value)}
             defaultValue=""
+            aria-label="Export report"
           >
             <option value="" disabled>Export...</option>
             <option value="customers">Customers</option>
@@ -377,6 +378,7 @@ function FinancialReportsTab({ dateRange, setDateRange, formatCurrency }: {
               value={dateRange.start}
               onChange={(e) => setDateRange({ ...dateRange, start: e.target.value })}
               className="px-3 py-2 border rounded-lg text-sm"
+              aria-label="Start date"
             />
             <span className="text-gray-500 dark:text-gray-300">to</span>
             <input
@@ -384,6 +386,7 @@ function FinancialReportsTab({ dateRange, setDateRange, formatCurrency }: {
               value={dateRange.end}
               onChange={(e) => setDateRange({ ...dateRange, end: e.target.value })}
               className="px-3 py-2 border rounded-lg text-sm"
+              aria-label="End date"
             />
           </div>
         </div>
@@ -742,6 +745,7 @@ function SalesAnalyticsTab({ dateRange, setDateRange, formatCurrency }: {
             value={dateRange.start}
             onChange={(e) => setDateRange({ ...dateRange, start: e.target.value })}
             className="px-3 py-2 border rounded-lg text-sm"
+            aria-label="Sales analytics start date"
           />
           <span className="text-gray-500 dark:text-gray-300">to</span>
           <input
@@ -749,6 +753,7 @@ function SalesAnalyticsTab({ dateRange, setDateRange, formatCurrency }: {
             value={dateRange.end}
             onChange={(e) => setDateRange({ ...dateRange, end: e.target.value })}
             className="px-3 py-2 border rounded-lg text-sm"
+            aria-label="Sales analytics end date"
           />
         </div>
       </div>
@@ -861,6 +866,7 @@ function ProcurementAnalyticsTab({ dateRange, setDateRange, formatCurrency }: {
             value={dateRange.start}
             onChange={(e) => setDateRange({ ...dateRange, start: e.target.value })}
             className="px-3 py-2 border rounded-lg text-sm"
+            aria-label="Procurement analytics start date"
           />
           <span className="text-gray-500 dark:text-gray-300">to</span>
           <input
@@ -868,6 +874,7 @@ function ProcurementAnalyticsTab({ dateRange, setDateRange, formatCurrency }: {
             value={dateRange.end}
             onChange={(e) => setDateRange({ ...dateRange, end: e.target.value })}
             className="px-3 py-2 border rounded-lg text-sm"
+            aria-label="Procurement analytics end date"
           />
         </div>
       </div>

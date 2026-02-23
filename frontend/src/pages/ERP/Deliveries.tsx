@@ -149,7 +149,7 @@ export default function Deliveries() {
                   <p className="text-white/80 text-sm">{selectedDelivery.delivery_number}</p>
                 </div>
               </div>
-              <button onClick={() => setShowShipModal(false)} className="p-2 hover:bg-white/20 rounded-lg transition-colors"><X className="h-5 w-5" /></button>
+              <button onClick={() => setShowShipModal(false)} className="p-2 hover:bg-white/20 rounded-lg transition-colors" aria-label="Close modal" title="Close"><X className="h-5 w-5" /></button>
             </div>
           </div>
 
@@ -199,7 +199,7 @@ export default function Deliveries() {
             <p className="text-gray-500 dark:text-gray-300 mt-1">Manage order deliveries and track shipments</p>
           </div>
           <div className="flex items-center gap-3">
-            <button onClick={() => loadDeliveries()} className="p-3 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-200 dark:border-gray-700">
+            <button onClick={() => loadDeliveries()} className="p-3 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-200 dark:border-gray-700" aria-label="Refresh deliveries" title="Refresh">
               <RefreshCw className={`h-5 w-5 text-gray-600 dark:text-gray-300 ${loading ? 'animate-spin' : ''}`} />
             </button>
           </div>
@@ -209,7 +209,7 @@ export default function Deliveries() {
           <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl flex items-center gap-3">
             <AlertCircle className="h-5 w-5 text-red-500 flex-shrink-0" />
             <p className="text-red-700 dark:text-red-300">{error}</p>
-            <button onClick={() => setError(null)} className="ml-auto p-1 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg"><X className="h-4 w-4 text-red-500" /></button>
+            <button onClick={() => setError(null)} className="ml-auto p-1 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg" aria-label="Close error" title="Dismiss error"><X className="h-4 w-4 text-red-500" /></button>
           </div>
         )}
 
@@ -253,7 +253,7 @@ export default function Deliveries() {
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-300" />
                 <input type="text" placeholder="Search by delivery number, customer..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-12 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all" />
               </div>
-              <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all min-w-[180px]">
+              <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all min-w-[180px]" aria-label="Filter deliveries by status">
                 <option value="">All Statuses</option>
                 <option value="draft">Draft</option>
                 <option value="ready">Ready</option>

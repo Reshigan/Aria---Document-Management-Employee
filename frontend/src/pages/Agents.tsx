@@ -189,6 +189,7 @@ export default function Agents() {
                     navigate(`/agents/${agent.id}`)
                   }}
                   className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl text-sm hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center justify-center text-gray-700 dark:text-gray-300 transition-colors"
+                  aria-label="Configure agent settings"
                 >
                   <Settings className="h-4 w-4" />
                 </button>
