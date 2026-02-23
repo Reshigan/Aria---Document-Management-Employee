@@ -5320,6 +5320,179 @@ async def list_banking_reconciliations():
     ]
     return {"reconciliations": reconciliations}
 
+# Banking accounts CRUD endpoints
+@app.post("/banking/accounts")
+@app.post("/api/v1/banking/accounts")
+async def create_banking_account(account: dict):
+    """Create new bank account"""
+    return {
+        "message": "Bank account created successfully",
+        "account": {
+            "id": 999,
+            "account_number": account.get("account_number"),
+            "account_name": account.get("account_name"),
+            "bank_name": account.get("bank_name"),
+            "account_type": account.get("account_type", "CURRENT"),
+            "currency": account.get("currency", "ZAR"),
+            "balance": float(account.get("balance", 0)),
+            "is_active": account.get("is_active", True),
+            "created_at": "2026-02-23T10:00:00Z"
+        }
+    }
+
+@app.put("/banking/accounts/{account_id}")
+@app.put("/api/v1/banking/accounts/{account_id}")
+async def update_banking_account(account_id: int, account: dict):
+    """Update bank account"""
+    return {
+        "message": "Bank account updated successfully",
+        "account": {
+            "id": account_id,
+            "account_number": account.get("account_number"),
+            "account_name": account.get("account_name"),
+            "bank_name": account.get("bank_name"),
+            "account_type": account.get("account_type"),
+            "currency": account.get("currency"),
+            "balance": float(account.get("balance", 0)),
+            "is_active": account.get("is_active"),
+            "updated_at": "2026-02-23T10:00:00Z"
+        }
+    }
+
+@app.delete("/banking/accounts/{account_id}")
+@app.delete("/api/v1/banking/accounts/{account_id}")
+async def delete_banking_account(account_id: int):
+    """Delete bank account"""
+    return {"message": f"Bank account {account_id} deleted successfully"}
+
+# Banking transactions CRUD endpoints
+@app.post("/banking/transactions")
+@app.post("/api/v1/banking/transactions")
+async def create_banking_transaction(transaction: dict):
+    """Create new bank transaction"""
+    return {
+        "message": "Bank transaction created successfully",
+        "transaction": {
+            "id": 999,
+            "transaction_number": f"TXN-2026-{999:04d}",
+            "account_id": int(transaction.get("account_id")),
+            "transaction_date": transaction.get("transaction_date"),
+            "description": transaction.get("description"),
+            "reference": transaction.get("reference"),
+            "debit": float(transaction.get("debit", 0)),
+            "credit": float(transaction.get("credit", 0)),
+            "balance": float(transaction.get("balance", 0)),
+            "reconciled": False,
+            "category": transaction.get("category", ""),
+            "created_at": "2026-02-23T10:00:00Z"
+        }
+    }
+
+@app.put("/banking/transactions/{transaction_id}")
+@app.put("/api/v1/banking/transactions/{transaction_id}")
+async def update_banking_transaction(transaction_id: int, transaction: dict):
+    """Update bank transaction"""
+    return {
+        "message": "Bank transaction updated successfully",
+        "transaction": {
+            "id": transaction_id,
+            "transaction_number": f"TXN-2026-{transaction_id:04d}",
+            "account_id": int(transaction.get("account_id")),
+            "transaction_date": transaction.get("transaction_date"),
+            "description": transaction.get("description"),
+            "reference": transaction.get("reference"),
+            "debit": float(transaction.get("debit", 0)),
+            "credit": float(transaction.get("credit", 0)),
+            "category": transaction.get("category"),
+            "updated_at": "2026-02-23T10:00:00Z"
+        }
+    }
+
+@app.delete("/banking/transactions/{transaction_id}")
+@app.delete("/api/v1/banking/transactions/{transaction_id}")
+async def delete_banking_transaction(transaction_id: int):
+    """Delete bank transaction"""
+    return {"message": f"Bank transaction {transaction_id} deleted successfully"}
+
+@app.post("/banking/transactions/{transaction_id}/reconcile")
+@app.post("/api/v1/banking/transactions/{transaction_id}/reconcile")
+async def reconcile_banking_transaction(transaction_id: int):
+    """Mark transaction as reconciled"""
+    return {
+        "message": f"Transaction {transaction_id} reconciled successfully",
+        "transaction": {
+            "id": transaction_id,
+            "reconciled": True,
+            "reconciled_at": "2026-02-23T10:00:00Z"
+        }
+    }
+
+# Banking reconciliations CRUD endpoints
+@app.post("/banking/reconciliations")
+@app.post("/api/v1/banking/reconciliations")
+async def create_banking_reconciliation(reconciliation: dict):
+    """Create new bank reconciliation"""
+    statement_balance = float(reconciliation.get("statement_balance", 0))
+    gl_balance = float(reconciliation.get("gl_balance", 0))
+    difference = statement_balance - gl_balance
+    
+    return {
+        "message": "Bank reconciliation created successfully",
+        "reconciliation": {
+            "id": 999,
+            "reconciliation_number": f"REC-2026-{999:03d}",
+            "account_id": int(reconciliation.get("account_id")),
+            "statement_date": reconciliation.get("statement_date"),
+            "statement_balance": statement_balance,
+            "gl_balance": gl_balance,
+            "difference": difference,
+            "status": "DRAFT",
+            "created_at": "2026-02-23T10:00:00Z"
+        }
+    }
+
+@app.put("/banking/reconciliations/{reconciliation_id}")
+@app.put("/api/v1/banking/reconciliations/{reconciliation_id}")
+async def update_banking_reconciliation(reconciliation_id: int, reconciliation: dict):
+    """Update bank reconciliation"""
+    statement_balance = float(reconciliation.get("statement_balance", 0))
+    gl_balance = float(reconciliation.get("gl_balance", 0))
+    difference = statement_balance - gl_balance
+    
+    return {
+        "message": "Bank reconciliation updated successfully",
+        "reconciliation": {
+            "id": reconciliation_id,
+            "reconciliation_number": f"REC-2026-{reconciliation_id:03d}",
+            "account_id": int(reconciliation.get("account_id")),
+            "statement_date": reconciliation.get("statement_date"),
+            "statement_balance": statement_balance,
+            "gl_balance": gl_balance,
+            "difference": difference,
+            "status": reconciliation.get("status", "DRAFT"),
+            "updated_at": "2026-02-23T10:00:00Z"
+        }
+    }
+
+@app.delete("/banking/reconciliations/{reconciliation_id}")
+@app.delete("/api/v1/banking/reconciliations/{reconciliation_id}")
+async def delete_banking_reconciliation(reconciliation_id: int):
+    """Delete bank reconciliation"""
+    return {"message": f"Bank reconciliation {reconciliation_id} deleted successfully"}
+
+@app.post("/banking/reconciliations/{reconciliation_id}/complete")
+@app.post("/api/v1/banking/reconciliations/{reconciliation_id}/complete")
+async def complete_banking_reconciliation(reconciliation_id: int):
+    """Mark reconciliation as completed"""
+    return {
+        "message": f"Reconciliation {reconciliation_id} completed successfully",
+        "reconciliation": {
+            "id": reconciliation_id,
+            "status": "COMPLETED",
+            "completed_at": "2026-02-23T10:00:00Z"
+        }
+    }
+
 # HR endpoints
 @app.get("/hr/metrics")
 @app.get("/api/v1/hr/metrics")
