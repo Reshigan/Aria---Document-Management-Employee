@@ -579,7 +579,7 @@ const WorkOrders: React.FC = () => {
               <h2 className="text-xl font-bold text-gray-900 dark:text-white">
                 {editingOrder ? 'Edit Work Order' : 'Create Work Order'}
               </h2>
-              <button onClick={() => { setShowModal(false); resetForm(); }} className="text-gray-500 hover:text-gray-700">
+              <button onClick={() => { setShowModal(false); resetForm(); }} className="text-gray-500 hover:text-gray-700" aria-label="Close modal" title="Close">
                 <X size={24} />
               </button>
             </div>
@@ -592,6 +592,7 @@ const WorkOrders: React.FC = () => {
                   onChange={(e) => setFormData({ ...formData, product_name: e.target.value })}
                   className="w-full border rounded-lg px-3 py-2 dark:bg-gray-700 dark:border-gray-600"
                   required
+                  aria-label="Product name"
                 />
               </div>
               <div className="grid grid-cols-2 gap-3">
@@ -604,6 +605,7 @@ const WorkOrders: React.FC = () => {
                     className="w-full border rounded-lg px-3 py-2 dark:bg-gray-700 dark:border-gray-600"
                     min="1"
                     required
+                    aria-label="Quantity"
                   />
                 </div>
                 <div>
@@ -612,6 +614,7 @@ const WorkOrders: React.FC = () => {
                     value={formData.priority}
                     onChange={(e) => setFormData({ ...formData, priority: e.target.value })}
                     className="w-full border rounded-lg px-3 py-2 dark:bg-gray-700 dark:border-gray-600"
+                    aria-label="Priority level"
                   >
                     <option value="low">Low</option>
                     <option value="medium">Medium</option>
@@ -629,6 +632,7 @@ const WorkOrders: React.FC = () => {
                     onChange={(e) => setFormData({ ...formData, start_date: e.target.value })}
                     className="w-full border rounded-lg px-3 py-2 dark:bg-gray-700 dark:border-gray-600"
                     required
+                    aria-label="Start date"
                   />
                 </div>
                 <div>
@@ -638,6 +642,7 @@ const WorkOrders: React.FC = () => {
                     value={formData.due_date}
                     onChange={(e) => setFormData({ ...formData, due_date: e.target.value })}
                     className="w-full border rounded-lg px-3 py-2 dark:bg-gray-700 dark:border-gray-600"
+                    aria-label="Due date"
                   />
                 </div>
               </div>
@@ -648,6 +653,7 @@ const WorkOrders: React.FC = () => {
                   onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                   className="w-full border rounded-lg px-3 py-2 dark:bg-gray-700 dark:border-gray-600"
                   rows={2}
+                  aria-label="Notes"
                 />
               </div>
               <div className="flex justify-end gap-2 pt-4">

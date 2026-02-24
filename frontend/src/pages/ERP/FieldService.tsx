@@ -213,7 +213,7 @@ export default function FieldService() {
                   <p className="text-white/80 text-sm">{isViewMode ? 'View details' : 'Fill in the details'}</p>
                 </div>
               </div>
-              <button onClick={() => setShowCreateModal(false)} className="p-2 hover:bg-white/20 rounded-lg transition-colors"><X className="h-5 w-5" /></button>
+              <button onClick={() => setShowCreateModal(false)} className="p-2 hover:bg-white/20 rounded-lg transition-colors" aria-label="Close modal" title="Close modal"><X className="h-5 w-5" /></button>
             </div>
           </div>
 
@@ -269,7 +269,7 @@ export default function FieldService() {
                   <>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Request Type</label>
-                      <select value={formData.request_type} onChange={(e) => setFormData({ ...formData, request_type: e.target.value })} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all">
+                    <select value={formData.request_type} onChange={(e) => setFormData({ ...formData, request_type: e.target.value })} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all" aria-label="Request type">
                         <option value="repair">Repair</option>
                         <option value="maintenance">Maintenance</option>
                         <option value="installation">Installation</option>
@@ -285,7 +285,7 @@ export default function FieldService() {
                   <>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Work Type</label>
-                      <select value={formData.work_type} onChange={(e) => setFormData({ ...formData, work_type: e.target.value })} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all">
+                      <select value={formData.work_type} onChange={(e) => setFormData({ ...formData, work_type: e.target.value })} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all" aria-label="Work type">
                         <option value="installation">Installation</option>
                         <option value="repair">Repair</option>
                         <option value="maintenance">Maintenance</option>
@@ -294,14 +294,14 @@ export default function FieldService() {
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Scheduled Date</label>
-                      <input type="date" value={formData.scheduled_date} onChange={(e) => setFormData({ ...formData, scheduled_date: e.target.value })} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all" />
+                      <input type="date" value={formData.scheduled_date} onChange={(e) => setFormData({ ...formData, scheduled_date: e.target.value })} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all" aria-label="Scheduled date" />
                     </div>
                   </>
                 )}
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Priority</label>
-                  <select value={formData.priority} onChange={(e) => setFormData({ ...formData, priority: e.target.value })} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all">
+                <select value={formData.priority} onChange={(e) => setFormData({ ...formData, priority: e.target.value })} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all" aria-label="Priority level">
                     <option value="low">Low</option>
                     <option value="medium">Medium</option>
                     <option value="high">High</option>
@@ -330,7 +330,7 @@ export default function FieldService() {
             <p className="text-gray-500 dark:text-gray-300 mt-1">Manage service requests and field work orders</p>
           </div>
           <div className="flex items-center gap-3">
-            <button onClick={() => loadData()} className="p-3 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-200 dark:border-gray-700">
+            <button onClick={() => loadData()} className="p-3 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-200 dark:border-gray-700" aria-label="Refresh data" title="Refresh data">
               <RefreshCw className={`h-5 w-5 text-gray-600 dark:text-gray-300 ${loading ? 'animate-spin' : ''}`} />
             </button>
             <button onClick={handleCreate} className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-cyan-600 to-teal-600 text-white rounded-xl font-medium hover:from-cyan-700 hover:to-teal-700 transition-all ">
@@ -343,7 +343,7 @@ export default function FieldService() {
           <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl flex items-center gap-3">
             <AlertCircle className="h-5 w-5 text-red-500 flex-shrink-0" />
             <p className="text-red-700 dark:text-red-300">{error}</p>
-            <button onClick={() => setError(null)} className="ml-auto p-1 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg"><X className="h-4 w-4 text-red-500" /></button>
+            <button onClick={() => setError(null)} className="ml-auto p-1 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg" aria-label="Close error message" title="Close error message"><X className="h-4 w-4 text-red-500" /></button>
           </div>
         )}
 
@@ -427,7 +427,7 @@ export default function FieldService() {
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-300" />
                 <input type="text" placeholder={`Search by ${activeTab === 'requests' ? 'request' : 'work order'} number or customer...`} value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-12 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all" />
               </div>
-              <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all min-w-[150px]">
+            <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all min-w-[150px]" aria-label="Filter by status">
                 <option value="">All Statuses</option>
                 {activeTab === 'requests' ? (
                   <>
@@ -491,7 +491,7 @@ export default function FieldService() {
                         <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{(sr.reported_date ? new Date(sr.reported_date).toLocaleDateString() : "-")}</td>
                         <td className="px-6 py-4">
                           <div className="flex items-center justify-end">
-                            <button onClick={() => handleViewDetails(sr)} className="p-2 hover:bg-cyan-100 dark:hover:bg-cyan-900/30 text-cyan-600 dark:text-cyan-400 rounded-lg transition-colors"><Eye className="h-4 w-4" /></button>
+                            <button onClick={() => handleViewDetails(sr)} className="p-2 hover:bg-cyan-100 dark:hover:bg-cyan-900/30 text-cyan-600 dark:text-cyan-400 rounded-lg transition-colors" aria-label="View service request details" title="View details"><Eye className="h-4 w-4" /></button>
                           </div>
                         </td>
                       </tr>
@@ -545,7 +545,7 @@ export default function FieldService() {
                                 <CheckCircle className="h-3 w-3" />Complete
                               </button>
                             )}
-                            <button onClick={() => handleViewDetails(wo)} className="p-2 hover:bg-cyan-100 dark:hover:bg-cyan-900/30 text-cyan-600 dark:text-cyan-400 rounded-lg transition-colors"><Eye className="h-4 w-4" /></button>
+                            <button onClick={() => handleViewDetails(wo)} className="p-2 hover:bg-cyan-100 dark:hover:bg-cyan-900/30 text-cyan-600 dark:text-cyan-400 rounded-lg transition-colors" aria-label="View work order details" title="View details"><Eye className="h-4 w-4" /></button>
                           </div>
                         </td>
                       </tr>

@@ -570,7 +570,7 @@ const leaveTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
                   <div className="mega-menu-panel-content">
                     {categories.map((category) => (
                       <div key={category.title} className="mega-menu-category">
-                        <div className="mega-menu-category-header" style={{ color: category.color }}>
+                        <div className="mega-menu-category-header" style={{ '--category-color': category.color } as React.CSSProperties}>
                           {category.icon}
                           <h3>{category.title}</h3>
                         </div>
@@ -657,7 +657,7 @@ const leaveTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
                     <div className="mega-menu-mobile-submenu">
                       {categories.map((category) => (
                         <div key={category.title} className="mega-menu-mobile-category">
-                          <div className="mega-menu-mobile-category-header" style={{ color: category.color }}>
+                          <div className="mega-menu-mobile-category-header" style={{ '--category-color': category.color } as React.CSSProperties}>
                             {category.icon}
                             <span>{category.title}</span>
                           </div>

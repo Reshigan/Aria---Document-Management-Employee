@@ -304,7 +304,7 @@ export default function ProjectsDashboard() {
                 <FolderOpen className="h-6 w-6" />
                 {editingProject ? 'Edit Project' : 'New Project'}
               </h2>
-              <button onClick={() => setShowModal(false)} className="text-white/80 hover:text-white transition-colors">
+              <button onClick={() => setShowModal(false)} className="text-white/80 hover:text-white transition-colors" aria-label="Close modal" title="Close">
                 <X className="h-6 w-6" />
               </button>
             </div>
@@ -317,6 +317,7 @@ export default function ProjectsDashboard() {
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  aria-label="Project name"
                 />
               </div>
               <div>
@@ -326,6 +327,7 @@ export default function ProjectsDashboard() {
                   value={formData.client}
                   onChange={(e) => setFormData({ ...formData, client: e.target.value })}
                   className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  aria-label="Client name"
                 />
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -335,6 +337,7 @@ export default function ProjectsDashboard() {
                     value={formData.status}
                     onChange={(e) => setFormData({ ...formData, status: e.target.value })}
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    aria-label="Project status"
                   >
                     <option value="planning">Planning</option>
                     <option value="active">Active</option>
@@ -350,6 +353,7 @@ export default function ProjectsDashboard() {
                     value={formData.budget}
                     onChange={(e) => setFormData({ ...formData, budget: parseFloat(e.target.value) })}
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    aria-label="Project budget"
                   />
                 </div>
               </div>
@@ -361,6 +365,7 @@ export default function ProjectsDashboard() {
                     value={formData.start_date}
                     onChange={(e) => setFormData({ ...formData, start_date: e.target.value })}
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    aria-label="Start date"
                   />
                 </div>
                 <div>
@@ -370,6 +375,7 @@ export default function ProjectsDashboard() {
                     value={formData.end_date}
                     onChange={(e) => setFormData({ ...formData, end_date: e.target.value })}
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    aria-label="End date"
                   />
                 </div>
               </div>

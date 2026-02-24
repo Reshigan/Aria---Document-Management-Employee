@@ -309,6 +309,7 @@ export default function Bills() {
                       <button
                         onClick={() => handleDelete(bill.id)}
                         className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors"
+                        aria-label={`Delete bill ${bill.bill_number}`}
                       >
                         <Trash2 className="h-4 w-4" />
                       </button>
@@ -342,6 +343,7 @@ export default function Bills() {
                     required
                     value={formData.supplier_id}
                     onChange={(e) => setFormData({ ...formData, supplier_id: e.target.value })}
+                    aria-label="Supplier ID"
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                   />
                 </div>
@@ -352,6 +354,7 @@ export default function Bills() {
                   <select
                     value={formData.currency}
                     onChange={(e) => setFormData({ ...formData, currency: e.target.value })}
+                    aria-label="Currency"
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                   >
                     <option value="ZAR">ZAR</option>
@@ -372,6 +375,7 @@ export default function Bills() {
                     required
                     value={formData.bill_date}
                     onChange={(e) => setFormData({ ...formData, bill_date: e.target.value })}
+                    aria-label="Bill date"
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                   />
                 </div>
@@ -384,6 +388,7 @@ export default function Bills() {
                     required
                     value={formData.due_date}
                     onChange={(e) => setFormData({ ...formData, due_date: e.target.value })}
+                    aria-label="Due date"
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                   />
                 </div>
@@ -397,6 +402,7 @@ export default function Bills() {
                   type="text"
                   value={formData.reference}
                   onChange={(e) => setFormData({ ...formData, reference: e.target.value })}
+                  aria-label="Reference number"
                   className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                 />
               </div>
@@ -409,6 +415,7 @@ export default function Bills() {
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   rows={2}
+                  aria-label="Bill description"
                   className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent resize-y"
                 />
               </div>
@@ -423,6 +430,7 @@ export default function Bills() {
                   required
                   value={formData.total_amount}
                   onChange={(e) => setFormData({ ...formData, total_amount: parseFloat(e.target.value) })}
+                  aria-label="Total amount"
                   className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                 />
               </div>

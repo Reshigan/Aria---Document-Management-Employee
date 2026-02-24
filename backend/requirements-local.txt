@@ -1,0 +1,49 @@
+# ARIA ERP Backend - Local Development Requirements (Windows-Friendly)
+# Minimal set of dependencies to run locally without build issues
+
+# Web Framework (Essential)
+fastapi>=0.104.0
+uvicorn>=0.24.0
+python-multipart>=0.0.6
+
+# Database (Essential - SQLite only for local)
+sqlalchemy>=2.0.23
+alembic>=1.12.0
+
+# Authentication & Security (Essential)
+python-jose[cryptography]>=3.3.0
+passlib[bcrypt]>=1.7.4
+python-dotenv>=1.0.0
+pydantic>=2.5.0
+pydantic-settings>=2.1.0
+
+# Date/Time (Essential)
+python-dateutil>=2.8.2
+
+# Validation (Essential)
+email-validator>=2.1.0
+
+# HTTP Client (Essential)
+httpx>=0.25.0
+requests>=2.31.0
+
+# Basic Data Processing (Essential)
+# Note: pandas and numpy can cause issues on Windows, installed separately if needed
+
+# Testing (Optional - install manually if needed)
+# pytest>=7.4.3
+# pytest-asyncio>=0.21.1
+# faker>=20.1.0
+
+# Development (Optional)
+# black>=23.12.0
+# flake8>=6.1.0
+
+# Note: The following packages are OPTIONAL and can cause build issues on Windows:
+# - psycopg2-binary (only needed for PostgreSQL, not SQLite)
+# - asyncpg (only needed for async PostgreSQL)
+# - redis (only needed if using Redis caching)
+# - celery (only needed for background tasks)
+# - pandas/numpy (install separately with: pip install pandas numpy)
+# - AI/ML packages (openai, langchain, tiktoken - install when needed)
+# - OCR packages (pytesseract, pdf2image, pillow - install when needed)

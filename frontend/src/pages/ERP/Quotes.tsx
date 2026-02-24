@@ -369,7 +369,7 @@ export default function Quotes() {
             <p className="text-gray-500 dark:text-gray-300 text-sm">Manage customer quotes and convert to sales orders</p>
           </div>
           <div className="flex items-center gap-3">
-            <button onClick={() => loadQuotes()} className="p-3 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-200 dark:border-gray-700">
+            <button onClick={() => loadQuotes()} className="p-3 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-200 dark:border-gray-700" aria-label="Refresh quotes" title="Refresh quotes">
               <RefreshCw className={`h-5 w-5 text-gray-600 dark:text-gray-300 ${loading ? 'animate-spin' : ''}`} />
             </button>
             <button onClick={handleCreate} className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-xl font-medium hover:from-violet-700 hover:to-purple-700 transition-all ">
@@ -382,7 +382,7 @@ export default function Quotes() {
           <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl flex items-center gap-3">
             <AlertCircle className="h-5 w-5 text-red-500 flex-shrink-0" />
             <p className="text-red-700 dark:text-red-300">{error}</p>
-            <button onClick={() => setError(null)} className="ml-auto p-1 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg"><X className="h-4 w-4 text-red-500" /></button>
+            <button onClick={() => setError(null)} className="ml-auto p-1 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg" aria-label="Close error message" title="Close error"><X className="h-4 w-4 text-red-500" /></button>
           </div>
         )}
 
@@ -420,7 +420,7 @@ export default function Quotes() {
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-300" />
                 <input type="text" placeholder="Search by customer, quote number..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-12 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all" />
               </div>
-              <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all min-w-[180px]">
+              <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} aria-label="Filter by status" className="px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all min-w-[180px]">
                 <option value="">All Statuses</option>
                 <option value="draft">Draft</option>
                 <option value="approved">Approved</option>
@@ -520,7 +520,7 @@ export default function Quotes() {
                     <p className="text-white/80 text-sm">Fill in the details below</p>
                   </div>
                 </div>
-                <button onClick={() => setShowCreateModal(false)} className="p-2 hover:bg-white/20 rounded-lg transition-colors"><X className="h-5 w-5" /></button>
+                <button onClick={() => setShowCreateModal(false)} className="p-2 hover:bg-white/20 rounded-lg transition-colors" aria-label="Close modal" title="Close"><X className="h-5 w-5" /></button>
               </div>
             </div>
 
@@ -537,25 +537,25 @@ export default function Quotes() {
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                     <div>
                       <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-0.5">Customer *</label>
-                      <select value={selectedCustomerId} onChange={(e) => handleCustomerChange(e.target.value)} required className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-violet-500 focus:border-transparent">
+                      <select value={selectedCustomerId} onChange={(e) => handleCustomerChange(e.target.value)} required aria-label="Select customer" className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-violet-500 focus:border-transparent">
                         <option value="">Select a customer...</option>
                         {customers.map(customer => (<option key={customer.id} value={customer.id}>{customer.name} ({customer.email})</option>))}
                       </select>
                     </div>
                     <div>
                       <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-0.5">Pricelist</label>
-                      <select value={selectedPricelistId} onChange={(e) => setSelectedPricelistId(e.target.value)} className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-violet-500 focus:border-transparent">
+                      <select value={selectedPricelistId} onChange={(e) => setSelectedPricelistId(e.target.value)} aria-label="Select pricelist" className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-violet-500 focus:border-transparent">
                         <option value="">Default pricing</option>
                         {pricelists.map(pricelist => (<option key={pricelist.id} value={pricelist.id}>{pricelist.name} ({pricelist.currency})</option>))}
                       </select>
                     </div>
                     <div>
                       <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-0.5">Quote Date *</label>
-                      <input type="date" value={formData.quote_date || ''} onChange={(e) => setFormData({ ...formData, quote_date: e.target.value })} required className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-violet-500 focus:border-transparent" />
+                      <input type="date" value={formData.quote_date || ''} onChange={(e) => setFormData({ ...formData, quote_date: e.target.value })} required aria-label="Quote date" className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-violet-500 focus:border-transparent" />
                     </div>
                     <div>
                       <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-0.5">Valid Until</label>
-                      <input type="date" value={formData.valid_until || ''} onChange={(e) => setFormData({ ...formData, valid_until: e.target.value })} className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-violet-500 focus:border-transparent" />
+                      <input type="date" value={formData.valid_until || ''} onChange={(e) => setFormData({ ...formData, valid_until: e.target.value })} aria-label="Valid until date" className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-violet-500 focus:border-transparent" />
                     </div>
                   </div>
                   <div className="mt-1">

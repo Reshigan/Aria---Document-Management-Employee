@@ -748,6 +748,7 @@ const PayrollDashboard: React.FC = () => {
                     value={employeeForm.first_name}
                     onChange={(e) => setEmployeeForm({ ...employeeForm, first_name: e.target.value })}
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    aria-label="First name"
                   />
                 </div>
                 <div>
@@ -757,6 +758,7 @@ const PayrollDashboard: React.FC = () => {
                     value={employeeForm.last_name}
                     onChange={(e) => setEmployeeForm({ ...employeeForm, last_name: e.target.value })}
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    aria-label="Last name"
                   />
                 </div>
               </div>
@@ -768,6 +770,7 @@ const PayrollDashboard: React.FC = () => {
                     value={employeeForm.email}
                     onChange={(e) => setEmployeeForm({ ...employeeForm, email: e.target.value })}
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    aria-label="Email address"
                   />
                 </div>
                 <div>
@@ -777,6 +780,7 @@ const PayrollDashboard: React.FC = () => {
                     value={employeeForm.phone}
                     onChange={(e) => setEmployeeForm({ ...employeeForm, phone: e.target.value })}
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    aria-label="Phone number"
                   />
                 </div>
               </div>
@@ -788,6 +792,7 @@ const PayrollDashboard: React.FC = () => {
                     value={employeeForm.department}
                     onChange={(e) => setEmployeeForm({ ...employeeForm, department: e.target.value })}
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    aria-label="Department"
                   />
                 </div>
                 <div>
@@ -797,6 +802,7 @@ const PayrollDashboard: React.FC = () => {
                     value={employeeForm.position}
                     onChange={(e) => setEmployeeForm({ ...employeeForm, position: e.target.value })}
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    aria-label="Position"
                   />
                 </div>
               </div>
@@ -807,6 +813,7 @@ const PayrollDashboard: React.FC = () => {
                     value={employeeForm.employment_type}
                     onChange={(e) => setEmployeeForm({ ...employeeForm, employment_type: e.target.value as 'PERMANENT' | 'CONTRACT' | 'TEMPORARY' })}
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    aria-label="Employment type"
                   >
                     <option value="PERMANENT">Permanent</option>
                     <option value="CONTRACT">Contract</option>
@@ -821,6 +828,7 @@ const PayrollDashboard: React.FC = () => {
                     value={employeeForm.salary}
                     onChange={(e) => setEmployeeForm({ ...employeeForm, salary: e.target.value })}
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    aria-label="Monthly salary in ZAR"
                   />
                 </div>
               </div>
@@ -872,6 +880,7 @@ const PayrollDashboard: React.FC = () => {
                   value={payslipForm.employee_id}
                   onChange={(e) => setPayslipForm({ ...payslipForm, employee_id: e.target.value })}
                   className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  aria-label="Employee ID"
                 />
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -882,6 +891,7 @@ const PayrollDashboard: React.FC = () => {
                     value={payslipForm.pay_period_start}
                     onChange={(e) => setPayslipForm({ ...payslipForm, pay_period_start: e.target.value })}
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    aria-label="Pay period start date"
                   />
                 </div>
                 <div>
@@ -891,6 +901,7 @@ const PayrollDashboard: React.FC = () => {
                     value={payslipForm.pay_period_end}
                     onChange={(e) => setPayslipForm({ ...payslipForm, pay_period_end: e.target.value })}
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    aria-label="Pay period end date"
                   />
                 </div>
               </div>
@@ -902,6 +913,7 @@ const PayrollDashboard: React.FC = () => {
                   value={payslipForm.gross_salary}
                   onChange={(e) => setPayslipForm({ ...payslipForm, gross_salary: e.target.value })}
                   className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  aria-label="Gross salary in ZAR"
                 />
               </div>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
@@ -913,6 +925,7 @@ const PayrollDashboard: React.FC = () => {
                     value={payslipForm.paye}
                     onChange={(e) => setPayslipForm({ ...payslipForm, paye: e.target.value })}
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    aria-label="PAYE tax in ZAR"
                   />
                 </div>
                 <div>
@@ -923,6 +936,7 @@ const PayrollDashboard: React.FC = () => {
                     value={payslipForm.uif}
                     onChange={(e) => setPayslipForm({ ...payslipForm, uif: e.target.value })}
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    aria-label="UIF contribution in ZAR"
                   />
                 </div>
                 <div>
@@ -933,6 +947,7 @@ const PayrollDashboard: React.FC = () => {
                     value={payslipForm.sdl}
                     onChange={(e) => setPayslipForm({ ...payslipForm, sdl: e.target.value })}
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    aria-label="SDL levy in ZAR"
                   />
                 </div>
               </div>
@@ -943,6 +958,7 @@ const PayrollDashboard: React.FC = () => {
                   step="0.01"
                   value={payslipForm.other_deductions}
                   onChange={(e) => setPayslipForm({ ...payslipForm, other_deductions: e.target.value })}
+                  aria-label="Other deductions in ZAR"
                   className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 />
               </div>

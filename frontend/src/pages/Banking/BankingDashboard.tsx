@@ -547,12 +547,16 @@ const BankingDashboard: React.FC = () => {
                         <button
                           onClick={() => handleEditAccount(account)}
                           className="p-2 text-teal-600 dark:text-teal-400 hover:bg-teal-50 dark:hover:bg-teal-900/30 rounded-lg transition-colors mr-2"
+                          aria-label="Edit account"
+                          title="Edit account"
                         >
                           <Edit2 className="h-4 w-4" />
                         </button>
                         <button
                           onClick={() => setDeleteConfirm({ show: true, type: 'account', id: account.id, name: account.account_name })}
                           className="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors"
+                          aria-label="Delete account"
+                          title="Delete account"
                         >
                           <Trash2 className="h-4 w-4" />
                         </button>
@@ -690,6 +694,8 @@ const BankingDashboard: React.FC = () => {
                         <button
                           onClick={() => handleEditTransaction(transaction)}
                           className="p-2 text-teal-600 dark:text-teal-400 hover:bg-teal-50 dark:hover:bg-teal-900/30 rounded-lg transition-colors mr-1"
+                          aria-label="Edit transaction"
+                          title="Edit transaction"
                         >
                           <Edit2 className="h-4 w-4" />
                         </button>
@@ -697,6 +703,8 @@ const BankingDashboard: React.FC = () => {
                           <button
                             onClick={() => handleReconcileTransaction(transaction.id)}
                             className="p-2 text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/30 rounded-lg transition-colors mr-1"
+                            aria-label="Reconcile transaction"
+                            title="Reconcile transaction"
                           >
                             <RefreshCw className="h-4 w-4" />
                           </button>
@@ -704,6 +712,8 @@ const BankingDashboard: React.FC = () => {
                         <button
                           onClick={() => setDeleteConfirm({ show: true, type: 'transaction', id: transaction.id, name: transaction.transaction_number })}
                           className="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors"
+                          aria-label="Delete transaction"
+                          title="Delete transaction"
                         >
                           <Trash2 className="h-4 w-4" />
                         </button>
@@ -818,6 +828,8 @@ const BankingDashboard: React.FC = () => {
                         <button
                           onClick={() => handleEditReconciliation(reconciliation)}
                           className="p-2 text-teal-600 dark:text-teal-400 hover:bg-teal-50 dark:hover:bg-teal-900/30 rounded-lg transition-colors mr-1"
+                          aria-label="Edit reconciliation"
+                          title="Edit reconciliation"
                         >
                           <Edit2 className="h-4 w-4" />
                         </button>
@@ -825,6 +837,8 @@ const BankingDashboard: React.FC = () => {
                           <button
                             onClick={() => handleCompleteReconciliation(reconciliation.id)}
                             className="p-2 text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/30 rounded-lg transition-colors mr-1"
+                            aria-label="Complete reconciliation"
+                            title="Complete reconciliation"
                           >
                             <CheckCircle className="h-4 w-4" />
                           </button>
@@ -832,6 +846,8 @@ const BankingDashboard: React.FC = () => {
                         <button
                           onClick={() => setDeleteConfirm({ show: true, type: 'reconciliation', id: reconciliation.id, name: reconciliation.reconciliation_number })}
                           className="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors"
+                          aria-label="Delete reconciliation"
+                          title="Delete reconciliation"
                         >
                           <Trash2 className="h-4 w-4" />
                         </button>
@@ -864,6 +880,7 @@ const BankingDashboard: React.FC = () => {
                     value={accountForm.account_number}
                     onChange={(e) => setAccountForm({ ...accountForm, account_number: e.target.value })}
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                    aria-label="Account number"
                   />
                 </div>
                 <div>
@@ -873,6 +890,7 @@ const BankingDashboard: React.FC = () => {
                     value={accountForm.bank_name}
                     onChange={(e) => setAccountForm({ ...accountForm, bank_name: e.target.value })}
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                    aria-label="Bank name"
                   />
                 </div>
               </div>
@@ -883,6 +901,7 @@ const BankingDashboard: React.FC = () => {
                   value={accountForm.account_name}
                   onChange={(e) => setAccountForm({ ...accountForm, account_name: e.target.value })}
                   className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  aria-label="Account name"
                 />
               </div>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-5 mb-5">
@@ -892,6 +911,7 @@ const BankingDashboard: React.FC = () => {
                     value={accountForm.account_type}
                     onChange={(e) => setAccountForm({ ...accountForm, account_type: e.target.value as 'CURRENT' | 'SAVINGS' | 'FOREIGN_CURRENCY' })}
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                    aria-label="Account type"
                   >
                     <option value="CURRENT">Current</option>
                     <option value="SAVINGS">Savings</option>
@@ -904,6 +924,7 @@ const BankingDashboard: React.FC = () => {
                     value={accountForm.currency}
                     onChange={(e) => setAccountForm({ ...accountForm, currency: e.target.value })}
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                    aria-label="Currency"
                   >
                     <option value="ZAR">ZAR</option>
                     <option value="USD">USD</option>
@@ -918,6 +939,7 @@ const BankingDashboard: React.FC = () => {
                     step="0.01"
                     value={accountForm.balance}
                     onChange={(e) => setAccountForm({ ...accountForm, balance: e.target.value })}
+                    aria-label="Opening balance"
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                   />
                 </div>
@@ -971,6 +993,7 @@ const BankingDashboard: React.FC = () => {
                     value={transactionForm.account_id}
                     onChange={(e) => setTransactionForm({ ...transactionForm, account_id: e.target.value })}
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                    aria-label="Account ID"
                   />
                 </div>
                 <div>
@@ -980,6 +1003,7 @@ const BankingDashboard: React.FC = () => {
                     value={transactionForm.transaction_date}
                     onChange={(e) => setTransactionForm({ ...transactionForm, transaction_date: e.target.value })}
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                    aria-label="Transaction date"
                   />
                 </div>
               </div>
@@ -990,6 +1014,7 @@ const BankingDashboard: React.FC = () => {
                   value={transactionForm.description}
                   onChange={(e) => setTransactionForm({ ...transactionForm, description: e.target.value })}
                   className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  aria-label="Transaction description"
                 />
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
@@ -1000,6 +1025,7 @@ const BankingDashboard: React.FC = () => {
                     value={transactionForm.reference}
                     onChange={(e) => setTransactionForm({ ...transactionForm, reference: e.target.value })}
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                    aria-label="Transaction reference"
                   />
                 </div>
                 <div>
@@ -1009,6 +1035,7 @@ const BankingDashboard: React.FC = () => {
                     value={transactionForm.category}
                     onChange={(e) => setTransactionForm({ ...transactionForm, category: e.target.value })}
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                    aria-label="Transaction category"
                   />
                 </div>
               </div>
@@ -1021,6 +1048,7 @@ const BankingDashboard: React.FC = () => {
                     value={transactionForm.debit}
                     onChange={(e) => setTransactionForm({ ...transactionForm, debit: e.target.value })}
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                    aria-label="Debit amount"
                   />
                 </div>
                 <div>
@@ -1031,6 +1059,7 @@ const BankingDashboard: React.FC = () => {
                     value={transactionForm.credit}
                     onChange={(e) => setTransactionForm({ ...transactionForm, credit: e.target.value })}
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                    aria-label="Credit amount"
                   />
                 </div>
               </div>
@@ -1072,6 +1101,7 @@ const BankingDashboard: React.FC = () => {
                     value={reconciliationForm.account_id}
                     onChange={(e) => setReconciliationForm({ ...reconciliationForm, account_id: e.target.value })}
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                    aria-label="Account ID for reconciliation"
                   />
                 </div>
                 <div>
@@ -1081,6 +1111,7 @@ const BankingDashboard: React.FC = () => {
                     value={reconciliationForm.statement_date}
                     onChange={(e) => setReconciliationForm({ ...reconciliationForm, statement_date: e.target.value })}
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                    aria-label="Statement date"
                   />
                 </div>
               </div>
@@ -1093,6 +1124,7 @@ const BankingDashboard: React.FC = () => {
                     value={reconciliationForm.statement_balance}
                     onChange={(e) => setReconciliationForm({ ...reconciliationForm, statement_balance: e.target.value })}
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                    aria-label="Statement balance"
                   />
                 </div>
                 <div>
@@ -1103,6 +1135,7 @@ const BankingDashboard: React.FC = () => {
                     value={reconciliationForm.gl_balance}
                     onChange={(e) => setReconciliationForm({ ...reconciliationForm, gl_balance: e.target.value })}
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                    aria-label="General Ledger balance"
                   />
                 </div>
               </div>
