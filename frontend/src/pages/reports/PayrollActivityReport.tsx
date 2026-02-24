@@ -93,6 +93,7 @@ export default function PayrollActivityReportPage() {
             <select
               value={year}
               onChange={(e) => setYear(Number(e.target.value))}
+              aria-label="Select year"
               className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
             >
               {[2026, 2025, 2024, 2023].map(y => (
@@ -101,6 +102,8 @@ export default function PayrollActivityReportPage() {
             </select>
             <button
               onClick={fetchPayrollData}
+              aria-label="Refresh payroll data"
+              title="Refresh payroll data"
               className="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
             >
               <RefreshCw className={`h-5 w-5 ${loading ? 'animate-spin' : ''}`} />

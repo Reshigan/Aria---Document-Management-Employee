@@ -53,7 +53,10 @@ const StockValuationReport: React.FC = () => {
     category: cat,
     value: data.filter(item => item.category === cat).reduce((sum, item) => sum + Number(item.total_value ?? 0), 0),
     percentage: totals.value > 0 ? (data.filter(item => item.category === cat).reduce((sum, item) => sum + Number(item.total_value ?? 0), 0) / totals.value) * 100 : 0
-  })).sort((a, b) => b.value - a.value);
+  })).sort((a, b) => b.value - a.value).map(cat => ({
+    ...cat,
+    percentValue: Math.round(Number(cat.percentage) || 0)
+  }));
 
   return (
     <div className="p-6">
@@ -71,7 +74,7 @@ const StockValuationReport: React.FC = () => {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-2 md:grid-cols-3 gap-6 mb-6">
-        <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow-lg p-4 text-white">
+        <div key="total-value" className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow-lg p-4 text-white">
           <div className="flex items-center justify-between mb-2">
             <Package className="w-10 h-10 opacity-80" />
           </div>
@@ -83,7 +86,7 @@ const StockValuationReport: React.FC = () => {
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-lg shadow-lg p-4 text-white">
+        <div key="total-units" className="bg-gradient-to-br from-green-500 to-green-600 rounded-lg shadow-lg p-4 text-white">
           <div className="flex items-center justify-between mb-2">
             <Package className="w-10 h-10 opacity-80" />
           </div>
@@ -94,7 +97,7 @@ const StockValuationReport: React.FC = () => {
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg shadow-lg p-4 text-white">
+        <div key="avg-value" className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg shadow-lg p-4 text-white">
           <div className="flex items-center justify-between mb-2">
             <Package className="w-10 h-10 opacity-80" />
           </div>
@@ -117,9 +120,15 @@ const StockValuationReport: React.FC = () => {
                 <span className="text-sm font-bold text-gray-900 dark:text-white">{formatCurrency(cat.value)}</span>
               </div>
               <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2">
+                {/* eslint-disable-next-line react/forbid-component-props */}
                 <div
                   className="bg-blue-600 dark:bg-blue-500 h-2 rounded-full transition-all"
                   style={{ width: `${cat.percentage}%` }}
+                  role="progressbar"
+                  aria-valuenow={cat.percentValue}
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                  aria-label={`${cat.category}: ${cat.percentValue} percent of inventory`}
                 />
               </div>
               <div className="text-xs text-gray-500 dark:text-gray-300 mt-1">{Number(cat.percentage ?? 0).toFixed(1)}% of total inventory value</div>
@@ -130,9 +139,12 @@ const StockValuationReport: React.FC = () => {
 
       {/* Filter */}
       <div className="mb-6">
+        <label htmlFor="category-filter" className="sr-only">Filter by Category</label>
         <select
+          id="category-filter"
           value={filterCategory}
           onChange={(e) => setFilterCategory(e.target.value)}
+          aria-label="Filter by category"
           className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
         >
           <option value="">All Categories</option>

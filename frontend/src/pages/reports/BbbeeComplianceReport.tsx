@@ -83,6 +83,11 @@ export default function BbbeeComplianceReportPage() {
     return 'text-red-600 dark:text-red-400';
   };
 
+  const scorecardElementsWithValues = (data?.scorecard_elements || []).map(element => ({
+    ...element,
+    percentValue: Math.round(Number(element.percentage) || 0)
+  }));
+
   return (
     <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4">
       <div className="mx-auto">
@@ -94,6 +99,8 @@ export default function BbbeeComplianceReportPage() {
           <div className="flex gap-3 items-center">
             <button
               onClick={fetchBbbeeData}
+              aria-label="Refresh BBBEE data"
+              title="Refresh BBBEE data"
               className="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
             >
               <RefreshCw className={`h-5 w-5 ${loading ? 'animate-spin' : ''}`} />
@@ -136,7 +143,7 @@ export default function BbbeeComplianceReportPage() {
             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
               <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-6">Scorecard Elements</h3>
               <div className="space-y-3">
-                {(data.scorecard_elements || []).map((element) => (
+                {scorecardElementsWithValues.map((element) => (
                   <div key={element.name}>
                     <div className="flex justify-between text-sm mb-2">
                       <span className="font-medium text-gray-700 dark:text-gray-300">{element.name}</span>
@@ -150,13 +157,19 @@ export default function BbbeeComplianceReportPage() {
                       </div>
                     </div>
                     <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
+                      {/* eslint-disable-next-line react/forbid-component-props */}
                       <div 
-                        className={`h-3 rounded-full ${
+                        className={`h-3 rounded-full transition-all duration-300 ${
                           element.percentage >= 80 ? 'bg-gradient-to-r from-green-500 to-green-600' :
                           element.percentage >= 60 ? 'bg-gradient-to-r from-yellow-500 to-yellow-600' :
                           'bg-gradient-to-r from-red-500 to-red-600'
                         }`}
-                        style={{ width: `${element.percentage}%` }}
+                        style={{ width: `${Math.min(element.percentage, 100)}%` }}
+                        role="progressbar"
+                        aria-valuenow={element.percentValue}
+                        aria-valuemin={0}
+                        aria-valuemax={100}
+                        aria-label={`${element.name}: ${element.percentage} percent achieved`}
                       ></div>
                     </div>
                   </div>

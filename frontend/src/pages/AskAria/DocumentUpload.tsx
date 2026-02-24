@@ -273,10 +273,11 @@ export default function DocumentUpload() {
           <div className="bg-white dark:bg-gray-800/80 backdrop-blur-sm rounded-xl shadow-xl border border-white/20 p-8">
             <div className="mb-6 grid grid-cols-3 gap-3">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label htmlFor="company-id" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Company ID
                 </label>
                 <input
+                  id="company-id"
                   type="number"
                   value={companyId}
                   onChange={(e) => setCompanyId(parseInt(e.target.value))}
@@ -393,13 +394,14 @@ export default function DocumentUpload() {
 
               <div className="grid grid-cols-2 gap-3 mb-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label htmlFor="supplier-name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Supplier Name
                     <span className={`ml-2 text-xs px-2 py-0.5 rounded ${getConfidenceColor(processedDoc.field_confidence.supplier_name || 0)}`}>
                       {((processedDoc.field_confidence.supplier_name || 0) * 100).toFixed(0)}%
                     </span>
                   </label>
                   <input
+                    id="supplier-name"
                     type="text"
                     value={processedDoc.header.supplier_name}
                     onChange={(e) => handleHeaderChange('supplier_name', e.target.value)}
@@ -407,13 +409,14 @@ export default function DocumentUpload() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label htmlFor="invoice-number" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Invoice Number
                     <span className={`ml-2 text-xs px-2 py-0.5 rounded ${getConfidenceColor(processedDoc.field_confidence.invoice_number || 0)}`}>
                       {((processedDoc.field_confidence.invoice_number || 0) * 100).toFixed(0)}%
                     </span>
                   </label>
                   <input
+                    id="invoice-number"
                     type="text"
                     value={processedDoc.header.invoice_number}
                     onChange={(e) => handleHeaderChange('invoice_number', e.target.value)}
@@ -421,8 +424,9 @@ export default function DocumentUpload() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Invoice Date</label>
+                  <label htmlFor="invoice-date" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Invoice Date</label>
                   <input
+                    id="invoice-date"
                     type="date"
                     value={processedDoc.header.invoice_date}
                     onChange={(e) => handleHeaderChange('invoice_date', e.target.value)}
@@ -430,8 +434,9 @@ export default function DocumentUpload() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Due Date</label>
+                  <label htmlFor="due-date" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Due Date</label>
                   <input
+                    id="due-date"
                     type="date"
                     value={processedDoc.header.due_date}
                     onChange={(e) => handleHeaderChange('due_date', e.target.value)}
@@ -439,8 +444,9 @@ export default function DocumentUpload() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Net Amount</label>
+                  <label htmlFor="net-amount" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Net Amount</label>
                   <input
+                    id="net-amount"
                     type="number"
                     step="0.01"
                     value={processedDoc.header.net_amount}
@@ -449,8 +455,9 @@ export default function DocumentUpload() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">VAT Amount</label>
+                  <label htmlFor="vat-amount" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">VAT Amount</label>
                   <input
+                    id="vat-amount"
                     type="number"
                     step="0.01"
                     value={processedDoc.header.vat_amount}
@@ -480,6 +487,7 @@ export default function DocumentUpload() {
                           <td className="px-4 py-2">
                             <input
                               type="text"
+                              aria-label={`Line ${idx + 1} Description`}
                               value={line.description}
                               onChange={(e) => handleLineChange(idx, 'description', e.target.value)}
                               className="w-full px-2 py-1 border border-gray-300 dark:border-gray-600 rounded"
@@ -488,6 +496,7 @@ export default function DocumentUpload() {
                           <td className="px-4 py-2">
                             <input
                               type="number"
+                              aria-label={`Line ${idx + 1} Quantity`}
                               value={line.quantity}
                               onChange={(e) => handleLineChange(idx, 'quantity', e.target.value)}
                               className="w-20 px-2 py-1 border border-gray-300 dark:border-gray-600 rounded"
@@ -497,6 +506,7 @@ export default function DocumentUpload() {
                             <input
                               type="number"
                               step="0.01"
+                              aria-label={`Line ${idx + 1} Unit Price`}
                               value={line.unit_price}
                               onChange={(e) => handleLineChange(idx, 'unit_price', e.target.value)}
                               className="w-24 px-2 py-1 border border-gray-300 dark:border-gray-600 rounded"
@@ -506,6 +516,7 @@ export default function DocumentUpload() {
                             <input
                               type="number"
                               step="0.01"
+                              aria-label={`Line ${idx + 1} Discount Percent`}
                               value={line.discount_percent}
                               onChange={(e) => handleLineChange(idx, 'discount_percent', e.target.value)}
                               className="w-20 px-2 py-1 border border-gray-300 dark:border-gray-600 rounded"
@@ -515,6 +526,7 @@ export default function DocumentUpload() {
                             <input
                               type="number"
                               step="0.01"
+                              aria-label={`Line ${idx + 1} Tax Rate`}
                               value={line.tax_rate}
                               onChange={(e) => handleLineChange(idx, 'tax_rate', e.target.value)}
                               className="w-20 px-2 py-1 border border-gray-300 dark:border-gray-600 rounded"

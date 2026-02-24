@@ -94,6 +94,8 @@ export default function ExpenseManagementReportPage() {
     { label: 'Rejected', value: summary.rejected, color: 'red' }
   ] : [];
 
+  const accuracyValue = Math.round(Number(summary?.auto_coding_accuracy) || 0);
+
   return (
     <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4">
       <div className="mx-auto">
@@ -105,14 +107,18 @@ export default function ExpenseManagementReportPage() {
           <div className="flex gap-3 items-center">
             <div className="flex items-center gap-2">
               <Calendar className="h-5 w-5 text-gray-500" />
+              <label htmlFor="expense-start-date" className="sr-only">Start Date</label>
               <input
+                id="expense-start-date"
                 type="date"
                 value={dateRange.start}
                 onChange={(e) => setDateRange(prev => ({ ...prev, start: e.target.value }))}
                 className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
               />
               <span className="text-gray-500">to</span>
+              <label htmlFor="expense-end-date" className="sr-only">End Date</label>
               <input
+                id="expense-end-date"
                 type="date"
                 value={dateRange.end}
                 onChange={(e) => setDateRange(prev => ({ ...prev, end: e.target.value }))}
@@ -121,6 +127,8 @@ export default function ExpenseManagementReportPage() {
             </div>
             <button
               onClick={fetchExpenseData}
+              aria-label="Refresh expense data"
+              title="Refresh expense data"
               className="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
             >
               <RefreshCw className={`h-5 w-5 ${loading ? 'animate-spin' : ''}`} />
@@ -159,9 +167,15 @@ export default function ExpenseManagementReportPage() {
               <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Auto-Coding Accuracy: {summary?.auto_coding_accuracy || 0}%</h3>
               <p className="text-gray-600 dark:text-gray-300">{summary?.auto_coded_count || 0} of {summary?.total_claims || 0} claims auto-coded successfully</p>
               <div className="mt-4 w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
+                {/* eslint-disable-next-line react/forbid-component-props */}
                 <div 
-                  className="bg-gradient-to-r from-indigo-600 to-purple-600 h-3 rounded-full" 
-                  style={{ width: `${summary?.auto_coding_accuracy || 0}%` }}
+                  className="bg-gradient-to-r from-indigo-600 to-purple-600 h-3 rounded-full transition-all duration-300" 
+                  style={{ width: `${Math.min(summary?.auto_coding_accuracy || 0, 100)}%` }}
+                  role="progressbar"
+                  aria-valuenow={accuracyValue}
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                  aria-label={`Auto-coding accuracy: ${summary?.auto_coding_accuracy || 0} percent`}
                 ></div>
               </div>
             </div>

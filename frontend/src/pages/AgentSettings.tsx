@@ -125,6 +125,8 @@ export default function AgentSettings() {
           <button
             onClick={() => navigate('/agents')}
             className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 dark:bg-gray-700 rounded-lg"
+            title="Back to agents"
+            aria-label="Back to agents"
           >
             <ArrowLeft className="h-5 w-5" />
           </button>
@@ -232,6 +234,8 @@ export default function AgentSettings() {
                   value={agent.name}
                   onChange={(e) => setAgent({ ...agent, name: e.target.value })}
                   className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
+                  placeholder="Agent name"
+                  title="Agent name"
                 />
               </div>
 
@@ -244,6 +248,8 @@ export default function AgentSettings() {
                   onChange={(e) => setAgent({ ...agent, description: e.target.value })}
                   rows={2}
                   className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
+                  placeholder="Agent description"
+                  title="Agent description"
                 />
               </div>
 
@@ -255,6 +261,8 @@ export default function AgentSettings() {
                   value={agent.model || 'tinyllama'}
                   onChange={(e) => setAgent({ ...agent, model: e.target.value })}
                   className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
+                  title="Model"
+                  aria-label="Model"
                 >
                   <option value="tinyllama">TinyLlama (Fast, Local)</option>
                   <option value="qwen2.5:3b-instruct">Qwen 2.5 3B (Balanced)</option>
@@ -274,6 +282,8 @@ export default function AgentSettings() {
                   value={agent.temperature || 0.7}
                   onChange={(e) => setAgent({ ...agent, temperature: parseFloat(e.target.value) })}
                   className="w-full"
+                  title="Temperature"
+                  aria-label="Temperature"
                 />
                 <div className="flex justify-between text-xs text-gray-500 dark:text-gray-300 mt-1">
                   <span>Precise</span>

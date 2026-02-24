@@ -526,7 +526,7 @@ const AskAriaChat: React.FC = () => {
                   Bot Categories
                 </h2>
                 <button onClick={() => setShowBotPanel(false)} className="text-purple-300 hover:text-white">
-                  <X className="w-4 h-4" />
+                  <X className="w-4 h-4" title="Close bot panel" aria-label="Close bot panel" />
                 </button>
               </div>
               <div className="space-y-2">
@@ -580,7 +580,7 @@ const AskAriaChat: React.FC = () => {
                   How to Use Aria
                 </h2>
                 <button onClick={() => setShowHelp(false)} className="text-purple-300 hover:text-white">
-                  <X className="w-4 h-4" />
+                  <X className="w-4 h-4" title="Close help panel" aria-label="Close help panel" />
                 </button>
               </div>
               <div className="space-y-4">
@@ -718,6 +718,8 @@ const AskAriaChat: React.FC = () => {
                 onClick={() => handleQuickAction(prompt)}
                 disabled={loading}
                 className="text-xs px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 text-purple-300 hover:text-white border border-white/20 hover:border-purple-500/30 transition-all duration-200 disabled:opacity-50"
+                title={`Quick prompt: ${prompt}`}
+                aria-label={`Quick prompt: ${prompt}`}
               >
                 {prompt}
               </button>
@@ -731,12 +733,14 @@ const AskAriaChat: React.FC = () => {
               accept="image/*,application/pdf"
               onChange={handleFileUpload}
               className="hidden"
+              title="Upload document"
             />
             <button
               onClick={() => fileInputRef.current?.click()}
               disabled={loading}
               className="flex-shrink-0 w-12 h-12 rounded-xl bg-white/5 hover:bg-white/10 border border-white/20 flex items-center justify-center text-purple-300 hover:text-white transition-all duration-200 disabled:opacity-50 hover:scale-105"
               title="Upload document"
+              aria-label="Upload document"
             >
               <Paperclip className="w-5 h-5" />
             </button>
@@ -757,6 +761,7 @@ const AskAriaChat: React.FC = () => {
               disabled={!inputMessage.trim() || loading}
               className="flex-shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 flex items-center justify-center text-white  transition-all duration-200 disabled:opacity-50 disabled:shadow-none hover:scale-105 disabled:hover:scale-100"
               title="Send message"
+              aria-label="Send message"
             >
               <Send className="w-5 h-5" />
             </button>

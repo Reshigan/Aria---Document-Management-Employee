@@ -14,6 +14,7 @@ sys.path.insert(0, str(backend_dir))
 
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker, Session
 from pydantic import BaseModel
@@ -338,6 +339,17 @@ async def get_products():
         "pageSize": 50
     }
 
+
+# --- Add POST endpoint for creating employees (mock) ---
+@app.post("/hr/employees")
+@app.post("/api/v1/hr/employees")
+async def create_employee(employee: dict):
+    """Create new employee (mock)"""
+    # In a real app, insert into DB. Here, just echo back with a fake id.
+    new_id = 100  # Simulate next id
+    employee["id"] = new_id
+    return {"message": "Employee created", "employee": employee}
+
 @app.get("/hr/employees")
 @app.get("/api/v1/hr/employees")
 async def get_employees():
@@ -387,6 +399,96 @@ async def get_employees():
         "total": 3,
         "page": 1,
         "pageSize": 50
+    }
+
+@app.get("/hr/employees/{employee_id}")
+@app.get("/api/v1/hr/employees/{employee_id}")
+async def get_employee_by_id(employee_id: int):
+    """Get single employee by ID"""
+    employees = {
+        1: {
+            "id": 1,
+            "employeeId": "EMP001",
+            "firstName": "Sarah",
+            "lastName": "Johnson",
+            "name": "Sarah Johnson",
+            "email": "sarah.johnson@aria.local",
+            "department": "Sales",
+            "position": "Sales Manager",
+            "hireDate": "2024-01-15",
+            "status": "Active",
+            "salary": 75000.00,
+            "manager": "John Doe"
+        },
+        2: {
+            "id": 2,
+            "employeeId": "EMP002",
+            "firstName": "Michael",
+            "lastName": "Chen",
+            "name": "Michael Chen",
+            "email": "michael.chen@aria.local",
+            "department": "IT",
+            "position": "Software Engineer",
+            "hireDate": "2023-06-01",
+            "status": "Active",
+            "salary": 85000.00,
+            "manager": "Jane Smith"
+        },
+        3: {
+            "id": 3,
+            "employeeId": "EMP003",
+            "firstName": "Emily",
+            "lastName": "Brown",
+            "name": "Emily Brown",
+            "email": "emily.brown@aria.local",
+            "department": "Finance",
+            "position": "Accountant",
+            "hireDate": "2024-03-20",
+            "status": "Active",
+            "salary": 65000.00,
+            "manager": "Robert Lee"
+        }
+    }
+    
+    if employee_id not in employees:
+        raise HTTPException(status_code=404, detail="Employee not found")
+    
+    return employees[employee_id]
+
+# --- Add PUT and DELETE endpoints for employee editing/deleting ---
+@app.put("/hr/employees/{employee_id}")
+@app.put("/api/v1/hr/employees/{employee_id}")
+async def update_employee(employee_id: int, employee: dict):
+    """Update employee (mock)"""
+    # In a real app, update the DB. Here, just echo back.
+    return {"message": f"Employee {employee_id} updated", "employee": employee}
+
+@app.delete("/hr/employees/{employee_id}")
+@app.delete("/api/v1/hr/employees/{employee_id}")
+async def delete_employee(employee_id: int):
+    """Delete employee (mock)"""
+    # In a real app, delete from DB. Here, just return success.
+    return {"message": f"Employee {employee_id} deleted"}
+
+@app.post("/hr/employees")
+@app.post("/api/hr/employees")
+@app.post("/api/v1/hr/employees")
+async def create_employee(employee_data: dict):
+    """Create new employee"""
+    # In production, this would save to database
+    # For now, return success with the employee data
+    import secrets
+    new_id = secrets.randbelow(9000) + 1000
+    
+    return {
+        "message": "Employee created successfully",
+        "employee": {
+            "id": new_id,
+            "employeeId": f"EMP{str(new_id).zfill(3)}",
+            **employee_data,
+            "status": "Active",
+            "created_at": "2026-02-24T10:30:00Z"
+        }
     }
 
 # ============================================
@@ -2620,6 +2722,226 @@ async def get_bots():
         }
     }
 
+# ============================================
+# AGENT/BOT MANAGEMENT - Individual Agent Endpoints
+# ============================================
+
+# Bot definitions for reuse
+BOTS_DATA = {
+    "accounts_payable": {"id": "accounts_payable", "name": "Accounts Payable Bot", "category": "Financial", "description": "Automates AP processing, invoice validation, and approval workflows", "status": "active"},
+    "ar_collections": {"id": "ar_collections", "name": "AR Collections Bot", "category": "Financial", "description": "Manages receivables, collections, and payment reminders", "status": "active"},
+    "bank_reconciliation": {"id": "bank_reconciliation", "name": "Bank Reconciliation Bot", "category": "Financial", "description": "Automatic bank statement reconciliation for SA banks (FNB, Nedbank, Standard Bank)", "status": "active"},
+    "expense_management": {"id": "expense_management", "name": "Expense Management Bot", "category": "Financial", "description": "Employee expense processing, approval, and reimbursement", "status": "active"},
+    "financial_close": {"id": "financial_close", "name": "Financial Close Bot", "category": "Financial", "description": "Period-end close automation and reconciliation", "status": "active"},
+    "financial_reporting": {"id": "financial_reporting", "name": "Financial Reporting Bot", "category": "Financial", "description": "Automated financial report generation and distribution", "status": "active"},
+    "general_ledger": {"id": "general_ledger", "name": "General Ledger Bot", "category": "Financial", "description": "GL posting, journal entries, and account management", "status": "active"},
+    "invoice_reconciliation": {"id": "invoice_reconciliation", "name": "Invoice Reconciliation Bot", "category": "Financial", "description": "Invoice matching, reconciliation, and discrepancy resolution", "status": "active"},
+    "payment_processing": {"id": "payment_processing", "name": "Payment Processing Bot", "category": "Financial", "description": "Automated payment processing and batch runs for SA banking", "status": "active"},
+    "tax_compliance": {"id": "tax_compliance", "name": "Tax Compliance Bot", "category": "Financial", "description": "SARS tax compliance (VAT201, EMP201, PAYE, UIF, SDL)", "status": "active"},
+    "bbbee_compliance": {"id": "bbbee_compliance", "name": "B-BBEE Compliance Bot", "category": "Financial", "description": "B-BBEE scorecard tracking and reporting for SA businesses", "status": "active"},
+}
+
+@app.get("/agents/{agent_id}")
+@app.get("/api/agents/{agent_id}")
+@app.get("/api/v1/agents/{agent_id}")
+async def get_agent_details(agent_id: str):
+    """Get detailed information about a specific agent/bot"""
+    
+    # Get bot from data or fetch from all bots
+    bot = BOTS_DATA.get(agent_id)
+    
+    if not bot:
+        # Try to find in full bot list
+        bots_response = await get_bots()
+        all_bots = bots_response["bots"]
+        bot = next((b for b in all_bots if b["id"] == agent_id), None)
+    
+    if not bot:
+        raise HTTPException(status_code=404, detail=f"Agent {agent_id} not found")
+    
+    # Enhance with additional details for settings page
+    return {
+        **bot,
+        "module": bot["category"],
+        "description": bot.get("description", "This agent automates business processes efficiently."),
+        "capabilities": [
+            "Automated processing",
+            "Real-time execution", 
+            "Error handling",
+            "Audit trail logging",
+            "Multi-tenant support"
+        ],
+        "model": "gpt-4",
+        "temperature": 0.7,
+        "enabled": True,
+        "version": "2.0.0",
+        "last_updated": "2026-02-20T10:30:00Z",
+        "created_date": "2025-10-01T00:00:00Z",
+        "settings": {
+            "auto_execute": True,
+            "max_retries": 3,
+            "timeout_seconds": 300,
+            "notification_email": "admin@aria.local",
+            "schedule_enabled": False,
+            "schedule_cron": "0 */6 * * *"
+        }
+    }
+
+@app.put("/agents/{agent_id}")
+@app.put("/api/agents/{agent_id}")
+@app.put("/api/v1/agents/{agent_id}")
+async def update_agent_settings(agent_id: str, settings: dict):
+    """Update agent settings and configuration"""
+    
+    # Validate agent exists
+    try:
+        await get_agent_details(agent_id)
+    except HTTPException:
+        raise
+    
+    # In production, this would update database
+    # For now, return success with updated settings
+    return {
+        "message": f"Agent {agent_id} settings updated successfully",
+        "agent_id": agent_id,
+        "updated_at": "2026-02-24T10:30:00Z",
+        "settings": settings
+    }
+
+@app.post("/bots/execute")
+@app.post("/api/bots/execute")
+@app.post("/api/v1/bots/execute")
+async def execute_bot(execution_request: dict):
+    """Execute a specific bot/agent"""
+    
+    bot_id = execution_request.get("bot_id")
+    data = execution_request.get("data", {})
+    
+    if not bot_id:
+        raise HTTPException(status_code=400, detail="bot_id is required")
+    
+    # Validate bot exists - get bot info
+    bot = BOTS_DATA.get(bot_id)
+    if not bot:
+        bots_response = await get_bots()
+        all_bots = bots_response["bots"]
+        bot = next((b for b in all_bots if b["id"] == bot_id), None)
+    
+    if not bot:
+        raise HTTPException(status_code=404, detail=f"Bot {bot_id} not found")
+    
+    # Simulate bot execution
+    import time
+    import random
+    
+    execution_time_ms = random.randint(500, 3000)
+    success = random.random() > 0.1  # 90% success rate
+    
+    if success:
+        return {
+            "status": "success",
+            "message": f"Bot '{bot['name']}' executed successfully",
+            "bot_id": bot_id,
+            "bot_name": bot["name"],
+            "execution_id": f"exec_{int(time.time())}",
+            "execution_time_ms": execution_time_ms,
+            "timestamp": "2026-02-24T10:30:00Z",
+            "result": {
+                "records_processed": random.randint(10, 500),
+                "items_updated": random.randint(5, 250),
+                "errors": 0,
+                "warnings": random.randint(0, 5)
+            }
+        }
+    else:
+        raise HTTPException(
+            status_code=500, 
+            detail=f"Bot execution failed: Simulated error for testing"
+        )
+
+@app.get("/agents/{agent_id}/usage")
+@app.get("/api/agents/{agent_id}/usage")
+@app.get("/api/v1/agents/{agent_id}/usage")
+async def get_agent_usage(agent_id: str):
+    """Get usage statistics for a specific agent"""
+    
+    # Validate agent exists
+    bot = BOTS_DATA.get(agent_id)
+    if not bot:
+        bots_response = await get_bots()
+        all_bots = bots_response["bots"]
+        bot = next((b for b in all_bots if b["id"] == agent_id), None)
+    
+    if not bot:
+        raise HTTPException(status_code=404, detail=f"Agent {agent_id} not found")
+    
+    import random
+    
+    total_runs = random.randint(100, 500)
+    successful_runs = int(total_runs * random.uniform(0.85, 0.98))
+    failed_runs = total_runs - successful_runs
+    
+    return {
+        "agent_id": agent_id,
+        "total_runs": total_runs,
+        "successful_runs": successful_runs,
+        "failed_runs": failed_runs,
+        "success_rate": round((successful_runs / total_runs) * 100, 1) if total_runs > 0 else 0,
+        "avg_duration_ms": random.randint(1000, 5000),
+        "last_run": "2026-02-24T09:15:00Z",
+        "runs_today": random.randint(5, 25),
+        "runs_7d": random.randint(30, 100),
+        "runs_30d": total_runs,
+        "uptime_percentage": round(random.uniform(95.0, 99.9), 2),
+        "last_error": "Connection timeout" if failed_runs > 0 else None,
+        "last_error_time": "2026-02-23T14:22:00Z" if failed_runs > 0 else None,
+        "avg_records_per_run": random.randint(50, 500),
+        "total_records_processed": random.randint(10000, 50000)
+    }
+
+@app.get("/agents/{agent_id}/history")
+@app.get("/api/agents/{agent_id}/history")
+@app.get("/api/v1/agents/{agent_id}/history")
+async def get_agent_execution_history(agent_id: str, limit: int = 50):
+    """Get execution history for a specific agent"""
+    
+    # Validate agent exists
+    bot = BOTS_DATA.get(agent_id)
+    if not bot:
+        bots_response = await get_bots()
+        all_bots = bots_response["bots"]
+        bot = next((b for b in all_bots if b["id"] == agent_id), None)
+    
+    if not bot:
+        raise HTTPException(status_code=404, detail=f"Agent {agent_id} not found")
+    
+    import random
+    from datetime import datetime, timedelta
+    
+    history = []
+    for i in range(min(limit, 20)):
+        timestamp = datetime.now() - timedelta(hours=i*2, minutes=random.randint(0, 59))
+        success = random.random() > 0.1
+        
+        history.append({
+            "execution_id": f"exec_{int(timestamp.timestamp())}_{i}",
+            "timestamp": timestamp.isoformat() + "Z",
+            "status": "success" if success else "failed",
+            "duration_ms": random.randint(500, 4000),
+            "records_processed": random.randint(10, 200) if success else 0,
+            "error_message": None if success else "Sample error message",
+            "triggered_by": random.choice(["schedule", "manual", "api", "webhook"])
+        })
+    
+    return {
+        "agent_id": agent_id,
+        "agent_name": bot["name"],
+        "history": history,
+        "total_records": len(history),
+        "page": 1,
+        "page_size": limit
+    }
+
 @app.get("/erp/procure-to-pay/purchase-orders")
 @app.get("/api/v1/erp/procure-to-pay/purchase-orders")
 async def get_purchase_orders():
@@ -2730,10 +3052,12 @@ async def create_aria_session():
     import secrets
     session_id = secrets.token_urlsafe(16)
     return {
+        "conversation_id": session_id,
         "sessionId": session_id,
+        "message": "Hi! I'm Aria, your AI assistant. I can help you with invoices, employees, inventory, bots, reports, and more. What would you like to do today?",
+        "greeting": "Hi! I'm Aria, your AI assistant. How can I help you today?",
         "createdAt": "2026-02-22T10:00:00Z",
-        "status": "active",
-        "greeting": "Hi! I'm Aria, your AI assistant. How can I help you today?"
+        "status": "active"
     }
 
 @app.post("/ask-aria/message")
@@ -2764,6 +3088,46 @@ async def send_aria_message(message: dict):
             "View purchase orders"
         ]
     }
+
+@app.post("/ask-aria/message/stream")
+@app.post("/api/v1/ask-aria/message/stream")
+async def send_aria_message_stream(message: dict):
+    """Send message to Ask Aria with streaming response"""
+    import asyncio
+    import json
+    
+    user_message = message.get("message", "")
+    conversation_id = message.get("conversation_id", "")
+    
+    # Enhanced responses based on keywords
+    response_text = "I understand your question. As a demo, I can help with: **Invoices** (view, create, reconcile), **Employees** (HR, payroll, leave), **Inventory** (stock levels, reorder), **Bots** (execute automation), and **Reports** (analytics, dashboards). Try asking me about any of these!"
+    
+    if "invoice" in user_message.lower():
+        response_text = "I can help you with invoices! 📄\n\n**What I can do:**\n- Show pending invoices\n- Create new invoices\n- Run invoice reconciliation bot\n- Check payment status\n\nWhat would you like to do?"
+    elif "employee" in user_message.lower() or "hr" in user_message.lower():
+        response_text = "For HR and employee questions, I can help with: 👥\n\n- **Employee records** - View and manage\n- **Leave balances** - Check available days\n- **Payroll** - Process and view\n- **Onboarding** - New employee setup\n\nWhat would you like to know?"
+    elif "inventory" in user_message.lower() or "stock" in user_message.lower():
+        response_text = "I can help with inventory management! 📦\n\n**Current Status:**\n- 3 products in stock\n- Low stock alerts active\n- Reorder suggestions available\n\nWould you like to see stock levels, reorder items, or run inventory optimization bot?"
+    elif "bot" in user_message.lower():
+        response_text = "I have access to **109 AI automation bots** across 10 categories! 🤖\n\n**Popular categories:**\n- Financial (12 bots) - Reconciliation, AP, AR, Tax\n- Sales (15 bots) - Quotes, CRM, Analytics\n- Inventory (8 bots) - Stock, Reorder, Valuation\n- HR (11 bots) - Payroll, Leave, Onboarding\n\nYou can ask me to run any bot, like: *'Run invoice reconciliation bot'* or *'Execute payroll processing'*"
+    elif "help" in user_message.lower() or "what can you" in user_message.lower():
+        response_text = "I'm Aria, your AI ERP assistant! ✨\n\n**I can help with:**\n\n**Finance** 💰\n- Invoices, payments, reconciliation\n- AP/AR management\n- Financial reports\n\n**Operations** 🏭\n- Inventory management\n- Purchase orders\n- Production tracking\n\n**People** 👥\n- HR records\n- Payroll\n- Leave management\n\n**Automation** 🤖\n- Run 109 AI bots\n- Execute workflows\n- Generate reports\n\nJust ask me what you need!"
+    elif "report" in user_message.lower() or "dashboard" in user_message.lower() or "analytics" in user_message.lower():
+        response_text = "I can generate various reports and dashboards! 📊\n\n**Available Reports:**\n- Sales analytics\n- Financial reports (P&L, Balance Sheet)\n- Inventory reports\n- Operational dashboards\n- Custom reports\n\nWhich report would you like to see?"
+    
+    async def generate():
+        # Simulate streaming by sending the response word by word
+        words = response_text.split(' ')
+        accumulated = ""
+        
+        for i, word in enumerate(words):
+            accumulated += word + (" " if i < len(words) - 1 else "")
+            yield f"data: {json.dumps({'content': accumulated})}\n\n"
+            await asyncio.sleep(0.03)  # Simulate typing delay
+        
+        yield "data: [DONE]\n\n"
+    
+    return StreamingResponse(generate(), media_type="text/event-stream")
 
 @app.get("/bi/dashboard/executive")
 @app.get("/api/v1/bi/dashboard/executive")
@@ -5586,6 +5950,549 @@ async def get_hr_recent_activity():
         }
     ]
     return {"activities": activities}
+
+# ============================================================================
+# REPORTS API ENDPOINTS
+# ============================================================================
+
+@app.get("/api/reports/aged-receivables")
+async def get_aged_receivables():
+    """Get aged receivables report showing outstanding customer balances by aging period"""
+    data = [
+        {
+            "customer_id": 1,
+            "customer_name": "ABC Manufacturing (Pty) Ltd",
+            "current": 125000.00,
+            "days_30": 45000.00,
+            "days_60": 20000.00,
+            "days_90": 15000.00,
+            "days_90_plus": 5000.00,
+            "total_outstanding": 210000.00
+        },
+        {
+            "customer_id": 2,
+            "customer_name": "XYZ Distributors",
+            "current": 85000.00,
+            "days_30": 30000.00,
+            "days_60": 12000.00,
+            "days_90": 8000.00,
+            "days_90_plus": 3000.00,
+            "total_outstanding": 138000.00
+        },
+        {
+            "customer_id": 3,
+            "customer_name": "South African Retailers",
+            "current": 95000.00,
+            "days_30": 25000.00,
+            "days_60": 18000.00,
+            "days_90": 10000.00,
+            "days_90_plus": 7000.00,
+            "total_outstanding": 155000.00
+        },
+        {
+            "customer_id": 4,
+            "customer_name": "Cape Town Suppliers",
+            "current": 55000.00,
+            "days_30": 20000.00,
+            "days_60": 8000.00,
+            "days_90": 5000.00,
+            "days_90_plus": 2000.00,
+            "total_outstanding": 90000.00
+        },
+        {
+            "customer_id": 5,
+            "customer_name": "Durban Industrial Co",
+            "current": 110000.00,
+            "days_30": 35000.00,
+            "days_60": 22000.00,
+            "days_90": 12000.00,
+            "days_90_plus": 8000.00,
+            "total_outstanding": 187000.00
+        },
+        {
+            "customer_id": 6,
+            "customer_name": "Johannesburg Trading",
+            "current": 75000.00,
+            "days_30": 28000.00,
+            "days_60": 15000.00,
+            "days_90": 9000.00,
+            "days_90_plus": 4000.00,
+            "total_outstanding": 131000.00
+        },
+        {
+            "customer_id": 7,
+            "customer_name": "Pretoria Enterprises",
+            "current": 65000.00,
+            "days_30": 18000.00,
+            "days_60": 10000.00,
+            "days_90": 6000.00,
+            "days_90_plus": 2500.00,
+            "total_outstanding": 101500.00
+        },
+        {
+            "customer_id": 8,
+            "customer_name": "Port Elizabeth Logistics",
+            "current": 48000.00,
+            "days_30": 15000.00,
+            "days_60": 7000.00,
+            "days_90": 4000.00,
+            "days_90_plus": 1500.00,
+            "total_outstanding": 75500.00
+        }
+    ]
+    
+    return {
+        "success": True,
+        "data": data,
+        "totals": {
+            "current": sum(row["current"] for row in data),
+            "days_30": sum(row["days_30"] for row in data),
+            "days_60": sum(row["days_60"] for row in data),
+            "days_90": sum(row["days_90"] for row in data),
+            "days_90_plus": sum(row["days_90_plus"] for row in data),
+            "total_outstanding": sum(row["total_outstanding"] for row in data)
+        }
+    }
+
+@app.get("/api/reports/aged-payables")
+async def get_aged_payables():
+    """Get aged payables report showing outstanding supplier balances by aging period"""
+    data = [
+        {
+            "supplier_id": 1,
+            "supplier_name": "SA Power Solutions (Pty) Ltd",
+            "current": 95000.00,
+            "days_30": 35000.00,
+            "days_60": 18000.00,
+            "days_90": 12000.00,
+            "days_90_plus": 5000.00,
+            "total_outstanding": 165000.00
+        },
+        {
+            "supplier_id": 2,
+            "supplier_name": "Cape Town Manufacturing Supplies",
+            "current": 75000.00,
+            "days_30": 28000.00,
+            "days_60": 15000.00,
+            "days_90": 8000.00,
+            "days_90_plus": 3000.00,
+            "total_outstanding": 129000.00
+        },
+        {
+            "supplier_id": 3,
+            "supplier_name": "Durban Raw Materials Co",
+            "current": 115000.00,
+            "days_30": 42000.00,
+            "days_60": 22000.00,
+            "days_90": 14000.00,
+            "days_90_plus": 7000.00,
+            "total_outstanding": 200000.00
+        },
+        {
+            "supplier_id": 4,
+            "supplier_name": "Johannesburg Electronics",
+            "current": 65000.00,
+            "days_30": 22000.00,
+            "days_60": 10000.00,
+            "days_90": 6000.00,
+            "days_90_plus": 2000.00,
+            "total_outstanding": 105000.00
+        },
+        {
+            "supplier_id": 5,
+            "supplier_name": "Pretoria Logistics Services",
+            "current": 52000.00,
+            "days_30": 18000.00,
+            "days_60": 8000.00,
+            "days_90": 4000.00,
+            "days_90_plus": 1500.00,
+            "total_outstanding": 83500.00
+        }
+    ]
+    
+    return {
+        "success": True,
+        "data": data,
+        "totals": {
+            "current": sum(row["current"] for row in data),
+            "days_30": sum(row["days_30"] for row in data),
+            "days_60": sum(row["days_60"] for row in data),
+            "days_90": sum(row["days_90"] for row in data),
+            "days_90_plus": sum(row["days_90_plus"] for row in data),
+            "total_outstanding": sum(row["total_outstanding"] for row in data)
+        }
+    }
+
+@app.get("/api/reports/trial-balance")
+async def get_trial_balance():
+    """Get trial balance report"""
+    data = [
+        {"account_code": "1000", "account_name": "Cash - FNB Current", "debit": 487250.75, "credit": 0},
+        {"account_code": "1010", "account_name": "Cash - Nedbank Savings", "debit": 256000.50, "credit": 0},
+        {"account_code": "1100", "account_name": "Accounts Receivable", "debit": 1088000.00, "credit": 0},
+        {"account_code": "1300", "account_name": "Inventory", "debit": 850000.00, "credit": 0},
+        {"account_code": "1500", "account_name": "Fixed Assets", "debit": 2500000.00, "credit": 0},
+        {"account_code": "2000", "account_name": "Accounts Payable", "debit": 0, "credit": 682500.00},
+        {"account_code": "2100", "account_name": "VAT Payable", "debit": 0, "credit": 125000.00},
+        {"account_code": "2200", "account_name": "PAYE Payable", "debit": 0, "credit": 75000.00},
+        {"account_code": "3000", "account_name": "Share Capital", "debit": 0, "credit": 1000000.00},
+        {"account_code": "3100", "account_name": "Retained Earnings", "debit": 0, "credit": 1800000.00},
+        {"account_code": "4000", "account_name": "Sales Revenue", "debit": 0, "credit": 3500000.00},
+        {"account_code": "5000", "account_name": "Cost of Sales", "debit": 1800000.00, "credit": 0},
+        {"account_code": "6000", "account_name": "Operating Expenses", "debit": 950000.00, "credit": 0},
+        {"account_code": "6100", "account_name": "Salaries & Wages", "debit": 450000.00, "credit": 0},
+        {"account_code": "6200", "account_name": "Rent Expense", "debit": 120000.00, "credit": 0}
+    ]
+    
+    total_debits = sum(row["debit"] for row in data)
+    total_credits = sum(row["credit"] for row in data)
+    
+    return {
+        "success": True,
+        "data": data,
+        "totals": {
+            "debit": total_debits,
+            "credit": total_credits,
+            "balanced": abs(total_debits - total_credits) < 0.01
+        }
+    }
+
+@app.get("/api/reports/profit-and-loss")
+async def get_profit_and_loss():
+    """Get profit and loss statement"""
+    return {
+        "success": True,
+        "data": {
+            "revenue": {
+                "sales": 3500000.00,
+                "other_income": 50000.00,
+                "total": 3550000.00
+            },
+            "cost_of_sales": {
+                "materials": 1200000.00,
+                "direct_labor": 400000.00,
+                "manufacturing_overhead": 200000.00,
+                "total": 1800000.00
+            },
+            "gross_profit": 1750000.00,
+            "operating_expenses": {
+                "salaries_wages": 450000.00,
+                "rent": 120000.00,
+                "utilities": 45000.00,
+                "marketing": 85000.00,
+                "insurance": 35000.00,
+                "depreciation": 125000.00,
+                "other": 90000.00,
+                "total": 950000.00
+            },
+            "operating_profit": 800000.00,
+            "other_income_expenses": {
+                "interest_income": 15000.00,
+                "interest_expense": -25000.00,
+                "total": -10000.00
+            },
+            "profit_before_tax": 790000.00,
+            "tax": 221200.00,
+            "net_profit": 568800.00,
+            "margins": {
+                "gross_margin": 49.3,
+                "operating_margin": 22.5,
+                "net_margin": 16.0
+            }
+        }
+    }
+
+@app.get("/api/reports/balance-sheet")
+async def get_balance_sheet():
+    """Get balance sheet"""
+    return {
+        "success": True,
+        "data": {
+            "assets": {
+                "current_assets": {
+                    "cash": 743251.25,
+                    "accounts_receivable": 1088000.00,
+                    "inventory": 850000.00,
+                    "prepaid_expenses": 45000.00,
+                    "total": 2726251.25
+                },
+                "fixed_assets": {
+                    "property": 1500000.00,
+                    "equipment": 800000.00,
+                    "vehicles": 450000.00,
+                    "accumulated_depreciation": -250000.00,
+                    "total": 2500000.00
+                },
+                "total_assets": 5226251.25
+            },
+            "liabilities": {
+                "current_liabilities": {
+                    "accounts_payable": 682500.00,
+                    "vat_payable": 125000.00,
+                    "paye_payable": 75000.00,
+                    "accrued_expenses": 55000.00,
+                    "total": 937500.00
+                },
+                "long_term_liabilities": {
+                    "bank_loan": 800000.00,
+                    "total": 800000.00
+                },
+                "total_liabilities": 1737500.00
+            },
+            "equity": {
+                "share_capital": 1000000.00,
+                "retained_earnings": 1800000.00,
+                "current_year_profit": 568800.00,
+                "total": 3368800.00
+            },
+            "total_liabilities_equity": 5106300.00
+        }
+    }
+
+@app.get("/api/reports/cash-flow")
+async def get_cash_flow():
+    """Get cash flow statement"""
+    return {
+        "success": True,
+        "data": {
+            "operating_activities": {
+                "net_profit": 568800.00,
+                "adjustments": {
+                    "depreciation": 125000.00,
+                    "increase_in_receivables": -150000.00,
+                    "increase_in_inventory": -85000.00,
+                    "increase_in_payables": 95000.00,
+                    "total": -15000.00
+                },
+                "net_cash_from_operations": 553800.00
+            },
+            "investing_activities": {
+                "purchase_of_equipment": -200000.00,
+                "purchase_of_vehicles": -150000.00,
+                "net_cash_from_investing": -350000.00
+            },
+            "financing_activities": {
+                "bank_loan_received": 300000.00,
+                "loan_repayment": -125000.00,
+                "dividends_paid": -200000.00,
+                "net_cash_from_financing": -25000.00
+            },
+            "net_increase_in_cash": 178800.00,
+            "cash_beginning": 564451.25,
+            "cash_ending": 743251.25
+        }
+    }
+
+@app.get("/api/reports/stock-valuation")
+async def get_stock_valuation():
+    """Get stock valuation report"""
+    items = [
+        {"sku": "SKU-001", "description": "Widget Type A", "quantity": 250, "unit_cost": 150.00, "total_value": 37500.00, "location": "WH-01"},
+        {"sku": "SKU-002", "description": "Widget Type B", "quantity": 180, "unit_cost": 220.00, "total_value": 39600.00, "location": "WH-01"},
+        {"sku": "SKU-003", "description": "Component Set C", "quantity": 500, "unit_cost": 85.00, "total_value": 42500.00, "location": "WH-02"},
+        {"sku": "SKU-004", "description": "Raw Material D", "quantity": 1200, "unit_cost": 45.00, "total_value": 54000.00, "location": "WH-02"},
+        {"sku": "SKU-005", "description": "Finished Product E", "quantity": 95, "unit_cost": 850.00, "total_value": 80750.00, "location": "WH-01"},
+        {"sku": "SKU-006", "description": "Assembly Kit F", "quantity": 320, "unit_cost": 125.00, "total_value": 40000.00, "location": "WH-03"},
+        {"sku": "SKU-007", "description": "Spare Part G", "quantity": 650, "unit_cost": 65.00, "total_value": 42250.00, "location": "WH-03"},
+        {"sku": "SKU-008", "description": "Tool Set H", "quantity": 75, "unit_cost": 450.00, "total_value": 33750.00, "location": "WH-01"}
+    ]
+    
+    return {
+        "success": True,
+        "data": items,
+        "summary": {
+            "total_items": len(items),
+            "total_quantity": sum(item["quantity"] for item in items),
+            "total_value": sum(item["total_value"] for item in items)
+        }
+    }
+
+@app.get("/api/reports/vat-summary")
+async def get_vat_summary(start: str = None, end: str = None):
+    """Get VAT summary report"""
+    return {
+        "success": True,
+        "data": {
+            "period": {
+                "start": start or "2026-01-01",
+                "end": end or "2026-02-28"
+            },
+            "output_vat": {
+                "standard_rated_sales": 3000000.00,
+                "vat_collected": 450000.00
+            },
+            "input_vat": {
+                "standard_rated_purchases": 1800000.00,
+                "vat_paid": 270000.00,
+                "capital_goods": 300000.00,
+                "vat_on_capital": 45000.00,
+                "total_input_vat": 315000.00
+            },
+            "summary": {
+                "output_vat": 450000.00,
+                "input_vat": 315000.00,
+                "vat_payable": 135000.00
+            },
+            "transactions": [
+                {"date": "2026-02-15", "description": "Sales Invoice INV-2026-045", "output_vat": 15000.00, "input_vat": 0},
+                {"date": "2026-02-14", "description": "Supplier Invoice SUP-789", "output_vat": 0, "input_vat": 8500.00},
+                {"date": "2026-02-10", "description": "Sales Invoice INV-2026-044", "output_vat": 22500.00, "input_vat": 0},
+                {"date": "2026-02-08", "description": "Equipment Purchase", "output_vat": 0, "input_vat": 12000.00},
+                {"date": "2026-02-05", "description": "Sales Invoice INV-2026-043", "output_vat": 18000.00, "input_vat": 0}
+            ]
+        }
+    }
+
+@app.get("/reports/payroll/runs")
+async def get_payroll_runs(year: int = 2026):
+    """Get payroll run history"""
+    return [
+        {"id": "1", "period": "January 2026", "employees": 45, "gross": 450000, "net": 350000, "paye": 75000, "uif": 4500, "status": "Completed", "run_date": "2026-01-25"},
+        {"id": "2", "period": "December 2025", "employees": 45, "gross": 480000, "net": 370000, "paye": 82000, "uif": 4800, "status": "Completed", "run_date": "2025-12-25"},
+        {"id": "3", "period": "November 2025", "employees": 44, "gross": 445000, "net": 345000, "paye": 74000, "uif": 4450, "status": "Completed", "run_date": "2025-11-25"},
+        {"id": "4", "period": "October 2025", "employees": 44, "gross": 445000, "net": 345000, "paye": 74000, "uif": 4450, "status": "Completed", "run_date": "2025-10-25"}
+    ]
+
+@app.get("/reports/payroll/summary")
+async def get_payroll_summary(year: int = 2026):
+    """Get payroll summary"""
+    return {
+        "total_employees": 45,
+        "monthly_cost": 450000,
+        "ytd_cost": 5400000,
+        "sars_status": "Up to date",
+        "last_submission": "2026-02-01"
+    }
+
+@app.get("/reports/payroll/export")
+async def export_payroll(year: int = 2026, format: str = "csv"):
+    """Export payroll data"""
+    return {
+        "success": True,
+        "message": f"Payroll data for {year} exported as {format}",
+        "download_url": f"/downloads/payroll_{year}.{format}"
+    }
+
+@app.get("/reports/expenses/claims")
+async def get_expense_claims(start_date: str = None, end_date: str = None):
+    """Get expense claims"""
+    return [
+        {"id": "1", "employee": "Thabo Mokwena", "department": "Sales", "category": "Travel", "amount": 2500.00, "status": "Approved", "submitted_date": "2026-02-15", "approved_date": "2026-02-16"},
+        {"id": "2", "employee": "Lerato Dlamini", "department": "Marketing", "category": "Entertainment", "amount": 1800.00, "status": "Approved", "submitted_date": "2026-02-14", "approved_date": "2026-02-15"},
+        {"id": "3", "employee": "Sipho Nkosi", "department": "Operations", "category": "Supplies", "amount": 850.00, "status": "Pending", "submitted_date": "2026-02-18"},
+        {"id": "4", "employee": "Nomsa Zulu", "department": "IT", "category": "Equipment", "amount": 4500.00, "status": "Approved", "submitted_date": "2026-02-10", "approved_date": "2026-02-12"},
+        {"id": "5", "employee": "Bongani Mthembu", "department": "Sales", "category": "Fuel", "amount": 1200.00, "status": "Approved", "submitted_date": "2026-02-12", "approved_date": "2026-02-13"}
+    ]
+
+@app.get("/reports/expenses/summary")
+async def get_expense_summary(start_date: str = None, end_date: str = None):
+    """Get expense summary"""
+    return {
+        "total_claims": 15,
+        "approved": 12,
+        "pending": 2,
+        "rejected": 1,
+        "total_amount": 18500.00,
+        "auto_coding_accuracy": 94.5,
+        "auto_coded_count": 14
+    }
+
+@app.get("/reports/expenses/export")
+async def export_expenses(start_date: str = None, end_date: str = None, format: str = "csv"):
+    """Export expense data"""
+    return {
+        "success": True,
+        "message": f"Expense data exported as {format}",
+        "download_url": f"/downloads/expenses_{start_date}_{end_date}.{format}"
+    }
+
+@app.get("/reports/agents/dashboard")
+async def get_agents_dashboard():
+    """Get AI agents dashboard data"""
+    return {
+        "total_bots": 67,
+        "active_bots": 42,
+        "tasks_today": 156,
+        "success_rate": 94.2,
+        "time_saved_hours": 324
+    }
+
+@app.get("/reports/agents/activity-chart")
+async def get_agents_activity():
+    """Get AI agents activity chart data"""
+    return {
+        "labels": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+        "data": [145, 167, 152, 189, 178, 95, 67]
+    }
+
+@app.get("/reports/agents/performance")
+async def get_agents_performance():
+    """Get AI agents performance metrics"""
+    return [
+        {"bot_name": "Invoice Processing Bot", "tasks": 45, "success_rate": 97.8, "avg_time": "2.3s"},
+        {"bot_name": "Bank Reconciliation Bot", "tasks": 32, "success_rate": 96.5, "avg_time": "5.1s"},
+        {"bot_name": "Expense Coding Bot", "tasks": 28, "success_rate": 94.2, "avg_time": "1.8s"},
+        {"bot_name": "Payroll Processing Bot", "tasks": 24, "success_rate": 99.1, "avg_time": "8.5s"},
+        {"bot_name": "Purchase Order Bot", "tasks": 21, "success_rate": 92.3, "avg_time": "3.2s"}
+    ]
+
+@app.get("/reports/agents/recent-actions")
+async def get_agents_recent_actions():
+    """Get AI agents recent actions"""
+    return [
+        {"bot": "Invoice Processing Bot", "action": "Processed invoice INV-2026-089", "time": "2 minutes ago", "status": "success"},
+        {"bot": "Bank Reconciliation Bot", "action": "Reconciled 15 transactions", "time": "5 minutes ago", "status": "success"},
+        {"bot": "Expense Coding Bot", "action": "Auto-coded 8 expense claims", "time": "12 minutes ago", "status": "success"},
+        {"bot": "Purchase Order Bot", "action": "Created PO-2026-234", "time": "18 minutes ago", "status": "success"},
+        {"bot": "Payroll Processing Bot", "action": "Calculated monthly payroll", "time": "25 minutes ago", "status": "success"}
+    ]
+
+@app.get("/reports/agents/invoice-reconciliation")
+async def get_invoice_reconciliation():
+    """Get invoice reconciliation report"""
+    return {
+        "stats": {
+            "total": 156,
+            "matched": 142,
+            "pending": 10,
+            "unmatched": 4
+        },
+        "invoices": [
+            {"invoice_number": "INV-2026-089", "supplier": "ABC Suppliers", "amount": 15000.00, "status": "matched", "confidence": 98},
+            {"invoice_number": "INV-2026-088", "supplier": "XYZ Manufacturing", "amount": 22500.00, "status": "matched", "confidence": 96},
+            {"invoice_number": "INV-2026-087", "supplier": "Cape Town Logistics", "amount": 8500.00, "status": "pending", "confidence": 75},
+            {"invoice_number": "INV-2026-086", "supplier": "Durban Supplies Co", "amount": 12000.00, "status": "matched", "confidence": 99},
+            {"invoice_number": "INV-2026-085", "supplier": "JHB Electronics", "amount": 5500.00, "status": "unmatched", "confidence": 45}
+        ]
+    }
+
+@app.get("/reports/bbbee/current")
+async def get_bbbee_report():
+    """Get current BBBEE compliance report"""
+    return {
+        "current_level": 4,
+        "total_score": 85.2,
+        "procurement_recognition": 100,
+        "certificate_expiry": "2026-12-31",
+        "verification_agency": "SANAS Accredited Agency",
+        "year": 2026,
+        "scorecard_elements": [
+            {"name": "Ownership", "max_points": 25, "achieved_points": 22, "percentage": 88, "status": "compliant"},
+            {"name": "Management Control", "max_points": 19, "achieved_points": 16, "percentage": 84, "status": "compliant"},
+            {"name": "Skills Development", "max_points": 25, "achieved_points": 21, "percentage": 84, "status": "compliant"},
+            {"name": "Enterprise & Supplier Development", "max_points": 44, "achieved_points": 38, "percentage": 86, "status": "compliant"},
+            {"name": "Socio-Economic Development", "max_points": 5, "achieved_points": 4, "percentage": 80, "status": "compliant"}
+        ]
+    }
+
+@app.get("/reports/bbbee/export")
+async def export_bbbee(format: str = "pdf"):
+    """Export BBBEE report"""
+    return {
+        "success": True,
+        "message": f"BBBEE report exported as {format}",
+        "download_url": f"/downloads/bbbee_2026.{format}"
+    }
 
 # Error handlers
 @app.exception_handler(404)
