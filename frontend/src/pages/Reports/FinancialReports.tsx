@@ -456,10 +456,11 @@ export default function FinancialReports() {
               </h3>
               <div className="space-y-3">
                 <div>
-                  <label className="block text-xs font-medium text-gray-500 dark:text-gray-300 mb-1">
+                  <label htmlFor="financial-report-start-date" className="block text-xs font-medium text-gray-500 dark:text-gray-300 mb-1">
                     Start Date
                   </label>
                   <input
+                    id="financial-report-start-date"
                     type="date"
                     value={dateRange.start_date}
                     onChange={(e) => setDateRange({ ...dateRange, start_date: e.target.value })}
@@ -467,10 +468,11 @@ export default function FinancialReports() {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-500 dark:text-gray-300 mb-1">
+                  <label htmlFor="financial-report-end-date" className="block text-xs font-medium text-gray-500 dark:text-gray-300 mb-1">
                     End Date
                   </label>
                   <input
+                    id="financial-report-end-date"
                     type="date"
                     value={dateRange.end_date}
                     onChange={(e) => setDateRange({ ...dateRange, end_date: e.target.value })}

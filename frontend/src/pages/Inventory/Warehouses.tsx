@@ -4,7 +4,7 @@ import { ConfirmDialog } from '../../components/ConfirmDialog';
 import { Warehouse as WarehouseIcon, Plus, Building2, Package, DollarSign, Edit2, Trash2 } from 'lucide-react';
 
 interface Warehouse {
-  id: number;
+  id: string;
   warehouse_code: string;
   warehouse_name: string;
   location: string;
@@ -42,7 +42,17 @@ const Warehouses: React.FC = () => {
     setError('');
     try {
       const response = await api.get('/inventory/warehouses');
-      setWarehouses(response.data.warehouses || []);
+      // Map backend fields to frontend expected fields
+      const mapped = (response.data.warehouses || []).map((w: any) => ({
+        id: w.id,
+        warehouse_code: w.code,
+        warehouse_name: w.name,
+        location: w.location,
+        capacity: w.capacity,
+        current_stock_value: w.current_stock || 0,
+        is_active: w.status === 'active',
+      }));
+      setWarehouses(mapped);
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Failed to load warehouses');
     } finally {
@@ -218,12 +228,16 @@ const Warehouses: React.FC = () => {
                     <button
                       onClick={() => handleEdit(warehouse)}
                       className="p-2 text-violet-600 dark:text-violet-400 hover:bg-violet-50 dark:hover:bg-violet-900/30 rounded-lg transition-colors mr-2"
+                      title="Edit warehouse"
+                      aria-label="Edit warehouse"
                     >
                       <Edit2 className="h-4 w-4" />
                     </button>
                     <button
                       onClick={() => setDeleteConfirm({ show: true, id: warehouse.id, code: warehouse.warehouse_code })}
                       className="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors"
+                      title="Delete warehouse"
+                      aria-label="Delete warehouse"
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>
@@ -253,6 +267,8 @@ const Warehouses: React.FC = () => {
                     value={form.warehouse_code}
                     onChange={(e) => setForm({ ...form, warehouse_code: e.target.value })}
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-violet-500 focus:border-transparent"
+                    title="Warehouse code"
+                    placeholder="Enter warehouse code"
                   />
                 </div>
                 <div>
@@ -262,6 +278,8 @@ const Warehouses: React.FC = () => {
                     value={form.warehouse_name}
                     onChange={(e) => setForm({ ...form, warehouse_name: e.target.value })}
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-violet-500 focus:border-transparent"
+                    title="Warehouse name"
+                    placeholder="Enter warehouse name"
                   />
                 </div>
               </div>
@@ -272,6 +290,8 @@ const Warehouses: React.FC = () => {
                   value={form.location}
                   onChange={(e) => setForm({ ...form, location: e.target.value })}
                   className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-violet-500 focus:border-transparent"
+                  title="Warehouse location"
+                  placeholder="Enter location"
                 />
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
@@ -282,6 +302,8 @@ const Warehouses: React.FC = () => {
                     value={form.capacity}
                     onChange={(e) => setForm({ ...form, capacity: e.target.value })}
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-violet-500 focus:border-transparent"
+                    title="Warehouse capacity"
+                    placeholder="Enter capacity"
                   />
                 </div>
                 <div>
@@ -292,6 +314,8 @@ const Warehouses: React.FC = () => {
                     value={form.current_stock_value}
                     onChange={(e) => setForm({ ...form, current_stock_value: e.target.value })}
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-violet-500 focus:border-transparent"
+                    title="Current stock value"
+                    placeholder="Enter stock value"
                   />
                 </div>
               </div>

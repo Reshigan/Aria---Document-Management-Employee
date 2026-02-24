@@ -325,6 +325,8 @@ const Employees: React.FC = () => {
                     value={form.first_name}
                     onChange={(e) => setForm({ ...form, first_name: e.target.value })}
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="Enter first name"
+                    title="First Name"
                   />
                 </div>
                 <div>
@@ -334,6 +336,8 @@ const Employees: React.FC = () => {
                     value={form.last_name}
                     onChange={(e) => setForm({ ...form, last_name: e.target.value })}
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="Enter last name"
+                    title="Last Name"
                   />
                 </div>
               </div>
@@ -344,6 +348,8 @@ const Employees: React.FC = () => {
                   value={form.email}
                   onChange={(e) => setForm({ ...form, email: e.target.value })}
                   className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Enter email address"
+                  title="Email"
                 />
               </div>
               <div className="mb-5">
@@ -353,6 +359,8 @@ const Employees: React.FC = () => {
                   value={form.phone}
                   onChange={(e) => setForm({ ...form, phone: e.target.value })}
                   className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Enter phone number"
+                  title="Phone"
                 />
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
@@ -363,6 +371,8 @@ const Employees: React.FC = () => {
                     value={form.department}
                     onChange={(e) => setForm({ ...form, department: e.target.value })}
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="Enter department"
+                    title="Department"
                   />
                 </div>
                 <div>
@@ -372,6 +382,8 @@ const Employees: React.FC = () => {
                     value={form.position}
                     onChange={(e) => setForm({ ...form, position: e.target.value })}
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="Enter position"
+                    title="Position"
                   />
                 </div>
               </div>
@@ -382,6 +394,7 @@ const Employees: React.FC = () => {
                     value={form.employment_type}
                     onChange={(e) => setForm({ ...form, employment_type: e.target.value as any })}
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    title="Employment Type"
                   >
                     <option value="PERMANENT">Permanent</option>
                     <option value="CONTRACT">Contract</option>
@@ -395,6 +408,8 @@ const Employees: React.FC = () => {
                     value={form.hire_date}
                     onChange={(e) => setForm({ ...form, hire_date: e.target.value })}
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="Select hire date"
+                    title="Hire Date"
                   />
                 </div>
               </div>
