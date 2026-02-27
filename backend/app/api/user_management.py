@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from typing import List, Dict, Any, Optional
 from datetime import datetime
 from pydantic import BaseModel, Field, EmailStr
-from core.database import get_db
+from app.core.database import get_db
 from app.services.user_management_service import UserManagementService
 from app.services.cache_service import monitor_performance
 

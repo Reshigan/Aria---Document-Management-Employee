@@ -4,8 +4,8 @@ ARIA ERP - Base Model
 import uuid
 from datetime import datetime
 from sqlalchemy import Column, String, DateTime
-from app.models.types import GUID
-from app.core.database import Base
+from .types import GUID
+from core.database import Base
 
 
 class BaseModel(Base):

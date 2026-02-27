@@ -6,7 +6,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 
-from app.core.deps import get_db, get_current_company_id
+from app.core.deps import get_db, get_current_company_id       
 from app.models.financial import Supplier
 from app.schemas.supplier import SupplierCreate, SupplierUpdate, SupplierResponse
 

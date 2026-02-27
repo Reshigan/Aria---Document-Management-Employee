@@ -31,5 +31,12 @@ class User(Base):
     last_login = Column(DateTime, nullable=True)
     last_login_at = Column(DateTime, nullable=True)
     
-    # Relationships removed to avoid SQLAlchemy configuration errors
-    # documents = relationship("Document", back_populates="uploaded_by_user", foreign_keys="Document.uploaded_by")
+
+# Minimal PasswordResetToken model for demo data seeding
+class PasswordResetToken(Base):
+    __tablename__ = "password_reset_tokens"
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    user_id = Column(UUID(as_uuid=True), nullable=False)
+    token = Column(String(255), nullable=False, unique=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    expires_at = Column(DateTime, nullable=False)

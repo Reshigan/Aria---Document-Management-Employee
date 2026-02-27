@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, Text, Boolean, DateTime, Float, JSON, ForeignKey, LargeBinary
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
-from app.database import Base
+from core.database import Base
 
 class BackupJob(Base):
     __tablename__ = "backup_jobs"

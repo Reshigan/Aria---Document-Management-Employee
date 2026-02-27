@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 import logging
 import os
 
-from app.core.deps import get_db, get_current_company_id
+from app.core.deps import get_db, get_current_company_id       
 from app.models.financial import CustomerInvoice, InvoiceLineItem, Customer
 from app.schemas.invoice import InvoiceCreate, InvoiceUpdate, InvoiceResponse, InvoiceLineItemResponse
 from services.gl_posting_service import GLPostingService

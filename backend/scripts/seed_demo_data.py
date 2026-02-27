@@ -80,16 +80,19 @@ def create_users(db: SessionLocal, tenant_id: int, count: int = 15):
         db.commit()
         db.refresh(admin)
         print(f"   ✅ Created admin: admin@vantax.co.za")
-    
     users.append(admin)
-    
+
     # Create standard users
     for i in range(1, count):
         first_name = random.choice(FIRST_NAMES)
         last_name = random.choice(LAST_NAMES)
-        
+        email = f"{first_name.lower()}.{last_name.lower()}@vantax.co.za"
+        existing = db.query(User).filter(User.email == email).first()
+        if existing:
+            users.append(existing)
+            continue
         user = User(
-            email=f"{first_name.lower()}.{last_name.lower()}@vantax.co.za",
+            email=email,
             password_hash=pwd_context.hash("Demo@2025"),
             full_name=f"{first_name} {last_name}",
             is_active=True,
@@ -97,9 +100,9 @@ def create_users(db: SessionLocal, tenant_id: int, count: int = 15):
             created_at=datetime.now() - timedelta(days=random.randint(1, 180))
         )
         db.add(user)
+        db.commit()
         users.append(user)
-    
-    db.commit()
+
     print(f"   ✅ Created {len(users)} users")
     return users
 
@@ -110,9 +113,15 @@ def create_customers(db: SessionLocal, tenant_id: str, count: int = 50):
     
     for i in range(count):
         company_name = random.choice(COMPANY_NAMES)
+        customer_code = f"CUST{1000+i}"
+        # Check if customer with this code already exists
+        existing = db.query(Customer).filter_by(customer_code=customer_code).first()
+        if existing:
+            customers.append(existing)
+            continue
         customer = Customer(
             tenant_id=tenant_id,
-            customer_code=f"CUST{1000+i}",
+            customer_code=customer_code,
             customer_name=f"{company_name} {i+1}",
             contact_person=f"{random.choice(FIRST_NAMES)} {random.choice(LAST_NAMES)}",
             email=f"contact{i+1}@customer{i+1}.co.za",
@@ -146,14 +155,18 @@ def create_suppliers(db: SessionLocal, tenant_id: int, count: int = 30):
     suppliers = []
     
     for i in range(count):
+        supplier_code = f"SUPP{1000+i}"
+        existing = db.query(Supplier).filter_by(supplier_code=supplier_code).first()
+        if existing:
+            suppliers.append(existing)
+            continue
         supplier = Supplier(
-            supplier_code=f"SUPP{1000+i}",
-            name=random.choice(COMPANY_NAMES) + f" Supplier {i+1}",
+            tenant_id=tenant_id,
+            supplier_code=supplier_code,
+            supplier_name=random.choice(COMPANY_NAMES) + f" Supplier {i+1}",
             email=f"supplier{i+1}@supply{i+1}.co.za",
             phone=f"+2711{random.randint(1000000, 9999999)}",
             vat_number=f"VAT{random.randint(1000000000, 9999999999)}",
-            registration_number=f"2019/{random.randint(100000, 999999)}/07",
-            physical_address=f"{random.randint(1, 999)} Industrial Rd, Pretoria",
             payment_terms_days=random.choice([7, 14, 30, 60]),
             is_active=True,
             created_at=datetime.now() - timedelta(days=random.randint(1, 365))
@@ -167,49 +180,59 @@ def create_suppliers(db: SessionLocal, tenant_id: int, count: int = 30):
 
 def create_products(db: SessionLocal, tenant_id: int, count: int = 100):
     """Create product catalog"""
+    print(f"Deleting all existing products...")
+    db.query(Product).delete()
+    db.commit()
     print(f"Creating {count} products...")
     products = []
-    
-    product_types = ["SERVICE", "INVENTORY"]
+    product_types = ["goods", "service", "digital"]
     categories = ["Electronics", "Furniture", "Software", "Hardware", "Consulting", 
                   "Materials", "Equipment", "Supplies", "Tools", "Parts"]
-    
     for i in range(count):
+        product_code = f"PROD{1000+i}"
         product = Product(
+            tenant_id=tenant_id,
+            product_code=product_code,
             sku=f"SKU{1000+i}",
-            name=f"Product {i+1} - {random.choice(categories)}",
+            product_name=f"Product {i+1} - {random.choice(categories)}",
             description=f"Description for product {i+1}",
             product_type=random.choice(product_types),
             category=random.choice(categories),
-            unit_price=Decimal(random.randint(50, 5000)),
-            cost_price=Decimal(random.randint(25, 2500)),
-            vat_rate=Decimal("15.00"),
+            selling_price=float(random.randint(50, 5000)),
+            cost_price=float(random.randint(25, 2500)),
+            vat_rate=15.0,
             is_active=True,
             created_at=datetime.now() - timedelta(days=random.randint(1, 365))
         )
         db.add(product)
         products.append(product)
-    
     db.commit()
     print(f"   ✅ Created {len(products)} products")
     return products
 
-def create_invoices(db: SessionLocal, customers: list, products: list, count: int = 100):
+def create_invoices(db: SessionLocal, customers: list, products: list, tenant_id: int, count: int = 100):
     """Create invoice records"""
+    # Delete all existing invoice lines and invoices to avoid UNIQUE constraint errors
+    db.query(InvoiceLine).delete()
+    db.query(Invoice).delete()
+    db.commit()
     print(f"Creating {count} invoices...")
     invoices = []
-    
+
     statuses = ["DRAFT", "SENT", "PAID", "OVERDUE", "CANCELLED"]
-    
+
     for i in range(count):
         customer = random.choice(customers)
         invoice_date = datetime.now() - timedelta(days=random.randint(1, 90))
-        
+
+        period_str = invoice_date.strftime("%Y-%m")
         invoice = Invoice(
+            tenant_id=tenant_id,
             invoice_number=f"INV-2025-{1000+i}",
             customer_id=customer.id,
             invoice_date=invoice_date,
             due_date=invoice_date + timedelta(days=30),
+            period=period_str,
             status=random.choice(statuses),
             subtotal=Decimal("0"),
             vat_amount=Decimal("0"),
@@ -227,13 +250,14 @@ def create_invoices(db: SessionLocal, customers: list, products: list, count: in
         for j in range(line_items_count):
             product = random.choice(products)
             quantity = random.randint(1, 10)
-            unit_price = product.unit_price
-            line_total = unit_price * quantity
-            
+            unit_price = product.selling_price
+            line_total = Decimal(str(unit_price)) * Decimal(str(quantity))
+
             line = InvoiceLine(
+                tenant_id=tenant_id,
                 invoice_id=invoice.id,
                 product_id=product.id,
-                description=product.name,
+                description=product.product_name,
                 quantity=quantity,
                 unit_price=unit_price,
                 vat_rate=Decimal("15.00"),
@@ -255,6 +279,9 @@ def create_invoices(db: SessionLocal, customers: list, products: list, count: in
 
 def create_employees(db: SessionLocal, tenant_id: int, count: int = 25):
     """Create employee records"""
+    # Delete all existing employees to avoid UNIQUE constraint errors
+    db.query(Employee).delete()
+    db.commit()
     print(f"Creating {count} employees...")
     employees = []
     
@@ -263,6 +290,7 @@ def create_employees(db: SessionLocal, tenant_id: int, count: int = 25):
         last_name = random.choice(LAST_NAMES)
         
         employee = Employee(
+            tenant_id=tenant_id,
             employee_number=f"EMP{1000+i}",
             first_name=first_name,
             last_name=last_name,
@@ -275,9 +303,9 @@ def create_employees(db: SessionLocal, tenant_id: int, count: int = 25):
             hire_date=datetime.now() - timedelta(days=random.randint(30, 1825)),
             employment_type="FULL_TIME",
             status="ACTIVE",
-            salary=Decimal(random.randint(15000, 80000)),
+            basic_salary=float(random.randint(15000, 80000)),
             bank_name="Standard Bank",
-            bank_account_number=f"{random.randint(1000000000, 9999999999)}",
+            account_number=f"{random.randint(1000000000, 9999999999)}",
             created_at=datetime.now() - timedelta(days=random.randint(30, 730))
         )
         db.add(employee)
@@ -297,6 +325,11 @@ def create_documents(db: SessionLocal, users: list, count: int = 50):
     
     for i in range(count):
         user = random.choice(users)
+        # Ensure uploaded_by is an integer (user.id), not a UUID
+        uploaded_by_id = getattr(user, 'id', None)
+        # Convert UUID to string for SQLite compatibility
+        if uploaded_by_id is not None:
+            uploaded_by_id = str(uploaded_by_id)
         
         document = Document(
             filename=f"document_{i+1}.pdf",
@@ -306,8 +339,7 @@ def create_documents(db: SessionLocal, users: list, count: int = 50):
             mime_type="application/pdf",
             document_type=random.choice(doc_types),
             status=random.choice(doc_statuses),
-            uploaded_by=user.id,
-            upload_date=datetime.now() - timedelta(days=random.randint(1, 180)),
+            uploaded_by=uploaded_by_id,
             created_at=datetime.now() - timedelta(days=random.randint(1, 180))
         )
         db.add(document)
@@ -332,7 +364,7 @@ def seed_all_data():
         customers = create_customers(db, tenant_id, count=50)
         suppliers = create_suppliers(db, tenant_id, count=30)
         products = create_products(db, tenant_id, count=100)
-        invoices = create_invoices(db, customers, products, count=100)
+        invoices = create_invoices(db, customers, products, tenant_id, count=100)
         employees = create_employees(db, tenant_id, count=25)
         documents = create_documents(db, users, count=50)
         

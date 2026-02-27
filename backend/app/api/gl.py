@@ -11,11 +11,11 @@ from pydantic import BaseModel, Field
 
 from core.database import get_db
 from core.auth import get_current_user
-from models.accounting import (
+from app.models.accounting import (
     ChartOfAccounts, GeneralLedger, GeneralLedgerLine,
     AccountType, AccountSubType, JournalStatus, JournalEntryType
 )
-from models.user import User
+from app.models.user import User
 
 router = APIRouter(prefix="/api/erp/gl", tags=["General Ledger"])
 

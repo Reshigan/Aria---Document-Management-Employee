@@ -4,20 +4,34 @@ Provides company-scoped helper functions for bots to access real ERP data
 All functions require company_id for multi-tenancy security
 """
 
-import psycopg2
-import psycopg2.extras
+import pymysql
+import pymysql.cursors
 import os
 from typing import Dict, Any, List, Optional
 from datetime import datetime, timedelta
 import uuid
 
-DATABASE_URL = os.getenv("DATABASE_URL_PG") or os.getenv("DATABASE_URL")
+DATABASE_URL = os.getenv("DATABASE_URL")
 
 def get_connection():
-    """Get PostgreSQL database connection"""
+    """Get MySQL database connection"""
     if not DATABASE_URL:
-        raise RuntimeError("DATABASE_URL_PG or DATABASE_URL environment variable must be set")
-    return psycopg2.connect(DATABASE_URL)
+        raise RuntimeError("DATABASE_URL environment variable must be set")
+    # Parse DATABASE_URL for PyMySQL
+    import re
+    match = re.match(r"mysql\+pymysql://(.*?):(.*?)@(.*?):(\d+)/(.*)", DATABASE_URL)
+    if not match:
+        raise RuntimeError("DATABASE_URL must be in the format mysql+pymysql://user:password@host:port/dbname")
+    user, password, host, port, db = match.groups()
+    return pymysql.connect(
+        host=host,
+        user=user,
+        password=password,
+        database=db,
+        port=int(port),
+        cursorclass=pymysql.cursors.DictCursor,
+        autocommit=True
+    )
 
 # ========================================
 # ========================================
@@ -25,12 +39,12 @@ def get_connection():
 def fetch_outstanding_ar_invoices(company_id: str, limit: int = 100) -> List[Dict[str, Any]]:
     """Fetch outstanding AR invoices for a company"""
     conn = get_connection()
-    cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    cursor = conn.cursor()
     try:
         cursor.execute("""
             SELECT ci.*, c.customer_name,
                    CASE 
-                       WHEN ci.due_date < CURRENT_DATE THEN CURRENT_DATE - ci.due_date
+                       WHEN ci.due_date < CURDATE() THEN DATEDIFF(CURDATE(), ci.due_date)
                        ELSE 0
                    END as days_overdue
             FROM customer_invoices ci

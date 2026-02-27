@@ -10,7 +10,7 @@ Date: October 2025
 from datetime import datetime
 from sqlalchemy import Column, Integer, String, Float, DateTime, ForeignKey, Text, Boolean, Numeric
 from sqlalchemy.orm import relationship
-from app.database import Base
+from core.database import Base
 
 
 class BbbeeScorecard(Base):
