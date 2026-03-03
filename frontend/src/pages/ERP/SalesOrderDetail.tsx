@@ -22,6 +22,10 @@ interface SalesOrderDetail {
   total_amount: number;
   notes?: string;
   warehouse_id?: string;
+  customer_po_number?: string;
+  customer_reference?: string;
+  delivery_address?: string;
+  shipping_method?: string;
   created_at: string;
   updated_at: string;
   lines: OrderLine[];
@@ -336,6 +340,35 @@ export default function SalesOrderDetail() {
                 </div>
               )}
             </div>
+
+            {(order.customer_po_number || order.customer_reference || order.delivery_address || order.shipping_method) && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                {order.customer_po_number && (
+                  <div>
+                    <div className="text-xs text-gray-500 dark:text-gray-300 mb-1">Customer PO Number</div>
+                    <div className="font-medium text-gray-900 dark:text-white">{order.customer_po_number}</div>
+                  </div>
+                )}
+                {order.customer_reference && (
+                  <div>
+                    <div className="text-xs text-gray-500 dark:text-gray-300 mb-1">Customer Reference</div>
+                    <div className="font-medium text-gray-900 dark:text-white">{order.customer_reference}</div>
+                  </div>
+                )}
+                {order.delivery_address && (
+                  <div>
+                    <div className="text-xs text-gray-500 dark:text-gray-300 mb-1">Delivery Address</div>
+                    <div className="font-medium text-gray-900 dark:text-white">{order.delivery_address}</div>
+                  </div>
+                )}
+                {order.shipping_method && (
+                  <div>
+                    <div className="text-xs text-gray-500 dark:text-gray-300 mb-1">Shipping Method</div>
+                    <div className="font-medium text-gray-900 dark:text-white">{order.shipping_method}</div>
+                  </div>
+                )}
+              </div>
+            )}
 
             {order.notes && (
               <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl">

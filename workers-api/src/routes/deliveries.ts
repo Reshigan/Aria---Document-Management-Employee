@@ -42,6 +42,14 @@ deliveries.get('/', async (c) => {
         d.tracking_number,
         d.carrier,
         d.notes,
+        d.driver_name,
+        d.driver_phone,
+        d.pod_uploaded,
+        d.pod_file_url,
+        d.pod_uploaded_at,
+        d.picking_slip_generated,
+        d.waybill_number,
+        d.waybill_url,
         d.created_at,
         d.updated_at
       FROM deliveries d
@@ -160,8 +168,9 @@ deliveries.post('/', async (c) => {
       INSERT INTO deliveries (
         id, company_id, delivery_number, sales_order_id, customer_id,
         warehouse_id, delivery_date, status, tracking_number, carrier, notes,
+        driver_name, driver_phone, delivery_type,
         created_at, updated_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, 'draft', ?, ?, ?, datetime('now'), datetime('now'))
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, 'draft', ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))
     `).bind(
       id,
       companyId,
@@ -172,7 +181,10 @@ deliveries.post('/', async (c) => {
       body.delivery_date || new Date().toISOString().split('T')[0],
       body.tracking_number || null,
       body.carrier || null,
-      body.notes || null
+      body.notes || null,
+      body.driver_name || null,
+      body.driver_phone || null,
+      body.delivery_type || 'outbound'
     ).run();
     
     // Insert delivery lines
@@ -228,6 +240,8 @@ deliveries.put('/:id', async (c) => {
         tracking_number = ?,
         carrier = ?,
         notes = ?,
+        driver_name = ?,
+        driver_phone = ?,
         updated_at = datetime('now')
       WHERE id = ? AND company_id = ?
     `).bind(
@@ -237,6 +251,8 @@ deliveries.put('/:id', async (c) => {
       body.tracking_number || null,
       body.carrier || null,
       body.notes || null,
+      body.driver_name || null,
+      body.driver_phone || null,
       id,
       companyId
     ).run();
@@ -353,6 +369,139 @@ deliveries.post('/:id/complete', async (c) => {
   } catch (error) {
     console.error('Error completing delivery:', error);
     return c.json({ error: 'Failed to complete delivery' }, 500);
+  }
+});
+
+// Upload POD for delivery
+deliveries.post('/:id/pod', async (c) => {
+  const db = c.env.DB;
+  const companyId = await getSecureCompanyId(c);
+  const id = c.req.param('id');
+  const body = await c.req.json();
+  
+  try {
+    const delivery = await db.prepare(`
+      SELECT id FROM deliveries WHERE id = ? AND company_id = ?
+    `).bind(id, companyId).first();
+    
+    if (!delivery) {
+      return c.json({ error: 'Delivery not found' }, 404);
+    }
+    
+    let uploadedBy = 'system';
+    try { uploadedBy = await getSecureUserId(c); } catch {}
+    
+    await db.prepare(`
+      UPDATE deliveries SET
+        pod_uploaded = 1,
+        pod_file_url = ?,
+        pod_uploaded_by = ?,
+        pod_uploaded_at = datetime('now'),
+        updated_at = datetime('now')
+      WHERE id = ? AND company_id = ?
+    `).bind(
+      body.file_url || body.pod_file_url || '',
+      uploadedBy,
+      id,
+      companyId
+    ).run();
+    
+    return c.json({ success: true, message: 'POD uploaded successfully' });
+  } catch (error) {
+    console.error('Error uploading POD:', error);
+    return c.json({ error: 'Failed to upload POD' }, 500);
+  }
+});
+
+// Generate picking slip for delivery
+deliveries.post('/:id/picking-slip', async (c) => {
+  const db = c.env.DB;
+  const companyId = await getSecureCompanyId(c);
+  const id = c.req.param('id');
+  
+  try {
+    const delivery = await db.prepare(`
+      SELECT d.*, c.name as customer_name, w.warehouse_name
+      FROM deliveries d
+      LEFT JOIN customers c ON d.customer_id = c.id
+      LEFT JOIN warehouses w ON d.warehouse_id = w.id
+      WHERE d.id = ? AND d.company_id = ?
+    `).bind(id, companyId).first();
+    
+    if (!delivery) {
+      return c.json({ error: 'Delivery not found' }, 404);
+    }
+    
+    const lines = await db.prepare(`
+      SELECT dl.*, p.product_code, p.product_name, p.bin_location
+      FROM delivery_lines dl
+      LEFT JOIN products p ON dl.product_id = p.id
+      WHERE dl.delivery_id = ?
+      ORDER BY dl.line_number
+    `).bind(id).all();
+    
+    await db.prepare(`
+      UPDATE deliveries SET
+        picking_slip_generated = 1,
+        picking_slip_generated_at = datetime('now'),
+        updated_at = datetime('now')
+      WHERE id = ? AND company_id = ?
+    `).bind(id, companyId).run();
+    
+    return c.json({
+      success: true,
+      picking_slip: {
+        delivery_number: (delivery as any).delivery_number,
+        customer_name: (delivery as any).customer_name,
+        warehouse_name: (delivery as any).warehouse_name,
+        delivery_date: (delivery as any).delivery_date,
+        lines: (lines.results || []).map((l: any) => ({
+          product_code: l.product_code,
+          product_name: l.product_name,
+          quantity: l.quantity,
+          bin_location: l.bin_location || 'N/A',
+        })),
+      },
+    });
+  } catch (error) {
+    console.error('Error generating picking slip:', error);
+    return c.json({ error: 'Failed to generate picking slip' }, 500);
+  }
+});
+
+// Add waybill to delivery
+deliveries.post('/:id/waybill', async (c) => {
+  const db = c.env.DB;
+  const companyId = await getSecureCompanyId(c);
+  const id = c.req.param('id');
+  const body = await c.req.json();
+  
+  try {
+    const delivery = await db.prepare(`
+      SELECT id FROM deliveries WHERE id = ? AND company_id = ?
+    `).bind(id, companyId).first();
+    
+    if (!delivery) {
+      return c.json({ error: 'Delivery not found' }, 404);
+    }
+    
+    await db.prepare(`
+      UPDATE deliveries SET
+        waybill_number = ?,
+        waybill_url = ?,
+        updated_at = datetime('now')
+      WHERE id = ? AND company_id = ?
+    `).bind(
+      body.waybill_number || '',
+      body.waybill_url || body.tracking_url || '',
+      id,
+      companyId
+    ).run();
+    
+    return c.json({ success: true, message: 'Waybill added successfully' });
+  } catch (error) {
+    console.error('Error adding waybill:', error);
+    return c.json({ error: 'Failed to add waybill' }, 500);
   }
 });
 
