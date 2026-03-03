@@ -23,7 +23,6 @@ ALTER TABLE deliveries ADD COLUMN picking_slip_generated INTEGER DEFAULT 0;
 ALTER TABLE deliveries ADD COLUMN picking_slip_generated_at TEXT;
 ALTER TABLE deliveries ADD COLUMN waybill_number TEXT;
 ALTER TABLE deliveries ADD COLUMN waybill_url TEXT;
-ALTER TABLE deliveries ADD COLUMN delivery_type TEXT DEFAULT 'outbound';
 
 -- 4. Customer statements table
 CREATE TABLE IF NOT EXISTS customer_statements (
