@@ -142,13 +142,13 @@ function parseNaturalLanguageOrder(message: string): ParsedOrder | null {
   const msg = message.replace(/^(?:hey|hi|hello|yo)?\s*(?:aria)?\s*/i, '').trim();
 
   let intent: ParsedOrder['intent'] | null = null;
-  if (/(?:create|make|generate|new|prepare|do|process)\s+(?:a\s+)?(?:new\s+)?sales\s+order/i.test(msg)) {
+  if (/(?:create|make|generate|new|prepare|do|process)\s+(?:an?\s+)?(?:new\s+)?sales\s+order/i.test(msg)) {
     intent = 'sales_order';
-  } else if (/(?:create|make|generate|new|prepare|do|process)\s+(?:a\s+)?(?:new\s+)?(?:quote|quotation)/i.test(msg)) {
+  } else if (/(?:create|make|generate|new|prepare|do|process)\s+(?:an?\s+)?(?:new\s+)?(?:quote|quotation)/i.test(msg)) {
     intent = 'quote';
-  } else if (/(?:create|make|generate|new|prepare|do|process)\s+(?:a\s+)?(?:new\s+)?(?:purchase\s+order|po\b)/i.test(msg)) {
+  } else if (/(?:create|make|generate|new|prepare|do|process)\s+(?:an?\s+)?(?:new\s+)?(?:purchase\s+order|po\b)/i.test(msg)) {
     intent = 'purchase_order';
-  } else if (/(?:create|make|generate|new|prepare|do|process)\s+(?:a\s+)?(?:new\s+)?invoice/i.test(msg)) {
+  } else if (/(?:create|make|generate|new|prepare|do|process)\s+(?:an?\s+)?(?:new\s+)?invoice/i.test(msg)) {
     intent = 'invoice';
   }
   if (!intent) return null;
@@ -449,8 +449,8 @@ const skills: Skill[] = [
     name: 'natural_language_order',
     description: 'Create sales order, quote, PO, or invoice from natural language with inline details',
     patterns: [
-      /(?:create|make|generate|new|prepare|do|process)\s+(?:a\s+)?(?:new\s+)?(?:sales\s+order|quote|quotation|purchase\s+order|po|invoice)\s+for\s+\w.+(?:need|at|@|\d+\s*x)/i,
-      /(?:create|make|generate|new|prepare|do|process)\s+(?:a\s+)?(?:new\s+)?(?:sales\s+order|quote|quotation|purchase\s+order|po|invoice)\s+for\s+\w.+(?:product|item)/i,
+      /(?:create|make|generate|new|prepare|do|process)\s+(?:an?\s+)?(?:new\s+)?(?:sales\s+order|quote|quotation|purchase\s+order|po|invoice)\s+for\s+\w.+(?:need|at|@|\d+\s*x)/i,
+      /(?:create|make|generate|new|prepare|do|process)\s+(?:an?\s+)?(?:new\s+)?(?:sales\s+order|quote|quotation|purchase\s+order|po|invoice)\s+for\s+\w.+(?:product|item)/i,
     ],
     slots: [],
     execute: async (ctx) => {
