@@ -470,26 +470,8 @@ async def delete_employee(employee_id: int):
     # In a real app, delete from DB. Here, just return success.
     return {"message": f"Employee {employee_id} deleted"}
 
-@app.post("/hr/employees")
-@app.post("/api/hr/employees")
-@app.post("/api/v1/hr/employees")
-async def create_employee(employee_data: dict):
-    """Create new employee"""
-    # In production, this would save to database
-    # For now, return success with the employee data
-    import secrets
-    new_id = secrets.randbelow(9000) + 1000
-    
-    return {
-        "message": "Employee created successfully",
-        "employee": {
-            "id": new_id,
-            "employeeId": f"EMP{str(new_id).zfill(3)}",
-            **employee_data,
-            "status": "Active",
-            "created_at": "2026-02-24T10:30:00Z"
-        }
-    }
+
+# Legacy /api/hr/employees endpoints removed. Use ORM-based /hr/employees endpoints only.
 
 # ============================================
 # HR - LEAVE MANAGEMENT

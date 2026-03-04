@@ -11,9 +11,9 @@ from decimal import Decimal
 
 from core.database import get_db
 from core.auth import get_current_user
-from models.crm import Lead, Opportunity, Quote, QuoteLine
-from models.transactions import Customer
-from models.user import User
+from app.models.crm import Lead, Opportunity, Quote, QuoteLine
+from app.models.transactions import Customer
+from app.models.user import User
 from pydantic import BaseModel, EmailStr, Field
 
 router = APIRouter(prefix="/api/crm", tags=["CRM"])

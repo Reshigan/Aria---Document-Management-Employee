@@ -156,7 +156,11 @@ class Warehouse(Base):
     
     # Relationships
     stock_levels = relationship("StockLevel", back_populates="warehouse")
-    stock_movements = relationship("StockMovement", back_populates="warehouse")
+    stock_movements = relationship(
+        "StockMovement",
+        back_populates="warehouse",
+        foreign_keys="StockMovement.warehouse_id"
+    )
     
     def __repr__(self):
         return f"<Warehouse {self.warehouse_code} - {self.warehouse_name}>"
@@ -246,7 +250,11 @@ class StockMovement(Base):
     
     # Relationships
     product = relationship("Product", back_populates="stock_movements")
-    warehouse = relationship("Warehouse", back_populates="stock_movements")
+    warehouse = relationship(
+        "Warehouse",
+        back_populates="stock_movements",
+        foreign_keys=[warehouse_id]
+    )
     
     def __repr__(self):
         return f"<StockMovement {self.movement_number} - {self.movement_type} - Qty:{self.quantity}>"

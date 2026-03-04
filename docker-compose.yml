@@ -10,7 +10,7 @@ services:
     environment:
       POSTGRES_USER: aria_user
       POSTGRES_PASSWORD: aria_password
-      POSTGRES_DB: aria_erp
+      POSTGRES_DB: aria_user
     ports:
       - "5432:5432"
     volumes:
@@ -84,7 +84,6 @@ services:
     depends_on:
       - backend
     restart: unless-stopped
-
 volumes:
   postgres_data:
   redis_data:

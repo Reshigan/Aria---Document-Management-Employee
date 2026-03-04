@@ -1,10 +1,14 @@
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 """
 ARIA ERP - Main FastAPI Application
 """
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.core.config import settings
-from app.core.database import Base, engine
+
+from core.config import settings
+from core.database import Base, engine
 
 # API Routes
 from app.api import auth, customers, suppliers, invoices, accounts, payments, dashboard, bots
@@ -19,9 +23,10 @@ app = FastAPI(
 )
 
 # Configure CORS
+from app.core.config import get_cors_origins
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.get_cors_origins(),
+    allow_origins=get_cors_origins(settings),
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -36,6 +41,8 @@ async def startup_event():
     print(f"📚 API Documentation: http://localhost:8000/docs")
 
 # Include API routers
+
+ # from api import hr
 app.include_router(auth.router, prefix=settings.API_V1_PREFIX)
 app.include_router(customers.router, prefix=settings.API_V1_PREFIX)
 app.include_router(suppliers.router, prefix=settings.API_V1_PREFIX)
@@ -44,6 +51,7 @@ app.include_router(accounts.router, prefix=settings.API_V1_PREFIX)
 app.include_router(payments.router, prefix=settings.API_V1_PREFIX)
 app.include_router(dashboard.router, prefix=settings.API_V1_PREFIX)
 app.include_router(bots.router, prefix=settings.API_V1_PREFIX)
+ # app.include_router(hr.router, prefix=settings.API_V1_PREFIX)
 
 @app.get("/")
 async def root():

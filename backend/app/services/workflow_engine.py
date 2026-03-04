@@ -5,18 +5,31 @@ Manages transactional workflows: Quote-to-Cash, Procure-to-Pay, Production workf
 
 from datetime import datetime
 from typing import Dict, Any, List, Optional
-import psycopg2
-import psycopg2.extras
+import pymysql
+import pymysql.cursors
 import uuid
 import os
 
-DATABASE_URL = os.getenv("DATABASE_URL_PG") or os.getenv("DATABASE_URL")
+DATABASE_URL = os.getenv("DATABASE_URL")
 
 def get_db_connection():
-    """Get PostgreSQL database connection"""
+    """Get MySQL database connection"""
     if not DATABASE_URL:
-        raise RuntimeError("DATABASE_URL_PG or DATABASE_URL environment variable must be set")
-    return psycopg2.connect(DATABASE_URL)
+        raise RuntimeError("DATABASE_URL environment variable must be set")
+    import re
+    match = re.match(r"mysql\+pymysql://(.*?):(.*?)@(.*?):(\d+)/(.*)", DATABASE_URL)
+    if not match:
+        raise RuntimeError("DATABASE_URL must be in the format mysql+pymysql://user:password@host:port/dbname")
+    user, password, host, port, db = match.groups()
+    return pymysql.connect(
+        host=host,
+        user=user,
+        password=password,
+        database=db,
+        port=int(port),
+        cursorclass=pymysql.cursors.DictCursor,
+        autocommit=True
+    )
 
 
 class WorkflowEngine:
@@ -25,7 +38,7 @@ class WorkflowEngine:
     def quote_to_sales_order(self, quote_id: str, company_id: str, user_id: str) -> Dict[str, Any]:
         """Convert approved quote to sales order"""
         conn = get_db_connection()
-        cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+        cursor = conn.cursor()
         
         try:
             cursor.execute("""

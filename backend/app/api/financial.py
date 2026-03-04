@@ -13,7 +13,7 @@ import os
 
 from core.database import get_db
 from core.auth import get_current_user
-from models.transactions import (
+from app.models.transactions import (
     Invoice, InvoiceLine, Payment, PaymentAllocation
 )
 from models.accounting import (

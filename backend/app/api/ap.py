@@ -15,7 +15,7 @@ import asyncio
 
 from core.database import get_db
 from core.auth import get_current_user
-from models.user import User
+from app.models.user import User
 from app.models.ap import (
     VendorBill, VendorBillLine, VendorPayment, PaymentAllocation, VendorCreditNote, VendorCreditNoteLine,
     BillStatus, PaymentStatus, PaymentMethod

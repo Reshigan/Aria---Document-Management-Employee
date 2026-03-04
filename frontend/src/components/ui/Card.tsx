@@ -63,6 +63,10 @@ export const CardBody: React.FC<CardBodyProps> = ({
   return <div className={`card-body ${className}`}>{children}</div>;
 };
 
+// Alias CardContent to CardBody for compatibility
+export const CardContent = CardBody;
+export type CardContentProps = CardBodyProps;
+
 export interface CardFooterProps {
   children: React.ReactNode;
   className?: string;
