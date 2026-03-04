@@ -256,6 +256,78 @@ quotes.post('/', async (c) => {
   }
 });
 
+// Full update quote (recalculates totals)
+quotes.put('/:id', async (c) => {
+  try {
+    const quoteId = c.req.param('id');
+    const companyId = await getSecureCompanyId(c);
+    const body = await c.req.json<Partial<Quote> & { items?: Partial<QuoteItem>[]; lines?: Partial<QuoteItem>[] }>();
+
+    const existing = await c.env.DB.prepare(
+      'SELECT * FROM quotes WHERE id = ? AND company_id = ?'
+    ).bind(quoteId, companyId).first<Quote>();
+    if (!existing) return c.json({ error: 'Quote not found' }, 404);
+
+    const items = body.items || body.lines || [];
+    const now = new Date().toISOString();
+
+    let subtotal = existing.subtotal;
+    let taxAmount = existing.tax_amount;
+    let totalAmount = existing.total_amount;
+    const discountAmount = safeNumber(body.discount_amount ?? existing.discount_amount);
+
+    if (items.length > 0) {
+      const totals = calculateLineTotals(items as Array<{ quantity?: number; unit_price?: number; discount_percent?: number; tax_rate?: number }>);
+      subtotal = totals.subtotal;
+      taxAmount = totals.tax_amount;
+      totalAmount = totals.total_amount - discountAmount;
+
+      await c.env.DB.prepare('DELETE FROM quote_items WHERE quote_id = ?').bind(quoteId).run();
+      for (let i = 0; i < items.length; i++) {
+        const item = items[i];
+        const lineTotal = (safeNumber(item.quantity) || 1) * safeNumber(item.unit_price) * (1 - safeNumber(item.discount_percent) / 100);
+        await c.env.DB.prepare(`
+          INSERT INTO quote_items (id, quote_id, product_id, description, quantity, unit_price, discount_percent, tax_rate, line_total, sort_order, created_at)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `).bind(
+          crypto.randomUUID(), quoteId,
+          item.product_id || null, item.description || '',
+          safeNumber(item.quantity) || 1, safeNumber(item.unit_price),
+          safeNumber(item.discount_percent), safeNumber(item.tax_rate) || 15,
+          lineTotal, i, now
+        ).run();
+      }
+    }
+
+    await c.env.DB.prepare(`
+      UPDATE quotes SET
+        customer_id = ?, quote_date = ?, valid_until = ?,
+        subtotal = ?, tax_amount = ?, discount_amount = ?, total_amount = ?,
+        notes = ?, terms = ?, updated_at = ?
+      WHERE id = ? AND company_id = ?
+    `).bind(
+      body.customer_id ?? existing.customer_id,
+      body.quote_date ?? existing.quote_date,
+      body.valid_until ?? existing.valid_until,
+      subtotal, taxAmount, discountAmount, totalAmount,
+      body.notes ?? existing.notes,
+      body.terms ?? existing.terms,
+      now, quoteId, companyId
+    ).run();
+
+    return c.json({
+      id: quoteId,
+      subtotal,
+      tax_amount: taxAmount,
+      total_amount: totalAmount,
+      message: 'Quote updated successfully',
+    });
+  } catch (error) {
+    console.error('Update quote error:', error);
+    return c.json({ error: 'Internal server error' }, 500);
+  }
+});
+
 // Update quote status
 quotes.put('/:id/status', async (c) => {
   try {
