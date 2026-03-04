@@ -28,6 +28,10 @@ interface SalesOrder {
   total_amount: number;
   shipping_address: string | null;
   notes: string | null;
+  customer_po_number: string | null;
+  customer_reference: string | null;
+  delivery_address: string | null;
+  shipping_method: string | null;
   created_by: string | null;
   created_at: string;
   updated_at: string;
@@ -111,6 +115,10 @@ salesOrders.get('/', async (c) => {
         tax_amount: order.tax_amount,
         discount_amount: order.discount_amount,
         total_amount: order.total_amount,
+        customer_po_number: (order as any).customer_po_number || null,
+        customer_reference: (order as any).customer_reference || null,
+        delivery_address: (order as any).delivery_address || null,
+        shipping_method: (order as any).shipping_method || null,
         created_at: order.created_at,
         updated_at: order.updated_at,
       })),
@@ -208,8 +216,8 @@ salesOrders.post('/', async (c) => {
     const totalAmount = totals.total_amount - discountAmount;
 
     await c.env.DB.prepare(`
-      INSERT INTO sales_orders (id, company_id, order_number, customer_id, quote_id, order_date, expected_delivery_date, status, subtotal, tax_amount, discount_amount, total_amount, shipping_address, notes, created_at, updated_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO sales_orders (id, company_id, order_number, customer_id, quote_id, order_date, expected_delivery_date, status, subtotal, tax_amount, discount_amount, total_amount, shipping_address, notes, customer_po_number, customer_reference, delivery_address, shipping_method, created_at, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).bind(
       orderId,
       companyId,
@@ -225,6 +233,10 @@ salesOrders.post('/', async (c) => {
       totalAmount,
       body.shipping_address || null,
       body.notes || null,
+      body.customer_po_number || null,
+      body.customer_reference || null,
+      body.delivery_address || null,
+      body.shipping_method || null,
       now,
       now
     ).run();
@@ -313,7 +325,9 @@ salesOrders.put('/:id', async (c) => {
       UPDATE sales_orders SET
         customer_id = ?, order_date = ?, expected_delivery_date = ?,
         subtotal = ?, tax_amount = ?, discount_amount = ?, total_amount = ?,
-        shipping_address = ?, notes = ?, updated_at = ?
+        shipping_address = ?, notes = ?,
+        customer_po_number = ?, customer_reference = ?, delivery_address = ?, shipping_method = ?,
+        updated_at = ?
       WHERE id = ? AND company_id = ?
     `).bind(
       body.customer_id ?? existing.customer_id,
@@ -322,6 +336,10 @@ salesOrders.put('/:id', async (c) => {
       subtotal, taxAmount, discountAmount, totalAmount,
       body.shipping_address ?? existing.shipping_address,
       body.notes ?? existing.notes,
+      body.customer_po_number ?? existing.customer_po_number ?? null,
+      body.customer_reference ?? existing.customer_reference ?? null,
+      body.delivery_address ?? existing.delivery_address ?? null,
+      body.shipping_method ?? existing.shipping_method ?? null,
       now, orderId, companyId
     ).run();
 
