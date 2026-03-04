@@ -58,6 +58,7 @@ import { executeScheduledBots as runScheduledBots } from './services/bot-executo
 import { processPendingDeliveries } from './services/webhook-service';
 import { processDueScheduledReports } from './services/report-builder-service';
 import { processScheduledPosts, generateDailyPosts } from './services/marketing-service';
+import { healSchema } from './services/schema-healer';
 
 // Types
 interface Env {
@@ -97,6 +98,16 @@ interface TokenPayload {
 
 // Create Hono app
 const app = new Hono<{ Bindings: Env }>();
+
+// Self-healing schema middleware: runs once on first request to ensure all tables/columns exist
+app.use('*', async (c, next) => {
+  try {
+    await healSchema(c.env.DB);
+  } catch (e) {
+    console.error('[schema-healer] Error:', e);
+  }
+  await next();
+});
 
 // CORS middleware - allow all aria-erp.pages.dev subdomains for preview deployments
 app.use('*', cors({
