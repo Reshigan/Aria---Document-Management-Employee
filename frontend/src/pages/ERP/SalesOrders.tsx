@@ -21,6 +21,10 @@ interface SalesOrder {
   notes?: string;
   warehouse_id?: string;
   quote_id?: string;
+  customer_po_number?: string;
+  customer_reference?: string;
+  delivery_address?: string;
+  shipping_method?: string;
   lines?: LineItem[];
 }
 
@@ -64,7 +68,11 @@ export default function SalesOrders() {
     customer_email: '',
     order_date: new Date().toISOString().split('T')[0],
     required_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-    notes: ''
+    notes: '',
+    customer_po_number: '',
+    customer_reference: '',
+    delivery_address: '',
+    shipping_method: ''
   });
   const [lineItems, setLineItems] = useState<LineItem[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -148,7 +156,11 @@ export default function SalesOrders() {
       customer_email: '',
       order_date: new Date().toISOString().split('T')[0],
       required_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-      notes: ''
+      notes: '',
+      customer_po_number: '',
+      customer_reference: '',
+      delivery_address: '',
+      shipping_method: ''
     });
     setSelectedCustomerId('');
     setSelectedPricelistId('');
@@ -165,7 +177,11 @@ export default function SalesOrders() {
       order_date: order.order_date,
       required_date: order.required_date,
       notes: order.notes,
-      warehouse_id: order.warehouse_id
+      warehouse_id: order.warehouse_id,
+      customer_po_number: order.customer_po_number || '',
+      customer_reference: order.customer_reference || '',
+      delivery_address: order.delivery_address || '',
+      shipping_method: order.shipping_method || ''
     });
     setLineItems(order.lines || []);
     setShowEditModal(true);
@@ -452,8 +468,34 @@ export default function SalesOrders() {
                     <input type="date" value={formData.required_date || ''} onChange={(e) => setFormData({ ...formData, required_date: e.target.value })} className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent" aria-label="Required date" />
                   </div>
                 </div>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-1">
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-0.5">Customer PO Number</label>
+                    <input type="text" value={formData.customer_po_number || ''} onChange={(e) => setFormData({ ...formData, customer_po_number: e.target.value })} placeholder="PO-12345" className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-0.5">Customer Reference</label>
+                    <input type="text" value={formData.customer_reference || ''} onChange={(e) => setFormData({ ...formData, customer_reference: e.target.value })} placeholder="Reference" className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-0.5">Shipping Method</label>
+                    <select value={formData.shipping_method || ''} onChange={(e) => setFormData({ ...formData, shipping_method: e.target.value })} aria-label="Shipping method" className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent">
+                      <option value="">Select method...</option>
+                      <option value="collection">Collection</option>
+                      <option value="delivery">Delivery</option>
+                      <option value="courier">Courier</option>
+                      <option value="skynet">Skynet Courier</option>
+                      <option value="postnet">PostNet</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-0.5">Notes</label>
+                    <input type="text" value={formData.notes || ''} onChange={(e) => setFormData({ ...formData, notes: e.target.value })} placeholder="Notes (optional)" className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent" />
+                  </div>
+                </div>
                 <div className="mt-1">
-                  <input type="text" value={formData.notes || ''} onChange={(e) => setFormData({ ...formData, notes: e.target.value })} placeholder="Notes (optional)" className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent" />
+                  <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-0.5">Delivery Address</label>
+                  <input type="text" value={formData.delivery_address || ''} onChange={(e) => setFormData({ ...formData, delivery_address: e.target.value })} placeholder="Full delivery address" className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent" />
                 </div>
               </div>
 
