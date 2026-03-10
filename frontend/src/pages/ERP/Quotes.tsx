@@ -67,6 +67,24 @@ export default function Quotes() {
   const [lineItems, setLineItems] = useState<LineItem[]>([]);
   const [error, setError] = useState<string | null>(null);
 
+  const calculateQuoteTotals = (items: LineItem[]) => {
+    let subtotal = 0;
+    let taxAmount = 0;
+    items.forEach(item => {
+      const qty = Number(item.quantity) || 0;
+      const price = Number(item.unit_price) || 0;
+      const discount = Number(item.discount_percent) || 0;
+      const tax = Number(item.tax_rate) || 15;
+      const lineSubtotal = qty * price * (1 - discount / 100);
+      const lineTax = lineSubtotal * (tax / 100);
+      subtotal += lineSubtotal;
+      taxAmount += lineTax;
+    });
+    return { subtotal, taxAmount, totalAmount: subtotal + taxAmount };
+  };
+
+  const liveQuoteTotals = calculateQuoteTotals(lineItems);
+
   useEffect(() => {
     loadQuotes();
     loadProducts();
@@ -565,6 +583,21 @@ export default function Quotes() {
 
                 <div className="bg-gray-50 dark:bg-gray-900/50 rounded-lg p-2">
                   <LineItemsTable items={lineItems} onChange={setLineItems} products={products} pricingContext={{ customer_id: selectedCustomerId || undefined, pricelist_id: selectedPricelistId || undefined, date: formData.quote_date }} />
+                </div>
+
+                <div className="bg-gradient-to-r from-violet-50 to-purple-50 dark:from-violet-900/20 dark:to-purple-900/20 border border-violet-200 dark:border-violet-800 rounded-lg p-3">
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-gray-600 dark:text-gray-300">Subtotal:</span>
+                    <span className="font-medium text-gray-900 dark:text-white">R {liveQuoteTotals.subtotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                  </div>
+                  <div className="flex justify-between items-center text-sm mt-1">
+                    <span className="text-gray-600 dark:text-gray-300">VAT (15%):</span>
+                    <span className="font-medium text-gray-900 dark:text-white">R {liveQuoteTotals.taxAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                  </div>
+                  <div className="flex justify-between items-center text-base font-bold mt-2 pt-2 border-t border-violet-200 dark:border-violet-700">
+                    <span className="text-violet-700 dark:text-violet-300">Total:</span>
+                    <span className="text-violet-700 dark:text-violet-300">R {liveQuoteTotals.totalAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                  </div>
                 </div>
               </div>
 

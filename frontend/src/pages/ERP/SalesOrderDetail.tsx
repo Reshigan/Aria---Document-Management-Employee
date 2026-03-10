@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../../lib/api';
-import { ArrowLeft, Check, Truck, FileText, User, Calendar, Package, DollarSign, Edit, Trash2, AlertCircle, Printer } from 'lucide-react';
+import { ArrowLeft, Check, Truck, FileText, User, Calendar, Package, DollarSign, Edit, Trash2, AlertCircle, Printer, Paperclip, Upload } from 'lucide-react';
 import { LineItemsTable, LineItem } from '../../components/LineItemsTable';
 import { PostingStatus } from '../../components/PostingStatus';
 import { AutomationPanel } from '../../components/AutomationPanel';
@@ -76,6 +76,8 @@ export default function SalesOrderDetail() {
   const [order, setOrder] = useState<SalesOrderDetail | null>(null);
   const [deliveries, setDeliveries] = useState<Delivery[]>([]);
   const [invoices, setInvoices] = useState<Invoice[]>([]);
+  const [attachments, setAttachments] = useState<any[]>([]);
+  const [attachmentUploading, setAttachmentUploading] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -93,6 +95,7 @@ export default function SalesOrderDetail() {
 
       loadDeliveries(id);
       loadInvoices(id);
+      loadAttachments(id);
     } catch (error: any) {
       console.error('Error loading sales order:', error);
       setError(error.response?.data?.detail || 'Failed to load sales order details');
@@ -122,6 +125,37 @@ export default function SalesOrderDetail() {
       setInvoices(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('Error loading invoices:', error);
+    }
+  };
+
+  const loadAttachments = async (orderId: string) => {
+    try {
+      const response = await api.get(`/attachments/sales_order/${orderId}`);
+      const data = response.data?.data || response.data?.attachments || response.data || [];
+      setAttachments(Array.isArray(data) ? data : []);
+    } catch (error) {
+      console.error('Error loading attachments:', error);
+    }
+  };
+
+  const handleUploadAttachment = async () => {
+    if (!id) return;
+    const url = prompt('Enter file URL for the attachment:');
+    if (!url) return;
+    const fileName = prompt('Enter file name:') || 'Attachment';
+    setAttachmentUploading(true);
+    try {
+      await api.post(`/attachments/sales_order/${id}` , {
+        file_name: fileName,
+        file_url: url,
+        file_type: url.split('.').pop() || 'pdf',
+        attachment_type: 'general'
+      });
+      await loadAttachments(id);
+    } catch (error) {
+      console.error('Error uploading attachment:', error);
+    } finally {
+      setAttachmentUploading(false);
     }
   };
 
@@ -491,6 +525,34 @@ export default function SalesOrderDetail() {
                       </div>
                     )}
                   </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Document Attachments */}
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                <Paperclip size={18} />
+                Attachments ({attachments.length})
+              </h3>
+              <button onClick={handleUploadAttachment} disabled={attachmentUploading} className="text-xs px-3 py-1.5 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-900/50 disabled:opacity-50 flex items-center gap-1">
+                <Upload size={12} />{attachmentUploading ? 'Uploading...' : 'Add'}
+              </button>
+            </div>
+            {attachments.length === 0 ? (
+              <p className="text-xs text-gray-500 dark:text-gray-300">No attachments yet</p>
+            ) : (
+              <div className="flex flex-col gap-2">
+                {attachments.map((att: any) => (
+                  <a key={att.id} href={att.file_url} target="_blank" rel="noreferrer" className="p-2 bg-gray-50 dark:bg-gray-700/50 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex items-center gap-2">
+                    <FileText size={14} className="text-gray-400" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{att.file_name}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-300">{att.attachment_type} {att.file_size ? `- ${(att.file_size / 1024).toFixed(1)}KB` : ''}</p>
+                    </div>
+                  </a>
                 ))}
               </div>
             )}
