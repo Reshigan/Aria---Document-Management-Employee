@@ -398,160 +398,129 @@ app.route('/api/erp/procure-to-pay/purchase-orders', purchaseOrders);
 app.route('/api/erp/invoices', invoices);
 app.route('/api/dashboard', dashboard);
 
-// Route aliases for legacy frontend paths (without /api prefix)
-app.route('/erp/master-data/customers', customers);
-app.route('/erp/master-data/suppliers', suppliers);
-app.route('/erp/order-to-cash/products', products);
-app.route('/erp/order-to-cash/quotes', quotes);
-app.route('/erp/order-to-cash/sales-orders', salesOrders);
-app.route('/erp/procure-to-pay/purchase-orders', purchaseOrders);
-app.route('/erp/invoices', invoices);
-app.route('/dashboard', dashboard);
+// Legacy path aliases - redirect non-/api paths to canonical /api paths
+app.all('/erp/*', (c) => {
+  const newUrl = new URL(c.req.url);
+  newUrl.pathname = '/api' + newUrl.pathname;
+  return c.redirect(newUrl.toString(), 301);
+});
+app.all('/dashboard/*', (c) => {
+  const newUrl = new URL(c.req.url);
+  newUrl.pathname = '/api' + newUrl.pathname;
+  return c.redirect(newUrl.toString(), 301);
+});
 
-// Additional legacy path aliases for procurement pages
-app.route('/erp/procurement/suppliers', suppliers);
-app.route('/erp/procurement/purchase-orders', purchaseOrders);
-
-// Route aliases for procure-to-pay paths (used by granular tests)
-app.route('/erp/procure-to-pay/suppliers', suppliers);
+// Additional canonical route aliases (frontend uses these paths)
 app.route('/api/erp/procure-to-pay/suppliers', suppliers);
-
-// Route aliases with /api prefix for procurement pages (frontend uses /api baseURL)
 app.route('/api/erp/procurement/suppliers', suppliers);
 app.route('/api/erp/procurement/purchase-orders', purchaseOrders);
-
-// Route aliases for order-to-cash paths that frontend uses
 app.route('/api/erp/order-to-cash/customers', customers);
-app.route('/erp/order-to-cash/customers', customers);
 app.route('/api/erp/order-to-cash/invoices', invoices);
-app.route('/erp/order-to-cash/invoices', invoices);
-
-// Route aliases for AR/AP invoice paths
 app.route('/api/ar/invoices', invoices);
-app.route('/ar/invoices', invoices);
 app.route('/api/ap/invoices', invoices);
-app.route('/ap/invoices', invoices);
 
 // Ask ARIA routes
 app.route('/api/ask-aria', askAria);
-app.route('/ask-aria', askAria);
 
-// Bot/Agent routes
+// Bot/Agent routes (canonical paths)
 app.route('/api/agents', bots);
-app.route('/agents', bots);
 app.route('/api/admin/agents', bots);
-app.route('/admin/agents', bots);
-// Route alias for frontend Agents.tsx which calls /api/bots
 app.route('/api/bots', bots);
-app.route('/bots', bots);
 
 // General Ledger routes
+app.route('/api/gl', gl);
 app.route('/api/erp/gl', gl);
-app.route('/erp/gl', gl);
 
 // Admin routes (company settings)
 app.route('/api/admin', admin);
-app.route('/admin', admin);
 
-// HR routes (employees, departments)
+// HR routes
 app.route('/api/hr', hr);
-app.route('/hr', hr);
 
-// Reports routes (trial balance, income statement, balance sheet)
+// Reports routes
 app.route('/api/erp/reports', reports);
-app.route('/erp/reports', reports);
+app.route('/api/reports', reports);
 
-// Onboarding routes (guided setup wizard)
+// Onboarding routes
 app.route('/api/onboarding', onboarding);
-app.route('/onboarding', onboarding);
 
-// Financial Period Management routes
+// Financial Period Management
 app.route('/api/erp/periods', periods);
-app.route('/erp/periods', periods);
 
-// Approval Workflow routes
+// Approval Workflow
 app.route('/api/approvals', approvals);
-app.route('/approvals', approvals);
 
-// Country Localization routes (tax calculations, e-invoicing, payroll)
+// Country Localization
 app.route('/api/localization', localization);
-app.route('/localization', localization);
 
-// Vertical Industry Packs (Distribution, Retail, Services/Projects)
+// Vertical Industry Packs
 app.route('/api/verticals', verticals);
-app.route('/verticals', verticals);
 
-// Phase D Differentiators (WhatsApp, Mobile/Offline, Spreadsheet Migration)
+// Differentiators
 app.route('/api/differentiators', differentiators);
-app.route('/differentiators', differentiators);
 
-// Business Intelligence & Reporting
+// Business Intelligence
 app.route('/api/bi', bi);
-app.route('/bi', bi);
 
-// Document Generation & Management (branded documents, print, email)
+// Documents
 app.route('/api/documents', documents);
-app.route('/documents', documents);
 
 // Banking & Reconciliation
 app.route('/api/banking', banking);
-app.route('/banking', banking);
 
-// Bot Observability & Exception Handling
+// Bot Observability
 app.route('/api/bot-observability', botObservability);
-app.route('/bot-observability', botObservability);
 
-// Payment Integrations
+// Payments
 app.route('/api/payments', payments);
-app.route('/payments', payments);
 
-// Enhanced Onboarding Wizard
+// Onboarding Wizard
 app.route('/api/onboarding-wizard', onboardingWizard);
-app.route('/onboarding-wizard', onboardingWizard);
 
-// Manufacturing routes (Work Orders, BOMs, Production, Quality)
+// Manufacturing
 app.route('/api/erp/manufacturing', manufacturing);
-app.route('/erp/manufacturing', manufacturing);
 
-// Enterprise routes (API Keys, Webhooks, Audit Logs, Subscriptions, Reports, Multi-Currency, Inventory Valuation, Three-Way Match)
+// Enterprise
 app.route('/api/enterprise', enterprise);
-app.route('/enterprise', enterprise);
 
-// Marketing Automation routes (Social Media, Content Generation, Influencer Tracking)
+// Marketing
 app.route('/api/marketing', marketing);
-app.route('/marketing', marketing);
 
-// Critical Features routes (Token Vault, Connectors, Bank, Tax, SSO, Accounting Sync, E-Commerce, Shipping, Fixed Assets, Payroll, E-Invoicing, MRP, Monitoring, Admin, Backup)
+// Critical Features
 app.route('/api/critical', criticalFeatures);
-app.route('/critical', criticalFeatures);
 
-// Odoo Parity routes (Product Hierarchy, Pricing, Service Fulfillment, Helpdesk, Field Service, Migration)
+// Odoo Parity
 app.route('/api/odoo', odooParity);
-app.route('/odoo', odooParity);
 
-// Self-Registration routes (public - no auth required for signup flow)
+// Self-Registration (public)
 app.route('/api/registration', registration);
-app.route('/registration', registration);
 
-// Reseller routes (application, portal, admin management)
+// Reseller
 app.route('/api/reseller', reseller);
-app.route('/reseller', reseller);
 
-// Microfeatures routes (notifications, recent items, favorites, comments, tags, attachments, activity)
+// Microfeatures
 app.route('/api/microfeatures', microfeatures);
-app.route('/microfeatures', microfeatures);
 
-// New Pages routes (Financial, Operations, People, Services, Compliance modules)
+// New Pages
 app.route('/api/new-pages', newPages);
-app.route('/new-pages', newPages);
 
-// Xero Parity routes (Recurring Invoices, Reminders, Statements, Portal, Budgets, Bank Feeds)
+// Xero Parity
 app.route('/api/xero', xeroParity);
-app.route('/xero', xeroParity);
 
-// Admin Configuration routes (Chart of Accounts, Invoice Templates, Lock Dates, Payment Terms, Tax Rates, Email Templates, Tracking Categories)
+// Admin Configuration
 app.route('/api/admin-config', adminConfig);
-app.route('/admin-config', adminConfig);
+
+// Legacy path redirects - non-/api paths redirect to canonical /api paths
+app.all('/:path{.+}', (c, next) => {
+  const path = c.req.path;
+  // Only redirect non-/api, non-/health paths that don't already have /api prefix
+  if (!path.startsWith('/api') && !path.startsWith('/health')) {
+    const newUrl = new URL(c.req.url);
+    newUrl.pathname = '/api' + newUrl.pathname;
+    return c.redirect(newUrl.toString(), 301);
+  }
+  return next();
+});
 
 // Data Seeding endpoint (for generating test data)
 import { seedFullYear, seedMonth } from './services/data-seeding-service';
