@@ -550,6 +550,64 @@ app.post('/webhook/:provider', async (c) => {
         return c.json({ error: 'Unknown provider' }, 400);
     }
     
+    // Handle Stripe subscription events
+    if (provider === 'stripe' && companyId && body.type) {
+      const now = new Date().toISOString();
+      switch (body.type) {
+        case 'checkout.session.completed': {
+          const session = body.data?.object;
+          if (session?.subscription) {
+            await db.prepare(`
+              INSERT OR REPLACE INTO subscriptions (id, company_id, stripe_subscription_id, stripe_customer_id, plan_id, status, current_period_start, current_period_end, created_at, updated_at)
+              VALUES (?, ?, ?, ?, ?, 'active', ?, ?, ?, ?)
+            `).bind(
+              crypto.randomUUID(), companyId, session.subscription, session.customer,
+              session.metadata?.plan_id || 'professional', now, now, now, now
+            ).run();
+          }
+          break;
+        }
+        case 'invoice.paid': {
+          const inv = body.data?.object;
+          if (inv?.subscription) {
+            await db.prepare(`
+              UPDATE subscriptions SET status = 'active', current_period_end = ?, updated_at = ? WHERE company_id = ? AND stripe_subscription_id = ?
+            `).bind(inv.period_end ? new Date(inv.period_end * 1000).toISOString() : now, now, companyId, inv.subscription).run();
+          }
+          break;
+        }
+        case 'invoice.payment_failed': {
+          const inv = body.data?.object;
+          if (inv?.subscription) {
+            await db.prepare(`
+              UPDATE subscriptions SET status = 'past_due', updated_at = ? WHERE company_id = ? AND stripe_subscription_id = ?
+            `).bind(now, companyId, inv.subscription).run();
+            // Create notification for company admin
+            await db.prepare(`
+              INSERT INTO notifications (id, company_id, type, title, message, created_at)
+              VALUES (?, ?, 'payment_failed', 'Payment Failed', 'Your subscription payment failed. Please update your payment method.', ?)
+            `).bind(crypto.randomUUID(), companyId, now).run();
+          }
+          break;
+        }
+        case 'customer.subscription.deleted': {
+          const sub = body.data?.object;
+          await db.prepare(`
+            UPDATE subscriptions SET status = 'cancelled', cancelled_at = ?, updated_at = ? WHERE company_id = ? AND stripe_subscription_id = ?
+          `).bind(now, now, companyId, sub?.id).run();
+          break;
+        }
+        case 'customer.subscription.updated': {
+          const sub = body.data?.object;
+          const subStatus = sub?.status === 'active' ? 'active' : sub?.status === 'past_due' ? 'past_due' : sub?.status || 'active';
+          await db.prepare(`
+            UPDATE subscriptions SET status = ?, plan_id = ?, updated_at = ? WHERE company_id = ? AND stripe_subscription_id = ?
+          `).bind(subStatus, sub?.metadata?.plan_id || 'professional', now, companyId, sub?.id).run();
+          break;
+        }
+      }
+    }
+
     // Find and update transaction
     if (externalId) {
       const existing = await db.prepare(`

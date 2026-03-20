@@ -52,6 +52,7 @@ import { processPendingDeliveries } from './services/webhook-service';
 import { processDueScheduledReports } from './services/report-builder-service';
 import { processScheduledPosts, generateDailyPosts } from './services/marketing-service';
 import { rateLimiter } from './middleware/rate-limiter';
+import { sendTransactionalEmail } from './services/email-service';
 
 // Types
 interface Env {
@@ -913,6 +914,13 @@ app.post('/api/auth/register', rateLimiter({ maxRequests: 3, windowSeconds: 60 }
       'user'
     ).run();
 
+    // Send welcome email (non-blocking)
+    if (company_id) {
+      sendTransactionalEmail(c.env.DB, company_id, 'welcome', email.toLowerCase(), {
+        name: full_name || email,
+      }).catch(err => console.error('Welcome email failed:', err));
+    }
+
     return c.json({
       message: 'User registered successfully',
       user: {
@@ -950,9 +958,13 @@ app.post('/api/auth/password-reset/request', rateLimiter({ maxRequests: 3, windo
       VALUES (?, ?, ?, ?, datetime('now'))
     `).bind(generateUUID(), user.id, resetToken, expiresAt).run();
 
-    // In production, send email via configured email service
-    // For now, log the token (email service integration in Session 7)
-    console.log(`Password reset token for ${email}: ${resetToken}`);
+    // Send password reset email
+    if (user.company_id) {
+      sendTransactionalEmail(c.env.DB, user.company_id, 'password_reset', email.toLowerCase(), {
+        reset_link: `${c.req.url.split('/api')[0]}/reset-password?token=${resetToken}`,
+        name: email,
+      }).catch(err => console.error('Password reset email failed:', err));
+    }
 
     return c.json({ message: 'If the email exists, a reset link has been sent' });
   } catch (error) {

@@ -619,3 +619,83 @@ export async function sendPaymentConfirmation(
     tags: ['payment-confirmation', `ref-${payment.reference}`]
   });
 }
+
+/**
+ * Send a transactional email using company's configured email service.
+ * This is the main wrapper that all notification points should use.
+ * It loads templates from DB, renders them, sends via the configured provider,
+ * and logs the attempt.
+ */
+export async function sendTransactionalEmail(
+  db: D1Database,
+  companyId: string,
+  templateType: string,
+  recipientEmail: string,
+  templateData: Record<string, string>
+): Promise<EmailResult> {
+  const config = await getEmailConfig(db, companyId);
+  if (!config) {
+    return { success: false, error: 'Email not configured for this company' };
+  }
+
+  // Try to load template from database
+  const template = await db.prepare(
+    'SELECT subject, html_body, text_body FROM email_templates WHERE company_id = ? AND template_type = ? AND is_active = 1'
+  ).bind(companyId, templateType).first<{ subject: string; html_body: string; text_body: string }>();
+
+  let subject = templateData.subject || `ARIA ERP - ${templateType}`;
+  let html = templateData.html || '';
+  let text = templateData.text || '';
+
+  if (template) {
+    subject = template.subject;
+    html = template.html_body;
+    text = template.text_body || '';
+    for (const [key, value] of Object.entries(templateData)) {
+      const placeholder = `{{${key}}}`;
+      const escaped = placeholder.replace(/[{}]/g, '\\$&');
+      subject = subject.replace(new RegExp(escaped, 'g'), value);
+      html = html.replace(new RegExp(escaped, 'g'), value);
+      text = text.replace(new RegExp(escaped, 'g'), value);
+    }
+  } else if (!html) {
+    // Default fallback templates by type
+    switch (templateType) {
+      case 'welcome':
+        subject = 'Welcome to ARIA ERP';
+        html = `<p>Welcome ${templateData.name || ''}! Your ARIA ERP account is ready.</p>`;
+        break;
+      case 'password_reset':
+        subject = 'Password Reset Request';
+        html = `<p>Click <a href="${templateData.reset_link || '#'}">here</a> to reset your password. This link expires in 1 hour.</p>`;
+        break;
+      case 'invoice_posted':
+        subject = `Invoice ${templateData.invoice_number || ''} from ${templateData.company_name || 'ARIA'}`;
+        html = `<p>Invoice ${templateData.invoice_number || ''} for ${templateData.amount || ''} has been posted.</p>`;
+        break;
+      case 'payment_receipt':
+        subject = `Payment Confirmation - ${templateData.amount || ''}`;
+        html = `<p>Payment of ${templateData.amount || ''} received. Reference: ${templateData.reference || ''}.</p>`;
+        break;
+      default:
+        html = `<p>${templateData.message || 'Notification from ARIA ERP'}</p>`;
+    }
+  }
+
+  const result = await sendEmail(config, { to: recipientEmail, subject, html, text, tags: [templateType] });
+
+  // Log the email attempt
+  try {
+    await db.prepare(
+      `INSERT INTO email_logs (id, company_id, template_type, recipient_email, subject, status, provider, message_id, error, sent_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))`
+    ).bind(
+      crypto.randomUUID(), companyId, templateType, recipientEmail, subject,
+      result.success ? 'sent' : 'failed', result.provider || null, result.messageId || null, result.error || null
+    ).run();
+  } catch (logError) {
+    console.error('Failed to log email:', logError);
+  }
+
+  return result;
+}

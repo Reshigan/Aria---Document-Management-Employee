@@ -1481,4 +1481,132 @@ app.get('/history', async (c) => {
   }
 });
 
+// ============================================================================
+// R2 DOCUMENT UPLOAD & DOWNLOAD
+// ============================================================================
+
+const ALLOWED_FILE_TYPES = new Set([
+  'application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'text/csv',
+  'image/jpeg', 'image/png', 'image/gif', 'image/webp'
+]);
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+
+// Upload a document to R2
+app.post('/upload', async (c) => {
+  try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+    const userId = await getSecureUserId(c) || 'system';
+
+    const formData = await c.req.formData();
+    const fileEntry = formData.get('file');
+    if (!fileEntry || typeof fileEntry === 'string') {
+      return c.json({ error: 'No file provided' }, 400);
+    }
+    const file = fileEntry as unknown as { name: string; type: string; size: number; stream(): ReadableStream; arrayBuffer(): Promise<ArrayBuffer> };
+
+    if (file.size > MAX_FILE_SIZE) {
+      return c.json({ error: 'File size exceeds 10MB limit' }, 400);
+    }
+
+    if (!ALLOWED_FILE_TYPES.has(file.type)) {
+      return c.json({ error: `File type ${file.type} not supported. Allowed: PDF, DOCX, XLSX, CSV, JPG, PNG` }, 400);
+    }
+
+    const documentType = (formData.get('document_type') as string) || 'general';
+    const documentId = crypto.randomUUID();
+    const r2Key = `${companyId}/${documentType}/${documentId}/${file.name}`;
+
+    // Upload to R2
+    await c.env.DOCUMENTS.put(r2Key, file.stream(), {
+      httpMetadata: { contentType: file.type },
+      customMetadata: { companyId, userId, documentType, originalName: file.name }
+    });
+
+    // Create database record
+    const now = new Date().toISOString();
+    await c.env.DB.prepare(`
+      INSERT INTO documents (id, company_id, filename, original_filename, mime_type, size, r2_key, document_type, uploaded_by, status, created_at, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'uploaded', ?, ?)
+    `).bind(documentId, companyId, file.name, file.name, file.type, file.size, r2Key, documentType, userId, now, now).run();
+
+    return c.json({
+      id: documentId,
+      filename: file.name,
+      mime_type: file.type,
+      size: file.size,
+      document_type: documentType,
+      status: 'uploaded',
+      created_at: now
+    }, 201);
+  } catch (error) {
+    console.error('Upload error:', error);
+    return c.json({ error: 'Failed to upload document' }, 500);
+  }
+});
+
+// Download a document from R2
+app.get('/:id/download', async (c) => {
+  try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+    const documentId = c.req.param('id');
+
+    const doc = await c.env.DB.prepare(
+      'SELECT * FROM documents WHERE id = ? AND company_id = ?'
+    ).bind(documentId, companyId).first<{ r2_key: string; filename: string; mime_type: string }>();
+
+    if (!doc) {
+      return c.json({ error: 'Document not found' }, 404);
+    }
+
+    const r2Object = await c.env.DOCUMENTS.get(doc.r2_key);
+    if (!r2Object) {
+      return c.json({ error: 'File not found in storage' }, 404);
+    }
+
+    return new Response(r2Object.body, {
+      headers: {
+        'Content-Type': doc.mime_type || 'application/octet-stream',
+        'Content-Disposition': `attachment; filename="${doc.filename}"`,
+        'Cache-Control': 'private, max-age=3600'
+      }
+    });
+  } catch (error) {
+    console.error('Download error:', error);
+    return c.json({ error: 'Failed to download document' }, 500);
+  }
+});
+
+// Delete a document from R2
+app.delete('/:id', async (c) => {
+  try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+    const documentId = c.req.param('id');
+
+    const doc = await c.env.DB.prepare(
+      'SELECT r2_key FROM documents WHERE id = ? AND company_id = ?'
+    ).bind(documentId, companyId).first<{ r2_key: string }>();
+
+    if (!doc) {
+      return c.json({ error: 'Document not found' }, 404);
+    }
+
+    // Delete from R2
+    await c.env.DOCUMENTS.delete(doc.r2_key);
+
+    // Delete from database
+    await c.env.DB.prepare(
+      'DELETE FROM documents WHERE id = ? AND company_id = ?'
+    ).bind(documentId, companyId).run();
+
+    return c.json({ message: 'Document deleted successfully' });
+  } catch (error) {
+    console.error('Delete error:', error);
+    return c.json({ error: 'Failed to delete document' }, 500);
+  }
+});
+
 export default app;
