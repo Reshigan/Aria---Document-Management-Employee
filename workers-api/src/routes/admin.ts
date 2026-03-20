@@ -291,4 +291,87 @@ app.post('/company/logo', async (c) => {
   }
 });
 
+// ==================== AUDIT LOGS ====================
+
+// Get audit logs (paginated, filterable)
+app.get('/audit-logs', async (c) => {
+  const companyId = await getSecureCompanyId(c);
+  if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+
+  try {
+    const db = c.env.DB;
+    const page = parseInt(c.req.query('page') || '1');
+    const pageSize = Math.min(parseInt(c.req.query('page_size') || '50'), 100);
+    const eventType = c.req.query('event_type');
+    const resourceType = c.req.query('resource_type');
+    const userId = c.req.query('user_id');
+    const action = c.req.query('action');
+    const startDate = c.req.query('start_date');
+    const endDate = c.req.query('end_date');
+
+    let whereClause = 'WHERE company_id = ?';
+    const params: (string | number)[] = [companyId];
+
+    if (eventType) { whereClause += ' AND event_type = ?'; params.push(eventType); }
+    if (resourceType) { whereClause += ' AND resource_type = ?'; params.push(resourceType); }
+    if (userId) { whereClause += ' AND user_id = ?'; params.push(userId); }
+    if (action) { whereClause += ' AND action = ?'; params.push(action); }
+    if (startDate) { whereClause += ' AND created_at >= ?'; params.push(startDate); }
+    if (endDate) { whereClause += ' AND created_at <= ?'; params.push(endDate); }
+
+    const countResult = await db.prepare(
+      `SELECT COUNT(*) as total FROM audit_logs ${whereClause}`
+    ).bind(...params).first() as { total: number } | null;
+    const total = countResult?.total || 0;
+
+    const offset = (page - 1) * pageSize;
+    const logs = await db.prepare(
+      `SELECT * FROM audit_logs ${whereClause} ORDER BY created_at DESC LIMIT ? OFFSET ?`
+    ).bind(...params, pageSize, offset).all();
+
+    return c.json({
+      logs: (logs.results || []).map((row: any) => ({
+        ...row,
+        old_values: row.old_values ? JSON.parse(row.old_values) : null,
+        new_values: row.new_values ? JSON.parse(row.new_values) : null,
+        metadata: row.metadata ? JSON.parse(row.metadata) : null,
+      })),
+      total,
+      page,
+      page_size: pageSize,
+      total_pages: Math.ceil(total / pageSize),
+    });
+  } catch (error) {
+    console.error('Audit logs error:', error);
+    return c.json({ error: 'Failed to fetch audit logs' }, 500);
+  }
+});
+
+// Get audit trail for a specific resource
+app.get('/audit-logs/:resourceType/:resourceId', async (c) => {
+  const companyId = await getSecureCompanyId(c);
+  if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+
+  try {
+    const { resourceType, resourceId } = c.req.param();
+    const logs = await c.env.DB.prepare(`
+      SELECT * FROM audit_logs
+      WHERE company_id = ? AND resource_type = ? AND resource_id = ?
+      ORDER BY created_at DESC LIMIT 100
+    `).bind(companyId, resourceType, resourceId).all();
+
+    return c.json({
+      logs: (logs.results || []).map((row: any) => ({
+        ...row,
+        old_values: row.old_values ? JSON.parse(row.old_values) : null,
+        new_values: row.new_values ? JSON.parse(row.new_values) : null,
+        metadata: row.metadata ? JSON.parse(row.metadata) : null,
+      })),
+    });
+  } catch (error) {
+    console.error('Resource audit trail error:', error);
+    return c.json({ error: 'Failed to fetch audit trail' }, 500);
+  }
+});
+
 export default app;

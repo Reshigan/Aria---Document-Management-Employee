@@ -111,6 +111,13 @@ app.use('*', cors({
   credentials: true,
 }));
 
+// Request ID middleware - adds correlation ID to every request
+app.use('*', async (c, next) => {
+  const requestId = crypto.randomUUID();
+  c.header('X-Request-ID', requestId);
+  await next();
+});
+
 // Health check endpoint
 app.get('/health', (c) => {
   return c.json({
