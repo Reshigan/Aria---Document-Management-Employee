@@ -425,22 +425,39 @@ app.get('/retail/loyalty/:customerId', async (c) => {
     if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const customerId = c.req.param('customerId');
     
-    // In a real implementation, this would query the loyalty_points table
-    // For now, return mock data
+    // Query loyalty points from database
+    const loyalty = await c.env.DB.prepare(
+      'SELECT * FROM loyalty_points WHERE customer_id = ? AND company_id = ?'
+    ).bind(customerId, companyId).first() as Record<string, unknown> | null;
+
+    const currentPoints = loyalty ? Number(loyalty.current_points || 0) : 0;
+    const lifetimePoints = loyalty ? Number(loyalty.lifetime_points || 0) : 0;
+
+    // Determine tier based on lifetime points
+    let tier = 'Bronze';
+    let nextTier = 'Silver';
+    let tierProgress = 0;
+    let pointsToNextTier = 1000;
+    if (lifetimePoints >= 10000) { tier = 'Platinum'; nextTier = 'Platinum'; tierProgress = 100; pointsToNextTier = 0; }
+    else if (lifetimePoints >= 5000) { tier = 'Gold'; nextTier = 'Platinum'; tierProgress = Math.round(((lifetimePoints - 5000) / 5000) * 100); pointsToNextTier = 10000 - lifetimePoints; }
+    else if (lifetimePoints >= 2000) { tier = 'Silver'; nextTier = 'Gold'; tierProgress = Math.round(((lifetimePoints - 2000) / 3000) * 100); pointsToNextTier = 5000 - lifetimePoints; }
+    else { tierProgress = Math.round((lifetimePoints / 2000) * 100); pointsToNextTier = 2000 - lifetimePoints; }
+
+    // Get recent loyalty transactions
+    const recentTxns = await c.env.DB.prepare(
+      'SELECT * FROM loyalty_transactions WHERE customer_id = ? AND company_id = ? ORDER BY created_at DESC LIMIT 10'
+    ).bind(customerId, companyId).all();
+
     return c.json({
       customer_id: customerId,
-      current_points: 1500,
-      lifetime_points: 5000,
-      tier: 'Gold',
-      tier_progress: 75,
-      next_tier: 'Platinum',
-      points_to_next_tier: 500,
-      points_value: 15.00, // R1 per 100 points
-      recent_transactions: [
-        { date: '2025-12-20', description: 'Purchase', points: 150 },
-        { date: '2025-12-15', description: 'Purchase', points: 200 },
-        { date: '2025-12-10', description: 'Redemption', points: -500 }
-      ]
+      current_points: currentPoints,
+      lifetime_points: lifetimePoints,
+      tier,
+      tier_progress: tierProgress,
+      next_tier: nextTier,
+      points_to_next_tier: pointsToNextTier,
+      points_value: currentPoints / 100,
+      recent_transactions: recentTxns.results || []
     });
   } catch (error) {
     console.error('Error loading loyalty info:', error);
