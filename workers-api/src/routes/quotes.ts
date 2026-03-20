@@ -50,6 +50,7 @@ const quotes = new Hono<{ Bindings: Env }>();
 quotes.get('/', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const status = c.req.query('status') || '';
     const customerId = c.req.query('customer_id') || '';
     const page = parseInt(c.req.query('page') || '1');
@@ -129,6 +130,8 @@ quotes.get('/:id', async (c) => {
     const quoteId = c.req.param('id');
     const companyId = await getSecureCompanyId(c);
 
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+
     const quote = await c.env.DB.prepare(`
       SELECT q.*, c.customer_name, c.customer_code, c.email as customer_email
       FROM quotes q
@@ -173,6 +176,7 @@ quotes.get('/:id', async (c) => {
 quotes.post('/', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json<Partial<Quote> & { items?: Partial<QuoteItem>[] }>();
 
     if (!body.customer_id) {
@@ -267,6 +271,7 @@ quotes.put('/:id/status', async (c) => {
   try {
     const quoteId = c.req.param('id');
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json<{ status: string }>();
 
     const validStatuses = ['draft', 'sent', 'accepted', 'rejected', 'expired', 'converted'];
@@ -294,6 +299,8 @@ quotes.post('/:id/convert', async (c) => {
   try {
     const quoteId = c.req.param('id');
     const companyId = await getSecureCompanyId(c);
+
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
 
     // Get quote
     const quote = await c.env.DB.prepare(
@@ -385,6 +392,8 @@ quotes.delete('/:id', async (c) => {
   try {
     const quoteId = c.req.param('id');
     const companyId = await getSecureCompanyId(c);
+
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
 
     // Delete line items first
     await c.env.DB.prepare('DELETE FROM quote_items WHERE quote_id = ?').bind(quoteId).run();

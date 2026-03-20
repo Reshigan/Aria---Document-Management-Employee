@@ -1,6 +1,7 @@
 // Critical Features API Routes - Token Vault, Connectors, Bank, Tax, SSO, etc.
 
 import { Hono } from 'hono';
+import { getSecureCompanyId, getSecureUserId } from '../middleware/auth';
 import { D1Database } from '@cloudflare/workers-types';
 
 // Import all services

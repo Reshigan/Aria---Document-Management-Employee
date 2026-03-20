@@ -5,6 +5,7 @@
  */
 
 import { Hono } from 'hono';
+import { getSecureCompanyId, getSecureUserId } from '../middleware/auth';
 import { jwtVerify } from 'jose';
 
 interface Env {
@@ -22,6 +23,8 @@ async function getAuthenticatedCompanyId(c: any): Promise<string | null> {
   }
   
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const token = authHeader.substring(7);
     const secretKey = new TextEncoder().encode(c.env.JWT_SECRET);
     const { payload } = await jwtVerify(token, secretKey);
@@ -121,6 +124,8 @@ app.post('/steps/:stepId/complete', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const stepId = c.req.param('stepId');
     const body = await c.req.json().catch(() => ({}));
     
@@ -443,6 +448,8 @@ app.post('/steps/:stepId/skip', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const stepId = c.req.param('stepId');
     
     // Validate step exists
@@ -499,6 +506,8 @@ app.post('/reset', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const now = new Date().toISOString();
     
     await c.env.DB.prepare(`

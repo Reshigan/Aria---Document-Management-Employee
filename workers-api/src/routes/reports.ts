@@ -4,6 +4,7 @@
  */
 
 import { Hono } from 'hono';
+import { getSecureCompanyId, getSecureUserId } from '../middleware/auth';
 import { jwtVerify } from 'jose';
 
 interface Env {
@@ -21,6 +22,8 @@ async function getAuthenticatedCompanyId(c: any): Promise<string | null> {
   }
   
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const token = authHeader.substring(7);
     const secretKey = new TextEncoder().encode(c.env.JWT_SECRET);
     const { payload } = await jwtVerify(token, secretKey);
@@ -39,6 +42,8 @@ app.get('/trial-balance', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const asOfDate = c.req.query('as_of_date') || new Date().toISOString().split('T')[0];
     
     // Get all accounts with their balances from posted journal entries
@@ -111,6 +116,8 @@ app.get('/income-statement', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const startDate = c.req.query('start_date') || new Date(new Date().getFullYear(), 0, 1).toISOString().split('T')[0];
     const endDate = c.req.query('end_date') || new Date().toISOString().split('T')[0];
     
@@ -179,6 +186,8 @@ app.get('/balance-sheet', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const asOfDate = c.req.query('as_of_date') || new Date().toISOString().split('T')[0];
     
     // Get asset accounts
@@ -271,6 +280,8 @@ app.get('/agents/dashboard', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     // Get bot execution stats from bot_executions table
     const statsResult = await c.env.DB.prepare(`
       SELECT 
@@ -309,6 +320,8 @@ app.get('/agents/activity-chart', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     // Get activity for last 7 days
     const result = await c.env.DB.prepare(`
       SELECT 
@@ -344,6 +357,8 @@ app.get('/agents/performance', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const result = await c.env.DB.prepare(`
       SELECT 
         bot_id as name,
@@ -376,6 +391,8 @@ app.get('/agents/recent-actions', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const result = await c.env.DB.prepare(`
       SELECT 
         bot_id,

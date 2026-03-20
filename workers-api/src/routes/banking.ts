@@ -19,6 +19,9 @@ app.get('/accounts', async (c) => {
   const companyId = await getSecureCompanyId(c);
   
 
+  if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+  
+
   try {
     const db = c.env.DB;
     
@@ -36,6 +39,9 @@ app.get('/accounts', async (c) => {
 // Get bank account by ID
 app.get('/accounts/:id', async (c) => {
   const companyId = await getSecureCompanyId(c);
+  
+
+  if (!companyId) return c.json({ error: 'Authentication required' }, 401);
   
 
   try {
@@ -60,6 +66,9 @@ app.get('/accounts/:id', async (c) => {
 // Create bank account
 app.post('/accounts', async (c) => {
   const companyId = await getSecureCompanyId(c);
+  
+
+  if (!companyId) return c.json({ error: 'Authentication required' }, 401);
   
 
   try {
@@ -96,6 +105,9 @@ app.post('/accounts', async (c) => {
 // Update bank account
 app.put('/accounts/:id', async (c) => {
   const companyId = await getSecureCompanyId(c);
+  
+
+  if (!companyId) return c.json({ error: 'Authentication required' }, 401);
   
 
   try {
@@ -136,6 +148,9 @@ app.put('/accounts/:id', async (c) => {
 // List bank transactions
 app.get('/accounts/:accountId/transactions', async (c) => {
   const companyId = await getSecureCompanyId(c);
+  
+
+  if (!companyId) return c.json({ error: 'Authentication required' }, 401);
   
 
   try {
@@ -200,6 +215,9 @@ app.get('/accounts/:accountId/transactions', async (c) => {
 // Import bank transactions (CSV)
 app.post('/accounts/:accountId/import', async (c) => {
   const companyId = await getSecureCompanyId(c);
+  
+
+  if (!companyId) return c.json({ error: 'Authentication required' }, 401);
   
 
   try {
@@ -293,6 +311,9 @@ app.get('/accounts/:accountId/reconciliation', async (c) => {
   const companyId = await getSecureCompanyId(c);
   
 
+  if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+  
+
   try {
     const accountId = c.req.param('accountId');
     const db = c.env.DB;
@@ -376,12 +397,16 @@ app.post('/transactions/:txnId/reconcile', async (c) => {
   const companyId = await getSecureCompanyId(c);
   
 
+  if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+  
+
   try {
     const txnId = c.req.param('txnId');
     const body = await c.req.json();
     const { matched_transaction_id, matched_transaction_type } = body;
     const db = c.env.DB;
     const userId = await getSecureUserId(c);
+    if (!userId) return c.json({ error: 'Authentication required' }, 401);
     
     // Update bank transaction
     await db.prepare(`
@@ -423,12 +448,16 @@ app.post('/accounts/:accountId/reconcile-bulk', async (c) => {
   const companyId = await getSecureCompanyId(c);
   
 
+  if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+  
+
   try {
     const accountId = c.req.param('accountId');
     const body = await c.req.json();
     const { matches } = body; // Array of { bank_transaction_id, matched_transaction_id, matched_transaction_type }
     const db = c.env.DB;
     const userId = await getSecureUserId(c);
+    if (!userId) return c.json({ error: 'Authentication required' }, 401);
     
     let reconciled = 0;
     
@@ -480,6 +509,9 @@ app.get('/rules', async (c) => {
   const companyId = await getSecureCompanyId(c);
   
 
+  if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+  
+
   try {
     const db = c.env.DB;
     
@@ -497,6 +529,9 @@ app.get('/rules', async (c) => {
 // Create matching rule
 app.post('/rules', async (c) => {
   const companyId = await getSecureCompanyId(c);
+  
+
+  if (!companyId) return c.json({ error: 'Authentication required' }, 401);
   
 
   try {
@@ -537,6 +572,9 @@ app.post('/rules', async (c) => {
 // Apply matching rules to unreconciled transactions
 app.post('/accounts/:accountId/apply-rules', async (c) => {
   const companyId = await getSecureCompanyId(c);
+  
+
+  if (!companyId) return c.json({ error: 'Authentication required' }, 401);
   
 
   try {

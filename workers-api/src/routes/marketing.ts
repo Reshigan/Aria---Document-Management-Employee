@@ -9,6 +9,7 @@
  */
 
 import { Hono } from 'hono';
+import { getSecureCompanyId, getSecureUserId } from '../middleware/auth';
 import {
   createPost,
   listPosts,
@@ -42,6 +43,8 @@ const marketing = new Hono<{ Bindings: Env }>();
  */
 marketing.post('/posts/generate', async (c) => {
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json<{
       platform: 'linkedin' | 'facebook';
       schedule_at?: string;
@@ -66,6 +69,8 @@ marketing.post('/posts/generate', async (c) => {
  */
 marketing.post('/posts/generate-daily', async (c) => {
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json<{ posts_per_platform?: number }>().catch(() => ({ posts_per_platform: 3 }));
     const postsPerPlatform = body.posts_per_platform || 3;
 
@@ -86,6 +91,8 @@ marketing.post('/posts/generate-daily', async (c) => {
  */
 marketing.post('/posts/preview', async (c) => {
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json<{ platform: 'linkedin' | 'facebook' }>();
     const { platform } = body;
 
@@ -122,6 +129,8 @@ marketing.post('/posts/preview', async (c) => {
  */
 marketing.get('/posts', async (c) => {
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const platform = c.req.query('platform');
     const status = c.req.query('status');
     const page = parseInt(c.req.query('page') || '1');
@@ -150,6 +159,8 @@ marketing.get('/posts', async (c) => {
  */
 marketing.post('/posts/process', async (c) => {
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const result = await processScheduledPosts(c.env.DB);
     return c.json({
       success: true,
@@ -171,6 +182,8 @@ marketing.post('/posts/process', async (c) => {
  */
 marketing.get('/themes', async (c) => {
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const themes = await getContentThemes(c.env.DB);
     return c.json({ success: true, themes });
   } catch (error) {
@@ -188,6 +201,8 @@ marketing.get('/themes', async (c) => {
  */
 marketing.get('/accounts', async (c) => {
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const platform = c.req.query('platform');
     const accounts = await getSocialMediaAccounts(c.env.DB, platform);
     
@@ -209,6 +224,8 @@ marketing.get('/accounts', async (c) => {
  */
 marketing.post('/accounts', async (c) => {
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json<{
       platform: string;
       account_type: string;
@@ -260,6 +277,8 @@ marketing.post('/accounts', async (c) => {
  */
 marketing.get('/influencers', async (c) => {
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const platform = c.req.query('platform');
     const influencers = await getInfluencers(c.env.DB, platform);
     return c.json({ success: true, influencers });
@@ -274,6 +293,8 @@ marketing.get('/influencers', async (c) => {
  */
 marketing.post('/influencers', async (c) => {
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json<{
       platform: string;
       username: string;
@@ -309,6 +330,8 @@ marketing.post('/influencers', async (c) => {
  */
 marketing.get('/groups', async (c) => {
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const platform = c.req.query('platform');
     const groups = await getMarketingGroups(c.env.DB, platform);
     return c.json({ success: true, groups });
@@ -323,6 +346,8 @@ marketing.get('/groups', async (c) => {
  */
 marketing.post('/groups', async (c) => {
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json<{
       platform: string;
       group_name: string;
@@ -356,6 +381,8 @@ marketing.post('/groups', async (c) => {
  */
 marketing.get('/analytics', async (c) => {
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const days = parseInt(c.req.query('days') || '30');
     const analytics = await getMarketingAnalytics(c.env.DB, days);
     
@@ -375,6 +402,8 @@ marketing.get('/analytics', async (c) => {
  */
 marketing.get('/dashboard', async (c) => {
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const analytics = await getMarketingAnalytics(c.env.DB, 30);
     const accounts = await getSocialMediaAccounts(c.env.DB);
     const themes = await getContentThemes(c.env.DB);
@@ -408,6 +437,8 @@ marketing.get('/dashboard', async (c) => {
  */
 marketing.post('/images/generate', async (c) => {
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json<{ prompt: string }>();
     const { prompt } = body;
 

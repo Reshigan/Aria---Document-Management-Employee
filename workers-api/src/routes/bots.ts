@@ -8,6 +8,7 @@
  */
 
 import { Hono } from 'hono';
+import { getSecureCompanyId, getSecureUserId } from '../middleware/auth';
 import { jwtVerify } from 'jose';
 import { 
   postCustomerInvoice, 
@@ -3021,6 +3022,8 @@ app.post('/marketplace/:botId/execute', async (c) => {
     const completedAt = new Date().toISOString();
     
     try {
+      const companyId = await getSecureCompanyId(c);
+      if (!companyId) return c.json({ error: 'Authentication required' }, 401);
       await c.env.DB.prepare(`
         UPDATE bot_runs SET status = 'completed', result = ?, completed_at = ?
         WHERE id = ?
@@ -3084,9 +3087,9 @@ app.post('/execute', async (c) => {
 
 // Get bot configuration
 app.get('/config', async (c) => {
-  const companyId = c.req.query('company_id') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
-  
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const configs = await c.env.DB.prepare(
       'SELECT * FROM bot_configs WHERE company_id = ?'
     ).bind(companyId).all();
@@ -3129,7 +3132,8 @@ app.get('/config', async (c) => {
 app.put('/config', async (c) => {
   try {
     const body = await c.req.json<{ agents: any[] }>();
-    const companyId = 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     
     for (const agent of body.agents || []) {
       await c.env.DB.prepare(`
@@ -3157,7 +3161,8 @@ app.post('/:botId/toggle', async (c) => {
   try {
     const botId = c.req.param('botId');
     const body = await c.req.json<{ enabled: boolean }>();
-    const companyId = 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     
     await c.env.DB.prepare(`
       INSERT OR REPLACE INTO bot_configs (id, bot_id, company_id, enabled, updated_at)
@@ -3173,11 +3178,11 @@ app.post('/:botId/toggle', async (c) => {
 
 // Get bot run history
 app.get('/runs', async (c) => {
-  const companyId = c.req.query('company_id') || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
-  const botId = c.req.query('bot_id');
-  const limit = parseInt(c.req.query('limit') || '50');
-  
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+    const botId = c.req.query('bot_id');
+    const limit = parseInt(c.req.query('limit') || '50');
     let query = 'SELECT * FROM bot_runs WHERE company_id = ?';
     const params: any[] = [companyId];
     
@@ -3210,6 +3215,8 @@ app.get('/runs/:runId', async (c) => {
   const runId = c.req.param('runId');
   
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const run = await c.env.DB.prepare(
       'SELECT * FROM bot_runs WHERE id = ?'
     ).bind(runId).first();
@@ -3299,6 +3306,8 @@ app.get('/workflows/:workflowId', async (c) => {
 // Execute a workflow (bot chain)
 app.post('/workflows/:workflowId/execute', async (c) => {
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const auth = await getAuthenticatedCompanyId(c);
     if (!auth) {
       return c.json({ error: 'Unauthorized' }, 401);
@@ -3340,6 +3349,8 @@ app.post('/workflows/:workflowId/execute', async (c) => {
 // Execute bot with dry_run support
 app.post('/execute-dry-run', async (c) => {
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const auth = await getAuthenticatedCompanyId(c);
     if (!auth) {
       return c.json({ error: 'Unauthorized' }, 401);
@@ -3376,8 +3387,8 @@ app.post('/execute-dry-run', async (c) => {
 // Get workflow run history
 app.get('/workflows/runs', async (c) => {
   try {
-    const auth = await getAuthenticatedCompanyId(c);
-    const companyId = auth?.companyId || 'b0598135-52fd-4f67-ac56-8f0237e6355e';
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const limit = parseInt(c.req.query('limit') || '50');
     
     const runs = await c.env.DB.prepare(`

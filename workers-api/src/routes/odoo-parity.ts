@@ -2,6 +2,7 @@
 // Product Hierarchy, Pricing, Service Fulfillment, Helpdesk, Field Service, Migration
 
 import { Hono } from 'hono';
+import { getSecureCompanyId, getSecureUserId } from '../middleware/auth';
 import { jwt } from 'hono/jwt';
 import * as productHierarchy from '../services/product-hierarchy-service';
 import * as pricing from '../services/pricing-service';

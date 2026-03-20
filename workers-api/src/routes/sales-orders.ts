@@ -52,6 +52,7 @@ const salesOrders = new Hono<{ Bindings: Env }>();
 salesOrders.get('/', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const status = c.req.query('status') || '';
     const customerId = c.req.query('customer_id') || '';
     const page = parseInt(c.req.query('page') || '1');
@@ -132,6 +133,8 @@ salesOrders.get('/:id', async (c) => {
     const orderId = c.req.param('id');
     const companyId = await getSecureCompanyId(c);
 
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+
     const order = await c.env.DB.prepare(`
       SELECT so.*, c.customer_name, c.customer_code, c.email as customer_email
       FROM sales_orders so
@@ -177,6 +180,7 @@ salesOrders.get('/:id', async (c) => {
 salesOrders.post('/', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json<Partial<SalesOrder> & { items?: Partial<SalesOrderItem>[] }>();
 
     if (!body.customer_id) {
@@ -271,6 +275,7 @@ salesOrders.put('/:id/status', async (c) => {
   try {
     const orderId = c.req.param('id');
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json<{ status: string }>();
 
     const validStatuses = ['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled', 'invoiced'];
@@ -298,6 +303,8 @@ salesOrders.post('/:id/invoice', async (c) => {
   try {
     const orderId = c.req.param('id');
     const companyId = await getSecureCompanyId(c);
+
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
 
     // Get sales order
     const order = await c.env.DB.prepare(
@@ -393,6 +400,8 @@ salesOrders.post('/:id/cancel', async (c) => {
     const orderId = c.req.param('id');
     const companyId = await getSecureCompanyId(c);
 
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+
     const order = await c.env.DB.prepare(
       'SELECT * FROM sales_orders WHERE id = ? AND company_id = ?'
     ).bind(orderId, companyId).first<SalesOrder>();
@@ -430,6 +439,8 @@ salesOrders.post('/:id/approve', async (c) => {
     const orderId = c.req.param('id');
     const companyId = await getSecureCompanyId(c);
 
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+
     const order = await c.env.DB.prepare(
       'SELECT * FROM sales_orders WHERE id = ? AND company_id = ?'
     ).bind(orderId, companyId).first<SalesOrder>();
@@ -462,6 +473,8 @@ salesOrders.delete('/:id', async (c) => {
   try {
     const orderId = c.req.param('id');
     const companyId = await getSecureCompanyId(c);
+
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
 
     // Delete line items first
     await c.env.DB.prepare('DELETE FROM sales_order_items WHERE sales_order_id = ?').bind(orderId).run();

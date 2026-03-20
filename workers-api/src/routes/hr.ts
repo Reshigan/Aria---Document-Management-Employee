@@ -4,6 +4,7 @@
  */
 
 import { Hono } from 'hono';
+import { getSecureCompanyId, getSecureUserId } from '../middleware/auth';
 import { jwtVerify } from 'jose';
 
 interface Env {
@@ -21,6 +22,8 @@ async function getAuthenticatedCompanyId(c: any): Promise<string | null> {
   }
   
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const token = authHeader.substring(7);
     const secretKey = new TextEncoder().encode(c.env.JWT_SECRET);
     const { payload } = await jwtVerify(token, secretKey);
@@ -45,6 +48,8 @@ app.get('/employees', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const result = await c.env.DB.prepare(`
       SELECT e.*, d.department_name as department_name
       FROM employees e
@@ -83,6 +88,8 @@ app.post('/employees', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json();
     const { first_name, last_name, email, phone, department, position, employment_type, hire_date, is_active } = body;
     
@@ -157,6 +164,8 @@ app.put('/employees/:id', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const id = c.req.param('id');
     const body = await c.req.json();
     const { first_name, last_name, email, phone, department, position, employment_type, hire_date, is_active } = body;
@@ -212,6 +221,8 @@ app.delete('/employees/:id', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const id = c.req.param('id');
     
     await c.env.DB.prepare(
@@ -235,6 +246,8 @@ app.get('/departments', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const result = await c.env.DB.prepare(`
       SELECT d.*, 
         (SELECT COUNT(*) FROM employees e WHERE e.department_id = d.id AND e.is_active = 1) as employee_count
@@ -270,6 +283,8 @@ app.post('/departments', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json();
     const { name, code, description, manager_id } = body;
     
@@ -301,6 +316,8 @@ app.put('/departments/:id', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const id = c.req.param('id');
     const body = await c.req.json();
     const { name, code, manager_id } = body;
@@ -327,6 +344,8 @@ app.delete('/departments/:id', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const id = c.req.param('id');
     
     // Check if department has employees

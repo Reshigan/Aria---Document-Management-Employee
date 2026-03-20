@@ -11,6 +11,7 @@
  */
 
 import { Hono } from 'hono';
+import { getSecureCompanyId, getSecureUserId } from '../middleware/auth';
 import { jwtVerify } from 'jose';
 
 // Import services
@@ -39,6 +40,8 @@ async function getAuthenticatedCompanyId(c: any): Promise<string | null> {
   }
   
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const token = authHeader.substring(7);
     const secretKey = new TextEncoder().encode(c.env.JWT_SECRET);
     const { payload } = await jwtVerify(token, secretKey);
@@ -56,6 +59,8 @@ async function getAuthenticatedUserId(c: any): Promise<string | null> {
   }
   
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const token = authHeader.substring(7);
     const secretKey = new TextEncoder().encode(c.env.JWT_SECRET);
     const { payload } = await jwtVerify(token, secretKey);
@@ -83,6 +88,8 @@ app.get('/recurring-invoices', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const customerId = c.req.query('customer_id');
     const isActive = c.req.query('is_active');
     
@@ -110,6 +117,8 @@ app.post('/recurring-invoices', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json();
     
     const invoice = await recurringInvoiceService.createRecurringInvoice(
@@ -236,6 +245,8 @@ app.post('/recurring-invoices/:id/generate', async (c) => {
 // Process all due recurring invoices (called by cron)
 app.post('/recurring-invoices/process-due', async (c) => {
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const result = await recurringInvoiceService.processDueRecurringInvoices(c.env.DB);
     return c.json(result);
   } catch (error: any) {
@@ -378,6 +389,8 @@ app.post('/invoice-reminders/send/:invoiceId', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const invoiceId = c.req.param('invoiceId');
     const body = await c.req.json();
     
@@ -404,6 +417,8 @@ app.post('/invoice-reminders/send/:invoiceId', async (c) => {
 // Process all due reminders (called by cron)
 app.post('/invoice-reminders/process-due', async (c) => {
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const result = await invoiceReminderService.processDueReminders(c.env.DB, dummyEmailService);
     return c.json(result);
   } catch (error: any) {
@@ -438,6 +453,8 @@ app.post('/statements/generate', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json();
     
     const statement = await customerStatementService.generateStatement(
@@ -463,6 +480,8 @@ app.get('/statements/:customerId/html', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const customerId = c.req.param('customerId');
     const startDate = c.req.query('start_date') || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
     const endDate = c.req.query('end_date') || new Date().toISOString().split('T')[0];
@@ -502,6 +521,8 @@ app.post('/statements/:customerId/email', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const customerId = c.req.param('customerId');
     const body = await c.req.json();
     
@@ -547,6 +568,8 @@ app.get('/statements/history', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const customerId = c.req.query('customer_id');
     if (!customerId) {
       return c.json({ error: 'customer_id is required' }, 400);
@@ -568,6 +591,8 @@ app.post('/statements/bulk-generate', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json();
     
     const result = await customerStatementService.bulkGenerateStatements(
@@ -610,6 +635,8 @@ app.post('/portal/invite', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json();
     
     const result = await customerPortalService.createPortalInvite(
@@ -629,6 +656,8 @@ app.post('/portal/invite', async (c) => {
 // Accept portal invite (public endpoint)
 app.post('/portal/accept-invite', async (c) => {
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json();
     
     const result = await customerPortalService.acceptPortalInvite(
@@ -651,6 +680,8 @@ app.post('/portal/accept-invite', async (c) => {
 // Portal login (public endpoint)
 app.post('/portal/login', async (c) => {
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json();
     
     const result = await customerPortalService.portalLogin(
@@ -677,6 +708,8 @@ app.post('/portal/login', async (c) => {
 // Portal logout
 app.post('/portal/logout', async (c) => {
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const authHeader = c.req.header('Authorization');
     if (authHeader && authHeader.startsWith('Bearer ')) {
       const token = authHeader.substring(7);
@@ -693,6 +726,8 @@ app.post('/portal/logout', async (c) => {
 // Get portal data (for logged-in portal users)
 app.get('/portal/data', async (c) => {
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const authHeader = c.req.header('Authorization');
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return c.json({ error: 'Authentication required' }, 401);
@@ -721,6 +756,8 @@ app.get('/portal/data', async (c) => {
 // Get invoice details (for portal users)
 app.get('/portal/invoices/:id', async (c) => {
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const authHeader = c.req.header('Authorization');
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return c.json({ error: 'Authentication required' }, 401);
@@ -751,6 +788,8 @@ app.get('/portal/invoices/:id', async (c) => {
 // Create payment link (for portal users)
 app.post('/portal/invoices/:id/pay', async (c) => {
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const authHeader = c.req.header('Authorization');
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return c.json({ error: 'Authentication required' }, 401);
@@ -882,6 +921,8 @@ app.post('/budgets/:id/lines', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const budgetId = c.req.param('id');
     const body = await c.req.json();
     
@@ -908,6 +949,8 @@ app.put('/budgets/lines/:lineId', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const lineId = c.req.param('lineId');
     const body = await c.req.json();
     
@@ -928,6 +971,8 @@ app.delete('/budgets/lines/:lineId', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const lineId = c.req.param('lineId');
     await budgetService.deleteBudgetLine(c.env.DB, lineId);
     
@@ -983,6 +1028,8 @@ app.get('/budgets/:id/vs-actual', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const budgetId = c.req.param('id');
     const period = c.req.query('period');
     const departmentId = c.req.query('department_id');
@@ -1008,6 +1055,8 @@ app.post('/budgets/:id/copy', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const budgetId = c.req.param('id');
     const body = await c.req.json();
     
@@ -1076,6 +1125,8 @@ app.post('/bank-feeds/link-token', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     if (!c.env.PLAID_CLIENT_ID || !c.env.PLAID_SECRET) {
       return c.json({ error: 'Plaid not configured' }, 400);
     }
@@ -1106,6 +1157,8 @@ app.post('/bank-feeds/exchange-token', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json();
     
     if (!c.env.PLAID_CLIENT_ID || !c.env.PLAID_SECRET) {
@@ -1139,6 +1192,8 @@ app.post('/bank-feeds/connections/:id/sync', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const connectionId = c.req.param('id');
     const body = await c.req.json();
     
@@ -1195,6 +1250,8 @@ app.post('/bank-feeds/transactions/:id/match', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const transactionId = c.req.param('id');
     const body = await c.req.json();
     
@@ -1220,6 +1277,8 @@ app.post('/bank-feeds/auto-match', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json().catch(() => ({}));
     const bankAccountId = body.bank_account_id;
     
@@ -1243,6 +1302,8 @@ app.delete('/bank-feeds/connections/:id', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const connectionId = c.req.param('id');
     const config = c.env.PLAID_CLIENT_ID && c.env.PLAID_SECRET ? {
       client_id: c.env.PLAID_CLIENT_ID,
@@ -1267,6 +1328,8 @@ app.get('/bank-feeds/connections/:id/balance', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const connectionId = c.req.param('id');
     
     if (!c.env.PLAID_CLIENT_ID || !c.env.PLAID_SECRET) {
@@ -1293,6 +1356,8 @@ app.get('/bank-feeds/connections/:id/balance', async (c) => {
 // Plaid webhook
 app.post('/bank-feeds/webhook', async (c) => {
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json();
     
     if (!c.env.PLAID_CLIENT_ID || !c.env.PLAID_SECRET) {
@@ -1321,6 +1386,8 @@ app.post('/bank-feeds/webhook', async (c) => {
 // Sync all connections (called by cron)
 app.post('/bank-feeds/sync-all', async (c) => {
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     if (!c.env.PLAID_CLIENT_ID || !c.env.PLAID_SECRET) {
       return c.json({ error: 'Plaid not configured' }, 400);
     }

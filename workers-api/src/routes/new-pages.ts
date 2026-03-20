@@ -4,6 +4,7 @@
  */
 
 import { Hono } from 'hono';
+import { getSecureCompanyId, getSecureUserId } from '../middleware/auth';
 
 interface Env {
   DB: D1Database;

@@ -1,4 +1,5 @@
 import { Hono } from 'hono';
+import { getSecureCompanyId, getSecureUserId } from '../middleware/auth';
 import { jwtVerify } from 'jose';
 
 interface Env {
@@ -16,6 +17,8 @@ async function getAuthContext(c: any): Promise<{ company_id: string; user_id: st
   }
   
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const token = authHeader.substring(7);
     const secretKey = new TextEncoder().encode(c.env.JWT_SECRET);
     const { payload } = await jwtVerify(token, secretKey);
@@ -53,6 +56,8 @@ differentiators.get('/whatsapp/webhook', async (c) => {
 // WhatsApp webhook to receive messages
 differentiators.post('/whatsapp/webhook', async (c) => {
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json();
     const db = c.env.DB;
     
@@ -173,7 +178,10 @@ async function executeWhatsAppCommand(
     WHERE u.phone = ? OR u.phone = ?
   `).bind(phoneNumber, '+' + phoneNumber).first().catch(() => null);
   
-  const companyId = user?.company_id || 'b0598135-52fd-4f67-ac56-8f0237e6355e'; // Default to demo company
+  const companyId = user?.company_id;
+  if (!companyId) {
+    return { message: 'Unable to determine company. Please register your phone number.' };
+  }
   
   switch (command.action) {
     case 'help':
@@ -334,6 +342,8 @@ differentiators.post('/whatsapp/send', async (c) => {
     if (!auth) return c.json({ error: 'Authentication required' }, 401);
   
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json();
     const { phone_number, message, template_name, template_params } = body;
     
@@ -474,6 +484,8 @@ differentiators.post('/mobile/push/subscribe', async (c) => {
     if (!auth) return c.json({ error: 'Authentication required' }, 401);
   
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json();
     const { subscription, device_name } = body;
     
@@ -514,6 +526,8 @@ differentiators.post('/mobile/push/unsubscribe', async (c) => {
     if (!auth) return c.json({ error: 'Authentication required' }, 401);
   
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json();
     const { endpoint } = body;
     
@@ -536,6 +550,8 @@ differentiators.post('/mobile/sync/queue', async (c) => {
     if (!auth) return c.json({ error: 'Authentication required' }, 401);
   
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json();
     const { actions } = body;
     
@@ -582,6 +598,8 @@ differentiators.post('/mobile/sync/process', async (c) => {
     if (!auth) return c.json({ error: 'Authentication required' }, 401);
   
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const db = c.env.DB;
     
     // Get pending actions for this user
@@ -597,6 +615,8 @@ differentiators.post('/mobile/sync/process', async (c) => {
     
     for (const action of pending.results as any[]) {
       try {
+        const companyId = await getSecureCompanyId(c);
+        if (!companyId) return c.json({ error: 'Authentication required' }, 401);
         const payload = JSON.parse(action.payload || '{}');
         
         // Process action based on type
@@ -953,6 +973,8 @@ differentiators.post('/migration/upload', async (c) => {
     if (!auth) return c.json({ error: 'Authentication required' }, 401);
   
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const formData = await c.req.formData();
     const fileEntry = formData.get('file');
     const entityType = formData.get('entity_type') as string;
@@ -1121,6 +1143,8 @@ differentiators.post('/migration/execute/:jobId', async (c) => {
   const db = c.env.DB;
   
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     // Get migration job
     const job = await db.prepare(`
       SELECT * FROM migration_jobs
@@ -1141,6 +1165,8 @@ differentiators.post('/migration/execute/:jobId', async (c) => {
     // Import rows
     for (let i = 0; i < rows.length; i++) {
       try {
+        const companyId = await getSecureCompanyId(c);
+        if (!companyId) return c.json({ error: 'Authentication required' }, 401);
         await importRow(db, auth.company_id, entityType, rows[i]);
         imported++;
       } catch (error: any) {
@@ -1294,6 +1320,8 @@ differentiators.post('/migration/rollback/:jobId', async (c) => {
   const db = c.env.DB;
   
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     // Get migration job
     const job = await db.prepare(`
       SELECT * FROM migration_jobs

@@ -121,16 +121,13 @@ export function getUserId(c: Context): string {
 
 /**
  * SECURE: Get company ID from JWT token
- * This function extracts company_id from the JWT token in the Authorization header.
- * Falls back to demo company for testing purposes.
+ * This function extracts company_id ONLY from a valid JWT token.
+ * Returns null if no valid authentication is present.
  * 
  * IMPORTANT: This is the ONLY secure way to get company_id in multi-tenant routes.
- * The X-Company-ID header is only trusted if it matches the demo company ID.
+ * Callers MUST check for null and return 401 if not authenticated.
  */
-export async function getSecureCompanyId(c: Context): Promise<string> {
-  // Demo company ID for testing
-  const DEMO_COMPANY_ID = 'b0598135-52fd-4f67-ac56-8f0237e6355e';
-  
+export async function getSecureCompanyId(c: Context): Promise<string | null> {
   // First check if auth context is already set by middleware
   const auth = c.get('auth') as AuthContext | undefined;
   if (auth?.companyId) {
@@ -147,36 +144,16 @@ export async function getSecureCompanyId(c: Context): Promise<string> {
     }
   }
 
-  // Fallback: Check X-Company-ID header - only trust if it's the demo company
-  // This allows demo users to test the system without a valid JWT
-  const headerCompanyId = c.req.header('X-Company-ID');
-  if (headerCompanyId === DEMO_COMPANY_ID) {
-    return DEMO_COMPANY_ID;
-  }
-  
-  // Query parameter fallback for demo company
-  const queryCompanyId = c.req.query('company_id');
-  if (queryCompanyId === DEMO_COMPANY_ID) {
-    return DEMO_COMPANY_ID;
-  }
-
-  // Development fallback
-  const isDev = c.env.ENVIRONMENT === 'development' || !c.env.ENVIRONMENT;
-  if (isDev) {
-    return DEMO_COMPANY_ID;
-  }
-
-  // Production fallback to demo company for testing
-  // In a real multi-tenant system, this would throw an error
-  // But for demo purposes, we allow access to the demo company
-  return DEMO_COMPANY_ID;
+  // No valid authentication found
+  return null;
 }
 
 /**
  * SECURE: Get user ID from JWT token
- * Falls back to 'system' for development/testing
+ * Returns null if no valid authentication is present.
+ * Callers MUST check for null and return 401 if not authenticated.
  */
-export async function getSecureUserId(c: Context): Promise<string> {
+export async function getSecureUserId(c: Context): Promise<string | null> {
   const auth = c.get('auth') as AuthContext | undefined;
   if (auth?.user?.sub) {
     return auth.user.sub;
@@ -191,5 +168,6 @@ export async function getSecureUserId(c: Context): Promise<string> {
     }
   }
 
-  return 'system';
+  // No valid authentication found
+  return null;
 }

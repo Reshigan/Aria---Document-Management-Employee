@@ -5,6 +5,7 @@
  */
 
 import { Hono } from 'hono';
+import { getSecureCompanyId, getSecureUserId } from '../middleware/auth';
 import { orchestrate, classifyIntent, BOT_CATALOG } from '../services/ai-orchestrator';
 
 interface Env {
@@ -1358,13 +1359,9 @@ function getDefaultResponse(): SkillResult {
 app.post('/session', async (c) => {
   try {
     const authHeader = c.req.header('Authorization');
-    let userId = 'anonymous';
-    let companyId = 'b0598135-52fd-4f67-ac56-8f0237e6355e'; // Default demo company
-    
-    if (authHeader && authHeader.startsWith('Bearer ')) {
-      // Extract user info from token if available
-      // For now, use defaults
-    }
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+    const userId = await getSecureUserId(c) || 'anonymous';
     
     const conversationId = generateUUID();
     
@@ -1400,6 +1397,8 @@ app.post('/session', async (c) => {
 // Send message (non-streaming)
 app.post('/message', async (c) => {
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json<{ conversation_id: string; message: string }>();
     const { conversation_id, message } = body;
     
@@ -1420,6 +1419,8 @@ app.post('/message', async (c) => {
     let conversationState: ConversationState = {};
     if (conversation.context) {
       try {
+        const companyId = await getSecureCompanyId(c);
+        if (!companyId) return c.json({ error: 'Authentication required' }, 401);
         conversationState = JSON.parse(conversation.context);
       } catch (e) {
         // Invalid JSON, start fresh
@@ -1450,6 +1451,8 @@ app.post('/message', async (c) => {
     if (!inMultiStepFlow && c.env.AI) {
       // Use AI orchestrator for intelligent intent classification
       try {
+        const companyId = await getSecureCompanyId(c);
+        if (!companyId) return c.json({ error: 'Authentication required' }, 401);
         // Get recent conversation history for context
         const historyResult = await c.env.DB.prepare(
           'SELECT role, content FROM aria_messages WHERE conversation_id = ? ORDER BY created_at DESC LIMIT 10'
@@ -2065,6 +2068,8 @@ app.post('/message', async (c) => {
 // Send message with streaming (SSE)
 app.post('/message/stream', async (c) => {
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json<{ conversation_id: string; message: string }>();
     const { conversation_id, message } = body;
     
@@ -2085,6 +2090,8 @@ app.post('/message/stream', async (c) => {
     let conversationState: ConversationState = {};
     if (conversation.context) {
       try {
+        const companyId = await getSecureCompanyId(c);
+        if (!companyId) return c.json({ error: 'Authentication required' }, 401);
         conversationState = JSON.parse(conversation.context);
       } catch (e) {
         // Invalid JSON, start fresh
@@ -2778,6 +2785,8 @@ app.post('/message/stream', async (c) => {
 // Upload document
 app.post('/upload', async (c) => {
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const formData = await c.req.formData();
     const fileData = formData.get('file');
     
@@ -2793,7 +2802,6 @@ app.post('/upload', async (c) => {
     }
     
     const documentId = generateUUID();
-    const companyId = 'b0598135-52fd-4f67-ac56-8f0237e6355e'; // Default demo company
     const r2Key = `${companyId}/${documentId}/${file.name}`;
     
     // Upload to R2
@@ -2829,6 +2837,8 @@ app.post('/upload', async (c) => {
 // Classify document (rule-based)
 app.post('/classify/:documentId', async (c) => {
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const documentId = c.req.param('documentId');
     
     // Get document metadata
@@ -2891,6 +2901,8 @@ app.post('/classify/:documentId', async (c) => {
 // Extract data from document (placeholder - returns mock data)
 app.post('/extract/:documentId', async (c) => {
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const documentId = c.req.param('documentId');
     
     const doc = await c.env.DB.prepare(
@@ -2920,6 +2932,8 @@ app.post('/extract/:documentId', async (c) => {
 // Validate document
 app.post('/documents/:documentId/validate', async (c) => {
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const documentId = c.req.param('documentId');
     
     const doc = await c.env.DB.prepare(
@@ -2949,6 +2963,8 @@ app.post('/documents/:documentId/validate', async (c) => {
 // Post to ARIA (placeholder)
 app.post('/documents/:documentId/post-to-aria', async (c) => {
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const documentId = c.req.param('documentId');
     
     return c.json({
@@ -2966,6 +2982,8 @@ app.post('/documents/:documentId/post-to-aria', async (c) => {
 // Export to SAP (placeholder)
 app.post('/documents/:documentId/export-to-sap', async (c) => {
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const documentId = c.req.param('documentId');
     
     return c.json({
@@ -2994,6 +3012,8 @@ app.get('/sap/export-templates', async (c) => {
 // SAP reclassify (placeholder)
 app.post('/sap/reclassify', async (c) => {
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json();
     
     return c.json({

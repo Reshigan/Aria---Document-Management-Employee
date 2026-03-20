@@ -65,6 +65,7 @@ const invoices = new Hono<{ Bindings: Env }>();
 invoices.get('/customer', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const status = c.req.query('status') || '';
     const customerId = c.req.query('customer_id') || '';
     const page = parseInt(c.req.query('page') || '1');
@@ -145,6 +146,8 @@ invoices.get('/customer/:id', async (c) => {
     const invoiceId = c.req.param('id');
     const companyId = await getSecureCompanyId(c);
 
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+
     const invoice = await c.env.DB.prepare(`
       SELECT ci.*, c.customer_name, c.customer_code, c.email as customer_email
       FROM customer_invoices ci
@@ -179,7 +182,9 @@ invoices.put('/customer/:id/status', async (c) => {
   try {
     const invoiceId = c.req.param('id');
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const userId = await getSecureUserId(c);
+    if (!userId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json<{ status: string }>();
 
     const validStatuses = ['draft', 'sent', 'posted', 'partial', 'paid', 'overdue', 'cancelled'];
@@ -240,7 +245,9 @@ invoices.post('/customer/:id/payment', async (c) => {
   try {
     const invoiceId = c.req.param('id');
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const userId = await getSecureUserId(c);
+    if (!userId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json<{ amount: number; payment_method?: string; reference?: string }>();
 
     if (!body.amount || body.amount <= 0) {
@@ -334,6 +341,7 @@ invoices.post('/customer/:id/payment', async (c) => {
 invoices.get('/supplier', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const status = c.req.query('status') || '';
     const supplierId = c.req.query('supplier_id') || '';
     const page = parseInt(c.req.query('page') || '1');
@@ -414,6 +422,8 @@ invoices.get('/supplier/:id', async (c) => {
     const invoiceId = c.req.param('id');
     const companyId = await getSecureCompanyId(c);
 
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+
     const invoice = await c.env.DB.prepare(`
       SELECT si.*, s.supplier_name, s.supplier_code, s.email as supplier_email
       FROM supplier_invoices si
@@ -437,7 +447,9 @@ invoices.put('/supplier/:id/status', async (c) => {
   try {
     const invoiceId = c.req.param('id');
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const userId = await getSecureUserId(c);
+    if (!userId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json<{ status: string }>();
 
     const validStatuses = ['draft', 'received', 'approved', 'partial', 'paid', 'overdue', 'cancelled'];
@@ -498,7 +510,9 @@ invoices.post('/supplier/:id/payment', async (c) => {
   try {
     const invoiceId = c.req.param('id');
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const userId = await getSecureUserId(c);
+    if (!userId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json<{ amount: number; payment_method?: string; reference?: string }>();
 
     if (!body.amount || body.amount <= 0) {
@@ -592,6 +606,7 @@ invoices.post('/supplier/:id/payment', async (c) => {
 invoices.post('/credit-notes', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json<{
       sales_order_id?: string;
       invoice_id?: string;
@@ -726,6 +741,7 @@ invoices.post('/credit-notes', async (c) => {
 invoices.post('/invoice-lines', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json<{
       invoice_id?: string;
       description: string;

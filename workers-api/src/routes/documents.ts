@@ -746,6 +746,9 @@ app.post('/preview', async (c) => {
   const companyId = await getSecureCompanyId(c);
   
 
+  if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+  
+
   try {
     const body = await c.req.json();
     const { document_type, recipient_id, recipient_type, line_items, ...documentData } = body;
@@ -819,6 +822,9 @@ app.post('/save', async (c) => {
   const companyId = await getSecureCompanyId(c);
   
 
+  if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+  
+
   try {
     const body = await c.req.json();
     const { document_type, recipient_id, recipient_type, line_items, ...documentData } = body;
@@ -883,6 +889,9 @@ app.get('/:id', async (c) => {
   const companyId = await getSecureCompanyId(c);
   
 
+  if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+  
+
   try {
     const docId = c.req.param('id');
     const db = c.env.DB;
@@ -909,6 +918,9 @@ app.get('/:id', async (c) => {
 // Get document HTML for printing
 app.get('/:id/html', async (c) => {
   const companyId = await getSecureCompanyId(c);
+  
+
+  if (!companyId) return c.json({ error: 'Authentication required' }, 401);
   
 
   try {
@@ -980,6 +992,9 @@ app.get('/', async (c) => {
   const companyId = await getSecureCompanyId(c);
   
 
+  if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+  
+
   try {
     const db = c.env.DB;
     
@@ -1041,6 +1056,9 @@ app.patch('/:id/status', async (c) => {
   const companyId = await getSecureCompanyId(c);
   
 
+  if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+  
+
   try {
     const docId = c.req.param('id');
     const { status } = await c.req.json();
@@ -1065,6 +1083,9 @@ app.patch('/:id/status', async (c) => {
 // Send document via email
 app.post('/:id/send', async (c) => {
   const companyId = await getSecureCompanyId(c);
+  
+
+  if (!companyId) return c.json({ error: 'Authentication required' }, 401);
   
 
   try {
@@ -1164,6 +1185,9 @@ app.get('/:id/emails', async (c) => {
   const companyId = await getSecureCompanyId(c);
   
 
+  if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+  
+
   try {
     const docId = c.req.param('id');
     const db = c.env.DB;
@@ -1184,6 +1208,9 @@ app.get('/:id/emails', async (c) => {
 // Generate document from existing transaction
 app.post('/from-transaction', async (c) => {
   const companyId = await getSecureCompanyId(c);
+  
+
+  if (!companyId) return c.json({ error: 'Authentication required' }, 401);
   
 
   try {

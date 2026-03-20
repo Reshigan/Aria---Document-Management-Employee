@@ -4,6 +4,7 @@
  */
 
 import { Hono } from 'hono';
+import { getSecureCompanyId, getSecureUserId } from '../middleware/auth';
 import { jwtVerify } from 'jose';
 
 interface Env {
@@ -21,6 +22,8 @@ async function getAuthenticatedCompanyId(c: any): Promise<string | null> {
   }
   
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const token = authHeader.substring(7);
     const secretKey = new TextEncoder().encode(c.env.JWT_SECRET);
     const { payload } = await jwtVerify(token, secretKey);
@@ -45,6 +48,8 @@ app.get('/chart-of-accounts', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const search = c.req.query('search') || '';
     const type = c.req.query('type') || '';
     
@@ -83,6 +88,8 @@ app.post('/chart-of-accounts', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json();
     const { account_code, account_name, account_type, account_category, is_active } = body;
     
@@ -130,6 +137,8 @@ app.put('/chart-of-accounts/:code', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const code = c.req.param('code');
     const body = await c.req.json();
     const { account_name, account_type, account_category, is_active } = body;
@@ -165,6 +174,8 @@ app.delete('/chart-of-accounts/:code', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const code = c.req.param('code');
     
     // Check if account has journal entries
@@ -200,6 +211,8 @@ app.get('/journal-entries', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const result = await c.env.DB.prepare(`
       SELECT je.*, 
         (SELECT GROUP_CONCAT(jel.account_id || ':' || jel.debit_amount || ':' || jel.credit_amount, '|')
@@ -237,6 +250,8 @@ app.post('/journal-entries', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json();
     const { entry_date, description, reference, lines } = body;
     
@@ -316,6 +331,8 @@ app.post('/journal-entries/:id/post', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const id = c.req.param('id');
     
     const entry = await c.env.DB.prepare(

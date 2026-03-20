@@ -55,6 +55,9 @@ app.get('/integrations', async (c) => {
   const companyId = await getSecureCompanyId(c);
   
 
+  if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+  
+
   try {
     const db = c.env.DB;
     
@@ -79,6 +82,9 @@ app.get('/integrations', async (c) => {
 // Add payment integration
 app.post('/integrations', async (c) => {
   const companyId = await getSecureCompanyId(c);
+  
+
+  if (!companyId) return c.json({ error: 'Authentication required' }, 401);
   
 
   try {
@@ -123,6 +129,9 @@ app.put('/integrations/:id', async (c) => {
   const companyId = await getSecureCompanyId(c);
   
 
+  if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+  
+
   try {
     const integrationId = c.req.param('id');
     const body = await c.req.json();
@@ -158,6 +167,9 @@ app.delete('/integrations/:id', async (c) => {
   const companyId = await getSecureCompanyId(c);
   
 
+  if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+  
+
   try {
     const integrationId = c.req.param('id');
     const db = c.env.DB;
@@ -180,6 +192,9 @@ app.delete('/integrations/:id', async (c) => {
 // List payment transactions
 app.get('/transactions', async (c) => {
   const companyId = await getSecureCompanyId(c);
+  
+
+  if (!companyId) return c.json({ error: 'Authentication required' }, 401);
   
 
   try {
@@ -256,6 +271,9 @@ app.get('/transactions/:id', async (c) => {
   const companyId = await getSecureCompanyId(c);
   
 
+  if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+  
+
   try {
     const txnId = c.req.param('id');
     const db = c.env.DB;
@@ -284,6 +302,9 @@ app.get('/transactions/:id', async (c) => {
 // Create payment request (for invoice payment links)
 app.post('/request', async (c) => {
   const companyId = await getSecureCompanyId(c);
+  
+
+  if (!companyId) return c.json({ error: 'Authentication required' }, 401);
   
 
   try {
@@ -339,6 +360,9 @@ app.post('/request', async (c) => {
 // Record manual payment
 app.post('/manual', async (c) => {
   const companyId = await getSecureCompanyId(c);
+  
+
+  if (!companyId) return c.json({ error: 'Authentication required' }, 401);
   
 
   try {
@@ -588,6 +612,9 @@ app.post('/webhook/:provider', async (c) => {
 // Get payment analytics
 app.get('/analytics', async (c) => {
   const companyId = await getSecureCompanyId(c);
+  
+
+  if (!companyId) return c.json({ error: 'Authentication required' }, 401);
   
 
   try {

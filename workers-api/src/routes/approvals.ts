@@ -6,6 +6,7 @@
  */
 
 import { Hono } from 'hono';
+import { getSecureCompanyId, getSecureUserId } from '../middleware/auth';
 import { jwtVerify } from 'jose';
 
 interface Env {
@@ -23,6 +24,8 @@ async function getAuthContext(c: any): Promise<{ companyId: string; userId: stri
   }
   
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const token = authHeader.substring(7);
     const secretKey = new TextEncoder().encode(c.env.JWT_SECRET);
     const { payload } = await jwtVerify(token, secretKey);
@@ -50,6 +53,8 @@ app.get('/workflows', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const result = await c.env.DB.prepare(`
       SELECT aw.*, 
         (SELECT COUNT(*) FROM approval_workflow_steps WHERE workflow_id = aw.id) as step_count
@@ -75,6 +80,8 @@ app.get('/workflows/:id', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const workflowId = c.req.param('id');
     
     const workflow = await c.env.DB.prepare(
@@ -107,6 +114,8 @@ app.post('/workflows', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json();
     const { workflow_name, document_type, steps } = body;
     
@@ -180,6 +189,8 @@ app.get('/pending', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const status = c.req.query('status') || 'pending';
     const documentType = c.req.query('document_type');
     
@@ -229,6 +240,8 @@ app.get('/all', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const status = c.req.query('status');
     const documentType = c.req.query('document_type');
     
@@ -274,6 +287,8 @@ app.post('/submit', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json();
     const { document_type, document_id, document_number, amount, notes } = body;
     
@@ -363,6 +378,8 @@ app.post('/:id/approve', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const approvalId = c.req.param('id');
     const body = await c.req.json();
     const { notes } = body;
@@ -425,6 +442,8 @@ app.post('/:id/reject', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const approvalId = c.req.param('id');
     const body = await c.req.json();
     const { reason } = body;
@@ -491,6 +510,8 @@ app.get('/history/:documentType/:documentId', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const documentType = c.req.param('documentType');
     const documentId = c.req.param('documentId');
     

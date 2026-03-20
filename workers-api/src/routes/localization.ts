@@ -14,6 +14,7 @@
  */
 
 import { Hono } from 'hono';
+import { getSecureCompanyId, getSecureUserId } from '../middleware/auth';
 import { jwtVerify } from 'jose';
 
 interface Env {
@@ -31,6 +32,8 @@ async function getAuthContext(c: any): Promise<{ companyId: string; userId: stri
   }
   
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const token = authHeader.substring(7);
     const secretKey = new TextEncoder().encode(c.env.JWT_SECRET);
     const { payload } = await jwtVerify(token, secretKey);
@@ -52,6 +55,8 @@ function generateUUID(): string {
 // Get all supported countries
 app.get('/countries', async (c) => {
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const result = await c.env.DB.prepare(
       'SELECT * FROM country_configs ORDER BY country_name'
     ).all();
@@ -68,6 +73,8 @@ app.get('/countries', async (c) => {
 // Get country configuration
 app.get('/countries/:code', async (c) => {
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const countryCode = c.req.param('code').toUpperCase();
     
     const country = await c.env.DB.prepare(
@@ -103,6 +110,8 @@ app.post('/tax/calculate', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json();
     const { country_code, tax_code, amount, transaction_type } = body;
     
@@ -161,6 +170,8 @@ app.post('/za/vat/calculate', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json();
     const { amount, vat_type = 'VAT15', is_inclusive = false } = body;
     
@@ -215,6 +226,8 @@ app.post('/za/payroll/calculate', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json();
     const { 
       gross_salary, 
@@ -315,6 +328,8 @@ app.post('/sa/vat/calculate', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json();
     const { amount, vat_type = 'VAT15', is_inclusive = false } = body;
     
@@ -367,6 +382,8 @@ app.post('/sa/zatca/generate', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json();
     const { 
       invoice_number, 
@@ -453,6 +470,8 @@ app.post('/ae/vat/calculate', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json();
     const { amount, vat_type = 'VAT5', is_inclusive = false } = body;
     
@@ -507,6 +526,8 @@ app.post('/in/gst/calculate', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json();
     const { 
       amount, 
@@ -570,6 +591,8 @@ app.post('/in/tds/calculate', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json();
     const { 
       amount, 
@@ -634,6 +657,8 @@ app.post('/mx/iva/calculate', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json();
     const { amount, iva_rate = 16, is_inclusive = false } = body;
     
@@ -679,6 +704,8 @@ app.post('/id/ppn/calculate', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json();
     const { amount, ppn_rate = 11, is_inclusive = false } = body;
     
@@ -724,6 +751,8 @@ app.get('/exchange-rates', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const fromCurrency = c.req.query('from');
     const toCurrency = c.req.query('to');
     const date = c.req.query('date');
@@ -767,6 +796,8 @@ app.post('/exchange-rates', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json();
     const { from_currency, to_currency, rate, rate_date, rate_type = 'spot', source = 'manual' } = body;
     
@@ -815,6 +846,8 @@ app.post('/exchange-rates/convert', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json();
     const { amount, from_currency, to_currency, date } = body;
     

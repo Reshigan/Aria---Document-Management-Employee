@@ -12,6 +12,7 @@
  */
 
 import { Hono } from 'hono';
+import { getSecureCompanyId } from '../middleware/auth';
 import { D1Database } from '@cloudflare/workers-types';
 import * as AdminConfigService from '../services/admin-config-service';
 
@@ -25,7 +26,8 @@ const adminConfigRoutes = new Hono<{ Bindings: Bindings }>();
 
 adminConfigRoutes.get('/chart-of-accounts', async (c) => {
   try {
-    const companyId = c.req.query('company_id') || 'demo-company';
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const accountType = c.req.query('account_type');
     const isActive = c.req.query('is_active');
     const parentId = c.req.query('parent_id');
@@ -44,7 +46,8 @@ adminConfigRoutes.get('/chart-of-accounts', async (c) => {
 
 adminConfigRoutes.get('/chart-of-accounts/:id', async (c) => {
   try {
-    const companyId = c.req.query('company_id') || 'demo-company';
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const accountId = c.req.param('id');
 
     const account = await AdminConfigService.getChartOfAccount(c.env.DB, companyId, accountId);
@@ -60,7 +63,8 @@ adminConfigRoutes.get('/chart-of-accounts/:id', async (c) => {
 
 adminConfigRoutes.post('/chart-of-accounts', async (c) => {
   try {
-    const companyId = c.req.query('company_id') || 'demo-company';
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json();
 
     const id = await AdminConfigService.createChartOfAccount(c.env.DB, companyId, body);
@@ -73,7 +77,8 @@ adminConfigRoutes.post('/chart-of-accounts', async (c) => {
 
 adminConfigRoutes.put('/chart-of-accounts/:id', async (c) => {
   try {
-    const companyId = c.req.query('company_id') || 'demo-company';
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const accountId = c.req.param('id');
     const body = await c.req.json();
 
@@ -87,7 +92,8 @@ adminConfigRoutes.put('/chart-of-accounts/:id', async (c) => {
 
 adminConfigRoutes.delete('/chart-of-accounts/:id', async (c) => {
   try {
-    const companyId = c.req.query('company_id') || 'demo-company';
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const accountId = c.req.param('id');
 
     await AdminConfigService.deleteChartOfAccount(c.env.DB, companyId, accountId);
@@ -102,7 +108,8 @@ adminConfigRoutes.delete('/chart-of-accounts/:id', async (c) => {
 
 adminConfigRoutes.get('/invoice-templates', async (c) => {
   try {
-    const companyId = c.req.query('company_id') || 'demo-company';
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const templateType = c.req.query('template_type');
 
     const templates = await AdminConfigService.listInvoiceTemplates(c.env.DB, companyId, templateType || undefined);
@@ -115,7 +122,8 @@ adminConfigRoutes.get('/invoice-templates', async (c) => {
 
 adminConfigRoutes.get('/invoice-templates/:id', async (c) => {
   try {
-    const companyId = c.req.query('company_id') || 'demo-company';
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const templateId = c.req.param('id');
 
     const template = await AdminConfigService.getInvoiceTemplate(c.env.DB, companyId, templateId);
@@ -131,7 +139,8 @@ adminConfigRoutes.get('/invoice-templates/:id', async (c) => {
 
 adminConfigRoutes.post('/invoice-templates', async (c) => {
   try {
-    const companyId = c.req.query('company_id') || 'demo-company';
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json();
 
     const id = await AdminConfigService.createInvoiceTemplate(c.env.DB, companyId, body);
@@ -144,7 +153,8 @@ adminConfigRoutes.post('/invoice-templates', async (c) => {
 
 adminConfigRoutes.put('/invoice-templates/:id', async (c) => {
   try {
-    const companyId = c.req.query('company_id') || 'demo-company';
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const templateId = c.req.param('id');
     const body = await c.req.json();
 
@@ -158,7 +168,8 @@ adminConfigRoutes.put('/invoice-templates/:id', async (c) => {
 
 adminConfigRoutes.delete('/invoice-templates/:id', async (c) => {
   try {
-    const companyId = c.req.query('company_id') || 'demo-company';
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const templateId = c.req.param('id');
 
     await AdminConfigService.deleteInvoiceTemplate(c.env.DB, companyId, templateId);
@@ -173,7 +184,8 @@ adminConfigRoutes.delete('/invoice-templates/:id', async (c) => {
 
 adminConfigRoutes.get('/financial-settings', async (c) => {
   try {
-    const companyId = c.req.query('company_id') || 'demo-company';
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
 
     const settings = await AdminConfigService.getFinancialSettings(c.env.DB, companyId);
 
@@ -185,7 +197,8 @@ adminConfigRoutes.get('/financial-settings', async (c) => {
 
 adminConfigRoutes.put('/financial-settings', async (c) => {
   try {
-    const companyId = c.req.query('company_id') || 'demo-company';
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json();
 
     await AdminConfigService.updateFinancialSettings(c.env.DB, companyId, body);
@@ -198,7 +211,8 @@ adminConfigRoutes.put('/financial-settings', async (c) => {
 
 adminConfigRoutes.post('/check-lock-date', async (c) => {
   try {
-    const companyId = c.req.query('company_id') || 'demo-company';
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json();
 
     const result = await AdminConfigService.checkLockDate(
@@ -218,7 +232,8 @@ adminConfigRoutes.post('/check-lock-date', async (c) => {
 
 adminConfigRoutes.get('/payment-terms', async (c) => {
   try {
-    const companyId = c.req.query('company_id') || 'demo-company';
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const activeOnly = c.req.query('active_only') !== 'false';
 
     const terms = await AdminConfigService.listPaymentTerms(c.env.DB, companyId, activeOnly);
@@ -231,7 +246,8 @@ adminConfigRoutes.get('/payment-terms', async (c) => {
 
 adminConfigRoutes.get('/payment-terms/:id', async (c) => {
   try {
-    const companyId = c.req.query('company_id') || 'demo-company';
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const termId = c.req.param('id');
 
     const term = await AdminConfigService.getPaymentTerm(c.env.DB, companyId, termId);
@@ -247,7 +263,8 @@ adminConfigRoutes.get('/payment-terms/:id', async (c) => {
 
 adminConfigRoutes.post('/payment-terms', async (c) => {
   try {
-    const companyId = c.req.query('company_id') || 'demo-company';
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json();
 
     const id = await AdminConfigService.createPaymentTerm(c.env.DB, companyId, body);
@@ -260,7 +277,8 @@ adminConfigRoutes.post('/payment-terms', async (c) => {
 
 adminConfigRoutes.put('/payment-terms/:id', async (c) => {
   try {
-    const companyId = c.req.query('company_id') || 'demo-company';
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const termId = c.req.param('id');
     const body = await c.req.json();
 
@@ -274,7 +292,8 @@ adminConfigRoutes.put('/payment-terms/:id', async (c) => {
 
 adminConfigRoutes.delete('/payment-terms/:id', async (c) => {
   try {
-    const companyId = c.req.query('company_id') || 'demo-company';
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const termId = c.req.param('id');
 
     await AdminConfigService.deletePaymentTerm(c.env.DB, companyId, termId);
@@ -287,7 +306,8 @@ adminConfigRoutes.delete('/payment-terms/:id', async (c) => {
 
 adminConfigRoutes.post('/payment-terms/calculate-due-date', async (c) => {
   try {
-    const companyId = c.req.query('company_id') || 'demo-company';
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json();
 
     const term = await AdminConfigService.getPaymentTerm(c.env.DB, companyId, body.term_id);
@@ -307,7 +327,8 @@ adminConfigRoutes.post('/payment-terms/calculate-due-date', async (c) => {
 
 adminConfigRoutes.get('/tax-rates', async (c) => {
   try {
-    const companyId = c.req.query('company_id') || 'demo-company';
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const taxType = c.req.query('tax_type');
     const appliesTo = c.req.query('applies_to');
     const activeOnly = c.req.query('active_only') !== 'false';
@@ -326,7 +347,8 @@ adminConfigRoutes.get('/tax-rates', async (c) => {
 
 adminConfigRoutes.get('/tax-rates/:id', async (c) => {
   try {
-    const companyId = c.req.query('company_id') || 'demo-company';
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const taxRateId = c.req.param('id');
 
     const rate = await AdminConfigService.getTaxRate(c.env.DB, companyId, taxRateId);
@@ -342,7 +364,8 @@ adminConfigRoutes.get('/tax-rates/:id', async (c) => {
 
 adminConfigRoutes.post('/tax-rates', async (c) => {
   try {
-    const companyId = c.req.query('company_id') || 'demo-company';
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json();
 
     const id = await AdminConfigService.createTaxRate(c.env.DB, companyId, body);
@@ -355,7 +378,8 @@ adminConfigRoutes.post('/tax-rates', async (c) => {
 
 adminConfigRoutes.put('/tax-rates/:id', async (c) => {
   try {
-    const companyId = c.req.query('company_id') || 'demo-company';
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const taxRateId = c.req.param('id');
     const body = await c.req.json();
 
@@ -369,7 +393,8 @@ adminConfigRoutes.put('/tax-rates/:id', async (c) => {
 
 adminConfigRoutes.delete('/tax-rates/:id', async (c) => {
   try {
-    const companyId = c.req.query('company_id') || 'demo-company';
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const taxRateId = c.req.param('id');
 
     await AdminConfigService.deleteTaxRate(c.env.DB, companyId, taxRateId);
@@ -384,7 +409,8 @@ adminConfigRoutes.delete('/tax-rates/:id', async (c) => {
 
 adminConfigRoutes.get('/email-templates', async (c) => {
   try {
-    const companyId = c.req.query('company_id') || 'demo-company';
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const templateType = c.req.query('template_type');
 
     const templates = await AdminConfigService.listEmailTemplates(c.env.DB, companyId, templateType || undefined);
@@ -397,7 +423,8 @@ adminConfigRoutes.get('/email-templates', async (c) => {
 
 adminConfigRoutes.get('/email-templates/:id', async (c) => {
   try {
-    const companyId = c.req.query('company_id') || 'demo-company';
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const templateId = c.req.param('id');
 
     const template = await AdminConfigService.getEmailTemplate(c.env.DB, companyId, templateId);
@@ -413,7 +440,8 @@ adminConfigRoutes.get('/email-templates/:id', async (c) => {
 
 adminConfigRoutes.post('/email-templates', async (c) => {
   try {
-    const companyId = c.req.query('company_id') || 'demo-company';
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json();
 
     const id = await AdminConfigService.createEmailTemplate(c.env.DB, companyId, body);
@@ -426,7 +454,8 @@ adminConfigRoutes.post('/email-templates', async (c) => {
 
 adminConfigRoutes.put('/email-templates/:id', async (c) => {
   try {
-    const companyId = c.req.query('company_id') || 'demo-company';
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const templateId = c.req.param('id');
     const body = await c.req.json();
 
@@ -440,7 +469,8 @@ adminConfigRoutes.put('/email-templates/:id', async (c) => {
 
 adminConfigRoutes.delete('/email-templates/:id', async (c) => {
   try {
-    const companyId = c.req.query('company_id') || 'demo-company';
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const templateId = c.req.param('id');
 
     await AdminConfigService.deleteEmailTemplate(c.env.DB, companyId, templateId);
@@ -453,7 +483,8 @@ adminConfigRoutes.delete('/email-templates/:id', async (c) => {
 
 adminConfigRoutes.post('/email-templates/:id/preview', async (c) => {
   try {
-    const companyId = c.req.query('company_id') || 'demo-company';
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const templateId = c.req.param('id');
     const body = await c.req.json();
 
@@ -474,7 +505,8 @@ adminConfigRoutes.post('/email-templates/:id/preview', async (c) => {
 
 adminConfigRoutes.get('/tracking-categories', async (c) => {
   try {
-    const companyId = c.req.query('company_id') || 'demo-company';
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const includeOptions = c.req.query('include_options') !== 'false';
 
     const categories = await AdminConfigService.listTrackingCategories(c.env.DB, companyId, includeOptions);
@@ -487,7 +519,8 @@ adminConfigRoutes.get('/tracking-categories', async (c) => {
 
 adminConfigRoutes.get('/tracking-categories/:id', async (c) => {
   try {
-    const companyId = c.req.query('company_id') || 'demo-company';
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const categoryId = c.req.param('id');
 
     const category = await AdminConfigService.getTrackingCategory(c.env.DB, companyId, categoryId);
@@ -503,7 +536,8 @@ adminConfigRoutes.get('/tracking-categories/:id', async (c) => {
 
 adminConfigRoutes.post('/tracking-categories', async (c) => {
   try {
-    const companyId = c.req.query('company_id') || 'demo-company';
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json();
 
     const id = await AdminConfigService.createTrackingCategory(c.env.DB, companyId, body);
@@ -516,7 +550,8 @@ adminConfigRoutes.post('/tracking-categories', async (c) => {
 
 adminConfigRoutes.put('/tracking-categories/:id', async (c) => {
   try {
-    const companyId = c.req.query('company_id') || 'demo-company';
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const categoryId = c.req.param('id');
     const body = await c.req.json();
 
@@ -530,7 +565,8 @@ adminConfigRoutes.put('/tracking-categories/:id', async (c) => {
 
 adminConfigRoutes.delete('/tracking-categories/:id', async (c) => {
   try {
-    const companyId = c.req.query('company_id') || 'demo-company';
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const categoryId = c.req.param('id');
 
     await AdminConfigService.deleteTrackingCategory(c.env.DB, companyId, categoryId);

@@ -51,6 +51,7 @@ import { executeScheduledBots as runScheduledBots } from './services/bot-executo
 import { processPendingDeliveries } from './services/webhook-service';
 import { processDueScheduledReports } from './services/report-builder-service';
 import { processScheduledPosts, generateDailyPosts } from './services/marketing-service';
+import { rateLimiter } from './middleware/rate-limiter';
 
 // Types
 interface Env {
@@ -550,7 +551,8 @@ import { seedFullYear, seedMonth } from './services/data-seeding-service';
 app.post('/api/seed/full-year', async (c) => {
   try {
     const body = await c.req.json<{ company_id?: string; year?: number }>().catch(() => ({ company_id: undefined, year: undefined }));
-    const companyId = body.company_id || 'b0598135-52fd-4f67-ac56-8f0237e6355e'; // Demo company
+    const companyId = body.company_id;
+    if (!companyId) return c.json({ error: 'company_id is required' }, 400);
     const year = body.year || 2025;
     
     console.log(`Starting full year seeding for company ${companyId}, year ${year}`);
@@ -573,7 +575,8 @@ app.post('/api/seed/full-year', async (c) => {
 app.post('/api/seed/month', async (c) => {
   try {
     const body = await c.req.json<{ company_id?: string; year?: number; month?: number }>().catch(() => ({ company_id: undefined, year: undefined, month: undefined }));
-    const companyId = body.company_id || 'b0598135-52fd-4f67-ac56-8f0237e6355e'; // Demo company
+    const companyId = body.company_id;
+    if (!companyId) return c.json({ error: 'company_id is required' }, 400);
     const year = body.year || 2025;
     const month = body.month || new Date().getMonth() + 1;
     
@@ -642,8 +645,8 @@ function generateUUID(): string {
   return crypto.randomUUID();
 }
 
-// Login endpoint
-app.post('/api/auth/login', async (c) => {
+// Login endpoint - rate limited: 5 requests per 60 seconds per IP
+app.post('/api/auth/login', rateLimiter({ maxRequests: 5, windowSeconds: 60 }), async (c) => {
   try {
     const body = await c.req.json<LoginRequest>();
     const { email, password } = body;
@@ -862,8 +865,8 @@ app.post('/api/auth/logout', async (c) => {
   }
 });
 
-// Register endpoint (for creating demo users)
-app.post('/api/auth/register', async (c) => {
+// Register endpoint - rate limited: 3 requests per 60 seconds per IP
+app.post('/api/auth/register', rateLimiter({ maxRequests: 3, windowSeconds: 60 }), async (c) => {
   try {
     const body = await c.req.json<{
       email: string;
@@ -906,7 +909,7 @@ app.post('/api/auth/register', async (c) => {
       full_name || null,
       firstName,
       lastName,
-      company_id || 'b0598135-52fd-4f67-ac56-8f0237e6355e', // Default demo company
+      company_id,
       'user'
     ).run();
 

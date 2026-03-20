@@ -4,6 +4,7 @@
  */
 
 import { Hono } from 'hono';
+import { getSecureCompanyId, getSecureUserId } from '../middleware/auth';
 import { jwtVerify } from 'jose';
 
 interface Env {
@@ -21,6 +22,8 @@ async function getAuthContext(c: any): Promise<{ company_id: string; user_id: st
   }
   
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const token = authHeader.substring(7);
     const secretKey = new TextEncoder().encode(c.env.JWT_SECRET);
     const { payload } = await jwtVerify(token, secretKey);
@@ -279,6 +282,8 @@ app.post('/query', async (c) => {
   if (!auth) return c.json({ error: 'Authentication required' }, 401);
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json();
     const { metric, dimensions, filters, date_range, granularity } = body;
     
@@ -1315,6 +1320,8 @@ app.get('/export/csv/:report', async (c) => {
   const db = c.env.DB;
   
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     let data: any[] = [];
     let headers: string[] = [];
     

@@ -219,6 +219,9 @@ app.get('/progress', async (c) => {
   const companyId = await getSecureCompanyId(c);
   
 
+  if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+  
+
   try {
     const db = c.env.DB;
     
@@ -274,6 +277,9 @@ app.get('/progress', async (c) => {
 // Complete a step
 app.post('/steps/:stepId/complete', async (c) => {
   const companyId = await getSecureCompanyId(c);
+  
+
+  if (!companyId) return c.json({ error: 'Authentication required' }, 401);
   
 
   try {
@@ -369,6 +375,9 @@ app.post('/steps/:stepId/skip', async (c) => {
   const companyId = await getSecureCompanyId(c);
   
 
+  if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+  
+
   try {
     const stepId = c.req.param('stepId');
     const db = c.env.DB;
@@ -449,6 +458,9 @@ app.get('/coa-templates/:templateId', async (c) => {
 // Apply COA template
 app.post('/coa-templates/:templateId/apply', async (c) => {
   const companyId = await getSecureCompanyId(c);
+  
+
+  if (!companyId) return c.json({ error: 'Authentication required' }, 401);
   
 
   try {
@@ -552,6 +564,9 @@ app.post('/import/validate', async (c) => {
   const companyId = await getSecureCompanyId(c);
   
 
+  if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+  
+
   try {
     const body = await c.req.json();
     const { import_type, data, column_mapping } = body;
@@ -648,6 +663,9 @@ app.post('/import/validate', async (c) => {
 // Execute import
 app.post('/import/execute', async (c) => {
   const companyId = await getSecureCompanyId(c);
+  
+
+  if (!companyId) return c.json({ error: 'Authentication required' }, 401);
   
 
   try {
@@ -783,6 +801,9 @@ app.post('/import/execute', async (c) => {
 // Set go-live date
 app.post('/go-live', async (c) => {
   const companyId = await getSecureCompanyId(c);
+  
+
+  if (!companyId) return c.json({ error: 'Authentication required' }, 401);
   
 
   try {

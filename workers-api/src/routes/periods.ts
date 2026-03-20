@@ -6,6 +6,7 @@
  */
 
 import { Hono } from 'hono';
+import { getSecureCompanyId, getSecureUserId } from '../middleware/auth';
 import { jwtVerify } from 'jose';
 
 interface Env {
@@ -23,6 +24,8 @@ async function getAuthContext(c: any): Promise<{ companyId: string; userId: stri
   }
   
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const token = authHeader.substring(7);
     const secretKey = new TextEncoder().encode(c.env.JWT_SECRET);
     const { payload } = await jwtVerify(token, secretKey);
@@ -81,6 +84,8 @@ app.post('/financial-periods/generate', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json();
     const { fiscal_year, start_month = 1 } = body;
     
@@ -153,6 +158,8 @@ app.post('/financial-periods/:id/close', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const periodId = c.req.param('id');
     
     // Get the period
@@ -212,6 +219,8 @@ app.post('/financial-periods/:id/reopen', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const periodId = c.req.param('id');
     const body = await c.req.json();
     const { reason } = body;
@@ -282,6 +291,8 @@ app.get('/period-locks', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const period = c.req.query('period'); // YYYY-MM format
     const module = c.req.query('module');
     
@@ -319,6 +330,8 @@ app.get('/period-locks/check', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const period = c.req.query('period'); // YYYY-MM format
     const module = c.req.query('module');
     
@@ -349,6 +362,8 @@ app.post('/period-locks', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json();
     const { period, module } = body;
     
@@ -389,6 +404,8 @@ app.delete('/period-locks/:period/:module', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const period = c.req.param('period');
     const module = c.req.param('module');
     const reason = c.req.query('reason') || 'Manual unlock';
