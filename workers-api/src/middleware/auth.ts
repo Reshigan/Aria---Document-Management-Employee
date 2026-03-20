@@ -153,6 +153,85 @@ export async function getSecureCompanyId(c: Context): Promise<string | null> {
  * Returns null if no valid authentication is present.
  * Callers MUST check for null and return 401 if not authenticated.
  */
+/**
+ * Subscription check middleware - enforces plan limits and subscription status.
+ * Runs after auth. Returns 402 if suspended/cancelled, 403 if module not included,
+ * 429 if API call limit exceeded.
+ */
+export function checkSubscription(requiredModule?: string) {
+  return async (c: Context, next: Next) => {
+    const auth = c.get('auth') as AuthContext | undefined;
+    if (!auth?.companyId) {
+      // No auth context - let the route handler deal with it
+      return next();
+    }
+
+    const db = c.env.DB;
+    try {
+      // Get subscription
+      const subscription = await db.prepare(`
+        SELECT s.status, s.plan_id, sp.features, sp.limits
+        FROM subscriptions s
+        LEFT JOIN subscription_plans sp ON sp.id = s.plan_id
+        WHERE s.company_id = ?
+        ORDER BY s.created_at DESC LIMIT 1
+      `).bind(auth.companyId).first() as { status: string; plan_id: string; features: string; limits: string } | null;
+
+      if (subscription) {
+        // Check subscription status
+        if (subscription.status === 'suspended' || subscription.status === 'cancelled') {
+          return c.json({
+            error: 'Subscription inactive',
+            message: 'Your subscription is ' + subscription.status + '. Please update your billing to continue.',
+            code: 'SUBSCRIPTION_INACTIVE'
+          }, 402);
+        }
+
+        // Check module access
+        if (requiredModule && subscription.features) {
+          try {
+            const features = JSON.parse(subscription.features);
+            const modules: string[] = features.modules || [];
+            if (modules.length > 0 && !modules.includes(requiredModule)) {
+              return c.json({
+                error: 'Feature not available',
+                message: `Upgrade your plan to access ${requiredModule}`,
+                code: 'MODULE_NOT_INCLUDED'
+              }, 403);
+            }
+          } catch { /* ignore parse errors */ }
+        }
+
+        // Check API call limits
+        if (subscription.limits) {
+          try {
+            const limits = JSON.parse(subscription.limits);
+            const monthlyLimit = limits.api_calls_monthly;
+            if (monthlyLimit && monthlyLimit > 0) {
+              const startOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString();
+              const usage = await db.prepare(
+                `SELECT COUNT(*) as cnt FROM audit_logs WHERE company_id = ? AND event_type = 'API' AND created_at >= ?`
+              ).bind(auth.companyId, startOfMonth).first() as { cnt: number } | null;
+              if (usage && usage.cnt >= monthlyLimit) {
+                return c.json({
+                  error: 'API limit exceeded',
+                  message: `Monthly API call limit (${monthlyLimit}) exceeded. Upgrade your plan for more.`,
+                  code: 'API_LIMIT_EXCEEDED'
+                }, 429);
+              }
+            }
+          } catch { /* ignore parse errors */ }
+        }
+      }
+    } catch (error) {
+      // Don't block requests if subscription check fails
+      console.error('Subscription check error:', error);
+    }
+
+    return next();
+  };
+}
+
 export async function getSecureUserId(c: Context): Promise<string | null> {
   const auth = c.get('auth') as AuthContext | undefined;
   if (auth?.user?.sub) {
