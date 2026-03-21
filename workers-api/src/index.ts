@@ -121,6 +121,8 @@ app.use('*', cors({
     if (origin === 'https://aria-erp.pages.dev') return origin;
     // Allow all Cloudflare Pages preview subdomains
     if (origin?.endsWith('.aria-erp.pages.dev')) return origin;
+    // Allow Devin Apps deployment domains
+    if (origin?.endsWith('.devinapps.com')) return origin;
     // Reject unknown origins
     return null;
   },
